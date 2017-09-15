@@ -18,16 +18,14 @@ package net.dv8tion.jda.core.requests.ratelimit;
 
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ExceptionEvent;
-import net.dv8tion.jda.core.requests.RateLimiter;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Requester;
-import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.requests.Route.RateLimit;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -54,7 +52,7 @@ public class ClientRateLimiter extends RateLimiter
     }
 
     @Override
-    protected void queueRequest(Request request)
+    protected void queueRequest(Request<?> request)
     {
         Bucket bucket = getBucket(request.getRoute());
         synchronized (bucket)
@@ -121,7 +119,7 @@ public class ClientRateLimiter extends RateLimiter
         final String route;
         final RateLimit rateLimit;
         volatile long retryAfter = 0;
-        volatile ConcurrentLinkedQueue<Request> requests = new ConcurrentLinkedQueue<>();
+        volatile ConcurrentLinkedQueue<Request<?>> requests = new ConcurrentLinkedQueue<>();
 
         public Bucket(String route, RateLimit rateLimit)
         {
@@ -129,7 +127,7 @@ public class ClientRateLimiter extends RateLimiter
             this.rateLimit = rateLimit;
         }
 
-        void addToQueue(Request request)
+        void addToQueue(Request<?> request)
         {
             requests.add(request);
             submitForProcessing();
@@ -197,9 +195,9 @@ public class ClientRateLimiter extends RateLimiter
             {
                 synchronized (requests)
                 {
-                    for (Iterator<Request> it = requests.iterator(); it.hasNext(); )
+                    for (Iterator<Request<?>> it = requests.iterator(); it.hasNext(); )
                     {
-                        Request request = null;
+                        Request<?> request = null;
                         try
                         {
                             request = it.next();
@@ -214,8 +212,9 @@ public class ClientRateLimiter extends RateLimiter
                             Requester.LOG.fatal("Requester system encountered an internal error");
                             Requester.LOG.log(t);
                             it.remove();
+
                             if (request != null)
-                                request.onFailure(t);
+                                request.handleResponse(new Response(request, null, t, Collections.emptySet()));
                         }
                     }
 
@@ -261,7 +260,7 @@ public class ClientRateLimiter extends RateLimiter
         }
 
         @Override
-        public Queue<Request> getRequests()
+        public Queue<Request<?>> getRequests()
         {
             return requests;
         }

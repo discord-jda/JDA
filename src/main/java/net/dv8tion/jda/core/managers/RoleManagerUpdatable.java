@@ -24,8 +24,6 @@ import net.dv8tion.jda.core.exceptions.HierarchyException;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.fields.PermissionField;
 import net.dv8tion.jda.core.managers.fields.RoleField;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
@@ -261,17 +259,7 @@ public class RoleManagerUpdatable
 
         reset();
         Route.CompiledRoute route = Route.Roles.MODIFY_ROLE.compile(getGuild().getId(), role.getId());
-        return new AuditableRestAction<Void>(getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestAction<Void>(getJDA(), route, body);
     }
 
     protected boolean needsUpdate()

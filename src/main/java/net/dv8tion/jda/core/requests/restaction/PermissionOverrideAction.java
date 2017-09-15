@@ -21,8 +21,6 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.AbstractChannelImpl;
 import net.dv8tion.jda.core.entities.impl.PermissionOverrideImpl;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.RequestBody;
@@ -47,7 +45,6 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
 
     private long allow = 0;
     private long deny = 0;
-    private final Channel channel;
 
     private final Member member;
     private final Role role;
@@ -66,10 +63,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      */
     public PermissionOverrideAction(JDA api, Route.CompiledRoute route, Channel channel, Member member)
     {
-        super(api, route);
-        this.channel = channel;
-        this.member = member;
-        this.role = null;
+        this(api, route, channel, member, null);
     }
 
     /**
@@ -86,12 +80,28 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      */
     public PermissionOverrideAction(JDA api, Route.CompiledRoute route, Channel channel, Role role)
     {
-        super(api, route);
-        this.channel = channel;
-        this.member = null;
-        this.role = role;
+        this(api, route, channel, null, role);
     }
 
+    private PermissionOverrideAction(JDA api, Route.CompiledRoute route, Channel channel, Member member, Role role)
+    {
+        super(api, route, response ->
+        {
+            JSONObject object = response.getObject();
+            boolean isMember = object.getString("type").equalsIgnoreCase("member");
+            long id = isMember ? member.getUser().getIdLong() : role.getIdLong();
+            int allow = object.getInt("allow");
+            int deny = object.getInt("deny");
+            PermissionOverrideImpl override = new PermissionOverrideImpl(channel, id, isMember ? member : role).setAllow(allow).setDeny(deny);
+
+            ((AbstractChannelImpl<?>) channel).getOverrideMap().put(id, override);
+
+            return override;
+        });
+
+        this.member = member;
+        this.role = role;
+    }
 
     /**
      * The currently set of allowed permission bits.
@@ -411,25 +421,6 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
         object.put("deny", deny);
 
         return getRequestBody(object);
-    }
-
-    @Override
-    protected void handleResponse(Response response, Request<PermissionOverride> request)
-    {
-        if (!response.isOk())
-        {
-            request.onFailure(response);
-            return;
-        }
-
-        JSONObject object = response.getObject();
-        boolean isMember = isMember();
-        long id = isMember ? member.getUser().getIdLong() : role.getIdLong();
-        PermissionOverrideImpl override = new PermissionOverrideImpl(channel, id, isMember ? member : role).setAllow(allow).setDeny(deny);
-
-        ((AbstractChannelImpl<?>) channel).getOverrideMap().put(id, override);
-
-        request.onSuccess(override);
     }
 
     private void checkNull(Collection<?> collection, String name)

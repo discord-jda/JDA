@@ -157,22 +157,15 @@ public class JDAImpl implements JDA
 
     public void verifyToken() throws LoginException, RateLimitedException
     {
-        RestAction<JSONObject> login = new RestAction<JSONObject>(this, Route.Self.GET_SELF.compile())
+        RestAction<JSONObject> login = new RestAction<JSONObject>(this, Route.Self.GET_SELF.compile(), response -> response.getObject(), response ->
         {
-            @Override
-            protected void handleResponse(Response response, Request<JSONObject> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(response.getObject());
-                else if (response.isRateLimit())
-                    request.onFailure(new RateLimitedException(request.getRoute(), response.retryAfter));
-                else if (response.code == 401)
-                    request.onSuccess(null);
-                else
-                    request.onFailure(new LoginException("When verifying the authenticity of the provided token, Discord returned an unknown response:\n" +
-                        response.toString()));
-            }
-        };
+            if (response.isRateLimit())
+                return new RateLimitedException(response.getRequest().getRoute(), response.retryAfter);
+            else if (response.code == 401)
+                return new AccountTypeException(response.getJDA().accountType == AccountType.BOT ? AccountType.CLIENT : AccountType.BOT);
+            else
+                return new LoginException("When verifying the authenticity of the provided token, Discord returned an unknown response:\n" + response.toString());
+        });
 
         JSONObject userResponse;
         try
@@ -183,7 +176,9 @@ public class JDAImpl implements JDA
         {
             //We check if the LoginException is masked inside of a ExecutionException which is masked inside of the RuntimeException
             Throwable ex = e.getCause() != null ? e.getCause().getCause() : null;
-            if (ex instanceof LoginException)
+            if (ex instanceof AccountTypeException)
+                userResponse = null;
+            else if (ex instanceof LoginException)
                 throw (LoginException) ex;
             else
                 throw e;
@@ -376,20 +371,7 @@ public class JDAImpl implements JDA
             return new RestAction.EmptyRestAction<>(this, user);
 
         Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
-        return new RestAction<User>(this, route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<User> request)
-            {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                }
-                JSONObject user = response.getObject();
-                request.onSuccess(getEntityBuilder().createFakeUser(user, false));
-            }
-        };
+        return new RestAction<User>(this, route, response -> response.getJDA().getEntityBuilder().createFakeUser(response.getObject(), false));
     }
 
     @Override

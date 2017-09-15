@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.requests;
 
+import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -33,23 +34,25 @@ public class Response implements Closeable
     public final int code;
     public final String message;
     public final long retryAfter;
+    private final Request<?> request;
     private final Object object;
     private final okhttp3.Response rawResponse;
     private final Set<String> cfRays;
-    private Exception exception;
+    private Throwable throwable;
 
-    protected Response(final okhttp3.Response response, final Exception exception, final Set<String> cfRays)
+    public Response(Request<?> request, final okhttp3.Response response, final Throwable throwable, final Set<String> cfRays)
     {
-        this(response, response != null ? response.code() : ERROR_CODE, ERROR_MESSAGE, -1, cfRays);
-        this.exception = exception;
+        this(request, response, response != null ? response.code() : ERROR_CODE, ERROR_MESSAGE, -1, cfRays);
+        this.throwable = throwable;
     }
 
-    protected Response(final okhttp3.Response response, final int code, final String message, final long retryAfter, final Set<String> cfRays)
+    public Response(Request<?> request, final okhttp3.Response response, final int code, final String message, final long retryAfter, final Set<String> cfRays)
     {
+        this.request = request;
         this.rawResponse = response;
         this.code = code;
         this.message = message;
-        this.exception = null;
+        this.throwable = null;
         this.retryAfter = retryAfter;
         this.cfRays = cfRays;
 
@@ -98,14 +101,14 @@ public class Response implements Closeable
         }
     }
 
-    protected Response(final long retryAfter, final Set<String> cfRays)
+    public Response(Request<?> request, final long retryAfter, final Set<String> cfRays)
     {
-        this(null, 429, "TOO MANY REQUESTS", retryAfter, cfRays);
+        this(request, null, 429, "TOO MANY REQUESTS", retryAfter, cfRays);
     }
 
-    protected Response(final okhttp3.Response response, final long retryAfter, final Set<String> cfRays)
+    public Response(Request<?> request, final okhttp3.Response response, final long retryAfter, final Set<String> cfRays)
     {
-        this(response, response.code(), response.message(), retryAfter, cfRays);
+        this(request, response, response.code(), response.message(), retryAfter, cfRays);
     }
 
     public JSONArray getArray()
@@ -123,6 +126,11 @@ public class Response implements Closeable
         return Objects.toString(object);
     }
 
+    public Request<?> getRequest()
+    {
+        return request;
+    }
+
     public okhttp3.Response getRawResponse()
     {
         return this.rawResponse;
@@ -133,9 +141,9 @@ public class Response implements Closeable
         return cfRays;
     }
 
-    public Exception getException()
+    public Throwable getThrowable()
     {
-        return exception;
+        return throwable;
     }
 
     public boolean isError()
@@ -156,9 +164,9 @@ public class Response implements Closeable
     @Override
     public String toString()
     {
-        return this.exception == null
+        return this.throwable == null
                 ? "HTTPResponse[" + this.code + (this.object == null ? "" : ", " + this.object.toString()) + ']'
-                : "HTTPException[" + this.exception.getMessage() + ']';
+                : "HTTPException[" + this.throwable.getMessage() + ']';
     }
 
     @Override
@@ -166,5 +174,10 @@ public class Response implements Closeable
     {
         if (rawResponse != null)
             rawResponse.close();
+    }
+
+    public JDAImpl getJDA()
+    {
+        return request.getJDA();
     }
 }

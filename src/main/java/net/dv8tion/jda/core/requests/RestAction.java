@@ -27,8 +27,11 @@ import okhttp3.RequestBody;
 import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.Optional;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * A class representing a terminal between the user and the discord API.
@@ -143,29 +146,53 @@ import java.util.function.Consumer;
  *
  * @since 3.0
  */
-public abstract class RestAction<T>
+public class RestAction<T>
 {
     public static final SimpleLog LOG = SimpleLog.getLog("RestAction");
 
+    protected static final Function<Response, Throwable> DEFAULT_FAILURE_TRANSFORMER = response ->
+    {
+        if (response.code == 429)
+            return new RateLimitedException(response.getRequest().getRoute(), response.retryAfter);
+        else
+            return ErrorResponseException.create(ErrorResponse.fromJSON(response.getObject()), response);
+    };
+
+    @SuppressWarnings("rawtypes")
     public static Consumer DEFAULT_SUCCESS = o -> {};
     public static Consumer<Throwable> DEFAULT_FAILURE = t ->
     {
         if (LOG.getEffectiveLevel().getPriority() <= SimpleLog.Level.DEBUG.getPriority())
-        {
             LOG.log(t);
-        }
         else
-        {
             LOG.fatal("RestAction queue returned failure: [" + t.getClass().getSimpleName() + "] " + t.getMessage());
-        }
     };
 
     protected final JDAImpl api;
+
+    protected final Function<Response, T> successTransformer;
+    protected final Function<Response, Throwable> failureTransformer;
 
     private final Route.CompiledRoute route;
     private final RequestBody data;
 
     private Object rawData;
+
+    /**
+     * Creates a new RestAction instance. 
+     * 
+     * <p><b><u>The created RestAction will always return null on success. Use this only for RestActions of type {@link java.lang.Void Void} !</b></u>
+     *
+     * @param  api
+     *         The current JDA instance
+     * @param  route
+     *         The {@link net.dv8tion.jda.core.requests.Route.CompiledRoute Route.CompiledRoute}
+     *         to be used for rate limit handling
+     */
+    public RestAction(JDA api, Route.CompiledRoute route)
+    {
+        this(api, route, (RequestBody) null, r -> null);
+    }
 
     /**
      * Creates a new RestAction instance
@@ -176,13 +203,29 @@ public abstract class RestAction<T>
      *         The {@link net.dv8tion.jda.core.requests.Route.CompiledRoute Route.CompiledRoute}
      *         to be used for rate limit handling
      */
-    public RestAction(JDA api, Route.CompiledRoute route)
+    public RestAction(JDA api, Route.CompiledRoute route, Function<Response, T> successTransformer)
     {
-        this(api, route, (RequestBody) null);
+        this(api, route, (RequestBody) null, successTransformer);
     }
 
     /**
      * Creates a new RestAction instance
+     *
+     * @param  api
+     *         The current JDA instance
+     * @param  route
+     *         The {@link net.dv8tion.jda.core.requests.Route.CompiledRoute Route.CompiledRoute}
+     *         to be used for rate limit handling
+     */
+    public RestAction(JDA api, Route.CompiledRoute route, Function<Response, T> successTransformer, Function<Response, Throwable> failureTransformer)
+    {
+        this(api, route, (RequestBody) null, successTransformer, failureTransformer);
+    }
+
+    /**
+     * Creates a new RestAction instance.
+     *
+     * <p><b><u>The created RestAction will always return null on success. Use this only for RestActions of type {@link java.lang.Void Void} !</b></u>
      *
      * @param  api
      *         The current JDA instance
@@ -194,11 +237,25 @@ public abstract class RestAction<T>
      */
     public RestAction(JDA api, Route.CompiledRoute route, RequestBody data)
     {
-        Checks.notNull(api, "api");
+        this(api, route, data, r -> null);
+    }
 
-        this.api = (JDAImpl) api;
-        this.route = route;
-        this.data = data;
+    /**
+     * Creates a new RestAction instance.
+     *
+     * <p><b><u>The created RestAction will always return null on success. Use this only for RestActions of type {@link java.lang.Void Void} !</b></u>
+     *
+     * @param  api
+     *         The current JDA instance
+     * @param  route
+     *         The {@link net.dv8tion.jda.core.requests.Route.CompiledRoute Route.CompiledRoute}
+     *         to be used for rate limit handling
+     * @param  data
+     *         The data that should be sent to the specified route. (can be null)
+     */
+    public RestAction(JDA api, Route.CompiledRoute route, JSONObject data)
+    {
+        this(api, route, data, r -> null);
     }
 
     /**
@@ -212,11 +269,67 @@ public abstract class RestAction<T>
      * @param  data
      *         The data that should be sent to the specified route. (can be null)
      */
-    public RestAction(JDA api, Route.CompiledRoute route, JSONObject data)
+    public RestAction(JDA api, Route.CompiledRoute route, RequestBody data, Function<Response, T> successTransformer)
     {
-        this(api, route, data == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, data.toString()));
+        this(api, route, data, successTransformer, null);
+    }
+
+    /**
+     * Creates a new RestAction instance
+     *
+     * @param  api
+     *         The current JDA instance
+     * @param  route
+     *         The {@link net.dv8tion.jda.core.requests.Route.CompiledRoute Route.CompiledRoute}
+     *         to be used for rate limit handling
+     * @param  data
+     *         The data that should be sent to the specified route. (can be null)
+     */
+    public RestAction(JDA api, Route.CompiledRoute route, JSONObject data, Function<Response, T> successTransformer)
+    {
+        this(api, route, data == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, data.toString()), successTransformer);
 
         this.rawData = data;
+    }
+
+    /**
+     * Creates a new RestAction instance
+     *
+     * @param  api
+     *         The current JDA instance
+     * @param  route
+     *         The {@link net.dv8tion.jda.core.requests.Route.CompiledRoute Route.CompiledRoute}
+     *         to be used for rate limit handling
+     * @param  data
+     *         The data that should be sent to the specified route. (can be null)
+     */
+    public RestAction(JDA api, Route.CompiledRoute route, JSONObject data, Function<Response, T> successTransformer, Function<Response, Throwable> failureTransformer)
+    {
+        this(api, route, data == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, data.toString()), successTransformer, failureTransformer);
+
+        this.rawData = data;
+    }
+
+    /**
+     * Creates a new RestAction instance
+     *
+     * @param  api
+     *         The current JDA instance
+     * @param  route
+     *         The {@link net.dv8tion.jda.core.requests.Route.CompiledRoute Route.CompiledRoute}
+     *         to be used for rate limit handling
+     * @param  data
+     *         The data that should be sent to the specified route. (can be null)
+     */
+    public RestAction(JDA api, Route.CompiledRoute route, RequestBody data, Function<Response, T> successTransformer, Function<Response, Throwable> failureTransformer)
+    {
+        Checks.notNull(api, "api");
+
+        this.api = (JDAImpl) api;
+        this.route = route;
+        this.data = data;
+        this.successTransformer = successTransformer;
+        this.failureTransformer = failureTransformer == null ? DEFAULT_FAILURE_TRANSFORMER : r -> Optional.ofNullable(failureTransformer.apply(r)).orElse(DEFAULT_FAILURE_TRANSFORMER.apply(r));
     }
 
     /**
@@ -275,11 +388,10 @@ public abstract class RestAction<T>
         Checks.notNull(route, "Route");
         RequestBody data = finalizeData();
         CaseInsensitiveMap<String, String> headers = finalizeHeaders();
-        if (success == null)
-            success = DEFAULT_SUCCESS;
-        if (failure == null)
-            failure = DEFAULT_FAILURE;
-        api.getRequester().request(new Request<>(this, success, failure, true, data, rawData, route, headers));
+        @SuppressWarnings("unchecked")
+        final Consumer<T> successConsumer = success == null ? DEFAULT_SUCCESS : success;
+        final Consumer<Throwable> failureConsumer = failure == null ? DEFAULT_FAILURE : failure;
+        api.getRequester().request(new Request<T>(this, r -> successConsumer.accept(getSuccessTransformer().apply(r)), r -> failureConsumer.accept(getFailureTransformer().apply(r)), true, data, rawData, route, headers));
     }
 
     /**
@@ -314,7 +426,7 @@ public abstract class RestAction<T>
         Checks.notNull(route, "Route");
         RequestBody data = finalizeData();
         CaseInsensitiveMap<String, String> headers = finalizeHeaders();
-        return new RestFuture<>(this, shouldQueue, data, rawData, route, headers);
+        return new RestFuture<>(this, shouldQueue, data, rawData, route, headers, successTransformer, failureTransformer);
     }
 
     /**
@@ -661,6 +773,16 @@ public abstract class RestAction<T>
         return executor.schedule(() -> queue(success, failure), delay, unit);
     }
 
+    protected Function<Response, T> getSuccessTransformer()
+    {
+        return this.successTransformer;
+    }
+
+    protected Function<Response, Throwable> getFailureTransformer()
+    {
+        return this.failureTransformer;
+    }
+
     protected RequestBody finalizeData() { return data; }
     protected Route.CompiledRoute finalizeRoute() { return route; }
     protected CaseInsensitiveMap<String, String> finalizeHeaders() { return null; }
@@ -678,8 +800,6 @@ public abstract class RestAction<T>
 
         return array == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, array.toString());
     }
-
-    protected abstract void handleResponse(Response response, Request<T> request);
 
     /**
      * Specialized form of {@link net.dv8tion.jda.core.requests.RestAction} that is used to provide information that
@@ -718,8 +838,6 @@ public abstract class RestAction<T>
             return returnObj;
         }
 
-        @Override
-        protected void handleResponse(Response response, Request<T> request) { }
     }
 
     /**
@@ -734,9 +852,9 @@ public abstract class RestAction<T>
     {
         private final Exception exception;
 
-        public FailedRestAction(Exception exception)
+        public FailedRestAction(JDA api, Exception exception)
         {
-            super(null, null);
+            super(api, null);
             this.exception = exception;
         }
 
@@ -758,8 +876,5 @@ public abstract class RestAction<T>
         {
             throw new RuntimeException(exception);
         }
-
-        @Override
-        protected void handleResponse(Response response, Request<T> request) {}
     }
 }

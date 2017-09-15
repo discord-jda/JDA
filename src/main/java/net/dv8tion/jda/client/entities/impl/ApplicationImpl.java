@@ -21,8 +21,6 @@ import net.dv8tion.jda.client.managers.ApplicationManager;
 import net.dv8tion.jda.client.managers.ApplicationManagerUpdatable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import org.json.JSONArray;
@@ -63,33 +61,13 @@ public class ApplicationImpl implements Application
         if (this.hasBot())
             return new RestAction.EmptyRestAction<>(getJDA(), this.bot);
 
-        return new RestAction<Application.Bot>(this.api, Route.Applications.CREATE_BOT.compile(getId()))
-        {
-            @Override
-            protected void handleResponse(final Response response, final Request<Application.Bot> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(ApplicationImpl.this.bot = new BotImpl(response.getObject()));
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new RestAction<Application.Bot>(this.api, Route.Applications.CREATE_BOT.compile(getId()), r -> (ApplicationImpl.this.bot = new BotImpl(r.getObject())));
     }
 
     @Override
     public RestAction<Void> delete()
     {
-        return new RestAction<Void>(this.api, Route.Applications.DELETE_APPLICATION.compile(getId()))
-        {
-            @Override
-            protected void handleResponse(final Response response, final Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new RestAction<Void>(this.api, Route.Applications.DELETE_APPLICATION.compile(getId()));
     }
 
     @Override
@@ -219,17 +197,8 @@ public class ApplicationImpl implements Application
     public RestAction<Application> resetSecret()
     {
         Route.CompiledRoute route = Route.Applications.RESET_BOT_TOKEN.compile(getId());
-        return new RestAction<Application>(this.api, route)
-        {
-            @Override
-            protected void handleResponse(final Response response, final Request<Application> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(ApplicationImpl.this.updateFromJson(response.getObject()));
-                else
-                    request.onFailure(response);
-            }
-        };
+
+        return new RestAction<Application>(this.api, route, r -> this.updateFromJson(r.getObject()));
     }
 
     @Override
@@ -392,17 +361,8 @@ public class ApplicationImpl implements Application
         public RestAction<Bot> resetToken()
         {
             Route.CompiledRoute route = Route.Applications.RESET_BOT_TOKEN.compile(getId());
-            return new RestAction<Bot>(getJDA(), route)
-            {
-                @Override
-                protected void handleResponse(final Response response, final Request<Bot> request)
-                {
-                    if (response.isOk())
-                        request.onSuccess(BotImpl.this.updateFromJson(response.getObject()));
-                    else
-                        request.onFailure(response);
-                }
-            };
+
+            return new RestAction<Bot>(getJDA(), route, r -> BotImpl.this.updateFromJson(r.getObject()));
         }
 
         @Override

@@ -21,8 +21,6 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.fields.WebhookField;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
@@ -228,17 +226,7 @@ public class WebhookManagerUpdatable
         }
 
         Route.CompiledRoute route = Route.Webhooks.MODIFY_WEBHOOK.compile(webhook.getId());
-        return new AuditableRestAction<Void>(getJDA(), route, data)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestAction<Void>(getJDA(), route, data);
     }
 
     protected boolean shouldUpdate()

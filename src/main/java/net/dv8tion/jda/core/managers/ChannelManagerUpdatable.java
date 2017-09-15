@@ -22,8 +22,6 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.fields.ChannelField;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
@@ -315,17 +313,7 @@ public class ChannelManagerUpdatable
 
         reset();    //now that we've built our JSON object, reset the manager back to the non-modified state
         Route.CompiledRoute route = Route.Channels.MODIFY_CHANNEL.compile(channel.getId());
-        return new AuditableRestAction<Void>(channel.getJDA(), route, frame)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestAction<Void>(channel.getJDA(), route, frame);
     }
 
     protected boolean needToUpdate()

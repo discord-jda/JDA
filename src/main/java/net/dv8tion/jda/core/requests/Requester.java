@@ -103,7 +103,7 @@ public class Requester
         if (retryAfter != null)
         {
             if (handleOnRatelimit)
-                apiRequest.handleResponse(new Response(retryAfter, Collections.emptySet()));
+                apiRequest.handleResponse(new Response(apiRequest, retryAfter, Collections.emptySet()));
             return retryAfter;
         }
 
@@ -122,7 +122,7 @@ public class Requester
                .header("user-agent", USER_AGENT)
                .header("accept-encoding", "gzip");
 
-        //adding token to all requests to the discord api or cdn pages
+        //adding token to all requests to the discord api
         //we can check for startsWith(DISCORD_API_PREFIX) because the cdn endpoints don't need any kind of authorization
         if (url.startsWith(DISCORD_API_PREFIX) && api.getToken() != null)
             builder.header("authorization", api.getToken());
@@ -183,16 +183,16 @@ public class Requester
                 LOG.debug("Received response with following cf-rays: " + rays);
 
             if (retryAfter == null)
-                apiRequest.handleResponse(new Response(firstSuccess, -1, rays));
+                apiRequest.handleResponse(new Response(apiRequest, firstSuccess, -1, rays));
             else if (handleOnRatelimit)
-                apiRequest.handleResponse(new Response(firstSuccess, retryAfter, rays));
+                apiRequest.handleResponse(new Response(apiRequest, firstSuccess, retryAfter, rays));
 
             return retryAfter;
         }
         catch (Exception e)
         {
             LOG.log(e); //This originally only printed on DEBUG in 2.x
-            apiRequest.handleResponse(new Response(firstSuccess, e, rays));
+            apiRequest.handleResponse(new Response(apiRequest, firstSuccess, e, rays));
             return null;
         }
         finally

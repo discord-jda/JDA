@@ -26,8 +26,6 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.fields.GuildField;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
@@ -433,17 +431,7 @@ public class GuildManagerUpdatable
 
         reset(); //now that we've built our JSON object, reset the manager back to the non-modified state
         Route.CompiledRoute route = Route.Guilds.MODIFY_GUILD.compile(guild.getId());
-        return new AuditableRestAction<Void>(guild.getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestAction<Void>(guild.getJDA(), route, body);
     }
 
     protected boolean needToUpdate()

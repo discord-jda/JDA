@@ -23,9 +23,10 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.EmoteImpl;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.MemberImpl;
+import net.dv8tion.jda.core.exceptions.AccountTypeException;
+import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
+import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.exceptions.*;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
@@ -161,17 +162,7 @@ public class GuildController
         JSONObject body = new JSONObject().put("channel_id", voiceChannel.getId());
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(guild.getId(), member.getUser().getId());
 
-        return new RestAction<Void>(guild.getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new RestAction<Void>(guild.getJDA(), route, body);
     }
 
     /**
@@ -253,17 +244,7 @@ public class GuildController
         else
             route = Route.Guilds.MODIFY_MEMBER.compile(guild.getId(), member.getUser().getId());
 
-        return new AuditableRestAction<Void>(guild.getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestAction<Void>(guild.getJDA(), route, body);
     }
 
     /**
@@ -305,17 +286,8 @@ public class GuildController
             throw new IllegalArgumentException("Days amount must be at minimum 1 day.");
 
         Route.CompiledRoute route = Route.Guilds.PRUNE_MEMBERS.compile(guild.getId()).withQueryParams("days", Integer.toString(days));
-        return new AuditableRestAction<Integer>(guild.getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Integer> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(response.getObject().getInt("pruned"));
-                else
-                    request .onFailure(response);
-            }
-        };
+
+        return new AuditableRestAction<Integer>(guild.getJDA(), route, r -> r.getObject().getInt("pruned"));
     }
 
     /**
@@ -372,17 +344,7 @@ public class GuildController
         if (reason != null && !reason.isEmpty())
             route = route.withQueryParams("reason", MiscUtil.encodeUTF8(reason));
 
-        return new AuditableRestAction<Void>(guild.getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestAction<Void>(guild.getJDA(), route);
     }
 
     /**
@@ -637,17 +599,7 @@ public class GuildController
         if (delDays > 0)
             route = route.withQueryParams("delete-message-days", Integer.toString(delDays));
 
-        return new AuditableRestAction<Void>(guild.getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestAction<Void>(guild.getJDA(), route);
     }
 
     /**
@@ -711,19 +663,12 @@ public class GuildController
         if (delDays > 0)
             route = route.withQueryParams("delete-message-days", Integer.toString(delDays));
 
-        return new AuditableRestAction<Void>(guild.getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else if (response.code == 404)
-                    request.onFailure(new IllegalArgumentException("User with provided id \"" + userId + "\" does not exist! Cannot ban a non-existent user!"));
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestAction<Void>(guild.getJDA(), route, r -> null, r -> {
+            if (r.code == 404)
+                return new IllegalArgumentException("User with provided id \"" + userId + "\" does not exist! Cannot ban a non-existent user!");
+            else
+                return null;
+         });
     }
 
     /**
@@ -945,19 +890,12 @@ public class GuildController
 
         Route.CompiledRoute route = Route.Guilds.UNBAN.compile(guild.getId(), userId);
 
-        return new AuditableRestAction<Void>(guild.getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else if (response.code == 404)
-                    request.onFailure(new IllegalArgumentException("User with provided id \"" + userId + "\" does not exist! Cannot unban a non-existent user!"));
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestAction<Void>(guild.getJDA(), route, r -> null, r -> {
+            if (r.code == 404)
+                return new IllegalArgumentException("User with provided id \"" + userId + "\" does not exist! Cannot unban a non-existent user!");
+            else
+                return null;
+         });
     }
 
     /**
@@ -1014,17 +952,7 @@ public class GuildController
 
         JSONObject body = new JSONObject().put("deaf", deafen);
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(guild.getId(), member.getUser().getId());
-        return new AuditableRestAction<Void>(guild.getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestAction<Void>(guild.getJDA(), route, body);
     }
 
     /**
@@ -1081,17 +1009,7 @@ public class GuildController
 
         JSONObject body = new JSONObject().put("mute", mute);
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(guild.getId(), member.getUser().getId());
-        return new AuditableRestAction<Void>(guild.getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestAction<Void>(guild.getJDA(), route, body);
     }
 
     /**
@@ -1148,17 +1066,7 @@ public class GuildController
         checkPosition(role);
 
         Route.CompiledRoute route = Route.Guilds.ADD_MEMBER_ROLE.compile(guild.getId(), member.getUser().getId(), role.getId());
-        return new AuditableRestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestAction<Void>(getJDA(), route);
     }
 
     /**
@@ -1215,17 +1123,7 @@ public class GuildController
         checkPosition(role);
 
         Route.CompiledRoute route = Route.Guilds.REMOVE_MEMBER_ROLE.compile(guild.getId(), member.getUser().getId(), role.getId());
-        return new AuditableRestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestAction<Void>(getJDA(), route);
     }
 
     /**
@@ -1541,17 +1439,7 @@ public class GuildController
                 .put("roles", currentRoles.stream().map(Role::getId).collect(Collectors.toList()));
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(guild.getId(), member.getUser().getId());
 
-        return new AuditableRestAction<Void>(guild.getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestAction<Void>(guild.getJDA(), route, body);
     }
 
     /**
@@ -1693,17 +1581,7 @@ public class GuildController
                 .put("roles", roles.stream().map(Role::getId).collect(Collectors.toList()));
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(guild.getId(), member.getUser().getId());
 
-        return new AuditableRestAction<Void>(guild.getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestAction<Void>(guild.getJDA(), route, body);
     }
 
     /**
@@ -1756,17 +1634,7 @@ public class GuildController
 
         JSONObject body = new JSONObject().put("owner_id", newOwner.getUser().getId());
         Route.CompiledRoute route = Route.Guilds.MODIFY_GUILD.compile(guild.getId());
-        return new AuditableRestAction<Void>(guild.getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestAction<Void>(guild.getJDA(), route, body);
     }
 
     /**
@@ -2138,35 +2006,26 @@ public class GuildController
             body.put("roles", Stream.of(roles).filter(Objects::nonNull).map(ISnowflake::getId).collect(Collectors.toSet()));
 
         Route.CompiledRoute route = Route.Emotes.CREATE_EMOTE.compile(guild.getId());
-        return new AuditableRestAction<Emote>(getJDA(), route, body)
+        return new AuditableRestAction<Emote>(getJDA(), route, body, r ->
         {
-            @Override
-            protected void handleResponse(Response response, Request<Emote> request)
+            JSONObject obj = r.getObject();
+            final long id = obj.getLong("id");
+            String emoteName = obj.getString("name");
+            EmoteImpl emote = new EmoteImpl(id, guild).setName(emoteName);
+            // managed is false by default, should always be false for emotes created by client accounts.
+
+            JSONArray rolesArr = obj.getJSONArray("roles");
+            Set<Role> roleSet = emote.getRoleSet();
+            for (int i = 0; i < rolesArr.length(); i++)
             {
-                if (response.isOk())
-                {
-                    JSONObject obj = response.getObject();
-                    final long id = obj.getLong("id");
-                    String name = obj.getString("name");
-                    EmoteImpl emote = new EmoteImpl(id, guild).setName(name);
-                    // managed is false by default, should always be false for emotes created by client accounts.
-
-                    JSONArray rolesArr = obj.getJSONArray("roles");
-                    Set<Role> roleSet = emote.getRoleSet();
-                    for (int i = 0; i < rolesArr.length(); i++)
-                    {
-                        roleSet.add(guild.getRoleById(rolesArr.getString(i)));
-                    }
-
-                    // put emote into cache
-                    ((GuildImpl) guild).getEmoteMap().put(id, emote);
-
-                    request.onSuccess(emote);
-                }
-                else
-                    request.onFailure(response);
+                roleSet.add(guild.getRoleById(rolesArr.getString(i)));
             }
-        };
+
+            // put emote into cache
+            ((GuildImpl) guild).getEmoteMap().put(id, emote);
+
+            return emote;
+        });
     }
 
     /**

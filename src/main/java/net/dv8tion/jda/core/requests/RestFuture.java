@@ -20,14 +20,15 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.utils.Promise;
 import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
+import java.util.function.Function;
 
 public class RestFuture<T> extends Promise<T>
 {
     final Request<T> request;
 
-    public RestFuture(final RestAction<T> restAction, final boolean shouldQueue, final RequestBody data, final Object rawData, final Route.CompiledRoute route, final CaseInsensitiveMap<String, String> headers)
+    public RestFuture(final RestAction<T> restAction, final boolean shouldQueue, final RequestBody data, final Object rawData, final Route.CompiledRoute route, final CaseInsensitiveMap<String, String> headers, Function<Response, T> successTransformer, Function<Response, Throwable> failureTransformer)
     {
-        this.request = new Request<>(restAction, this::complete, this::completeExceptionally, shouldQueue, data, rawData, route, headers);
+        this.request = new Request<>(restAction, r -> this.complete(successTransformer.apply(r)), r -> this.completeExceptionally(failureTransformer.apply(r)), shouldQueue, data, rawData, route, headers);
         ((JDAImpl) restAction.getJDA()).getRequester().request(this.request);
     }
 

@@ -17,10 +17,7 @@
 package net.dv8tion.jda.core.requests;
 
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.events.http.HttpRequestEvent;
-import net.dv8tion.jda.core.exceptions.ErrorResponseException;
-import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 
@@ -30,8 +27,8 @@ public class Request<T>
 {
     private final JDAImpl api;
     private final RestAction<T> restAction;
-    private final Consumer<T> onSuccess;
-    private final Consumer<Throwable> onFailure;
+    private final Consumer<Response> onSuccess;
+    private final Consumer<Response> onFailure;
     private final boolean shouldQueue;
     private final Route.CompiledRoute route;
     private final RequestBody body;
@@ -40,7 +37,7 @@ public class Request<T>
 
     private boolean isCanceled = false;
 
-    public Request(RestAction<T> restAction, Consumer<T> onSuccess, Consumer<Throwable> onFailure, boolean shouldQueue, RequestBody body, Object rawBody, Route.CompiledRoute route, CaseInsensitiveMap<String, String> headers)
+    public Request(RestAction<T> restAction, Consumer<Response> onSuccess, Consumer<Response> onFailure, boolean shouldQueue, RequestBody body, Object rawBody, Route.CompiledRoute route, CaseInsensitiveMap<String, String> headers)
     {
         this.restAction = restAction;
         this.onSuccess = onSuccess;
@@ -54,57 +51,6 @@ public class Request<T>
         this.api = (JDAImpl) restAction.getJDA();
     }
 
-    public void onSuccess(T successObj)
-    {
-        api.pool.execute(() ->
-        {
-            try
-            {
-                onSuccess.accept(successObj);
-            }
-            catch (Throwable t)
-            {
-                RestAction.LOG.fatal("Encountered error while processing success consumer");
-                RestAction.LOG.log(t);
-                if (t instanceof Error)
-                    api.getEventManager().handle(new ExceptionEvent(api, t, true));
-            }
-        });
-    }
-
-    public void onFailure(Response response)
-    {
-        if (response.code == 429)
-        {
-            onFailure(new RateLimitedException(route, response.retryAfter));
-        }
-        else
-        {
-            onFailure(ErrorResponseException.create(
-                    ErrorResponse.fromJSON(response.getObject()), response));
-        }
-    }
-
-    public void onFailure(Throwable failException)
-    {
-        api.pool.execute(() ->
-        {
-            try
-            {
-                onFailure.accept(failException);
-                if (failException instanceof Error)
-                    api.getEventManager().handle(new ExceptionEvent(api, failException, false));
-            }
-            catch (Throwable t)
-            {
-                RestAction.LOG.fatal("Encountered error while processing failure consumer");
-                RestAction.LOG.log(t);
-                if (t instanceof Error)
-                    api.getEventManager().handle(new ExceptionEvent(api, t, true));
-            }
-        });
-    }
-
     public JDAImpl getJDA()
     {
         return api;
@@ -113,16 +59,6 @@ public class Request<T>
     public RestAction<T> getRestAction()
     {
         return restAction;
-    }
-
-    public Consumer<T> getOnSuccess()
-    {
-        return onSuccess;
-    }
-
-    public Consumer<Throwable> getOnFailure()
-    {
-        return onFailure;
     }
 
     public CaseInsensitiveMap<String, String> getHeaders()
@@ -162,7 +98,18 @@ public class Request<T>
 
     public void handleResponse(Response response)
     {
-        api.getEventManager().handle(new HttpRequestEvent(this, response));
-        restAction.handleResponse(response, this);
+        api.pool.execute(() ->
+        {
+            api.getEventManager().handle(new HttpRequestEvent(this, response));
+
+            if (response.isOk())
+            {
+                onSuccess.accept(response);
+            }
+            else
+            {
+                onFailure.accept(response);
+            }
+        });
     }
 }

@@ -20,8 +20,6 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
@@ -69,22 +67,7 @@ public class InviteImpl implements Invite
 
         final Route.CompiledRoute route = Route.Invites.GET_INVITE.compile(code);
 
-        return new RestAction<Invite>(api, route)
-        {
-            @Override
-            protected void handleResponse(final Response response, final Request<Invite> request)
-            {
-                if (response.isOk())
-                {
-                    final Invite invite = this.api.getEntityBuilder().createInvite(response.getObject());
-                    request.onSuccess(invite);
-                }
-                else
-                {
-                    request.onFailure(response);
-                }
-            }
-        };
+        return new RestAction<Invite>(api, route, response -> response.getJDA().getEntityBuilder().createInvite(response.getObject()));
     }
 
     @Override
@@ -92,17 +75,7 @@ public class InviteImpl implements Invite
     {
         final Route.CompiledRoute route = Route.Invites.DELETE_INVITE.compile(this.code);
 
-        return new AuditableRestAction<Void>(this.api, route)
-        {
-            @Override
-            protected void handleResponse(final Response response, final Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestAction<Void>(this.api, route);
     }
 
     @Override
@@ -137,32 +110,18 @@ public class InviteImpl implements Invite
             throw new InsufficientPermissionException(Permission.MANAGE_CHANNEL, "You don't have the permission to view the full invite info");
         }
 
-        return new RestAction<Invite>(this.api, route)
+        return new RestAction<Invite>(this.api, route, response ->
         {
-            @Override
-            protected void handleResponse(final Response response, final Request<Invite> request)
+            final EntityBuilder entityBuilder = this.api.getEntityBuilder();
+            final JSONArray array = response.getArray();
+            for (int i = 0; i < array.length(); i++)
             {
-                if (response.isOk())
-                {
-                    final EntityBuilder entityBuilder = this.api.getEntityBuilder();
-                    final JSONArray array = response.getArray();
-                    for (int i = 0; i < array.length(); i++)
-                    {
-                        final JSONObject object = array.getJSONObject(i);
-                        if (InviteImpl.this.code.equals(object.getString("code")))
-                        {
-                            request.onSuccess(entityBuilder.createInvite(object));
-                            return;
-                        }
-                    }
-                    request.onFailure(new IllegalStateException("Missing the invite in the channel/guild invite list"));
-                }
-                else
-                {
-                    request.onFailure(response);
-                }
-            }
-        };
+                final JSONObject object = array.getJSONObject(i);
+                if (InviteImpl.this.code.equals(object.getString("code")))
+                    return entityBuilder.createInvite(object);
+             }
+            throw new RuntimeException("Missing the invite in the channel/guild invite list");
+        });
     }
 
     @Override

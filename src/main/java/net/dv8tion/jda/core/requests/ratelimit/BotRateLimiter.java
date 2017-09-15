@@ -18,10 +18,7 @@ package net.dv8tion.jda.core.requests.ratelimit;
 
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ExceptionEvent;
-import net.dv8tion.jda.core.requests.RateLimiter;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Requester;
-import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.requests.Route.RateLimit;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import okhttp3.Headers;
@@ -32,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -60,7 +58,7 @@ public class BotRateLimiter extends RateLimiter
     }
 
     @Override
-    protected void queueRequest(Request request)
+    protected void queueRequest(Request<?> request)
     {
         Bucket bucket = getBucket(request.getRoute());
         synchronized (bucket)
@@ -214,7 +212,7 @@ public class BotRateLimiter extends RateLimiter
         volatile long resetTime = 0;
         volatile int routeUsageRemaining = 1;    //These are default values to only allow 1 request until we have properly
         volatile int routeUsageLimit = 1;        // ratelimit information.
-        volatile ConcurrentLinkedQueue<Request> requests = new ConcurrentLinkedQueue<>();
+        volatile ConcurrentLinkedQueue<Request<?>> requests = new ConcurrentLinkedQueue<>();
 
         public Bucket(String route, RateLimit rateLimit)
         {
@@ -227,7 +225,7 @@ public class BotRateLimiter extends RateLimiter
             }
         }
 
-        void addToQueue(Request request)
+        void addToQueue(Request<?> request)
         {
             requests.add(request);
             submitForProcessing();
@@ -301,9 +299,9 @@ public class BotRateLimiter extends RateLimiter
             {
                 synchronized (requests)
                 {
-                    for (Iterator<Request> it = requests.iterator(); it.hasNext(); )
+                    for (Iterator<Request<?>> it = requests.iterator(); it.hasNext(); )
                     {
-                        Request request = null;
+                        Request<?> request = null;
                         try
                         {
                             request = it.next();
@@ -318,8 +316,9 @@ public class BotRateLimiter extends RateLimiter
                             Requester.LOG.fatal("Requester system encountered an internal error");
                             Requester.LOG.log(t);
                             it.remove();
+
                             if (request != null)
-                                request.onFailure(t);
+                                request.handleResponse(new Response(request, null, t, Collections.emptySet()));
                         }
                     }
 
@@ -365,7 +364,7 @@ public class BotRateLimiter extends RateLimiter
         }
 
         @Override
-        public Queue<Request> getRequests()
+        public Queue<Request<?>> getRequests()
         {
             return requests;
         }

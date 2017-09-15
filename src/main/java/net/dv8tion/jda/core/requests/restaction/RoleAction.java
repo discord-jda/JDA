@@ -20,8 +20,6 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.RequestBody;
@@ -60,7 +58,7 @@ public class RoleAction extends AuditableRestAction<Role>
      */
     public RoleAction(Route.CompiledRoute route, Guild guild)
     {
-        super(guild.getJDA(), route);
+        super(guild.getJDA(), route, response -> response.getJDA().getEntityBuilder().createRole(response.getObject(), guild.getIdLong()));
         this.guild = guild;
     }
 
@@ -250,15 +248,6 @@ public class RoleAction extends AuditableRestAction<Role>
             object.put("mentionable", mentionable.booleanValue());
 
         return getRequestBody(object);
-    }
-
-    @Override
-    protected void handleResponse(Response response, Request<Role> request)
-    {
-        if (response.isOk())
-            request.onSuccess(api.getEntityBuilder().createRole(response.getObject(), guild.getIdLong()));
-        else
-            request.onFailure(response);
     }
 
     private void checkPermission(Permission permission)

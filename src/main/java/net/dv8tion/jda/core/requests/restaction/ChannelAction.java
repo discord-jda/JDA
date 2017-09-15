@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.requests.restaction;
 
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
@@ -74,7 +75,25 @@ public class ChannelAction extends AuditableRestAction<Channel>
      */
     public ChannelAction(Route.CompiledRoute route, String name, Guild guild, ChannelType type)
     {
-        super(guild.getJDA(), route);
+        super(guild.getJDA(), route, response -> {
+            EntityBuilder builder = response.getJDA().getEntityBuilder();
+            Channel channel;
+            switch (type)
+            {
+                case VOICE:
+                    channel = builder.createVoiceChannel(response.getObject(), guild.getIdLong());
+                    break;
+                case TEXT:
+                    channel = builder.createTextChannel(response.getObject(), guild.getIdLong());
+                    break;
+                case CATEGORY:
+                    channel = builder.createCategory(response.getObject(), guild.getIdLong());
+                    break;
+                default:
+                    throw new IllegalStateException("Created channel of unknown type!");
+            }
+            return channel;
+        });
         this.guild = guild;
         this.type = type;
         this.name = name;
@@ -386,35 +405,6 @@ public class ChannelAction extends AuditableRestAction<Channel>
             object.put("parent_id", parent.getId());
 
         return getRequestBody(object);
-    }
-
-    @Override
-    protected void handleResponse(Response response, Request<Channel> request)
-    {
-        if (!response.isOk())
-        {
-            request.onFailure(response);
-            return;
-        }
-
-        EntityBuilder builder = api.getEntityBuilder();;
-        Channel channel;
-        switch (type)
-        {
-            case VOICE:
-                channel = builder.createVoiceChannel(response.getObject(), guild.getIdLong());
-                break;
-            case TEXT:
-                channel = builder.createTextChannel(response.getObject(), guild.getIdLong());
-                break;
-            case CATEGORY:
-                channel = builder.createCategory(response.getObject(), guild.getIdLong());
-                break;
-            default:
-                request.onFailure(new IllegalStateException("Created channel of unknown type!"));
-                return;
-        }
-        request.onSuccess(channel);
     }
 
     protected void checkPermissions(Permission... permissions)

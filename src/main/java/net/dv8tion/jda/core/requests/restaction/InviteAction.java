@@ -18,8 +18,6 @@ package net.dv8tion.jda.core.requests.restaction;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Invite;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.RequestBody;
@@ -41,7 +39,7 @@ public class InviteAction extends AuditableRestAction<Invite>
 
     public InviteAction(final JDA api, final String channelId)
     {
-        super(api, Route.Invites.CREATE_INVITE.compile(channelId));
+        super(api, Route.Invites.CREATE_INVITE.compile(channelId), response -> response.getJDA().getEntityBuilder().createInvite(response.getObject()));
     }
 
     @Override
@@ -59,15 +57,6 @@ public class InviteAction extends AuditableRestAction<Invite>
             object.put("unique", (boolean) this.unique);
 
         return getRequestBody(object);
-    }
-
-    @Override
-    protected void handleResponse(final Response response, final Request<Invite> request)
-    {
-        if (response.isOk())
-            request.onSuccess(this.api.getEntityBuilder().createInvite(response.getObject()));
-        else
-            request.onFailure(response);
     }
 
     /**
