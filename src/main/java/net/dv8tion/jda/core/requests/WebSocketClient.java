@@ -1051,7 +1051,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             // in all cases, update to this channel
             request.setChannel(channel);
         }
-        catch (InterruptedException ignored) {}
+        catch (InterruptedException e)
+        {
+            LOG.log(e);
+        }
         finally
         {
             audioQueueLock.release();
@@ -1081,7 +1084,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             // in all cases, update to this channel
             request.setChannel(channel);
         }
-        catch (InterruptedException ignored) {}
+        catch (InterruptedException e)
+        {
+            LOG.log(e);
+        }
         finally
         {
             audioQueueLock.release();
@@ -1108,7 +1114,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             }
             // channel is not relevant here
         }
-        catch (InterruptedException ignored) {}
+        catch (InterruptedException e)
+        {
+            LOG.log(e);
+        }
         finally
         {
             audioQueueLock.release();
@@ -1125,7 +1134,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             audioQueueLock.acquire();
             return queuedAudioConnections.remove(guildId);
         }
-        catch (InterruptedException ignored) {}
+        catch (InterruptedException e)
+        {
+            LOG.log(e);
+        }
         finally
         {
             audioQueueLock.release();
@@ -1140,7 +1152,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             audioQueueLock.acquire();
             return updateAudioConnection0(guildId, connectedChannel);
         }
-        catch (InterruptedException ignored) {}
+        catch (InterruptedException e)
+        {
+            LOG.log(e);
+        }
         finally
         {
             audioQueueLock.release();
