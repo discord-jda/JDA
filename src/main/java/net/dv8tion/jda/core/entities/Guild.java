@@ -322,6 +322,12 @@ public interface Guild extends ISnowflake
         return getMemberCache().getElementsWithRoles(roles);
     }
 
+    /**
+     * {@link net.dv8tion.jda.core.utils.cache.MemberCacheView MemberCacheView} for all cached
+     * {@link net.dv8tion.jda.core.entities.Member Members} of this Guild.
+     *
+     * @return {@link net.dv8tion.jda.core.utils.cache.MemberCacheView MemberCacheView}
+     */
     MemberCacheView getMemberCache();
 
     /**
@@ -384,6 +390,13 @@ public interface Guild extends ISnowflake
         return getCategoryCache().getElementsByName(name, ignoreCase);
     }
 
+    /**
+     * Sorted {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link net.dv8tion.jda.core.entities.Category Categories} of this Guild.
+     * <br>Categories are sorted according to their position.
+     *
+     * @return Sorted {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     */
     SnowflakeCacheView<Category> getCategoryCache();
 
     /**
@@ -451,6 +464,13 @@ public interface Guild extends ISnowflake
         return getTextChannelCache().getElementsByName(name, ignoreCase);
     }
 
+    /**
+     * Sorted {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} of this Guild.
+     * <br>TextChannels are sorted according to their position.
+     *
+     * @return Sorted {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     */
     SnowflakeCacheView<TextChannel> getTextChannelCache();
 
     /**
@@ -518,6 +538,13 @@ public interface Guild extends ISnowflake
         return getVoiceChannelCache().getElementsByName(name, ignoreCase);
     }
 
+    /**
+     * Sorted {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels} of this Guild.
+     * <br>VoiceChannels are sorted according to their position.
+     *
+     * @return Sorted {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     */
     SnowflakeCacheView<VoiceChannel> getVoiceChannelCache();
 
     /**
@@ -583,6 +610,13 @@ public interface Guild extends ISnowflake
         return getRoleCache().getElementsByName(name, ignoreCase);
     }
 
+    /**
+     * Sorted {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link net.dv8tion.jda.core.entities.Role Roles} of this Guild.
+     * <br>Roles are sorted according to their position.
+     *
+     * @return Sorted {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     */
     SnowflakeCacheView<Role> getRoleCache();
 
     /**
@@ -656,6 +690,12 @@ public interface Guild extends ISnowflake
         return getEmoteCache().getElementsByName(name, ignoreCase);
     }
 
+    /**
+     * {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link net.dv8tion.jda.core.entities.Emote Emotes} of this Guild.
+     *
+     * @return {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     */
     SnowflakeCacheView<Emote> getEmoteCache();
 
     /**

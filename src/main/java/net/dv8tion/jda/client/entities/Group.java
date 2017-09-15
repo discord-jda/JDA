@@ -19,9 +19,10 @@ package net.dv8tion.jda.client.entities;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 
-import java.util.List;
 import javax.annotation.CheckReturnValue;
+import java.util.List;
 
 public interface Group extends MessageChannel, CallableChannel
 {
@@ -37,6 +38,7 @@ public interface Group extends MessageChannel, CallableChannel
     String getIconUrl();
 
     User getOwner();
+    SnowflakeCacheView<User> getUserCache();
     List<User> getUsers();
     List<User> getNonFriendUsers();
     List<Friend> getFriends();

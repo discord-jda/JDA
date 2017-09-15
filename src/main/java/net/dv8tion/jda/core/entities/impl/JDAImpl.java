@@ -45,7 +45,7 @@ import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
-import net.dv8tion.jda.core.utils.cache.SnowflakeCacheViewImpl;
+import net.dv8tion.jda.core.utils.cache.impl.SnowflakeCacheViewImpl;
 import okhttp3.OkHttpClient;
 import org.json.JSONObject;
 
@@ -382,6 +382,12 @@ public class JDAImpl implements JDA
     }
 
     @Override
+    public SnowflakeCacheView<Emote> getEmoteCache()
+    {
+        return CacheView.projectSnowflake(() -> guildCache.stream().map(Guild::getEmoteCache));
+    }
+
+    @Override
     public SnowflakeCacheView<Category> getCategoryCache()
     {
         return categories;
@@ -406,37 +412,9 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public List<Emote> getEmotes()
+    public SnowflakeCacheView<User> getUserCache()
     {
-        return guildCache.stream()
-                .flatMap(guild -> guild.getEmotes().stream())
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<Emote> getEmotesByName(String name, boolean ignoreCase)
-    {
-        return guildCache.stream()
-                .flatMap(guild -> guild.getEmotesByName(name, ignoreCase).stream())
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public Emote getEmoteById(String id)
-    {
-        return getEmoteById(MiscUtil.parseSnowflake(id));
-    }
-
-    @Override
-    public Emote getEmoteById(long id)
-    {
-        for (Guild guild : guildCache)
-        {
-            Emote emote = guild.getEmoteById(id);
-            if (emote != null)
-                return emote;
-        }
-        return null;
+        return userCache;
     }
 
     public SelfUser getSelfUser()
@@ -563,12 +541,6 @@ public class JDAImpl implements JDA
     public List<Object> getRegisteredListeners()
     {
         return Collections.unmodifiableList(eventManager.getRegisteredListeners());
-    }
-
-    @Override
-    public SnowflakeCacheView<User> getUserCache()
-    {
-        return userCache;
     }
 
     public EntityBuilder getEntityBuilder()

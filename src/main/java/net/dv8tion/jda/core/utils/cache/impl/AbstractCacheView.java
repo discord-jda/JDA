@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.utils.cache;
+package net.dv8tion.jda.core.utils.cache.impl;
 
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.core.utils.cache.CacheView;
 
 import javax.annotation.Nonnull;
 import java.util.*;

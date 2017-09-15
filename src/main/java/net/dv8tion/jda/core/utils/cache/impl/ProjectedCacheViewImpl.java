@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.utils.cache;
+package net.dv8tion.jda.core.utils.cache.impl;
 
 import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.utils.cache.CacheView;
+import net.dv8tion.jda.core.utils.cache.MemberCacheView;
+import net.dv8tion.jda.core.utils.cache.ProjectedMemberCacheView;
+import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -44,7 +48,7 @@ public class ProjectedCacheViewImpl<T, E extends CacheView<T>> implements CacheV
     @Override
     public boolean isEmpty()
     {
-        return !generator.get().findAny().isPresent();
+        return generator.get().allMatch(CacheView::isEmpty);
     }
 
     @Override

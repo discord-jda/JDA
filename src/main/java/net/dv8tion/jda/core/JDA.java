@@ -220,6 +220,12 @@ public interface JDA
      */
     List<Object> getRegisteredListeners();
 
+    /**
+     * {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link net.dv8tion.jda.core.entities.User Users} visible to this JDA session.
+     *
+     * @return {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     */
     SnowflakeCacheView<User> getUserCache();
 
     /**
@@ -363,6 +369,12 @@ public interface JDA
     @CheckReturnValue
     RestAction<User> retrieveUserById(long id);
 
+    /**
+     * {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link net.dv8tion.jda.core.entities.Guild Guilds} visible to this JDA session.
+     *
+     * @return {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     */
     SnowflakeCacheView<Guild> getGuildCache();
 
     /**
@@ -429,6 +441,14 @@ public interface JDA
         return getGuildCache().getElementsByName(name, ignoreCase);
     }
 
+    /**
+     * Projected {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link net.dv8tion.jda.core.entities.Role Roles} visible to this JDA session.
+     *
+     * @return Projected {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     *
+     * @see    net.dv8tion.jda.core.utils.cache.CacheView#projectSnowflake(java.util.function.Supplier) CacheView.projectSnowflake(...)
+     */
     SnowflakeCacheView<Role> getRoleCache();
 
     /**
@@ -489,6 +509,12 @@ public interface JDA
         return getRoleCache().getElementsByName(name, ignoreCase);
     }
 
+    /**
+     * {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link net.dv8tion.jda.core.entities.Category Categories} visible to this JDA session.
+     *
+     * @return {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     */
     SnowflakeCacheView<Category> getCategoryCache();
 
     /**
@@ -546,6 +572,12 @@ public interface JDA
         return getCategoryCache().getElementsByName(name, ignoreCase);
     }
 
+    /**
+     * {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} visible to this JDA session.
+     *
+     * @return {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     */
     SnowflakeCacheView<TextChannel> getTextChannelCache();
 
     /**
@@ -632,6 +664,12 @@ public interface JDA
         return getTextChannelCache().getElementsByName(name, ignoreCase);
     }
 
+    /**
+     * {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels} visible to this JDA session.
+     *
+     * @return {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     */
     SnowflakeCacheView<VoiceChannel> getVoiceChannelCache();
 
     /**
@@ -694,6 +732,12 @@ public interface JDA
         return getVoiceChannelCache().getElementsByName(name, ignoreCase);
     }
 
+    /**
+     * {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannels} visible to this JDA session.
+     *
+     * @return {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     */
     SnowflakeCacheView<PrivateChannel> getPrivateChannelCache();
 
     /**
@@ -739,60 +783,82 @@ public interface JDA
     }
 
     /**
+     * Projected {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link net.dv8tion.jda.core.entities.Emote Emotes} visible to this JDA session.
+     *
+     * @return Projected {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     *
+     * @see    net.dv8tion.jda.core.utils.cache.CacheView#projectSnowflake(java.util.function.Supplier) CacheView.projectSnowflake(...)
+     */
+    SnowflakeCacheView<Emote> getEmoteCache();
+
+    /**
      * A collection of all to us known emotes (managed/restricted included).
      *
      * <p><b>Hint</b>: To check whether you can use an {@link net.dv8tion.jda.core.entities.Emote Emote} in a specific
-     * context you can use {@link Emote#canInteract(net.dv8tion.jda.core.entities.Member)} or
-     * {@link Emote#canInteract(net.dv8tion.jda.core.entities.User, net.dv8tion.jda.core.entities.MessageChannel)}
+     * context you can use {@link Emote#canInteract(net.dv8tion.jda.core.entities.Member)} or {@link
+     * Emote#canInteract(net.dv8tion.jda.core.entities.User, net.dv8tion.jda.core.entities.MessageChannel)}
      *
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.core.entities.Emote Emote}!</b>
      *
      * @return An immutable list of Emotes (which may or may not be available to usage).
      */
-    List<Emote> getEmotes();
+    default List<Emote> getEmotes()
+    {
+        return getEmoteCache().asList();
+    }
 
     /**
      * Retrieves an emote matching the specified {@code id} if one is available in our cache.
      *
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.core.entities.Emote Emote}!</b>
      *
-     * @param  id
+     * @param id
      *         The id of the requested {@link net.dv8tion.jda.core.entities.Emote}.
-     *
+     * @return An {@link net.dv8tion.jda.core.entities.Emote Emote} represented by this id or null if none is found in
+     * our cache.
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
-     *
-     * @return An {@link net.dv8tion.jda.core.entities.Emote Emote} represented by this id or null if none is found in our cache.
      */
-    Emote getEmoteById(String id);
+    default Emote getEmoteById(String id)
+    {
+        return getEmoteCache().getElementById(id);
+    }
 
     /**
      * Retrieves an emote matching the specified {@code id} if one is available in our cache.
      *
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.core.entities.Emote Emote}!</b>
      *
-     * @param  id
+     * @param id
      *         The id of the requested {@link net.dv8tion.jda.core.entities.Emote}.
-     *
-     * @return An {@link net.dv8tion.jda.core.entities.Emote Emote} represented by this id or null if none is found in our cache.
+     * @return An {@link net.dv8tion.jda.core.entities.Emote Emote} represented by this id or null if none is found in
+     * our cache.
      */
-    Emote getEmoteById(long id);
+    default Emote getEmoteById(long id)
+    {
+        return getEmoteCache().getElementById(id);
+    }
 
     /**
-     * An unmodifiable list of all {@link net.dv8tion.jda.core.entities.Emote Emotes} that have the same name as the one provided.
-     * <br>If there are no {@link net.dv8tion.jda.core.entities.Emote Emotes} with the provided name, then this returns an empty list.
+     * An unmodifiable list of all {@link net.dv8tion.jda.core.entities.Emote Emotes} that have the same name as the one
+     * provided. <br>If there are no {@link net.dv8tion.jda.core.entities.Emote Emotes} with the provided name, then
+     * this returns an empty list.
      *
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.core.entities.Emote Emote}!</b>
      *
-     * @param  name
+     * @param name
      *         The name of the requested {@link net.dv8tion.jda.core.entities.Emote Emotes}.
-     * @param  ignoreCase
-     *         Whether to ignore case or not when comparing the provided name to each {@link net.dv8tion.jda.core.entities.Emote#getName()}.
-     *
-     * @return Possibly-empty list of all the {@link net.dv8tion.jda.core.entities.Emote Emotes} that all have the
-     *         same name as the provided name.
+     * @param ignoreCase
+     *         Whether to ignore case or not when comparing the provided name to each {@link
+     *         net.dv8tion.jda.core.entities.Emote#getName()}.
+     * @return Possibly-empty list of all the {@link net.dv8tion.jda.core.entities.Emote Emotes} that all have the same
+     * name as the provided name.
      */
-    List<Emote> getEmotesByName(String name, boolean ignoreCase);
+    default List<Emote> getEmotesByName(String name, boolean ignoreCase)
+    {
+        return getEmoteCache().getElementsByName(name, ignoreCase);
+    }
 
     /**
      * Returns the currently logged in account represented by {@link net.dv8tion.jda.core.entities.SelfUser SelfUser}.

@@ -39,6 +39,9 @@ import net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAct
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.cache.*;
+import net.dv8tion.jda.core.utils.cache.impl.MemberCacheViewImpl;
+import net.dv8tion.jda.core.utils.cache.impl.SnowflakeCacheViewImpl;
+import net.dv8tion.jda.core.utils.cache.impl.SortedSnowflakeCacheView;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

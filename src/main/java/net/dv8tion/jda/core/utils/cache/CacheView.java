@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.utils.cache;
 
 import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.cache.impl.ProjectedCacheViewImpl;
 
 import java.util.Collection;
 import java.util.List;
@@ -26,63 +27,233 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
 
+/**
+ * Read-only view on internal JDA cache of items.
+ * <br>This can be useful to check information such as size without creating
+ * an immutable snapshot first.
+ *
+ * @param  <T>
+ *         The cache type
+ */
 public interface CacheView<T> extends Iterable<T>
 {
+    /**
+     * Creates an immutable snapshot of the current cache state.
+     * <br>This will copy all elements contained in this cache into a list.
+     * <br>This will be sorted for a {@link net.dv8tion.jda.core.utils.cache.impl.SortedSnowflakeCacheView SortedSnowflakeCacheView}.
+     *
+     * @return Immutable list of cached elements
+     */
     List<T> asList();
 
+    /**
+     * Creates an immutable snapshot of the current cache state.
+     * <br>This will copy all elements contained in this cache into a set.
+     *
+     * @return Immutable set of cached elements
+     */
     Set<T> asSet();
 
+    /**
+     * The current size of this cache
+     * <br>This is a {@code long} as it may be a projected view of multiple caches
+     * (See {@link net.dv8tion.jda.core.utils.cache.CacheView#project(java.util.function.Supplier)})
+     *
+     * <p>This is more efficient than creating a list or set snapshot first as it checks the size
+     * of the internal cache directly.
+     *
+     * @return The current size of this cache
+     */
     long size();
 
+    /**
+     * Whether the cache is empty
+     *
+     * <p>This is more efficient than creating a list or set snapshot first as it checks the size
+     * of the internal cache directly.
+     * <br>On a projected cache view this will simply look through all projected views and return false
+     * the moment it finds one that is not empty.
+     *
+     * @return True, if this cache is currently empty
+     */
     boolean isEmpty();
 
+    /**
+     * Creates an immutable list of all elements matching the given name.
+     * <br>For a {@link net.dv8tion.jda.core.utils.cache.MemberCacheView MemberCacheView} this will
+     * check the {@link net.dv8tion.jda.core.entities.Member#getEffectiveName() Effective Name} of the cached members.
+     *
+     * @param  name
+     *         The name to check
+     * @param  ignoreCase
+     *         Whether to ignore case when comparing names
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided name is {@code null}
+     *
+     * @return Immutable list of elements with the given name
+     */
     List<T> getElementsByName(String name, boolean ignoreCase);
 
+    /**
+     * Creates an immutable list of all elements matching the given name.
+     * <br>For a {@link net.dv8tion.jda.core.utils.cache.MemberCacheView MemberCacheView} this will
+     * check the {@link net.dv8tion.jda.core.entities.Member#getEffectiveName() Effective Name} of the cached members.
+     *
+     * @param  name
+     *         The name to check
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided name is {@code null}
+     *
+     * @return Immutable list of elements with the given name
+     */
     default List<T> getElementsByName(String name)
     {
         return getElementsByName(name, false);
     }
 
+    /**
+     * Creates a {@link java.util.stream.Stream Stream} of all cached elements.
+     * <br>This will be sorted for a {@link net.dv8tion.jda.core.utils.cache.impl.SortedSnowflakeCacheView SortedSnowflakeCacheView}.
+     *
+     * @return Stream of elements
+     */
     Stream<T> stream();
 
+    /**
+     * Creates a parallel {@link java.util.stream.Stream Stream} of all cached elements.
+     * <br>This will be sorted for a {@link net.dv8tion.jda.core.utils.cache.impl.SortedSnowflakeCacheView SortedSnowflakeCacheView}.
+     *
+     * @return Parallel Stream of elements
+     */
     Stream<T> parallelStream();
 
+    /**
+     * Collects all cached entities into a single Collection using the provided
+     * {@link java.util.stream.Collector Collector}.
+     * Shortcut for {@code stream().collect(collector)}.
+     *
+     * @param  collector
+     *         The collector used to collect the elements
+     *
+     * @param  <R>
+     *         The output type
+     * @param  <A>
+     *         The accumulator type
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided collector is {@code null}
+     *
+     * @return Resulting collections
+     */
     default <R, A> R collect(Collector<? super T, A, R> collector)
     {
         return stream().collect(collector);
     }
 
-
-    static <E> CacheView<E> project(Collection<? extends CacheView<E>> cacheView)
+    /**
+     * Creates a combined {@link net.dv8tion.jda.core.utils.cache.CacheView CacheView}
+     * for all provided CacheView implementations. This allows to combine cache of multiple
+     * JDA sessions or Guilds.
+     *
+     * @param  cacheViews
+     *         Collection of {@link net.dv8tion.jda.core.utils.cache.CacheView CacheView} implementations
+     *
+     * @param  <E>
+     *         The target type of the projection
+     *
+     * @return Combined CacheView spanning over all provided implementation instances
+     */
+    static <E> CacheView<E> project(Collection<? extends CacheView<E>> cacheViews)
     {
-        Checks.noneNull(cacheView, "Collection");
-        return new ProjectedCacheViewImpl<>(cacheView::stream);
+        Checks.noneNull(cacheViews, "Collection");
+        return new ProjectedCacheViewImpl<>(cacheViews::stream);
     }
 
+    /**
+     * Creates a combined {@link net.dv8tion.jda.core.utils.cache.CacheView CacheView}
+     * for all provided CacheView implementations. This allows to combine cache of multiple
+     * JDA sessions or Guilds.
+     *
+     * @param  generator
+     *         Stream generator of {@link net.dv8tion.jda.core.utils.cache.CacheView CacheView} implementations
+     *
+     * @param  <E>
+     *         The target type of the projection
+     *
+     * @return Combined CacheView spanning over all provided implementation instances
+     */
     static <E> CacheView<E> project(Supplier<Stream<CacheView<E>>> generator)
     {
         Checks.notNull(generator, "Generator");
         return new ProjectedCacheViewImpl<>(generator);
     }
 
+    /**
+     * Creates a combined {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     * for all provided SnowflakeCacheView implementations. This allows to combine cache of multiple
+     * JDA sessions or Guilds.
+     *
+     * @param  cacheViews
+     *         Collection of {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView} implementations
+     *
+     * @param  <E>
+     *         The target type of the projection
+     *
+     * @return Combined SnowflakeCacheView spanning over all provided implementation instances
+     */
     static <E extends ISnowflake> SnowflakeCacheView<E> projectSnowflake(Collection<SnowflakeCacheView<E>> cacheViews)
     {
         Checks.noneNull(cacheViews, "Collection");
         return new ProjectedCacheViewImpl.ProjectedSnowflakeCacheView<>(cacheViews::stream);
     }
 
+    /**
+     * Creates a combined {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     * for all provided SnowflakeCacheView implementations. This allows to combine cache of multiple
+     * JDA sessions or Guilds.
+     *
+     * @param  generator
+     *         Stream generator of {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView} implementations
+     *
+     * @param  <E>
+     *         The target type of the projection
+     *
+     * @return Combined SnowflakeCacheView spanning over all provided implementation instances
+     */
     static <E extends ISnowflake> SnowflakeCacheView<E> projectSnowflake(Supplier<Stream<SnowflakeCacheView<E>>> generator)
     {
         Checks.notNull(generator, "Generator");
         return new ProjectedCacheViewImpl.ProjectedSnowflakeCacheView<>(generator);
     }
 
+    /**
+     * Creates a combined {@link net.dv8tion.jda.core.utils.cache.ProjectedMemberCacheView ProjectedMemberCacheView}
+     * for all provided MemberCacheView implementations. This allows to combine cache of multiple
+     * JDA sessions or Guilds.
+     *
+     * @param  cacheViews
+     *         Collection of {@link net.dv8tion.jda.core.utils.cache.MemberCacheView MemberCacheView} implementations
+     *
+     * @return Combined MemberCacheView spanning over all provided implementation instances
+     */
     static ProjectedMemberCacheView projectMember(Collection<MemberCacheView> cacheViews)
     {
         Checks.noneNull(cacheViews, "Collection");
         return new ProjectedCacheViewImpl.ProjectedMemberCacheViewImpl(cacheViews::stream);
     }
 
+    /**
+     * Creates a combined {@link net.dv8tion.jda.core.utils.cache.ProjectedMemberCacheView ProjectedMemberCacheView}
+     * for all provided MemberCacheView implementations. This allows to combine cache of multiple
+     * JDA sessions or Guilds.
+     *
+     * @param  generator
+     *         Stream generator of {@link net.dv8tion.jda.core.utils.cache.MemberCacheView MemberCacheView} implementations
+     *
+     * @return Combined MemberCacheView spanning over all provided implementation instances
+     */
     static ProjectedMemberCacheView projectMember(Supplier<Stream<MemberCacheView>> generator)
     {
         Checks.notNull(generator, "Generator");

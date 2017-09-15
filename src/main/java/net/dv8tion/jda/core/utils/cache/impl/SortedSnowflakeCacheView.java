@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.utils.cache;
+package net.dv8tion.jda.core.utils.cache.impl;
 
 import net.dv8tion.jda.core.entities.ISnowflake;
 

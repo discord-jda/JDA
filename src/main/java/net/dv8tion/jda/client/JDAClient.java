@@ -24,19 +24,33 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.requests.RestAction;
-
-import java.util.List;
+import net.dv8tion.jda.core.utils.cache.CacheView;
+import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 
 import javax.annotation.CheckReturnValue;
+import java.util.List;
 
 public interface JDAClient
 {
     JDA getJDA();
 
-    List<Group> getGroups();
-    List<Group> getGroupsByName(String name, boolean ignoreCase);
-    Group getGroupById(String id);
-    Group getGroupById(long id);
+    SnowflakeCacheView<Group> getGroupCache();
+    default List<Group> getGroups()
+    {
+        return getGroupCache().asList();
+    }
+    default List<Group> getGroupsByName(String name, boolean ignoreCase)
+    {
+        return getGroupCache().getElementsByName(name, ignoreCase);
+    }
+    default Group getGroupById(String id)
+    {
+        return getGroupCache().getElementById(id);
+    }
+    default Group getGroupById(long id)
+    {
+        return getGroupCache().getElementById(id);
+    }
 
     List<Relationship> getRelationships();
     List<Relationship> getRelationships(RelationshipType type);
