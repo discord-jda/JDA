@@ -51,6 +51,7 @@ public class GuildImpl implements Guild
 {
     private final long id;
     private final JDAImpl api;
+    private final TLongObjectMap<CategoryImpl> categories = MiscUtil.newLongMap();
     private final TLongObjectMap<TextChannel> textChannels = MiscUtil.newLongMap();
     private final TLongObjectMap<VoiceChannel> voiceChannels = MiscUtil.newLongMap();
     private final TLongObjectMap<Member> members = MiscUtil.newLongMap();
@@ -272,6 +273,37 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public Category getCategoryById(String id)
+    {
+        return categories.get(MiscUtil.parseSnowflake(id));
+    }
+
+    @Override
+    public Category getCategoryById(long id)
+    {
+        return categories.get(id);
+    }
+
+    @Override
+    public List<Category> getCategories()
+    {
+        ArrayList<Category> list = new ArrayList<>(categories.valueCollection());
+        list.sort(Comparator.reverseOrder());
+        return Collections.unmodifiableList(list);
+    }
+
+    @Override
+    public List<Category> getCategoriesByName(String name, boolean ignoreCase)
+    {
+        Checks.notNull(name, "Name");
+        return Collections.unmodifiableList(categories.valueCollection().stream()
+                    .filter(category -> ignoreCase
+                            ? category.getName().equalsIgnoreCase(name)
+                            : category.getName().equals(name))
+                    .collect(Collectors.toList()));
+    }
+
+    @Override
     public TextChannel getTextChannelById(String id)
     {
         return textChannels.get(MiscUtil.parseSnowflake(id));
@@ -299,7 +331,7 @@ public class GuildImpl implements Guild
     public List<TextChannel> getTextChannels()
     {
         ArrayList<TextChannel> channels = new ArrayList<>(textChannels.valueCollection());
-        channels.sort(Comparator.reverseOrder());
+        channels.sort(Comparator.naturalOrder());
         return Collections.unmodifiableList(channels);
     }
 
@@ -331,7 +363,7 @@ public class GuildImpl implements Guild
     public List<VoiceChannel> getVoiceChannels()
     {
         List<VoiceChannel> channels = new ArrayList<>(voiceChannels.valueCollection());
-        channels.sort(Comparator.reverseOrder());
+        channels.sort(Comparator.naturalOrder());
         return Collections.unmodifiableList(channels);
     }
 
@@ -455,8 +487,8 @@ public class GuildImpl implements Guild
     {
         final Role role = getPublicRole();
         return getTextChannelsMap().valueCollection().stream()
-                .sorted(Comparator.reverseOrder())
                 .filter(c -> role.hasPermission(c, Permission.MESSAGE_READ))
+                .sorted(Comparator.naturalOrder())
                 .findFirst().orElse(null);
     }
 
@@ -745,12 +777,17 @@ public class GuildImpl implements Guild
 
     // -- Map getters --
 
+    public TLongObjectMap<CategoryImpl> getCategoriesMap()
+    {
+        return categories;
+    }
+
     public TLongObjectMap<TextChannel> getTextChannelsMap()
     {
         return textChannels;
     }
 
-    public TLongObjectMap<VoiceChannel> getVoiceChannelMap()
+    public TLongObjectMap<VoiceChannel> getVoiceChannelsMap()
     {
         return voiceChannels;
     }

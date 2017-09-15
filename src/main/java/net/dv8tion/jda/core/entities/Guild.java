@@ -297,6 +297,62 @@ public interface Guild extends ISnowflake
     List<Member> getMembersWithRoles(Collection<Role> roles);
 
     /**
+     * Gets the {@link net.dv8tion.jda.core.entities.Category Category} from this guild
+     * that matches the provided id. This method is similar to {@link net.dv8tion.jda.core.JDA#getCategoryById(String)}, but
+     * it only checks in this specific Guild.
+     * <br>If there is no matching {@link net.dv8tion.jda.core.entities.Category Category} this returns {@code null}.
+     *
+     * @param  id
+     *         The snowflake ID of the wanted Category
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided ID is not a valid {@code long}
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Category Category} for
+     *         the provided ID.
+     */
+    Category getCategoryById(String id);
+
+    /**
+     * Gets the {@link net.dv8tion.jda.core.entities.Category Category} from this guild
+     * that matches the provided id. This method is similar to {@link net.dv8tion.jda.core.JDA#getCategoryById(String)}, but
+     * it only checks in this specific Guild.
+     * <br>If there is no matching {@link net.dv8tion.jda.core.entities.Category Category} this returns {@code null}.
+     *
+     * @param  id
+     *         The snowflake ID of the wanted Category
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Category Category} for
+     *         the provided ID.
+     */
+    Category getCategoryById(long id);
+
+    /**
+     * Gets all {@link net.dv8tion.jda.core.entities.Category Categories} in this {@link net.dv8tion.jda.core.entities.Guild Guild}.
+     * <br>The returned categories will be sorted according to their position.
+     *
+     * @return An immutable list of all {@link net.dv8tion.jda.core.entities.Category Categories} in this Guild.
+     */
+    List<Category> getCategories();
+
+    /**
+     * Gets a list of all {@link net.dv8tion.jda.core.entities.Category Categories} in this Guild that have the same
+     * name as the one provided.
+     * <br>If there are no matching categories this will return an empty list.
+     *
+     * @param  name
+     *         The name to check
+     * @param  ignoreCase
+     *         Whether to ignore case on name checking
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided name is {@code null}
+     *
+     * @return Immutable list of all categories matching the provided name
+     */
+    List<Category> getCategoriesByName(String name, boolean ignoreCase);
+
+    /**
      * Gets a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} from this guild that has the same id as the
      * one provided. This method is similar to {@link net.dv8tion.jda.core.JDA#getTextChannelById(String)}, but it only
      * checks this specific Guild for a TextChannel.

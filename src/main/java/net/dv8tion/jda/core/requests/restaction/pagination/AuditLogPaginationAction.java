@@ -112,7 +112,8 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
     }
 
     /**
-     * Filters retrieved entities by the specified {@link net.dv8tion.jda.core.entities.User User}
+     * Filters retrieved entities by the specified {@link net.dv8tion.jda.core.entities.User User}.
+     * <br>This specified the action issuer and not the target of an action. (Targets need not be users)
      *
      * @param  user
      *         {@link net.dv8tion.jda.core.entities.User User} used to filter,
@@ -127,6 +128,7 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
 
     /**
      * Filters retrieved entities by the specified {@link net.dv8tion.jda.core.entities.User User} id.
+     * <br>This specified the action issuer and not the target of an action. (Targets need not be users)
      *
      * @param  userId
      *         {@link net.dv8tion.jda.core.entities.User User} id used to filter,

@@ -92,6 +92,7 @@ public class RelationshipRemoveHandler extends SocketHandler
                         }
                     }
                 }
+                api.getEventCache().clear(EventCache.Type.USER, userId);
             }
         }
         else
@@ -138,6 +139,7 @@ public class RelationshipRemoveHandler extends SocketHandler
                 WebSocketClient.LOG.warn("Received a RELATIONSHIP_REMOVE with an unknown RelationshipType! JSON: " + content);
                 return null;
         }
+        api.getEventCache().clear(EventCache.Type.RELATIONSHIP, userId);
         return null;
     }
 }

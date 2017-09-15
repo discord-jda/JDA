@@ -40,7 +40,6 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> implements Channel
 {
-
     protected final long id;
     protected final GuildImpl guild;
 
@@ -50,6 +49,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     protected volatile ChannelManager manager;
     protected volatile ChannelManagerUpdatable managerUpdatable;
 
+    protected long parentId;
     protected String name;
     protected int rawPosition;
 
@@ -69,6 +69,12 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     public Guild getGuild()
     {
         return guild;
+    }
+
+    @Override
+    public Category getParent()
+    {
+        return guild.getCategoriesMap().get(parentId);
     }
 
     @Override
@@ -231,6 +237,17 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         return Long.hashCode(id);
     }
 
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (!(obj instanceof Channel))
+            return false;
+        if (obj == this)
+            return true;
+        Channel channel = (Channel) obj;
+        return channel.getIdLong() == getIdLong();
+    }
+
     public TLongObjectMap<PermissionOverride> getOverrideMap()
     {
         return overrides;
@@ -240,6 +257,13 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     public T setName(String name)
     {
         this.name = name;
+        return (T) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public T setParent(long parentId)
+    {
+        this.parentId = parentId;
         return (T) this;
     }
 

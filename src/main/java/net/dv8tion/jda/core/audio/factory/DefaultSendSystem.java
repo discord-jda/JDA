@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.audio.factory;
 
 import net.dv8tion.jda.core.audio.AudioConnection;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
+import net.dv8tion.jda.core.utils.SimpleLog;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -72,7 +73,6 @@ public class DefaultSendSystem implements IAudioSendSystem
                 }
                 finally
                 {
-
                     long sleepTime = (OPUS_FRAME_TIME_AMOUNT) - (System.currentTimeMillis() - lastFrameSent);
                     if (sleepTime > 0)
                     {
@@ -97,6 +97,12 @@ public class DefaultSendSystem implements IAudioSendSystem
                 }
             }
         });
+        sendThread.setUncaughtExceptionHandler((thread, throwable) ->
+        {
+            SimpleLog.getLog("DefaultSendSystem").log(throwable);
+            start();
+        });
+        sendThread.setDaemon(true);
         sendThread.setName(packetProvider.getIdentifier() + " Sending Thread");
         sendThread.setPriority((Thread.NORM_PRIORITY + Thread.MAX_PRIORITY) / 2);
         sendThread.start();
