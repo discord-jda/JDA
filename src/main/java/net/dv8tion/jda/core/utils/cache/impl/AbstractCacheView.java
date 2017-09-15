@@ -76,13 +76,11 @@ public abstract class AbstractCacheView<T> implements CacheView<T>
         Checks.notEmpty(name, "Name");
         if (elements.isEmpty())
             return Collections.emptyList();
-        Iterator<T> iter = iterator();
-        T elem = iter.next();
         if (nameMapper == null) // no getName method available
             throw new UnsupportedOperationException("The contained elements are not assigned with names.");
 
         List<T> list = new LinkedList<>();
-        do
+        for (T elem : elements.valueCollection())
         {
             String elementName = nameMapper.apply(elem);
             if (elementName != null)
@@ -98,12 +96,7 @@ public abstract class AbstractCacheView<T> implements CacheView<T>
                         list.add(elem);
                 }
             }
-
-            if (!iter.hasNext())
-                break;
-            elem = iter.next();
         }
-        while (elem != null);
 
         return list;
     }
