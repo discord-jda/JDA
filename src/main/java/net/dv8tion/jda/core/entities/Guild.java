@@ -281,7 +281,7 @@ public interface Guild extends ISnowflake
      */
     default List<Member> getMembersByEffectiveName(String name, boolean ignoreCase)
     {
-        return getMemberCache().getElementsByEffectiveName(name, ignoreCase);
+        return getMemberCache().getElementsByName(name, ignoreCase);
     }
 
     /**

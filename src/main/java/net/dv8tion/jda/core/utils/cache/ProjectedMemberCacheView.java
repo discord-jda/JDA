@@ -23,13 +23,13 @@ import net.dv8tion.jda.core.utils.MiscUtil;
 import java.util.Collection;
 import java.util.List;
 
-public interface MemberCacheView extends CacheView<Member>
+public interface ProjectedMemberCacheView extends CacheView<Member>
 {
-    Member getElementById(long id);
+    List<Member> getElementsById(long id);
 
-    default Member getElementById(String id)
+    default List<Member> getElementsById(String id)
     {
-        return getElementById(MiscUtil.parseSnowflake(id));
+        return getElementsById(MiscUtil.parseSnowflake(id));
     }
 
     List<Member> getElementsByUsername(String name, boolean ignoreCase);
@@ -49,5 +49,4 @@ public interface MemberCacheView extends CacheView<Member>
     List<Member> getElementsWithRoles(Role... roles);
 
     List<Member> getElementsWithRoles(Collection<Role> roles);
-
 }

@@ -18,11 +18,10 @@ package net.dv8tion.jda.core.utils.cache;
 
 import net.dv8tion.jda.core.entities.ISnowflake;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import javax.annotation.Nonnull;
+import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 public class SortedSnowflakeCacheView<T extends ISnowflake & Comparable<T>> extends SnowflakeCacheViewImpl<T>
 {
@@ -45,5 +44,24 @@ public class SortedSnowflakeCacheView<T extends ISnowflake & Comparable<T>> exte
         List<T> list = new ArrayList<>(elements.valueCollection());
         list.sort(comparator);
         return Collections.unmodifiableList(list);
+    }
+
+    @Override
+    public Stream<T> stream()
+    {
+        return super.stream().sorted(comparator);
+    }
+
+    @Override
+    public Stream<T> parallelStream()
+    {
+        return super.parallelStream().sorted(comparator);
+    }
+
+    @Nonnull
+    @Override
+    public Iterator<T> iterator()
+    {
+        return asList().iterator();
     }
 }

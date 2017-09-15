@@ -43,7 +43,7 @@ import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.SimpleLog;
-import net.dv8tion.jda.core.utils.cache.ProjectedCacheViewImpl;
+import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheViewImpl;
 import okhttp3.OkHttpClient;
@@ -378,7 +378,7 @@ public class JDAImpl implements JDA
     @Override
     public SnowflakeCacheView<Role> getRoleCache()
     {
-        return new ProjectedCacheViewImpl<>(() -> getGuilds().stream().map(Guild::getRoleCache));
+        return CacheView.projectSnowflake(() -> guildCache.stream().map(Guild::getRoleCache));
     }
 
     @Override

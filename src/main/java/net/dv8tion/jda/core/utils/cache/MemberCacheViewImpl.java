@@ -16,46 +16,20 @@
 
 package net.dv8tion.jda.core.utils.cache;
 
-import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.utils.Checks;
-import net.dv8tion.jda.core.utils.MiscUtil;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
-public class MemberCacheViewImpl implements MemberCacheView
+public class MemberCacheViewImpl extends AbstractCacheView<Member> implements MemberCacheView
 {
-    protected final TLongObjectMap<Member> elements = MiscUtil.newLongMap();
-
-    public TLongObjectMap<Member> getMap()
+    public MemberCacheViewImpl()
     {
-        return elements;
-    }
-
-    @Override
-    public List<Member> asList()
-    {
-        // already unmodifiable
-        return Arrays.asList(elements.values(new Member[size()]));
-    }
-
-    @Override
-    public Set<Member> asSet()
-    {
-        return Collections.unmodifiableSet(new HashSet<>(elements.valueCollection()));
-    }
-
-    @Override
-    public int size()
-    {
-        return elements.size();
-    }
-
-    @Override
-    public boolean isEmpty()
-    {
-        return elements.isEmpty();
+        super(Member::getEffectiveName);
     }
 
     @Override
@@ -115,7 +89,7 @@ public class MemberCacheViewImpl implements MemberCacheView
     }
 
     @Override
-    public List<Member> getElementsByEffectiveName(String name, boolean ignoreCase)
+    public List<Member> getElementsByName(String name, boolean ignoreCase)
     {
         Checks.notEmpty(name, "Name");
         List<Member> members = new LinkedList<>();
@@ -167,5 +141,4 @@ public class MemberCacheViewImpl implements MemberCacheView
         }
         return members;
     }
-
 }

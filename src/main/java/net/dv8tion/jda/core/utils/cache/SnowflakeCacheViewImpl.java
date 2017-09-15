@@ -16,100 +16,15 @@
 
 package net.dv8tion.jda.core.utils.cache;
 
-import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.core.entities.ISnowflake;
-import net.dv8tion.jda.core.utils.Checks;
-import net.dv8tion.jda.core.utils.MiscUtil;
 
-import java.lang.reflect.Method;
-import java.util.*;
 import java.util.function.Function;
 
-public class SnowflakeCacheViewImpl<T extends ISnowflake> implements SnowflakeCacheView<T>
+public class SnowflakeCacheViewImpl<T extends ISnowflake> extends AbstractCacheView<T> implements SnowflakeCacheView<T>
 {
-    protected final TLongObjectMap<T> elements = MiscUtil.newLongMap();
-    protected final Function<T, String> nameMapper;
-
-    public SnowflakeCacheViewImpl()
-    {
-        this.nameMapper = null;
-    }
-
     public SnowflakeCacheViewImpl(Function<T, String> nameMapper)
     {
-        this.nameMapper = nameMapper;
-    }
-
-    public void clear()
-    {
-        elements.clear();
-    }
-
-    public TLongObjectMap<T> getMap()
-    {
-        return elements;
-    }
-
-    @Override
-    public List<T> asList()
-    {
-        return Collections.unmodifiableList(new ArrayList<>(elements.valueCollection()));
-    }
-
-    @Override
-    public Set<T> asSet()
-    {
-        return Collections.unmodifiableSet(new HashSet<>(elements.valueCollection()));
-    }
-
-    @Override
-    public long size()
-    {
-        return elements.size();
-    }
-
-    @Override
-    public boolean isEmpty()
-    {
-        return elements.isEmpty();
-    }
-
-    @Override
-    public List<T> getElementsByName(String name, boolean ignoreCase)
-    {
-        Checks.notEmpty(name, "Name");
-        if (elements.isEmpty())
-            return Collections.emptyList();
-        Iterator<T> iter = iterator();
-        T elem = iter.next();
-        if (nameMapper == null) // no getName method available
-            throw new UnsupportedOperationException("The contained elements are not assigned with names.");
-
-        List<T> list = new LinkedList<>();
-        do
-        {
-            String elementName = nameMapper.apply(elem);
-            if (elementName != null)
-            {
-                if (ignoreCase)
-                {
-                    if (elementName.equalsIgnoreCase(name))
-                        list.add(elem);
-                }
-                else
-                {
-                    if (elementName.equals(name))
-                        list.add(elem);
-                }
-            }
-
-            if (!iter.hasNext())
-                break;
-            elem = iter.next();
-        }
-        while (elem != null);
-
-        return list;
+        super(nameMapper);
     }
 
     @Override
@@ -117,17 +32,4 @@ public class SnowflakeCacheViewImpl<T extends ISnowflake> implements SnowflakeCa
     {
         return elements.get(id);
     }
-
-    protected Method getNameGetter(T element)
-    {
-        try
-        {
-            return element.getClass().getMethod("getName");
-        }
-        catch (Exception e)
-        {
-            return null;
-        }
-    }
-
 }

@@ -19,27 +19,8 @@ package net.dv8tion.jda.core.utils.cache;
 import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.utils.MiscUtil;
 
-import java.util.*;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
-public interface SnowflakeCacheView<T extends ISnowflake> extends Iterable<T>
+public interface SnowflakeCacheView<T extends ISnowflake> extends CacheView<T>
 {
-    List<T> asList();
-
-    Set<T> asSet();
-
-    long size();
-
-    boolean isEmpty();
-
-    default List<T> getElementsByName(String name)
-    {
-        return getElementsByName(name, false);
-    }
-
-    List<T> getElementsByName(String name, boolean ignoreCase);
-
     T getElementById(long id);
 
     default T getElementById(String id)
@@ -47,44 +28,4 @@ public interface SnowflakeCacheView<T extends ISnowflake> extends Iterable<T>
         return getElementById(MiscUtil.parseSnowflake(id));
     }
 
-    default Stream<T> stream()
-    {
-        return StreamSupport.stream(spliterator(), false);
-    }
-
-    default Stream<T> parallelStream()
-    {
-        return StreamSupport.stream(spliterator(), true);
-    }
-
-    @Override
-    default CacheIterator<T> iterator()
-    {
-        return new CacheIterator<>(this);
-    }
-
-    class CacheIterator<V extends ISnowflake> implements Iterator<V>
-    {
-        protected final List<V> list;
-        protected int index = 0;
-
-        public CacheIterator(SnowflakeCacheView<V> view)
-        {
-            this.list = view.asList();
-        }
-
-        @Override
-        public boolean hasNext()
-        {
-            return index < list.size();
-        }
-
-        @Override
-        public V next()
-        {
-            if (!hasNext())
-                throw new NoSuchElementException("Reached end of iteration.");
-            return list.get(index++);
-        }
-    }
 }
