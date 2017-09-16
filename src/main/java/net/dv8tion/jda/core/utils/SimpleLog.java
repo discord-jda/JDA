@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.core.utils;
 
+import net.dv8tion.jda.core.JDA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
@@ -38,7 +39,11 @@ public class SimpleLog
             Class.forName("org.slf4j.impl.StaticLoggerBinder");
             tmp = true;
         }
-        catch (ClassNotFoundException ignored) {}
+        catch (ClassNotFoundException e)
+        {
+            //prints warning of missing implementation
+            LoggerFactory.getLogger(JDA.class);
+        }
         SLF4J_ENABLED = tmp;
     }
 
@@ -176,6 +181,8 @@ public class SimpleLog
             slf4j(level, obj);
             return;
         }
+        if (getEffectiveLevel().ordinal() < level.ordinal())
+            return;
         String msg;
         if (obj instanceof Throwable)
             msg = "Encountered an Exception: \n" + Helpers.getStackTrace((Throwable) obj);
