@@ -15,6 +15,9 @@
  */
 package net.dv8tion.jda.core.utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.swing.JOptionPane;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -35,6 +38,19 @@ public class SimpleLog
      */
     public static boolean ENABLE_GUI = false;
 
+    public static final boolean SLF4J_ENABLED;
+    static
+    {
+        boolean tmp = false;
+        try
+        {
+            Class.forName("org.slf4j.impl.StaticLoggerBinder");
+            tmp = true;
+        }
+        catch (ClassNotFoundException ignored) {}
+        SLF4J_ENABLED = tmp;
+    }
+
     private static final String FORMAT = "[%time%] [%level%] [%name%]: %text%";
     private static final String MSGFORMAT = "%text%";
     private static final SimpleDateFormat DFORMAT = new SimpleDateFormat("HH:mm:ss");
@@ -42,26 +58,257 @@ public class SimpleLog
     private static final Map<String, SimpleLog> LOGS = new HashMap<>();
     private static final Set<LogListener> listeners = new HashSet<>();
 
+    private static final Map<Level, Set<File>> fileLogs = new HashMap<>();
+
+    private static PrintStream origStd = null;
+    private static PrintStream origErr = null;
+    private static FileOutputStream stdOut = null;
+    private static FileOutputStream errOut = null;
+
+    private final String name;
+    private final Logger logger;
+    private Level level = null;
+
+    private SimpleLog(Class<?> clazz)
+    {
+        this.name = clazz.getName();
+        this.logger = SLF4J_ENABLED ? LoggerFactory.getLogger(clazz) : null;
+    }
+
+    private SimpleLog(String name)
+    {
+        this.name = name;
+        this.logger = SLF4J_ENABLED ? LoggerFactory.getLogger(name) : null;
+    }
+
+    /**
+     * Set the LOG-level
+     * All messages with lower LOG-level will not be printed
+     * If this level is set to null, the global Log-level ({@link net.dv8tion.jda.core.utils.SimpleLog#LEVEL}) will be used
+     *
+     * @param lev the new LOG-level
+     */
+    public void setLevel(Level lev)
+    {
+        this.level = lev;
+    }
+
+    /**
+     * Gets the current logging-level of this Logger.
+     * This might return null, if the global logging-level is used.
+     *
+     * @return the logging-level of this Logger or null
+     */
+    public Level getLevel()
+    {
+        return level;
+    }
+
+    /**
+     * Gets the effective logging-level of this Logger.
+     * This considers the global logging-level.
+     *
+     * @return the effective logging-level of this Logger
+     */
+    public Level getEffectiveLevel()
+    {
+        return level == null ? SimpleLog.LEVEL : level;
+    }
+
+    private void slf4j(Level level, Object obj)
+    {
+        if (obj instanceof Throwable)
+        {
+            Throwable t = (Throwable) obj;
+            switch (level)
+            {
+                case FATAL:
+                    logger.error("Encountered an Exception ", t);
+                    break;
+                case WARNING:
+                    logger.warn("Encountered an Exception ", t);
+                    break;
+                case INFO:
+                    logger.info("Encountered an Exception ", t);
+                    break;
+                case DEBUG:
+                    logger.debug("Encountered an Exception ", t);
+                    break;
+                case TRACE:
+                    logger.trace("Encountered an Exception ", t);
+                    break;
+                default:
+                    break;
+            }
+            return;
+        }
+        String msg = String.valueOf(obj);
+        switch (level)
+        {
+            case FATAL:
+                logger.error(msg);
+                break;
+            case WARNING:
+                logger.warn(msg);
+                break;
+            case INFO:
+                logger.info(msg);
+                break;
+            case DEBUG:
+                logger.debug(msg);
+                break;
+            case TRACE:
+                logger.trace(msg);
+                break;
+        }
+    }
+
+    /**
+     * Will LOG a message with given LOG-level
+     *
+     * @param level The level of the Log
+     * @param msg   The message to LOG
+     */
+    public void log(Level level, Object msg)
+    {
+        if (logger != null)
+        {
+            slf4j(level, msg);
+            return;
+        }
+        synchronized (listeners)
+        {
+            for (LogListener listener : listeners)
+            {
+                listener.onLog(this, level, msg);
+            }
+        }
+        String format = (ENABLE_GUI && !isConsolePresent()) ? MSGFORMAT : FORMAT;
+        format = format.replace("%time%", DFORMAT.format(new Date())).replace("%level%", level.getTag()).replace("%name%", name).replace("%text%", String.valueOf(msg));
+        if(level == Level.OFF || level.getPriority() < ((this.level == null) ? SimpleLog.LEVEL.getPriority() : this.level.getPriority())) {
+            logToFiles(format, level);
+        }
+        else
+        {
+            print(format, level);
+        }
+    }
+
+    public void log(Throwable ex)
+    {
+        synchronized (listeners)
+        {
+            for (LogListener listener : listeners)
+            {
+                listener.onError(this, ex);
+            }
+        }
+        log(Level.FATAL, "Encountered an exception:");
+        log(Level.FATAL, Helpers.getStackTrace(ex));
+    }
+
+    /**
+     * Will LOG a message with trace level.
+     *
+     * @param msg the object, which should be logged
+     */
+    public void trace(Object msg)
+    {
+        log(Level.TRACE, msg);
+    }
+
+    /**
+     * Will LOG a message with debug level
+     *
+     * @param msg the object, which should be logged
+     */
+    public void debug(Object msg)
+    {
+        log(Level.DEBUG, msg);
+    }
+
+    /**
+     * Will LOG a message with info level
+     *
+     * @param msg the object, which should be logged
+     */
+    public void info(Object msg)
+    {
+        log(Level.INFO, msg);
+    }
+
+    /**
+     * Will LOG a message with warning level
+     *
+     * @param msg the object, which should be logged
+     */
+    public void warn(Object msg)
+    {
+        log(Level.WARNING, msg);
+    }
+
+    /**
+     * Will LOG a message with fatal level
+     *
+     * @param msg the object, which should be logged
+     */
+    public void fatal(Object msg)
+    {
+        log(Level.FATAL, msg);
+    }
+
+    /**
+     * prints a message to the console or as message-box.
+     *
+     * @param msg   the message, that should be displayed
+     * @param level the LOG level of the message
+     */
+    private void print(String msg, Level level)
+    {
+        if(ENABLE_GUI && !isConsolePresent()) {
+            if(level.isError()) {
+                JOptionPane.showMessageDialog(null, msg, "An Error occurred!", JOptionPane.ERROR_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, msg, level.getTag(), JOptionPane.INFORMATION_MESSAGE);
+            }
+        } else {
+            if(level.isError()) {
+                System.err.println(msg);
+            } else {
+                System.out.println(msg);
+            }
+        }
+    }
+
+    /**
+     * Will return whether the program has a console present, or was launched without
+     *
+     * @return boolean true, if console is present
+     */
+    public static boolean isConsolePresent()
+    {
+        return System.console() != null;
+    }
+
+    // STATIC ACCESS
+
     /**
      * Will get the LOG with the given LOG-name or create one if it didn't exist
      *
      * @param name the name of the LOG
      * @return SimpleLog with given LOG-name
      */
-    public static SimpleLog getLog(String name) {
-        synchronized (LOGS) {
-            if(!LOGS.containsKey(name.toLowerCase())) {
+    public static SimpleLog getLog(String name)
+    {
+        synchronized (LOGS)
+        {
+            if(!LOGS.containsKey(name.toLowerCase()))
+            {
                 LOGS.put(name.toLowerCase(), new SimpleLog(name));
             }
         }
         return LOGS.get(name.toLowerCase());
     }
-
-    private static final Map<Level, Set<File>> fileLogs = new HashMap<>();
-    private static PrintStream origStd = null;
-    private static PrintStream origErr = null;
-    private static FileOutputStream stdOut = null;
-    private static FileOutputStream errOut = null;
 
     /**
      * Will duplicate the output-streams to the specified Files.
@@ -223,8 +470,8 @@ public class SimpleLog
             catch (IOException e)
             {
                 e.printStackTrace();
-//                JDAImpl.LOG.fatal("Could not write log to logFile...");
-//                JDAImpl.LOG.log(e);
+                //                JDAImpl.LOG.fatal("Could not write log to logFile...");
+                //                JDAImpl.LOG.log(e);
             }
         }
     }
@@ -253,165 +500,12 @@ public class SimpleLog
         }
     }
 
-    public final String name;
-    private Level level = null;
-
-    private SimpleLog(String name) {
-        this.name = name;
-    }
-
-    /**
-     * Set the LOG-level
-     * All messages with lower LOG-level will not be printed
-     * If this level is set to null, the global Log-level ({@link net.dv8tion.jda.core.utils.SimpleLog#LEVEL}) will be used
-     *
-     * @param lev the new LOG-level
-     */
-    public void setLevel(Level lev) {
-        this.level = lev;
-    }
-
-    /**
-     * Gets the current logging-level of this Logger.
-     * This might return null, if the global logging-level is used.
-     *
-     * @return the logging-level of this Logger or null
-     */
-    public Level getLevel()
-    {
-        return level;
-    }
-
-    /**
-     * Gets the effective logging-level of this Logger.
-     * This considers the global logging-level.
-     *
-     * @return the effective logging-level of this Logger
-     */
-    public Level getEffectiveLevel()
-    {
-        return level == null ? SimpleLog.LEVEL : level;
-    }
-
-    /**
-     * Will LOG a message with given LOG-level
-     *
-     * @param level The level of the Log
-     * @param msg   The message to LOG
-     */
-    public void log(Level level, Object msg) {
-        synchronized (listeners)
-        {
-            for (LogListener listener : listeners)
-            {
-                listener.onLog(this, level, msg);
-            }
-        }
-        String format = (ENABLE_GUI && !isConsolePresent()) ? MSGFORMAT : FORMAT;
-        format = format.replace("%time%", DFORMAT.format(new Date())).replace("%level%", level.getTag()).replace("%name%", name).replace("%text%", String.valueOf(msg));
-        if(level == Level.OFF || level.getPriority() < ((this.level == null) ? SimpleLog.LEVEL.getPriority() : this.level.getPriority())) {
-            logToFiles(format, level);
-        }
-        else
-        {
-            print(format, level);
-        }
-    }
-
-    public void log(Throwable ex)
-    {
-        synchronized (listeners)
-        {
-            for (LogListener listener : listeners)
-            {
-                listener.onError(this, ex);
-            }
-        }
-        log(Level.FATAL, "Encountered an exception:");
-        log(Level.FATAL, Helpers.getStackTrace(ex));
-    }
-
-    /**
-     * Will LOG a message with trace level.
-     *
-     * @param msg the object, which should be logged
-     */
-    public void trace(Object msg) {
-        log(Level.TRACE, msg);
-    }
-
-    /**
-     * Will LOG a message with debug level
-     *
-     * @param msg the object, which should be logged
-     */
-    public void debug(Object msg) {
-        log(Level.DEBUG, msg);
-    }
-
-    /**
-     * Will LOG a message with info level
-     *
-     * @param msg the object, which should be logged
-     */
-    public void info(Object msg) {
-        log(Level.INFO, msg);
-    }
-
-    /**
-     * Will LOG a message with warning level
-     *
-     * @param msg the object, which should be logged
-     */
-    public void warn(Object msg) {
-        log(Level.WARNING, msg);
-    }
-
-    /**
-     * Will LOG a message with fatal level
-     *
-     * @param msg the object, which should be logged
-     */
-    public void fatal(Object msg) {
-        log(Level.FATAL, msg);
-    }
-
-    /**
-     * prints a message to the console or as message-box.
-     *
-     * @param msg   the message, that should be displayed
-     * @param level the LOG level of the message
-     */
-    private void print(String msg, Level level) {
-        if(ENABLE_GUI && !isConsolePresent()) {
-            if(level.isError()) {
-                JOptionPane.showMessageDialog(null, msg, "An Error occurred!", JOptionPane.ERROR_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(null, msg, level.getTag(), JOptionPane.INFORMATION_MESSAGE);
-            }
-        } else {
-            if(level.isError()) {
-                System.err.println(msg);
-            } else {
-                System.out.println(msg);
-            }
-        }
-    }
-
-    /**
-     * Will return whether the program has a console present, or was launched without
-     *
-     * @return boolean true, if console is present
-     */
-    public static boolean isConsolePresent() {
-        return System.console() != null;
-    }
-
     /**
      * This interface has to be able to register (via {@link net.dv8tion.jda.core.utils.SimpleLog#addListener(net.dv8tion.jda.core.utils.SimpleLog.LogListener)}) and listen to log-messages.
      */
     public interface LogListener
     {
+
         /**
          * Called on any incoming log-messages (including stacktraces).
          * This is also called on log-messages that would normally not print to console due to log-level.
@@ -439,7 +533,8 @@ public class SimpleLog
     /**
      * Enum containing all the LOG-levels
      */
-    public enum Level {
+    public enum Level
+    {
         ALL("Finest", 0, false),
         TRACE("Trace", 1, false),
         DEBUG("Debug", 2, false),
@@ -452,7 +547,8 @@ public class SimpleLog
         private final int pri;
         private final boolean isError;
 
-        Level(String message, int priority, boolean isError) {
+        Level(String message, int priority, boolean isError)
+        {
             this.msg = message;
             this.pri = priority;
             this.isError = isError;
@@ -463,7 +559,8 @@ public class SimpleLog
          *
          * @return the logTag
          */
-        public String getTag() {
+        public String getTag()
+        {
             return msg;
         }
 
@@ -472,7 +569,8 @@ public class SimpleLog
          *
          * @return the level-priority
          */
-        public int getPriority() {
+        public int getPriority()
+        {
             return pri;
         }
 
@@ -481,7 +579,8 @@ public class SimpleLog
          *
          * @return boolean true, if this LOG-level is an error-level
          */
-        public boolean isError() {
+        public boolean isError()
+        {
             return isError;
         }
     }
