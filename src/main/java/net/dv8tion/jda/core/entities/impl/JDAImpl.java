@@ -53,7 +53,7 @@ import java.util.stream.Collectors;
 
 public class JDAImpl implements JDA
 {
-    public static final SimpleLog LOG = SimpleLog.getLog("JDA");
+    public static final SimpleLog LOG = SimpleLog.getLog(JDA.class);
 
     public final ScheduledThreadPoolExecutor pool;
 

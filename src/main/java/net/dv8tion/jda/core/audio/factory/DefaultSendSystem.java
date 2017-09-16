@@ -69,7 +69,7 @@ public class DefaultSendSystem implements IAudioSendSystem
                 }
                 catch (Exception e)
                 {
-                    AudioConnection.LOG.log(e);
+                    AudioConnection.LOG.fatal(e);
                 }
                 finally
                 {
@@ -99,7 +99,7 @@ public class DefaultSendSystem implements IAudioSendSystem
         });
         sendThread.setUncaughtExceptionHandler((thread, throwable) ->
         {
-            SimpleLog.getLog("DefaultSendSystem").log(throwable);
+            SimpleLog.getLog(DefaultSendSystem.class).fatal(throwable);
             start();
         });
         sendThread.setDaemon(true);

@@ -162,7 +162,7 @@ public class GuildImpl implements Guild
                     }
                     catch (JSONException | NullPointerException e)
                     {
-                        JDAImpl.LOG.log(e);
+                        JDAImpl.LOG.fatal(e);
                     }
                 }
 

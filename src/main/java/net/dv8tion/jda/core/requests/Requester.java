@@ -35,7 +35,7 @@ import java.util.zip.GZIPInputStream;
 
 public class Requester
 {
-    public static final SimpleLog LOG = SimpleLog.getLog("JDARequester");
+    public static final SimpleLog LOG = SimpleLog.getLog(Requester.class);
     public static final String DISCORD_API_PREFIX = String.format("https://discordapp.com/api/v%d/", JDAInfo.DISCORD_REST_VERSION);
     public static final String USER_AGENT = "DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
     public static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");
@@ -191,7 +191,7 @@ public class Requester
         }
         catch (Exception e)
         {
-            LOG.log(e); //This originally only printed on DEBUG in 2.x
+            LOG.fatal(e); //This originally only printed on DEBUG in 2.x
             apiRequest.handleResponse(new Response(firstSuccess, e, rays));
             return null;
         }
