@@ -27,7 +27,7 @@ public class SimpleLog
     /**
      * The global LOG-level that is used as standard if not overwritten
      */
-    public static org.slf4j.event.Level LEVEL = org.slf4j.event.Level.INFO;
+    public static Level LEVEL = Level.INFO;
 
     public static final boolean SLF4J_ENABLED;
     static
@@ -103,14 +103,14 @@ public class SimpleLog
         if (logger != null)
         {
             if (logger.isTraceEnabled())
-                return org.slf4j.event.Level.TRACE;
+                return Level.TRACE;
             if (logger.isDebugEnabled())
-                return org.slf4j.event.Level.DEBUG;
+                return Level.DEBUG;
             if (logger.isInfoEnabled())
-                return org.slf4j.event.Level.INFO;
+                return Level.INFO;
             if (logger.isWarnEnabled())
-                return org.slf4j.event.Level.WARN;
-            return org.slf4j.event.Level.ERROR;
+                return Level.WARN;
+            return Level.ERROR;
         }
         return level == null ? SimpleLog.LEVEL : level;
     }
