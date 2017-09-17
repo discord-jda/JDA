@@ -18,7 +18,7 @@ package net.dv8tion.jda.core.utils.cache;
 
 import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.utils.Checks;
-import net.dv8tion.jda.core.utils.cache.impl.ProjectedCacheViewImpl;
+import net.dv8tion.jda.core.utils.cache.impl.ChainedCacheViewImpl;
 
 import java.util.Collection;
 import java.util.List;
@@ -57,7 +57,7 @@ public interface CacheView<T> extends Iterable<T>
     /**
      * The current size of this cache
      * <br>This is a {@code long} as it may be a projected view of multiple caches
-     * (See {@link net.dv8tion.jda.core.utils.cache.CacheView#project(java.util.function.Supplier)})
+     * (See {@link net.dv8tion.jda.core.utils.cache.CacheView#all(java.util.function.Supplier)})
      *
      * <p>This is more efficient than creating a list or set snapshot first as it checks the size
      * of the internal cache directly.
@@ -165,10 +165,10 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @return Combined CacheView spanning over all provided implementation instances
      */
-    static <E> CacheView<E> project(Collection<? extends CacheView<E>> cacheViews)
+    static <E> CacheView<E> all(Collection<? extends CacheView<E>> cacheViews)
     {
         Checks.noneNull(cacheViews, "Collection");
-        return new ProjectedCacheViewImpl<>(cacheViews::stream);
+        return new ChainedCacheViewImpl<>(cacheViews::stream);
     }
 
     /**
@@ -184,79 +184,79 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @return Combined CacheView spanning over all provided implementation instances
      */
-    static <E> CacheView<E> project(Supplier<Stream<CacheView<E>>> generator)
+    static <E> CacheView<E> all(Supplier<Stream<CacheView<E>>> generator)
     {
         Checks.notNull(generator, "Generator");
-        return new ProjectedCacheViewImpl<>(generator);
+        return new ChainedCacheViewImpl<>(generator);
     }
 
     /**
      * Creates a combined {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
-     * for all provided SnowflakeCacheView implementations. This allows to combine cache of multiple
-     * JDA sessions or Guilds.
+     * for all provided SnowflakeCacheView implementations.
+     * <br>This allows to combine cache of multiple JDA sessions or Guilds.
      *
      * @param  cacheViews
      *         Collection of {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView} implementations
      *
      * @param  <E>
-     *         The target type of the projection
+     *         The target type of the chain
      *
      * @return Combined SnowflakeCacheView spanning over all provided implementation instances
      */
-    static <E extends ISnowflake> SnowflakeCacheView<E> projectSnowflake(Collection<SnowflakeCacheView<E>> cacheViews)
+    static <E extends ISnowflake> SnowflakeCacheView<E> allSnowflakes(Collection<SnowflakeCacheView<E>> cacheViews)
     {
         Checks.noneNull(cacheViews, "Collection");
-        return new ProjectedCacheViewImpl.ProjectedSnowflakeCacheView<>(cacheViews::stream);
+        return new ChainedCacheViewImpl.ChainedSnowflakeCacheView<>(cacheViews::stream);
     }
 
     /**
      * Creates a combined {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
-     * for all provided SnowflakeCacheView implementations. This allows to combine cache of multiple
-     * JDA sessions or Guilds.
+     * for all provided SnowflakeCacheView implementations.
+     * <br>This allows to combine cache of multiple JDA sessions or Guilds.
      *
      * @param  generator
      *         Stream generator of {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView} implementations
      *
      * @param  <E>
-     *         The target type of the projection
+     *         The target type of the chain
      *
      * @return Combined SnowflakeCacheView spanning over all provided implementation instances
      */
-    static <E extends ISnowflake> SnowflakeCacheView<E> projectSnowflake(Supplier<Stream<SnowflakeCacheView<E>>> generator)
+    static <E extends ISnowflake> SnowflakeCacheView<E> allSnowflakes(Supplier<Stream<SnowflakeCacheView<E>>> generator)
     {
         Checks.notNull(generator, "Generator");
-        return new ProjectedCacheViewImpl.ProjectedSnowflakeCacheView<>(generator);
+        return new ChainedCacheViewImpl.ChainedSnowflakeCacheView<>(generator);
     }
 
     /**
-     * Creates a combined {@link net.dv8tion.jda.core.utils.cache.ProjectedMemberCacheView ProjectedMemberCacheView}
-     * for all provided MemberCacheView implementations. This allows to combine cache of multiple
-     * JDA sessions or Guilds.
+     * Creates a combined {@link ChainedMemberCacheView ChainedMemberCacheView}
+     * for all provided MemberCacheView implementations.
+     * <br>This allows to combine cache of multiple JDA sessions or Guilds.
      *
      * @param  cacheViews
-     *         Collection of {@link net.dv8tion.jda.core.utils.cache.MemberCacheView MemberCacheView} implementations
+     *         Collection of {@link net.dv8tion.jda.core.utils.cache.MemberCacheView MemberCacheView} instances
      *
-     * @return Combined MemberCacheView spanning over all provided implementation instances
+     * @return Combined MemberCacheView spanning over all provided instances
      */
-    static ProjectedMemberCacheView projectMember(Collection<MemberCacheView> cacheViews)
+    static ChainedMemberCacheView allMembers(Collection<MemberCacheView> cacheViews)
     {
         Checks.noneNull(cacheViews, "Collection");
-        return new ProjectedCacheViewImpl.ProjectedMemberCacheViewImpl(cacheViews::stream);
+        return new ChainedCacheViewImpl.ChainedMemberCacheViewImpl(cacheViews::stream);
     }
 
     /**
-     * Creates a combined {@link net.dv8tion.jda.core.utils.cache.ProjectedMemberCacheView ProjectedMemberCacheView}
-     * for all provided MemberCacheView implementations. This allows to combine cache of multiple
-     * JDA sessions or Guilds.
+     * Creates a combined {@link ChainedMemberCacheView ChainedMemberCacheView}
+     * for all provided MemberCacheView implementations.
+     * <br>This allows to combine cache of multiple JDA sessions or Guilds.
      *
      * @param  generator
-     *         Stream generator of {@link net.dv8tion.jda.core.utils.cache.MemberCacheView MemberCacheView} implementations
+     *         Stream generator of {@link net.dv8tion.jda.core.utils.cache.MemberCacheView MemberCacheView} instances
      *
-     * @return Combined MemberCacheView spanning over all provided implementation instances
+     * @return Combined MemberCacheView spanning over all provided instances
      */
-    static ProjectedMemberCacheView projectMember(Supplier<Stream<MemberCacheView>> generator)
+    static ChainedMemberCacheView allMembers(Supplier<Stream<MemberCacheView>> generator)
     {
         Checks.notNull(generator, "Generator");
-        return new ProjectedCacheViewImpl.ProjectedMemberCacheViewImpl(generator);
+        return new ChainedCacheViewImpl.ChainedMemberCacheViewImpl(generator);
     }
 }

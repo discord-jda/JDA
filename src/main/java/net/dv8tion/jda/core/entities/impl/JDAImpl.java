@@ -378,13 +378,13 @@ public class JDAImpl implements JDA
     @Override
     public SnowflakeCacheView<Role> getRoleCache()
     {
-        return CacheView.projectSnowflake(() -> guildCache.stream().map(Guild::getRoleCache));
+        return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getRoleCache));
     }
 
     @Override
     public SnowflakeCacheView<Emote> getEmoteCache()
     {
-        return CacheView.projectSnowflake(() -> guildCache.stream().map(Guild::getEmoteCache));
+        return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getEmoteCache));
     }
 
     @Override
