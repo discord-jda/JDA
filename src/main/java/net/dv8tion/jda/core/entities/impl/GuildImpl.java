@@ -56,11 +56,6 @@ public class GuildImpl implements Guild
 {
     private final long id;
     private final JDAImpl api;
-//    private final TLongObjectMap<TextChannel> textChannels = MiscUtil.newLongMap();
-//    private final TLongObjectMap<VoiceChannel> voiceChannels = MiscUtil.newLongMap();
-//    private final TLongObjectMap<Member> members = MiscUtil.newLongMap();
-//    private final TLongObjectMap<Role> roles = MiscUtil.newLongMap();
-//    private final TLongObjectMap<Emote> emotes = MiscUtil.newLongMap();
 
     private final SortedSnowflakeCacheView<Category> categoryCache = new SortedSnowflakeCacheView<Category>(Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheView<VoiceChannel> voiceChannelCache = new SortedSnowflakeCacheView<VoiceChannel>(Channel::getName, Comparator.naturalOrder());
