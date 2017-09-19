@@ -442,10 +442,10 @@ public interface JDA
     }
 
     /**
-     * Chained {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * Unified {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
      * all cached {@link net.dv8tion.jda.core.entities.Role Roles} visible to this JDA session.
      *
-     * @return Chained {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     * @return Unified {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      *
      * @see    net.dv8tion.jda.core.utils.cache.CacheView#allSnowflakes(java.util.function.Supplier) CacheView.allSnowflakes(...)
      */
@@ -783,10 +783,10 @@ public interface JDA
     }
 
     /**
-     * Chained {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * Unified {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
      * all cached {@link net.dv8tion.jda.core.entities.Emote Emotes} visible to this JDA session.
      *
-     * @return Chained {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     * @return Unified {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      *
      * @see    net.dv8tion.jda.core.utils.cache.CacheView#allSnowflakes(java.util.function.Supplier) CacheView.allSnowflakes(...)
      */

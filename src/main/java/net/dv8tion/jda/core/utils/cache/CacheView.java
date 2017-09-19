@@ -18,7 +18,7 @@ package net.dv8tion.jda.core.utils.cache;
 
 import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.utils.Checks;
-import net.dv8tion.jda.core.utils.cache.impl.ChainedCacheViewImpl;
+import net.dv8tion.jda.core.utils.cache.impl.UnifiedCacheViewImpl;
 
 import java.util.Collection;
 import java.util.List;
@@ -168,7 +168,7 @@ public interface CacheView<T> extends Iterable<T>
     static <E> CacheView<E> all(Collection<? extends CacheView<E>> cacheViews)
     {
         Checks.noneNull(cacheViews, "Collection");
-        return new ChainedCacheViewImpl<>(cacheViews::stream);
+        return new UnifiedCacheViewImpl<>(cacheViews::stream);
     }
 
     /**
@@ -187,7 +187,7 @@ public interface CacheView<T> extends Iterable<T>
     static <E> CacheView<E> all(Supplier<Stream<CacheView<E>>> generator)
     {
         Checks.notNull(generator, "Generator");
-        return new ChainedCacheViewImpl<>(generator);
+        return new UnifiedCacheViewImpl<>(generator);
     }
 
     /**
@@ -206,7 +206,7 @@ public interface CacheView<T> extends Iterable<T>
     static <E extends ISnowflake> SnowflakeCacheView<E> allSnowflakes(Collection<SnowflakeCacheView<E>> cacheViews)
     {
         Checks.noneNull(cacheViews, "Collection");
-        return new ChainedCacheViewImpl.ChainedSnowflakeCacheView<>(cacheViews::stream);
+        return new UnifiedCacheViewImpl.UnifiedSnowflakeCacheView<>(cacheViews::stream);
     }
 
     /**
@@ -225,11 +225,11 @@ public interface CacheView<T> extends Iterable<T>
     static <E extends ISnowflake> SnowflakeCacheView<E> allSnowflakes(Supplier<Stream<SnowflakeCacheView<E>>> generator)
     {
         Checks.notNull(generator, "Generator");
-        return new ChainedCacheViewImpl.ChainedSnowflakeCacheView<>(generator);
+        return new UnifiedCacheViewImpl.UnifiedSnowflakeCacheView<>(generator);
     }
 
     /**
-     * Creates a combined {@link ChainedMemberCacheView ChainedMemberCacheView}
+     * Creates a combined {@link UnifiedMemberCacheView UnifiedMemberCacheView}
      * for all provided MemberCacheView implementations.
      * <br>This allows to combine cache of multiple JDA sessions or Guilds.
      *
@@ -238,14 +238,14 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @return Combined MemberCacheView spanning over all provided instances
      */
-    static ChainedMemberCacheView allMembers(Collection<MemberCacheView> cacheViews)
+    static UnifiedMemberCacheView allMembers(Collection<MemberCacheView> cacheViews)
     {
         Checks.noneNull(cacheViews, "Collection");
-        return new ChainedCacheViewImpl.ChainedMemberCacheViewImpl(cacheViews::stream);
+        return new UnifiedCacheViewImpl.UnifiedMemberCacheViewImpl(cacheViews::stream);
     }
 
     /**
-     * Creates a combined {@link ChainedMemberCacheView ChainedMemberCacheView}
+     * Creates a combined {@link UnifiedMemberCacheView UnifiedMemberCacheView}
      * for all provided MemberCacheView implementations.
      * <br>This allows to combine cache of multiple JDA sessions or Guilds.
      *
@@ -254,9 +254,9 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @return Combined MemberCacheView spanning over all provided instances
      */
-    static ChainedMemberCacheView allMembers(Supplier<Stream<MemberCacheView>> generator)
+    static UnifiedMemberCacheView allMembers(Supplier<Stream<MemberCacheView>> generator)
     {
         Checks.notNull(generator, "Generator");
-        return new ChainedCacheViewImpl.ChainedMemberCacheViewImpl(generator);
+        return new UnifiedCacheViewImpl.UnifiedMemberCacheViewImpl(generator);
     }
 }

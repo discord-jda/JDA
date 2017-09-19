@@ -26,12 +26,12 @@ import java.util.List;
 
 /**
  * {@link net.dv8tion.jda.core.utils.cache.CacheView CacheView} implementation
- * specifically to chain {@link net.dv8tion.jda.core.entities.Member Member} cache views.
+ * specifically to combine {@link net.dv8tion.jda.core.entities.Member Member} cache views.
  *
  * <p>This is done because Members do not implement {@link net.dv8tion.jda.core.entities.ISnowflake ISnowflake} as
  * they are not globally unique but only unique per {@link net.dv8tion.jda.core.entities.Guild Guild}!
  */
-public interface ChainedMemberCacheView extends CacheView<Member>
+public interface UnifiedMemberCacheView extends CacheView<Member>
 {
     /**
      * Retrieves all member represented by the provided ID.

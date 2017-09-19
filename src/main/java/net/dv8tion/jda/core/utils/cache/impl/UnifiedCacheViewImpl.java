@@ -21,7 +21,7 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.core.utils.cache.MemberCacheView;
-import net.dv8tion.jda.core.utils.cache.ChainedMemberCacheView;
+import net.dv8tion.jda.core.utils.cache.UnifiedMemberCacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 
 import javax.annotation.Nonnull;
@@ -30,11 +30,11 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class ChainedCacheViewImpl<T, E extends CacheView<T>> implements CacheView<T>
+public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheView<T>
 {
     protected final Supplier<Stream<E>> generator;
 
-    public ChainedCacheViewImpl(Supplier<Stream<E>> generator)
+    public UnifiedCacheViewImpl(Supplier<Stream<E>> generator)
     {
         this.generator = generator;
     }
@@ -94,10 +94,10 @@ public class ChainedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
         return asList().iterator();
     }
 
-    public static class ChainedSnowflakeCacheView<T extends ISnowflake>
-        extends ChainedCacheViewImpl<T, SnowflakeCacheView<T>> implements SnowflakeCacheView<T>
+    public static class UnifiedSnowflakeCacheView<T extends ISnowflake>
+        extends UnifiedCacheViewImpl<T, SnowflakeCacheView<T>> implements SnowflakeCacheView<T>
     {
-        public ChainedSnowflakeCacheView(Supplier<Stream<SnowflakeCacheView<T>>> generator)
+        public UnifiedSnowflakeCacheView(Supplier<Stream<SnowflakeCacheView<T>>> generator)
         {
             super(generator);
         }
@@ -112,11 +112,11 @@ public class ChainedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
         }
     }
 
-    public static class ChainedMemberCacheViewImpl
-        extends ChainedCacheViewImpl<Member, MemberCacheView> implements ChainedMemberCacheView
+    public static class UnifiedMemberCacheViewImpl
+        extends UnifiedCacheViewImpl<Member, MemberCacheView> implements UnifiedMemberCacheView
     {
 
-        public ChainedMemberCacheViewImpl(Supplier<Stream<MemberCacheView>> generator)
+        public UnifiedMemberCacheViewImpl(Supplier<Stream<MemberCacheView>> generator)
         {
             super(generator);
         }

@@ -155,7 +155,7 @@ public interface MemberCacheView extends CacheView<Member>
     List<Member> getElementsWithRoles(Collection<Role> roles);
 
     /**
-     * Creates a combined {@link ChainedMemberCacheView ChainedMemberCacheView}
+     * Creates a combined {@link UnifiedMemberCacheView UnifiedMemberCacheView}
      * for all provided MemberCacheView implementations.
      * <br>This allows to combine cache of multiple JDA sessions or Guilds.
      *
@@ -164,13 +164,13 @@ public interface MemberCacheView extends CacheView<Member>
      *
      * @return Combined MemberCacheView spanning over all provided instances
      */
-    static ChainedMemberCacheView all(Supplier<Stream<MemberCacheView>> generator)
+    static UnifiedMemberCacheView all(Supplier<Stream<MemberCacheView>> generator)
     {
         return CacheView.allMembers(generator);
     }
 
     /**
-     * Creates a combined {@link ChainedMemberCacheView ChainedMemberCacheView}
+     * Creates a combined {@link UnifiedMemberCacheView UnifiedMemberCacheView}
      * for all provided MemberCacheView implementations.
      * <br>This allows to combine cache of multiple JDA sessions or Guilds.
      *
@@ -179,7 +179,7 @@ public interface MemberCacheView extends CacheView<Member>
      *
      * @return Combined MemberCacheView spanning over all provided instances
      */
-    static ChainedMemberCacheView all(Collection<MemberCacheView> cacheViews)
+    static UnifiedMemberCacheView all(Collection<MemberCacheView> cacheViews)
     {
         return all(cacheViews::stream);
     }
