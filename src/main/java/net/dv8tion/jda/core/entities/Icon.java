@@ -26,8 +26,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.Base64;
 
 /**
- * Icon containing a base64 encoded jpeg image.
- * <br>Used to different base64 images in the Discord api.
+ * Icon containing a base64 encoded jpeg/png/gif/gifv image.
+ * <br>Used to represent various base64 images in the Discord api.
  * <br>Example: {@link net.dv8tion.jda.core.managers.AccountManager#setAvatar(Icon)}.
  *
  * @since 3.0
@@ -38,6 +38,7 @@ public class Icon
 
     protected Icon(String base64Encoding)
     {
+        //Note: the usage of `image/jpeg` does not mean png/gif are not supported!
         this.encoding = "data:image/jpeg;base64," + base64Encoding;
     }
 
