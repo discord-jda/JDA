@@ -783,7 +783,7 @@ public interface JDA
      * @param id
      *         The id of the requested {@link net.dv8tion.jda.core.entities.Emote}.
      * @return An {@link net.dv8tion.jda.core.entities.Emote Emote} represented by this id or null if none is found in
-     * our cache.
+     *         our cache.
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      */
@@ -800,7 +800,7 @@ public interface JDA
      * @param id
      *         The id of the requested {@link net.dv8tion.jda.core.entities.Emote}.
      * @return An {@link net.dv8tion.jda.core.entities.Emote Emote} represented by this id or null if none is found in
-     * our cache.
+     *         our cache.
      */
     default Emote getEmoteById(long id)
     {
@@ -820,7 +820,7 @@ public interface JDA
      *         Whether to ignore case or not when comparing the provided name to each {@link
      *         net.dv8tion.jda.core.entities.Emote#getName()}.
      * @return Possibly-empty list of all the {@link net.dv8tion.jda.core.entities.Emote Emotes} that all have the same
-     * name as the provided name.
+     *         name as the provided name.
      */
     default List<Emote> getEmotesByName(String name, boolean ignoreCase)
     {

@@ -16,39 +16,32 @@
 package net.dv8tion.jda.bot.entities.impl;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
-import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.security.auth.login.LoginException;
-import net.dv8tion.jda.bot.entities.ApplicationInfo;
 import net.dv8tion.jda.bot.sharding.ShardManager;
+import net.dv8tion.jda.bot.utils.cache.ShardCacheView;
+import net.dv8tion.jda.bot.utils.cache.impl.ShardCacheViewImpl;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
-import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.SessionReconnectQueue;
 import net.dv8tion.jda.core.utils.Checks;
-import net.dv8tion.jda.core.utils.MiscUtil;
-import net.dv8tion.jda.core.utils.SimpleLog;
 import okhttp3.OkHttpClient;
 
 public class DefaultShardManagerImpl implements ShardManager
 {
-    public static final SimpleLog LOG = SimpleLog.getLog("ShardManager"); 
-
     protected final IAudioSendFactory audioSendFactory;
-
     protected final boolean autoReconnect;
     protected final int corePoolSize;
     protected final boolean enableBulkDeleteSplitting;
@@ -66,21 +59,19 @@ public class DefaultShardManagerImpl implements ShardManager
     protected final List<Object> listeners;
     protected final int maxReconnectDelay;
     protected final Queue<Integer> queue = new ConcurrentLinkedQueue<>();
-    protected TIntObjectMap<JDAImpl> shards = new TIntObjectHashMap<>();
+    protected ShardCacheViewImpl shards = new ShardCacheViewImpl();
     protected int shardsTotal;
     protected final int backoff;
     protected final OkHttpClient.Builder httpClientBuilder;
     protected final WebSocketFactory wsFactory;
     protected final SessionReconnectQueue reconnectQueue;
-
     protected final AtomicBoolean shutdown = new AtomicBoolean(false);
     protected final Thread shutdownHook;
     protected final OnlineStatus status;
     protected final String token;
-
     protected ScheduledFuture<?> worker;
 
-    public DefaultShardManagerImpl(final int shardsTotal, final Collection<Integer> shardIds, final List<Object> listeners, final String token, final IEventManager eventManager, final IAudioSendFactory audioSendFactory, final Game game, final OnlineStatus status, final OkHttpClient.Builder httpClientBuilder, final WebSocketFactory wsFactory, final int maxReconnectDelay, final int corePoolSize, final boolean enableVoice, final boolean enableShutdownHook, final boolean enableBulkDeleteSplitting, final boolean autoReconnect, final boolean idle, final SessionReconnectQueue reconnectQueue, int backoff)
+    public DefaultShardManagerImpl(final int shardsTotal, final Collection<Integer> shardIds, final List<Object> listeners, final String token, final IEventManager eventManager, final IAudioSendFactory audioSendFactory, final Game game, final OnlineStatus status, final OkHttpClient.Builder httpClientBuilder, final WebSocketFactory wsFactory, final int maxReconnectDelay, final int corePoolSize, final boolean enableVoice, final boolean enableShutdownHook, final boolean enableBulkDeleteSplitting, final boolean autoReconnect, final boolean idle, final SessionReconnectQueue reconnectQueue, final int backoff)
     {
         this.shardsTotal = shardsTotal;
         this.listeners = listeners;
@@ -102,174 +93,36 @@ public class DefaultShardManagerImpl implements ShardManager
         this.backoff = backoff;
 
         if (shardsTotal != -1)
-        {
             if (shardIds == null)
             {
-                this.shards = new TIntObjectHashMap<>(shardsTotal);
+                this.shards = new ShardCacheViewImpl(shardsTotal);
                 for (int i = 0; i < this.shardsTotal; i++)
-                    queue.offer(i);
+                    this.queue.offer(i);
             }
             else
             {
-                this.shards = new TIntObjectHashMap<>(shardIds.size());
-                shardIds.stream().distinct().sorted().forEach(queue::offer);
+                this.shards = new ShardCacheViewImpl(shardIds.size());
+                shardIds.stream().distinct().sorted().forEach(this.queue::offer);
             }
-        }
     }
 
     @Override
     public void addEventListener(final Object... listeners)
     {
-        this.shards.valueCollection().forEach(jda -> jda.addEventListener(listeners));
+        this.listeners.addAll(Arrays.asList(listeners));
+        ShardManager.super.addEventListener(listeners);
     }
 
     @Override
-    public RestAction<ApplicationInfo> getApplicationInfo()
+    public int getAmountQueuedShards()
     {
-        return this.shards.valueCollection().stream().findAny().orElseThrow(() -> new IllegalStateException("no active shards")).asBot().getApplicationInfo();
+        return this.queue.size();
     }
 
     @Override
-    public double getAveragePing()
+    public ShardCacheView getShardCache()
     {
-        return this.shards.valueCollection().stream().mapToLong(jda -> jda.getPing()).filter(ping -> ping != -1).average().getAsDouble();
-    }
-
-    @Override
-    public Guild getGuildById(final long id)
-    {
-        int shardId = MiscUtil.getShardForGuild(id, shardsTotal);
-        JDA jda = this.getShard(shardId);
-        return jda != null ? jda.getGuildById(id) : null;
-    }
-
-    @Override
-    public Guild getGuildById(final String id)
-    {
-        return this.getGuildById(MiscUtil.parseSnowflake(id));
-    }
-
-    @Override
-    public List<Guild> getGuilds()
-    {
-        return this.getDistinctUnmodifiableCombinedList(api -> api.getGuildMap().valueCollection());
-    }
-
-    @Override
-    public List<Guild> getMutualGuilds(final Collection<User> users)
-    {
-        Checks.notNull(users, "users");
-        for (final User u : users)
-            Checks.notNull(u, "All users");
-
-        return Collections.unmodifiableList(this.getCombinedStream(jda -> jda.getGuildMap().valueCollection()).filter(guild -> users.stream().allMatch(guild::isMember)).collect(Collectors.toList()));
-    }
-
-    @Override
-    public List<Guild> getMutualGuilds(final User... users)
-    {
-        Checks.notNull(users, "users");
-        return this.getMutualGuilds(Arrays.asList(users));
-    }
-
-    @Override
-    public List<Guild> getMutualGuilds(final User user)
-    {
-        Checks.notNull(user, "user");
-        return Collections.unmodifiableList(this.getCombinedStream(jda -> jda.getGuildMap().valueCollection()).filter(guild -> guild.isMember(user)).collect(Collectors.toList()));
-    }
-
-    @Override
-    public JDA getShard(final int shardId)
-    {
-        return this.shards.get(shardId);
-    }
-
-    @Override
-    public List<JDA> getShards()
-    {
-        return Collections.unmodifiableList(new ArrayList<>(this.shards.valueCollection()));
-    }
-
-    @Override
-    public int getShardsCount()
-    {
-        return this.shards.size() + queue.size();
-    }
-
-    @Override
-    public int getShardsTotal()
-    {
-        return this.shardsTotal;
-    }
-
-    @Override
-    public JDA.Status getStatus(final int shardId)
-    {
-        final JDA api = this.shards.get(shardId);
-        return api == null ? null : api.getStatus();
-    }
-
-    @Override
-    public List<JDA.Status> getStatuses()
-    {
-        return this.getUnmodifiableList(jda -> jda.getStatus());
-    }
-
-    @Override
-    public TextChannel getTextChannelById(final long id)
-    {
-        return this.findSnowflakeInCombinedCollection(jda -> jda.getTextChannelMap().valueCollection(), id);
-    }
-
-    @Override
-    public TextChannel getTextChannelById(final String id)
-    {
-        return this.findSnowflakeInCombinedCollection(jda -> jda.getTextChannelMap().valueCollection(), id);
-    }
-
-    @Override
-    public List<TextChannel> getTextChannels()
-    {
-        return this.getDistinctUnmodifiableCombinedList(api -> api.getTextChannelMap().valueCollection());
-    }
-
-    @Override
-    public User getUserById(final long id)
-    {
-        return this.findSnowflakeInCombinedCollection(jda -> jda.getUserMap().valueCollection(), id);
-
-    }
-
-    @Override
-    public User getUserById(final String id)
-    {
-        return this.findSnowflakeInCombinedCollection(jda -> jda.getUserMap().valueCollection(), id);
-    }
-
-    @Override
-    public List<User> getUsers()
-    {
-        return this.getDistinctUnmodifiableCombinedList(api -> api.getUserMap().valueCollection());
-
-    }
-
-    @Override
-    public VoiceChannel getVoiceChannelById(final long id)
-    {
-        return this.findSnowflakeInCombinedCollection(jda -> jda.getVoiceChannelMap().valueCollection(), id);
-    }
-
-    @Override
-    public VoiceChannel getVoiceChannelById(final String id)
-    {
-        return this.findSnowflakeInCombinedCollection(jda -> jda.getVoiceChannelMap().valueCollection(), id);
-    }
-
-    @Override
-    public List<VoiceChannel> getVoiceChannels()
-    {
-        return this.getDistinctUnmodifiableCombinedList(api -> api.getVoiceChannelMap().valueCollection());
+        return this.shards;
     }
 
     public void login() throws LoginException, IllegalArgumentException
@@ -282,17 +135,17 @@ public class DefaultShardManagerImpl implements ShardManager
             {
                 jda = this.buildInstance(0);
 
-                this.shards = new TIntObjectHashMap<>(shardsTotal);
+                this.shards = new ShardCacheViewImpl(this.shardsTotal);
                 for (int i = 0; i < this.shardsTotal; i++)
-                    queue.offer(i);
+                    this.queue.offer(i);
 
-                this.shards.put(0, jda);
+                this.shards.getMap().put(0, jda);
             }
             else
             {
                 final int shardId = this.queue.peek();
 
-                this.shards.put(shardId, jda = this.buildInstance(shardId));
+                this.shards.getMap().put(shardId, jda = this.buildInstance(shardId));
                 this.queue.remove(shardId);
             }
         }
@@ -319,7 +172,7 @@ public class DefaultShardManagerImpl implements ShardManager
                 do
                 {
                     final int i = this.queue.peek();
-                    if (this.shards.containsKey(i))
+                    if (this.shards.getMap().containsKey(i))
                         this.queue.poll();
                     else
                         shardId = i;
@@ -332,7 +185,7 @@ public class DefaultShardManagerImpl implements ShardManager
                     return;
                 }
 
-                this.shards.put(shardId, api = this.buildInstance(shardId));
+                this.shards.getMap().put(shardId, api = this.buildInstance(shardId));
                 this.queue.remove(shardId);
             }
             catch (LoginException | IllegalArgumentException e)
@@ -356,15 +209,16 @@ public class DefaultShardManagerImpl implements ShardManager
     @Override
     public void removeEventListener(final Object... listeners)
     {
-        this.shards.valueCollection().forEach(jda -> jda.removeEventListener(listeners));
+        this.listeners.removeAll(Arrays.asList(listeners));
+        ShardManager.super.removeEventListener(listeners);
     }
 
     @Override
     public void restart()
     {
-        for (int shardId : this.shards.keys())
+        for (final int shardId : this.shards.getMap().keys())
         {
-            final JDAImpl jda = this.shards.remove(shardId);
+            final JDA jda = this.shards.getMap().remove(shardId);
             if (jda != null)
             {
                 jda.shutdown();
@@ -379,37 +233,11 @@ public class DefaultShardManagerImpl implements ShardManager
         Checks.notNegative(shardId, "shardId");
         Checks.check(shardId < this.shardsTotal, "shardId must be lower than shardsTotal");
 
-        final JDAImpl jda = this.shards.remove(shardId);
+        final JDA jda = this.shards.getMap().remove(shardId);
         if (jda != null)
             jda.shutdown();
 
         this.queue.offer(shardId);
-    }
-
-    @Override
-    public void setGame(final Game game)
-    {
-        this.shards.valueCollection().forEach(jda -> jda.getPresence().setGame(game));
-    }
-
-    @Override
-    public void setIdle(final boolean idle)
-    {
-        this.shards.valueCollection().forEach(jda -> jda.getPresence().setIdle(idle));
-    }
-
-    @Override
-    public void setStatus(final int shardId, final OnlineStatus status)
-    {
-        final JDA api = this.shards.get(shardId);
-        if (api != null)
-            api.getPresence().setStatus(status);
-    }
-
-    @Override
-    public void setStatus(final OnlineStatus status)
-    {
-        this.shards.valueCollection().forEach(jda -> jda.getPresence().setStatus(status));
     }
 
     @Override
@@ -426,20 +254,19 @@ public class DefaultShardManagerImpl implements ShardManager
             {
                 Runtime.getRuntime().removeShutdownHook(this.shutdownHook);
             }
-            catch (final Exception ignored)
-            {}
+            catch (final Exception ignored) {}
 
         this.executor.shutdown();
 
         if (this.shards != null)
-            for (final JDA jda : this.shards.valueCollection())
+            for (final JDA jda : this.shards)
                 jda.shutdown();
     }
 
     @Override
     public void shutdown(final int shardId)
     {
-        final JDAImpl jda = this.shards.remove(shardId);
+        final JDA jda = this.shards.getMap().remove(shardId);
         if (jda != null)
             jda.shutdown();
     }
@@ -467,8 +294,8 @@ public class DefaultShardManagerImpl implements ShardManager
         this.listeners.forEach(jda::addEventListener);
         jda.setStatus(JDA.Status.INITIALIZED); //This is already set by JDA internally, but this is to make sure the listeners catch it.
 
-        // Set the presence information before connecting to have the correct information ready when sending IDENTIFY 
-        ((PresenceImpl) jda.getPresence()).setCacheGame(this.game).setCacheIdle(this.idle).setCacheStatus(this.status); 
+        // Set the presence information before connecting to have the correct information ready when sending IDENTIFY
+        ((PresenceImpl) jda.getPresence()).setCacheGame(this.game).setCacheIdle(this.idle).setCacheStatus(this.status);
 
         final JDAImpl.ShardInfoImpl shardInfo = new JDAImpl.ShardInfoImpl(shardId, this.shardsTotal);
 
@@ -476,35 +303,5 @@ public class DefaultShardManagerImpl implements ShardManager
         if (this.shardsTotal == -1)
             this.shardsTotal = shardTotal;
         return jda;
-    }
-
-    protected <T extends ISnowflake> T findSnowflakeInCombinedCollection(final Function<JDAImpl, ? extends Collection<? extends T>> mapper, final long id)
-    {
-        return this.getCombinedStream(mapper).filter(g -> g.getIdLong() == id).findFirst().orElse(null);
-    }
-
-    protected <T extends ISnowflake> T findSnowflakeInCombinedCollection(final Function<JDAImpl, ? extends Collection<? extends T>> mapper, final String id)
-    {
-        return findSnowflakeInCombinedCollection(mapper, MiscUtil.parseSnowflake(id));
-    }
-
-    protected <T> Stream<T> getCombinedStream(final Function<JDAImpl, ? extends Collection<? extends T>> mapper)
-    {
-        return this.shards.valueCollection().stream().flatMap(mapper.andThen(c -> c.stream()));
-    }
-
-    protected <T> List<T> getDistinctUnmodifiableCombinedList(final Function<JDAImpl, ? extends Collection<? extends T>> mapper)
-    {
-        return Collections.unmodifiableList(this.getCombinedStream(mapper).distinct().collect(Collectors.toList()));
-    }
-
-    protected <T> Stream<T> getStream(final Function<JDAImpl, ? extends T> mapper)
-    {
-        return this.shards.valueCollection().stream().map(mapper);
-    }
-
-    protected <T> List<T> getUnmodifiableList(final Function<JDAImpl, ? extends T> mapper)
-    {
-        return Collections.unmodifiableList(this.getStream(mapper).collect(Collectors.toList()));
     }
 }
