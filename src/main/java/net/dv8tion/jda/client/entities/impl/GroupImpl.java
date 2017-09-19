@@ -26,7 +26,8 @@ import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.core.utils.cache.impl.SnowflakeCacheViewImpl;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,7 +38,7 @@ public class GroupImpl implements Group
     private final long id;
     private final JDAImpl api;
 
-    private final TLongObjectMap<User> userMap = MiscUtil.newLongMap();
+    private final SnowflakeCacheViewImpl<User> userCache = new SnowflakeCacheViewImpl<>(User::getName);
 
     private Call currentCall;
     private User owner;
@@ -97,11 +98,15 @@ public class GroupImpl implements Group
     }
 
     @Override
+    public SnowflakeCacheView<User> getUserCache()
+    {
+        return userCache;
+    }
+
+    @Override
     public List<User> getUsers()
     {
-        return Collections.unmodifiableList(
-                new ArrayList<>(
-                        userMap.valueCollection()));
+        return userCache.asList();
     }
 
     @Override
@@ -109,13 +114,12 @@ public class GroupImpl implements Group
     {
         List<User> nonFriends = new ArrayList<>();
         TLongObjectMap<Relationship> map = ((JDAClientImpl) api.asClient()).getRelationshipMap();
-        userMap.forEachEntry((userId, user) ->
+        userCache.forEach((user) ->
         {
-            Relationship relationship = map.get(userId);
+            Relationship relationship = map.get(user.getIdLong());
             Friend friend = relationship instanceof Friend ? (Friend) relationship : null;
             if (friend == null)
                 nonFriends.add(user);
-            return true;
         });
         return Collections.unmodifiableList(nonFriends);
     }
@@ -125,13 +129,12 @@ public class GroupImpl implements Group
     {
         List<Friend> friends = new ArrayList<>();
         TLongObjectMap<Relationship> map = ((JDAClientImpl) api.asClient()).getRelationshipMap();
-        userMap.forEachKey(userId ->
+        userCache.forEach(user ->
         {
-            Relationship relationship = map.get(userId);
+            Relationship relationship = map.get(user.getIdLong());
             Friend friend = relationship instanceof Friend ? (Friend) relationship : null;
             if (friend != null)
                 friends.add(friend);
-            return true;
         });
         return Collections.unmodifiableList(friends);
     }
@@ -184,7 +187,7 @@ public class GroupImpl implements Group
 
     public TLongObjectMap<User> getUserMap()
     {
-        return userMap;
+        return userCache.getMap();
     }
 
     public GroupImpl setCurrentCall(Call call)

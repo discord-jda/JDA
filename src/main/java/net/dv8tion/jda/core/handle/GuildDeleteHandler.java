@@ -49,9 +49,16 @@ public class GuildDeleteHandler extends SocketHandler
         final long id = content.getLong("id");
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
 
+        if (guild == null)
+        {
+            api.getEventCache().cache(EventCache.Type.GUILD, id, () -> handle(responseNumber, allContent));
+            EventCache.LOG.debug("Received GUILD_DELETE for a Guild that is not currently cached. ID: " + id);
+            return null;
+        }
+
         //If the event is attempting to mark the guild as unavailable, but it is already unavailable,
         // ignore the event
-        if ((guild == null || !guild.isAvailable()) && content.has("unavailable") && content.getBoolean("unavailable"))
+        if (!guild.isAvailable() && content.has("unavailable") && content.getBoolean("unavailable"))
             return null;
 
         if (api.getGuildLock().isLocked(id))
@@ -143,8 +150,9 @@ public class GuildDeleteHandler extends SocketHandler
         });
 
         api.getGuildMap().remove(id);
-        guild.getTextChannels().forEach(chan -> api.getTextChannelMap().remove(chan.getIdLong()));
-        guild.getVoiceChannels().forEach(chan -> api.getVoiceChannelMap().remove(chan.getIdLong()));
+        guild.getTextChannelCache().forEach(chan -> api.getTextChannelMap().remove(chan.getIdLong()));
+        guild.getVoiceChannelCache().forEach(chan -> api.getVoiceChannelMap().remove(chan.getIdLong()));
+        guild.getCategoryCache().forEach(chan -> api.getCategoryMap().remove(chan.getIdLong()));
         api.getEventManager().handle(
                 new GuildLeaveEvent(
                         api, responseNumber,
