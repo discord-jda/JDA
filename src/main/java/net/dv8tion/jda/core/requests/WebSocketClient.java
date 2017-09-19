@@ -61,6 +61,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public static final int DISCORD_GATEWAY_VERSION = 6;
     public static final int IDENTIFY_DELAY = 5;
 
+    private static final String INVALIDATE_REASON = "INVALIDATE_SESSION";
+
     protected final JDAImpl api;
     protected final JDA.ShardInfo shardInfo;
     protected final Map<String, SocketHandler> handlers = new HashMap<>();
@@ -493,6 +495,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         CloseCode closeCode = null;
         int rawCloseCode = 1000;
+        //When we get 1000 from remote close we will try to resume
+        // as apparently discord doesn't understand what "graceful disconnect" means
+        boolean isInvalidate = false;
 
         if (keepAliveThread != null)
         {
@@ -509,6 +514,14 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 LOG.debug("WebSocket connection closed with code " + closeCode);
             else
                 LOG.warn("WebSocket connection closed with unknown meaning for close-code " + rawCloseCode);
+        }
+        if (clientCloseFrame != null
+            && clientCloseFrame.getCloseCode() == 1000
+            && Objects.equals(clientCloseFrame.getCloseReason(), INVALIDATE_REASON))
+        {
+            //When we close with 1000 we properly dropped our session due to invalidation
+            // in that case we can be sure that resume will not work and instead we invalidate and reconnect here
+            isInvalidate = true;
         }
 
         // null is considered -reconnectable- as we do not know the close-code meaning
@@ -532,7 +545,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         else
         {
-            if (rawCloseCode == 1000)
+            if (isInvalidate)
                 invalidate(); // 1000 means our session is dropped so we cannot resume
             api.getEventManager().handle(new DisconnectEvent(api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now()));
             if (sessionId == null && reconnectQueue != null)
@@ -655,10 +668,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 int closeCode = isResume ? 4000 : 1000;
                 if (isResume)
                     LOG.debug("Session can be recovered... Closing and sending new RESUME request");
-                else if (!handleIdentifyRateLimit) // this can also mean we got rate limited in IDENTIFY (no need to invalidate then)
+                else
                     invalidate();
 
-                close(closeCode, "INVALIDATE_SESSION");
+                close(closeCode, INVALIDATE_REASON);
                 break;
             case WebSocketCode.HELLO:
                 LOG.debug("Got HELLO packet (OP 10). Initializing keep-alive.");
@@ -1043,7 +1056,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             // in all cases, update to this channel
             request.setChannel(channel);
         }
-        catch (InterruptedException ignored) {}
+        catch (InterruptedException e)
+        {
+            LOG.log(e);
+        }
         finally
         {
             audioQueueLock.release();
@@ -1073,7 +1089,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             // in all cases, update to this channel
             request.setChannel(channel);
         }
-        catch (InterruptedException ignored) {}
+        catch (InterruptedException e)
+        {
+            LOG.log(e);
+        }
         finally
         {
             audioQueueLock.release();
@@ -1100,7 +1119,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             }
             // channel is not relevant here
         }
-        catch (InterruptedException ignored) {}
+        catch (InterruptedException e)
+        {
+            LOG.log(e);
+        }
         finally
         {
             audioQueueLock.release();
@@ -1117,7 +1139,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             audioQueueLock.acquire();
             return queuedAudioConnections.remove(guildId);
         }
-        catch (InterruptedException ignored) {}
+        catch (InterruptedException e)
+        {
+            LOG.log(e);
+        }
         finally
         {
             audioQueueLock.release();
@@ -1132,7 +1157,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             audioQueueLock.acquire();
             return updateAudioConnection0(guildId, connectedChannel);
         }
-        catch (InterruptedException ignored) {}
+        catch (InterruptedException e)
+        {
+            LOG.log(e);
+        }
         finally
         {
             audioQueueLock.release();
