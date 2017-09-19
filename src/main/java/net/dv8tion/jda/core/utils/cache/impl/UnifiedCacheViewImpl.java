@@ -42,7 +42,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
     @Override
     public long size()
     {
-        return generator.get().mapToLong(CacheView::size).sum();
+        return generator.get().distinct().mapToLong(CacheView::size).sum();
     }
 
     @Override
@@ -55,7 +55,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
     public List<T> asList()
     {
         List<T> list = new ArrayList<>();
-        generator.get().forEach(view -> view.forEach(list::add));
+        stream().forEach(list::add);
         return Collections.unmodifiableList(list);
     }
 
@@ -71,6 +71,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
     public List<T> getElementsByName(String name, boolean ignoreCase)
     {
         return Collections.unmodifiableList(generator.get()
+                .distinct()
                 .flatMap(view -> view.getElementsByName(name, ignoreCase).stream())
                 .collect(Collectors.toList()));
     }
@@ -78,13 +79,13 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
     @Override
     public Stream<T> stream()
     {
-        return generator.get().flatMap(CacheView::stream);
+        return generator.get().flatMap(CacheView::stream).distinct();
     }
 
     @Override
     public Stream<T> parallelStream()
     {
-        return generator.get().flatMap(CacheView::parallelStream);
+        return generator.get().flatMap(CacheView::parallelStream).distinct();
     }
 
     @Nonnull
@@ -125,6 +126,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
         public List<Member> getElementsById(long id)
         {
             return Collections.unmodifiableList(generator.get()
+                .distinct()
                 .map(view -> view.getElementById(id))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList()));
@@ -134,6 +136,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
         public List<Member> getElementsByUsername(String name, boolean ignoreCase)
         {
             return Collections.unmodifiableList(generator.get()
+                .distinct()
                 .flatMap(view -> view.getElementsByUsername(name, ignoreCase).stream())
                 .collect(Collectors.toList()));
         }
@@ -142,6 +145,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
         public List<Member> getElementsByNickname(String name, boolean ignoreCase)
         {
             return Collections.unmodifiableList(generator.get()
+                .distinct()
                 .flatMap(view -> view.getElementsByNickname(name, ignoreCase).stream())
                 .collect(Collectors.toList()));
         }
@@ -150,6 +154,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
         public List<Member> getElementsWithRoles(Role... roles)
         {
             return Collections.unmodifiableList(generator.get()
+                .distinct()
                 .flatMap(view -> view.getElementsWithRoles(roles).stream())
                 .collect(Collectors.toList()));
         }
@@ -158,6 +163,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
         public List<Member> getElementsWithRoles(Collection<Role> roles)
         {
             return Collections.unmodifiableList(generator.get()
+                .distinct()
                 .flatMap(view -> view.getElementsWithRoles(roles).stream())
                 .collect(Collectors.toList()));
         }
