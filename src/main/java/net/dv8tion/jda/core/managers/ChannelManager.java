@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.managers;
 
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.Category;
 import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
@@ -109,6 +110,33 @@ public class ChannelManager
     public AuditableRestAction<Void> setName(String name)
     {
         return updatable.getNameField().setValue(name).update();
+    }
+
+    /**
+     * Sets the <b><u>{@link net.dv8tion.jda.core.entities.Category Parent Category}</u></b>
+     * of the selected {@link net.dv8tion.jda.core.entities.Channel Channel}.
+     *
+     *
+     * @param  category
+     *         The new parent for the selected {@link net.dv8tion.jda.core.entities.Channel Channel}
+     *
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
+     * @throws IllegalArgumentException
+     *         If the provided category is not from the same Guild
+     * @throws UnsupportedOperationException
+     *         If the target is a category itself
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     *         <br>Update RestAction from {@link ChannelManagerUpdatable#update() #update()}
+     *
+     * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getParentField()
+     * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
+     */
+    @CheckReturnValue
+    public AuditableRestAction<Void> setParent(Category category)
+    {
+        return updatable.getParentField().setValue(category).update();
     }
 
     /**

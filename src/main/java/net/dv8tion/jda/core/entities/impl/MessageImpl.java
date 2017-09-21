@@ -634,6 +634,12 @@ public class MessageImpl implements Message
     }
 
     @Override
+    public Category getCategory()
+    {
+        return isFromType(ChannelType.TEXT) ? getTextChannel().getParent() : null;
+    }
+
+    @Override
     public Guild getGuild()
     {
         return isFromType(ChannelType.TEXT) ? getTextChannel().getGuild() : null;

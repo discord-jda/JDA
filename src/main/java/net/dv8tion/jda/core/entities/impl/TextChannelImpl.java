@@ -33,7 +33,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.InputStream;
-import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -422,15 +421,6 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        if (!(o instanceof TextChannelImpl))
-            return false;
-        TextChannelImpl oTChannel = (TextChannelImpl) o;
-        return this == oTChannel || this.id == oTChannel.id;
-    }
-
-    @Override
     public String toString()
     {
         return "TC:" + getName() + '(' + id + ')';
@@ -439,22 +429,13 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     @Override
     public int compareTo(TextChannel chan)
     {
+        Checks.notNull(chan, "Other TextChannel");
         if (this == chan)
             return 0;
-
-        if (!this.getGuild().equals(chan.getGuild()))
-            throw new IllegalArgumentException("Cannot compare TextChannels that aren't from the same guild!");
-
-        if (this.getPositionRaw() != chan.getPositionRaw())
-            return chan.getPositionRaw() - this.getPositionRaw();
-
-        OffsetDateTime thisTime = this.getCreationTime();
-        OffsetDateTime chanTime = chan.getCreationTime();
-
-        //We compare the provided channel's time to this's time instead of the reverse as one would expect due to how
-        // discord deals with hierarchy. The more recent a channel was created, the lower its hierarchy ranking when
-        // it shares the same position as another channel.
-        return chanTime.compareTo(thisTime);
+        Checks.check(getGuild().equals(chan.getGuild()), "Cannot compare TextChannels that aren't from the same guild!");
+        if (this.getPositionRaw() == chan.getPositionRaw())
+            return Long.compare(id, chan.getIdLong());
+        return Integer.compare(rawPosition, chan.getPositionRaw());
     }
 
     // -- Setters --

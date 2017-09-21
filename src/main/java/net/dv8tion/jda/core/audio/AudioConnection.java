@@ -30,6 +30,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import net.dv8tion.jda.core.utils.tuple.Pair;
@@ -130,6 +131,13 @@ public class AudioConnection
                 webSocket.close(ConnectionStatus.ERROR_CONNECTION_TIMEOUT);
             }
         });
+        readyThread.setUncaughtExceptionHandler((thread, throwable) ->
+        {
+            LOG.log(throwable);
+            JDAImpl api = (JDAImpl) getJDA();
+            api.getEventManager().handle(new ExceptionEvent(api, throwable, true));
+        });
+        readyThread.setDaemon(true);
         readyThread.setName(threadIdentifier + " Ready Thread");
         readyThread.start();
     }
@@ -410,6 +418,13 @@ public class AudioConnection
                     }
                 }
             });
+            receiveThread.setUncaughtExceptionHandler((thread, throwable) ->
+            {
+                LOG.log(throwable);
+                JDAImpl api = (JDAImpl) getJDA();
+                api.getEventManager().handle(new ExceptionEvent(api, throwable, true));
+            });
+            receiveThread.setDaemon(true);
             receiveThread.setName(threadIdentifier + " Receiving Thread");
             receiveThread.start();
         }
@@ -424,8 +439,18 @@ public class AudioConnection
     {
         if (combinedAudioExecutor == null)
         {
-            combinedAudioExecutor = Executors.newSingleThreadScheduledExecutor( r ->
-                    new Thread(AudioManagerImpl.AUDIO_THREADS, r, threadIdentifier + " Combined Thread"));
+            combinedAudioExecutor = Executors.newSingleThreadScheduledExecutor((task) ->
+            {
+                final Thread t = new Thread(AudioManagerImpl.AUDIO_THREADS, task, threadIdentifier + " Combined Thread");
+                t.setDaemon(true);
+                t.setUncaughtExceptionHandler((thread, throwable) ->
+                {
+                    LOG.log(throwable);
+                    JDAImpl api = (JDAImpl) getJDA();
+                    api.getEventManager().handle(new ExceptionEvent(api, throwable, true));
+                });
+                return t;
+            });
             combinedAudioExecutor.scheduleAtFixedRate(() ->
             {
                 try

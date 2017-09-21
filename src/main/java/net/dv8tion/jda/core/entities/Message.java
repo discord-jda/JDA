@@ -418,6 +418,15 @@ public interface Message extends ISnowflake, Formattable
     TextChannel getTextChannel();
 
     /**
+     * The {@link net.dv8tion.jda.core.entities.Category Category} this
+     * message was sent in. This will always be {@code null} for DMs and Groups.
+     * <br>Equivalent to {@code getTextChannel().getParent()}.
+     *
+     * @return {@link net.dv8tion.jda.core.entities.Category Category} for this message
+     */
+    Category getCategory();
+
+    /**
      * Returns the {@link net.dv8tion.jda.core.entities.Guild Guild} that this message was sent in.
      * <br>This is just a shortcut to {@link #getTextChannel()}{@link net.dv8tion.jda.core.entities.TextChannel#getGuild() .getGuild()}.
      * <br><b>This is only valid if the Message was actually sent in a TextChannel.</b> This will return {@code null}
