@@ -43,7 +43,7 @@ public class RoleAction extends AuditableRestAction<Role>
 {
 
     protected final Guild guild;
-    protected long permissions = 0;
+    protected Long permissions;
     protected String name = null;
     protected Integer color = null;
     protected Boolean hoisted = null;
@@ -242,7 +242,7 @@ public class RoleAction extends AuditableRestAction<Role>
             object.put("name", name);
         if (color != null)
             object.put("color", color & 0xFFFFFF);
-        if (permissions >= 0)
+        if (permissions != null)
             object.put("permissions", permissions);
         if (hoisted != null)
             object.put("hoist", hoisted.booleanValue());

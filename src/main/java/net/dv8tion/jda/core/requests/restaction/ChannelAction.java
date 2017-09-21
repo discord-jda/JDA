@@ -25,7 +25,6 @@ import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.RequestBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONString;
 
 import javax.annotation.CheckReturnValue;
 import java.util.Collection;
@@ -42,10 +41,7 @@ import java.util.Set;
  */
 public class ChannelAction extends AuditableRestAction<Channel>
 {
-    public static final int ROLE_TYPE = 0;
-    public static final int MEMBER_TYPE = 1;
-
-    protected final Set<PromisePermissionOverride> overrides = new HashSet<>();
+    protected final Set<PermOverrideData> overrides = new HashSet<>();
     protected final Guild guild;
     protected final ChannelType type;
     protected String name;
@@ -190,6 +186,10 @@ public class ChannelAction extends AuditableRestAction<Channel>
     {
         checkPermissions(allow);
         checkPermissions(deny);
+        if (allow != null)
+            Checks.noneNull(allow, "Granted Permissions");
+        if (deny != null)
+            Checks.noneNull(deny, "Denied Permissions");
         final long allowRaw = allow != null ? Permission.getRaw(allow) : 0;
         final long denyRaw = deny != null ? Permission.getRaw(deny) : 0;
 
@@ -260,8 +260,8 @@ public class ChannelAction extends AuditableRestAction<Channel>
         Checks.check(deny <= Permission.ALL_PERMISSIONS,  "Specified deny value may not be greater than a full permission set");
         Checks.check(role.getGuild().equals(guild), "Specified Role is not in the same Guild!");
 
-        String id = role.getId();
-        overrides.add(new PromisePermissionOverride(ROLE_TYPE, id, allow, deny));
+        long id = role.getIdLong();
+        overrides.add(new PermOverrideData(PermOverrideData.ROLE_TYPE, id, allow, deny));
         return this;
     }
 
@@ -301,8 +301,8 @@ public class ChannelAction extends AuditableRestAction<Channel>
         Checks.check(deny <= Permission.ALL_PERMISSIONS,  "Specified deny value may not be greater than a full permission set");
         Checks.check(member.getGuild().equals(guild), "Specified Member is not in the same Guild!");
 
-        String id = member.getUser().getId();
-        overrides.add(new PromisePermissionOverride(MEMBER_TYPE, id, allow, deny));
+        long id = member.getUser().getIdLong();
+        overrides.add(new PermOverrideData(PermOverrideData.MEMBER_TYPE, id, allow, deny));
         return this;
     }
 
@@ -431,33 +431,5 @@ public class ChannelAction extends AuditableRestAction<Channel>
             return;
         for (Permission p : permissions)
             Checks.notNull(p, "Permissions");
-    }
-
-    protected final class PromisePermissionOverride implements JSONString
-    {
-        protected final String id;
-        protected final long deny;
-        protected final long allow;
-        protected final int type;
-
-        public PromisePermissionOverride(int type, String id, long allow, long deny)
-        {
-            this.type = type;
-            this.id = id;
-            this.deny  = deny;
-            this.allow = allow;
-        }
-
-        @Override
-        public String toJSONString()
-        {
-            JSONObject object = new JSONObject();
-            object.put("id",    id);
-            object.put("type",  type);
-            object.put("deny",  deny);
-            object.put("allow", allow);
-
-            return object.toString();
-        }
     }
 }

@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.restaction.GuildAction;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
@@ -219,6 +220,8 @@ public interface JDA
      * @return List of currently registered Objects acting as EventListeners.
      */
     List<Object> getRegisteredListeners();
+
+    GuildAction createGuild(String name);
 
     /**
      * {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView} of

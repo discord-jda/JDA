@@ -41,6 +41,7 @@ import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.core.requests.restaction.GuildAction;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.SimpleLog;
@@ -544,6 +545,22 @@ public class JDAImpl implements JDA
     public List<Object> getRegisteredListeners()
     {
         return Collections.unmodifiableList(eventManager.getRegisteredListeners());
+    }
+
+    @Override
+    public GuildAction createGuild(String name)
+    {
+        switch (accountType)
+        {
+            case BOT:
+                if (guildCache.size() > 10)
+                    throw new IllegalStateException("Cannot create a Guild with a Bot in more than 10 guilds!");
+                break;
+            case CLIENT:
+                if (guildCache.size() >= 100)
+                    throw new IllegalStateException("Cannot be in more than 100 guilds with AccountType.CLIENT!");
+        }
+        return new GuildAction(this, name);
     }
 
     public EntityBuilder getEntityBuilder()
