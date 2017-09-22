@@ -38,7 +38,7 @@ public enum Permission
     VIEW_AUDIT_LOGS(7, true, false, "View Audit Logs"),
 
     // Text Permissions
-    MESSAGE_READ(10, true, true, "Read Messages"),
+    MESSAGE_READ(10, false, true, "Read Messages"),
     MESSAGE_WRITE(11, true, true, "Send Messages"),
     MESSAGE_TTS(12, true, true, "Send TTS Messages"),
     MESSAGE_MANAGE(13, true, true, "Manage Messages"),
@@ -49,12 +49,16 @@ public enum Permission
     MESSAGE_EXT_EMOJI(18, true, true, "Use External Emojis"),
 
     // Voice Permissions
+    VIEW_CHANNEL(10, false, true, "View Channel"),
     VOICE_CONNECT(20, true, true, "Connect"),
     VOICE_SPEAK(21, true, true, "Speak"),
     VOICE_MUTE_OTHERS(22, true, true, "Mute Members"),
     VOICE_DEAF_OTHERS(23, true, true, "Deafen Members"),
     VOICE_MOVE_OTHERS(24, true, true, "Move Members"),
     VOICE_USE_VAD(25, true, true, "Use Voice Activity"),
+
+    // Category Permissions
+    READ_SEE_CHANNELS(10, true, true, "Read Text Channels & See Voice Channels"),
 
     NICKNAME_CHANGE(26, true, false, "Change Nickname"),
     NICKNAME_MANAGE(27, true, false, "Manage Nicknames"),
@@ -94,6 +98,12 @@ public enum Permission
      */
     public static final long ALL_VOICE_PERMISSIONS = Permission.getRaw(Arrays.stream(values())
             .filter(Permission::isVoice).collect(Collectors.toList()));
+
+    /**
+     * All channel category specific permissions which are only available in voice channel overrides
+     */
+    public static final long ALL_CATEGORY_PERMISSIONS = Permission.getRaw(Arrays.stream(values())
+            .filter(Permission::isCategory).collect(Collectors.toList()));
 
     private final int offset;
     private final long raw;
@@ -181,7 +191,17 @@ public enum Permission
      */
     public boolean isVoice()
     {
-        return offset > 19 && offset < 26;
+        return offset == 10 || (offset > 19 && offset < 26);
+    }
+
+    /**
+     * Whether this permission is specifically for {@link net.dv8tion.jda.core.entities.Category Categories}
+     *
+     * @return True, if and only if this permission can be applied to only channel categories
+     */
+    public boolean isCategory()
+    {
+        return offset == 10;
     }
 
     /**
