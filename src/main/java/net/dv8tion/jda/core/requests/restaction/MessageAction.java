@@ -148,7 +148,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
             }
             catch (IOException ex)
             {
-                JDAImpl.LOG.log(ex);
+                JDAImpl.LOG.fatal(ex);
             }
         }
         return content(message.getContentRaw()).tts(message.isTTS());
