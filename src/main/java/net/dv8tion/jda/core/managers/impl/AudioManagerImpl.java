@@ -372,17 +372,17 @@ public class AudioManagerImpl implements AudioManager
             else if (e instanceof  IOException)
             {
                 LOG.fatal("There was an IO Exception when setting up the temp files for audio.");
-                LOG.log(e);
+                LOG.fatal(e);
             }
             else if (e instanceof UnsatisfiedLinkError)
             {
                 LOG.fatal("JDA encountered a problem when attempting to load the Native libraries. Contact a DEV.");
-                LOG.log(e);
+                LOG.fatal(e);
             }
             else
             {
                 LOG.fatal("An unknown error occurred while attempting to setup JDA's audio system!");
-                LOG.log(e);
+                LOG.fatal(e);
             }
 
             nativesRoot = null;

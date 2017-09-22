@@ -28,7 +28,7 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '2.0.1'
 }
 
-def versionObj = new Version(major: 3, minor: 3, revision: 0)
+def versionObj = new Version(major: 3, minor: 3, revision: 1)
 
 group = "net.dv8tion"
 archivesBaseName = "JDA"
@@ -49,11 +49,13 @@ sourceSets {
 }
 
 dependencies {
-    // code safety
+    //Code safety
     compile 'com.google.code.findbugs:jsr305:3.0.2'
 
+    //Logger
+    compile 'org.slf4j:slf4j-api:1.7.25'
+
     //General Utility
-//    compile 'org.apache.commons:commons-lang3:3.5'
     compile 'org.apache.commons:commons-collections4:4.1'
     compile 'org.json:json:20160810'
     compile 'net.sf.trove4j:trove4j:3.0.3'

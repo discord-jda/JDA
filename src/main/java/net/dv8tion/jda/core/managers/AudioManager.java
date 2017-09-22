@@ -32,7 +32,7 @@ import net.dv8tion.jda.core.utils.SimpleLog;
 public interface AudioManager
 {
     long DEFAULT_CONNECTION_TIMEOUT = 10000;
-    SimpleLog LOG = SimpleLog.getLog("JDAAudioManager");
+    SimpleLog LOG = SimpleLog.getLog(AudioManager.class);
 
     /**
      * Starts the process to create an audio connection with a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}

@@ -26,7 +26,7 @@ import java.util.Map;
 
 public class EventCache
 {
-    public static final SimpleLog LOG = SimpleLog.getLog("EventCache");
+    public static final SimpleLog LOG = SimpleLog.getLog(EventCache.class);
     private final Map<Type, TLongObjectMap<List<Runnable>>> eventCache = new HashMap<>();
 
     public void cache(Type type, long triggerId, Runnable handler)

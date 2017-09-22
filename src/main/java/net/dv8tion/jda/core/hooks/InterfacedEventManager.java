@@ -86,7 +86,7 @@ public class InterfacedEventManager implements IEventManager
             catch (Throwable throwable)
             {
                 JDAImpl.LOG.fatal("One of the EventListeners had an uncaught exception");
-                JDAImpl.LOG.log(throwable);
+                JDAImpl.LOG.fatal(throwable);
             }
         }
     }

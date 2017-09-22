@@ -150,8 +150,9 @@ public class GuildDeleteHandler extends SocketHandler
         });
 
         api.getGuildMap().remove(id);
-        guild.getTextChannels().forEach(chan -> api.getTextChannelMap().remove(chan.getIdLong()));
-        guild.getVoiceChannels().forEach(chan -> api.getVoiceChannelMap().remove(chan.getIdLong()));
+        guild.getTextChannelCache().forEach(chan -> api.getTextChannelMap().remove(chan.getIdLong()));
+        guild.getVoiceChannelCache().forEach(chan -> api.getVoiceChannelMap().remove(chan.getIdLong()));
+        guild.getCategoryCache().forEach(chan -> api.getCategoryMap().remove(chan.getIdLong()));
         api.getEventManager().handle(
                 new GuildLeaveEvent(
                         api, responseNumber,

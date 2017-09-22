@@ -93,12 +93,12 @@ public class AnnotatedEventManager implements IEventManager
                     }
                     catch (IllegalAccessException | InvocationTargetException e1)
                     {
-                        JDAImpl.LOG.log(e1);
+                        JDAImpl.LOG.fatal(e1);
                     }
                     catch (Throwable throwable)
                     {
                         JDAImpl.LOG.fatal("One of the EventListeners had an uncaught exception");
-                        JDAImpl.LOG.log(throwable);
+                        JDAImpl.LOG.fatal(throwable);
                     }
                 }));
             }
