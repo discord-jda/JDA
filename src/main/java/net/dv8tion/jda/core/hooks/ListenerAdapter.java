@@ -184,6 +184,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onVoiceChannelUpdateUserLimit(VoiceChannelUpdateUserLimitEvent event) {}
     public void onVoiceChannelUpdateBitrate(VoiceChannelUpdateBitrateEvent event) {}
     public void onVoiceChannelUpdatePermissions(VoiceChannelUpdatePermissionsEvent event) {}
+    public void onVoiceChannelUpdateParent(VoiceChannelUpdateParentEvent event) {}
     public void onVoiceChannelCreate(VoiceChannelCreateEvent event) {}
 
     //Category Events
@@ -452,14 +453,14 @@ public abstract class ListenerAdapter implements EventListener
             onTextChannelUpdateTopic((TextChannelUpdateTopicEvent) event);
         else if (event instanceof TextChannelUpdatePositionEvent)
             onTextChannelUpdatePosition((TextChannelUpdatePositionEvent) event);
-        else if (event instanceof TextChannelDeleteEvent)
-            onTextChannelDelete((TextChannelDeleteEvent) event);
         else if (event instanceof TextChannelUpdatePermissionsEvent)
             onTextChannelUpdatePermissions((TextChannelUpdatePermissionsEvent) event);
         else if (event instanceof TextChannelUpdateNSFWEvent)
             onTextChannelUpdateNSFW((TextChannelUpdateNSFWEvent) event);
         else if (event instanceof TextChannelUpdateParentEvent)
             onTextChannelUpdateParent((TextChannelUpdateParentEvent) event);
+        else if (event instanceof TextChannelDeleteEvent)
+        onTextChannelDelete((TextChannelDeleteEvent) event);
 
         //VoiceChannel Events
         else if (event instanceof VoiceChannelCreateEvent)
@@ -474,6 +475,8 @@ public abstract class ListenerAdapter implements EventListener
             onVoiceChannelUpdateBitrate((VoiceChannelUpdateBitrateEvent) event);
         else if (event instanceof VoiceChannelUpdatePermissionsEvent)
             onVoiceChannelUpdatePermissions((VoiceChannelUpdatePermissionsEvent) event);
+        else if (event instanceof VoiceChannelUpdateParentEvent)
+            onVoiceChannelUpdateParent((VoiceChannelUpdateParentEvent) event);
         else if (event instanceof VoiceChannelDeleteEvent)
             onVoiceChannelDelete((VoiceChannelDeleteEvent) event);
 
