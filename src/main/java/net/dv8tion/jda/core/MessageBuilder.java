@@ -16,7 +16,7 @@
 package net.dv8tion.jda.core;
 
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.entities.message.DataMessage;
+import net.dv8tion.jda.core.entities.impl.DataMessage;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.MessageAction;

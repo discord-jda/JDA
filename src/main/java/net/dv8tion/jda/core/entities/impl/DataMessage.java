@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.entities.message;
+package net.dv8tion.jda.core.entities.impl;
 
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.entities.impl.ReceivedMessage;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.MessageAction;
