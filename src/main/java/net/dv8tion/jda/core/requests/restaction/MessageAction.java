@@ -47,20 +47,23 @@ import java.util.Map;
  * <p>When updating a Message, unset fields will be ignored by default. To override existing fields with no value (remove content)
  * you can use {@link #override(boolean) override(true)}. Setting this to {@code true} will cause all fields to be considered
  * and will override the Message entirely causing unset values to be removed from that message.
+ * <br>This can be used to remove existing embeds from a message:
+ * <br>{@code message.editMessage("This message had an embed").override(true).queue()}
  *
  * <h1>Example</h1>
- * <pre>{@code
- * public void onMessageReceived(MessageReceivedEvent event)
- * {
- *     MessageChannel channel = event.getChannel();
- *     channel.sendMessage("This has an embed with an image!")
- *            .addFile(new File("dog.png"))
- *            .embed(new EmbedBuilder()
- *                .setImage("attachment://dog.png")
- *                .build())
- *            .queue(); // this actually sends the information to discord
- * }
- * }</pre>
+ * <pre><code>
+ * {@literal @Override}
+ *  public void onMessageReceived(MessageReceivedEvent event)
+ *  {
+ *      MessageChannel channel = event.getChannel();
+ *      channel.sendMessage("This has an embed with an image!")
+ *             .addFile(new File("dog.png"))
+ *             .embed(new EmbedBuilder()
+ *                 .setImage("attachment://dog.png")
+ *                 .build())
+ *             .queue(); // this actually sends the information to discord
+ *  }
+ * </code></pre>
  */
 public class MessageAction extends RestAction<Message> implements Appendable
 {
@@ -131,7 +134,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
     @CheckReturnValue
     public MessageAction apply(final Message message)
     {
-        if (message == null)
+        if (message == null || message.getType() != MessageType.DEFAULT)
             return this;
         final List<MessageEmbed> embeds = message.getEmbeds();
         if (embeds != null && !embeds.isEmpty())

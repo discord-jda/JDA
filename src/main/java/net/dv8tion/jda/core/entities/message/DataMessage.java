@@ -19,7 +19,7 @@ package net.dv8tion.jda.core.entities.message;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.entities.impl.MessageImpl;
+import net.dv8tion.jda.core.entities.impl.ReceivedMessage;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.MessageAction;
@@ -27,7 +27,7 @@ import org.json.JSONObject;
 
 import java.util.Collections;
 
-public class DataMessage extends MessageImpl implements Message
+public class DataMessage extends ReceivedMessage implements Message
 {
     private static final String UNSUPPORTED = "This operation is not supported for Messages that were created by a MessageBuilder!";
     private MessageEmbed embed;

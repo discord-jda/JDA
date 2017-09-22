@@ -52,7 +52,7 @@ public class MessageUpdateHandler extends SocketHandler
                 switch (type)
                 {
                     case DEFAULT:
-                        return handleDefaultMessage(content);
+                        return handleMessage(content);
                     default:
                         WebSocketClient.LOG.debug("JDA received a message of unknown type. Type: " + type + "  JSON: " + content);
                         return null;
@@ -75,7 +75,7 @@ public class MessageUpdateHandler extends SocketHandler
             return handleMessageEmbed(content);
     }
 
-    private Long handleDefaultMessage(JSONObject content)
+    private Long handleMessage(JSONObject content)
     {
         Message message;
         try

@@ -49,6 +49,7 @@ public class EntityBuilder
 {
     public static final String MISSING_CHANNEL = "MISSING_CHANNEL";
     public static final String MISSING_USER = "MISSING_USER";
+    public static final String UNKNOWN_MESSAGE_TYPE = "UNKNOWN_MESSAGE_TYPE";
 
     protected final JDAImpl api;
     protected final TLongObjectMap<JSONObject> cachedGuildJsons = MiscUtil.newLongMap();
@@ -844,9 +845,21 @@ public class EntityBuilder
             reactions = Collections.emptyList();
         }
 
-        return new MessageImpl(id, chan, MessageType.DEFAULT,
-                fromWebhook, mentionsEveryone, tts, pinned,
-                content, nonce, user, editTime, reactions, attachments, embeds);
+        MessageType type = MessageType.fromId(jsonObject.getInt("type"));
+        switch (type)
+        {
+            case DEFAULT:
+                return new ReceivedMessage(id, chan, type,
+                    fromWebhook, mentionsEveryone, tts, pinned,
+                    content, nonce, user, editTime, reactions, attachments, embeds);
+            case UNKNOWN:
+                throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
+            default:
+                return new SystemMessage(id, chan, type,
+                    fromWebhook, mentionsEveryone, tts, pinned,
+                    content, nonce, user, editTime, reactions, attachments, embeds);
+        }
+
     }
 
     public MessageReaction createMessageReaction(MessageChannel chan, long id, JSONObject obj)

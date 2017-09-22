@@ -37,7 +37,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class MessageImpl implements Message
+public class ReceivedMessage implements Message
 {
     private final Object mutex = new Object();
 
@@ -66,10 +66,11 @@ public class MessageImpl implements Message
     protected List<TextChannel> channelMentions = null;
     protected List<String> invites = null;
 
-    public MessageImpl(long id, MessageChannel channel, MessageType type,
-           boolean fromWebhook, boolean mentionsEveryone, boolean tts, boolean pinned,
-           String content, String nonce, User author, OffsetDateTime editTime,
-           List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds)
+    public ReceivedMessage(
+        long id, MessageChannel channel, MessageType type,
+        boolean fromWebhook, boolean mentionsEveryone, boolean tts, boolean pinned,
+        String content, String nonce, User author, OffsetDateTime editTime,
+        List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds)
     {
         this.id = id;
         this.channel = channel;
@@ -746,9 +747,9 @@ public class MessageImpl implements Message
     @Override
     public boolean equals(Object o)
     {
-        if (!(o instanceof MessageImpl))
+        if (!(o instanceof ReceivedMessage))
             return false;
-        MessageImpl oMsg = (MessageImpl) o;
+        ReceivedMessage oMsg = (ReceivedMessage) o;
         return this == oMsg || this.id == oMsg.id;
     }
 
