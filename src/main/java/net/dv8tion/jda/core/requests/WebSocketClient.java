@@ -57,7 +57,7 @@ import java.util.zip.InflaterOutputStream;
 
 public class WebSocketClient extends WebSocketAdapter implements WebSocketListener
 {
-    public static final SimpleLog LOG = SimpleLog.getLog("JDASocket");
+    public static final SimpleLog LOG = SimpleLog.getLog(WebSocketClient.class);
     public static final int DISCORD_GATEWAY_VERSION = 6;
     public static final int IDENTIFY_DELAY = 5;
 
@@ -796,6 +796,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         api.getTextChannelMap().clear();
         api.getVoiceChannelMap().clear();
+        api.getCategoryMap().clear();
         api.getGuildMap().clear();
         api.getUserMap().clear();
         api.getPrivateChannelMap().clear();
@@ -974,11 +975,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             LOG.warn("Got an unexpected Json-parse error. Please redirect following message to the devs:\n\t"
                     + ex.getMessage() + "\n\t" + type + " -> " + content);
-            LOG.log(ex);
+            LOG.warn(ex);
         }
         catch (Exception ex)
         {
-            LOG.log(ex);
+            LOG.fatal(ex);
         }
     }
 
@@ -1010,7 +1011,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     @Override
     public void handleCallbackError(WebSocket websocket, Throwable cause)
     {
-        LOG.log(cause);
+        LOG.fatal(cause);
         api.getEventManager().handle(new ExceptionEvent(api, cause, true));
     }
 
@@ -1066,7 +1067,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         catch (InterruptedException e)
         {
-            LOG.log(e);
+            LOG.fatal(e);
         }
         finally
         {
@@ -1099,7 +1100,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         catch (InterruptedException e)
         {
-            LOG.log(e);
+            LOG.fatal(e);
         }
         finally
         {
@@ -1129,7 +1130,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         catch (InterruptedException e)
         {
-            LOG.log(e);
+            LOG.fatal(e);
         }
         finally
         {
@@ -1149,7 +1150,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         catch (InterruptedException e)
         {
-            LOG.log(e);
+            LOG.fatal(e);
         }
         finally
         {
@@ -1167,7 +1168,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         catch (InterruptedException e)
         {
-            LOG.log(e);
+            LOG.fatal(e);
         }
         finally
         {

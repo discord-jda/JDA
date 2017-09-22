@@ -84,7 +84,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
                     }
                     catch (JSONException | NullPointerException e)
                     {
-                        JDAImpl.LOG.log(e);
+                        JDAImpl.LOG.fatal(e);
                     }
                 }
 
