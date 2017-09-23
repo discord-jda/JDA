@@ -130,7 +130,7 @@ public class CategoryImpl extends AbstractChannelImpl<CategoryImpl> implements C
     @Override
     public ChannelAction createTextChannel(String name)
     {
-        ChannelAction action = guild.getController().createTextChannel(name);
+        ChannelAction action = guild.getController().createTextChannel(name).setParent(this);
         applyPermission(action);
         return action;
     }
@@ -138,7 +138,7 @@ public class CategoryImpl extends AbstractChannelImpl<CategoryImpl> implements C
     @Override
     public ChannelAction createVoiceChannel(String name)
     {
-        ChannelAction action = guild.getController().createVoiceChannel(name);
+        ChannelAction action = guild.getController().createVoiceChannel(name).setParent(this);
         applyPermission(action);
         return action;
     }
