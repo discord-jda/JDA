@@ -50,6 +50,7 @@ public class JDABuilder
     protected final List<Object> listeners;
 
     protected SessionReconnectQueue reconnectQueue = null;
+    protected ShardedRateLimiter shardRateLimiter = new ShardedRateLimiter();
     protected OkHttpClient.Builder httpClientBuilder = null;
     protected WebSocketFactory wsFactory = null;
     protected AccountType accountType;
@@ -100,6 +101,31 @@ public class JDABuilder
     public JDABuilder setReconnectQueue(SessionReconnectQueue queue)
     {
         this.reconnectQueue = queue;
+        return this;
+    }
+
+    /**
+     * Sets the {@link net.dv8tion.jda.core.ShardedRateLimiter ShardedRateLimiter} that will be used to keep
+     * track of rate limits across sessions.
+     * <br>When one shard hits the global rate limit all others will be informed by this value wrapper.
+     *
+     * <p>It is recommended to use the same ShardedRateLimiter for all shards and not one each. This is
+     * similar to {@link net.dv8tion.jda.core.requests.SessionReconnectQueue SessionReconnectQueue}!
+     *
+     * <p><b>This value is set by default and cannot be unset using {@code null}. The re-use of this builder
+     * to build each shard is sufficient and setting it is not required.</b>
+     *
+     * <p>When you construct multiple JDABuilder instances to build shards it is recommended to use the same ShardedRateLimiter on
+     * all of them.
+     *
+     * @param  rateLimiter
+     *         ShardedRateLimiter used to keep track of cross-session rate limits
+     *
+     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public JDABuilder setShardedRateLimiter(ShardedRateLimiter rateLimiter)
+    {
+        this.shardRateLimiter = rateLimiter == null ? new ShardedRateLimiter() : rateLimiter;
         return this;
     }
 
@@ -484,8 +510,9 @@ public class JDABuilder
     {
         OkHttpClient.Builder httpClientBuilder = this.httpClientBuilder == null ? new OkHttpClient.Builder() : this.httpClientBuilder;
         WebSocketFactory wsFactory = this.wsFactory == null ? new WebSocketFactory() : this.wsFactory;
-        JDAImpl jda = new JDAImpl(accountType, httpClientBuilder, wsFactory, autoReconnect, enableVoice, enableShutdownHook,
-                enableBulkDeleteSplitting, corePoolSize, maxReconnectDelay);
+        JDAImpl jda = new JDAImpl(accountType, httpClientBuilder, wsFactory, shardRateLimiter,
+                                  autoReconnect, enableVoice, enableShutdownHook, enableBulkDeleteSplitting,
+                                  corePoolSize, maxReconnectDelay);
 
         if (eventManager != null)
             jda.setEventManager(eventManager);

@@ -19,6 +19,7 @@ package net.dv8tion.jda.core.requests;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDAInfo;
+import net.dv8tion.jda.core.ShardedRateLimiter;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.ratelimit.BotRateLimiter;
 import net.dv8tion.jda.core.requests.ratelimit.ClientRateLimiter;
@@ -46,19 +47,19 @@ public class Requester
 
     private final OkHttpClient httpClient;
 
-    public Requester(JDA api)
+    public Requester(JDA api, ShardedRateLimiter shardedRateLimiter)
     {
-        this(api, api.getAccountType());
+        this(api, api.getAccountType(), shardedRateLimiter);
     }
 
-    public Requester(JDA api, AccountType accountType)
+    public Requester(JDA api, AccountType accountType, ShardedRateLimiter shardedRateLimiter)
     {
         if (accountType == null)
             throw new NullPointerException("Provided accountType was null!");
 
         this.api = (JDAImpl) api;
         if (accountType == AccountType.BOT)
-            rateLimiter = new BotRateLimiter(this, 5);
+            rateLimiter = new BotRateLimiter(this, 5, shardedRateLimiter);
         else
             rateLimiter = new ClientRateLimiter(this, 5);
         
