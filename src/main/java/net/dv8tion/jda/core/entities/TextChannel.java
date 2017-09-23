@@ -17,6 +17,7 @@ package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.core.requests.restaction.WebhookAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
 
 import javax.annotation.CheckReturnValue;
@@ -68,6 +69,34 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      */
     @CheckReturnValue
     RestAction<List<Webhook>> getWebhooks();
+
+    /**
+     * Creates a new {@link net.dv8tion.jda.core.entities.Webhook Webhook}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The webhook could not be created due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>We were removed from the Guild before finishing the task</li>
+     * </ul>
+     *
+     * @param  name
+     *         The default name for the new Webhook.
+     *
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If you do not hold the permission {@link net.dv8tion.jda.core.Permission#MANAGE_WEBHOOKS Manage Webhooks}
+     * @throws IllegalArgumentException
+     *         If the provided name is {@code null}, blank or not
+     *         between 2-100 characters in length
+     *
+     * @return A specific {@link net.dv8tion.jda.core.requests.restaction.WebhookAction WebhookAction}
+     *         <br>This action allows to set fields for the new webhook before creating it
+     */
+    @CheckReturnValue
+    WebhookAction createWebhook(String name);
 
     /**
      * Bulk deletes a list of messages.

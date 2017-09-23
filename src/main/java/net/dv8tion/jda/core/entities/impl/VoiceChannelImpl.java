@@ -17,9 +17,8 @@
 package net.dv8tion.jda.core.entities.impl;
 
 import gnu.trove.map.TLongObjectMap;
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.requests.restaction.ChannelAction;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 
@@ -72,6 +71,36 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannelImpl> impl
                 return i;
         }
         throw new AssertionError("Somehow when determining position we never found the VoiceChannel in the Guild's channels? wtf?");
+    }
+
+    @Override
+    public ChannelAction createCopy(Guild guild)
+    {
+        Checks.notNull(guild, "Guild");
+        ChannelAction action = guild.getController().createVoiceChannel(name).setBitrate(bitrate).setUserlimit(userLimit);
+        if (guild.equals(getGuild()))
+        {
+            Category parent = getParent();
+            if (parent != null)
+                action.setParent(parent);
+            for (PermissionOverride o : overrides.valueCollection())
+            {
+                if (o.isMemberOverride())
+                    action.addPermissionOverride(o.getMember(), o.getAllowedRaw(), o.getDeniedRaw());
+                else
+                    action.addPermissionOverride(o.getRole(), o.getAllowedRaw(), o.getDeniedRaw());
+            }
+        }
+        return action;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof VoiceChannel))
+            return false;
+        VoiceChannel oVChannel = (VoiceChannel) o;
+        return this == oVChannel || this.getIdLong() == oVChannel.getIdLong();
     }
 
     @Override
