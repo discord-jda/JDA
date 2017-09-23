@@ -140,10 +140,10 @@ public class GuildController
     public RestAction<Void> moveVoiceMember(Member member, VoiceChannel voiceChannel)
     {
         checkAvailable();
-        Checks.notNull(member, "member");
-        Checks.notNull(member, "voiceChannel");
-        checkGuild(member.getGuild(), "member");
-        checkGuild(voiceChannel.getGuild(), "voiceChannel");
+        Checks.notNull(member, "Member");
+        Checks.notNull(voiceChannel, "VoiceChannel");
+        checkGuild(member.getGuild(), "Member");
+        checkGuild(voiceChannel.getGuild(), "VoiceChannel");
 
         GuildVoiceState vState = member.getVoiceState();
         if (!vState.inVoiceChannel())
@@ -224,8 +224,8 @@ public class GuildController
     public AuditableRestAction<Void> setNickname(Member member, String nickname)
     {
         checkAvailable();
-        Checks.notNull(member, "member");
-        checkGuild(member.getGuild(), "member");
+        Checks.notNull(member, "Member");
+        checkGuild(member.getGuild(), "Member");
 
         if(member.equals(guild.getSelfMember()))
         {
@@ -301,8 +301,7 @@ public class GuildController
         checkAvailable();
         checkPermission(Permission.KICK_MEMBERS);
 
-        if (days < 1)
-            throw new IllegalArgumentException("Days amount must be at minimum 1 day.");
+        Checks.check(days >= 1, "Days amount must be at minimum 1 day.");
 
         Route.CompiledRoute route = Route.Guilds.PRUNE_MEMBERS.compile(guild.getId()).withQueryParams("days", Integer.toString(days));
         return new AuditableRestAction<Integer>(guild.getJDA(), route)
@@ -428,8 +427,7 @@ public class GuildController
         Checks.notBlank(userId, "userId");
 
         Member member = guild.getMemberById(userId);
-        if (member == null)
-            throw new IllegalArgumentException("The provided userId does not correspond to a member in this guild! Provided userId: " + userId);
+        Checks.check(member != null, "The provided userId does not correspond to a member in this guild! Provided userId: %s", userId);
 
         return kick(member, reason);
     }
@@ -565,7 +563,7 @@ public class GuildController
     public AuditableRestAction<Void> ban(Member member, int delDays, String reason)
     {
         checkAvailable();
-        Checks.notNull(member, "member");
+        Checks.notNull(member, "Member");
         //Don't check if the provided member is from this guild. It doesn't matter if they are or aren't.
 
         return ban(member.getUser(), delDays, reason);
@@ -620,14 +618,13 @@ public class GuildController
     public AuditableRestAction<Void> ban(User user, int delDays, String reason)
     {
         checkAvailable();
-        Checks.notNull(user, "user");
+        Checks.notNull(user, "User");
         checkPermission(Permission.BAN_MEMBERS);
 
         if (guild.isMember(user)) // If user is in guild. Check if we are able to ban.
             checkPosition(guild.getMember(user));
 
-        if (delDays < 0)
-            throw new IllegalArgumentException("Provided delDays cannot be less that 0. How can you delete messages that are -1 days old?");
+        Checks.notNegative(delDays, "Deletion Days");
 
         final String userId = user.getId();
 
@@ -696,7 +693,7 @@ public class GuildController
     public AuditableRestAction<Void> ban(String userId, int delDays, String reason)
     {
         checkAvailable();
-        Checks.notBlank(userId, "userId");
+        Checks.notBlank(userId, "User ID");
         checkPermission(Permission.BAN_MEMBERS);
 
         User user = guild.getJDA().getUserById(userId);
@@ -903,7 +900,7 @@ public class GuildController
     @CheckReturnValue
     public AuditableRestAction<Void> unban(User user)
     {
-        Checks.notNull(user, "user");
+        Checks.notNull(user, "User");
 
         return unban(user.getId());
     }
@@ -940,7 +937,7 @@ public class GuildController
     public AuditableRestAction<Void> unban(String userId)
     {
         checkAvailable();
-        Checks.notBlank(userId, "userId");
+        Checks.notBlank(userId, "User ID");
         checkPermission(Permission.BAN_MEMBERS);
 
         Route.CompiledRoute route = Route.Guilds.UNBAN.compile(guild.getId(), userId);
@@ -1000,8 +997,8 @@ public class GuildController
     public AuditableRestAction<Void> setDeafen(Member member, boolean deafen)
     {
         checkAvailable();
-        Checks.notNull(member, "member");
-        checkGuild(member.getGuild(), "member");
+        Checks.notNull(member, "Member");
+        checkGuild(member.getGuild(), "Member");
         checkPermission(Permission.VOICE_DEAF_OTHERS);
 
         //We check the owner instead of Position because, apparently, Discord doesn't care about position for
@@ -1067,8 +1064,8 @@ public class GuildController
     public AuditableRestAction<Void> setMute(Member member, boolean mute)
     {
         checkAvailable();
-        Checks.notNull(member, "member");
-        checkGuild(member.getGuild(), "member");
+        Checks.notNull(member, "Member");
+        checkGuild(member.getGuild(), "Member");
         checkPermission(Permission.VOICE_MUTE_OTHERS);
 
         //We check the owner instead of Position because, apparently, Discord doesn't care about position for
@@ -1142,8 +1139,8 @@ public class GuildController
     {
         Checks.notNull(member, "Member");
         Checks.notNull(role, "Role");
-        checkGuild(member.getGuild(), "Member is not from the same Guild!");
-        checkGuild(role.getGuild(), "Role is not from the same Guild!");
+        checkGuild(member.getGuild(), "Member");
+        checkGuild(role.getGuild(), "Role");
         checkPermission(Permission.MANAGE_ROLES);
         checkPosition(role);
 
@@ -1209,8 +1206,8 @@ public class GuildController
     {
         Checks.notNull(member, "Member");
         Checks.notNull(role, "Role");
-        checkGuild(member.getGuild(), "Member is not from the same Guild!");
-        checkGuild(role.getGuild(), "Role is not from the same Guild!");
+        checkGuild(member.getGuild(), "Member");
+        checkGuild(role.getGuild(), "Role");
         checkPermission(Permission.MANAGE_ROLES);
         checkPosition(role);
 
@@ -1508,34 +1505,32 @@ public class GuildController
     public AuditableRestAction<Void> modifyMemberRoles(Member member, Collection<Role> rolesToAdd, Collection<Role> rolesToRemove)
     {
         checkAvailable();
-        Checks.notNull(member, "member");
+        Checks.notNull(member, "Member");
         Checks.notNull(rolesToAdd, "Collection containing roles to be added to the member");
         Checks.notNull(rolesToRemove, "Collection containing roles to be removed from the member");
-        checkGuild(member.getGuild(), "member");
+        checkGuild(member.getGuild(), "Member");
         checkPermission(Permission.MANAGE_ROLES);
         rolesToAdd.forEach(role ->
         {
-            Checks.notNull(role, "role in rolesToAdd");
-            checkGuild(role.getGuild(), "role: " + role.toString());
+            Checks.notNull(role, "Role in rolesToAdd");
+            checkGuild(role.getGuild(), "Role: " + role.toString());
             checkPosition(role);
-            if (role.isManaged())
-                throw new IllegalArgumentException("Cannot add a Managed role to a Member. Role: " + role.toString());
+            Checks.check(!role.isManaged(), "Cannot add a Managed role to a Member. Role: %s", role.toString());
         });
         rolesToRemove.forEach(role ->
         {
-            Checks.notNull(role, "role in rolesToRemove");
-            checkGuild(role.getGuild(), "role: " + role.toString());
+            Checks.notNull(role, "Role in rolesToRemove");
+            checkGuild(role.getGuild(), "Role: " + role.toString());
             checkPosition(role);
-            if (role.isManaged())
-                throw new IllegalArgumentException("Cannot remove a Managed role from a Member. Role: " + role.toString());
+            Checks.check(!role.isManaged(), "Cannot remove a Managed role from a Member. Role: %s", role.toString());
         });
 
         Set<Role> currentRoles = new HashSet<>(((MemberImpl) member).getRoleSet());
         currentRoles.addAll(rolesToAdd);
         currentRoles.removeAll(rolesToRemove);
 
-        if (currentRoles.contains(guild.getPublicRole()))
-            throw new IllegalArgumentException("Cannot add the PublicRole of a Guild to a Member. All members have this role by default!");
+        Checks.check(!currentRoles.contains(guild.getPublicRole()),
+            "Cannot add the PublicRole of a Guild to a Member. All members have this role by default!");
 
         JSONObject body = new JSONObject()
                 .put("roles", currentRoles.stream().map(Role::getId).collect(Collectors.toList()));
@@ -1662,18 +1657,18 @@ public class GuildController
     public AuditableRestAction<Void> modifyMemberRoles(Member member, Collection<Role> roles)
     {
         checkAvailable();
-        Checks.notNull(member, "member");
-        Checks.notNull(roles, "roles");
-        checkGuild(member.getGuild(), "member");
+        Checks.notNull(member, "Member");
+        Checks.notNull(roles, "Roles");
+        checkGuild(member.getGuild(), "Member");
         roles.forEach(role ->
         {
-            Checks.notNull(role, "role in collection");
-            checkGuild(role.getGuild(), "role: " + role.toString());
+            Checks.notNull(role, "Role in collection");
+            checkGuild(role.getGuild(), "Role: " + role.toString());
             checkPosition(role);
         });
 
-        if (roles.contains(guild.getPublicRole()))
-            throw new IllegalArgumentException("Cannot add the PublicRole of a Guild to a Member. All members have this role by default!");
+        Checks.check(!roles.contains(guild.getPublicRole()),
+            "Cannot add the PublicRole of a Guild to a Member. All members have this role by default!");
 
         //Make sure that the current managed roles are preserved and no new ones are added.
         List<Role> currentManaged = roles.stream().filter(Role::isManaged).collect(Collectors.toList());
@@ -1743,16 +1738,15 @@ public class GuildController
     public AuditableRestAction<Void> transferOwnership(Member newOwner)
     {
         checkAvailable();
-        Checks.notNull(newOwner, "newOwner member");
-        checkGuild(newOwner.getGuild(), "newOwner member");
+        Checks.notNull(newOwner, "Member");
+        checkGuild(newOwner.getGuild(), "Member");
         if (!guild.getOwner().equals(guild.getSelfMember()))
             throw new PermissionException("The logged in account must be the owner of this Guild to be able to transfer ownership");
 
-        if (guild.getSelfMember().equals(newOwner))
-            throw new IllegalArgumentException("The member provided as the newOwner is the currently logged in account. Provide a different member to give ownership to.");
+        Checks.check(!guild.getSelfMember().equals(newOwner),
+            "The member provided as the newOwner is the currently logged in account. Provide a different member to give ownership to.");
 
-        if (newOwner.getUser().isBot())
-            throw new IllegalArgumentException("Cannot transfer ownership of a Guild to a Bot!");
+        Checks.check(!newOwner.getUser().isBot(), "Cannot transfer ownership of a Guild to a Bot!");
 
         JSONObject body = new JSONObject().put("owner_id", newOwner.getUser().getId());
         Route.CompiledRoute route = Route.Guilds.MODIFY_GUILD.compile(guild.getId());
@@ -1801,10 +1795,10 @@ public class GuildController
     {
         checkAvailable();
         checkPermission(Permission.MANAGE_CHANNEL);
-        Checks.notBlank(name, "name");
+        Checks.notBlank(name, "Name");
+        name = name.trim();
 
-        if (name.length() < 2 || name.length() > 100)
-            throw new IllegalArgumentException("Provided name must be 2 - 100 characters in length");
+        Checks.check(name.length() >= 2 && name.length() <= 100, "Provided name must be 2 - 100 characters in length");
 
         Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(guild.getId());
         return new ChannelAction(route, name, guild, ChannelType.TEXT);
@@ -1842,10 +1836,10 @@ public class GuildController
     {
         checkAvailable();
         checkPermission(Permission.MANAGE_CHANNEL);
-        Checks.notBlank(name, "name");
+        Checks.notBlank(name, "Name");
+        name = name.trim();
 
-        if (name.length() < 2 || name.length() > 100)
-            throw new IllegalArgumentException("Provided name must be 2 to 100 characters in length");
+        Checks.check(name.length() >= 2 && name.length() <= 100, "Provided name must be 2 - 100 characters in length");
 
         Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(guild.getId());
         return new ChannelAction(route, name, guild, ChannelType.VOICE);
@@ -1883,10 +1877,10 @@ public class GuildController
     {
         checkAvailable();
         checkPermission(Permission.MANAGE_CHANNEL);
-        Checks.notBlank(name, "name");
+        Checks.notBlank(name, "Name");
+        name = name.trim();
 
-        if (name.length() < 2 || name.length() > 100)
-            throw new IllegalArgumentException("Provided name must be 2 to 100 characters in length");
+        Checks.check(name.length() >= 2 && name.length() <= 100, "Provided name must be 2 - 100 characters in length");
 
         Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(guild.getId());
         return new ChannelAction(route, name, guild, ChannelType.CATEGORY);
@@ -1978,6 +1972,7 @@ public class GuildController
     @CheckReturnValue
     public WebhookAction createWebhook(TextChannel channel, String name)
     {
+        Checks.notNull(channel, "Channel");
         checkGuild(channel.getGuild(), "channel");
         return channel.createWebhook(name);
     }
@@ -2048,7 +2043,7 @@ public class GuildController
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      * @throws java.lang.IllegalArgumentException
-     *         If the specified role is {@code null} or not from this Guild
+     *         If the specified role is {@code null}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.RoleAction RoleAction}
      *         <br>RoleAction with already copied values from the specified {@link net.dv8tion.jda.core.entities.Role Role}
@@ -2056,6 +2051,7 @@ public class GuildController
     @CheckReturnValue
     public RoleAction createCopyOfRole(Role role)
     {
+        Checks.notNull(role, "Role");
         return role.createCopy(guild);
     }
 
@@ -2100,8 +2096,8 @@ public class GuildController
     {
         checkAvailable();
         checkPermission(Permission.MANAGE_EMOTES);
-        Checks.notNull(name, "emote name");
-        Checks.notNull(icon, "emote icon");
+        Checks.notNull(name, "Emote name");
+        Checks.notNull(icon, "Emote icon");
 
         if (getJDA().getAccountType() != AccountType.CLIENT)
             throw new AccountTypeException(AccountType.CLIENT);
@@ -2129,12 +2125,10 @@ public class GuildController
                     JSONArray rolesArr = obj.getJSONArray("roles");
                     Set<Role> roleSet = emote.getRoleSet();
                     for (int i = 0; i < rolesArr.length(); i++)
-                    {
                         roleSet.add(guild.getRoleById(rolesArr.getString(i)));
-                    }
 
                     // put emote into cache
-                    ((GuildImpl) guild).getEmoteMap().put(id, emote);
+                    guild.getEmoteMap().put(id, emote);
 
                     request.onSuccess(emote);
                 }

@@ -89,7 +89,8 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         If you do not hold the permission {@link net.dv8tion.jda.core.Permission#MANAGE_WEBHOOKS Manage Webhooks}
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or blank
+     *         If the provided name is {@code null}, blank or not
+     *         between 2-100 characters in length
      *
      * @return A specific {@link net.dv8tion.jda.core.requests.restaction.WebhookAction WebhookAction}
      *         <br>This action allows to set fields for the new webhook before creating it

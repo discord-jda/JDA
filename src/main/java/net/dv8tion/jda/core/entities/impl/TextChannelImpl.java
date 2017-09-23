@@ -99,7 +99,10 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     public WebhookAction createWebhook(String name)
     {
         Checks.notBlank(name, "Webhook name");
+        name = name.trim();
         checkPermission(Permission.MANAGE_WEBHOOKS);
+
+        Checks.check(name.length() >= 2 && name.length() <= 100, "Name must be 2-100 characters in length!");
 
         Route.CompiledRoute route = Route.Channels.CREATE_WEBHOOK.compile(getId());
         return new WebhookAction(getJDA(), route, name);
