@@ -303,6 +303,9 @@ public class BotRateLimiter extends RateLimiter
                 {
                     for (Iterator<Request> it = requests.iterator(); it.hasNext(); )
                     {
+                        Long limit = getRateLimit();
+                        if (limit != null && limit > 0)
+                            break; // possible global cooldown here
                         Request request = null;
                         try
                         {
