@@ -141,7 +141,7 @@ public class GuildController
     {
         checkAvailable();
         Checks.notNull(member, "member");
-        Checks.notNull(member, "voiceChannel");
+        Checks.notNull(voiceChannel, "voiceChannel");
         checkGuild(member.getGuild(), "member");
         checkGuild(voiceChannel.getGuild(), "voiceChannel");
 
