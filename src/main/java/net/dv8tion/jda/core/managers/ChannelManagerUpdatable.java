@@ -56,6 +56,7 @@ public class ChannelManagerUpdatable
     protected ChannelField<Integer> bitrate;
     protected ChannelField<Boolean> nsfw;
     protected ChannelField<Category> parent;
+    protected ChannelField<Integer> position;
 
     /**
      * Creates a new ChannelManagerUpdatable instance
@@ -242,6 +243,24 @@ public class ChannelManagerUpdatable
     }
 
     /**
+     * An {@link net.dv8tion.jda.core.managers.fields.ChannelField ChannelField}
+     * for the <b><u>position</u></b> of the selected {@link net.dv8tion.jda.core.entities.Channel Channel}.
+     *
+     * <p>To set the value use {@link net.dv8tion.jda.core.managers.fields.Field#setValue(Object) setValue(Integer)}
+     * on the returned {@link net.dv8tion.jda.core.managers.fields.ChannelField ChannelField} instance.
+     *
+     * <p>A channel position <b>must not</b> be {@code null}!
+     * <br>Otherwise {@link net.dv8tion.jda.core.managers.fields.Field#setValue(Object) Field.setValue(...)} will
+     * throw an {@link IllegalArgumentException IllegalArgumentException}.
+     *
+     * @return {@link net.dv8tion.jda.core.managers.fields.ChannelField ChannelField} - Type: {@code Integer}
+     */
+    public ChannelField<Integer> getPositionField()
+    {
+        return position;
+    }
+
+    /**
      * Resets all {@link net.dv8tion.jda.core.managers.fields.ChannelField Fields}
      * for this manager instance by calling {@link net.dv8tion.jda.core.managers.fields.Field#reset() Field.reset()} sequentially
      * <br>This is automatically called by {@link #update()}
@@ -302,6 +321,8 @@ public class ChannelManagerUpdatable
         JSONObject frame = new JSONObject().put("name", channel.getName());
         if (name.shouldUpdate())
             frame.put("name", name.getValue());
+        if (position.shouldUpdate())
+            frame.put("position", position.getValue());
         if (topic != null && topic.shouldUpdate())
             frame.put("topic", topic.getValue() == null ? JSONObject.NULL : topic.getValue());
         if (nsfw != null && nsfw.shouldUpdate())
@@ -331,6 +352,7 @@ public class ChannelManagerUpdatable
     protected boolean needToUpdate()
     {
         return name.shouldUpdate()
+                || position.shouldUpdate()
                 || (parent != null && parent.shouldUpdate())
                 || (topic != null && topic.shouldUpdate())
                 || (userLimit != null && userLimit.shouldUpdate())
@@ -354,6 +376,15 @@ public class ChannelManagerUpdatable
                 Checks.notEmpty(value, "name");
                 if (value.length() < 2 || value.length() > 100)
                     throw new IllegalArgumentException("Provided channel name must be 2 to 100 characters in length");
+            }
+        };
+
+        this.position = new ChannelField<Integer>(this, channel::getPositionRaw)
+        {
+            @Override
+            public void checkValue(Integer value)
+            {
+                Checks.notNull(value, "Position");
             }
         };
 
