@@ -92,13 +92,13 @@ public class PresenceImpl implements Presence
     @Override
     public void setGame(Game game)
     {
-        setPresence(status, idle);
+        setPresence(status, game);
     }
 
     @Override
     public void setIdle(boolean idle)
     {
-        setPresence(status, game);
+        setPresence(status, idle);
     }
 
     @Override
