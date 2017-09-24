@@ -979,6 +979,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         catch (Exception ex)
         {
+            LOG.fatal("Got an unexpected error. Please redirect following message to the devs:\n\t"
+                    + type + " -> " + content);
             LOG.fatal(ex);
         }
     }
