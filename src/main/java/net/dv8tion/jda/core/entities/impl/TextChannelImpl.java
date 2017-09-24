@@ -25,6 +25,8 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.core.requests.restaction.ChannelAction;
+import net.dv8tion.jda.core.requests.restaction.WebhookAction;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.json.JSONArray;
@@ -84,13 +86,26 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
                     }
                     catch (JSONException | NullPointerException e)
                     {
-                        JDAImpl.LOG.log(e);
+                        JDAImpl.LOG.fatal(e);
                     }
                 }
 
                 request.onSuccess(webhooks);
             }
         };
+    }
+
+    @Override
+    public WebhookAction createWebhook(String name)
+    {
+        Checks.notBlank(name, "Webhook name");
+        name = name.trim();
+        checkPermission(Permission.MANAGE_WEBHOOKS);
+
+        Checks.check(name.length() >= 2 && name.length() <= 100, "Name must be 2-100 characters in length!");
+
+        Route.CompiledRoute route = Route.Channels.CREATE_WEBHOOK.compile(getId());
+        return new WebhookAction(getJDA(), route, name);
     }
 
     @Override
@@ -221,6 +236,27 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
                 return i;
         }
         throw new AssertionError("Somehow when determining position we never found the TextChannel in the Guild's channels? wtf?");
+    }
+
+    @Override
+    public ChannelAction createCopy(Guild guild)
+    {
+        Checks.notNull(guild, "Guild");
+        ChannelAction action = guild.getController().createTextChannel(name).setNSFW(nsfw).setTopic(topic);
+        if (guild.equals(getGuild()))
+        {
+            Category parent = getParent();
+            if (parent != null)
+                action.setParent(parent);
+            for (PermissionOverride o : overrides.valueCollection())
+            {
+                if (o.isMemberOverride())
+                    action.addPermissionOverride(o.getMember(), o.getAllowedRaw(), o.getDeniedRaw());
+                else
+                    action.addPermissionOverride(o.getRole(), o.getAllowedRaw(), o.getDeniedRaw());
+            }
+        }
+        return action;
     }
 
     @Override

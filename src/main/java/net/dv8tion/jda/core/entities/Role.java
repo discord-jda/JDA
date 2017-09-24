@@ -19,6 +19,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.managers.RoleManager;
 import net.dv8tion.jda.core.managers.RoleManagerUpdatable;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.core.requests.restaction.RoleAction;
 
 import javax.annotation.CheckReturnValue;
 import java.awt.Color;
@@ -126,6 +127,80 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      * @return the Guild containing this Role
      */
     Guild getGuild();
+
+    /**
+     * Creates a new {@link net.dv8tion.jda.core.entities.Role Role} in the specified {@link net.dv8tion.jda.core.entities.Guild Guild}
+     * with the same settings as the given {@link net.dv8tion.jda.core.entities.Role Role}.
+     * <br>The position of the specified Role does not matter in this case!
+     *
+     * <p>It will be placed at the bottom (just over the Public Role) to avoid permission hierarchy conflicts.
+     * <br>For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES} Permission
+     * and all {@link net.dv8tion.jda.core.Permission Permissions} the given {@link net.dv8tion.jda.core.entities.Role Role} has.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The role could not be created due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>We were removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MAX_ROLES_PER_GUILD MAX_ROLES_PER_GUILD}
+     *     <br>There are too many roles in this Guild</li>
+     * </ul>
+     *
+     * @param  guild
+     *         The {@link net.dv8tion.jda.core.entities.Role Role} that should be copied
+     *
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES} Permission and every Permission the provided Role has
+     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
+     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
+     * @throws java.lang.IllegalArgumentException
+     *         If the specified guild is {@code null}
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.RoleAction RoleAction}
+     *         <br>RoleAction with already copied values from the specified {@link net.dv8tion.jda.core.entities.Role Role}
+     */
+    @CheckReturnValue
+    RoleAction createCopy(Guild guild);
+
+    /**
+     * Creates a new {@link net.dv8tion.jda.core.entities.Role Role} in this {@link net.dv8tion.jda.core.entities.Guild Guild}
+     * with the same settings as the given {@link net.dv8tion.jda.core.entities.Role Role}.
+     * <br>The position of the specified Role does not matter in this case!
+     *
+     * <p>It will be placed at the bottom (just over the Public Role) to avoid permission hierarchy conflicts.
+     * <br>For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES} Permission
+     * and all {@link net.dv8tion.jda.core.Permission Permissions} the given {@link net.dv8tion.jda.core.entities.Role Role} has.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The role could not be created due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>We were removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MAX_ROLES_PER_GUILD MAX_ROLES_PER_GUILD}
+     *     <br>There are too many roles in this Guild</li>
+     * </ul>
+     *
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES} Permission and every Permission the provided Role has
+     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
+     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.RoleAction RoleAction}
+     *         <br>RoleAction with already copied values from the specified {@link net.dv8tion.jda.core.entities.Role Role}
+     */
+    @CheckReturnValue
+    default RoleAction createCopy()
+    {
+        return createCopy(getGuild());
+    }
 
     /**
      * The {@link net.dv8tion.jda.core.managers.RoleManager RoleManager} for this Role.

@@ -23,10 +23,10 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.Route.RateLimit;
-import net.dv8tion.jda.core.utils.SimpleLog;
 import okhttp3.Headers;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import org.slf4j.event.Level;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -197,7 +197,7 @@ public class BotRateLimiter extends RateLimiter
         {
             if (!bucket.getRoute().equals("gateway")
                     && !bucket.getRoute().equals("users/@me")
-                    && Requester.LOG.getEffectiveLevel().getPriority() <= SimpleLog.Level.DEBUG.getPriority())
+                    && Requester.LOG.getEffectiveLevel().ordinal() >= Level.DEBUG.ordinal())
             {
                 Requester.LOG.debug("Encountered issue with headers when updating a bucket"
                                   + "\nRoute: " + bucket.getRoute()
@@ -303,6 +303,9 @@ public class BotRateLimiter extends RateLimiter
                 {
                     for (Iterator<Request> it = requests.iterator(); it.hasNext(); )
                     {
+                        Long limit = getRateLimit();
+                        if (limit != null && limit > 0)
+                            break; // possible global cooldown here
                         Request request = null;
                         try
                         {
@@ -316,7 +319,7 @@ public class BotRateLimiter extends RateLimiter
                         catch (Throwable t)
                         {
                             Requester.LOG.fatal("Requester system encountered an internal error");
-                            Requester.LOG.log(t);
+                            Requester.LOG.fatal(t);
                             it.remove();
                             if (request != null)
                                 request.onFailure(t);
@@ -343,7 +346,7 @@ public class BotRateLimiter extends RateLimiter
             catch (Throwable err)
             {
                 Requester.LOG.fatal("Requester system encountered an internal error from beyond the synchronized execution blocks. NOT GOOD!");
-                Requester.LOG.log(err);
+                Requester.LOG.fatal(err);
                 if (err instanceof Error)
                 {
                     JDAImpl api = requester.getJDA();

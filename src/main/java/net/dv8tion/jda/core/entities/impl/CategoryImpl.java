@@ -3,6 +3,7 @@ package net.dv8tion.jda.core.entities.impl;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.restaction.ChannelAction;
 import net.dv8tion.jda.core.requests.restaction.InviteAction;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
@@ -70,6 +71,24 @@ public class CategoryImpl extends AbstractChannelImpl<CategoryImpl> implements C
     }
 
     @Override
+    public ChannelAction createCopy(Guild guild)
+    {
+        Checks.notNull(guild, "Guild");
+        ChannelAction action = guild.getController().createCategory(name);
+        if (guild.equals(getGuild()))
+        {
+            for (PermissionOverride o : overrides.valueCollection())
+            {
+                if (o.isMemberOverride())
+                    action.addPermissionOverride(o.getMember(), o.getAllowedRaw(), o.getDeniedRaw());
+                else
+                    action.addPermissionOverride(o.getRole(), o.getAllowedRaw(), o.getDeniedRaw());
+            }
+        }
+        return action;
+    }
+
+    @Override
     public InviteAction createInvite()
     {
         throw new UnsupportedOperationException("Cannot create invites for category!");
@@ -109,8 +128,36 @@ public class CategoryImpl extends AbstractChannelImpl<CategoryImpl> implements C
     }
 
     @Override
+    public ChannelAction createTextChannel(String name)
+    {
+        ChannelAction action = guild.getController().createTextChannel(name).setParent(this);
+        applyPermission(action);
+        return action;
+    }
+
+    @Override
+    public ChannelAction createVoiceChannel(String name)
+    {
+        ChannelAction action = guild.getController().createVoiceChannel(name).setParent(this);
+        applyPermission(action);
+        return action;
+    }
+
+    @Override
     public String toString()
     {
         return "GC:" + getName() + '(' + id + ')';
+    }
+
+    private void applyPermission(ChannelAction a)
+    {
+        overrides.forEachValue(override ->
+        {
+            if (override.isMemberOverride())
+                a.addPermissionOverride(override.getMember(), override.getAllowedRaw(), override.getDeniedRaw());
+            else
+                a.addPermissionOverride(override.getRole(), override.getAllowedRaw(), override.getDeniedRaw());
+            return true;
+        });
     }
 }

@@ -17,7 +17,6 @@ package net.dv8tion.jda.core.utils;
 
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.entities.impl.AbstractChannelImpl;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -339,17 +338,15 @@ public class PermissionUtil
     {
         Checks.notNull(channel, "Channel");
         Checks.notNull(member, "Member");
-        final long admin = Permission.ADMINISTRATOR.getRawValue();
 
-        if (!channel.getGuild().equals(member.getGuild()))
-            throw new IllegalArgumentException("Provided channel and provided member are not of the same guild!");
+        Checks.check(channel.getGuild().equals(member.getGuild()), "Provided channel and provided member are not of the same guild!");
 
         if (member.isOwner())
+        {
             // Owner effectively has all permissions
             return Permission.ALL_PERMISSIONS;
+        }
 
-        final AbstractChannelImpl<?> abstractChannel = (AbstractChannelImpl<?>) channel;
-        final Guild guild = member.getGuild();
         long permission = getEffectivePermission(member) | getExplicitPermission(channel, member);
 
         AtomicLong allow = new AtomicLong(0);
@@ -358,18 +355,25 @@ public class PermissionUtil
         getExplicitOverrides(channel, member, allow, deny);
         permission = apply(permission, allow.get(), deny.get());
 
-        if (isApplied(permission, admin))
+        if (isApplied(permission, Permission.ADMINISTRATOR.getRawValue()))
+        {
             // If the public role is marked as administrator we can return full permissions here
             return Permission.ALL_PERMISSIONS;
-        else if (!isApplied(permission, Permission.MESSAGE_READ.getRawValue()))
-            // When the permission to read messages is not applied it is not granted
-            return permission & ~Permission.ALL_TEXT_PERMISSIONS;
+        }
+        else if (!isApplied(permission, Permission.VIEW_CHANNEL.getRawValue()))
+        {
+            //When the permission to view the channel is not applied it is not granted
+            // This means that we have no access to this channel at all
+            return 0;
+        }
 
         final boolean isPerms = isApplied(permission, Permission.MANAGE_PERMISSIONS.getRawValue());
         final boolean isChan = isApplied(permission, Permission.MANAGE_CHANNEL.getRawValue());
         if (isPerms || isChan)
-            // In text channels MANAGE_CHANNEL and MANAGE_PERMISSIONS grant full text/voice permissions
+        {
+            // In channels, MANAGE_CHANNEL and MANAGE_PERMISSIONS grant full text/voice permissions
             permission |= Permission.ALL_TEXT_PERMISSIONS | Permission.ALL_VOICE_PERMISSIONS;
+        }
 
         return permission & ~deny.get() | allow.get();
     }

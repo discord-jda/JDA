@@ -53,7 +53,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class AudioConnection
 {
-    public static final SimpleLog LOG = SimpleLog.getLog("JDAAudioConn");
+    public static final SimpleLog LOG = SimpleLog.getLog(AudioConnection.class);
     public static final int OPUS_SAMPLE_RATE = 48000;   //(Hz) We want to use the highest of qualities! All the bandwidth!
     public static final int OPUS_FRAME_SIZE = 960;      //An opus frame size of 960 at 48000hz represents 20 milliseconds of audio.
     public static final int OPUS_FRAME_TIME_AMOUNT = 20;//This is 20 milliseconds. We are only dealing with 20ms opus packets.
@@ -115,7 +115,7 @@ public class AudioConnection
                 }
                 catch (InterruptedException e)
                 {
-                    LOG.log(e);
+                    LOG.fatal(e);
                     Thread.currentThread().interrupt();
                 }
             }
@@ -133,7 +133,7 @@ public class AudioConnection
         });
         readyThread.setUncaughtExceptionHandler((thread, throwable) ->
         {
-            LOG.log(throwable);
+            LOG.fatal(throwable);
             JDAImpl api = (JDAImpl) getJDA();
             api.getEventManager().handle(new ExceptionEvent(api, throwable, true));
         });
@@ -317,7 +317,7 @@ public class AudioConnection
                 }
                 catch (SocketException e)
                 {
-                    LOG.log(e);
+                    LOG.fatal(e);
                 }
                 while (!udpSocket.isClosed() && !Thread.currentThread().isInterrupted())
                 {
@@ -414,13 +414,13 @@ public class AudioConnection
                     }
                     catch (Exception e)
                     {
-                        LOG.log(e);
+                        LOG.fatal(e);
                     }
                 }
             });
             receiveThread.setUncaughtExceptionHandler((thread, throwable) ->
             {
-                LOG.log(throwable);
+                LOG.fatal(throwable);
                 JDAImpl api = (JDAImpl) getJDA();
                 api.getEventManager().handle(new ExceptionEvent(api, throwable, true));
             });
@@ -445,7 +445,7 @@ public class AudioConnection
                 t.setDaemon(true);
                 t.setUncaughtExceptionHandler((thread, throwable) ->
                 {
-                    LOG.log(throwable);
+                    LOG.fatal(throwable);
                     JDAImpl api = (JDAImpl) getJDA();
                     api.getEventManager().handle(new ExceptionEvent(api, throwable, true));
                 });
@@ -514,7 +514,7 @@ public class AudioConnection
                 }
                 catch (Exception e)
                 {
-                    LOG.log(e);
+                    LOG.fatal(e);
                 }
             }, 0, 20, TimeUnit.MILLISECONDS);
         }
@@ -653,7 +653,7 @@ public class AudioConnection
             }
             catch (Exception e)
             {
-                LOG.log(e);
+                LOG.fatal(e);
             }
 
             if (nextPacket != null)

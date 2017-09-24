@@ -65,7 +65,7 @@ public class Request<T>
             catch (Throwable t)
             {
                 RestAction.LOG.fatal("Encountered error while processing success consumer");
-                RestAction.LOG.log(t);
+                RestAction.LOG.fatal(t);
                 if (t instanceof Error)
                     api.getEventManager().handle(new ExceptionEvent(api, t, true));
             }
@@ -98,7 +98,7 @@ public class Request<T>
             catch (Throwable t)
             {
                 RestAction.LOG.fatal("Encountered error while processing failure consumer");
-                RestAction.LOG.log(t);
+                RestAction.LOG.fatal(t);
                 if (t instanceof Error)
                     api.getEventManager().handle(new ExceptionEvent(api, t, true));
             }
