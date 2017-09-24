@@ -50,7 +50,7 @@ public class JDABuilder
     protected final List<Object> listeners;
 
     protected SessionReconnectQueue reconnectQueue = null;
-    protected ShardedRateLimiter shardRateLimiter = new ShardedRateLimiter();
+    protected ShardedRateLimiter shardRateLimiter = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
     protected WebSocketFactory wsFactory = null;
     protected AccountType accountType;
@@ -112,11 +112,11 @@ public class JDABuilder
      * <p>It is recommended to use the same ShardedRateLimiter for all shards and not one each. This is
      * similar to {@link net.dv8tion.jda.core.requests.SessionReconnectQueue SessionReconnectQueue}!
      *
-     * <p><b>This value is set by default and cannot be unset using {@code null}. The re-use of this builder
+     * <p><b>This value is set when invoking {@link #setToken(String)} and cannot be unset using {@code null}. The re-use of this builder
      * to build each shard is sufficient and setting it is not required.</b>
      *
      * <p>When you construct multiple JDABuilder instances to build shards it is recommended to use the same ShardedRateLimiter on
-     * all of them.
+     * all of them. But it is to be <u>avoided</u> to use the same ShardedRateLimiter for different accounts/tokens!
      *
      * @param  rateLimiter
      *         ShardedRateLimiter used to keep track of cross-session rate limits
@@ -125,7 +125,10 @@ public class JDABuilder
      */
     public JDABuilder setShardedRateLimiter(ShardedRateLimiter rateLimiter)
     {
-        this.shardRateLimiter = rateLimiter == null ? new ShardedRateLimiter() : rateLimiter;
+        if (accountType != AccountType.BOT)
+            this.shardRateLimiter = null;
+        else
+            this.shardRateLimiter = rateLimiter == null ? new ShardedRateLimiter() : rateLimiter;
         return this;
     }
 
@@ -134,6 +137,8 @@ public class JDABuilder
      * {@link net.dv8tion.jda.core.JDABuilder#buildAsync() buildAsync()}
      * or {@link net.dv8tion.jda.core.JDABuilder#buildBlocking() buildBlocking()}
      * is called.
+     *
+     * <p><u><b>This will reset the prior provided {@link #setShardedRateLimiter(ShardedRateLimiter)} setting!</b></u>
      *
      * <p>For {@link net.dv8tion.jda.core.AccountType#BOT} accounts:
      * <ol>
@@ -160,6 +165,11 @@ public class JDABuilder
     public JDABuilder setToken(String token)
     {
         this.token = token;
+        //Share ratelimit for the same token
+        // when this builder is used to build different accounts this makes sure we don't use the
+        // same ratelimiter on them as it would be inaccurate
+        if (accountType == AccountType.BOT)
+            shardRateLimiter = new ShardedRateLimiter();
         return this;
     }
 
