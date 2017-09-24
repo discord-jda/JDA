@@ -86,7 +86,7 @@ public class PresenceImpl implements Presence
     @Override
     public void setStatus(OnlineStatus status)
     {
-        setPresence(game, stats);
+        setPresence(game, status);
     }
 
     @Override
