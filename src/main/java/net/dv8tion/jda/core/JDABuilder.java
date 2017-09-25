@@ -29,10 +29,7 @@ import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.OkHttpClient;
 
 import javax.security.auth.login.LoginException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Used to create new {@link net.dv8tion.jda.core.JDA} instances. This is also useful for making sure all of
@@ -138,7 +135,8 @@ public class JDABuilder
      * or {@link net.dv8tion.jda.core.JDABuilder#buildBlocking() buildBlocking()}
      * is called.
      *
-     * <p><u><b>This will reset the prior provided {@link #setShardedRateLimiter(ShardedRateLimiter)} setting!</b></u>
+     * <p><u><b>This will reset the prior provided {@link #setShardedRateLimiter(ShardedRateLimiter)} setting
+     * if this token is different to the previously set token!</b></u>
      *
      * <p>For {@link net.dv8tion.jda.core.AccountType#BOT} accounts:
      * <ol>
@@ -164,12 +162,12 @@ public class JDABuilder
      */
     public JDABuilder setToken(String token)
     {
-        this.token = token;
         //Share ratelimit for the same token
         // when this builder is used to build different accounts this makes sure we don't use the
         // same ratelimiter on them as it would be inaccurate
-        if (accountType == AccountType.BOT)
+        if (accountType == AccountType.BOT && !Objects.equals(token, this.token))
             shardRateLimiter = new ShardedRateLimiter();
+        this.token = token;
         return this;
     }
 
