@@ -246,6 +246,10 @@ public class ChannelManagerUpdatable
      * An {@link net.dv8tion.jda.core.managers.fields.ChannelField ChannelField}
      * for the <b><u>position</u></b> of the selected {@link net.dv8tion.jda.core.entities.Channel Channel}.
      *
+     * <p><b>To modify multiple channels you should use
+     * <code>Guild.{@link net.dv8tion.jda.core.managers.GuildController getController()}.{@link GuildController#modifyTextChannelPositions() modifyTextChannelPositions()}</code>
+     * instead! This is not the same as looping through channels and using this to update positions!</b>
+     *
      * <p>To set the value use {@link net.dv8tion.jda.core.managers.fields.Field#setValue(Object) setValue(Integer)}
      * on the returned {@link net.dv8tion.jda.core.managers.fields.ChannelField ChannelField} instance.
      *
@@ -257,6 +261,8 @@ public class ChannelManagerUpdatable
      */
     public ChannelField<Integer> getPositionField()
     {
+        if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_CHANNEL))
+            throw new InsufficientPermissionException(Permission.MANAGE_CHANNEL);
         return position;
     }
 

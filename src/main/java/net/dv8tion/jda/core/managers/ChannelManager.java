@@ -143,11 +143,16 @@ public class ChannelManager
      * Sets the <b><u>position</u></b>
      * of the selected {@link net.dv8tion.jda.core.entities.Channel Channel}.
      *
+     * <p><b>To modify multiple channels you should use
+     * <code>Guild.{@link net.dv8tion.jda.core.managers.GuildController getController()}.{@link GuildController#modifyTextChannelPositions() modifyTextChannelPositions()}</code>
+     * instead! This is not the same as looping through channels and using this to update positions!</b>
+     *
      * @param  position
      *         The new position for the selected {@link net.dv8tion.jda.core.entities.Channel Channel}
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
+     *         If the currently logged in account does not have the Permission
+     *         {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} in the Guild!
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link ChannelManagerUpdatable#update() #update()}

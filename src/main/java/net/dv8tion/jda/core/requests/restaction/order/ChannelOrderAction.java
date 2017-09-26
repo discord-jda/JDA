@@ -33,7 +33,10 @@ import java.util.Collection;
 /**
  * Implementation of {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction OrderAction}
  * to modify the order of {@link net.dv8tion.jda.core.entities.Channel Channels} for a {@link net.dv8tion.jda.core.entities.Guild Guild}.
- * <br>To apply the changes you must finish the {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+ * <br>To apply the changes you must finish the {@link net.dv8tion.jda.core.requests.RestAction RestAction}.
+ *
+ * <p>Before you can use any of the {@code move} methods
+ * you must use either {@link #selectPosition(Object) selectPosition(Channel)} or {@link #selectPosition(int)}!
  *
  * @param <T>
  *        The type of {@link net.dv8tion.jda.core.entities.Channel Channel} defining
