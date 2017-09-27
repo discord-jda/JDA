@@ -105,12 +105,14 @@ public class JDABuilder
      * Sets the {@link net.dv8tion.jda.core.ShardedRateLimiter ShardedRateLimiter} that will be used to keep
      * track of rate limits across sessions.
      * <br>When one shard hits the global rate limit all others will be informed by this value wrapper.
+     * This does nothing for {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}!
      *
      * <p>It is recommended to use the same ShardedRateLimiter for all shards and not one each. This is
      * similar to {@link net.dv8tion.jda.core.requests.SessionReconnectQueue SessionReconnectQueue}!
      *
      * <p><b>This value is set when invoking {@link #setToken(String)} and cannot be unset using {@code null}. The re-use of this builder
      * to build each shard is sufficient and setting it is not required.</b>
+     * <br>Providing {@code null} is equivalent to doing {@code setShardedRateLimiter(new ShardedRateLimiter())}.
      *
      * <p>When you construct multiple JDABuilder instances to build shards it is recommended to use the same ShardedRateLimiter on
      * all of them. But it is to be <u>avoided</u> to use the same ShardedRateLimiter for different accounts/tokens!
@@ -138,7 +140,7 @@ public class JDABuilder
      * <p><u><b>This will reset the prior provided {@link #setShardedRateLimiter(ShardedRateLimiter)} setting
      * if this token is different to the previously set token!</b></u>
      *
-     * <p>For {@link net.dv8tion.jda.core.AccountType#BOT} accounts:
+     * <h2>For {@link net.dv8tion.jda.core.AccountType#BOT}</h2>
      * <ol>
      *     <li>Go to your <a href="https://discordapp.com/developers/applications/me">Discord Applications</a></li>
      *     <li>Create or select an already existing application</li>
@@ -146,7 +148,7 @@ public class JDABuilder
      *     <li>Click the <i>click to reveal</i> link beside the <b>Token</b> label to show your Bot's {@code token}</li>
      * </ol>
      *
-     * <p>For {@link net.dv8tion.jda.core.AccountType#CLIENT} accounts:
+     * <h2>For {@link net.dv8tion.jda.core.AccountType#CLIENT}</h2>
      * <br>Using either the Discord desktop app or the Browser Webapp
      * <ol>
      *     <li>Press {@code Ctrl-Shift-i} which will bring up the developer tools.</li>
