@@ -443,6 +443,7 @@ public class MessageReaction
 
         /**
          * The name for this emote/emoji
+         * <br>For unicode emojis this will be the unicode of said emoji.
          *
          * @return The name for this emote/emoji
          */

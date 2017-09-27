@@ -100,8 +100,6 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      *         If this emote is managed by discord ({@link #isManaged()})
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         if the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES MANAGE_EMOTES} is not given
-     * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
-     *         if the current account is not from {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType#CLIENT}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         The RestAction to delete this Emote.
@@ -115,8 +113,6 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      *
      * <p>This will only work for {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}.
      *
-     * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
-     *         if this is not used with {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType#CLIENT}
      * @throws IllegalStateException
      *         if this emote is fake
      *
@@ -132,8 +128,6 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      * <p>This specific Manager is used to modify multiple properties at once
      * by setting the property and calling {@link EmoteManagerUpdatable#update()}
      *
-     * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
-     *         if this is not used with {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType#CLIENT}
      * @throws IllegalStateException
      *         if this emote is fake
      *

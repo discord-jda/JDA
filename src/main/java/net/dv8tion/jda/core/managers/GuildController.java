@@ -16,14 +16,16 @@
 
 package net.dv8tion.jda.core.managers;
 
-import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.EmoteImpl;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.MemberImpl;
-import net.dv8tion.jda.core.exceptions.*;
+import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
+import net.dv8tion.jda.core.exceptions.HierarchyException;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
@@ -34,9 +36,9 @@ import net.dv8tion.jda.core.requests.restaction.RoleAction;
 import net.dv8tion.jda.core.requests.restaction.WebhookAction;
 import net.dv8tion.jda.core.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.core.requests.restaction.order.RoleOrderAction;
+import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.PermissionUtil;
-import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -2061,7 +2063,8 @@ public class GuildController
      * <br>For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES MANAGE_EMOTES} Permission.
      *
      * <p><b><u>Unicode emojis are not included as {@link net.dv8tion.jda.core.entities.Emote Emote}!</u></b>
-     * <br>Roles may only be available for whitelisted accounts.
+     * <br>Passing the roles field will be ignored unless the application is whitelisted as an emoji provider.
+     * For more information and to request whitelisting please contact {@code support@discordapp.com}
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
@@ -2085,8 +2088,6 @@ public class GuildController
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES MANAGE_EMOTES} Permission
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
-     * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
-     *         If the logged in account is not from {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction} - Type: {@link net.dv8tion.jda.core.entities.Emote Emote}
      *         <br>The newly created Emote
@@ -2096,11 +2097,12 @@ public class GuildController
     {
         checkAvailable();
         checkPermission(Permission.MANAGE_EMOTES);
-        Checks.notNull(name, "Emote name");
+        Checks.notBlank(name, "Emote name");
         Checks.notNull(icon, "Emote icon");
+        Checks.notNull(roles, "Roles");
 
-        if (getJDA().getAccountType() != AccountType.CLIENT)
-            throw new AccountTypeException(AccountType.CLIENT);
+//        if (getJDA().getAccountType() != AccountType.CLIENT)
+//            throw new AccountTypeException(AccountType.CLIENT);
 
         JSONObject body = new JSONObject();
         body.put("name", name);
@@ -2114,26 +2116,22 @@ public class GuildController
             @Override
             protected void handleResponse(Response response, Request<Emote> request)
             {
-                if (response.isOk())
+                if (!response.isOk())
                 {
-                    JSONObject obj = response.getObject();
-                    final long id = obj.getLong("id");
-                    String name = obj.getString("name");
-                    EmoteImpl emote = new EmoteImpl(id, guild).setName(name);
-                    // managed is false by default, should always be false for emotes created by client accounts.
-
-                    JSONArray rolesArr = obj.getJSONArray("roles");
-                    Set<Role> roleSet = emote.getRoleSet();
-                    for (int i = 0; i < rolesArr.length(); i++)
-                        roleSet.add(guild.getRoleById(rolesArr.getString(i)));
-
-                    // put emote into cache
-                    guild.getEmoteMap().put(id, emote);
-
-                    request.onSuccess(emote);
-                }
-                else
                     request.onFailure(response);
+                    return;
+                }
+                JSONObject obj = response.getObject();
+                final long id = obj.getLong("id");
+                final String name = obj.getString("name");
+                final boolean managed = !obj.isNull("managed") && obj.getBoolean("managed");
+                EmoteImpl emote = new EmoteImpl(id, guild).setName(name).setManaged(managed);
+
+                JSONArray rolesArr = obj.getJSONArray("roles");
+                Set<Role> roleSet = emote.getRoleSet();
+                for (int i = 0; i < rolesArr.length(); i++)
+                    roleSet.add(guild.getRoleById(rolesArr.getString(i)));
+                request.onSuccess(emote);
             }
         };
     }
