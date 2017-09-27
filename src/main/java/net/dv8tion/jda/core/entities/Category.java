@@ -2,6 +2,7 @@ package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.requests.restaction.ChannelAction;
 
+import javax.annotation.CheckReturnValue;
 import java.util.List;
 
 /**
@@ -66,6 +67,7 @@ public interface Category extends Channel, Comparable<Category>
      * @return A specific {@link net.dv8tion.jda.core.requests.restaction.ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new TextChannel before creating it
      */
+    @CheckReturnValue
     ChannelAction createTextChannel(String name);
 
     /**
@@ -98,5 +100,6 @@ public interface Category extends Channel, Comparable<Category>
      * @return A specific {@link net.dv8tion.jda.core.requests.restaction.ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new VoiceChannel before creating it
      */
+    @CheckReturnValue
     ChannelAction createVoiceChannel(String name);
 }
