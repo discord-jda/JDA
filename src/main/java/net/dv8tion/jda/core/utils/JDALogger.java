@@ -3,7 +3,6 @@ package net.dv8tion.jda.core.utils;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.impl.SimpleLogger;
 
 import java.util.Map;
 

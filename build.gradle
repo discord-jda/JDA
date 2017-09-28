@@ -155,9 +155,6 @@ javadoc {
     
     //voice crypto
     exclude('com/iwebpp/crypto')
-
-    //SLF4J SimpleLogger
-    exclude('org/slf4j/impl')
 }
 
 bintray {
