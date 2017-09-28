@@ -23,20 +23,23 @@ import net.dv8tion.jda.core.ShardedRateLimiter;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.ratelimit.BotRateLimiter;
 import net.dv8tion.jda.core.requests.ratelimit.ClientRateLimiter;
-import net.dv8tion.jda.core.utils.SimpleLog;
+import net.dv8tion.jda.core.utils.JDALogger;
 import okhttp3.*;
 import okhttp3.internal.http.HttpMethod;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
 public class Requester
 {
-    public static final SimpleLog LOG = SimpleLog.getLog(Requester.class);
+    public static final Logger LOG = JDALogger.getLog(Requester.class);
     public static final String DISCORD_API_PREFIX = String.format("https://discordapp.com/api/v%d/", JDAInfo.DISCORD_REST_VERSION);
     public static final String USER_AGENT = "DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
     public static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");
@@ -192,7 +195,7 @@ public class Requester
         }
         catch (Exception e)
         {
-            LOG.fatal(e); //This originally only printed on DEBUG in 2.x
+            LOG.error("There was an exception while executing a REST request", e); //This originally only printed on DEBUG in 2.x
             apiRequest.handleResponse(new Response(firstSuccess, e, rays));
             return null;
         }

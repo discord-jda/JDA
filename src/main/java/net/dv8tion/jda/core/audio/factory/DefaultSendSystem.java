@@ -18,7 +18,7 @@ package net.dv8tion.jda.core.audio.factory;
 
 import net.dv8tion.jda.core.audio.AudioConnection;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
-import net.dv8tion.jda.core.utils.SimpleLog;
+import net.dv8tion.jda.core.utils.JDALogger;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -69,7 +69,7 @@ public class DefaultSendSystem implements IAudioSendSystem
                 }
                 catch (Exception e)
                 {
-                    AudioConnection.LOG.fatal(e);
+                    AudioConnection.LOG.error("Error while sending udp audio data", e);
                 }
                 finally
                 {
@@ -99,7 +99,7 @@ public class DefaultSendSystem implements IAudioSendSystem
         });
         sendThread.setUncaughtExceptionHandler((thread, throwable) ->
         {
-            SimpleLog.getLog(DefaultSendSystem.class).fatal(throwable);
+            JDALogger.getLog(DefaultSendSystem.class).error("Uncaught exception in audio send thread", throwable);
             start();
         });
         sendThread.setDaemon(true);

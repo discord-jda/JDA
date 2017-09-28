@@ -25,9 +25,10 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
-import net.dv8tion.jda.core.utils.SimpleLog;
+import net.dv8tion.jda.core.utils.JDALogger;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.net.*;
@@ -40,7 +41,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class AudioWebSocket extends WebSocketAdapter
 {
-    public static final SimpleLog LOG = SimpleLog.getLog(AudioWebSocket.class);
+    public static final Logger LOG = JDALogger.getLog(AudioWebSocket.class);
     public static final int DISCORD_SECRET_KEY_LENGTH = 32;
     public static final int AUDIO_GATEWAY_VERSION = 3;
 
@@ -301,7 +302,7 @@ public class AudioWebSocket extends WebSocketAdapter
     @Override
     public void handleCallbackError(WebSocket websocket, Throwable cause)
     {
-        LOG.fatal(cause);
+        LOG.error("There was some audio websocket error", cause);
         api.getEventManager().handle(new ExceptionEvent(api, cause, true));
     }
 
@@ -554,7 +555,7 @@ public class AudioWebSocket extends WebSocketAdapter
     private void setupKeepAlive(final int keepAliveInterval)
     {
         if (keepAliveHandle != null)
-            LOG.fatal("Setting up a KeepAlive runnable while the previous one seems to still be active!!");
+            LOG.error("Setting up a KeepAlive runnable while the previous one seems to still be active!!");
 
         Runnable keepAliveRunnable = () ->
         {
@@ -580,7 +581,7 @@ public class AudioWebSocket extends WebSocketAdapter
                 }
                 catch (IOException e)
                 {
-                    LOG.fatal(e);
+                    LOG.error("There was some error sending an audio keepalive packet", e);
                 }
             }
         };
@@ -622,7 +623,7 @@ public class AudioWebSocket extends WebSocketAdapter
     {
         if (!shutdown)
         {
-            LOG.fatal("Finalization hook of AudioWebSocket was triggered without properly shutting down");
+            LOG.error("Finalization hook of AudioWebSocket was triggered without properly shutting down");
             close(ConnectionStatus.NOT_CONNECTED);
         }
     }

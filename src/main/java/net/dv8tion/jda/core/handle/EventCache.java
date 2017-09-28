@@ -17,7 +17,8 @@ package net.dv8tion.jda.core.handle;
 
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
-import net.dv8tion.jda.core.utils.SimpleLog;
+import net.dv8tion.jda.core.utils.JDALogger;
+import org.slf4j.Logger;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -26,7 +27,7 @@ import java.util.Map;
 
 public class EventCache
 {
-    public static final SimpleLog LOG = SimpleLog.getLog(EventCache.class);
+    public static final Logger LOG = JDALogger.getLog(EventCache.class);
     private final Map<Type, TLongObjectMap<List<Runnable>>> eventCache = new HashMap<>();
 
     public void cache(Type type, long triggerId, Runnable handler)

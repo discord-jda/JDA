@@ -21,13 +21,13 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
-import net.dv8tion.jda.core.utils.SimpleLog;
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
-import okhttp3.RequestBody;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.JDALogger;
+import okhttp3.RequestBody;
+import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.slf4j.event.Level;
+import org.slf4j.Logger;
 
 import java.util.concurrent.*;
 import java.util.function.Consumer;
@@ -147,18 +147,18 @@ import java.util.function.Consumer;
  */
 public abstract class RestAction<T>
 {
-    public static final SimpleLog LOG = SimpleLog.getLog(RestAction.class);
+    public static final Logger LOG = JDALogger.getLog(RestAction.class);
 
     public static Consumer DEFAULT_SUCCESS = o -> {};
     public static Consumer<Throwable> DEFAULT_FAILURE = t ->
     {
-        if (LOG.getEffectiveLevel().ordinal() >= Level.DEBUG.ordinal())
+        if (LOG.isDebugEnabled())
         {
-            LOG.fatal(t);
+            LOG.error("RestAction queue returned failure", t);
         }
         else
         {
-            LOG.fatal("RestAction queue returned failure: [" + t.getClass().getSimpleName() + "] " + t.getMessage());
+            LOG.error("RestAction queue returned failure: [" + t.getClass().getSimpleName() + "] " + t.getMessage());
         }
     };
 

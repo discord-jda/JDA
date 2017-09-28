@@ -129,7 +129,7 @@ public class ReadyHandler extends SocketHandler
                 JSONObject relationship = relationships.getJSONObject(i);
                 Relationship r = builder.createRelationship(relationship);
                 if (r == null)
-                    JDAImpl.LOG.fatal("Provided relationship in READY with an unknown type! JSON: " + relationship.toString());
+                    JDAImpl.LOG.error("Provided relationship in READY with an unknown type! JSON: " + relationship.toString());
             }
 
             for (int i = 0; i < presences.length(); i++)
@@ -188,7 +188,7 @@ public class ReadyHandler extends SocketHandler
     public void guildSetupComplete(Guild guild)
     {
         if (!incompleteGuilds.remove(guild.getIdLong()))
-            WebSocketClient.LOG.fatal("Completed the setup for Guild: " + guild + " without matching id in ReadyHandler cache");
+            WebSocketClient.LOG.error("Completed the setup for Guild: " + guild + " without matching id in ReadyHandler cache");
         if (incompleteGuilds.size() == unavailableGuilds.size())
             guildLoadComplete(allContent.getJSONObject("d"));
         else

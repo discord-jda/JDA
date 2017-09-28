@@ -39,25 +39,26 @@ import net.dv8tion.jda.core.handle.*;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
+import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.MiscUtil;
-import net.dv8tion.jda.core.utils.SimpleLog;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.time.OffsetDateTime;
 import java.util.*;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.Semaphore;
 import java.util.zip.DataFormatException;
 import java.util.zip.InflaterOutputStream;
 
 public class WebSocketClient extends WebSocketAdapter implements WebSocketListener
 {
-    public static final SimpleLog LOG = SimpleLog.getLog(WebSocketClient.class);
+    public static final Logger LOG = JDALogger.getLog(WebSocketClient.class);
     public static final int DISCORD_GATEWAY_VERSION = 6;
     public static final int IDENTIFY_DELAY = 5;
 
@@ -517,7 +518,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             rawCloseCode = serverCloseFrame.getCloseCode();
             closeCode = CloseCode.from(rawCloseCode);
             if (closeCode == CloseCode.RATE_LIMITED)
-                LOG.fatal("WebSocket connection closed due to ratelimit! Sent more than 120 websocket messages in under 60 seconds!");
+                LOG.error("WebSocket connection closed due to ratelimit! Sent more than 120 websocket messages in under 60 seconds!");
             else if (closeCode != null)
                 LOG.debug("WebSocket connection closed with code " + closeCode);
             else
@@ -544,8 +545,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 //it is possible that a token can be invalidated due to too many reconnect attempts
                 //or that a bot reached a new shard minimum and cannot connect with the current settings
                 //if that is the case we have to drop our connection and inform the user with a fatal error message
-                LOG.fatal("WebSocket connection was closed and cannot be recovered due to identification issues");
-                LOG.fatal(closeCode);
+                LOG.error("WebSocket connection was closed and cannot be recovered due to identification issues");
+                LOG.error("{}", closeCode);
             }
 
             api.setStatus(JDA.Status.SHUTDOWN);
@@ -574,7 +575,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         catch (IllegalStateException ex)
         {
-            LOG.fatal("Reconnect queue rejected session. Shutting down...");
+            LOG.error("Reconnect queue rejected session. Shutting down...");
             api.setStatus(JDA.Status.SHUTDOWN);
             api.getEventManager().handle(
                 new ShutdownEvent(api, OffsetDateTime.now(), 1006));
@@ -611,7 +612,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 api.setStatus(JDA.Status.WAITING_TO_RECONNECT);
                 if (handleIdentifyRateLimit && shouldHandleIdentify)
                 {
-                    LOG.fatal("Encountered IDENTIFY (OP " + WebSocketCode.IDENTIFY + ") Rate Limit! " +
+                    LOG.error("Encountered IDENTIFY (OP " + WebSocketCode.IDENTIFY + ") Rate Limit! " +
                         "Waiting " + IDENTIFY_DELAY + " seconds before trying again!");
                     Thread.sleep(IDENTIFY_DELAY * 1000);
                 }
@@ -975,13 +976,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             LOG.warn("Got an unexpected Json-parse error. Please redirect following message to the devs:\n\t"
                     + ex.getMessage() + "\n\t" + type + " -> " + content);
-            LOG.warn(ex);
+            LOG.warn("Stacktrace:", ex);
         }
         catch (Exception ex)
         {
-            LOG.fatal("Got an unexpected error. Please redirect following message to the devs:\n\t"
+            LOG.error("Got an unexpected error. Please redirect following message to the devs:\n\t"
                     + type + " -> " + content);
-            LOG.fatal(ex);
+            LOG.error("Stacktrace:", ex);
         }
     }
 
@@ -1013,7 +1014,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     @Override
     public void handleCallbackError(WebSocket websocket, Throwable cause)
     {
-        LOG.fatal(cause);
+        LOG.error("There was an error in the WebSocket connection", cause);
         api.getEventManager().handle(new ExceptionEvent(api, cause, true));
     }
 
@@ -1069,7 +1070,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         catch (InterruptedException e)
         {
-            LOG.fatal(e);
+            LOG.error("There was an error queueing the audio reconnect", e);
         }
         finally
         {
@@ -1102,7 +1103,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         catch (InterruptedException e)
         {
-            LOG.fatal(e);
+            LOG.error("There was an error queueing the audio connect", e);
         }
         finally
         {
@@ -1132,7 +1133,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         catch (InterruptedException e)
         {
-            LOG.fatal(e);
+            LOG.error("There was an error queueing the audio disconnect", e);
         }
         finally
         {
@@ -1152,7 +1153,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         catch (InterruptedException e)
         {
-            LOG.fatal(e);
+            LOG.error("There was an error cleaning up audio connections for deleted guild", e);
         }
         finally
         {
@@ -1170,7 +1171,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         catch (InterruptedException e)
         {
-            LOG.fatal(e);
+            LOG.error("There was an error updating the audio connection", e);
         }
         finally
         {

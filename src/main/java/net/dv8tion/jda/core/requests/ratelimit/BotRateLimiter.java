@@ -198,7 +198,7 @@ public class BotRateLimiter extends RateLimiter
         {
             if (!bucket.getRoute().equals("gateway")
                     && !bucket.getRoute().equals("users/@me")
-                    && Requester.LOG.getEffectiveLevel().ordinal() >= Level.DEBUG.ordinal())
+                    && Requester.LOG.isDebugEnabled())
             {
                 Requester.LOG.debug("Encountered issue with headers when updating a bucket"
                                   + "\nRoute: " + bucket.getRoute()
@@ -321,8 +321,7 @@ public class BotRateLimiter extends RateLimiter
                         }
                         catch (Throwable t)
                         {
-                            Requester.LOG.fatal("Requester system encountered an internal error");
-                            Requester.LOG.fatal(t);
+                            Requester.LOG.error("Requester system encountered an internal error", t);
                             it.remove();
                             if (request != null)
                                 request.onFailure(t);
@@ -348,8 +347,7 @@ public class BotRateLimiter extends RateLimiter
             }
             catch (Throwable err)
             {
-                Requester.LOG.fatal("Requester system encountered an internal error from beyond the synchronized execution blocks. NOT GOOD!");
-                Requester.LOG.fatal(err);
+                Requester.LOG.error("Requester system encountered an internal error from beyond the synchronized execution blocks. NOT GOOD!", err);
                 if (err instanceof Error)
                 {
                     JDAImpl api = requester.getJDA();

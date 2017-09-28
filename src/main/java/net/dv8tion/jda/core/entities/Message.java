@@ -816,7 +816,7 @@ public interface Message extends ISnowflake, Formattable
             }
             catch (Exception e)
             {
-                JDAImpl.LOG.fatal(e);
+                JDAImpl.LOG.error("Error while downloading an attachment", e);
             }
             finally
             {

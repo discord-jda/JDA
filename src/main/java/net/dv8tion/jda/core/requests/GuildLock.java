@@ -21,15 +21,16 @@ import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.utils.SimpleLog;
+import net.dv8tion.jda.core.utils.JDALogger;
 import org.json.JSONObject;
+import org.slf4j.Logger;
 
 import java.util.LinkedList;
 import java.util.List;
 
 public class GuildLock
 {
-    public static final SimpleLog LOG = SimpleLog.getLog(GuildLock.class);
+    public static final Logger LOG = JDALogger.getLog(GuildLock.class);
 
     private final JDA api;
     private final TLongObjectMap<List<JSONObject>> cache = new TLongObjectHashMap<>();

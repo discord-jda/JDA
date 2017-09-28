@@ -32,9 +32,10 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
-import net.dv8tion.jda.core.utils.SimpleLog;
+import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.tuple.Pair;
 import org.json.JSONObject;
+import org.slf4j.Logger;
 import tomp2p.opuswrapper.Opus;
 
 import java.net.DatagramPacket;
@@ -53,7 +54,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class AudioConnection
 {
-    public static final SimpleLog LOG = SimpleLog.getLog(AudioConnection.class);
+    public static final Logger LOG = JDALogger.getLog(AudioConnection.class);
     public static final int OPUS_SAMPLE_RATE = 48000;   //(Hz) We want to use the highest of qualities! All the bandwidth!
     public static final int OPUS_FRAME_SIZE = 960;      //An opus frame size of 960 at 48000hz represents 20 milliseconds of audio.
     public static final int OPUS_FRAME_TIME_AMOUNT = 20;//This is 20 milliseconds. We are only dealing with 20ms opus packets.
@@ -115,7 +116,7 @@ public class AudioConnection
                 }
                 catch (InterruptedException e)
                 {
-                    LOG.fatal(e);
+                    LOG.error("Someone didn't let me sleep :(", e);
                     Thread.currentThread().interrupt();
                 }
             }
@@ -133,7 +134,7 @@ public class AudioConnection
         });
         readyThread.setUncaughtExceptionHandler((thread, throwable) ->
         {
-            LOG.fatal(throwable);
+            LOG.error("Uncaught exception in Audio ready-thread", throwable);
             JDAImpl api = (JDAImpl) getJDA();
             api.getEventManager().handle(new ExceptionEvent(api, throwable, true));
         });
@@ -206,7 +207,7 @@ public class AudioConnection
             {
                 //Different User already existed with this ssrc. What should we do? Just replace? Probably should nuke the old opusDecoder.
                 //Log for now and see if any user report the error.
-                LOG.fatal("Yeah.. So.. JDA received a UserSSRC update for an ssrc that already had a User set. Inform DV8FromTheWorld.\n" +
+                LOG.error("Yeah.. So.. JDA received a UserSSRC update for an ssrc that already had a User set. Inform DV8FromTheWorld.\n" +
                         "ChannelId: " + channel.getId() + " SSRC: " + ssrc + " oldId: " + previousId + " newId: " + userId);
             }
         }
@@ -317,7 +318,7 @@ public class AudioConnection
                 }
                 catch (SocketException e)
                 {
-                    LOG.fatal(e);
+                    LOG.error("Couldn't set SO_TIMEOUT for UDP socket", e);
                 }
                 while (!udpSocket.isClosed() && !Thread.currentThread().isInterrupted())
                 {
@@ -414,13 +415,13 @@ public class AudioConnection
                     }
                     catch (Exception e)
                     {
-                        LOG.fatal(e);
+                        LOG.error("There was some random exception while waiting for udp packets", e);
                     }
                 }
             });
             receiveThread.setUncaughtExceptionHandler((thread, throwable) ->
             {
-                LOG.fatal(throwable);
+                LOG.error("There was some uncaught exception in the audio receive thread", throwable);
                 JDAImpl api = (JDAImpl) getJDA();
                 api.getEventManager().handle(new ExceptionEvent(api, throwable, true));
             });
@@ -445,7 +446,7 @@ public class AudioConnection
                 t.setDaemon(true);
                 t.setUncaughtExceptionHandler((thread, throwable) ->
                 {
-                    LOG.fatal(throwable);
+                    LOG.error("I don't know what happened :(", throwable);
                     JDAImpl api = (JDAImpl) getJDA();
                     api.getEventManager().handle(new ExceptionEvent(api, throwable, true));
                 });
@@ -514,7 +515,7 @@ public class AudioConnection
                 }
                 catch (Exception e)
                 {
-                    LOG.fatal(e);
+                    LOG.error("Something happened!", e);
                 }
             }, 0, 20, TimeUnit.MILLISECONDS);
         }
@@ -653,7 +654,7 @@ public class AudioConnection
             }
             catch (Exception e)
             {
-                LOG.fatal(e);
+                LOG.error("There was an error while getting next audio packet", e);
             }
 
             if (nextPacket != null)
