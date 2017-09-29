@@ -470,7 +470,7 @@ public class WebhookClient implements AutoCloseable
             }
             else if (!response.isSuccessful())
             {
-                LOG.debug("Failed to update buckets due to unsuccessful response with code: " + response.code() + " and body: ");
+                LOG.debug("Failed to update buckets due to unsuccessful response with code: {} and body: ", response.code());
                 LOG.debug(new String(IOUtil.readFully(Requester.getBody(response))));
                 return;
             }

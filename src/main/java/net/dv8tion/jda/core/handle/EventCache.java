@@ -60,7 +60,8 @@ public class EventCache
 
         if (items != null && !items.isEmpty())
         {
-            EventCache.LOG.debug("Replaying " + items.size() + " events from the EventCache for a " + type + " with id: " + triggerId);
+            EventCache.LOG.debug("Replaying {} events from the EventCache for a {} with id: {}",
+                items.size(), type, triggerId);
             List<Runnable> itemsCopy = new LinkedList<>(items);
             items.clear();
             for (Runnable item : itemsCopy)
@@ -88,7 +89,7 @@ public class EventCache
         try
         {
             List<Runnable> events = eventCache.get(type).remove(id);
-            LOG.debug("Clearing cache for type " + type + " with ID " + id + " (Size: " + events.size() + ')');
+            LOG.debug("Clearing cache for type {} with ID {} (Size: {})", type, id, events.size());
         }
         catch (NullPointerException ignored) {}
     }

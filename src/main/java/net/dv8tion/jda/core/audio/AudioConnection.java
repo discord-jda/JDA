@@ -666,7 +666,7 @@ public class AudioConnection
         @Override
         public void onConnectionError(ConnectionStatus status)
         {
-            LOG.warn("IAudioSendSystem reported a connection error of: " + status);
+            LOG.warn("IAudioSendSystem reported a connection error of: {}", status);
             LOG.warn("Shutting down AudioConnection.");
             webSocket.close(status);
         }

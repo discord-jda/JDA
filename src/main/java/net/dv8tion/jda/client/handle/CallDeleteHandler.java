@@ -45,7 +45,7 @@ public class CallDeleteHandler extends SocketHandler
         if (channel == null)
         {
             api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
-            EventCache.LOG.debug("Received CALL_DELETE for a Group/PrivateChannel that is not yet cached. JSON: " + content);
+            EventCache.LOG.debug("Received CALL_DELETE for a Group/PrivateChannel that is not yet cached. JSON: {}", content);
             return null;
         }
 
@@ -53,7 +53,7 @@ public class CallDeleteHandler extends SocketHandler
         if (call == null)
         {
             api.getEventCache().cache(EventCache.Type.CALL, channelId, () -> handle(responseNumber, allContent));
-            EventCache.LOG.debug("Received a CALL_DELETE for a Call that is not yet cached. JSON: " + content);
+            EventCache.LOG.debug("Received a CALL_DELETE for a Call that is not yet cached. JSON: {}", content);
             return null;
         }
 

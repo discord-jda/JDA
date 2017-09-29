@@ -58,9 +58,9 @@ public class GuildLock
             List<JSONObject> events = cache.remove(guildId);
             if(events.size() > 0)
             {
-                LOG.debug("Replaying " + events.size() + " events for unlocked guild with id " + guildId);
+                LOG.debug("Replaying {} events for unlocked guild with id {}", events.size(), guildId);
                 ((JDAImpl) api).getClient().handle(events);
-                LOG.debug("Finished replaying events for guild with id " + guildId);
+                LOG.debug("Finished replaying events for guild with id {}", guildId);
             }
         }
     }
@@ -69,7 +69,7 @@ public class GuildLock
     {
         if (isLocked(guildId))
         {
-            LOG.debug("Queueing up event for guild with id " + guildId + ": " + event.toString());
+            LOG.debug("Queueing up event for guild with id {}: {}", guildId, event);
             cache.get(guildId).add(event);
         }
     }

@@ -73,7 +73,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 if (textChannel == null)
                 {
                     api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
-                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a TextChannel that does not exist. JSON: " + content);
+                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a TextChannel that does not exist. JSON: {}", content);
                     return null;
                 }
 
@@ -146,7 +146,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 if (voiceChannel == null)
                 {
                     api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
-                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a VoiceChannel that does not exist. JSON: " + content);
+                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a VoiceChannel that does not exist. JSON: {}", content);
                     return null;
                 }
                 //If any properties changed, update the values and fire the proper events.
@@ -316,7 +316,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 {
                     api.getEventCache().cache(EventCache.Type.ROLE, id, () ->
                             handlePermissionOverride(override, channel, content, changedPermHolders, containedPermHolders));
-                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to create or update a PermissionOverride for a Role that doesn't exist! RoleId: " + id + " JSON: " + content);
+                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to create or update a PermissionOverride for a Role that doesn't exist! RoleId: {} JSON: {}", id, content);
                     return;
                 }
                 break;
@@ -328,7 +328,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 {
                     api.getEventCache().cache(EventCache.Type.USER, id, () ->
                             handlePermissionOverride(override, channel, content, changedPermHolders, containedPermHolders));
-                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to create or update a PermissionOverride for Member that doesn't exist in this Guild! MemberId: " + id + " JSON: " + content);
+                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to create or update a PermissionOverride for Member that doesn't exist in this Guild! MemberId: {} JSON: {}", id, content);
                     return;
                 }
                 break;
@@ -364,7 +364,7 @@ public class ChannelUpdateHandler extends SocketHandler
         if (group == null)
         {
             api.getEventCache().cache(EventCache.Type.CHANNEL, groupId, () -> handle(responseNumber, allContent));
-            EventCache.LOG.debug("Received CHANNEL_UPDATE for a group that was not yet cached. JSON: " + content);
+            EventCache.LOG.debug("Received CHANNEL_UPDATE for a group that was not yet cached. JSON: {}", content);
             return;
         }
 
@@ -375,7 +375,7 @@ public class ChannelUpdateHandler extends SocketHandler
 
         if (owner == null)
         {
-            EventCache.LOG.warn("Received CHANNEL_UPDATE for a group with an owner_id for a user that is not cached. owner_id: " + ownerId);
+            EventCache.LOG.warn("Received CHANNEL_UPDATE for a group with an owner_id for a user that is not cached. owner_id: {}", ownerId);
         }
         else
         {

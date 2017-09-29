@@ -165,9 +165,9 @@ public class Requester
                     break; // break loop, got a successful response!
 
                 attempt++;
-                LOG.debug(String.format("Requesting %s -> %s returned status %d... retrying (attempt %d)",
-                        apiRequest.getRoute().getMethod().toString(),
-                        url, firstSuccess.code(), attempt));
+                LOG.debug("Requesting {} -> {} returned status {}... retrying (attempt {})",
+                        apiRequest.getRoute().getMethod(),
+                        url, firstSuccess.code(), attempt);
                 try
                 {
                     Thread.sleep(50 * attempt);
@@ -184,7 +184,7 @@ public class Requester
 
             retryAfter = rateLimiter.handleResponse(route, firstSuccess);
             if (!rays.isEmpty())
-                LOG.debug("Received response with following cf-rays: " + rays);
+                LOG.debug("Received response with following cf-rays: {}", rays);
 
             if (retryAfter == null)
                 apiRequest.handleResponse(new Response(firstSuccess, -1, rays));

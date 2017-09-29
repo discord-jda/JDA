@@ -52,7 +52,7 @@ public class GuildDeleteHandler extends SocketHandler
         if (guild == null)
         {
             api.getEventCache().cache(EventCache.Type.GUILD, id, () -> handle(responseNumber, allContent));
-            EventCache.LOG.debug("Received GUILD_DELETE for a Guild that is not currently cached. ID: " + id);
+            EventCache.LOG.debug("Received GUILD_DELETE for a Guild that is not currently cached. ID: {}", id);
             return null;
         }
 

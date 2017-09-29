@@ -60,7 +60,7 @@ public class MessageReactionHandler extends SocketHandler
 
         if (emojiId == null && emojiName == null)
         {
-            WebSocketClient.LOG.debug("Received a reaction " + (add ? "add" : "remove") + " with no name nor id. json: " + content);
+            WebSocketClient.LOG.debug("Received a reaction {} with no name nor id. json: {}", (add ? "add" : "remove"), content);
             return null;
         }
 
@@ -106,7 +106,7 @@ public class MessageReactionHandler extends SocketHandler
                 }
                 else
                 {
-                    WebSocketClient.LOG.debug("Received a reaction " + (add ? "add" : "remove") + " with a null name. json: " + content);
+                    WebSocketClient.LOG.debug("Received a reaction {} with a null name. json: {}", (add ? "add" : "remove"), content);
                     return null;
                 }
             }

@@ -200,9 +200,8 @@ public class BotRateLimiter extends RateLimiter
                     && !bucket.getRoute().equals("users/@me")
                     && Requester.LOG.isDebugEnabled())
             {
-                Requester.LOG.debug("Encountered issue with headers when updating a bucket"
-                                  + "\nRoute: " + bucket.getRoute()
-                                  + "\nHeaders: " + headers);
+                Requester.LOG.debug("Encountered issue with headers when updating a bucket\nRoute: {}\nHeaders: {}",
+                    bucket.getRoute(), headers);
             }
 
         }

@@ -126,8 +126,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected void updateTraces(JSONArray arr, String type, int opCode)
     {
-        final String msg = String.format("Received a _trace for %s (OP: %d) with %s", type, opCode, arr);
-        WebSocketClient.LOG.debug(msg);
+        WebSocketClient.LOG.debug("Received a _trace for {} (OP: {}) with {}", type, opCode, arr);
         traces.clear();
         for (Object o : arr)
             traces.add(String.valueOf(o));
@@ -180,7 +179,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             api.getEventManager().handle(new ResumedEvent(api, api.getResponseTotal()));
         }
         api.setStatus(JDA.Status.CONNECTED);
-        LOG.debug("Resending " + cachedEvents.size() + " cached events...");
+        LOG.debug("Resending {} cached events...", cachedEvents.size());
         handle(cachedEvents);
         LOG.debug("Sending of cached events finished.");
         cachedEvents.clear();
@@ -223,7 +222,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         //Allows 115 messages to be sent before limiting.
         if (this.messagesSent <= 115 || (skipQueue && this.messagesSent <= 119))   //technically we could go to 120, but we aren't going to chance it
         {
-            LOG.trace("<- " + message);
+            LOG.trace("<- {}", message);
             socket.sendText(message);
             this.messagesSent++;
             return true;
@@ -482,7 +481,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             {
                 String ray = values.get(0);
                 cfRays.add(ray);
-                LOG.debug("Received new CF-RAY: " + ray);
+                LOG.debug("Received new CF-RAY: {}", ray);
             }
         }
         connected = true;
@@ -520,9 +519,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             if (closeCode == CloseCode.RATE_LIMITED)
                 LOG.error("WebSocket connection closed due to ratelimit! Sent more than 120 websocket messages in under 60 seconds!");
             else if (closeCode != null)
-                LOG.debug("WebSocket connection closed with code " + closeCode);
+                LOG.debug("WebSocket connection closed with code {}", closeCode);
             else
-                LOG.warn("WebSocket connection closed with unknown meaning for close-code " + rawCloseCode);
+                LOG.warn("WebSocket connection closed with unknown meaning for close-code {}", rawCloseCode);
         }
         if (clientCloseFrame != null
             && clientCloseFrame.getCloseCode() == 1000
@@ -600,10 +599,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         if (!handleIdentifyRateLimit)
         {
             if (callFromQueue)
-                LOG.warn("Queue is attempting to reconnect a shard..." + (shardInfo != null ? " Shard: " + shardInfo.getShardString() : ""));
+                LOG.warn("Queue is attempting to reconnect a shard...{}", (shardInfo != null ? " Shard: " + shardInfo.getShardString() : ""));
             else
                 LOG.warn("Got disconnected from WebSocket (Internet?!)...");
-            LOG.warn("Attempting to reconnect in " + reconnectTimeoutS + "s");
+            LOG.warn("Attempting to reconnect in {}s", reconnectTimeoutS);
         }
         while(shouldReconnect)
         {
@@ -612,8 +611,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 api.setStatus(JDA.Status.WAITING_TO_RECONNECT);
                 if (handleIdentifyRateLimit && shouldHandleIdentify)
                 {
-                    LOG.error("Encountered IDENTIFY (OP " + WebSocketCode.IDENTIFY + ") Rate Limit! " +
-                        "Waiting " + IDENTIFY_DELAY + " seconds before trying again!");
+                    LOG.error("Encountered IDENTIFY (OP {}) Rate Limit! Waiting {} seconds before trying again!",
+                        WebSocketCode.IDENTIFY, IDENTIFY_DELAY);
                     Thread.sleep(IDENTIFY_DELAY * 1000);
                 }
                 else
@@ -640,7 +639,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             catch (RuntimeException ex)
             {
                 reconnectTimeoutS = Math.min(reconnectTimeoutS << 1, api.getMaxReconnectDelay());
-                LOG.warn("Reconnect failed! Next attempt in " + reconnectTimeoutS + "s");
+                LOG.warn("Reconnect failed! Next attempt in {}s", reconnectTimeoutS);
             }
         }
     }
@@ -694,7 +693,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 api.setPing(System.currentTimeMillis() - heartbeatStartTime);
                 break;
             default:
-                LOG.debug("Got unknown op-code: " + opCode + " with content: " + message);
+                LOG.debug("Got unknown op-code: {} with content: {}", opCode, message);
         }
     }
 
@@ -918,7 +917,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             }
             else
             {
-                LOG.debug("Caching " + type + " event during init!");
+                LOG.debug("Caching {} event during init!", type);
                 cachedEvents.add(raw);
                 return;
             }
@@ -939,7 +938,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 //        }
 
         JSONObject content = raw.getJSONObject("d");
-        LOG.trace(String.format("%s -> %s", type, content.toString()));
+        LOG.trace("{} -> {}", type, content);
 
         try
         {
@@ -969,19 +968,18 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     if (handler != null)
                         handler.handle(responseTotal, raw);
                     else
-                        LOG.debug("Unrecognized event:\n" + raw);
+                        LOG.debug("Unrecognized event:\n{}", raw);
             }
         }
         catch (JSONException ex)
         {
-            LOG.warn("Got an unexpected Json-parse error. Please redirect following message to the devs:\n\t"
-                    + ex.getMessage() + "\n\t" + type + " -> " + content);
+            LOG.warn("Got an unexpected Json-parse error. Please redirect following message to the devs:\n\t{}\n\t{} -> {}",
+                ex.getMessage(), type, content);
             LOG.warn("Stacktrace:", ex);
         }
         catch (Exception ex)
         {
-            LOG.error("Got an unexpected error. Please redirect following message to the devs:\n\t"
-                    + type + " -> " + content);
+            LOG.error("Got an unexpected error. Please redirect following message to the devs:\n\t{} -> {}", type, content);
             LOG.error("Stacktrace:", ex);
         }
     }

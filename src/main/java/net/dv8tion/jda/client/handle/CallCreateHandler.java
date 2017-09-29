@@ -52,7 +52,7 @@ public class CallCreateHandler extends SocketHandler
         if (channel == null)
         {
             api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
-            EventCache.LOG.debug("Received a CALL_CREATE for a Group/PrivateChannel that is not yet cached. JSON: " + content);
+            EventCache.LOG.debug("Received a CALL_CREATE for a Group/PrivateChannel that is not yet cached. JSON: {}", content);
             return null;
         }
 
@@ -64,7 +64,7 @@ public class CallCreateHandler extends SocketHandler
         {
             GroupImpl group = (GroupImpl) channel;
             if (group.getCurrentCall() != null)
-                WebSocketClient.LOG.error("Received a CALL_CREATE for a Group that already has an active call cached! JSON: " + content);
+                WebSocketClient.LOG.error("Received a CALL_CREATE for a Group that already has an active call cached! JSON: {}", content);
             group.setCurrentCall(call);
             group.getUserMap().forEachEntry((userId, user) ->
             {
@@ -88,7 +88,7 @@ public class CallCreateHandler extends SocketHandler
         {
             PrivateChannelImpl priv = (PrivateChannelImpl) channel;
             if (priv.getCurrentCall() != null)
-                WebSocketClient.LOG.error("Received a CALL_CREATE for a PrivateChannel that already has an active call cached! JSON: " + content);
+                WebSocketClient.LOG.error("Received a CALL_CREATE for a PrivateChannel that already has an active call cached! JSON: {}", content);
             priv.setCurrentCall(call);
             callUsers.put(priv.getUser().getIdLong(), new CallUserImpl(call, priv.getUser()));
             callUsers.put(api.getSelfUser().getIdLong(), new CallUserImpl(call, api.getSelfUser()));

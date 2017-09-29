@@ -129,7 +129,7 @@ public class ReadyHandler extends SocketHandler
                 JSONObject relationship = relationships.getJSONObject(i);
                 Relationship r = builder.createRelationship(relationship);
                 if (r == null)
-                    JDAImpl.LOG.error("Provided relationship in READY with an unknown type! JSON: " + relationship.toString());
+                    JDAImpl.LOG.error("Provided relationship in READY with an unknown type! JSON: {}", relationship);
             }
 
             for (int i = 0; i < presences.length(); i++)
@@ -138,7 +138,7 @@ public class ReadyHandler extends SocketHandler
                 String userId = presence.getJSONObject("user").getString("id");
                 FriendImpl friend = (FriendImpl) api.asClient().getFriendById(userId);
                 if (friend == null)
-                    WebSocketClient.LOG.warn("Received a presence in the Presences array in READY that did not correspond to a cached Friend! JSON: " + presence);
+                    WebSocketClient.LOG.warn("Received a presence in the Presences array in READY that did not correspond to a cached Friend! JSON: {}", presence);
                 else
                     builder.createPresence(friend, presence);
             }
@@ -158,7 +158,7 @@ public class ReadyHandler extends SocketHandler
                     builder.createGroup(chan);
                     break;
                 default:
-                    WebSocketClient.LOG.warn("Received a Channel in the priv_channels array in READY of an unknown type! JSON: " + type);
+                    WebSocketClient.LOG.warn("Received a Channel in the priv_channels array in READY of an unknown type! JSON: {}", type);
             }
 
         }
@@ -188,7 +188,7 @@ public class ReadyHandler extends SocketHandler
     public void guildSetupComplete(Guild guild)
     {
         if (!incompleteGuilds.remove(guild.getIdLong()))
-            WebSocketClient.LOG.error("Completed the setup for Guild: " + guild + " without matching id in ReadyHandler cache");
+            WebSocketClient.LOG.error("Completed the setup for Guild: {} without matching id in ReadyHandler cache", guild);
         if (incompleteGuilds.size() == unavailableGuilds.size())
             guildLoadComplete(allContent.getJSONObject("d"));
         else
