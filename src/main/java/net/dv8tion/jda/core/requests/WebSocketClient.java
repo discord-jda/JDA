@@ -599,7 +599,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         if (!handleIdentifyRateLimit)
         {
             if (callFromQueue)
-                LOG.warn("Queue is attempting to reconnect a shard...{}", (shardInfo != null ? " Shard: " + shardInfo.getShardString() : ""));
+                LOG.warn("Queue is attempting to reconnect a shard...{}",
+                    JDALogger.getLazyString(() -> shardInfo != null ? " Shard: " + shardInfo.getShardString() : ""));
             else
                 LOG.warn("Got disconnected from WebSocket (Internet?!)...");
             LOG.warn("Attempting to reconnect in {}s", reconnectTimeoutS);

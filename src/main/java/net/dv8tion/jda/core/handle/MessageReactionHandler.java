@@ -33,6 +33,7 @@ import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.requests.WebSocketClient;
+import net.dv8tion.jda.core.utils.JDALogger;
 import org.json.JSONObject;
 
 public class MessageReactionHandler extends SocketHandler
@@ -60,7 +61,8 @@ public class MessageReactionHandler extends SocketHandler
 
         if (emojiId == null && emojiName == null)
         {
-            WebSocketClient.LOG.debug("Received a reaction {} with no name nor id. json: {}", (add ? "add" : "remove"), content);
+            WebSocketClient.LOG.debug("Received a reaction {} with no name nor id. json: {}",
+                JDALogger.getLazyString(() -> add ? "add" : "remove"), content);
             return null;
         }
 
@@ -106,7 +108,8 @@ public class MessageReactionHandler extends SocketHandler
                 }
                 else
                 {
-                    WebSocketClient.LOG.debug("Received a reaction {} with a null name. json: {}", (add ? "add" : "remove"), content);
+                    WebSocketClient.LOG.debug("Received a reaction {} with a null name. json: {}",
+                        JDALogger.getLazyString(() -> add ? "add" : "remove"), content);
                     return null;
                 }
             }
