@@ -20,6 +20,10 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 
+/**
+ * <b><u>GuildVoiceMoveEvent</u></b>
+ * <p>Fired when a {@link net.dv8tion.jda.core.entities.Member} for any reason is moved from one {@link net.dv8tion.jda.core.entities.VoiceChannel} to another
+ */
 public class GuildVoiceMoveEvent extends GenericGuildVoiceEvent
 {
     protected final VoiceChannel channelLeft;
@@ -32,11 +36,17 @@ public class GuildVoiceMoveEvent extends GenericGuildVoiceEvent
         this.channelJoined = member.getVoiceState().getChannel();
     }
 
+    /**
+     * @return the {@link net.dv8tion.jda.core.entities.VoiceChannel} the {@link net.dv8tion.jda.core.entities.Member} is moved from
+     */
     public VoiceChannel getChannelLeft()
     {
         return channelLeft;
     }
 
+    /**
+     * @return the {@link net.dv8tion.jda.core.entities.VoiceChannel} the {@link net.dv8tion.jda.core.entities.Member} is moved to
+     */
     public VoiceChannel getChannelJoined()
     {
         return channelJoined;
