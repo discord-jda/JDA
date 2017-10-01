@@ -36,7 +36,7 @@ import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
  * <br>Custom implementations my not support all methods and throw
  * {@link java.lang.UnsupportedOperationException UnsupportedOperationExceptions} instead.
  *
- * @since  3.1
+ * @since  3.4
  * @author Aljoscha Grebe
  */
 public interface ShardManager
@@ -62,14 +62,14 @@ public interface ShardManager
      *
      * @return The amount of shards queued for (re)connecting.
      */
-    int getAmountQueuedShards();
+    int getAmountOfQueuedShards();
 
     /**
      * Returns the amount of running shards.
      *
      * @return The amount of running shards.
      */
-    default int getAmountRunningShards()
+    default int getAmountOfRunningShards()
     {
         return (int) this.getShardCache().size();
     }
@@ -80,9 +80,9 @@ public interface ShardManager
      *
      * @return The managed amount of shards.
      */
-    default int getAmountTotalShards()
+    default int getAmountOfTotalShards()
     {
-        return this.getAmountQueuedShards() + this.getAmountRunningShards();
+        return this.getAmountOfQueuedShards() + this.getAmountOfRunningShards();
     }
 
     /**
@@ -734,7 +734,10 @@ public interface ShardManager
     }
 
     /**
-     * Restarts all shards
+     * Restarts all shards, shutting old ones down first.
+     * 
+     * As all shards need to connect to discord again this will take equally long as the startup of a new ShardManager
+     * (using the 5000ms + backoff as delay between starting new JDA instances). 
      */
     void restart();
 

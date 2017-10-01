@@ -29,6 +29,7 @@ import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.StatusChangeEvent;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
+import net.dv8tion.jda.core.exceptions.HttpException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.handle.EventCache;
 import net.dv8tion.jda.core.hooks.IEventManager;
@@ -141,7 +142,7 @@ public class JDAImpl implements JDA
 
         if (gateway == null) 
         { 
-            throw new RuntimeException("Could not fetch WS-Gateway!"); 
+            throw new HttpException("Could not fetch WS-Gateway!"); 
         }
 
         this.gatewayUrl = gateway.getLeft();

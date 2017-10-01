@@ -96,9 +96,9 @@ public class MiscUtil
      * <br>Source for formula: <a href="https://discordapp.com/developers/docs/topics/gateway#sharding">Discord Documentation</a>
      *
      * @param guildId
-     *             The guild id.
+     *        The guild id.
      * @param shards
-     *             The amount of shards.
+     *        The amount of shards.
      * 
      * @return The shard id for the guild.
      */
@@ -115,9 +115,9 @@ public class MiscUtil
      * <br>Source for formula: <a href="https://discordapp.com/developers/docs/topics/gateway#sharding">Discord Documentation</a>
      *
      * @param guildId
-     *             The guild id.
+     *        The guild id.
      * @param shards
-     *             The amount of shards.
+     *        The amount of shards.
      * 
      * @return The shard id for the guild.
      */

@@ -31,36 +31,36 @@ import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.OkHttpClient;
 
 /**
- * Used to create new {@link net.dv8tion.jda.bot.entities.impl.DefaultShardManagerImpl DefaultShardManagerImpl} instances.
+ * Used to create new instances of JDA's default {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} implementation.
  *
- * <p>A single DefaultShardManagerBuilder can be reused multiple times. Each call to {@link #buildAsync()} or {@link #buildBlocking()}
- * creates a new {@link net.dv8tion.jda.bot.entities.impl.DefaultShardManagerImpl DefaultShardManagerImpl} instance using the same information.
+ * <p>A single DefaultShardManagerBuilder can be reused multiple times. Each call to {@link #buildAsync()}
+ * creates a new {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} instance using the same information.
  *
- * @since  3.1
+ * @since  3.4
  * @author Aljoscha Grebe
  */
 public class DefaultShardManagerBuilder
 {
-    protected Collection<Integer> shards = null;
-    protected int shardsTotal = 1;
-    protected IAudioSendFactory audioSendFactory = null;
-    protected OkHttpClient.Builder httpClientBuilder = null;
-    protected WebSocketFactory wsFactory = null;
-    protected ShardedRateLimiter shardedRateLimiter = null;
-    protected boolean autoReconnect = true;
-    protected int backoff = 200;
-    protected int corePoolSize = 2;
     protected boolean enableBulkDeleteSplitting = true;
     protected boolean enableShutdownHook = true;
     protected boolean enableVoice = true;
+    protected boolean autoReconnect = true;
+    protected boolean idle = false;
+    protected int shardsTotal = 1;
+    protected int maxReconnectDelay = 900;
+    protected int backoff = 200;
+    protected int corePoolSize = 2;
+    protected Collection<Integer> shards = null;
+    protected IAudioSendFactory audioSendFactory = null;
     protected IEventManager eventManager = null;
     protected Game game = null;
-    protected boolean idle = false;
-    protected final List<Object> listeners = new ArrayList<>();
-    protected int maxReconnectDelay = 900;
+    protected OkHttpClient.Builder httpClientBuilder = null;
     protected OnlineStatus status = OnlineStatus.ONLINE;
+    protected SessionReconnectQueue reconnectQueue;
+    protected ShardedRateLimiter shardedRateLimiter = null;
     protected String token = null;
-    private SessionReconnectQueue reconnectQueue;
+    protected WebSocketFactory wsFactory = null;
+    protected final List<Object> listeners = new ArrayList<>();
 
     /**
      * Creates a completely empty DefaultShardManagerBuilder.

@@ -16,6 +16,7 @@
 package net.dv8tion.jda.core;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
+import net.dv8tion.jda.core.JDA.Status;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
@@ -563,41 +564,11 @@ public class JDABuilder
      */
     public JDA buildBlocking() throws LoginException, IllegalArgumentException, InterruptedException, RateLimitedException
     {
-        ReadyListener listener = new ReadyListener();
-        this.listeners.add(listener);
         JDA jda = buildAsync();
-        synchronized (listener)
-        {
-            while (!listener.isReady())
-            {
-                listener.wait();
-            }
-        }
+
+        while(jda.getStatus() != Status.CONNECTED)
+            Thread.sleep(50);
+
         return jda;
-    }
-
-    private static class ReadyListener implements EventListener
-    {
-        private boolean ready = false;
-
-        public boolean isReady()
-        {
-            return ready;
-        }
-
-        @Override
-        @SubscribeEvent
-        public void onEvent(Event event)
-        {
-            if (event instanceof ReadyEvent)
-            {
-                event.getJDA().removeEventListener(this);
-                this.ready = true;
-                synchronized (this)
-                {
-                    this.notifyAll();
-                }
-            }
-        }
     }
 }
