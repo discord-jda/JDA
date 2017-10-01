@@ -37,7 +37,9 @@ public class GuildVoiceMoveEvent extends GenericGuildVoiceEvent
     }
 
     /**
-     * @return the {@link net.dv8tion.jda.core.entities.VoiceChannel} the {@link net.dv8tion.jda.core.entities.Member} is moved from
+     * The {@link net.dv8tion.jda.core.entities.VoiceChannel} that the {@link net.dv8tion.jda.core.entities.Member} is moved from
+     *
+     * @return the {@link net.dv8tion.jda.core.entities.VoiceChannel}
      */
     public VoiceChannel getChannelLeft()
     {
@@ -45,7 +47,9 @@ public class GuildVoiceMoveEvent extends GenericGuildVoiceEvent
     }
 
     /**
-     * @return the {@link net.dv8tion.jda.core.entities.VoiceChannel} the {@link net.dv8tion.jda.core.entities.Member} is moved to
+     * The {@link net.dv8tion.jda.core.entities.VoiceChannel} that the {@link net.dv8tion.jda.core.entities.Member} is moved to
+     *
+     * @return the {@link net.dv8tion.jda.core.entities.VoiceChannel}
      */
     public VoiceChannel getChannelJoined()
     {
