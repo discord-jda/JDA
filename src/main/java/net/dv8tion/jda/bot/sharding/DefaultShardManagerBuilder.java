@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import javax.security.auth.login.LoginException;
 import net.dv8tion.jda.bot.entities.impl.DefaultShardManagerImpl;
 import net.dv8tion.jda.core.OnlineStatus;
+import net.dv8tion.jda.core.ShardedRateLimiter;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
@@ -45,6 +46,7 @@ public class DefaultShardManagerBuilder
     protected IAudioSendFactory audioSendFactory = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
     protected WebSocketFactory wsFactory = null;
+    protected ShardedRateLimiter shardedRateLimiter = null;
     protected boolean autoReconnect = true;
     protected int backoff = 200;
     protected int corePoolSize = 2;
@@ -114,7 +116,7 @@ public class DefaultShardManagerBuilder
      */
     public ShardManager buildAsync() throws LoginException, IllegalArgumentException, RateLimitedException
     {
-        final DefaultShardManagerImpl manager = new DefaultShardManagerImpl(this.shardsTotal, this.shards, this.listeners, this.token, this.eventManager, this.audioSendFactory, this.game, this.status, this.httpClientBuilder, this.wsFactory, this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting, this.autoReconnect, this.idle, this.reconnectQueue, this.backoff);
+        final DefaultShardManagerImpl manager = new DefaultShardManagerImpl(this.shardsTotal, this.shards, this.listeners, this.token, this.eventManager, this.audioSendFactory, this.game, this.status, this.httpClientBuilder, this.wsFactory, this.shardedRateLimiter, this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting, this.autoReconnect, this.idle, this.reconnectQueue, this.backoff);
 
         manager.login();
 
@@ -324,10 +326,10 @@ public class DefaultShardManagerBuilder
     }
 
     /**
-     * THis can be used to set a custom queue that will be used to reconnect sessions.
+     * This can be used to set a custom queue that will be used to reconnect sessions.
      * <br>This will ensure that sessions do not reconnect at the same time!
-     * 
-     * <p>If none is provided the ShardManager will use fall back to JDA's default implementation!
+     *
+     * <p><b>If none is provided the ShardManager will use fall back to JDA's default implementation!</b>
      *
      * @param  queue
      *         {@link java.util.concurrent.BlockingQueue BlockingQueue} to use
@@ -337,6 +339,31 @@ public class DefaultShardManagerBuilder
     public DefaultShardManagerBuilder setReconnectQueue(SessionReconnectQueue queue)
     {
         this.reconnectQueue = queue;
+        return this;
+    }
+
+    /**
+     * Sets the {@link net.dv8tion.jda.core.ShardedRateLimiter ShardedRateLimiter} that will be used to keep
+     * track of rate limits across sessions.
+     * <br>When one shard hits the global rate limit all others will be informed by this value wrapper.
+     *
+     * <p>It is recommended to use the same ShardedRateLimiter for all shards and not one each. This is
+     * similar to {@link net.dv8tion.jda.core.requests.SessionReconnectQueue SessionReconnectQueue}!
+     *
+     * <p>When you construct multiple ShardManagers manage your shards it is recommended to use the same ShardedRateLimiter on
+     * all of them. But it is to be <u>avoided</u> to use the same ShardedRateLimiter for different accounts/tokens!
+     *
+     * <p><b>If none is provided the ShardManager will use fall back to JDA's default implementation!</b>
+     *
+     * @param  shardedRateLimiter
+     *         ShardedRateLimiter used to keep track of cross-session rate limits
+     *
+     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     */
+    public DefaultShardManagerBuilder setShardedRateLimiter(ShardedRateLimiter shardedRateLimiter)
+    {
+        this.shardedRateLimiter = shardedRateLimiter;
+
         return this;
     }
 

@@ -29,6 +29,7 @@ import net.dv8tion.jda.bot.utils.cache.impl.ShardCacheViewImpl;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
+import net.dv8tion.jda.core.ShardedRateLimiter;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
@@ -65,13 +66,14 @@ public class DefaultShardManagerImpl implements ShardManager
     protected final OkHttpClient.Builder httpClientBuilder;
     protected final WebSocketFactory wsFactory;
     protected final SessionReconnectQueue reconnectQueue;
+    protected final ShardedRateLimiter shardedRateLimiter;
     protected final AtomicBoolean shutdown = new AtomicBoolean(false);
     protected final Thread shutdownHook;
     protected final OnlineStatus status;
     protected final String token;
     protected ScheduledFuture<?> worker;
 
-    public DefaultShardManagerImpl(final int shardsTotal, final Collection<Integer> shardIds, final List<Object> listeners, final String token, final IEventManager eventManager, final IAudioSendFactory audioSendFactory, final Game game, final OnlineStatus status, final OkHttpClient.Builder httpClientBuilder, final WebSocketFactory wsFactory, final int maxReconnectDelay, final int corePoolSize, final boolean enableVoice, final boolean enableShutdownHook, final boolean enableBulkDeleteSplitting, final boolean autoReconnect, final boolean idle, final SessionReconnectQueue reconnectQueue, final int backoff)
+    public DefaultShardManagerImpl(final int shardsTotal, final Collection<Integer> shardIds, final List<Object> listeners, final String token, final IEventManager eventManager, final IAudioSendFactory audioSendFactory, final Game game, final OnlineStatus status, final OkHttpClient.Builder httpClientBuilder, final WebSocketFactory wsFactory, ShardedRateLimiter shardedRateLimiter, final int maxReconnectDelay, final int corePoolSize, final boolean enableVoice, final boolean enableShutdownHook, final boolean enableBulkDeleteSplitting, final boolean autoReconnect, final boolean idle, final SessionReconnectQueue reconnectQueue, final int backoff)
     {
         this.shardsTotal = shardsTotal;
         this.listeners = listeners;
@@ -82,6 +84,7 @@ public class DefaultShardManagerImpl implements ShardManager
         this.status = status;
         this.httpClientBuilder = httpClientBuilder == null ? new OkHttpClient.Builder() : httpClientBuilder;
         this.wsFactory = wsFactory == null ? new WebSocketFactory() : wsFactory;
+        this.shardedRateLimiter = shardedRateLimiter == null ? new ShardedRateLimiter() : shardedRateLimiter;
         this.maxReconnectDelay = maxReconnectDelay;
         this.corePoolSize = corePoolSize;
         this.enableVoice = enableVoice;
@@ -281,7 +284,7 @@ public class DefaultShardManagerImpl implements ShardManager
 
     protected JDAImpl buildInstance(final int shardId) throws LoginException, RateLimitedException
     {
-        final JDAImpl jda = new JDAImpl(AccountType.BOT, this.httpClientBuilder, this.wsFactory, this.autoReconnect, this.enableVoice, false, this.enableBulkDeleteSplitting, this.corePoolSize, this.maxReconnectDelay);
+        final JDAImpl jda = new JDAImpl(AccountType.BOT, this.httpClientBuilder, this.wsFactory, this.shardedRateLimiter, this.autoReconnect, this.enableVoice, false, this.enableBulkDeleteSplitting, this.corePoolSize, this.maxReconnectDelay);
 
         jda.asBot().setShardManager(this);
 
