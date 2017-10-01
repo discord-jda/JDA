@@ -40,12 +40,21 @@ public class PresenceUpdateHandler extends SocketHandler
     @Override
     protected Long handleInternally(JSONObject content)
     {
-        //Do a pre-check to see if this is for a Guild, and if it is, if the guild is currently locked.
-        if (content.has("guild_id"))
+        GuildImpl guild = null;
+        //Do a pre-check to see if this is for a Guild, and if it is, if the guild is currently locked or not cached.
+        if (!content.isNull("guild_id"))
         {
             final long guildId = content.getLong("guild_id");
             if (api.getGuildLock().isLocked(guildId))
                 return guildId;
+            guild = (GuildImpl) api.getGuildById(guildId);
+            if (guild == null)
+            {
+                api.getEventCache().cache(EventCache.Type.GUILD, guildId, () -> handle(responseNumber, allContent));
+                EventCache.LOG.debug("Received a PRESENCE_UPDATE for a guild that is not yet cached! " +
+                    "GuildId: " + guildId + " UserId: " + content.getJSONObject("user").get("id"));
+                return null;
+            }
         }
 
         JSONObject jsonUser = content.getJSONObject("user");
@@ -77,7 +86,7 @@ public class PresenceUpdateHandler extends SocketHandler
                                     user, oldUsername, oldDiscriminator));
                 }
                 String oldAvatar = user.getAvatarId();
-                if (!(avatarId == null && oldAvatar == null) && !Objects.equals(avatarId, oldAvatar))
+                if (!Objects.equals(avatarId, oldAvatar))
                 {
                     String oldAvatarId = user.getAvatarId();
                     user.setAvatarId(avatarId);
@@ -93,31 +102,29 @@ public class PresenceUpdateHandler extends SocketHandler
             String gameName = null;
             String gameUrl = null;
             Game.GameType type = null;
-            if ( !content.isNull("game") && !content.getJSONObject("game").isNull("name") )
+            final JSONObject game = content.optJSONObject("game");
+            if (game != null && !game.isNull("name"))
             {
-                gameName = content.getJSONObject("game").get("name").toString();
-                gameUrl = ( content.getJSONObject("game").isNull("url") ? null : content.getJSONObject("game").get("url").toString() );
+                gameName = game.get("name").toString();
+                gameUrl = game.isNull("url") ? null : game.get("url").toString();
                 try
                 {
-                    type = content.getJSONObject("game").isNull("type")
+                    type = game.isNull("type")
                             ? Game.GameType.DEFAULT
-                            : Game.GameType.fromKey(Integer.parseInt(content.getJSONObject("game").get("type").toString()));
+                            : Game.GameType.fromKey(Integer.parseInt(game.get("type").toString()));
                 }
                 catch (NumberFormatException ex)
                 {
                     type = Game.GameType.DEFAULT;
                 }
             }
-            Game nextGame = (gameName == null
-                    ? null
-                    : api.getEntityBuilder().createGame(gameName, gameUrl, type));
+            Game nextGame = gameName == null ? null : api.getEntityBuilder().createGame(gameName, gameUrl, type);
             OnlineStatus status = OnlineStatus.fromKey(content.getString("status"));
 
             //If we are in a Guild, then we will use Member.
             // If we aren't we'll be dealing with the Relation system.
-            if (content.has("guild_id"))
+            if (guild != null)
             {
-                GuildImpl guild = (GuildImpl) api.getGuildById(content.getLong("guild_id"));
                 MemberImpl member = (MemberImpl) guild.getMember(user);
 
                 //If the Member is null, then User isn't in the Guild.
@@ -147,7 +154,7 @@ public class PresenceUpdateHandler extends SocketHandler
                                         api, responseNumber,
                                         user, guild, oldStatus));
                     }
-                    if(member.getGame() == null ? nextGame != null : !member.getGame().equals(nextGame))
+                    if (!Objects.equals(member.getGame(), nextGame))
                     {
                         Game oldGame = member.getGame();
                         member.setGame(nextGame);
@@ -173,7 +180,6 @@ public class PresenceUpdateHandler extends SocketHandler
                 }
                 else
                 {
-
                     if (!friend.getOnlineStatus().equals(status))
                     {
                         OnlineStatus oldStatus = friend.getOnlineStatus();
@@ -183,7 +189,7 @@ public class PresenceUpdateHandler extends SocketHandler
                                 api, responseNumber,
                                 user, null, oldStatus));
                     }
-                    if(!Objects.equals(friend.getGame(), nextGame))
+                    if (!Objects.equals(friend.getGame(), nextGame))
                     {
                         Game oldGame = friend.getGame();
                         friend.setGame(nextGame);
@@ -211,15 +217,8 @@ public class PresenceUpdateHandler extends SocketHandler
                 return null;
 
             //If this was for a Guild, cache it in the Guild for later use in GUILD_MEMBER_ADD
-            if (content.has("guild_id"))
-            {
-                GuildImpl guild = (GuildImpl) api.getGuildById(content.getLong("guild_id"));
+            if (guild != null)
                 guild.getCachedPresenceMap().put(userId, content);
-            }
-            else
-            {
-                //cache in relationship stuff
-            }
         }
         return null;
     }
