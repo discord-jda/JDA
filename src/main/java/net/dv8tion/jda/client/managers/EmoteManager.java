@@ -119,6 +119,8 @@ public class EmoteManager
      * <br>If these are empty the Emote will be available to everyone otherwise only available to the specified roles.
      *
      * <p>An emote's restriction roles <b>must not</b> contain {@code null}!
+     * <br>Passing the roles field will be ignored unless the application is whitelisted as an emoji provider.
+     * For more information and to request whitelisting please contact {@code support@discordapp.com}
      *
      * @param  roles
      *         The new not-null set of {@link net.dv8tion.jda.core.entities.Role Roles} for the selected {@link net.dv8tion.jda.core.entities.Emote Emote}
@@ -134,11 +136,7 @@ public class EmoteManager
      *
      * @see    net.dv8tion.jda.client.managers.EmoteManagerUpdatable#getRolesField()
      * @see    net.dv8tion.jda.client.managers.EmoteManagerUpdatable#update()
-     *
-     * @deprecated
-     *         This setting is only available to whitelisted accounts and <i>may</i> be removed in successive builds.
      */
-    @Deprecated
     @CheckReturnValue
     public AuditableRestAction<Void> setRoles(Set<Role> roles)
     {

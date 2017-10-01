@@ -32,10 +32,7 @@ import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.OkHttpClient;
 
 import javax.security.auth.login.LoginException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Used to create new {@link net.dv8tion.jda.core.JDA} instances. This is also useful for making sure all of
@@ -53,6 +50,7 @@ public class JDABuilder
     protected final List<Object> listeners = new LinkedList<>();
 
     protected SessionReconnectQueue reconnectQueue = null;
+    protected ShardedRateLimiter shardRateLimiter = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
     protected WebSocketFactory wsFactory = null;
     protected AccountType accountType;
@@ -106,12 +104,45 @@ public class JDABuilder
     }
 
     /**
+     * Sets the {@link net.dv8tion.jda.core.ShardedRateLimiter ShardedRateLimiter} that will be used to keep
+     * track of rate limits across sessions.
+     * <br>When one shard hits the global rate limit all others will be informed by this value wrapper.
+     * This does nothing for {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}!
+     *
+     * <p>It is recommended to use the same ShardedRateLimiter for all shards and not one each. This is
+     * similar to {@link net.dv8tion.jda.core.requests.SessionReconnectQueue SessionReconnectQueue}!
+     *
+     * <p><b>This value is set when invoking {@link #setToken(String)} and cannot be unset using {@code null}. The re-use of this builder
+     * to build each shard is sufficient and setting it is not required.</b>
+     * <br>Providing {@code null} is equivalent to doing {@code setShardedRateLimiter(new ShardedRateLimiter())}.
+     *
+     * <p>When you construct multiple JDABuilder instances to build shards it is recommended to use the same ShardedRateLimiter on
+     * all of them. But it is to be <u>avoided</u> to use the same ShardedRateLimiter for different accounts/tokens!
+     *
+     * @param  rateLimiter
+     *         ShardedRateLimiter used to keep track of cross-session rate limits
+     *
+     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public JDABuilder setShardedRateLimiter(ShardedRateLimiter rateLimiter)
+    {
+        if (accountType != AccountType.BOT)
+            this.shardRateLimiter = null;
+        else
+            this.shardRateLimiter = rateLimiter == null ? new ShardedRateLimiter() : rateLimiter;
+        return this;
+    }
+
+    /**
      * Sets the token that will be used by the {@link net.dv8tion.jda.core.JDA} instance to log in when
      * {@link net.dv8tion.jda.core.JDABuilder#buildAsync() buildAsync()}
      * or {@link net.dv8tion.jda.core.JDABuilder#buildBlocking() buildBlocking()}
      * is called.
      *
-     * <p>For {@link net.dv8tion.jda.core.AccountType#BOT} accounts:
+     * <p><u><b>This will reset the prior provided {@link #setShardedRateLimiter(ShardedRateLimiter)} setting
+     * if this token is different to the previously set token!</b></u>
+     *
+     * <h2>For {@link net.dv8tion.jda.core.AccountType#BOT}</h2>
      * <ol>
      *     <li>Go to your <a href="https://discordapp.com/developers/applications/me">Discord Applications</a></li>
      *     <li>Create or select an already existing application</li>
@@ -119,7 +150,7 @@ public class JDABuilder
      *     <li>Click the <i>click to reveal</i> link beside the <b>Token</b> label to show your Bot's {@code token}</li>
      * </ol>
      *
-     * <p>For {@link net.dv8tion.jda.core.AccountType#CLIENT} accounts:
+     * <h2>For {@link net.dv8tion.jda.core.AccountType#CLIENT}</h2>
      * <br>Using either the Discord desktop app or the Browser Webapp
      * <ol>
      *     <li>Press {@code Ctrl-Shift-i} which will bring up the developer tools.</li>
@@ -135,6 +166,11 @@ public class JDABuilder
      */
     public JDABuilder setToken(String token)
     {
+        //Share ratelimit for the same token
+        // when this builder is used to build different accounts this makes sure we don't use the
+        // same ratelimiter on them as it would be inaccurate
+        if (accountType == AccountType.BOT && !Objects.equals(token, this.token))
+            shardRateLimiter = new ShardedRateLimiter();
         this.token = token;
         return this;
     }
@@ -486,8 +522,9 @@ public class JDABuilder
     {
         OkHttpClient.Builder httpClientBuilder = this.httpClientBuilder == null ? new OkHttpClient.Builder() : this.httpClientBuilder;
         WebSocketFactory wsFactory = this.wsFactory == null ? new WebSocketFactory() : this.wsFactory;
-        JDAImpl jda = new JDAImpl(accountType, httpClientBuilder, wsFactory, autoReconnect, enableVoice, enableShutdownHook,
-                enableBulkDeleteSplitting, corePoolSize, maxReconnectDelay);
+        JDAImpl jda = new JDAImpl(accountType, httpClientBuilder, wsFactory, shardRateLimiter,
+                                  autoReconnect, enableVoice, enableShutdownHook, enableBulkDeleteSplitting,
+                                  corePoolSize, maxReconnectDelay);
 
         if (eventManager != null)
             jda.setEventManager(eventManager);

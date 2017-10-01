@@ -319,9 +319,7 @@ public class EntityBuilder
             throw new IllegalArgumentException("No callback provided for the second pass on the Guild!");
 
         for (JSONArray chunk : memberChunks)
-        {
             createGuildMemberPass(guildObj, chunk);
-        }
 
         Member owner = guildObj.getMemberById(guildJson.getLong("owner_id"));
         if (owner != null)

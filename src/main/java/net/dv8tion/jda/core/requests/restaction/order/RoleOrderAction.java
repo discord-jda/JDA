@@ -37,6 +37,9 @@ import java.util.List;
  * specified {@link net.dv8tion.jda.core.entities.Guild Guild}.
  * <br>To apply the changes you must finish the {@link net.dv8tion.jda.core.requests.RestAction RestAction}
  *
+ * <p>Before you can use any of the {@code move} methods
+ * you must use either {@link #selectPosition(Object) selectPosition(Role)} or {@link #selectPosition(int)}!
+ *
  * <p><b>This uses descending order!</b>
  *
  * @since 3.0

@@ -22,6 +22,7 @@ import net.dv8tion.jda.bot.entities.impl.JDABotImpl;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.ShardedRateLimiter;
 import net.dv8tion.jda.core.audio.AudioWebSocket;
 import net.dv8tion.jda.core.audio.factory.DefaultSendFactory;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
@@ -103,8 +104,9 @@ public class JDAImpl implements JDA
     protected long ping = -1;
     protected String gatewayUrl;
 
-    public JDAImpl(AccountType accountType, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory, boolean autoReconnect, boolean audioEnabled,
-            boolean useShutdownHook, boolean bulkDeleteSplittingEnabled, int corePoolSize, int maxReconnectDelay)
+    public JDAImpl(AccountType accountType, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory, ShardedRateLimiter rateLimiter,
+                   boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled,
+                   int corePoolSize, int maxReconnectDelay)
     {
         this.accountType = accountType;
         this.httpClientBuilder = httpClientBuilder;
@@ -117,7 +119,7 @@ public class JDAImpl implements JDA
         this.maxReconnectDelay = maxReconnectDelay;
 
         this.presence = new PresenceImpl(this);
-        this.requester = new Requester(this);
+        this.requester = new Requester(this, rateLimiter);
 
         this.jdaClient = accountType == AccountType.CLIENT ? new JDAClientImpl(this) : null;
         this.jdaBot = accountType == AccountType.BOT ? new JDABotImpl(this) : null;
@@ -278,12 +280,12 @@ public class JDAImpl implements JDA
             if (getAccountType() == AccountType.BOT)
             {
                 token = token.replace("Bot ", "");
-                requester = new Requester(this, AccountType.CLIENT);
+                requester = new Requester(this, AccountType.CLIENT, null);
             }
             else    //If we attempted to login as a Client, prepend the "Bot " prefix and set the Requester to be a Bot
             {
                 token = "Bot " + token;
-                requester = new Requester(this, AccountType.BOT);
+                requester = new Requester(this, AccountType.BOT, null);
             }
 
             try
