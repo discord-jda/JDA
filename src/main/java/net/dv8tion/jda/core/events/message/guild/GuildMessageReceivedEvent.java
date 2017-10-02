@@ -36,18 +36,52 @@ public class GuildMessageReceivedEvent extends GenericGuildMessageEvent
         this.message = message;
     }
 
+    /**
+     * Returns the received {@link net.dv8tion.jda.core.entities.Message Message} object.
+     * <br>The Message will be of type {@link net.dv8tion.jda.core.entities.impl.ReceivedMessage ReceivedMessage}.
+     *
+     * @return The received {@link net.dv8tion.jda.core.entities.Message Message} object.
+     */
     public Message getMessage()
     {
         return message;
     }
 
+    /**
+     * Returns the Author of the message sent as {@link net.dv8tion.jda.core.entities.User User} object.
+     * <br>This will be never-null but might be a fake user if message was sent via Webhook
+     *
+     * @return The Author of the message.
+     *
+     * @see #isWebhookMessage()
+     * @see net.dv8tion.jda.core.entities.User#isFake()
+     */
     public User getAuthor()
     {
         return message.getAuthor();
     }
 
+    /**
+     * Returns the Author of the message sent as {@link net.dv8tion.jda.core.entities.Member Member} object.
+     * <br>This will be {@code null} in case of {@link #isWebhookMessage() isWebhookMessage()} returning {@code true}.
+     *
+     * @return The Author of the message as Member object.
+     *
+     * @see #isWebhookMessage()
+     */
     public Member getMember()
     {
-        return getGuild().getMember(getAuthor());
+        return isWebhookMessage() ? null : getGuild().getMember(getAuthor());
+    }
+
+    /**
+     * Returns whether or not the Message received was sent via a Webhook.
+     * <br>This is a shortcut for {@code getMessage().isWebhookMessage()}.
+     *
+     * @return Whether or not the Message was sent via Webhook
+     */
+    public boolean isWebhookMessage()
+    {
+        return getMessage().isWebhookMessage();
     }
 }
