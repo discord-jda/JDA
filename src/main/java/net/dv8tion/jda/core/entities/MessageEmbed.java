@@ -31,27 +31,27 @@ import java.util.List;
 public interface MessageEmbed
 {
     /**
-     * The character limit of the maximum title length is 256 chacacters.
+     * The character limit of the maximum title length is {@value} chacacters.
      */
     int TITLE_MAX_LENGTH = 256;
     /**
-     * The character limit of the maximum value length is 1024 chacacters.
+     * The character limit of the maximum value length is {@value} chacacters.
      */
     int VALUE_MAX_LENGTH = 1024;
     /**
-     * The character limit of the maximum text length is 2048 chacacters.
+     * The character limit of the maximum text length is {@value} chacacters.
      */
     int TEXT_MAX_LENGTH = 2048;
     /**
-     * The character limit of the maximum url length is 2000 chacacters.
+     * The character limit of the maximum url length is {@value} chacacters.
      */
     int URL_MAX_LENGTH = 2000;
     /**
-     * The character limit of the maximum bot embed length is 4000 chacacters.
+     * The character limit of the maximum bot embed length is {@value} chacacters.
      */
     int EMBED_MAX_LENGTH_BOT = 4000;
     /**
-     * The character limit of the maximum client embed length is 2000 chacacters.
+     * The character limit of the maximum client embed length is {@value} chacacters.
      */
     int EMBED_MAX_LENGTH_CLIENT = 2000;
 
