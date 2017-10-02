@@ -32,17 +32,17 @@ public interface MessageEmbed
 {
     /**
      * The character limit of the maximum title length is {@value} chacacters.<br>
-     * The title is the line under the author. [Image - More](https://imgur.com/a/yOb5n).
+     * The title usually contains the topic of the description or {@link net.dv8tion.jda.core.entities.MessageEmbed.Field Field} value. [Image - More](https://imgur.com/a/yOb5n).
      */
     int TITLE_MAX_LENGTH = 256;
     /**
      * The character limit of the maximum value length is {@value} chacacters.<br>
-     * The value is the text in a field . [Image - More](https://imgur.com/a/yOb5n).
+     * The value representes the text in a {@link net.dv8tion.jda.core.entities.MessageEmbed.Field Field}. Its called field value too. [Image - More](https://imgur.com/a/yOb5n).
      */
     int VALUE_MAX_LENGTH = 1024;
     /**
      * The character limit of the maximum text length is {@value} chacacters.<br>
-     * The text is the text of the description. [Image - More](https://imgur.com/a/yOb5n).
+     * The text equals the description. [Image - More](https://imgur.com/a/yOb5n).
      */
     int TEXT_MAX_LENGTH = 2048;
     /**
@@ -51,8 +51,7 @@ public interface MessageEmbed
      */
     int URL_MAX_LENGTH = 2000;
     /**
-     * The character limit of the maximum bot embed length is {@value} chacacters.<br>
-     * The bot limit is different and higher than the client limit because usually embeds are made by bots and have multiple {@link net.dv8tion.jda.core.entities.MessageEmbed.Field Field}s. 
+     * The character limit of the maximum bot embed length is {@value} chacacters.
      */
     int EMBED_MAX_LENGTH_BOT = 4000;
     /**
