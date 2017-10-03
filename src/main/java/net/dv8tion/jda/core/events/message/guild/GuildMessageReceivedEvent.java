@@ -22,8 +22,8 @@ import net.dv8tion.jda.core.entities.User;
 
 /**
  * <b><u>GuildMessageReceivedEvent</u></b><br>
- * Fired if a Message is sent in a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.<br>
- * <br>
+ * Fired if a Message is received in a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
+ * <p>
  * Use: Retrieve affected TextChannel and Message.
  */
 public class GuildMessageReceivedEvent extends GenericGuildMessageEvent
@@ -38,7 +38,6 @@ public class GuildMessageReceivedEvent extends GenericGuildMessageEvent
 
     /**
      * Returns the received {@link net.dv8tion.jda.core.entities.Message Message} object.
-     * <br>The Message will be of type {@link net.dv8tion.jda.core.entities.impl.ReceivedMessage ReceivedMessage}.
      *
      * @return The received {@link net.dv8tion.jda.core.entities.Message Message} object.
      */
@@ -48,10 +47,10 @@ public class GuildMessageReceivedEvent extends GenericGuildMessageEvent
     }
 
     /**
-     * Returns the Author of the message sent as {@link net.dv8tion.jda.core.entities.User User} object.
-     * <br>This will be never-null but might be a fake user if message was sent via Webhook
+     * Returns the Author of the Message received as {@link net.dv8tion.jda.core.entities.User User} object.
+     * <br>This will be never-null but might be a fake User if Message was sent via Webhook
      *
-     * @return The Author of the message.
+     * @return The Author of the Message.
      *
      * @see #isWebhookMessage()
      * @see net.dv8tion.jda.core.entities.User#isFake()
@@ -62,10 +61,10 @@ public class GuildMessageReceivedEvent extends GenericGuildMessageEvent
     }
 
     /**
-     * Returns the Author of the message sent as {@link net.dv8tion.jda.core.entities.Member Member} object.
+     * Returns the Author of the Message received as {@link net.dv8tion.jda.core.entities.Member Member} object.
      * <br>This will be {@code null} in case of {@link #isWebhookMessage() isWebhookMessage()} returning {@code true}.
      *
-     * @return The Author of the message as Member object.
+     * @return The Author of the Message as Member object.
      *
      * @see #isWebhookMessage()
      */

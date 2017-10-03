@@ -21,11 +21,11 @@ import net.dv8tion.jda.core.entities.*;
 
 /**
  * <b><u>MessageReceivedEvent</u></b><br>
- * Fired if a Message is sent in a {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.
- * <br>This includes both {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
- * and {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}!
+ * Fired if a Message is received in a {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.
+ * <br>This includes {@link net.dv8tion.jda.core.entities.TextChannel TextChannel},
+ * {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} and {@link net.dv8tion.jda.client.entities.Group Group}!
  * <p>
- * Use: This event indicates that a Message is sent in either a private or guild channel. Providing a MessageChannel and Message.
+ * Use: This event indicates that a Message is received in either a guild, private channel or group. Providing a MessageChannel and Message.
  */
 public class MessageReceivedEvent extends GenericMessageEvent
 {
@@ -39,7 +39,6 @@ public class MessageReceivedEvent extends GenericMessageEvent
 
     /**
      * Returns the received {@link net.dv8tion.jda.core.entities.Message Message} object.
-     * <br>The Message will be of type {@link net.dv8tion.jda.core.entities.impl.ReceivedMessage ReceivedMessage}.
      *
      * @return The received {@link net.dv8tion.jda.core.entities.Message Message} object.
      */
@@ -49,8 +48,8 @@ public class MessageReceivedEvent extends GenericMessageEvent
     }
 
     /**
-     * Returns the Author of the Message sent as {@link net.dv8tion.jda.core.entities.User User} object.
-     * <br>This will be never-null but might be a fake user if Message was sent via Webhook
+     * Returns the Author of the Message received as {@link net.dv8tion.jda.core.entities.User User} object.
+     * <br>This will be never-null but might be a fake user if Message was sent via Webhook (Guild only).
      *
      * @return The Author of the Message.
      *
@@ -63,8 +62,10 @@ public class MessageReceivedEvent extends GenericMessageEvent
     }
 
     /**
-     * Returns the Author of the Message sent as {@link net.dv8tion.jda.core.entities.Member Member} object.
-     * <br>This will be {@code null} in case of Message being sent in a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}
+     * Returns the Author of the Message received as {@link net.dv8tion.jda.core.entities.Member Member} object.
+     * <br>This will be {@code null} in case of Message being received in
+     * a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel},
+     * a {@link net.dv8tion.jda.client.entities.Group Group}
      * or {@link #isWebhookMessage() isWebhookMessage()} returning {@code true}.
      *
      * @return The Author of the Message as null-able Member object.
@@ -77,11 +78,11 @@ public class MessageReceivedEvent extends GenericMessageEvent
     }
 
     /**
-     * Returns the {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} the Message was sent in.
-     * <br>If this Message was not sent in a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel},
+     * Returns the {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} the Message was received in.
+     * <br>If this Message was not received in a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel},
      * this will return {@code null}.
      *
-     * @return The PrivateChannel the Message was sent in or null if not from a PrivateChannel
+     * @return The PrivateChannel the Message was received in or null if not from a PrivateChannel
      *
      * @see net.dv8tion.jda.core.events.message.GenericMessageEvent#isFromType(ChannelType)
      */
@@ -91,11 +92,11 @@ public class MessageReceivedEvent extends GenericMessageEvent
     }
 
     /**
-     * Returns the {@link net.dv8tion.jda.client.entities.Group Group} the Message was sent in.
-     * <br>If this Message was not sent in a {@link net.dv8tion.jda.client.entities.Group Group},
+     * Returns the {@link net.dv8tion.jda.client.entities.Group Group} the Message was received in.
+     * <br>If this Message was not received in a {@link net.dv8tion.jda.client.entities.Group Group},
      * this will return {@code null}.
      *
-     * @return The Group the Message was sent in or null if not from a Group
+     * @return The Group the Message was received in or null if not from a Group
      *
      * @see net.dv8tion.jda.core.events.message.GenericMessageEvent#isFromType(ChannelType)
      */
@@ -105,11 +106,11 @@ public class MessageReceivedEvent extends GenericMessageEvent
     }
 
     /**
-     * Returns the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} the Message was sent in.
-     * <br>If this Message was not sent in a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel},
+     * Returns the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} the Message was received in.
+     * <br>If this Message was not received in a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel},
      * this will return {@code null}.
      *
-     * @return The TextChannel the Message was sent in or null if not from a TextChannel
+     * @return The TextChannel the Message was received in or null if not from a TextChannel
      *
      * @see net.dv8tion.jda.core.events.message.GenericMessageEvent#isFromType(ChannelType)
      */
@@ -119,11 +120,11 @@ public class MessageReceivedEvent extends GenericMessageEvent
     }
 
     /**
-     * Returns the {@link net.dv8tion.jda.core.entities.Guild Guild} the Message was sent in.
-     * <br>If this Message was not sent in a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel},
+     * Returns the {@link net.dv8tion.jda.core.entities.Guild Guild} the Message was received in.
+     * <br>If this Message was not received in a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel},
      * this will return {@code null}.
      *
-     * @return The Guild the Message was sent in or null if not from a TextChannel
+     * @return The Guild the Message was received in or null if not from a TextChannel
      *
      * @see net.dv8tion.jda.core.events.message.GenericMessageEvent#isFromType(ChannelType)
      */
