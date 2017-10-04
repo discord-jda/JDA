@@ -470,8 +470,8 @@ public class WebhookClient implements AutoCloseable
             }
             else if (!response.isSuccessful())
             {
-                LOG.debug("Failed to update buckets due to unsuccessful response with code: {} and body: ", response.code());
-                LOG.debug("{}", JDALogger.getLazyString(() -> new String(IOUtil.readFully(Requester.getBody(response)))));
+                LOG.debug("Failed to update buckets due to unsuccessful response with code: {} and body: \n{}",
+                    response.code(), JDALogger.getLazyString(() -> new String(IOUtil.readFully(Requester.getBody(response)))));
                 return;
             }
             remainingUses = Integer.parseInt(response.header("X-RateLimit-Remaining"));

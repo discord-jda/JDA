@@ -544,8 +544,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 //it is possible that a token can be invalidated due to too many reconnect attempts
                 //or that a bot reached a new shard minimum and cannot connect with the current settings
                 //if that is the case we have to drop our connection and inform the user with a fatal error message
-                LOG.error("WebSocket connection was closed and cannot be recovered due to identification issues");
-                LOG.error("{}", closeCode);
+                LOG.error("WebSocket connection was closed and cannot be recovered due to identification issues\n{}", closeCode);
             }
 
             api.setStatus(JDA.Status.SHUTDOWN);
@@ -975,13 +974,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         catch (JSONException ex)
         {
             LOG.warn("Got an unexpected Json-parse error. Please redirect following message to the devs:\n\t{}\n\t{} -> {}",
-                ex.getMessage(), type, content);
-            LOG.warn("Stacktrace:", ex);
+                ex.getMessage(), type, content, ex);
         }
         catch (Exception ex)
         {
-            LOG.error("Got an unexpected error. Please redirect following message to the devs:\n\t{} -> {}", type, content);
-            LOG.error("Stacktrace:", ex);
+            LOG.error("Got an unexpected error. Please redirect following message to the devs:\n\t{} -> {}", type, content, ex);
         }
     }
 

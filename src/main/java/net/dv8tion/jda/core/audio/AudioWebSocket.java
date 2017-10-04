@@ -256,12 +256,10 @@ public class AudioWebSocket extends WebSocketAdapter
     @Override
     public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer)
     {
-        LOG.debug("The Audio connection was closed!");
-        LOG.debug("By remote? {}", closedByServer);
+        LOG.debug("The Audio connection was closed!\nBy remote? {}", closedByServer);
         if (serverCloseFrame != null)
         {
-            LOG.debug("Reason: {}", serverCloseFrame.getCloseReason());
-            LOG.debug("Close code: {}", serverCloseFrame.getCloseCode());
+            LOG.debug("Reason: {}\nClose code: {}", serverCloseFrame.getCloseReason(), serverCloseFrame.getCloseCode());
             final int code = serverCloseFrame.getCloseCode();
             final VoiceCode.Close closeCode = VoiceCode.Close.from(code);
             switch (closeCode)
@@ -281,8 +279,7 @@ public class AudioWebSocket extends WebSocketAdapter
         }
         if (clientCloseFrame != null)
         {
-            LOG.debug("ClientReason: {}", clientCloseFrame.getCloseReason());
-            LOG.debug("ClientCode: {}", clientCloseFrame.getCloseCode());
+            LOG.debug("ClientReason: {}\nClientCode: {}", clientCloseFrame.getCloseReason(), clientCloseFrame.getCloseCode());
             if (clientCloseFrame.getCloseCode() != 1000)
             {
                 // unexpected close -> error -> attempt resume

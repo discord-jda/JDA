@@ -197,8 +197,7 @@ public class BotRateLimiter extends RateLimiter
         catch (NumberFormatException ex)
         {
             if (!bucket.getRoute().equals("gateway")
-                    && !bucket.getRoute().equals("users/@me")
-                    && Requester.LOG.isDebugEnabled())
+                    && !bucket.getRoute().equals("users/@me"))
             {
                 Requester.LOG.debug("Encountered issue with headers when updating a bucket\nRoute: {}\nHeaders: {}",
                     bucket.getRoute(), headers);

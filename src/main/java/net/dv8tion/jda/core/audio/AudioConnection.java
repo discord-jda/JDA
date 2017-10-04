@@ -116,7 +116,7 @@ public class AudioConnection
                 }
                 catch (InterruptedException e)
                 {
-                    LOG.error("Someone didn't let me sleep :(", e);
+                    LOG.error("AudioConnection ready thread got interrupted while sleeping", e);
                     Thread.currentThread().interrupt();
                 }
             }
@@ -446,7 +446,7 @@ public class AudioConnection
                 t.setDaemon(true);
                 t.setUncaughtExceptionHandler((thread, throwable) ->
                 {
-                    LOG.error("I don't know what happened :(", throwable);
+                    LOG.error("I have no idea how, but there was an uncaught exception in the combinedAudioExecutor", throwable);
                     JDAImpl api = (JDAImpl) getJDA();
                     api.getEventManager().handle(new ExceptionEvent(api, throwable, true));
                 });
@@ -515,7 +515,7 @@ public class AudioConnection
                 }
                 catch (Exception e)
                 {
-                    LOG.error("Something happened!", e);
+                    LOG.error("There was some unexpected exception in the combinedAudioExecutor!", e);
                 }
             }, 0, 20, TimeUnit.MILLISECONDS);
         }
