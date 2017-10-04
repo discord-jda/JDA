@@ -553,7 +553,7 @@ public class JDAImpl implements JDA
         switch (accountType)
         {
             case BOT:
-                if (guildCache.size() > 10)
+                if (guildCache.size() >= 10)
                     throw new IllegalStateException("Cannot create a Guild with a Bot in more than 10 guilds!");
                 break;
             case CLIENT:

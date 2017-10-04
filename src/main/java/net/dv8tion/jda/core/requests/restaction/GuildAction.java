@@ -211,6 +211,68 @@ public class GuildAction extends RestAction<Void>
         return this.channels.get(index);
     }
 
+    /**
+     * Removes the {@link net.dv8tion.jda.core.requests.restaction.GuildAction.ChannelData ChannelData}
+     * at the specified index and returns the removed object.
+     *
+     * @param  index
+     *         The index of the channel
+     *
+     * @throws java.lang.IndexOutOfBoundsException
+     *         If the index is out of bounds
+     *
+     * @return The removed object
+     */
+    @CheckReturnValue
+    public ChannelData removeChannel(int index)
+    {
+        return this.channels.remove(index);
+    }
+
+    /**
+     * Removes the provided {@link net.dv8tion.jda.core.requests.restaction.GuildAction.ChannelData ChannelData}
+     * from this GuildAction if present.
+     *
+     * @param  data
+     *         The ChannelData to remove
+     *
+     * @return The current GuildAction for chaining convenience
+     */
+    @CheckReturnValue
+    public GuildAction removeChannel(ChannelData data)
+    {
+        this.channels.remove(data);
+        return this;
+    }
+
+    /**
+     * Creates a new {@link net.dv8tion.jda.core.requests.restaction.GuildAction.ChannelData ChannelData}
+     * instance and adds it to this GuildAction.
+     *
+     * @param  type
+     *         The {@link net.dv8tion.jda.core.entities.ChannelType ChannelType} of the resulting Channel
+     *         <br>This may be of type {@link net.dv8tion.jda.core.entities.ChannelType#TEXT TEXT} or {@link net.dv8tion.jda.core.entities.ChannelType#VOICE VOICE}!
+     * @param  name
+     *         The name of the channel. This must be alphanumeric with underscores for type TEXT
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If provided with an invalid ChannelType</li>
+     *             <li>If the provided name is {@code null} or blank</li>
+     *             <li>If the provided name is not between 2-100 characters long</li>
+     *             <li>If the type is TEXT and the provided name is not alphanumeric with underscores</li>
+     *         </ul>
+     *
+     * @return The new ChannelData instance
+     */
+    @CheckReturnValue
+    public ChannelData newChannel(ChannelType type, String name)
+    {
+        ChannelData data = new ChannelData(type, name);
+        addChannel(data);
+        return data;
+    }
+
     // Roles
 
     /**
