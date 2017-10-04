@@ -173,12 +173,7 @@ public class PresenceUpdateHandler extends SocketHandler
                 JDAClient client = api.asClient();
                 FriendImpl friend = (FriendImpl) client.getFriendById(userId);
 
-                if (friend == null)
-                {
-                    if (status != OnlineStatus.OFFLINE)
-                        return null;
-                }
-                else
+                if (friend != null)
                 {
                     if (!friend.getOnlineStatus().equals(status))
                     {
