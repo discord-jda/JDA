@@ -87,7 +87,7 @@ import net.dv8tion.jda.core.events.user.*;
 
 /**
  * An abstract implementation of {@link net.dv8tion.jda.core.hooks.EventListener EventListener} which divides {@link net.dv8tion.jda.core.events.Event Events}
- * for the you.
+ * for you.
  *
  * <p><b>Example:</b>
  * <br>
