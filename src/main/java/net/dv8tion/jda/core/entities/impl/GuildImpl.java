@@ -20,7 +20,6 @@ import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.client.requests.restaction.pagination.MentionPaginationAction;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
@@ -38,7 +37,8 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAction;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
-import net.dv8tion.jda.core.utils.cache.*;
+import net.dv8tion.jda.core.utils.cache.MemberCacheView;
+import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.core.utils.cache.impl.MemberCacheViewImpl;
 import net.dv8tion.jda.core.utils.cache.impl.SnowflakeCacheViewImpl;
 import net.dv8tion.jda.core.utils.cache.impl.SortedSnowflakeCacheView;
@@ -75,7 +75,7 @@ public class GuildImpl implements Guild
     private String name;
     private String iconId;
     private String splashId;
-    private Region region;
+    private String region;
     private VoiceChannel afkChannel;
     private TextChannel systemChannel;
     private Role publicRole;
@@ -188,7 +188,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public Region getRegion()
+    public String getRegionRaw()
     {
         return region;
     }
@@ -577,7 +577,7 @@ public class GuildImpl implements Guild
         return this;
     }
 
-    public GuildImpl setRegion(Region region)
+    public GuildImpl setRegion(String region)
     {
         this.region = region;
         return this;
