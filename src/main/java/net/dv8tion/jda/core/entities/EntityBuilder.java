@@ -920,8 +920,8 @@ public class EntityBuilder
             {
                 try
                 {
-                    TextChannel channel = chanMap.get(Long.parseLong(matcher.group(1)));
-                    if(channel != null && !mentionedChannels.contains(channel))
+                    TextChannel channel = chanMap.get(Long.parseUnsignedLong(matcher.group(1)));
+                    if (channel != null && !mentionedChannels.contains(channel))
                     {
                         mentionedChannels.add(channel);
                     }
