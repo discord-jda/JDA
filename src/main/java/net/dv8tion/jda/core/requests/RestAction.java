@@ -736,9 +736,9 @@ public abstract class RestAction<T>
     {
         private final Exception exception;
 
-        public FailedRestAction(Exception exception)
+        public FailedRestAction(JDA api, Exception exception)
         {
-            super(null, null);
+            super(api, null);
             this.exception = exception;
         }
 
