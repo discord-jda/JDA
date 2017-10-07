@@ -675,6 +675,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 break;
             case WebSocketCode.INVALIDATE_SESSION:
                 LOG.debug("Got Invalidate request (OP 9). Invalidating...");
+                sentAuthInfo = false;
                 final boolean isResume = content.getBoolean("d");
                 // When d: true we can wait a bit and then try to resume again
                 //sending 4000 to not drop session
@@ -791,7 +792,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 .put("token", getToken())
                 .put("seq", api.getResponseTotal()));
         send(resume.toString(), true);
-        sentAuthInfo = true;
+        //sentAuthInfo = true; set on RESUMED response as this could fail
         api.setStatus(JDA.Status.AWAITING_LOGIN_CONFIRMATION);
     }
 
@@ -963,6 +964,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     handlers.get("READY").handle(responseTotal, raw);
                     break;
                 case "RESUMED":
+                    sentAuthInfo = true;
                     if (!processingReady)
                     {
                         api.setStatus(JDA.Status.LOADING_SUBSYSTEMS);
