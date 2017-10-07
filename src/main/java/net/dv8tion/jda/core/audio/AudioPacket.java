@@ -194,6 +194,11 @@ public class AudioPacket
         System.arraycopy(encryptedPacket.getNonce(), 0, extendedNonce, 0, RTP_HEADER_BYTE_LENGTH);
 
         byte[] decryptedAudio = boxer.open(encryptedPacket.getEncodedAudio(), extendedNonce);
+        if (decryptedAudio == null)
+        {
+            AudioConnection.LOG.debug("Failed to decrypt audio packet");
+            return null;
+        }
         byte[] decryptedRawPacket = new byte[RTP_HEADER_BYTE_LENGTH + decryptedAudio.length];
 
         System.arraycopy(encryptedPacket.getNonce(), 0, decryptedRawPacket, 0, RTP_HEADER_BYTE_LENGTH);

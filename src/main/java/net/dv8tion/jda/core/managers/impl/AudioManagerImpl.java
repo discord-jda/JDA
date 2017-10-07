@@ -18,7 +18,6 @@ package net.dv8tion.jda.core.managers.impl;
 import com.sun.jna.Platform;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.WebSocketCode;
 import net.dv8tion.jda.core.audio.AudioConnection;
 import net.dv8tion.jda.core.audio.AudioReceiveHandler;
 import net.dv8tion.jda.core.audio.AudioSendHandler;
@@ -36,7 +35,6 @@ import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.NativeUtil;
 import net.dv8tion.jda.core.utils.PermissionUtil;
-import org.json.JSONObject;
 
 import java.io.IOException;
 
@@ -46,19 +44,18 @@ public class AudioManagerImpl implements AudioManager
     //These values are set at the bottom of this file.
     public static boolean AUDIO_SUPPORTED;
     public static String OPUS_LIB_NAME;
-
     protected static boolean initialized = false;
 
     public final Object CONNECTION_LOCK = new Object();
 
     protected final JDAImpl api;
-    protected GuildImpl guild;
+    protected final ListenerProxy connectionListener = new ListenerProxy();
+    protected final GuildImpl guild;
     protected AudioConnection audioConnection = null;
     protected VoiceChannel queuedAudioConnection = null;
 
     protected AudioSendHandler sendHandler;
     protected AudioReceiveHandler receiveHandler;
-    protected ListenerProxy connectionListener = new ListenerProxy();
     protected long queueTimeout = 100;
     protected boolean shouldReconnect = true;
 
@@ -74,9 +71,9 @@ public class AudioManagerImpl implements AudioManager
         init(); //Just to make sure that the audio libs have been initialized.
     }
 
-    public void setGuild(GuildImpl guild)
+    public AudioConnection getAudioConnection()
     {
-        this.guild = guild;
+        return audioConnection;
     }
 
     @Override
@@ -137,11 +134,11 @@ public class AudioManagerImpl implements AudioManager
     {
         synchronized (CONNECTION_LOCK)
         {
-            api.getClient().getQueuedAudioConnectionMap().remove(guild.getIdLong());
             this.queuedAudioConnection = null;
-            if (audioConnection == null)
-                return;
-            this.audioConnection.close(reason);
+            if (audioConnection != null)
+                this.audioConnection.close(reason);
+            else
+                this.api.getClient().queueAudioDisconnect(guild);
             this.audioConnection = null;
         }
     }
@@ -339,15 +336,7 @@ public class AudioManagerImpl implements AudioManager
             VoiceChannel channel = isConnected() ? getConnectedChannel() : getQueuedAudioConnection();
 
             //This is technically equivalent to an audio open/move packet.
-            JSONObject voiceStateChange = new JSONObject()
-                    .put("op", WebSocketCode.VOICE_STATE)
-                    .put("d", new JSONObject()
-                            .put("guild_id", guild.getId())
-                            .put("channel_id", channel.getId())
-                            .put("self_mute", isSelfMuted())
-                            .put("self_deaf", isSelfDeafened())
-                    );
-            api.getClient().send(voiceStateChange.toString());
+            api.getClient().queueAudioConnect(channel);
         }
     }
 
@@ -383,17 +372,17 @@ public class AudioManagerImpl implements AudioManager
             else if (e instanceof  IOException)
             {
                 LOG.fatal("There was an IO Exception when setting up the temp files for audio.");
-                LOG.log(e);
+                LOG.fatal(e);
             }
             else if (e instanceof UnsatisfiedLinkError)
             {
                 LOG.fatal("JDA encountered a problem when attempting to load the Native libraries. Contact a DEV.");
-                LOG.log(e);
+                LOG.fatal(e);
             }
             else
             {
                 LOG.fatal("An unknown error occurred while attempting to setup JDA's audio system!");
-                LOG.log(e);
+                LOG.fatal(e);
             }
 
             nativesRoot = null;

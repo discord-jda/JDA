@@ -17,8 +17,8 @@
 package net.dv8tion.jda.core.audio.factory;
 
 import net.dv8tion.jda.core.audio.AudioConnection;
-import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
+import net.dv8tion.jda.core.utils.SimpleLog;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -44,67 +44,67 @@ public class DefaultSendSystem implements IAudioSendSystem
     @Override
     public void start()
     {
-        final Guild guild = packetProvider.getConnectedChannel().getGuild();
         final DatagramSocket udpSocket = packetProvider.getUdpSocket();
 
-        sendThread = new Thread(AudioManagerImpl.AUDIO_THREADS, packetProvider.getIdentifier() + " Sending Thread")
+        sendThread = new Thread(AudioManagerImpl.AUDIO_THREADS, () ->
         {
-            @Override
-            public void run()
+            long lastFrameSent = System.currentTimeMillis();
+            while (!udpSocket.isClosed() && !sendThread.isInterrupted())
             {
-                long lastFrameSent = System.currentTimeMillis();
-                while (!udpSocket.isClosed() && !sendThread.isInterrupted())
+                try
                 {
-                    try
-                    {
-                        boolean changeTalking = (System.currentTimeMillis() - lastFrameSent) > OPUS_FRAME_TIME_AMOUNT;
-                        DatagramPacket packet = packetProvider.getNextPacket(changeTalking);
+                    boolean changeTalking = (System.currentTimeMillis() - lastFrameSent) > OPUS_FRAME_TIME_AMOUNT;
+                    DatagramPacket packet = packetProvider.getNextPacket(changeTalking);
 
-                        if (packet != null)
-                            udpSocket.send(packet);
-                    }
-                    catch (NoRouteToHostException e)
+                    if (packet != null)
+                        udpSocket.send(packet);
+                }
+                catch (NoRouteToHostException e)
+                {
+                    packetProvider.onConnectionLost();
+                }
+                catch (SocketException e)
+                {
+                    //Most likely the socket has been closed due to the audio connection be closed. Next iteration will kill loop.
+                }
+                catch (Exception e)
+                {
+                    AudioConnection.LOG.fatal(e);
+                }
+                finally
+                {
+                    long sleepTime = (OPUS_FRAME_TIME_AMOUNT) - (System.currentTimeMillis() - lastFrameSent);
+                    if (sleepTime > 0)
                     {
-                        packetProvider.onConnectionLost();
-                    }
-                    catch (SocketException e)
-                    {
-                        //Most likely the socket has been closed due to the audio connection be closed. Next iteration will kill loop.
-                    }
-                    catch (Exception e)
-                    {
-                        AudioConnection.LOG.log(e);
-                    }
-                    finally
-                    {
-
-                        long sleepTime = (OPUS_FRAME_TIME_AMOUNT) - (System.currentTimeMillis() - lastFrameSent);
-                        if (sleepTime > 0)
+                        try
                         {
-                            try
-                            {
-                                Thread.sleep(sleepTime);
-                            }
-                            catch (InterruptedException e)
-                            {
-                                //We've been asked to stop.
-                                Thread.currentThread().interrupt();
-                            }
+                            Thread.sleep(sleepTime);
                         }
-                        if (System.currentTimeMillis() < lastFrameSent + 60) // If the sending didn't took longer than 60ms (3 times the time frame)
+                        catch (InterruptedException e)
                         {
-                            lastFrameSent += OPUS_FRAME_TIME_AMOUNT; // increase lastFrameSent
+                            //We've been asked to stop.
+                            Thread.currentThread().interrupt();
                         }
-                        else
-                        {
-                            lastFrameSent = System.currentTimeMillis(); // else reset lastFrameSent to current time
-                        }
+                    }
+                    if (System.currentTimeMillis() < lastFrameSent + 60) // If the sending didn't took longer than 60ms (3 times the time frame)
+                    {
+                        lastFrameSent += OPUS_FRAME_TIME_AMOUNT; // increase lastFrameSent
+                    }
+                    else
+                    {
+                        lastFrameSent = System.currentTimeMillis(); // else reset lastFrameSent to current time
                     }
                 }
             }
-        };
-        sendThread.setPriority((Thread.NORM_PRIORITY + Thread.MAX_PRIORITY) / 2);
+        });
+        sendThread.setUncaughtExceptionHandler((thread, throwable) ->
+        {
+            SimpleLog.getLog(DefaultSendSystem.class).fatal(throwable);
+            start();
+        });
         sendThread.setDaemon(true);
+        sendThread.setName(packetProvider.getIdentifier() + " Sending Thread");
+        sendThread.setPriority((Thread.NORM_PRIORITY + Thread.MAX_PRIORITY) / 2);
         sendThread.start();
     }
 

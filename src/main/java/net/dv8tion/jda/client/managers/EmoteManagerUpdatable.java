@@ -17,7 +17,6 @@
 package net.dv8tion.jda.client.managers;
 
 import net.dv8tion.jda.client.managers.fields.EmoteField;
-import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Emote;
@@ -25,7 +24,6 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.impl.EmoteImpl;
-import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
@@ -70,20 +68,17 @@ public class EmoteManagerUpdatable
      * @param  emote
      *         The target {@link net.dv8tion.jda.core.entities.impl.EmoteImpl EmoteImpl} to modify
      *
-     * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
-     *         If the currently logged in account is not from {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}
      * @throws java.lang.IllegalStateException
      *         If the specified Emote is {@link net.dv8tion.jda.core.entities.Emote#isFake() fake} or {@link net.dv8tion.jda.core.entities.Emote#isManaged() managed}.
      */
     public EmoteManagerUpdatable(EmoteImpl emote)
     {
-        if (emote.getJDA().getAccountType() != AccountType.CLIENT)
-            throw new AccountTypeException(AccountType.CLIENT);
         if (emote.isFake())
             throw new IllegalStateException("The emote you are trying to update is not an actual emote we have access to (it is fake)!");
         if (emote.isManaged())
             throw new IllegalStateException("You cannot modify a managed emote!");
         this.emote = emote;
+        checkPermission(Permission.MANAGE_EMOTES);
         setupFields();
     }
 
@@ -143,6 +138,8 @@ public class EmoteManagerUpdatable
      * An {@link net.dv8tion.jda.client.managers.fields.EmoteField EmoteField}
      * for the restriction roles of the selected {@link net.dv8tion.jda.core.entities.Emote Emote}.
      * <br>If the roles are empty this Emote will be available to everyone.
+     * <br>Passing the roles field will be ignored unless the application is whitelisted as an emoji provider.
+     * For more information and to request whitelisting please contact {@code support@discordapp.com}
      *
      * <p>To set the value use {@link net.dv8tion.jda.core.managers.fields.Field#setValue(Object) setValue(Collection)}
      * on the returned {@link net.dv8tion.jda.client.managers.fields.EmoteField EmoteField} instance.
@@ -152,11 +149,7 @@ public class EmoteManagerUpdatable
      * throw an {@link IllegalArgumentException IllegalArgumentException}.
      *
      * @return {@link net.dv8tion.jda.client.managers.fields.EmoteField EmoteField} - Type: {@link Collection}
-     *
-     * @deprecated
-     *         This setting is only available to whitelisted accounts and <i>may</i> be removed in successive builds.
      */
-    @Deprecated
     public EmoteField<Collection<Role>> getRolesField()
     {
         return roles;

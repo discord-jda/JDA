@@ -26,7 +26,7 @@ import java.util.Map;
 
 public class EventCache
 {
-    public static final SimpleLog LOG = SimpleLog.getLog("EventCache");
+    public static final SimpleLog LOG = SimpleLog.getLog(EventCache.class);
     private final Map<Type, TLongObjectMap<List<Runnable>>> eventCache = new HashMap<>();
 
     public void cache(Type type, long triggerId, Runnable handler)
@@ -80,6 +80,16 @@ public class EventCache
     public void clear()
     {
         eventCache.clear();
+    }
+
+    public void clear(Type type, long id)
+    {
+        try
+        {
+            List<Runnable> events = eventCache.get(type).remove(id);
+            LOG.debug("Clearing cache for type " + type + " with ID " + id + " (Size: " + events.size() + ')');
+        }
+        catch (NullPointerException ignored) {}
     }
 
     public enum Type

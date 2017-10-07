@@ -16,14 +16,16 @@
 
 package net.dv8tion.jda.core.managers;
 
-import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.EmoteImpl;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.MemberImpl;
-import net.dv8tion.jda.core.exceptions.*;
+import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
+import net.dv8tion.jda.core.exceptions.HierarchyException;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
@@ -34,9 +36,9 @@ import net.dv8tion.jda.core.requests.restaction.RoleAction;
 import net.dv8tion.jda.core.requests.restaction.WebhookAction;
 import net.dv8tion.jda.core.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.core.requests.restaction.order.RoleOrderAction;
+import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.PermissionUtil;
-import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -140,10 +142,10 @@ public class GuildController
     public RestAction<Void> moveVoiceMember(Member member, VoiceChannel voiceChannel)
     {
         checkAvailable();
-        Checks.notNull(member, "member");
-        Checks.notNull(member, "voiceChannel");
-        checkGuild(member.getGuild(), "member");
-        checkGuild(voiceChannel.getGuild(), "voiceChannel");
+        Checks.notNull(member, "Member");
+        Checks.notNull(voiceChannel, "VoiceChannel");
+        checkGuild(member.getGuild(), "Member");
+        checkGuild(voiceChannel.getGuild(), "VoiceChannel");
 
         GuildVoiceState vState = member.getVoiceState();
         if (!vState.inVoiceChannel())
@@ -224,8 +226,8 @@ public class GuildController
     public AuditableRestAction<Void> setNickname(Member member, String nickname)
     {
         checkAvailable();
-        Checks.notNull(member, "member");
-        checkGuild(member.getGuild(), "member");
+        Checks.notNull(member, "Member");
+        checkGuild(member.getGuild(), "Member");
 
         if(member.equals(guild.getSelfMember()))
         {
@@ -301,8 +303,7 @@ public class GuildController
         checkAvailable();
         checkPermission(Permission.KICK_MEMBERS);
 
-        if (days < 1)
-            throw new IllegalArgumentException("Days amount must be at minimum 1 day.");
+        Checks.check(days >= 1, "Days amount must be at minimum 1 day.");
 
         Route.CompiledRoute route = Route.Guilds.PRUNE_MEMBERS.compile(guild.getId()).withQueryParams("days", Integer.toString(days));
         return new AuditableRestAction<Integer>(guild.getJDA(), route)
@@ -428,8 +429,7 @@ public class GuildController
         Checks.notBlank(userId, "userId");
 
         Member member = guild.getMemberById(userId);
-        if (member == null)
-            throw new IllegalArgumentException("The provided userId does not correspond to a member in this guild! Provided userId: " + userId);
+        Checks.check(member != null, "The provided userId does not correspond to a member in this guild! Provided userId: %s", userId);
 
         return kick(member, reason);
     }
@@ -565,7 +565,7 @@ public class GuildController
     public AuditableRestAction<Void> ban(Member member, int delDays, String reason)
     {
         checkAvailable();
-        Checks.notNull(member, "member");
+        Checks.notNull(member, "Member");
         //Don't check if the provided member is from this guild. It doesn't matter if they are or aren't.
 
         return ban(member.getUser(), delDays, reason);
@@ -620,14 +620,13 @@ public class GuildController
     public AuditableRestAction<Void> ban(User user, int delDays, String reason)
     {
         checkAvailable();
-        Checks.notNull(user, "user");
+        Checks.notNull(user, "User");
         checkPermission(Permission.BAN_MEMBERS);
 
         if (guild.isMember(user)) // If user is in guild. Check if we are able to ban.
             checkPosition(guild.getMember(user));
 
-        if (delDays < 0)
-            throw new IllegalArgumentException("Provided delDays cannot be less that 0. How can you delete messages that are -1 days old?");
+        Checks.notNegative(delDays, "Deletion Days");
 
         final String userId = user.getId();
 
@@ -696,7 +695,7 @@ public class GuildController
     public AuditableRestAction<Void> ban(String userId, int delDays, String reason)
     {
         checkAvailable();
-        Checks.notBlank(userId, "userId");
+        Checks.notBlank(userId, "User ID");
         checkPermission(Permission.BAN_MEMBERS);
 
         User user = guild.getJDA().getUserById(userId);
@@ -903,7 +902,7 @@ public class GuildController
     @CheckReturnValue
     public AuditableRestAction<Void> unban(User user)
     {
-        Checks.notNull(user, "user");
+        Checks.notNull(user, "User");
 
         return unban(user.getId());
     }
@@ -940,7 +939,7 @@ public class GuildController
     public AuditableRestAction<Void> unban(String userId)
     {
         checkAvailable();
-        Checks.notBlank(userId, "userId");
+        Checks.notBlank(userId, "User ID");
         checkPermission(Permission.BAN_MEMBERS);
 
         Route.CompiledRoute route = Route.Guilds.UNBAN.compile(guild.getId(), userId);
@@ -1000,8 +999,8 @@ public class GuildController
     public AuditableRestAction<Void> setDeafen(Member member, boolean deafen)
     {
         checkAvailable();
-        Checks.notNull(member, "member");
-        checkGuild(member.getGuild(), "member");
+        Checks.notNull(member, "Member");
+        checkGuild(member.getGuild(), "Member");
         checkPermission(Permission.VOICE_DEAF_OTHERS);
 
         //We check the owner instead of Position because, apparently, Discord doesn't care about position for
@@ -1067,8 +1066,8 @@ public class GuildController
     public AuditableRestAction<Void> setMute(Member member, boolean mute)
     {
         checkAvailable();
-        Checks.notNull(member, "member");
-        checkGuild(member.getGuild(), "member");
+        Checks.notNull(member, "Member");
+        checkGuild(member.getGuild(), "Member");
         checkPermission(Permission.VOICE_MUTE_OTHERS);
 
         //We check the owner instead of Position because, apparently, Discord doesn't care about position for
@@ -1142,8 +1141,8 @@ public class GuildController
     {
         Checks.notNull(member, "Member");
         Checks.notNull(role, "Role");
-        checkGuild(member.getGuild(), "Member is not from the same Guild!");
-        checkGuild(role.getGuild(), "Role is not from the same Guild!");
+        checkGuild(member.getGuild(), "Member");
+        checkGuild(role.getGuild(), "Role");
         checkPermission(Permission.MANAGE_ROLES);
         checkPosition(role);
 
@@ -1209,8 +1208,8 @@ public class GuildController
     {
         Checks.notNull(member, "Member");
         Checks.notNull(role, "Role");
-        checkGuild(member.getGuild(), "Member is not from the same Guild!");
-        checkGuild(role.getGuild(), "Role is not from the same Guild!");
+        checkGuild(member.getGuild(), "Member");
+        checkGuild(role.getGuild(), "Role");
         checkPermission(Permission.MANAGE_ROLES);
         checkPosition(role);
 
@@ -1508,34 +1507,32 @@ public class GuildController
     public AuditableRestAction<Void> modifyMemberRoles(Member member, Collection<Role> rolesToAdd, Collection<Role> rolesToRemove)
     {
         checkAvailable();
-        Checks.notNull(member, "member");
+        Checks.notNull(member, "Member");
         Checks.notNull(rolesToAdd, "Collection containing roles to be added to the member");
         Checks.notNull(rolesToRemove, "Collection containing roles to be removed from the member");
-        checkGuild(member.getGuild(), "member");
+        checkGuild(member.getGuild(), "Member");
         checkPermission(Permission.MANAGE_ROLES);
         rolesToAdd.forEach(role ->
         {
-            Checks.notNull(role, "role in rolesToAdd");
-            checkGuild(role.getGuild(), "role: " + role.toString());
+            Checks.notNull(role, "Role in rolesToAdd");
+            checkGuild(role.getGuild(), "Role: " + role.toString());
             checkPosition(role);
-            if (role.isManaged())
-                throw new IllegalArgumentException("Cannot add a Managed role to a Member. Role: " + role.toString());
+            Checks.check(!role.isManaged(), "Cannot add a Managed role to a Member. Role: %s", role.toString());
         });
         rolesToRemove.forEach(role ->
         {
-            Checks.notNull(role, "role in rolesToRemove");
-            checkGuild(role.getGuild(), "role: " + role.toString());
+            Checks.notNull(role, "Role in rolesToRemove");
+            checkGuild(role.getGuild(), "Role: " + role.toString());
             checkPosition(role);
-            if (role.isManaged())
-                throw new IllegalArgumentException("Cannot remove a Managed role from a Member. Role: " + role.toString());
+            Checks.check(!role.isManaged(), "Cannot remove a Managed role from a Member. Role: %s", role.toString());
         });
 
         Set<Role> currentRoles = new HashSet<>(((MemberImpl) member).getRoleSet());
         currentRoles.addAll(rolesToAdd);
         currentRoles.removeAll(rolesToRemove);
 
-        if (currentRoles.contains(guild.getPublicRole()))
-            throw new IllegalArgumentException("Cannot add the PublicRole of a Guild to a Member. All members have this role by default!");
+        Checks.check(!currentRoles.contains(guild.getPublicRole()),
+            "Cannot add the PublicRole of a Guild to a Member. All members have this role by default!");
 
         JSONObject body = new JSONObject()
                 .put("roles", currentRoles.stream().map(Role::getId).collect(Collectors.toList()));
@@ -1662,18 +1659,18 @@ public class GuildController
     public AuditableRestAction<Void> modifyMemberRoles(Member member, Collection<Role> roles)
     {
         checkAvailable();
-        Checks.notNull(member, "member");
-        Checks.notNull(roles, "roles");
-        checkGuild(member.getGuild(), "member");
+        Checks.notNull(member, "Member");
+        Checks.notNull(roles, "Roles");
+        checkGuild(member.getGuild(), "Member");
         roles.forEach(role ->
         {
-            Checks.notNull(role, "role in collection");
-            checkGuild(role.getGuild(), "role: " + role.toString());
+            Checks.notNull(role, "Role in collection");
+            checkGuild(role.getGuild(), "Role: " + role.toString());
             checkPosition(role);
         });
 
-        if (roles.contains(guild.getPublicRole()))
-            throw new IllegalArgumentException("Cannot add the PublicRole of a Guild to a Member. All members have this role by default!");
+        Checks.check(!roles.contains(guild.getPublicRole()),
+            "Cannot add the PublicRole of a Guild to a Member. All members have this role by default!");
 
         //Make sure that the current managed roles are preserved and no new ones are added.
         List<Role> currentManaged = roles.stream().filter(Role::isManaged).collect(Collectors.toList());
@@ -1743,16 +1740,15 @@ public class GuildController
     public AuditableRestAction<Void> transferOwnership(Member newOwner)
     {
         checkAvailable();
-        Checks.notNull(newOwner, "newOwner member");
-        checkGuild(newOwner.getGuild(), "newOwner member");
+        Checks.notNull(newOwner, "Member");
+        checkGuild(newOwner.getGuild(), "Member");
         if (!guild.getOwner().equals(guild.getSelfMember()))
             throw new PermissionException("The logged in account must be the owner of this Guild to be able to transfer ownership");
 
-        if (guild.getSelfMember().equals(newOwner))
-            throw new IllegalArgumentException("The member provided as the newOwner is the currently logged in account. Provide a different member to give ownership to.");
+        Checks.check(!guild.getSelfMember().equals(newOwner),
+            "The member provided as the newOwner is the currently logged in account. Provide a different member to give ownership to.");
 
-        if (newOwner.getUser().isBot())
-            throw new IllegalArgumentException("Cannot transfer ownership of a Guild to a Bot!");
+        Checks.check(!newOwner.getUser().isBot(), "Cannot transfer ownership of a Guild to a Bot!");
 
         JSONObject body = new JSONObject().put("owner_id", newOwner.getUser().getId());
         Route.CompiledRoute route = Route.Guilds.MODIFY_GUILD.compile(guild.getId());
@@ -1801,13 +1797,13 @@ public class GuildController
     {
         checkAvailable();
         checkPermission(Permission.MANAGE_CHANNEL);
-        Checks.notNull(name, "name");
+        Checks.notBlank(name, "Name");
+        name = name.trim();
 
-        if (name.length() < 2 || name.length() > 100)
-            throw new IllegalArgumentException("Provided name must be 2 - 100 characters in length");
+        Checks.check(name.length() >= 2 && name.length() <= 100, "Provided name must be 2 - 100 characters in length");
 
         Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(guild.getId());
-        return new ChannelAction(route, name, guild, false);
+        return new ChannelAction(route, name, guild, ChannelType.TEXT);
     }
 
     /**
@@ -1842,13 +1838,54 @@ public class GuildController
     {
         checkAvailable();
         checkPermission(Permission.MANAGE_CHANNEL);
-        Checks.notNull(name, "name");
+        Checks.notBlank(name, "Name");
+        name = name.trim();
 
-        if (name.length() < 2 || name.length() > 100)
-            throw new IllegalArgumentException("Provided name must be 2 to 100 characters in length");
+        Checks.check(name.length() >= 2 && name.length() <= 100, "Provided name must be 2 - 100 characters in length");
 
         Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(guild.getId());
-        return new ChannelAction(route, name, guild, true);
+        return new ChannelAction(route, name, guild, ChannelType.VOICE);
+    }
+
+    /**
+     * Creates a new {@link net.dv8tion.jda.core.entities.Category Category} in this Guild.
+     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The channel could not be created due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>We were removed from the Guild before finishing the task</li>
+     * </ul>
+     *
+     * @param  name
+     *         The name of the Category to create
+     *
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL} permission
+     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
+     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
+     * @throws IllegalArgumentException
+     *         If the provided name is {@code null} or less than 2 characters or greater than 100 characters in length
+     *
+     * @return A specific {@link net.dv8tion.jda.core.requests.restaction.ChannelAction ChannelAction}
+     *         <br>This action allows to set fields for the new Category before creating it
+     */
+    @CheckReturnValue
+    public ChannelAction createCategory(String name)
+    {
+        checkAvailable();
+        checkPermission(Permission.MANAGE_CHANNEL);
+        Checks.notBlank(name, "Name");
+        name = name.trim();
+
+        Checks.check(name.length() >= 2 && name.length() <= 100, "Provided name must be 2 - 100 characters in length");
+
+        Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(guild.getId());
+        return new ChannelAction(route, name, guild, ChannelType.CATEGORY);
     }
 
     /**
@@ -1856,11 +1893,12 @@ public class GuildController
      * in this {@link net.dv8tion.jda.core.entities.Guild Guild}.
      * <br>The provided channel need not be in the same Guild for this to work!
      *
-     * This copies the following elements:
+     * <p>This copies the following elements:
      * <ol>
      *     <li>Name</li>
+     *     <li>Parent Category (if present)</li>
      *     <li>Voice Elements (Bitrate, Userlimit)</li>
-     *     <li>Text Elements (Topic)</li>
+     *     <li>Text Elements (Topic, NSFW)</li>
      *     <li>All permission overrides for Members/Roles</li>
      * </ol>
      *
@@ -1895,33 +1933,7 @@ public class GuildController
     public ChannelAction createCopyOfChannel(Channel channel)
     {
         Checks.notNull(channel, "Channel");
-        checkPermission(Permission.MANAGE_CHANNEL);
-        boolean isVoice = channel instanceof VoiceChannel;
-
-        Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(guild.getId());
-        final ChannelAction action = new ChannelAction(route, channel.getName(), guild, isVoice);
-
-        if (isVoice)
-        {
-            VoiceChannel voice = (VoiceChannel) channel;
-            action.setBitrate(voice.getBitrate())
-                  .setUserlimit(voice.getUserLimit());
-        }
-        else
-        {
-            TextChannel text = (TextChannel) channel;
-            action.setTopic(text.getTopic());
-        }
-
-        for (PermissionOverride o : channel.getPermissionOverrides())
-        {
-            if (o.isMemberOverride())
-                action.addPermissionOverride(o.getMember(), o.getAllowedRaw(), o.getDeniedRaw());
-            else
-                action.addPermissionOverride(o.getRole(), o.getAllowedRaw(), o.getDeniedRaw());
-        }
-
-        return action;
+        return channel.createCopy(guild);
     }
 
     /**
@@ -1954,18 +1966,17 @@ public class GuildController
      *
      * @return A specific {@link net.dv8tion.jda.core.requests.restaction.WebhookAction WebhookAction}
      *         <br>This action allows to set fields for the new webhook before creating it
+     *
+     * @deprecated
+     *         Use {@link net.dv8tion.jda.core.entities.TextChannel#createWebhook(String) TextChannel.createWebhook(String)} instead
      */
+    @Deprecated
     @CheckReturnValue
     public WebhookAction createWebhook(TextChannel channel, String name)
     {
-        Checks.notNull(name, "Webhook name");
-        Checks.notNull(channel, "TextChannel");
+        Checks.notNull(channel, "Channel");
         checkGuild(channel.getGuild(), "channel");
-        if (!guild.getSelfMember().hasPermission(channel, Permission.MANAGE_WEBHOOKS))
-            throw new InsufficientPermissionException(Permission.MANAGE_WEBHOOKS);
-
-        Route.CompiledRoute route = Route.Channels.CREATE_WEBHOOK.compile(channel.getId());
-        return new WebhookAction(getJDA(), route, name);
+        return channel.createWebhook(name);
     }
 
     /**
@@ -2034,7 +2045,7 @@ public class GuildController
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      * @throws java.lang.IllegalArgumentException
-     *         If the specified role is {@code null} or not from this Guild
+     *         If the specified role is {@code null}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.RoleAction RoleAction}
      *         <br>RoleAction with already copied values from the specified {@link net.dv8tion.jda.core.entities.Role Role}
@@ -2042,12 +2053,8 @@ public class GuildController
     @CheckReturnValue
     public RoleAction createCopyOfRole(Role role)
     {
-        return createRole()
-                .setColor(role.getColor())
-                .setPermissions(role.getPermissionsRaw())
-                .setName(role.getName())
-                .setHoisted(role.isHoisted())
-                .setMentionable(role.isMentionable());
+        Checks.notNull(role, "Role");
+        return role.createCopy(guild);
     }
 
     /**
@@ -2056,7 +2063,8 @@ public class GuildController
      * <br>For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES MANAGE_EMOTES} Permission.
      *
      * <p><b><u>Unicode emojis are not included as {@link net.dv8tion.jda.core.entities.Emote Emote}!</u></b>
-     * <br>Roles may only be available for whitelisted accounts.
+     * <br>Passing the roles field will be ignored unless the application is whitelisted as an emoji provider.
+     * For more information and to request whitelisting please contact {@code support@discordapp.com}
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
@@ -2080,8 +2088,6 @@ public class GuildController
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES MANAGE_EMOTES} Permission
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
-     * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
-     *         If the logged in account is not from {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction} - Type: {@link net.dv8tion.jda.core.entities.Emote Emote}
      *         <br>The newly created Emote
@@ -2091,11 +2097,12 @@ public class GuildController
     {
         checkAvailable();
         checkPermission(Permission.MANAGE_EMOTES);
-        Checks.notNull(name, "emote name");
-        Checks.notNull(icon, "emote icon");
+        Checks.notBlank(name, "Emote name");
+        Checks.notNull(icon, "Emote icon");
+        Checks.notNull(roles, "Roles");
 
-        if (getJDA().getAccountType() != AccountType.CLIENT)
-            throw new AccountTypeException(AccountType.CLIENT);
+//        if (getJDA().getAccountType() != AccountType.CLIENT)
+//            throw new AccountTypeException(AccountType.CLIENT);
 
         JSONObject body = new JSONObject();
         body.put("name", name);
@@ -2109,30 +2116,48 @@ public class GuildController
             @Override
             protected void handleResponse(Response response, Request<Emote> request)
             {
-                if (response.isOk())
+                if (!response.isOk())
                 {
-                    JSONObject obj = response.getObject();
-                    final long id = obj.getLong("id");
-                    String name = obj.getString("name");
-                    EmoteImpl emote = new EmoteImpl(id, guild).setName(name);
-                    // managed is false by default, should always be false for emotes created by client accounts.
-
-                    JSONArray rolesArr = obj.getJSONArray("roles");
-                    Set<Role> roleSet = emote.getRoleSet();
-                    for (int i = 0; i < rolesArr.length(); i++)
-                    {
-                        roleSet.add(guild.getRoleById(rolesArr.getString(i)));
-                    }
-
-                    // put emote into cache
-                    ((GuildImpl) guild).getEmoteMap().put(id, emote);
-
-                    request.onSuccess(emote);
-                }
-                else
                     request.onFailure(response);
+                    return;
+                }
+                JSONObject obj = response.getObject();
+                final long id = obj.getLong("id");
+                final String name = obj.getString("name");
+                final boolean managed = !obj.isNull("managed") && obj.getBoolean("managed");
+                EmoteImpl emote = new EmoteImpl(id, guild).setName(name).setManaged(managed);
+
+                JSONArray rolesArr = obj.getJSONArray("roles");
+                Set<Role> roleSet = emote.getRoleSet();
+                for (int i = 0; i < rolesArr.length(); i++)
+                    roleSet.add(guild.getRoleById(rolesArr.getString(i)));
+                request.onSuccess(emote);
             }
         };
+    }
+
+    /**
+     * Modifies the positional order of {@link net.dv8tion.jda.core.entities.Guild#getCategories() Guild.getCategories()}
+     * using a specific {@link net.dv8tion.jda.core.requests.RestAction RestAction} extension to allow moving Channels
+     * {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveDown(int) down}
+     * or {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
+     * <br>This uses <b>ascending</b> order with a 0 based index.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNNKOWN_CHANNEL}
+     *     <br>One of the channels has been deleted before the completion of the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The currently logged in account was removed from the Guild</li>
+     * </ul>
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.order.ChannelOrderAction ChannelOrderAction} - Type: {@link net.dv8tion.jda.core.entities.Category Category}
+     */
+    @CheckReturnValue
+    public ChannelOrderAction<Category> modifyCategoryPositions()
+    {
+        return new ChannelOrderAction<>(guild, ChannelType.CATEGORY);
     }
 
     /**
