@@ -113,6 +113,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         connect();
     }
 
+    public JDA getJDA()
+    {
+        return api;
+    }
+
     public Set<String> getCfRays()
     {
         return cfRays;
@@ -464,7 +469,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     @Override
     public void onConnected(WebSocket websocket, Map<String, List<String>> headers)
     {
-        api.setStatus(JDA.Status.LOADING_SUBSYSTEMS);
+        api.setStatus(JDA.Status.IDENTIFYING_SESSION);
         LOG.info("Connected to WebSocket");
         if (headers.containsKey("cf-ray"))
         {
@@ -596,7 +601,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 LOG.warn("Got disconnected from WebSocket (Internet?!)...");
             LOG.warn("Attempting to reconnect in " + reconnectTimeoutS + "s");
         }
-        while(shouldReconnect)
+        while (shouldReconnect)
         {
             try
             {
@@ -765,6 +770,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         send(identify.toString(), true);
         handleIdentifyRateLimit = true;
         sentAuthInfo = true;
+        api.setStatus(JDA.Status.AWAITING_LOGIN_CONFIRMATION);
     }
 
     protected void sendResume()
@@ -778,6 +784,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 .put("seq", api.getResponseTotal()));
         send(resume.toString(), true);
         sentAuthInfo = true;
+        api.setStatus(JDA.Status.AWAITING_LOGIN_CONFIRMATION);
     }
 
     protected void invalidate()
@@ -938,6 +945,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             {
                 //INIT types
                 case "READY":
+                    api.setStatus(JDA.Status.LOADING_SUBSYSTEMS);
                     //LOG.debug(String.format("%s -> %s", type, content.toString())); already logged on trace level
                     processingReady = true;
                     handleIdentifyRateLimit = false;
@@ -949,6 +957,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 case "RESUMED":
                     if (!processingReady)
                     {
+                        api.setStatus(JDA.Status.LOADING_SUBSYSTEMS);
                         initiating = false;
                         ready();
                     }

@@ -918,10 +918,14 @@ public class EntityBuilder
             Matcher matcher = channelMentionPattern.matcher(content);
             while (matcher.find())
             {
-                TextChannel channel = chanMap.get(Long.parseLong(matcher.group(1)));
-                if(channel != null && !mentionedChannels.contains(channel))
+                try
                 {
-                    mentionedChannels.add(channel);
+                    TextChannel channel = chanMap.get(Long.parseUnsignedLong(matcher.group(1)));
+                    if (channel != null && !mentionedChannels.contains(channel))
+                    {
+                        mentionedChannels.add(channel);
+                    }
+                } catch (NumberFormatException ignored) {
                 }
             }
             message.setMentionedChannels(mentionedChannels);
