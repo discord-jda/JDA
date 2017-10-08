@@ -507,7 +507,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.notNull(file, "file");
         Checks.check(file.exists() && file.canRead(),
             "Provided file is either null, doesn't exist or is not readable!");
-        Checks.check(file.length() <= (getJDA().getAccountType() == AccountType.CLIENT && getJDA().getSelfUser().isPremium() ? Message.MAX_FILE_SIZE_NITRO : Message.MAX_FILE_SIZE),
+        Checks.check(file.length() <= getJDA().getSelfUser().getAllowedFileSize(),
             "File is to big! Max file-size is 8 MiB for normal and 50 MiB for nitro users");
 
         Checks.notNull(fileName, "fileName");
@@ -662,8 +662,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     {
         Checks.notNull(data, "data");
         Checks.notNull(fileName, "fileName");
-
-        Checks.check(data.length <= (getJDA().getAccountType() == AccountType.CLIENT && getJDA().getSelfUser().isPremium() ? Message.MAX_FILE_SIZE_NITRO : Message.MAX_FILE_SIZE),
+        Checks.check(data.length <= getJDA().getSelfUser().getAllowedFileSize(),
                 "Provided data is too large! Max file-size is 8 MiB for normal and 50 MiB for nitro users");
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());

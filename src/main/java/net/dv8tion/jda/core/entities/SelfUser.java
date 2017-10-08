@@ -92,6 +92,18 @@ public interface SelfUser extends User
     String getPhoneNumber() throws AccountTypeException;
 
     /**
+     * Returns the maximum size for files that can be uploaded with this account.
+     * <br>Returns {@value net.dv8tion.jda.core.entities.Message#MAX_FILE_SIZE} for bots and non-nitro client accounts
+     * and {@value net.dv8tion.jda.core.entities.Message#MAX_FILE_SIZE_NITRO} for client accounts with a active nitro subscription.
+     * 
+     * @return The maximum size for files that can be uploaded with this account
+     * 
+     * @see net.dv8tion.jda.core.entities.Message#MAX_FILE_SIZE
+     * @see net.dv8tion.jda.core.entities.Message#MAX_FILE_SIZE_NITRO
+     */
+    long getAllowedFileSize();
+
+    /**
      * The {@link net.dv8tion.jda.core.managers.AccountManager AccountManager}
      * for the currently logged in account.
      *

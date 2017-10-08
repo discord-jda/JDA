@@ -16,6 +16,7 @@
 package net.dv8tion.jda.core.entities.impl;
 
 import net.dv8tion.jda.core.AccountType;
+import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.SelfUser;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
@@ -103,6 +104,15 @@ public class SelfUserImpl extends UserImpl implements SelfUser
         if (api.getAccountType() != AccountType.CLIENT)
             throw new AccountTypeException(AccountType.CLIENT, "Nitro status retrieval can only be done on CLIENT accounts!");
         return this.premium;
+    }
+
+    @Override
+    public long getAllowedFileSize()
+    {
+        if (this.premium) // by directly accessing the field we don't need to check the account type 
+            return Message.MAX_FILE_SIZE_NITRO;
+        else
+            return Message.MAX_FILE_SIZE;
     }
 
     @Override

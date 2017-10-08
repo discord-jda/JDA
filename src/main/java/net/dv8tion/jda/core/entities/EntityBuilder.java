@@ -73,21 +73,25 @@ public class EntityBuilder
             selfUser = new SelfUserImpl(id, api);
             api.setSelfUser(selfUser);
         }
+
         if (!api.getUserMap().containsKey(selfUser.getIdLong()))
-        {
             api.getUserMap().put(selfUser.getIdLong(), selfUser);
-        }
-        return (SelfUser) selfUser
-                .setVerified(self.getBoolean("verified"))
+
+        selfUser.setVerified(self.getBoolean("verified"))
                 .setMfaEnabled(self.getBoolean("mfa_enabled"))
-                .setEmail(!self.isNull("email") ? self.getString("email") : null)
-                .setMobile(self.has("mobile") ? self.getBoolean("mobile") : false) 
-                .setPremium(self.has("premium") ? self.getBoolean("premium") : false)
-                .setPhoneNumber(!self.isNull("phone") ? self.getString("phone") : null)
                 .setName(self.getString("username"))
                 .setDiscriminator(self.getString("discriminator"))
                 .setAvatarId(self.isNull("avatar") ? null : self.getString("avatar"))
                 .setBot(self.has("bot") && self.getBoolean("bot"));
+
+        if (this.api.getAccountType() == AccountType.CLIENT)
+            selfUser
+                .setEmail(!self.isNull("email") ? self.getString("email") : null)
+                .setMobile(!self.isNull("mobile") ? self.getBoolean("mobile") : false) 
+                .setPremium(!self.isNull("premium") ? self.getBoolean("premium") : false)
+                .setPhoneNumber(!self.isNull("phone") ? self.getString("phone") : null);
+
+        return selfUser;
     }
 
     public Game createGame(String name, String url, Game.GameType type)

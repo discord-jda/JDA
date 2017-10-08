@@ -522,7 +522,7 @@ public class GuildImpl implements Guild
         switch (verificationLevel)
         {
             case VERY_HIGH:
-                return false; // we already checked for a verified phone number
+                break; // we already checked for a verified phone number
             case HIGH:
                 if (ChronoUnit.MINUTES.between(getSelfMember().getJoinDate(), OffsetDateTime.now()) < 10)
                     break;
