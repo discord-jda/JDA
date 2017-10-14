@@ -51,9 +51,12 @@ public class MessageHistory
     public MessageHistory(MessageChannel channel)
     {
         this.channel = channel;
-        if (channel instanceof TextChannel &&
-                !((TextChannel) channel).getGuild().getSelfMember().hasPermission((TextChannel) channel, Permission.MESSAGE_HISTORY))
-            throw new InsufficientPermissionException(Permission.MESSAGE_HISTORY);
+        if (channel instanceof TextChannel)
+        {
+            TextChannel tc = (TextChannel) channel;
+            if (!tc.getGuild().getSelfMember().hasPermission(tc, Permission.MESSAGE_HISTORY))
+                throw new InsufficientPermissionException(Permission.MESSAGE_HISTORY);
+        }
     }
 
     /**
