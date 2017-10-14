@@ -432,7 +432,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     throw new RuntimeException("Could not fetch WS-Gateway!");
                 }
             }
-            zlibContext = new Inflater();
             socket = api.getWebSocketFactory()
                     .createSocket(gatewayUrl)
                     .addHeader("Accept-Encoding", "gzip")
@@ -496,6 +495,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         reconnectTimeoutS = 2;
         messagesSent = 0;
         ratelimitResetTime = System.currentTimeMillis() + 60000;
+        zlibContext = new Inflater();
         if (sessionId == null)
             sendIdentify();
         else
