@@ -52,10 +52,8 @@ public class MessageHistory
     {
         this.channel = channel;
         if (channel instanceof TextChannel &&
-                !((TextChannel) channel).getGuild().getSelfMember().hasPermission((TextChannel) channel,
-                    Permission.MESSAGE_READ, Permission.MESSAGE_HISTORY))
-            throw new InsufficientPermissionException(Permission.MESSAGE_HISTORY,
-                "Can not create history of TextChannel without MESSAGE_READ and MESSAGE_HISTORY permissions");
+                !((TextChannel) channel).getGuild().getSelfMember().hasPermission((TextChannel) channel, Permission.MESSAGE_HISTORY))
+            throw new InsufficientPermissionException(Permission.MESSAGE_HISTORY);
     }
 
     /**
