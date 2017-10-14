@@ -192,7 +192,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onCategoryUpdateName(CategoryUpdateNameEvent event) {}
     public void onCategoryUpdatePosition(CategoryUpdatePositionEvent event) {}
     public void onCategoryUpdatePermissions(CategoryUpdatePermissionsEvent event) {}
-    public void onCategoryCreate(CategoryCreateEvent evnet) {}
+    public void onCategoryCreate(CategoryCreateEvent event) {}
 
     //PrivateChannel Events
     public void onPrivateChannelCreate(PrivateChannelCreateEvent event) {}
