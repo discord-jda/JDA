@@ -73,7 +73,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected WebSocket socket;
     protected String gatewayUrl = null;
     protected String sessionId = null;
-    protected final Inflater zlibContext = new Inflater();
+    protected Inflater zlibContext;
 
     protected volatile Thread keepAliveThread;
     protected boolean initiating;             //cache all events?
@@ -432,6 +432,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     throw new RuntimeException("Could not fetch WS-Gateway!");
                 }
             }
+            zlibContext = new Inflater();
             socket = api.getWebSocketFactory()
                     .createSocket(gatewayUrl)
                     .addHeader("Accept-Encoding", "gzip")
