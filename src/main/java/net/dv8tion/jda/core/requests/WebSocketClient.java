@@ -47,7 +47,6 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.RejectedExecutionException;
@@ -1014,7 +1013,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         //check whether the transition is finished or not
         if (readBuffer.size() < 4)
             return;
-        final int suffix = ByteBuffer.wrap(binary).getInt(binary.length - 4);
+        final int suffix = getInt(binary, binary.length - 4);
         if (suffix != ZLIB_SUFFIX)
             return;
         //Thanks to ShadowLordAlpha and Shredder121 for code and debugging.
@@ -1034,6 +1033,14 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             readBuffer = allocateBuffer();
         }
+    }
+
+    private static int getInt(byte[] sink, int offset)
+    {
+        return sink[offset + 3] & 0xFF
+            | (sink[offset + 2] & 0xFF) << 8
+            | (sink[offset + 1] & 0xFF) << 16
+            | (sink[offset    ] & 0xFF) << 24;
     }
 
     @Override
