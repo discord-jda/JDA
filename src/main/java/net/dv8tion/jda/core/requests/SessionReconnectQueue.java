@@ -54,6 +54,12 @@ public class SessionReconnectQueue
         }
     }
 
+    //allows any custom extensions of this class to call reconnects on the WebSocketClient
+    protected static void reconnect(WebSocketClient client, boolean shouldHandleIdentify)
+    {
+        client.reconnect(true, shouldHandleIdentify);
+    }
+
     protected final class ReconnectThread extends Thread
     {
         protected ReconnectThread()
@@ -71,7 +77,7 @@ public class SessionReconnectQueue
                 try
                 {
                     final WebSocketClient client = reconnectQueue.poll();
-                    client.reconnect(true, isFirst);
+                    SessionReconnectQueue.reconnect(client, isFirst);
                     isFirst = false;
 
                     if (!reconnectQueue.isEmpty())
