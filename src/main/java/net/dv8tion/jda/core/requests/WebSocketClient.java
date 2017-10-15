@@ -65,6 +65,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected final JDAImpl api;
     protected final JDA.ShardInfo shardInfo;
+    protected final IGatewayProvider gatewayProvider;
     protected final Map<String, SocketHandler> handlers = new HashMap<>();
     protected final Set<String> cfRays = new HashSet<>();
     protected final Set<String> traces = new HashSet<>();
@@ -102,12 +103,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected boolean firstInit = true;
     protected boolean processingReady = true;
 
-    public WebSocketClient(JDAImpl api, SessionReconnectQueue reconnectQueue)
+    public WebSocketClient(JDAImpl api, SessionReconnectQueue reconnectQueue, IGatewayProvider gatewayProvider)
     {
         this.api = api;
         this.shardInfo = api.getShardInfo();
         this.shouldReconnect = api.isAutoReconnect();
         this.reconnectQueue = reconnectQueue;
+        this.gatewayProvider = gatewayProvider;
         setupHandlers();
         setupSendingThread();
         connect();
@@ -424,7 +426,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             if (gatewayUrl == null)
             {
-                gatewayUrl = getGateway();
+                gatewayUrl = gatewayProvider.getGatewayUrl();
                 if (gatewayUrl == null)
                 {
                     throw new RuntimeException("Could not fetch WS-Gateway!");
@@ -440,37 +442,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             //Completely fail here. We couldn't make the connection.
             throw new IllegalStateException(e);
-        }
-    }
-
-    protected String getGateway()
-    {
-        try
-        {
-            RestAction<String> gateway = new RestAction<String>(api, Route.Misc.GATEWAY.compile())
-            {
-                @Override
-                protected void handleResponse(Response response, Request<String> request)
-                {
-                    try
-                    {
-                        if (response.isOk())
-                            request.onSuccess(response.getObject().getString("url"));
-                        else
-                            request.onFailure(new Exception("Failed to get gateway url"));
-                    }
-                    catch (Exception e)
-                    {
-                        request.onFailure(e);
-                    }
-                }
-            };
-
-            return gateway.complete(false) + "?encoding=json&v=" + DISCORD_GATEWAY_VERSION;
-        }
-        catch (Exception ex)
-        {
-            return null;
         }
     }
 
