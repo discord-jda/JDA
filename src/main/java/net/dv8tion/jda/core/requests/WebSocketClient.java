@@ -47,11 +47,11 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
 import java.time.OffsetDateTime;
 import java.util.*;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.Semaphore;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterOutputStream;
@@ -61,6 +61,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public static final SimpleLog LOG = SimpleLog.getLog(WebSocketClient.class);
     public static final int DISCORD_GATEWAY_VERSION = 6;
     public static final int IDENTIFY_DELAY = 5;
+    public static final int ZLIB_SUFFIX = 0x0000FFFF;
 
     private static final String INVALIDATE_REASON = "INVALIDATE_SESSION";
 
@@ -74,6 +75,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected String gatewayUrl = null;
     protected String sessionId = null;
     protected Inflater zlibContext;
+    protected ByteArrayOutputStream readBuffer;
 
     protected volatile Thread keepAliveThread;
     protected boolean initiating;             //cache all events?
@@ -137,6 +139,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         traces.clear();
         for (Object o : arr)
             traces.add(String.valueOf(o));
+    }
+
+    protected ByteArrayOutputStream allocateBuffer()
+    {
+        return new ByteArrayOutputStream(4048);
     }
 
     public void setAutoReconnect(boolean reconnect)
@@ -496,6 +503,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         messagesSent = 0;
         ratelimitResetTime = System.currentTimeMillis() + 60000;
         zlibContext = new Inflater();
+        readBuffer = allocateBuffer();
         if (sessionId == null)
             sendIdentify();
         else
@@ -1000,22 +1008,34 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     }
 
     @Override
-    public void onBinaryMessage(WebSocket websocket, byte[] binary) throws UnsupportedEncodingException, DataFormatException
+    public void onBinaryMessage(WebSocket websocket, byte[] binary) throws IOException, DataFormatException
     {
+        readBuffer.write(binary);
+        //check whether the transition is finished or not
+        if (readBuffer.size() < 4)
+            return;
+        final byte[] data = readBuffer.toByteArray();
+        final int suffix = ByteBuffer.wrap(data).getInt(data.length - 4);
+        if (suffix != ZLIB_SUFFIX)
+            return;
         //Thanks to ShadowLordAlpha and Shredder121 for code and debugging.
         //Get the compressed message and inflate it
-        ByteArrayOutputStream out = new ByteArrayOutputStream(binary.length * 2);
+        ByteArrayOutputStream out = new ByteArrayOutputStream(data.length * 2);
         try (InflaterOutputStream decompressor = new InflaterOutputStream(out, zlibContext))
         {
-            decompressor.write(binary);
+            decompressor.write(data);
+            // send the inflated message to the TextMessage method
+            onTextMessage(websocket, out.toString("UTF-8"));
         }
         catch (IOException e)
         {
             throw (DataFormatException) new DataFormatException("Malformed").initCause(e);
         }
-
-        // send the inflated message to the TextMessage method
-        onTextMessage(websocket, out.toString("UTF-8"));
+        finally
+        {
+            readBuffer.close();
+            readBuffer = allocateBuffer();
+        }
     }
 
     @Override
