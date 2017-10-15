@@ -53,6 +53,7 @@ import java.util.*;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.zip.DataFormatException;
+import java.util.zip.Inflater;
 import java.util.zip.InflaterOutputStream;
 
 public class WebSocketClient extends WebSocketAdapter implements WebSocketListener
@@ -72,6 +73,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected WebSocket socket;
     protected String gatewayUrl = null;
     protected String sessionId = null;
+    protected Inflater zlibContext;
 
     protected volatile Thread keepAliveThread;
     protected boolean initiating;             //cache all events?
@@ -466,7 +468,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 }
             };
 
-            return gateway.complete(false) + "?encoding=json&v=" + DISCORD_GATEWAY_VERSION;
+            return gateway.complete(false) + "?encoding=json&compress=zlib-stream&v=" + DISCORD_GATEWAY_VERSION;
         }
         catch (Exception ex)
         {
@@ -493,6 +495,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         reconnectTimeoutS = 2;
         messagesSent = 0;
         ratelimitResetTime = System.currentTimeMillis() + 60000;
+        zlibContext = new Inflater();
         if (sessionId == null)
             sendIdentify();
         else
@@ -1002,7 +1005,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         //Thanks to ShadowLordAlpha and Shredder121 for code and debugging.
         //Get the compressed message and inflate it
         ByteArrayOutputStream out = new ByteArrayOutputStream(binary.length * 2);
-        try (InflaterOutputStream decompressor = new InflaterOutputStream(out))
+        try (InflaterOutputStream decompressor = new InflaterOutputStream(out, zlibContext))
         {
             decompressor.write(binary);
         }
