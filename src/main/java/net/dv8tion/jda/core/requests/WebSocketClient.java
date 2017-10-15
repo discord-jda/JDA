@@ -1008,32 +1008,30 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     }
 
     @Override
-    public void onBinaryMessage(WebSocket websocket, byte[] binary) throws IOException, DataFormatException
+    public void onBinaryMessage(WebSocket websocket, byte[] binary) throws IOException
     {
         readBuffer.write(binary);
         //check whether the transition is finished or not
         if (readBuffer.size() < 4)
             return;
-        final byte[] data = readBuffer.toByteArray();
-        final int suffix = ByteBuffer.wrap(data).getInt(data.length - 4);
+        final int suffix = ByteBuffer.wrap(binary).getInt(binary.length - 4);
         if (suffix != ZLIB_SUFFIX)
             return;
         //Thanks to ShadowLordAlpha and Shredder121 for code and debugging.
         //Get the compressed message and inflate it
-        ByteArrayOutputStream out = new ByteArrayOutputStream(data.length * 2);
+        ByteArrayOutputStream out = new ByteArrayOutputStream(readBuffer.size() * 2);
         try (InflaterOutputStream decompressor = new InflaterOutputStream(out, zlibContext))
         {
-            decompressor.write(data);
+            readBuffer.writeTo(decompressor);
             // send the inflated message to the TextMessage method
             onTextMessage(websocket, out.toString("UTF-8"));
         }
         catch (IOException e)
         {
-            throw (DataFormatException) new DataFormatException("Malformed").initCause(e);
+            throw (IOException) new DataFormatException("Malformed").initCause(e);
         }
         finally
         {
-            readBuffer.close();
             readBuffer = allocateBuffer();
         }
     }
