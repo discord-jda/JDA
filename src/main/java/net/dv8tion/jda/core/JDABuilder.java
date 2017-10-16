@@ -24,8 +24,9 @@ import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
-import net.dv8tion.jda.core.requests.DefaultGatewayProvider;
+import net.dv8tion.jda.core.requests.DefaultGatewayProviderFactory;
 import net.dv8tion.jda.core.requests.IGatewayProvider;
+import net.dv8tion.jda.core.requests.IGatewayProviderFactory;
 import net.dv8tion.jda.core.requests.SessionReconnectQueue;
 import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.OkHttpClient;
@@ -48,7 +49,7 @@ public class JDABuilder
 {
     protected final List<Object> listeners;
 
-    protected IGatewayProvider gatewayProvider = null;
+    protected IGatewayProviderFactory gatewayProviderFactory = null;
     protected SessionReconnectQueue reconnectQueue = null;
     protected ShardedRateLimiter shardRateLimiter = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
@@ -89,14 +90,15 @@ public class JDABuilder
     /**
      * Sets the gateway provider that will be used to get the URL to connect the websocket to.
      *
-     * @param  gatewayProvider
-     *         {@link net.dv8tion.jda.core.requests.IGatewayProvider IGatewayProvider} to use
+     * @param  factory
+     *         {@link net.dv8tion.jda.core.requests.IGatewayProviderFactory IGatewayProviderFactory} to use
+     *         when creating {@link IGatewayProvider IGatewayProviders}
      *
      * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      */
-    public JDABuilder setGatewayProvider(IGatewayProvider gatewayProvider)
+    public JDABuilder setGatewayProviderFactory(IGatewayProviderFactory factory)
     {
-        this.gatewayProvider = gatewayProvider;
+        this.gatewayProviderFactory = factory;
         return this;
     }
 
@@ -555,8 +557,8 @@ public class JDABuilder
                 .setCacheGame(game)
                 .setCacheIdle(idle)
                 .setCacheStatus(status);
-        IGatewayProvider gatewayProvider = this.gatewayProvider == null ? new DefaultGatewayProvider(jda) : this.gatewayProvider;
-        jda.login(token, shardInfo, reconnectQueue, gatewayProvider);
+        IGatewayProviderFactory gatewayProviderFactory = this.gatewayProviderFactory == null ? new DefaultGatewayProviderFactory() : this.gatewayProviderFactory;
+        jda.login(token, shardInfo, reconnectQueue, gatewayProviderFactory);
         return jda;
     }
 

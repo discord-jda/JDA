@@ -65,12 +65,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected final JDAImpl api;
     protected final JDA.ShardInfo shardInfo;
-    protected final IGatewayProvider gatewayProvider;
+    protected final IGatewayProviderFactory gatewayProviderFactory;
     protected final Map<String, SocketHandler> handlers = new HashMap<>();
     protected final Set<String> cfRays = new HashSet<>();
     protected final Set<String> traces = new HashSet<>();
 
     protected WebSocket socket;
+    protected IGatewayProvider gatewayProvider = null;
     protected String gatewayUrl = null;
     protected String sessionId = null;
 
@@ -103,13 +104,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected boolean firstInit = true;
     protected boolean processingReady = true;
 
-    public WebSocketClient(JDAImpl api, SessionReconnectQueue reconnectQueue, IGatewayProvider gatewayProvider)
+    public WebSocketClient(JDAImpl api, SessionReconnectQueue reconnectQueue, IGatewayProviderFactory gatewayProviderFactory)
     {
         this.api = api;
         this.shardInfo = api.getShardInfo();
         this.shouldReconnect = api.isAutoReconnect();
         this.reconnectQueue = reconnectQueue;
-        this.gatewayProvider = gatewayProvider;
+        this.gatewayProviderFactory = gatewayProviderFactory;
         setupHandlers();
         setupSendingThread();
         connect();
@@ -426,6 +427,14 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             if (gatewayUrl == null)
             {
+                if (gatewayProvider == null)
+                {
+                    gatewayProvider = gatewayProviderFactory.createGatewayProvider(api);
+                    if (gatewayProvider == null)
+                    {
+                        throw new RuntimeException("IGatewayProviderFactory returned a null IGatewayProvider!");
+                    }
+                }
                 gatewayUrl = gatewayProvider.getGatewayUrl();
                 if (gatewayUrl == null)
                 {
