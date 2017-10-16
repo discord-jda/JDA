@@ -53,6 +53,7 @@ import java.util.*;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.zip.DataFormatException;
+import java.util.zip.Inflater;
 import java.util.zip.InflaterOutputStream;
 
 public class WebSocketClient extends WebSocketAdapter implements WebSocketListener
@@ -72,6 +73,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected WebSocket socket;
     protected String gatewayUrl = null;
     protected String sessionId = null;
+    protected Inflater zlibContext;
 
     protected volatile Thread keepAliveThread;
     protected boolean initiating;             //cache all events?
@@ -458,7 +460,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 }
             };
 
-            return gateway.complete(false) + "?encoding=json&v=" + DISCORD_GATEWAY_VERSION;
+            return gateway.complete(false) + "?encoding=json&compress=zlib-stream&v=" + DISCORD_GATEWAY_VERSION;
         }
         catch (Exception ex)
         {
@@ -485,6 +487,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         reconnectTimeoutS = 2;
         messagesSent = 0;
         ratelimitResetTime = System.currentTimeMillis() + 60000;
+        zlibContext = new Inflater();
         if (sessionId == null)
             sendIdentify();
         else
@@ -663,10 +666,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 break;
             case WebSocketCode.RECONNECT:
                 LOG.debug("Got Reconnect request (OP 7). Closing connection now...");
-                close();
+                close(4000, "OP 7: RECONNECT");
                 break;
             case WebSocketCode.INVALIDATE_SESSION:
                 LOG.debug("Got Invalidate request (OP 9). Invalidating...");
+                sentAuthInfo = false;
                 final boolean isResume = content.getBoolean("d");
                 // When d: true we can wait a bit and then try to resume again
                 //sending 4000 to not drop session
@@ -783,7 +787,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 .put("token", getToken())
                 .put("seq", api.getResponseTotal()));
         send(resume.toString(), true);
-        sentAuthInfo = true;
+        //sentAuthInfo = true; set on RESUMED response as this could fail
         api.setStatus(JDA.Status.AWAITING_LOGIN_CONFIRMATION);
     }
 
@@ -955,6 +959,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     handlers.get("READY").handle(responseTotal, raw);
                     break;
                 case "RESUMED":
+                    sentAuthInfo = true;
                     if (!processingReady)
                     {
                         api.setStatus(JDA.Status.LOADING_SUBSYSTEMS);
@@ -992,7 +997,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         //Thanks to ShadowLordAlpha and Shredder121 for code and debugging.
         //Get the compressed message and inflate it
         ByteArrayOutputStream out = new ByteArrayOutputStream(binary.length * 2);
-        try (InflaterOutputStream decompressor = new InflaterOutputStream(out))
+        try (InflaterOutputStream decompressor = new InflaterOutputStream(out, zlibContext))
         {
             decompressor.write(binary);
         }
