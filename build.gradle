@@ -28,7 +28,7 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '2.0.1'
 }
 
-def versionObj = new Version(major: 3, minor: 2, revision: 0)
+def versionObj = new Version(major: 3, minor: 3, revision: 1)
 
 group = "net.dv8tion"
 archivesBaseName = "JDA"
@@ -49,11 +49,13 @@ sourceSets {
 }
 
 dependencies {
-    // code safety
+    //Code safety
     compile 'com.google.code.findbugs:jsr305:3.0.2'
 
+    //Logger
+    compile 'org.slf4j:slf4j-api:1.7.25'
+
     //General Utility
-//    compile 'org.apache.commons:commons-lang3:3.5'
     compile 'org.apache.commons:commons-collections4:4.1'
     compile 'org.json:json:20160810'
     compile 'net.sf.trove4j:trove4j:3.0.3'
@@ -119,38 +121,40 @@ javadoc {
 
     //### excludes ###
     //jda internals
-    exclude("net/dv8tion/jda/bot/entities/impl")
-    exclude("net/dv8tion/jda/bot/handle")
-    exclude("net/dv8tion/jda/bot/managers/impl")
+    exclude('net/dv8tion/jda/bot/entities/impl')
+    exclude('net/dv8tion/jda/bot/handle')
+    exclude('net/dv8tion/jda/bot/managers/impl')
 
-    exclude("net/dv8tion/jda/client/entities/impl")
-    exclude("net/dv8tion/jda/client/handle")
-    exclude("net/dv8tion/jda/client/managers/impl")
+    exclude('net/dv8tion/jda/client/entities/impl')
+    exclude('net/dv8tion/jda/client/handle')
+    exclude('net/dv8tion/jda/client/managers/impl')
 
-    exclude("net/dv8tion/jda/core/audio/AudioConnection.java",
-            "net/dv8tion/jda/core/audio/AudioWebSocket.java",
-            "net/dv8tion/jda/core/audio/AudioPacket.java",
-            "net/dv8tion/jda/core/audio/Decoder.java",
-            "net/dv8tion/jda/core/audio/hooks/ListenerProxy.java")
-    exclude("net/dv8tion/jda/core/entities/impl")
-    exclude("net/dv8tion/jda/core/handle")
-    exclude("net/dv8tion/jda/core/managers/impl")
-    exclude("net/dv8tion/jda/core/requests/GuildLock.java",
-            "net/dv8tion/jda/core/requests/WebSocketClient.java",
-            "net/dv8tion/jda/core/requests/RateLimiter.java",
-            "net/dv8tion/jda/core/requests/Request.java",
-            "net/dv8tion/jda/core/requests/Route.java",
-            "net/dv8tion/jda/core/requests/Requester.java",
-            "net/dv8tion/jda/core/requests/Response.java",
-            "net/dv8tion/jda/core/requests/ratelimit",
-            "net/dv8tion/jda/core/requests/restaction/CompletedFuture.java",
-            "net/dv8tion/jda/core/requests/restaction/RequestFuture.java")
+    exclude('net/dv8tion/jda/core/audio/AudioConnection.java',
+            'net/dv8tion/jda/core/audio/AudioWebSocket.java',
+            'net/dv8tion/jda/core/audio/AudioPacket.java',
+            'net/dv8tion/jda/core/audio/Decoder.java',
+            'net/dv8tion/jda/core/audio/hooks/ListenerProxy.java')
+    exclude('net/dv8tion/jda/core/entities/impl')
+    exclude('net/dv8tion/jda/core/entities/EntityBuilder.java')
+    exclude('net/dv8tion/jda/core/handle')
+    exclude('net/dv8tion/jda/core/managers/impl')
+    exclude('net/dv8tion/jda/core/requests/GuildLock.java',
+            'net/dv8tion/jda/core/requests/WebSocketClient.java',
+            'net/dv8tion/jda/core/requests/RateLimiter.java',
+            'net/dv8tion/jda/core/requests/Request.java',
+            'net/dv8tion/jda/core/requests/Route.java',
+            'net/dv8tion/jda/core/requests/Requester.java',
+            'net/dv8tion/jda/core/requests/Response.java',
+            'net/dv8tion/jda/core/requests/ratelimit',
+            'net/dv8tion/jda/core/requests/restaction/CompletedFuture.java',
+            'net/dv8tion/jda/core/requests/restaction/RequestFuture.java')
+    exclude('net/dv8tion/jda/core/utils/cache/impl')
 
     //opuswrapper
-    exclude("tomp2p/opuswrapper")
+    exclude('tomp2p/opuswrapper')
     
     //voice crypto
-    exclude("com/iwebpp/crypto")
+    exclude('com/iwebpp/crypto')
 }
 
 bintray {

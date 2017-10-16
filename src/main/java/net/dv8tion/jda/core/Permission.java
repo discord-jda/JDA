@@ -37,6 +37,9 @@ public enum Permission
     MESSAGE_ADD_REACTION(6, true, true, "Add Reactions"),
     VIEW_AUDIT_LOGS(7, true, false, "View Audit Logs"),
 
+    // Applicable to all channel types
+    VIEW_CHANNEL(10, true, true, "Read Text Channels & See Voice Channels"),
+
     // Text Permissions
     MESSAGE_READ(10, true, true, "Read Messages"),
     MESSAGE_WRITE(11, true, true, "Send Messages"),
@@ -84,13 +87,13 @@ public enum Permission
             .filter(Permission::isGuild).collect(Collectors.toList()));
 
     /**
-     * All text channel specific permissions which are only available in text channel overrides
+     * All text channel specific permissions which are only available in text channel permission overrides
      */
     public static final long ALL_TEXT_PERMISSIONS = Permission.getRaw(Arrays.stream(values())
             .filter(Permission::isText).collect(Collectors.toList()));
 
     /**
-     * All voice channel specific permissions which are only available in voice channel overrides
+     * All voice channel specific permissions which are only available in voice channel permission overrides
      */
     public static final long ALL_VOICE_PERMISSIONS = Permission.getRaw(Arrays.stream(values())
             .filter(Permission::isVoice).collect(Collectors.toList()));
@@ -181,7 +184,7 @@ public enum Permission
      */
     public boolean isVoice()
     {
-        return offset > 19 && offset < 26;
+        return offset == 10 || offset > 19 && offset < 26;
     }
 
     /**

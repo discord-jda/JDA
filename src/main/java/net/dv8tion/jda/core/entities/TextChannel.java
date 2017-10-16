@@ -17,13 +17,14 @@ package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.core.requests.restaction.WebhookAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
 
+import javax.annotation.CheckReturnValue;
 import java.util.Collection;
 import java.util.FormattableFlags;
 import java.util.Formatter;
 import java.util.List;
-import javax.annotation.CheckReturnValue;
 
 /**
  * Represents a Discord Text Channel. See {@link net.dv8tion.jda.core.entities.Channel Channel} and
@@ -70,6 +71,34 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
     RestAction<List<Webhook>> getWebhooks();
 
     /**
+     * Creates a new {@link net.dv8tion.jda.core.entities.Webhook Webhook}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The webhook could not be created due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>We were removed from the Guild before finishing the task</li>
+     * </ul>
+     *
+     * @param  name
+     *         The default name for the new Webhook.
+     *
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If you do not hold the permission {@link net.dv8tion.jda.core.Permission#MANAGE_WEBHOOKS Manage Webhooks}
+     * @throws IllegalArgumentException
+     *         If the provided name is {@code null}, blank or not
+     *         between 2-100 characters in length
+     *
+     * @return A specific {@link net.dv8tion.jda.core.requests.restaction.WebhookAction WebhookAction}
+     *         <br>This action allows to set fields for the new webhook before creating it
+     */
+    @CheckReturnValue
+    WebhookAction createWebhook(String name);
+
+    /**
      * Bulk deletes a list of messages.
      * <b>This is not the same as calling {@link net.dv8tion.jda.core.entities.Message#delete()} in a loop.</b>
      * <br>This is much more efficient, but it has a different ratelimit. You may call this once per second per Guild.
@@ -104,8 +133,8 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *
      * @throws IllegalArgumentException
      *         If the size of the list less than 2 or more than 100 messages.
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *         If this account does not have MANAGE_MESSAGES
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If this account does not have {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *
@@ -152,8 +181,8 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *         If the size of the list less than 2 or more than 100 messages.
      * @throws java.lang.NumberFormatException
      *         If any of the provided ids cannot be parsed by {@link Long#parseLong(String)}
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
-     *         If this account does not have MANAGE_MESSAGES
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If this account does not have {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *
@@ -188,7 +217,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided {@code id} is {@code null} or empty.
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MANAGE_WEBHOOKS Permission.MANAGE_WEBHOOKS} in this channel.
      *
@@ -220,7 +249,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * @param  messageId
      *         The not-empty valid message id
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in this channel.
      * @throws java.lang.IllegalArgumentException
@@ -254,7 +283,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * @param  messageId
      *         The message id
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in this channel.
      *

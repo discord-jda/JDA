@@ -27,6 +27,8 @@ import okhttp3.RequestBody;
 import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.event.Level;
+
 import java.util.concurrent.*;
 import java.util.function.Consumer;
 
@@ -145,14 +147,14 @@ import java.util.function.Consumer;
  */
 public abstract class RestAction<T>
 {
-    public static final SimpleLog LOG = SimpleLog.getLog("RestAction");
+    public static final SimpleLog LOG = SimpleLog.getLog(RestAction.class);
 
     public static Consumer DEFAULT_SUCCESS = o -> {};
     public static Consumer<Throwable> DEFAULT_FAILURE = t ->
     {
-        if (LOG.getEffectiveLevel().getPriority() <= SimpleLog.Level.DEBUG.getPriority())
+        if (LOG.getEffectiveLevel().ordinal() >= Level.DEBUG.ordinal())
         {
-            LOG.log(t);
+            LOG.fatal(t);
         }
         else
         {
@@ -337,7 +339,7 @@ public abstract class RestAction<T>
             //This is so beyond impossible, but on the off chance that the laws of nature are rewritten
             // after the writing of this code, I'm placing this here.
             //Better safe than sorry?
-            throw new RuntimeException(ignored);
+            throw new AssertionError(ignored);
         }
     }
 

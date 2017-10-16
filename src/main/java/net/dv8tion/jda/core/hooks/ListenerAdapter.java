@@ -35,6 +35,13 @@ import net.dv8tion.jda.client.events.message.group.react.GroupMessageReactionRem
 import net.dv8tion.jda.client.events.relationship.*;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.events.*;
+import net.dv8tion.jda.core.events.channel.category.CategoryCreateEvent;
+import net.dv8tion.jda.core.events.channel.category.CategoryDeleteEvent;
+import net.dv8tion.jda.core.events.channel.category.GenericCategoryEvent;
+import net.dv8tion.jda.core.events.channel.category.update.CategoryUpdateNameEvent;
+import net.dv8tion.jda.core.events.channel.category.update.CategoryUpdatePermissionsEvent;
+import net.dv8tion.jda.core.events.channel.category.update.CategoryUpdatePositionEvent;
+import net.dv8tion.jda.core.events.channel.category.update.GenericCategoryUpdateEvent;
 import net.dv8tion.jda.core.events.channel.priv.PrivateChannelCreateEvent;
 import net.dv8tion.jda.core.events.channel.priv.PrivateChannelDeleteEvent;
 import net.dv8tion.jda.core.events.channel.text.GenericTextChannelEvent;
@@ -167,6 +174,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onTextChannelUpdatePosition(TextChannelUpdatePositionEvent event) {}
     public void onTextChannelUpdatePermissions(TextChannelUpdatePermissionsEvent event) {}
     public void onTextChannelUpdateNSFW(TextChannelUpdateNSFWEvent event) {}
+    public void onTextChannelUpdateParent(TextChannelUpdateParentEvent event) {}
     public void onTextChannelCreate(TextChannelCreateEvent event) {}
 
     //VoiceChannel Events
@@ -176,7 +184,15 @@ public abstract class ListenerAdapter implements EventListener
     public void onVoiceChannelUpdateUserLimit(VoiceChannelUpdateUserLimitEvent event) {}
     public void onVoiceChannelUpdateBitrate(VoiceChannelUpdateBitrateEvent event) {}
     public void onVoiceChannelUpdatePermissions(VoiceChannelUpdatePermissionsEvent event) {}
+    public void onVoiceChannelUpdateParent(VoiceChannelUpdateParentEvent event) {}
     public void onVoiceChannelCreate(VoiceChannelCreateEvent event) {}
+
+    //Category Events
+    public void onCategoryDelete(CategoryDeleteEvent event) {}
+    public void onCategoryUpdateName(CategoryUpdateNameEvent event) {}
+    public void onCategoryUpdatePosition(CategoryUpdatePositionEvent event) {}
+    public void onCategoryUpdatePermissions(CategoryUpdatePermissionsEvent event) {}
+    public void onCategoryCreate(CategoryCreateEvent evnet) {}
 
     //PrivateChannel Events
     public void onPrivateChannelCreate(PrivateChannelCreateEvent event) {}
@@ -193,6 +209,7 @@ public abstract class ListenerAdapter implements EventListener
 
     //Guild Update Events
     public void onGuildUpdateAfkChannel(GuildUpdateAfkChannelEvent event) {}
+    public void onGuildUpdateSystemChannel(GuildUpdateSystemChannelEvent event) {}
     public void onGuildUpdateAfkTimeout(GuildUpdateAfkTimeoutEvent event) {}
     public void onGuildUpdateIcon(GuildUpdateIconEvent event) {}
     public void onGuildUpdateMFALevel(GuildUpdateMFALevelEvent event) {}
@@ -258,6 +275,8 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericTextChannelUpdate(GenericTextChannelUpdateEvent event) {}
     public void onGenericVoiceChannel(GenericVoiceChannelEvent event) {}
     public void onGenericVoiceChannelUpdate(GenericVoiceChannelUpdateEvent event) {}
+    public void onGenericCategory(GenericCategoryEvent event) {}
+    public void onGenericCategoryUpdate(GenericCategoryUpdateEvent event) {}
     public void onGenericGuild(GenericGuildEvent event) {}
     public void onGenericGuildUpdate(GenericGuildUpdateEvent event) {}
     public void onGenericGuildMember(GenericGuildMemberEvent event) {}
@@ -266,7 +285,6 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericRoleUpdate(GenericRoleUpdateEvent event) {}
     public void onGenericEmote(GenericEmoteEvent event) {}
     public void onGenericEmoteUpdate(GenericEmoteUpdateEvent event) {}
-
 
     // ==========================================================================================
     // |                                   Client Only Events                                   |
@@ -435,12 +453,14 @@ public abstract class ListenerAdapter implements EventListener
             onTextChannelUpdateTopic((TextChannelUpdateTopicEvent) event);
         else if (event instanceof TextChannelUpdatePositionEvent)
             onTextChannelUpdatePosition((TextChannelUpdatePositionEvent) event);
-        else if (event instanceof TextChannelDeleteEvent)
-            onTextChannelDelete((TextChannelDeleteEvent) event);
         else if (event instanceof TextChannelUpdatePermissionsEvent)
             onTextChannelUpdatePermissions((TextChannelUpdatePermissionsEvent) event);
         else if (event instanceof TextChannelUpdateNSFWEvent)
             onTextChannelUpdateNSFW((TextChannelUpdateNSFWEvent) event);
+        else if (event instanceof TextChannelUpdateParentEvent)
+            onTextChannelUpdateParent((TextChannelUpdateParentEvent) event);
+        else if (event instanceof TextChannelDeleteEvent)
+        onTextChannelDelete((TextChannelDeleteEvent) event);
 
         //VoiceChannel Events
         else if (event instanceof VoiceChannelCreateEvent)
@@ -455,8 +475,22 @@ public abstract class ListenerAdapter implements EventListener
             onVoiceChannelUpdateBitrate((VoiceChannelUpdateBitrateEvent) event);
         else if (event instanceof VoiceChannelUpdatePermissionsEvent)
             onVoiceChannelUpdatePermissions((VoiceChannelUpdatePermissionsEvent) event);
+        else if (event instanceof VoiceChannelUpdateParentEvent)
+            onVoiceChannelUpdateParent((VoiceChannelUpdateParentEvent) event);
         else if (event instanceof VoiceChannelDeleteEvent)
             onVoiceChannelDelete((VoiceChannelDeleteEvent) event);
+
+        //Category Events
+        else if (event instanceof CategoryCreateEvent)
+            onCategoryCreate((CategoryCreateEvent) event);
+        else if (event instanceof CategoryUpdateNameEvent)
+            onCategoryUpdateName((CategoryUpdateNameEvent) event);
+        else if (event instanceof CategoryUpdatePositionEvent)
+            onCategoryUpdatePosition((CategoryUpdatePositionEvent) event);
+        else if (event instanceof CategoryUpdatePermissionsEvent)
+            onCategoryUpdatePermissions((CategoryUpdatePermissionsEvent) event);
+        else if (event instanceof CategoryDeleteEvent)
+            onCategoryDelete((CategoryDeleteEvent) event);
 
         //PrivateChannel Events
         else if (event instanceof PrivateChannelCreateEvent)
@@ -483,6 +517,8 @@ public abstract class ListenerAdapter implements EventListener
         //Guild Update Events
         else if (event instanceof GuildUpdateAfkChannelEvent)
             onGuildUpdateAfkChannel((GuildUpdateAfkChannelEvent) event);
+        else if (event instanceof GuildUpdateSystemChannelEvent)
+            onGuildUpdateSystemChannel((GuildUpdateSystemChannelEvent) event);
         else if (event instanceof GuildUpdateAfkTimeoutEvent)
             onGuildUpdateAfkTimeout((GuildUpdateAfkTimeoutEvent) event);
         else if (event instanceof GuildUpdateIconEvent)
@@ -584,6 +620,8 @@ public abstract class ListenerAdapter implements EventListener
             onGenericPrivateMessageReaction((GenericPrivateMessageReactionEvent) event);
         else if (event instanceof GenericTextChannelUpdateEvent)
             onGenericTextChannelUpdate((GenericTextChannelUpdateEvent) event);
+        else if (event instanceof GenericCategoryUpdateEvent)
+            onGenericCategoryUpdate((GenericCategoryUpdateEvent) event);
         else if (event instanceof GenericGuildMessageReactionEvent)
             onGenericGuildMessageReaction((GenericGuildMessageReactionEvent) event);
         else if (event instanceof GenericVoiceChannelUpdateEvent)
@@ -610,6 +648,8 @@ public abstract class ListenerAdapter implements EventListener
             onGenericTextChannel((GenericTextChannelEvent) event);
         else if (event instanceof GenericVoiceChannelEvent)
             onGenericVoiceChannel((GenericVoiceChannelEvent) event);
+        else if (event instanceof GenericCategoryEvent)
+            onGenericCategory((GenericCategoryEvent) event);
         else if (event instanceof GenericGuildEvent)
             onGenericGuild((GenericGuildEvent) event);
         else if (event instanceof GenericRoleEvent)

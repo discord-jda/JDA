@@ -20,7 +20,7 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.RequestBody;
@@ -36,6 +36,9 @@ import java.util.List;
  * designed to modify the order of {@link net.dv8tion.jda.core.entities.Role Roles} of the
  * specified {@link net.dv8tion.jda.core.entities.Guild Guild}.
  * <br>To apply the changes you must finish the {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+ *
+ * <p>Before you can use any of the {@code move} methods
+ * you must use either {@link #selectPosition(Object) selectPosition(Role)} or {@link #selectPosition(int)}!
  *
  * <p><b>This uses descending order!</b>
  *
@@ -106,7 +109,7 @@ public class RoleOrderAction extends OrderAction<Role, RoleOrderAction>
             if (self.getRoles().isEmpty())
                 throw new IllegalStateException("Cannot move roles above your highest role unless you are the guild owner");
             if (!self.hasPermission(Permission.MANAGE_ROLES))
-                throw new PermissionException(Permission.MANAGE_ROLES);
+                throw new InsufficientPermissionException(Permission.MANAGE_ROLES);
         }
 
         JSONArray array = new JSONArray();

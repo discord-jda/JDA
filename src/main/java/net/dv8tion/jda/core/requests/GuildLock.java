@@ -24,14 +24,12 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import org.json.JSONObject;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 public class GuildLock
 {
-    public static final SimpleLog LOG = SimpleLog.getLog("JDAGuildLock");
+    public static final SimpleLog LOG = SimpleLog.getLog(GuildLock.class);
 
     private final JDA api;
     private final TLongObjectMap<List<JSONObject>> cache = new TLongObjectHashMap<>();

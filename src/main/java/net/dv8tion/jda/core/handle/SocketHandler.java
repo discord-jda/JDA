@@ -47,4 +47,18 @@ public abstract class SocketHandler
      *      Guild-id if that guild has a lock, or null if successful
      */
     protected abstract Long handleInternally(JSONObject content);
+
+    public static class NOPHandler extends SocketHandler
+    {
+        public NOPHandler(JDAImpl api)
+        {
+            super(api);
+        }
+
+        @Override
+        protected Long handleInternally(JSONObject content)
+        {
+            return null;
+        }
+    }
 }

@@ -3,10 +3,12 @@
 [discord-invite]: https://discord.gg/0hMr4ce0tIl3SLv5
 [license]: https://img.shields.io/badge/License-Apache%202.0-lightgrey.svg
 [jenkins]: https://img.shields.io/badge/Download-Jenkins-brightgreen.svg
+[FAQ]: https://img.shields.io/badge/Wiki-FAQ-blue.svg
 [ ![version][] ][download]
 [ ![jenkins][] ](http://home.dv8tion.net:8080/job/JDA/lastSuccessfulBuild/)
 [ ![license][] ](https://github.com/DV8FromTheWorld/JDA/tree/master/LICENSE)
 [ ![Discord](https://discordapp.com/api/guilds/125227483518861312/widget.png) ][discord-invite]
+[ ![FAQ] ](https://github.com/DV8FromTheWorld/JDA/wiki/10\)-FAQ)
 
 <img align="right" src="https://i.imgur.com/OG7Tne8.png" height="200" width="200">
 
@@ -89,6 +91,54 @@ public class MessageListener extends ListenerAdapter
 
 > **Note**: In these examples we override methods from the inheriting class `ListenerAdapter`.<br>
 > The usage of the `@Override` annotation is recommended to validate methods.
+
+### Sharding a Bot
+
+Discord allows Bot-accounts to share load across sessions by limiting them to a fraction of the total connected Guilds/Servers of the bot.
+<br>This can be done using **sharding** which will limit JDA to only a certain amount of Guilds/Servers including events and entities.
+Sharding will limit the amount of Guilds/Channels/Users visible to the JDA session so it is recommended to have some kind of elevated management to
+access information of other shards.
+
+To use sharding in JDA you will need to use `JDABuilder.useSharding(int shardId, int shardTotal)`. The **shardId** is 0-based which means the first shard
+has the ID 0. The **shardTotal** is the total amount of shards (not 0-based) which can be seen similar to the length of an array, the last shard has the ID of 
+`shardTotal - 1`.
+
+When using sharding it is also recommended to use a `SessionReconnectQueue` instance for all shards. This allows JDA to properly
+handle reconnecting multiple shards without violating Discord limitations (not using this might cause an IP ban on bad days).
+
+Additionally to keep track of the global REST rate-limit JDA has a `ShardedRateLimiter` which is set by default when using the same JDABuilder
+for all shards. If you want to use multiple builders to build your shards you should use the same ShardedRateLimiter instance!
+
+**Logins between shards _must_ happen with a minimum of _5 SECONDS_ of backoff time. JDA will inform you if the backoff is too short
+with a log message:**
+
+```
+Encountered IDENTIFY (OP 2) Rate Limit! Waiting 5 seconds before trying again!
+```
+> Note: Failing to backoff properly will cause JDA to wait 5 seconds after failing to connect. Respect the 5 second login rate limit!
+
+#### Example Sharding
+
+```java
+public static void main(String[] args) throws Exception
+{
+    JDABuilder shardBuilder = new JDABuilder(AccountType.BOT).setToken(args[0]).setReconnectQueue(new SessionReconnectQueue());
+    //register your listeners here using shardBuilder.addEventListener(...)
+    shardBuilder.addEventListener(new MessageListener());
+    for (int i = 0; i < 10; i++)
+    {
+        //using buildBlocking(JDA.Status.AWAITING_LOGIN_CONFIRMATION)
+        // makes sure we start to delay the next shard once the current one actually
+        // sent the login information, otherwise we might hit nasty race conditions
+        shardBuilder.useSharding(i, 10)
+                    .buildBlocking(JDA.Status.AWAITING_LOGIN_CONFIRMATION);
+        Thread.sleep(5000); //sleep 5 seconds between each login
+    }
+}
+```
+
+> Note: We are not setting a `ShardedRateLimiter` here as it isn't necessary when we use the same builder!<br>
+> When you use multiple builders you should use JDABuilder.setShardedRateLimiter(ShardedRateLimiter) with a shared instance of the same ShardedRateLimiter!
 
 ## More Examples
 We provide a small set of Examples in the [Example Directory](https://github.com/DV8FromTheWorld/JDA/tree/master/src/examples/java).

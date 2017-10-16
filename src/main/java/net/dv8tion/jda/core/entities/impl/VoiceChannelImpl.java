@@ -17,12 +17,11 @@
 package net.dv8tion.jda.core.entities.impl;
 
 import gnu.trove.map.TLongObjectMap;
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.requests.restaction.ChannelAction;
+import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -71,7 +70,28 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannelImpl> impl
             if (channels.get(i) == this)
                 return i;
         }
-        throw new RuntimeException("Somehow when determining position we never found the VoiceChannel in the Guild's channels? wtf?");
+        throw new AssertionError("Somehow when determining position we never found the VoiceChannel in the Guild's channels? wtf?");
+    }
+
+    @Override
+    public ChannelAction createCopy(Guild guild)
+    {
+        Checks.notNull(guild, "Guild");
+        ChannelAction action = guild.getController().createVoiceChannel(name).setBitrate(bitrate).setUserlimit(userLimit);
+        if (guild.equals(getGuild()))
+        {
+            Category parent = getParent();
+            if (parent != null)
+                action.setParent(parent);
+            for (PermissionOverride o : overrides.valueCollection())
+            {
+                if (o.isMemberOverride())
+                    action.addPermissionOverride(o.getMember(), o.getAllowedRaw(), o.getDeniedRaw());
+                else
+                    action.addPermissionOverride(o.getRole(), o.getAllowedRaw(), o.getDeniedRaw());
+            }
+        }
+        return action;
     }
 
     @Override
@@ -92,22 +112,13 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannelImpl> impl
     @Override
     public int compareTo(VoiceChannel chan)
     {
+        Checks.notNull(chan, "Other VoiceChannel");
         if (this == chan)
             return 0;
-
-        if (this.getGuild() != chan.getGuild())
-            throw new IllegalArgumentException("Cannot compare VoiceChannels that aren't from the same guild!");
-
-        if (this.getPositionRaw() != chan.getPositionRaw())
-            return chan.getPositionRaw() - this.getPositionRaw();
-
-        OffsetDateTime thisTime = this.getCreationTime();
-        OffsetDateTime chanTime = chan.getCreationTime();
-
-        //We compare the provided channel's time to this's time instead of the reverse as one would expect due to how
-        // discord deals with hierarchy. The more recent a channel was created, the lower its hierarchy ranking when
-        // it shares the same position as another channel.
-        return chanTime.compareTo(thisTime);
+        Checks.check(getGuild().equals(chan.getGuild()), "Cannot compare VoiceChannels that aren't from the same guild!");
+        if (this.getPositionRaw() == chan.getPositionRaw())
+            return Long.compare(id, chan.getIdLong());
+        return Integer.compare(rawPosition, chan.getPositionRaw());
     }
 
     // -- Setters --

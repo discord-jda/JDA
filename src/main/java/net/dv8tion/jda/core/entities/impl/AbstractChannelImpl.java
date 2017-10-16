@@ -20,7 +20,7 @@ import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.ChannelManager;
 import net.dv8tion.jda.core.managers.ChannelManagerUpdatable;
 import net.dv8tion.jda.core.requests.Request;
@@ -30,8 +30,8 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.InviteAction;
 import net.dv8tion.jda.core.requests.restaction.PermissionOverrideAction;
-import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.MiscUtil;
 import org.json.JSONArray;
 
 import java.util.ArrayList;
@@ -42,7 +42,6 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> implements Channel
 {
-
     protected final long id;
     protected final GuildImpl guild;
 
@@ -52,6 +51,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     protected volatile ChannelManager manager;
     protected volatile ChannelManagerUpdatable managerUpdatable;
 
+    protected long parentId;
     protected String name;
     protected int rawPosition;
 
@@ -71,6 +71,12 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     public Guild getGuild()
     {
         return guild;
+    }
+
+    @Override
+    public Category getParent()
+    {
+        return guild.getCategoriesMap().get(parentId);
     }
 
     @Override
@@ -205,7 +211,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     public InviteAction createInvite()
     {
         if (!this.guild.getSelfMember().hasPermission(this, Permission.CREATE_INSTANT_INVITE))
-            throw new PermissionException(Permission.CREATE_INSTANT_INVITE);
+            throw new InsufficientPermissionException(Permission.CREATE_INSTANT_INVITE);
 
         return new InviteAction(this.getJDA(), this.getId());
     }
@@ -214,7 +220,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     public RestAction<List<Invite>> getInvites()
     {
         if (!this.guild.getSelfMember().hasPermission(this, Permission.MANAGE_CHANNEL))
-            throw new PermissionException(Permission.MANAGE_CHANNEL);
+            throw new InsufficientPermissionException(Permission.MANAGE_CHANNEL);
 
         final Route.CompiledRoute route = Route.Invites.GET_CHANNEL_INVITES.compile(getId());
 
@@ -254,6 +260,17 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         return Long.hashCode(id);
     }
 
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (!(obj instanceof Channel))
+            return false;
+        if (obj == this)
+            return true;
+        Channel channel = (Channel) obj;
+        return channel.getIdLong() == getIdLong();
+    }
+
     public TLongObjectMap<PermissionOverride> getOverrideMap()
     {
         return overrides;
@@ -263,6 +280,13 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     public T setName(String name)
     {
         this.name = name;
+        return (T) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public T setParent(long parentId)
+    {
+        this.parentId = parentId;
         return (T) this;
     }
 
@@ -279,9 +303,9 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         if (!guild.getSelfMember().hasPermission(this, permission))
         {
             if (message != null)
-                throw new PermissionException(permission, message);
+                throw new InsufficientPermissionException(permission, message);
             else
-                throw new PermissionException(permission);
+                throw new InsufficientPermissionException(permission);
         }
     }
 }

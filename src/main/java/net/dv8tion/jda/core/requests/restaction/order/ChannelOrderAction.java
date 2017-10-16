@@ -21,8 +21,7 @@ import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.exceptions.PermissionException;
-import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.RequestBody;
@@ -34,7 +33,10 @@ import java.util.Collection;
 /**
  * Implementation of {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction OrderAction}
  * to modify the order of {@link net.dv8tion.jda.core.entities.Channel Channels} for a {@link net.dv8tion.jda.core.entities.Guild Guild}.
- * <br>To apply the changes you must finish the {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+ * <br>To apply the changes you must finish the {@link net.dv8tion.jda.core.requests.RestAction RestAction}.
+ *
+ * <p>Before you can use any of the {@code move} methods
+ * you must use either {@link #selectPosition(Object) selectPosition(Channel)} or {@link #selectPosition(int)}!
  *
  * @param <T>
  *        The type of {@link net.dv8tion.jda.core.entities.Channel Channel} defining
@@ -64,7 +66,21 @@ public class ChannelOrderAction<T extends Channel> extends OrderAction<T, Channe
         this.guild = guild;
         this.type = type;
 
-        Collection chans = type == ChannelType.TEXT ? guild.getTextChannels() : guild.getVoiceChannels();
+        Collection chans;
+        switch (type)
+        {
+            case TEXT:
+                chans = guild.getTextChannels();
+                break;
+            case VOICE:
+                chans = guild.getVoiceChannels();
+                break;
+            case CATEGORY:
+                chans = guild.getCategories();
+                break;
+            default:
+                throw new IllegalArgumentException("Cannot order specified channel type " + type);
+        }
         this.orderList.addAll(chans);
     }
 
@@ -95,7 +111,7 @@ public class ChannelOrderAction<T extends Channel> extends OrderAction<T, Channe
     {
         final Member self = guild.getSelfMember();
         if (!self.hasPermission(Permission.MANAGE_CHANNEL))
-            throw new PermissionException(Permission.MANAGE_CHANNEL);
+            throw new InsufficientPermissionException(Permission.MANAGE_CHANNEL);
         JSONArray array = new JSONArray();
         for (int i = 0; i < orderList.size(); i++)
         {

@@ -25,7 +25,7 @@ import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
-import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
@@ -60,7 +60,7 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
     {
         super(guild.getJDA(), Route.Guilds.GET_AUDIT_LOGS.compile(guild.getId()), 1, 100, 100);
         if (!guild.getSelfMember().hasPermission(Permission.VIEW_AUDIT_LOGS))
-            throw new PermissionException(Permission.VIEW_AUDIT_LOGS);
+            throw new InsufficientPermissionException(Permission.VIEW_AUDIT_LOGS);
         this.guild = guild;
     }
 
@@ -80,7 +80,8 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
     }
 
     /**
-     * Filters retrieved entities by the specified {@link net.dv8tion.jda.core.entities.User User}
+     * Filters retrieved entities by the specified {@link net.dv8tion.jda.core.entities.User User}.
+     * <br>This specified the action issuer and not the target of an action. (Targets need not be users)
      *
      * @param  user
      *         {@link net.dv8tion.jda.core.entities.User User} used to filter,
@@ -95,6 +96,7 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
 
     /**
      * Filters retrieved entities by the specified {@link net.dv8tion.jda.core.entities.User User} id.
+     * <br>This specified the action issuer and not the target of an action. (Targets need not be users)
      *
      * @param  userId
      *         {@link net.dv8tion.jda.core.entities.User User} id used to filter,
