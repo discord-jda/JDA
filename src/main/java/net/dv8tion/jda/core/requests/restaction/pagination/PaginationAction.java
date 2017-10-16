@@ -22,7 +22,6 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
-import net.dv8tion.jda.core.utils.FailedFuture;
 import net.dv8tion.jda.core.utils.Procedure;
 
 import javax.annotation.Nonnull;
@@ -384,7 +383,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
         catch (Exception ex)
         {
             failure.accept(ex);
-            return new FailedFuture<>(ex);
+            task.completeExceptionally(ex);
         }
         return task;
     }
@@ -489,7 +488,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
         catch (Exception ex)
         {
             failure.accept(ex);
-            return new FailedFuture<>(ex);
+            task.completeExceptionally(ex);
         }
         return task;
     }
