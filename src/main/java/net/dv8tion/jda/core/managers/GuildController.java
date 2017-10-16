@@ -1536,8 +1536,13 @@ public class GuildController
         });
 
         Set<Role> currentRoles = new HashSet<>(((MemberImpl) member).getRoleSet());
-        currentRoles.addAll(rolesToAdd);
-        currentRoles.removeAll(rolesToRemove);
+        Collection netRolesToAdd = new HashSet<>(rolesToAdd);
+        netRolesToAdd.removeAll(rolesToRemove);
+        
+        if(currentRoles.addAll(netRolesToAdd))
+            currentRoles.removeAll(rolesToRemove);
+        else if(!currentRoles.removeAll(rolesToRemove))
+            return new AuditableRestAction.EmptyRestAction<>(guild.getJDA());
 
         if (currentRoles.contains(guild.getPublicRole()))
             throw new IllegalArgumentException("Cannot add the PublicRole of a Guild to a Member. All members have this role by default!");
@@ -1676,19 +1681,27 @@ public class GuildController
         if (roles.contains(guild.getPublicRole()))
             throw new IllegalArgumentException("Cannot add the PublicRole of a Guild to a Member. All members have this role by default!");
 
+        // Return an empty rest action if there were no changes
+        if(member.getRoles().size()==roles.size() && member.getRoles().containsAll(roles))
+            return new AuditableRestAction.EmptyRestAction<>(guild.getJDA());
+        
         //Make sure that the current managed roles are preserved and no new ones are added.
-        List<Role> currentManaged = roles.stream().filter(Role::isManaged).collect(Collectors.toList());
+        List<Role> currentManaged = member.getRoles().stream().filter(Role::isManaged).collect(Collectors.toList());
         List<Role> newManaged = roles.stream().filter(Role::isManaged).collect(Collectors.toList());
-        if (currentManaged.size() != 0 || newManaged.size() != 0)
+        if (!currentManaged.isEmpty() || !newManaged.isEmpty())
         {
-            currentManaged.removeIf(newManaged::contains);
-
-            if (currentManaged.size() > 0)
+            if (!newManaged.containsAll(currentManaged))
+            {
+                currentManaged.removeAll(newManaged);
                 throw new IllegalArgumentException("Cannot remove managed roles from a member! Roles: " + currentManaged.toString());
-            if (newManaged.size() > 0)
+            }
+            if (!currentManaged.containsAll(newManaged))
+            {
+                newManaged.removeAll(currentManaged);
                 throw new IllegalArgumentException("Cannot add managed roles to a member! Roles: " + newManaged.toString());
+            }
         }
-
+        
         //This is identical to the rest action stuff in #modifyMemberRoles(Member, Collection<Role>, Collection<Role>)
         JSONObject body = new JSONObject()
                 .put("roles", roles.stream().map(Role::getId).collect(Collectors.toList()));
