@@ -73,7 +73,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected WebSocket socket;
     protected String gatewayUrl = null;
     protected String sessionId = null;
-    protected Inflater zlibContext;
+    protected Inflater zlibContext = new Inflater();
     protected ByteArrayOutputStream readBuffer;
 
     protected volatile Thread keepAliveThread;
@@ -501,7 +501,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         reconnectTimeoutS = 2;
         messagesSent = 0;
         ratelimitResetTime = System.currentTimeMillis() + 60000;
-        zlibContext = new Inflater();
         readBuffer = allocateBuffer();
         if (sessionId == null)
             sendIdentify();
@@ -568,6 +567,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         else
         {
+            zlibContext = new Inflater();
             if (isInvalidate)
                 invalidate(); // 1000 means our session is dropped so we cannot resume
             api.getEventManager().handle(new DisconnectEvent(api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now()));
