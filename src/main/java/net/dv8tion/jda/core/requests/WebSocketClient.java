@@ -140,9 +140,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             traces.add(String.valueOf(o));
     }
 
-    protected ByteArrayOutputStream allocateBuffer()
+    protected void allocateBuffer(byte[] binary) throws IOException
     {
-        return new ByteArrayOutputStream(4048);
+        this.readBuffer = new ByteArrayOutputStream(binary.length * 2);
+        this.readBuffer.write(binary);
     }
 
     public void setAutoReconnect(boolean reconnect)
@@ -501,7 +502,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         reconnectTimeoutS = 2;
         messagesSent = 0;
         ratelimitResetTime = System.currentTimeMillis() + 60000;
-        readBuffer = allocateBuffer();
         if (sessionId == null)
             sendIdentify();
         else
@@ -567,7 +567,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         else
         {
+            //reset our zlib decompression tools
             zlibContext = new Inflater();
+            readBuffer = null;
             if (isInvalidate)
                 invalidate(); // 1000 means our session is dropped so we cannot resume
             api.getEventManager().handle(new DisconnectEvent(api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now()));
@@ -1006,32 +1008,43 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
-    @Override
-    public void onBinaryMessage(WebSocket websocket, byte[] binary) throws IOException
+    public boolean onBufferMessage(byte[] binary) throws IOException
     {
-        readBuffer.write(binary);
-        //check whether the transition is finished or not
-        if (readBuffer.size() < 4)
-            return;
-        final int suffix = getInt(binary, binary.length - 4);
-        if (suffix != ZLIB_SUFFIX)
+        if (binary.length >= 4 && getInt(binary, binary.length - 4) == ZLIB_SUFFIX)
+            return true;
+        if (readBuffer != null)
+            readBuffer.write(binary);
+        else
+            allocateBuffer(binary);
+
+        return false;
+    }
+
+    @Override
+    public void onBinaryMessage(WebSocket websocket, byte[] binary) throws IOException, DataFormatException
+    {
+        if (!onBufferMessage(binary))
             return;
         //Thanks to ShadowLordAlpha and Shredder121 for code and debugging.
         //Get the compressed message and inflate it
-        ByteArrayOutputStream out = new ByteArrayOutputStream(readBuffer.size() * 2);
+        final int size = readBuffer != null ? readBuffer.size() : binary.length;
+        ByteArrayOutputStream out = new ByteArrayOutputStream(size * 2);
         try (InflaterOutputStream decompressor = new InflaterOutputStream(out, zlibContext))
         {
-            readBuffer.writeTo(decompressor);
+            if (readBuffer != null)
+                readBuffer.writeTo(decompressor);
+            else
+                decompressor.write(binary);
             // send the inflated message to the TextMessage method
             onTextMessage(websocket, out.toString("UTF-8"));
         }
         catch (IOException e)
         {
-            throw (IOException) new DataFormatException("Malformed").initCause(e);
+            throw (DataFormatException) new DataFormatException("Malformed").initCause(e);
         }
         finally
         {
-            readBuffer = allocateBuffer();
+            readBuffer = null;
         }
     }
 
