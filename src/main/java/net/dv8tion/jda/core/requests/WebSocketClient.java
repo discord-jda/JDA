@@ -146,6 +146,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         this.readBuffer.write(binary);
     }
 
+    protected void extendBuffer(byte[] binary) throws IOException
+    {
+        if (this.readBuffer != null)
+            this.readBuffer.write(binary);
+    }
+
     public void setAutoReconnect(boolean reconnect)
     {
         this.shouldReconnect = reconnect;
@@ -1008,12 +1014,16 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
-    public boolean onBufferMessage(byte[] binary) throws IOException
+    protected boolean onBufferMessage(byte[] binary) throws IOException
     {
         if (binary.length >= 4 && getInt(binary, binary.length - 4) == ZLIB_SUFFIX)
+        {
+            extendBuffer(binary);
             return true;
+        }
+
         if (readBuffer != null)
-            readBuffer.write(binary);
+            extendBuffer(binary);
         else
             allocateBuffer(binary);
 
