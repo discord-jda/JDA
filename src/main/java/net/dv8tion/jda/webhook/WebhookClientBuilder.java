@@ -73,7 +73,7 @@ public class WebhookClientBuilder
      *         <br>This constructor also parses URLs pointing to subdomains of {@code discordapp.com}
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the provided token is {@code null}
+     *         If the provided URL is {@code null}
      *         or is incorrectly formatted
      */
     public WebhookClientBuilder(@Nonnull String url)
