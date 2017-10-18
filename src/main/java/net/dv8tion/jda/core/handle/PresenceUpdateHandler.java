@@ -208,11 +208,9 @@ public class PresenceUpdateHandler extends SocketHandler
 
             //If the OnlineStatus is OFFLINE, ignore the event and return.
             OnlineStatus status = OnlineStatus.fromKey(content.getString("status"));
-            if (status == OnlineStatus.OFFLINE)
-                return null;
 
             //If this was for a Guild, cache it in the Guild for later use in GUILD_MEMBER_ADD
-            if (guild != null)
+            if (status != OnlineStatus.OFFLINE && guild != null)
                 guild.getCachedPresenceMap().put(userId, content);
         }
         return null;
