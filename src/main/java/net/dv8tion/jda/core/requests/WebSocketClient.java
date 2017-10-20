@@ -913,7 +913,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             {
                 type = "GUILD_CREATE";
                 raw.put("t", "GUILD_CREATE")
-                        .put("jda-field","This event was originally a GUILD_DELETE but was converted to GUILD_CREATE for WS init Guild streaming");
+                   .put("jda-field","This event was originally a GUILD_DELETE but was converted to GUILD_CREATE for WS init Guild streaming");
             }
             else
             {
@@ -932,9 +932,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             for (int i = 0; i < presences.length(); i++)
             {
                 JSONObject presence = presences.getJSONObject(i);
-                final JSONObject obj = new JSONObject().put("s", responseTotal)
-                                                       .put("d", presence)
-                                                       .put("t", "PRESENCE_UPDATE");
+                final JSONObject obj = new JSONObject();
+                obj.put("jda-field", "This was constructed from a PRESENCES_REPLACE payload")
+                   .put("d", presence)
+                   .put("t", "PRESENCE_UPDATE");
                 handler.handle(responseTotal, obj);
             }
             return;
@@ -1322,10 +1323,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         // Unused events
         final SocketHandler.NOPHandler nopHandler = new SocketHandler.NOPHandler(api);
-        handlers.put("CHANNEL_PINS_UPDATE",       nopHandler);
-        handlers.put("WEBHOOKS_UPDATE",           nopHandler);
-        handlers.put("GUILD_INTEGRATIONS_UPDATE", nopHandler);
         handlers.put("CHANNEL_PINS_ACK",          nopHandler);
+        handlers.put("CHANNEL_PINS_UPDATE",       nopHandler);
+        handlers.put("GUILD_INTEGRATIONS_UPDATE", nopHandler);
+        handlers.put("PRESENCES_REPLACE",         nopHandler);
+        handlers.put("WEBHOOKS_UPDATE",           nopHandler);
 
         if (api.getAccountType() == AccountType.CLIENT)
         {
