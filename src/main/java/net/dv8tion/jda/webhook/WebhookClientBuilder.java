@@ -80,7 +80,8 @@ public class WebhookClientBuilder
     public WebhookClientBuilder(@Nonnull String url)
     {
         Matcher matcher = WEBHOOK_PATTERN.matcher(url);
-        if (!matcher.matches()) {
+        if (!matcher.matches())
+        {
             throw new IllegalArgumentException("Failed to parse webhook URL");
         }
 
