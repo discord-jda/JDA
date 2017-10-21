@@ -846,17 +846,17 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected void updateAudioManagerReferences()
     {
-        final TLongObjectMap<AudioManagerImpl> managerMap = api.getAudioManagerMap();
+        final TLongObjectMap<AudioManager> managerMap = api.getAudioManagerMap();
         if (managerMap.size() > 0)
             LOG.trace("Updating AudioManager references");
 
         synchronized (managerMap)
         {
-            for (TLongObjectIterator<AudioManagerImpl> it = managerMap.iterator(); it.hasNext(); )
+            for (TLongObjectIterator<AudioManager> it = managerMap.iterator(); it.hasNext(); )
             {
                 it.advance();
                 final long guildId = it.key();
-                final AudioManagerImpl mng = it.value();
+                final AudioManagerImpl mng = (AudioManagerImpl) it.value();
                 ConnectionListener listener = mng.getConnectionListener();
 
                 GuildImpl guild = (GuildImpl) api.getGuildById(guildId);

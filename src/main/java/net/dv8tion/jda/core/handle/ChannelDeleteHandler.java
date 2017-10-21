@@ -85,7 +85,7 @@ public class ChannelDeleteHandler extends SocketHandler
                 }
 
                 //We use this instead of getAudioManager(Guild) so we don't create a new instance. Efficiency!
-                AudioManagerImpl manager = api.getAudioManagerMap().get(guild.getIdLong());
+                AudioManagerImpl manager = (AudioManagerImpl) api.getAudioManagerMap().get(guild.getIdLong());
                 if (manager != null && manager.isConnected()
                         && manager.getConnectedChannel().getIdLong() == channel.getIdLong())
                 {
