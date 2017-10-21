@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 public class WebhookClientBuilder
 {
     public static final OkHttpClient.Builder DEFAULT_HTTP_BUILDER = new OkHttpClient.Builder();
-    private static final Pattern WEBHOOK_PATTERN = Pattern.compile("(?:https?://)?(?:\\w+.)?discordapp\\.com/api(?:/\\d+)?/webhooks/(\\d+)/([\\w-]+)(?:/(?:\\w+)?)?");
+    private static final Pattern WEBHOOK_PATTERN = Pattern.compile("(?:https?://)?(?:\\w+\\.)?discordapp\\.com/api(?:/v\\d+)?/webhooks/(\\d+)/([\\w-]+)(?:/(?:\\w+)?)?");
 
     protected final long id;
     protected final String token;
@@ -80,10 +80,8 @@ public class WebhookClientBuilder
     public WebhookClientBuilder(@Nonnull String url)
     {
         Matcher matcher = WEBHOOK_PATTERN.matcher(url);
-        if(!matcher.find()) {
+        if (!matcher.matches()) {
             throw new IllegalArgumentException("Failed to parse webhook URL");
-        } else if (!matcher.matches()) {
-            throw new IllegalArgumentException("Failed to match the entire string as a webhook URL");
         }
 
         this.id = MiscUtil.parseSnowflake(matcher.group(1));
