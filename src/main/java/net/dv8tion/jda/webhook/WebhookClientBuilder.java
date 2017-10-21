@@ -18,6 +18,7 @@ package net.dv8tion.jda.webhook;
 
 import net.dv8tion.jda.core.entities.Webhook;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.MiscUtil;
 import okhttp3.OkHttpClient;
 
 import javax.annotation.Nonnull;
@@ -34,7 +35,7 @@ import java.util.regex.Pattern;
 public class WebhookClientBuilder
 {
     public static final OkHttpClient.Builder DEFAULT_HTTP_BUILDER = new OkHttpClient.Builder();
-    private static final Pattern WEBHOOK_PATTERN = Pattern.compile("webhooks\\/(\\d+)\\/([\\w-]+)");
+    private static final Pattern WEBHOOK_PATTERN = Pattern.compile("(?:https?://)?(?:\\w+.)?discordapp\\.com/api(?:/\\d+)?/webhooks/(\\d+)/([\\w-]+)(?:/(?:\\w+)?)?");
 
     protected final long id;
     protected final String token;
@@ -81,9 +82,11 @@ public class WebhookClientBuilder
         Matcher matcher = WEBHOOK_PATTERN.matcher(url);
         if(!matcher.find()) {
             throw new IllegalArgumentException("Failed to parse webhook URL");
+        } else if (!matcher.matches()) {
+            throw new IllegalArgumentException("Failed to match the entire string as a webhook URL");
         }
 
-        this.id = Long.parseLong(matcher.group(1));
+        this.id = MiscUtil.parseSnowflake(matcher.group(1));
         this.token = matcher.group(2);
     }
 
