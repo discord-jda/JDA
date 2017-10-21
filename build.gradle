@@ -118,6 +118,7 @@ javadoc {
     options.memberLevel = JavadocMemberLevel.PUBLIC
     options.author()
     options.encoding = 'UTF-8'
+    options.addStringOption('-html5')
 
     //### excludes ###
     //jda internals
@@ -198,7 +199,7 @@ String getProjectProperty(String propertyName)
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '4.0.1'
+    gradleVersion = '4.2.1'
 }
 
 build {
