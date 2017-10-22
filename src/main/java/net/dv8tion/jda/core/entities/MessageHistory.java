@@ -23,9 +23,11 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.commons.collections4.map.ListOrderedMap;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 import java.util.*;
@@ -329,5 +331,165 @@ public class MessageHistory
     public Message getMessageById(long id)
     {
         return history.get(id);
+    }
+
+    /**
+     * Constructs a {@link net.dv8tion.jda.core.entities.MessageHistory MessageHistory} with the initially retrieved history
+     * of messages sent after the mentioned message ID (exclusive).
+     * <br>The provided id need not be valid!
+     *
+     * @param  channel
+     *         The {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}
+     * @param  messageId
+     *         The pivot ID to use
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If any of the provided arguments is {@code null}
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If this is a TextChannel and the currently logged in account does not
+     *         have the permission {@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
+     *
+     * @return {@link net.dv8tion.jda.core.entities.MessageHistory.MessageRetrieveAction MessageRetrieveAction}
+     */
+    public static MessageRetrieveAction getHistoryAfter(MessageChannel channel, String messageId)
+    {
+        Checks.noWhitespace(messageId, "Message ID");
+        Checks.notNull(channel, "Channel");
+        if (channel.getType() == ChannelType.TEXT )
+        {
+            TextChannel t = (TextChannel) channel;
+            if (!t.getGuild().getSelfMember().hasPermission(t, Permission.MESSAGE_HISTORY, Permission.MESSAGE_READ))
+                throw new InsufficientPermissionException(Permission.MESSAGE_HISTORY);
+        }
+        Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId()).withQueryParams("after", messageId);
+        return new MessageRetrieveAction(route, channel);
+    }
+
+    /**
+     * Constructs a {@link net.dv8tion.jda.core.entities.MessageHistory MessageHistory} with the initially retrieved history
+     * of messages sent before the mentioned message ID (exclusive).
+     * <br>The provided id need not be valid!
+     *
+     * @param  channel
+     *         The {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}
+     * @param  messageId
+     *         The pivot ID to use
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If any of the provided arguments is {@code null}
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If this is a TextChannel and the currently logged in account does not
+     *         have the permission {@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
+     *
+     * @return {@link net.dv8tion.jda.core.entities.MessageHistory.MessageRetrieveAction MessageRetrieveAction}
+     */
+    public static MessageRetrieveAction getHistoryBefore(MessageChannel channel, String messageId)
+    {
+        Checks.noWhitespace(messageId, "Message ID");
+        Checks.notNull(channel, "Channel");
+        if (channel.getType() == ChannelType.TEXT )
+        {
+            TextChannel t = (TextChannel) channel;
+            if (!t.getGuild().getSelfMember().hasPermission(t, Permission.MESSAGE_HISTORY, Permission.MESSAGE_READ))
+                throw new InsufficientPermissionException(Permission.MESSAGE_HISTORY);
+        }
+        Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId()).withQueryParams("before", messageId);
+        return new MessageRetrieveAction(route, channel);
+    }
+
+    /**
+     * Constructs a {@link net.dv8tion.jda.core.entities.MessageHistory MessageHistory} with the initially retrieved history
+     * of messages sent around the mentioned message ID (inclusive).
+     * <br>The provided id need not be valid!
+     *
+     * @param  channel
+     *         The {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}
+     * @param  messageId
+     *         The pivot ID to use
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If any of the provided arguments is {@code null}
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If this is a TextChannel and the currently logged in account does not
+     *         have the permission {@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
+     *
+     * @return {@link net.dv8tion.jda.core.entities.MessageHistory.MessageRetrieveAction MessageRetrieveAction}
+     */
+    public static MessageRetrieveAction getHistoryAround(MessageChannel channel, String messageId)
+    {
+        Checks.noWhitespace(messageId, "Message ID");
+        Checks.notNull(channel, "Channel");
+        if (channel.getType() == ChannelType.TEXT )
+        {
+            TextChannel t = (TextChannel) channel;
+            if (!t.getGuild().getSelfMember().hasPermission(t, Permission.MESSAGE_HISTORY, Permission.MESSAGE_READ))
+                throw new InsufficientPermissionException(Permission.MESSAGE_HISTORY);
+        }
+        Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId()).withQueryParams("around", messageId);
+        return new MessageRetrieveAction(route, channel);
+    }
+
+    /**
+     * Constructs a MessageHistory object with initially retrieved Messages before or after a certain pivot message id.
+     * <br>Allows to {@link #limit(Integer) limit} the amount to retrieve for better performance!
+     */
+    public static class MessageRetrieveAction extends RestAction<MessageHistory>
+    {
+        private final MessageChannel channel;
+        private Integer limit;
+
+        protected MessageRetrieveAction(Route.CompiledRoute route, MessageChannel channel)
+        {
+            super(channel.getJDA(), route);
+            this.channel = channel;
+        }
+
+        /**
+         * Limit between 1-100 messages that should be retrieved.
+         *
+         * @param  limit
+         *         The limit to use, or {@code null} to use default 50
+         *
+         * @throws java.lang.IllegalArgumentException
+         *         If the provided limit is not between 1-100
+         *
+         * @return The current MessageRetrieveAction for chaining convenience
+         */
+        public MessageRetrieveAction limit(Integer limit)
+        {
+            if (limit != null)
+            {
+                Checks.notNegative(limit, "Limit");
+                Checks.check(limit <= 100, "Limit may not exceed 100!");
+            }
+            this.limit = limit;
+            return this;
+        }
+
+        @Override
+        protected Route.CompiledRoute finalizeRoute()
+        {
+            final Route.CompiledRoute route = super.finalizeRoute();
+            return limit == null ? route : route.withQueryParams("limit", String.valueOf(limit));
+        }
+
+        @Override
+        protected void handleResponse(Response response, Request<MessageHistory> request)
+        {
+            if (!response.isOk())
+            {
+                request.onFailure(response);
+                return;
+            }
+            final MessageHistory result = new MessageHistory(channel);
+            final JSONArray array = response.getArray();
+            final EntityBuilder builder = api.getEntityBuilder();
+            for (int i = 0; i < array.length(); i++)
+            {
+                JSONObject obj = array.getJSONObject(i);
+                result.history.put(obj.getLong("id"), builder.createMessage(obj, channel, false));
+            }
+            request.onSuccess(result);
+        }
     }
 }
