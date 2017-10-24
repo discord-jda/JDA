@@ -313,6 +313,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    @Deprecated
     public TextChannel getPublicChannel()
     {
         return textChannelCache.getElementById(id);

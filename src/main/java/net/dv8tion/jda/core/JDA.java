@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.restaction.GuildAction;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
@@ -242,6 +243,31 @@ public interface JDA
      * @return List of currently registered Objects acting as EventListeners.
      */
     List<Object> getRegisteredListeners();
+
+    /**
+     * Constructs a new {@link net.dv8tion.jda.core.entities.Guild Guild} with the specified name
+     * <br>Use the returned {@link net.dv8tion.jda.core.requests.restaction.GuildAction GuildAction} to provide
+     * further details and settings for the resulting Guild!
+     *
+     * <p>This RestAction does not provide the resulting Guild!
+     * It will be in a following {@link net.dv8tion.jda.core.events.guild.GuildJoinEvent GuildJoinEvent}.
+     *
+     * @param  name
+     *         The name of the resulting guild
+     *
+     * @throws java.lang.IllegalStateException
+     *         If the currently logged in account is from
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT} and the account is in 100 or more guilds</li>
+     *             <li>{@link net.dv8tion.jda.core.AccountType#BOT AccountType.BOT} and the account is in 10 or more guilds</li>
+     *         </ul>
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided name is empty, {@code null} or not between 2-100 characters
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.GuildAction GuildAction}
+     *         <br>Allows for setting various details for the resulting Guild
+     */
+    GuildAction createGuild(String name);
 
     /**
      * {@link net.dv8tion.jda.core.utils.cache.CacheView CacheView} of
