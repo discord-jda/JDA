@@ -47,11 +47,10 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.time.OffsetDateTime;
 import java.util.*;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.Semaphore;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterOutputStream;
@@ -61,6 +60,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public static final SimpleLog LOG = SimpleLog.getLog(WebSocketClient.class);
     public static final int DISCORD_GATEWAY_VERSION = 6;
     public static final int IDENTIFY_DELAY = 5;
+    public static final int ZLIB_SUFFIX = 0x0000FFFF;
 
     private static final String INVALIDATE_REASON = "INVALIDATE_SESSION";
 
@@ -73,7 +73,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected WebSocket socket;
     protected String gatewayUrl = null;
     protected String sessionId = null;
-    protected Inflater zlibContext;
+    protected Inflater zlibContext = new Inflater();
+    protected ByteArrayOutputStream readBuffer;
 
     protected volatile Thread keepAliveThread;
     protected boolean initiating;             //cache all events?
@@ -137,6 +138,18 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         traces.clear();
         for (Object o : arr)
             traces.add(String.valueOf(o));
+    }
+
+    protected void allocateBuffer(byte[] binary) throws IOException
+    {
+        this.readBuffer = new ByteArrayOutputStream(binary.length * 2);
+        this.readBuffer.write(binary);
+    }
+
+    protected void extendBuffer(byte[] binary) throws IOException
+    {
+        if (this.readBuffer != null)
+            this.readBuffer.write(binary);
     }
 
     public void setAutoReconnect(boolean reconnect)
@@ -487,7 +500,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         reconnectTimeoutS = 2;
         messagesSent = 0;
         ratelimitResetTime = System.currentTimeMillis() + 60000;
-        zlibContext = new Inflater();
         if (sessionId == null)
             sendIdentify();
         else
@@ -553,6 +565,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         else
         {
+            //reset our zlib decompression tools
+            zlibContext = new Inflater();
+            readBuffer = null;
             if (isInvalidate)
                 invalidate(); // 1000 means our session is dropped so we cannot resume
             api.getEventManager().handle(new DisconnectEvent(api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now()));
@@ -823,17 +838,17 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected void updateAudioManagerReferences()
     {
-        final TLongObjectMap<AudioManagerImpl> managerMap = api.getAudioManagerMap();
+        final TLongObjectMap<AudioManager> managerMap = api.getAudioManagerMap();
         if (managerMap.size() > 0)
             LOG.trace("Updating AudioManager references");
 
         synchronized (managerMap)
         {
-            for (TLongObjectIterator<AudioManagerImpl> it = managerMap.iterator(); it.hasNext(); )
+            for (TLongObjectIterator<AudioManager> it = managerMap.iterator(); it.hasNext(); )
             {
                 it.advance();
                 final long guildId = it.key();
-                final AudioManagerImpl mng = it.value();
+                final AudioManagerImpl mng = (AudioManagerImpl) it.value();
                 ConnectionListener listener = mng.getConnectionListener();
 
                 GuildImpl guild = (GuildImpl) api.getGuildById(guildId);
@@ -991,23 +1006,56 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
-    @Override
-    public void onBinaryMessage(WebSocket websocket, byte[] binary) throws UnsupportedEncodingException, DataFormatException
+    protected boolean onBufferMessage(byte[] binary) throws IOException
     {
+        if (binary.length >= 4 && getInt(binary, binary.length - 4) == ZLIB_SUFFIX)
+        {
+            extendBuffer(binary);
+            return true;
+        }
+
+        if (readBuffer != null)
+            extendBuffer(binary);
+        else
+            allocateBuffer(binary);
+
+        return false;
+    }
+
+    @Override
+    public void onBinaryMessage(WebSocket websocket, byte[] binary) throws IOException, DataFormatException
+    {
+        if (!onBufferMessage(binary))
+            return;
         //Thanks to ShadowLordAlpha and Shredder121 for code and debugging.
         //Get the compressed message and inflate it
-        ByteArrayOutputStream out = new ByteArrayOutputStream(binary.length * 2);
+        final int size = readBuffer != null ? readBuffer.size() : binary.length;
+        ByteArrayOutputStream out = new ByteArrayOutputStream(size * 2);
         try (InflaterOutputStream decompressor = new InflaterOutputStream(out, zlibContext))
         {
-            decompressor.write(binary);
+            if (readBuffer != null)
+                readBuffer.writeTo(decompressor);
+            else
+                decompressor.write(binary);
+            // send the inflated message to the TextMessage method
+            onTextMessage(websocket, out.toString("UTF-8"));
         }
         catch (IOException e)
         {
             throw (DataFormatException) new DataFormatException("Malformed").initCause(e);
         }
+        finally
+        {
+            readBuffer = null;
+        }
+    }
 
-        // send the inflated message to the TextMessage method
-        onTextMessage(websocket, out.toString("UTF-8"));
+    private static int getInt(byte[] sink, int offset)
+    {
+        return sink[offset + 3] & 0xFF
+            | (sink[offset + 2] & 0xFF) << 8
+            | (sink[offset + 1] & 0xFF) << 16
+            | (sink[offset    ] & 0xFF) << 24;
     }
 
     @Override

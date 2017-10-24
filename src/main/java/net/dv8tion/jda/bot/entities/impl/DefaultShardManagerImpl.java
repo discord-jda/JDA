@@ -73,6 +73,7 @@ public class DefaultShardManagerImpl implements ShardManager
     protected final OkHttpClient.Builder httpClientBuilder;
     protected final WebSocketFactory wsFactory;
     protected final SessionReconnectQueue reconnectQueue;
+    protected final boolean retryOnTimeout;
     protected final ShardedRateLimiter shardedRateLimiter;
     protected final AtomicBoolean shutdown = new AtomicBoolean(false);
     protected final Thread shutdownHook;
@@ -84,8 +85,8 @@ public class DefaultShardManagerImpl implements ShardManager
             final IEventManager eventManager, final IAudioSendFactory audioSendFactory, final Game game, final OnlineStatus status,
             final OkHttpClient.Builder httpClientBuilder, final WebSocketFactory wsFactory, ShardedRateLimiter shardedRateLimiter,
             final int maxReconnectDelay, final int corePoolSize, final boolean enableVoice, final boolean enableShutdownHook,
-            final boolean enableBulkDeleteSplitting, final boolean autoReconnect, final boolean idle, final SessionReconnectQueue reconnectQueue,
-            final int backoff)
+            final boolean enableBulkDeleteSplitting, final boolean autoReconnect, final boolean idle, final boolean retryOnTimeout,
+            final SessionReconnectQueue reconnectQueue, final int backoff)
     {
         this.shardsTotal = shardsTotal;
         this.listeners = listeners;
@@ -105,6 +106,7 @@ public class DefaultShardManagerImpl implements ShardManager
         this.autoReconnect = autoReconnect;
         this.idle = idle;
         this.reconnectQueue = reconnectQueue == null ? new SessionReconnectQueue() : reconnectQueue;
+        this.retryOnTimeout = retryOnTimeout;
         this.backoff = backoff;
 
         if (shardsTotal != -1)
@@ -310,7 +312,7 @@ public class DefaultShardManagerImpl implements ShardManager
     protected JDAImpl buildInstance(final int shardId) throws LoginException, RateLimitedException
     {
         final JDAImpl jda = new JDAImpl(AccountType.BOT, this.httpClientBuilder, this.wsFactory, this.shardedRateLimiter, this.autoReconnect,
-                this.enableVoice, false, this.enableBulkDeleteSplitting, this.corePoolSize, this.maxReconnectDelay);
+                this.enableVoice, false, this.enableBulkDeleteSplitting, this.retryOnTimeout, this.corePoolSize, this.maxReconnectDelay);
 
         jda.asBot().setShardManager(this);
 

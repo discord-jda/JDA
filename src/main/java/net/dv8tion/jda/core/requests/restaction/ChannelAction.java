@@ -25,7 +25,6 @@ import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.RequestBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONString;
 
 import javax.annotation.CheckReturnValue;
 import java.util.Collection;
@@ -42,10 +41,7 @@ import java.util.Set;
  */
 public class ChannelAction extends AuditableRestAction<Channel>
 {
-    public static final int ROLE_TYPE = 0;
-    public static final int MEMBER_TYPE = 1;
-
-    protected final Set<PromisePermissionOverride> overrides = new HashSet<>();
+    protected final Set<PermOverrideData> overrides = new HashSet<>();
     protected final Guild guild;
     protected final ChannelType type;
     protected String name;
@@ -172,8 +168,8 @@ public class ChannelAction extends AuditableRestAction<Channel>
      * Adds a new Role-{@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
      * for the new Channel.
      *
-     * @param  role
-     *         The not-null {@link net.dv8tion.jda.core.entities.Role Role} for the override
+     * @param  target
+     *         The not-null {@link net.dv8tion.jda.core.entities.Role Role} or {@link net.dv8tion.jda.core.entities.Member Member} for the override
      * @param  allow
      *         The granted {@link net.dv8tion.jda.core.Permission Permissions} for the override or null
      * @param  deny
@@ -186,49 +182,21 @@ public class ChannelAction extends AuditableRestAction<Channel>
      * @return The current ChannelAction, for chaining convenience
      */
     @CheckReturnValue
-    public ChannelAction addPermissionOverride(Role role, Collection<Permission> allow, Collection<Permission> deny)
+    public ChannelAction addPermissionOverride(IPermissionHolder target, Collection<Permission> allow, Collection<Permission> deny)
     {
         checkPermissions(allow);
         checkPermissions(deny);
         final long allowRaw = allow != null ? Permission.getRaw(allow) : 0;
         final long denyRaw = deny != null ? Permission.getRaw(deny) : 0;
 
-        return addPermissionOverride(role, allowRaw, denyRaw);
-    }
-
-    /**
-     * Adds a new Member-{@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
-     * for the new Channel.
-     *
-     * @param  member
-     *         The not-null {@link net.dv8tion.jda.core.entities.Member Member} for the override
-     * @param  allow
-     *         The granted {@link net.dv8tion.jda.core.Permission Permissions} for the override or null
-     * @param  deny
-     *         The denied {@link net.dv8tion.jda.core.Permission Permissions} for the override or null
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the specified {@link net.dv8tion.jda.core.entities.Member Member} is null
-     *         or not within the same guild.
-     *
-     * @return The current ChannelAction, for chaining convenience
-     */
-    @CheckReturnValue
-    public ChannelAction addPermissionOverride(Member member, Collection<Permission> allow, Collection<Permission> deny)
-    {
-        checkPermissions(allow);
-        checkPermissions(deny);
-        final long allowRaw = allow != null ? Permission.getRaw(allow) : 0;
-        final long denyRaw = deny != null ? Permission.getRaw(deny) : 0;
-
-        return addPermissionOverride(member, allowRaw, denyRaw);
+        return addPermissionOverride(target, allowRaw, denyRaw);
     }
 
     /**
      * Adds a new Role-{@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
      * for the new Channel.
      *
-     * @param  role
+     * @param  target
      *         The not-null {@link net.dv8tion.jda.core.entities.Role Role} for the override
      * @param  allow
      *         The granted {@link net.dv8tion.jda.core.Permission Permissions} for the override
@@ -251,58 +219,27 @@ public class ChannelAction extends AuditableRestAction<Channel>
      * @see    net.dv8tion.jda.core.Permission#getRaw(net.dv8tion.jda.core.Permission...)
      */
     @CheckReturnValue
-    public ChannelAction addPermissionOverride(Role role, long allow, long deny)
+    public ChannelAction addPermissionOverride(IPermissionHolder target, long allow, long deny)
     {
-        Checks.notNull(role, "Override Role");
+        Checks.notNull(target, "Override Role");
         Checks.notNegative(allow, "Granted permissions value");
         Checks.notNegative(deny, "Denied permissions value");
         Checks.check(allow <= Permission.ALL_PERMISSIONS, "Specified allow value may not be greater than a full permission set");
         Checks.check(deny <= Permission.ALL_PERMISSIONS,  "Specified deny value may not be greater than a full permission set");
-        Checks.check(role.getGuild().equals(guild), "Specified Role is not in the same Guild!");
+        Checks.check(target.getGuild().equals(guild), "Specified Role is not in the same Guild!");
 
-        String id = role.getId();
-        overrides.add(new PromisePermissionOverride(ROLE_TYPE, id, allow, deny));
-        return this;
-    }
-
-    /**
-     * Adds a new Member-{@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
-     * for the new Channel.
-     *
-     * @param  member
-     *         The not-null {@link net.dv8tion.jda.core.entities.Member Member} for the override
-     * @param  allow
-     *         The granted {@link net.dv8tion.jda.core.Permission Permissions} for the override
-     *         Use {@link net.dv8tion.jda.core.Permission#getRawValue()} to retrieve these Permissions.
-     * @param  deny
-     *         The denied {@link net.dv8tion.jda.core.Permission Permissions} for the override
-     *         Use {@link net.dv8tion.jda.core.Permission#getRawValue()} to retrieve these Permissions.
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         <ul>
-     *             <li>If the specified {@link net.dv8tion.jda.core.entities.Member Member} is null
-     *                 or not within the same guild.</li>
-     *             <li>If one of the provided Permission values is invalid</li>
-     *         </ul>
-     *
-     * @return The current ChannelAction, for chaining convenience
-     *
-     * @see    net.dv8tion.jda.core.Permission#getRawValue()
-     * @see    net.dv8tion.jda.core.Permission#getRaw(java.util.Collection)
-     * @see    net.dv8tion.jda.core.Permission#getRaw(net.dv8tion.jda.core.Permission...)
-     */
-    @CheckReturnValue
-    public ChannelAction addPermissionOverride(Member member, long allow, long deny)
-    {
-        Checks.notNull(member, "Override Member");
-        Checks.notNegative(allow, "Granted permissions value");
-        Checks.notNegative(deny, "Denied permissions value");
-        Checks.check(allow <= Permission.ALL_PERMISSIONS, "Specified allow value may not be greater than a full permission set");
-        Checks.check(deny <= Permission.ALL_PERMISSIONS,  "Specified deny value may not be greater than a full permission set");
-        Checks.check(member.getGuild().equals(guild), "Specified Member is not in the same Guild!");
-
-        String id = member.getUser().getId();
-        overrides.add(new PromisePermissionOverride(MEMBER_TYPE, id, allow, deny));
+        if (target instanceof Role)
+        {
+            Role r = (Role) target;
+            long id = r.getIdLong();
+            overrides.add(new PermOverrideData(PermOverrideData.ROLE_TYPE, id, allow, deny));
+        }
+        else
+        {
+            Member m = (Member) target;
+            long id = m.getUser().getIdLong();
+            overrides.add(new PermOverrideData(PermOverrideData.MEMBER_TYPE, id, allow, deny));
+        }
         return this;
     }
 
@@ -431,33 +368,5 @@ public class ChannelAction extends AuditableRestAction<Channel>
             return;
         for (Permission p : permissions)
             Checks.notNull(p, "Permissions");
-    }
-
-    protected final class PromisePermissionOverride implements JSONString
-    {
-        protected final String id;
-        protected final long deny;
-        protected final long allow;
-        protected final int type;
-
-        public PromisePermissionOverride(int type, String id, long allow, long deny)
-        {
-            this.type = type;
-            this.id = id;
-            this.deny  = deny;
-            this.allow = allow;
-        }
-
-        @Override
-        public String toJSONString()
-        {
-            JSONObject object = new JSONObject();
-            object.put("id",    id);
-            object.put("type",  type);
-            object.put("deny",  deny);
-            object.put("allow", allow);
-
-            return object.toString();
-        }
     }
 }

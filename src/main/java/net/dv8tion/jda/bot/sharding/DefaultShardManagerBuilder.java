@@ -60,6 +60,7 @@ public class DefaultShardManagerBuilder
     protected ShardedRateLimiter shardedRateLimiter = null;
     protected String token = null;
     protected WebSocketFactory wsFactory = null;
+    protected boolean retryOnTimeout = true;
     protected final List<Object> listeners = new ArrayList<>();
 
     /**
@@ -116,7 +117,7 @@ public class DefaultShardManagerBuilder
      */
     public ShardManager buildAsync() throws LoginException, IllegalArgumentException, RateLimitedException
     {
-        final DefaultShardManagerImpl manager = new DefaultShardManagerImpl(this.shardsTotal, this.shards, this.listeners, this.token, this.eventManager, this.audioSendFactory, this.game, this.status, this.httpClientBuilder, this.wsFactory, this.shardedRateLimiter, this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting, this.autoReconnect, this.idle, this.reconnectQueue, this.backoff);
+        final DefaultShardManagerImpl manager = new DefaultShardManagerImpl(this.shardsTotal, this.shards, this.listeners, this.token, this.eventManager, this.audioSendFactory, this.game, this.status, this.httpClientBuilder, this.wsFactory, this.shardedRateLimiter, this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting, this.autoReconnect, this.idle, this.retryOnTimeout, this.reconnectQueue, this.backoff);
 
         manager.login();
 
@@ -339,6 +340,24 @@ public class DefaultShardManagerBuilder
     public DefaultShardManagerBuilder setReconnectQueue(SessionReconnectQueue queue)
     {
         this.reconnectQueue = queue;
+        return this;
+    }
+
+    /**
+     * Whether the Requester should retry when
+     * a {@link java.net.SocketTimeoutException SocketTimeoutException} occurs.
+     * <br><b>Default</b>: {@code true}
+     *
+     * <p>This value can be changed at any time with {@link net.dv8tion.jda.core.JDA#setRequestTimeoutRetry(boolean) JDA.setRequestTimeoutRetry(boolean)}!
+     *
+     * @param  retryOnTimeout
+     *         True, if the Request should retry once on a socket timeout
+     *
+     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public DefaultShardManagerBuilder setRequestTimeoutRetry(boolean retryOnTimeout)
+    {
+        this.retryOnTimeout = retryOnTimeout;
         return this;
     }
 
