@@ -24,13 +24,19 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.ratelimit.BotRateLimiter;
 import net.dv8tion.jda.core.requests.ratelimit.ClientRateLimiter;
 import net.dv8tion.jda.core.utils.SimpleLog;
-import okhttp3.*;
+import okhttp3.Call;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
 import okhttp3.internal.http.HttpMethod;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.net.SocketTimeoutException;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
@@ -46,6 +52,8 @@ public class Requester
     private final RateLimiter rateLimiter;
 
     private final OkHttpClient httpClient;
+
+    private volatile boolean retryOnTimeout = false;
 
     public Requester(JDA api, ShardedRateLimiter shardedRateLimiter)
     {
@@ -92,12 +100,19 @@ public class Requester
      *
      * @param  apiRequest
      *         The API request that needs to be sent
+     * @param  handleOnRateLimit
+     *         Whether to forward rate-limits, false if rate limit handling should take over
      *
      * @return Non-null if the request was ratelimited. Returns a Long containing retry_after milliseconds until
      *         the request can be made again. This could either be for the Per-Route ratelimit or the Global ratelimit.
      *         <br>Check if globalCooldown is {@code null} to determine if it was Per-Route or Global.
      */
-    public Long execute(Request<?> apiRequest, boolean handleOnRatelimit)
+    public Long execute(Request<?> apiRequest, boolean handleOnRateLimit)
+    {
+        return execute(apiRequest, false, handleOnRateLimit);
+    }
+
+    public Long execute(Request<?> apiRequest, boolean retried, boolean handleOnRatelimit)
     {
         Route.CompiledRoute route = apiRequest.getRoute();
         Long retryAfter = rateLimiter.getRateLimit(route);
@@ -190,6 +205,14 @@ public class Requester
 
             return retryAfter;
         }
+        catch (SocketTimeoutException e)
+        {
+            if (retryOnTimeout && !retried)
+                return execute(apiRequest, true, handleOnRatelimit);
+            LOG.fatal(e);
+            apiRequest.handleResponse(new Response(firstSuccess, e, rays));
+            return null;
+        }
         catch (Exception e)
         {
             LOG.fatal(e); //This originally only printed on DEBUG in 2.x
@@ -215,6 +238,11 @@ public class Requester
     public RateLimiter getRateLimiter()
     {
         return rateLimiter;
+    }
+
+    public void setRetryOnTimeout(boolean retryOnTimeout)
+    {
+        this.retryOnTimeout = retryOnTimeout;
     }
 
     public void shutdown(long time, TimeUnit unit)

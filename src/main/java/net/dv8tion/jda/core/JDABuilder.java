@@ -64,6 +64,7 @@ public class JDABuilder
     protected boolean enableBulkDeleteSplitting = true;
     protected boolean autoReconnect = true;
     protected boolean idle = false;
+    protected boolean requestTimeoutRetry = true;
 
     /**
      * Creates a completely empty JDABuilder.
@@ -132,6 +133,24 @@ public class JDABuilder
     }
 
     /**
+     * Whether the Requester should retry when
+     * a {@link java.net.SocketTimeoutException SocketTimeoutException} occurs.
+     * <br><b>Default</b>: {@code true}
+     *
+     * <p>This value can be changed at any time with {@link net.dv8tion.jda.core.JDA#setRequestTimeoutRetry(boolean) JDA.setRequestTimeoutRetry(boolean)}!
+     *
+     * @param  retryOnTimeout
+     *         True, if the Request should retry once on a socket timeout
+     *
+     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public JDABuilder setRequestTimeoutRetry(boolean retryOnTimeout)
+    {
+        this.requestTimeoutRetry = retryOnTimeout;
+        return this;
+    }
+
+    /**
      * Sets the token that will be used by the {@link net.dv8tion.jda.core.JDA} instance to log in when
      * {@link net.dv8tion.jda.core.JDABuilder#buildAsync() buildAsync()}
      * or {@link net.dv8tion.jda.core.JDABuilder#buildBlocking() buildBlocking()}
@@ -160,7 +179,7 @@ public class JDABuilder
      * @param  token
      *         The token of the account that you would like to login with.
      *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      */
     public JDABuilder setToken(String token)
     {
@@ -506,12 +525,12 @@ public class JDABuilder
      * {@link net.dv8tion.jda.core.hooks.EventListener EventListener} to listen for the
      * {@link net.dv8tion.jda.core.events.ReadyEvent ReadyEvent} .
      *
-     * @throws  LoginException
-     *          If the provided token is invalid.
-     * @throws  IllegalArgumentException
-     *          If the provided token is empty or null.
-     * @throws  RateLimitedException
-     *          If we are being Rate limited.
+     * @throws LoginException
+     *         If the provided token is invalid.
+     * @throws IllegalArgumentException
+     *         If the provided token is empty or null.
+     * @throws RateLimitedException
+     *         If we are being Rate limited.
      *
      * @return A {@link net.dv8tion.jda.core.JDA} instance that has started the login process. It is unknown as
      *         to whether or not loading has finished when this returns.
@@ -520,9 +539,8 @@ public class JDABuilder
     {
         OkHttpClient.Builder httpClientBuilder = this.httpClientBuilder == null ? new OkHttpClient.Builder() : this.httpClientBuilder;
         WebSocketFactory wsFactory = this.wsFactory == null ? new WebSocketFactory() : this.wsFactory;
-        JDAImpl jda = new JDAImpl(accountType, httpClientBuilder, wsFactory, shardRateLimiter,
-                                  autoReconnect, enableVoice, enableShutdownHook, enableBulkDeleteSplitting,
-                                  corePoolSize, maxReconnectDelay);
+        JDAImpl jda = new JDAImpl(accountType, httpClientBuilder, wsFactory, shardRateLimiter, autoReconnect, enableVoice, enableShutdownHook,
+                enableBulkDeleteSplitting, requestTimeoutRetry, corePoolSize, maxReconnectDelay);
 
         if (eventManager != null)
             jda.setEventManager(eventManager);
@@ -544,28 +562,72 @@ public class JDABuilder
 
     /**
      * Builds a new {@link net.dv8tion.jda.core.JDA} instance and uses the provided token to start the login process.
+     * <br>This method will block until JDA has reached the specified connection status.
+     *
+     * <h2>Login Cycle</h2>
+     * <ol>
+     *     <li>{@link net.dv8tion.jda.core.JDA.Status#INITIALIZING INITIALIZING}</li>
+     *     <li>{@link net.dv8tion.jda.core.JDA.Status#INITIALIZED INITIALIZED}</li>
+     *     <li>{@link net.dv8tion.jda.core.JDA.Status#LOGGING_IN LOGGING_IN}</li>
+     *     <li>{@link net.dv8tion.jda.core.JDA.Status#CONNECTING_TO_WEBSOCKET CONNECTING_TO_WEBSOCKET}</li>
+     *     <li>{@link net.dv8tion.jda.core.JDA.Status#IDENTIFYING_SESSION IDENTIFYING_SESSION}</li>
+     *     <li>{@link net.dv8tion.jda.core.JDA.Status#AWAITING_LOGIN_CONFIRMATION AWAITING_LOGIN_CONFIRMATION}</li>
+     *     <li>{@link net.dv8tion.jda.core.JDA.Status#LOADING_SUBSYSTEMS LOADING_SUBSYSTEMS}</li>
+     *     <li>{@link net.dv8tion.jda.core.JDA.Status#CONNECTED CONNECTED}</li>
+     * </ol>
+     *
+     * @param  status
+     *         The {@link JDA.Status Status} to wait for, once JDA has reached the specified
+     *         stage of the startup cycle this method will return.
+     *
+     * @throws LoginException
+     *         If the provided token is invalid.
+     * @throws IllegalArgumentException
+     *         If the provided token is empty or {@code null} or
+     *         the provided status is not part of the login cycle.
+     * @throws InterruptedException
+     *         If an interrupt request is received while waiting for {@link net.dv8tion.jda.core.JDA} to finish logging in.
+     *         This would most likely be caused by a JVM shutdown request.
+     * @throws RateLimitedException
+     *         If we are being Rate limited.
+     *
+     * @return A {@link net.dv8tion.jda.core.JDA} Object that is <b>guaranteed</b> to be logged in and finished loading.
+     */
+    public JDA buildBlocking(JDA.Status status) throws LoginException, IllegalArgumentException, InterruptedException, RateLimitedException
+    {
+        Checks.notNull(status, "Status");
+        Checks.check(status.isInit(), "Cannot await the status %s as it is not part of the login cycle!", status);
+        JDA jda = buildAsync();
+        while (!jda.getStatus().isInit()                      // JDA might disconnect while starting
+             || jda.getStatus().ordinal() < status.ordinal()) // Wait until status is bypassed
+        {
+            if (jda.getStatus() == Status.SHUTDOWN)
+                throw new IllegalStateException("JDA was unable to finish starting up!");
+            Thread.sleep(50);
+        }
+
+        return jda;
+    }
+
+    /**
+     * Builds a new {@link net.dv8tion.jda.core.JDA} instance and uses the provided token to start the login process.
      * <br>This method will block until JDA has logged in and finished loading all resources. This is an alternative
      * to using {@link net.dv8tion.jda.core.events.ReadyEvent ReadyEvent}.
      *
-     * @throws  LoginException
-     *          If the provided token is invalid.
-     * @throws  IllegalArgumentException
-     *          If the provided token is empty or null.
-     * @throws  InterruptedException
-     *          If an interrupt request is received while waiting for {@link net.dv8tion.jda.core.JDA} to finish logging in.
-     *          This would most likely be caused by a JVM shutdown request.
-     * @throws  RateLimitedException
-     *          If we are being Rate limited.
+     * @throws LoginException
+     *         If the provided token is invalid.
+     * @throws IllegalArgumentException
+     *         If the provided token is empty or null.
+     * @throws InterruptedException
+     *         If an interrupt request is received while waiting for {@link net.dv8tion.jda.core.JDA} to finish logging in.
+     *         This would most likely be caused by a JVM shutdown request.
+     * @throws RateLimitedException
+     *         If we are being Rate limited.
      *
      * @return A {@link net.dv8tion.jda.core.JDA} Object that is <b>guaranteed</b> to be logged in and finished loading.
      */
     public JDA buildBlocking() throws LoginException, IllegalArgumentException, InterruptedException, RateLimitedException
     {
-        JDA jda = buildAsync();
-        while(jda.getStatus() != Status.CONNECTED)
-        {
-            Thread.sleep(50);
-        }
-        return jda;
+        return buildBlocking(Status.CONNECTED);
     }
 }
