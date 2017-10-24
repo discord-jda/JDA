@@ -20,8 +20,10 @@ import net.dv8tion.jda.bot.JDABot;
 import net.dv8tion.jda.client.JDAClient;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.hooks.IEventManager;
+import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
@@ -240,6 +242,29 @@ public interface JDA
      * @return List of currently registered Objects acting as EventListeners.
      */
     List<Object> getRegisteredListeners();
+
+    /**
+     * {@link net.dv8tion.jda.core.utils.cache.CacheView CacheView} of
+     * all cached {@link net.dv8tion.jda.core.managers.AudioManager AudioManagers} created for this JDA instance.
+     * <br>AudioManagers are created when first retrieved via {@link net.dv8tion.jda.core.entities.Guild#getAudioManager() Guild.getAudioManager()}.
+     * <u>Using this will perform better than calling {@code Guild.getAudioManager()} iteratively as that would cause many useless audio managers to be created!</u>
+     *
+     * <p>AudioManagers are cross-session persistent!
+     *
+     * @return {@link net.dv8tion.jda.core.utils.cache.CacheView CacheView}
+     */
+    CacheView<AudioManager> getAudioManagerCache();
+
+    /**
+     * Immutable list of all created {@link net.dv8tion.jda.core.managers.AudioManager AudioManagers} for this JDA instance!
+     *
+     * @return Immutable list of all created AudioManager instances
+     */
+    default List<AudioManager> getAudioManagers()
+    {
+        return getAudioManagerCache().asList();
+    }
+
 
     /**
      * {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
@@ -939,6 +964,15 @@ public interface JDA
      * @param  reconnect If true - enables autoReconnect
      */
     void setAutoReconnect(boolean reconnect);
+
+    /**
+     * Whether the Requester should retry when
+     * a {@link java.net.SocketTimeoutException SocketTimeoutException} occurs.
+     *
+     * @param  retryOnTimeout
+     *         True, if the Request should retry once on a socket timeout
+     */
+    void setRequestTimeoutRetry(boolean retryOnTimeout);
 
     /**
      * USed to determine whether or not autoReconnect is enabled for JDA.
