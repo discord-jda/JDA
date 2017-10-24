@@ -1352,6 +1352,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     private void setupHandlers()
     {
+        final SocketHandler.NOPHandler nopHandler = new SocketHandler.NOPHandler(api);
         handlers.put("CHANNEL_CREATE",              new ChannelCreateHandler(api));
         handlers.put("CHANNEL_DELETE",              new ChannelDeleteHandler(api));
         handlers.put("CHANNEL_UPDATE",              new ChannelUpdateHandler(api));
@@ -1384,7 +1385,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("VOICE_STATE_UPDATE",          new VoiceStateUpdateHandler(api));
 
         // Unused events
-        final SocketHandler.NOPHandler nopHandler = new SocketHandler.NOPHandler(api);
         handlers.put("CHANNEL_PINS_ACK",          nopHandler);
         handlers.put("CHANNEL_PINS_UPDATE",       nopHandler);
         handlers.put("GUILD_INTEGRATIONS_UPDATE", nopHandler);
