@@ -939,7 +939,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             {
                 type = "GUILD_CREATE";
                 raw.put("t", "GUILD_CREATE")
-                        .put("jda-field","This event was originally a GUILD_DELETE but was converted to GUILD_CREATE for WS init Guild streaming");
+                   .put("jda-field","This event was originally a GUILD_DELETE but was converted to GUILD_CREATE for WS init Guild streaming");
             }
             else
             {
@@ -948,20 +948,24 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 return;
             }
         }
-//
-//        // Needs special handling due to content of "d" being an array
-//        if(type.equals("PRESENCE_REPLACE"))
-//        {
-//            JSONArray presences = raw.getJSONArray("d");
-//            LOG.trace(String.format("%s -> %s", type, presences.toString()));
-//            PresenceUpdateHandler handler = new PresenceUpdateHandler(api, responseTotal);
-//            for (int i = 0; i < presences.length(); i++)
-//            {
-//                JSONObject presence = presences.getJSONObject(i);
-//                handler.handle(presence);
-//            }
-//            return;
-//        }
+
+        // Needs special handling due to content of "d" being an array
+        if (type.equals("PRESENCES_REPLACE"))
+        {
+            JSONArray presences = raw.getJSONArray("d");
+            LOG.trace(String.format("%s -> %s", type, presences.toString()));
+            PresenceUpdateHandler handler = getHandler("PRESENCE_UPDATE");
+            for (int i = 0; i < presences.length(); i++)
+            {
+                JSONObject presence = presences.getJSONObject(i);
+                final JSONObject obj = new JSONObject();
+                obj.put("jda-field", "This was constructed from a PRESENCES_REPLACE payload")
+                   .put("d", presence)
+                   .put("t", "PRESENCE_UPDATE");
+                handler.handle(responseTotal, obj);
+            }
+            return;
+        }
 
         JSONObject content = raw.getJSONObject("d");
         LOG.trace(String.format("%s -> %s", type, content.toString()));
@@ -973,7 +977,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 //INIT types
                 case "READY":
                     api.setStatus(JDA.Status.LOADING_SUBSYSTEMS);
-                    //LOG.debug(String.format("%s -> %s", type, content.toString())); already logged on trace level
                     processingReady = true;
                     handleIdentifyRateLimit = false;
                     sessionId = content.getString("session_id");
@@ -1349,6 +1352,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     private void setupHandlers()
     {
+        final SocketHandler.NOPHandler nopHandler = new SocketHandler.NOPHandler(api);
         handlers.put("CHANNEL_CREATE",              new ChannelCreateHandler(api));
         handlers.put("CHANNEL_DELETE",              new ChannelDeleteHandler(api));
         handlers.put("CHANNEL_UPDATE",              new ChannelUpdateHandler(api));
@@ -1381,8 +1385,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("VOICE_STATE_UPDATE",          new VoiceStateUpdateHandler(api));
 
         // Unused events
-        handlers.put("CHANNEL_PINS_UPDATE",         new SocketHandler.NOPHandler(api));
-        handlers.put("WEBHOOKS_UPDATE",             new SocketHandler.NOPHandler(api));
+        handlers.put("CHANNEL_PINS_ACK",          nopHandler);
+        handlers.put("CHANNEL_PINS_UPDATE",       nopHandler);
+        handlers.put("GUILD_INTEGRATIONS_UPDATE", nopHandler);
+        handlers.put("PRESENCES_REPLACE",         nopHandler);
+        handlers.put("WEBHOOKS_UPDATE",           nopHandler);
 
         if (api.getAccountType() == AccountType.CLIENT)
         {
@@ -1395,7 +1402,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             handlers.put("RELATIONSHIP_REMOVE",      new RelationshipRemoveHandler(api));
 
             // Unused client events
-            handlers.put("MESSAGE_ACK", new SocketHandler.NOPHandler(api));
+            handlers.put("MESSAGE_ACK", nopHandler);
         }
     }
 
