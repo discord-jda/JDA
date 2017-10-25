@@ -37,7 +37,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     private String email;
     private String phoneNumber;
     private boolean mobile;
-    private boolean premium;
+    private boolean nitro;
 
     public SelfUserImpl(long id, JDAImpl api)
     {
@@ -99,17 +99,17 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     }
 
     @Override
-    public boolean isPremium() throws AccountTypeException
+    public boolean isNitro() throws AccountTypeException
     {
         if (api.getAccountType() != AccountType.CLIENT)
             throw new AccountTypeException(AccountType.CLIENT, "Nitro status retrieval can only be done on CLIENT accounts!");
-        return this.premium;
+        return this.nitro;
     }
 
     @Override
     public long getAllowedFileSize()
     {
-        if (this.premium) // by directly accessing the field we don't need to check the account type 
+        if (this.nitro) // by directly accessing the field we don't need to check the account type
             return Message.MAX_FILE_SIZE_NITRO;
         else
             return Message.MAX_FILE_SIZE;
@@ -177,9 +177,9 @@ public class SelfUserImpl extends UserImpl implements SelfUser
         return this;
     }
 
-    public SelfUserImpl setPremium(boolean premium)
+    public SelfUserImpl setNitro(boolean nitro)
     {
-        this.premium = premium;
+        this.nitro = nitro;
         return this;
     }
 }

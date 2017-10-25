@@ -87,8 +87,8 @@ public class EntityBuilder
         if (this.api.getAccountType() == AccountType.CLIENT)
             selfUser
                 .setEmail(!self.isNull("email") ? self.getString("email") : null)
-                .setMobile(!self.isNull("mobile") ? self.getBoolean("mobile") : false) 
-                .setPremium(!self.isNull("premium") ? self.getBoolean("premium") : false)
+                .setMobile(!self.isNull("mobile") ? self.getBoolean("mobile") : false)
+                .setNitro(!self.isNull("premium") ? self.getBoolean("premium") : false)
                 .setPhoneNumber(!self.isNull("phone") ? self.getString("phone") : null);
 
         return selfUser;
@@ -996,7 +996,7 @@ public class EntityBuilder
                     imageJson.isNull("height") ? -1 : imageJson.getInt("height")));
         }
         else embed.setImage(null);
-        
+
         if (messageEmbed.has("footer"))
         {
             JSONObject footerJson = messageEmbed.getJSONObject("footer");
@@ -1006,7 +1006,7 @@ public class EntityBuilder
                     footerJson.isNull("proxy_icon_url") ? null : footerJson.getString("proxy_icon_url")));
         }
         else embed.setFooter(null);
-        
+
         if (messageEmbed.has("fields"))
         {
             JSONArray fieldsJson = messageEmbed.getJSONArray("fields");
@@ -1023,7 +1023,7 @@ public class EntityBuilder
             embed.setFields(fields);
         }
         else embed.setFields(Collections.emptyList());
-        
+
         if (messageEmbed.has("video"))
         {
             JSONObject videoJson = messageEmbed.getJSONObject("video");

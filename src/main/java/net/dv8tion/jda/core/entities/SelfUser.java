@@ -54,7 +54,6 @@ public interface SelfUser extends User
      */
     String getEmail() throws AccountTypeException;
 
-    // TODO: find out if this is the real meaning of the field or if it has another purpose
     /**
      * Shows whether there has ever been a mobile app connected to this account.
      * <br><b>NOTE:</b> this is a {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT} method only!
@@ -77,7 +76,7 @@ public interface SelfUser extends User
      *
      * @return The Discord Nitro status of the currently logged in account.
      */
-    boolean isPremium() throws AccountTypeException;
+    boolean isNitro() throws AccountTypeException;
 
     /**
      * Used to get the phone number of the currently logged in account if a phone number has been attached to it.

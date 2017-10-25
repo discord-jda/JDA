@@ -43,9 +43,9 @@ public class UserUpdateHandler extends SocketHandler
         Boolean mfaEnabled = content.has("mfa_enabled") ? content.getBoolean("mfa_enabled") : null;
 
         //Client only
-        String email = !content.isNull("email") ? content.getString("email") : null; // TODO: client fields
+        String email = !content.isNull("email") ? content.getString("email") : null;
         Boolean mobile = content.has("mobile") ? content.getBoolean("mobile") : null; // mobile device 
-        Boolean premium = content.has("premium") ? content.getBoolean("premium") : null; // nitro
+        Boolean nitro = content.has("premium") ? content.getBoolean("premium") : null; // nitro
         String phoneNumber = !content.isNull("phone") ? content.getString("phone") : null; // verified phone number (verification level !)
 
         if (!Objects.equals(name, self.getName()) || !Objects.equals(discriminator, self.getDiscriminator()))
@@ -95,8 +95,6 @@ public class UserUpdateHandler extends SocketHandler
                     oldEmail));
         }
 
-        // TODO: find out if these are actually fired
-
         if (api.getAccountType() == AccountType.CLIENT && mobile != null && mobile != self.isMobile())
         {
             boolean oldMobile = self.isMobile();
@@ -106,13 +104,13 @@ public class UserUpdateHandler extends SocketHandler
                     oldMobile));
         }
 
-        if (api.getAccountType() == AccountType.CLIENT && premium != null && premium != self.isPremium())
+        if (api.getAccountType() == AccountType.CLIENT && nitro != null && nitro != self.isNitro())
         {
-            boolean oldPremium = self.isPremium();
-            self.setPremium(premium);
-            api.getEventManager().handle(new SelfUpdatePremiumEvent(
+            boolean oldNitro = self.isNitro();
+            self.setNitro(nitro);
+            api.getEventManager().handle(new SelfUpdateNitroEvent(
                     api, responseNumber,
-                    oldPremium));
+                    oldNitro));
         }
 
         if (api.getAccountType() == AccountType.CLIENT && !Objects.equals(phoneNumber, self.getPhoneNumber()))
