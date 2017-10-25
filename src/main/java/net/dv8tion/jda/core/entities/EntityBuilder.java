@@ -859,7 +859,7 @@ public class EntityBuilder
                 final Long emojiId = emoji.isNull("id") ? null : emoji.getLong("id");
                 String emojiName = emoji.getString("name");
 
-                boolean self = obj.has("self") && obj.getBoolean("self");
+                boolean self = obj.has("me") && obj.getBoolean("me");
                 int count = obj.getInt("count");
                 Emote emote = null;
                 if (emojiId != null)

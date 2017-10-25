@@ -43,7 +43,7 @@ public class RoleAction extends AuditableRestAction<Role>
 {
 
     protected final Guild guild;
-    protected long permissions = 0;
+    protected Long permissions;
     protected String name = null;
     protected Integer color = null;
     protected Boolean hoisted = null;
@@ -168,7 +168,7 @@ public class RoleAction extends AuditableRestAction<Role>
             }
         }
 
-        this.permissions = permissions == null ? 0 : Permission.getRaw(permissions);
+        this.permissions = permissions == null ? null : Permission.getRaw(permissions);
         return this;
     }
 
@@ -199,7 +199,7 @@ public class RoleAction extends AuditableRestAction<Role>
             }
         }
 
-        this.permissions = permissions == null ? 0 : Permission.getRaw(permissions);
+        this.permissions = permissions == null ? null : Permission.getRaw(permissions);
         return this;
     }
 
@@ -224,12 +224,15 @@ public class RoleAction extends AuditableRestAction<Role>
      * @see    net.dv8tion.jda.core.Permission#getRaw(net.dv8tion.jda.core.Permission...)
      */
     @CheckReturnValue
-    public RoleAction setPermissions(long permissions)
+    public RoleAction setPermissions(Long permissions)
     {
-        Checks.notNegative(permissions, "Raw Permissions");
-        Checks.check(permissions <= Permission.ALL_PERMISSIONS, "Provided permissions may not be greater than a full permission set!");
-        for (Permission p : Permission.getPermissions(permissions))
-            checkPermission(p);
+        if (permissions != null)
+        {
+            Checks.notNegative(permissions, "Raw Permissions");
+            Checks.check(permissions <= Permission.ALL_PERMISSIONS, "Provided permissions may not be greater than a full permission set!");
+            for (Permission p : Permission.getPermissions(permissions))
+                checkPermission(p);
+        }
         this.permissions = permissions;
         return this;
     }
@@ -242,7 +245,7 @@ public class RoleAction extends AuditableRestAction<Role>
             object.put("name", name);
         if (color != null)
             object.put("color", color & 0xFFFFFF);
-        if (permissions >= 0)
+        if (permissions != null)
             object.put("permissions", permissions);
         if (hoisted != null)
             object.put("hoist", hoisted.booleanValue());
