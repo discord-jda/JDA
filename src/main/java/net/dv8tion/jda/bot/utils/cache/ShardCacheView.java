@@ -18,6 +18,11 @@ package net.dv8tion.jda.bot.utils.cache;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 
+/**
+ * Read-only view on internal ShardManager cache of JDA instances.
+ * <br>This can be useful to check information such as size without creating
+ * an immutable snapshot first.
+ */
 public interface ShardCacheView extends CacheView<JDA>
 {
     /**
@@ -26,21 +31,22 @@ public interface ShardCacheView extends CacheView<JDA>
      * @param  id
      *         The ID of the entity
      *
-     * @return Possibly-null entity for the specified ID
+     * @return Possibly-null entity for the specified shard ID
      */
     JDA getElementById(int id);
 
     /**
-     * Retrieves the JDA instance represented by the provided shard ID.
+     * Retrieves the JDA instance represented by the provided shard ID
+     * or {@code null} if none of the connected shards match the provided id.
      *
      * @param  id
-     *         The ID of the entity
+     *         The ID of the shard
      *
      * @throws java.lang.NumberFormatException
      *         If the provided String is {@code null} or
      *         cannot be resolved to an unsigned int id
      *
-     * @return Possibly-null entity for the specified ID
+     * @return Possibly-null entity for the specified shard ID
      */
     default JDA getElementById(String id)
     {

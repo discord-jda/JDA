@@ -106,7 +106,7 @@ public class CallCreateHandler extends SocketHandler
             vState.setSelfMuted(voiceState.getBoolean("self_mute"));
             vState.setSelfDeafened(voiceState.getBoolean("self_deaf"));
 
-            ((JDAClientImpl) api.asClient()).getCallUserMap().put(userId, cUser);
+            api.asClient().getCallUserMap().put(userId, cUser);
         }
         api.getEventCache().playbackCache(EventCache.Type.CALL, channelId);
         return null;

@@ -108,7 +108,7 @@ public class GuildDeleteHandler extends SocketHandler
         // Remember, everything left in memberIds is removed from the userMap
         if (api.getAccountType() == AccountType.CLIENT)
         {
-            TLongObjectMap<Relationship> relationships = ((JDAClientImpl) api.asClient()).getRelationshipMap();
+            TLongObjectMap<Relationship> relationships = api.asClient().getRelationshipMap();
             for (TLongIterator it = memberIds.iterator(); it.hasNext();)
             {
                 Relationship rel = relationships.get(it.next());

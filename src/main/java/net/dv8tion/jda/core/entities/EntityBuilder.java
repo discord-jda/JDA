@@ -1136,7 +1136,7 @@ public class EntityBuilder
                 default:
                     return null;
             }
-            ((JDAClientImpl) api.asClient()).getRelationshipMap().put(user.getIdLong(), relationship);
+            api.asClient().getRelationshipMap().put(user.getIdLong(), relationship);
         }
         return relationship;
     }
@@ -1157,7 +1157,7 @@ public class EntityBuilder
         if (group == null)
         {
             group = new GroupImpl(groupId, api);
-            ((JDAClientImpl) api.asClient()).getGroupMap().put(groupId, group);
+            api.asClient().getGroupMap().put(groupId, group);
         }
 
         TLongObjectMap<User> groupUsers = group.getUserMap();

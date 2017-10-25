@@ -44,7 +44,7 @@ import java.util.*;
  */
 public class JDABuilder
 {
-    protected final List<Object> listeners = new LinkedList<>();
+    protected final List<Object> listeners;
 
     protected SessionReconnectQueue reconnectQueue = null;
     protected ShardedRateLimiter shardRateLimiter = null;
@@ -54,7 +54,7 @@ public class JDABuilder
     protected String token = null;
     protected IEventManager eventManager = null;
     protected IAudioSendFactory audioSendFactory = null;
-    protected JDAImpl.ShardInfoImpl shardInfo = null;
+    protected JDA.ShardInfo shardInfo = null;
     protected Game game = null;
     protected OnlineStatus status = OnlineStatus.ONLINE;
     protected int maxReconnectDelay = 900;
@@ -78,9 +78,10 @@ public class JDABuilder
      */
     public JDABuilder(AccountType accountType)
     {
-        if (accountType == null)
-            throw new NullPointerException("Provided AccountType was null!");
+        Checks.notNull(accountType, "accountType");
+
         this.accountType = accountType;
+        this.listeners = new LinkedList<>();
     }
 
     /**
@@ -508,7 +509,7 @@ public class JDABuilder
         Checks.positive(shardTotal, "Shard Total");
         Checks.check(shardId < shardTotal,
             "The shard ID must be lower than the shardTotal! Shard IDs are 0-based.");
-        shardInfo = new JDAImpl.ShardInfoImpl(shardId, shardTotal);
+        shardInfo = new JDA.ShardInfo(shardId, shardTotal);
         return this;
     }
 
@@ -538,7 +539,7 @@ public class JDABuilder
     {
         OkHttpClient.Builder httpClientBuilder = this.httpClientBuilder == null ? new OkHttpClient.Builder() : this.httpClientBuilder;
         WebSocketFactory wsFactory = this.wsFactory == null ? new WebSocketFactory() : this.wsFactory;
-        JDAImpl jda = new JDAImpl(accountType, httpClientBuilder, wsFactory, shardRateLimiter, autoReconnect, enableVoice, enableShutdownHook,
+        JDAImpl jda = new JDAImpl(accountType, token, httpClientBuilder, wsFactory, shardRateLimiter, autoReconnect, enableVoice, enableShutdownHook,
                 enableBulkDeleteSplitting, requestTimeoutRetry, corePoolSize, maxReconnectDelay);
 
         if (eventManager != null)
@@ -550,12 +551,14 @@ public class JDABuilder
         listeners.forEach(jda::addEventListener);
         jda.setStatus(JDA.Status.INITIALIZED);  //This is already set by JDA internally, but this is to make sure the listeners catch it.
 
+        String gateway = jda.getGateway().complete();
+
         // Set the presence information before connecting to have the correct information ready when sending IDENTIFY
         ((PresenceImpl) jda.getPresence())
                 .setCacheGame(game)
                 .setCacheIdle(idle)
                 .setCacheStatus(status);
-        jda.login(token, shardInfo, reconnectQueue);
+        jda.login(gateway, shardInfo, reconnectQueue);
         return jda;
     }
 

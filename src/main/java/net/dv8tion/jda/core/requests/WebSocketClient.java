@@ -71,7 +71,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected final Set<String> traces = new HashSet<>();
 
     protected WebSocket socket;
-    protected String gatewayUrl = null;
     protected String sessionId = null;
     protected Inflater zlibContext = new Inflater();
     protected ByteArrayOutputStream readBuffer;
@@ -435,10 +434,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             throw new RejectedExecutionException("JDA is shutdown!");
         initiating = true;
 
+        String url = api.getGatewayUrl() + "?encoding=json&compress=zlib-stream&v=" + DISCORD_GATEWAY_VERSION;
+
         try
         {
             socket = api.getWebSocketFactory()
-                    .createSocket(api.getGateway())
+                    .createSocket(url)
                     .addHeader("Accept-Encoding", "gzip")
                     .addListener(this);
             socket.connect();
@@ -447,37 +448,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             //Completely fail here. We couldn't make the connection.
             throw new IllegalStateException(e);
-        }
-    }
-
-    protected String getGateway()
-    {
-        try
-        {
-            RestAction<String> gateway = new RestAction<String>(api, Route.Misc.GATEWAY.compile())
-            {
-                @Override
-                protected void handleResponse(Response response, Request<String> request)
-                {
-                    try
-                    {
-                        if (response.isOk())
-                            request.onSuccess(response.getObject().getString("url"));
-                        else
-                            request.onFailure(new Exception("Failed to get gateway url"));
-                    }
-                    catch (Exception e)
-                    {
-                        request.onFailure(e);
-                    }
-                }
-            };
-
-            return gateway.complete(false) + "?encoding=json&compress=zlib-stream&v=" + DISCORD_GATEWAY_VERSION;
-        }
-        catch (Exception ex)
-        {
-            return null;
         }
     }
 
@@ -828,7 +798,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         if (api.getAccountType() == AccountType.CLIENT)
         {
-            JDAClientImpl client = (JDAClientImpl) api.asClient();
+            JDAClientImpl client = api.asClient();
 
             client.getRelationshipMap().clear();
             client.getGroupMap().clear();

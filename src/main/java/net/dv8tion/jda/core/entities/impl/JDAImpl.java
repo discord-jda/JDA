@@ -29,7 +29,6 @@ import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.StatusChangeEvent;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
-import net.dv8tion.jda.core.exceptions.HttpException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.handle.EventCache;
 import net.dv8tion.jda.core.hooks.IEventManager;
@@ -45,7 +44,6 @@ import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import net.dv8tion.jda.core.utils.tuple.Pair;
 import okhttp3.OkHttpClient;
-import net.dv8tion.jda.core.requests.Route.CompiledRoute;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.core.utils.cache.impl.AbstractCacheView;
@@ -98,18 +96,19 @@ public class JDAImpl implements JDA
     protected Status status = Status.INITIALIZING;
     protected SelfUser selfUser;
     protected ShardInfo shardInfo;
-    protected String token = null;
     protected boolean audioEnabled;
     protected boolean bulkDeleteSplittingEnabled;
     protected boolean autoReconnect;
     protected long responseTotal;
     protected long ping = -1;
+    protected String token;
     protected String gatewayUrl;
 
-    public JDAImpl(AccountType accountType, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory, ShardedRateLimiter rateLimiter,boolean autoReconnect, boolean audioEnabled,
+    public JDAImpl(AccountType accountType, String token, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory, ShardedRateLimiter rateLimiter,boolean autoReconnect, boolean audioEnabled,
             boolean useShutdownHook, boolean bulkDeleteSplittingEnabled,boolean retryOnTimeout, int corePoolSize, int maxReconnectDelay)
     {
         this.accountType = accountType;
+        this.setToken(token);
         this.httpClientBuilder = httpClientBuilder;
         this.wsFactory = wsFactory;
         this.autoReconnect = autoReconnect;
@@ -127,89 +126,79 @@ public class JDAImpl implements JDA
         this.jdaBot = accountType == AccountType.BOT ? new JDABotImpl(this) : null;
     }
 
-    public int login(String token, ShardInfoImpl shardInfo, SessionReconnectQueue reconnectQueue) throws LoginException, RateLimitedException
+    public int login(String gatewayUrl, ShardInfo shardInfo, SessionReconnectQueue reconnectQueue) throws LoginException, RateLimitedException
     {
+        this.gatewayUrl = gatewayUrl;
         this.shardInfo = shardInfo;
 
         setStatus(Status.LOGGING_IN);
         if (token == null || token.isEmpty())
             throw new LoginException("Provided token was null or empty!");
 
-        setToken(token);
         verifyToken();
         LOG.info("Login Successful!");
-
-        Pair<String, Integer> gateway = getGatewayAndRecommendedShardCount();
-
-        if (gateway == null) 
-        { 
-            throw new HttpException("Could not fetch WS-Gateway!"); 
-        }
-
-        this.gatewayUrl = gateway.getLeft();
-
-        if (shardInfo != null && shardInfo.getShardTotal() == -1)
-        {
-            shardInfo.setShardTotal(gateway.getRight());
-        }
 
         client = new WebSocketClient(this, reconnectQueue);
 
         if (shutdownHook != null)
-        {
             Runtime.getRuntime().addShutdownHook(shutdownHook);
-        }
 
         return shardInfo == null ? -1 : shardInfo.getShardTotal();
     }
 
-    protected Pair<String, Integer> getGatewayAndRecommendedShardCount()
+    public RestAction<String> getGateway()
     {
-        final CompiledRoute route;
-        if (accountType == AccountType.BOT)
-            route = Route.Misc.GATEWAY_BOT.compile();
-        else
-            route = Route.Misc.GATEWAY.compile();
-
-        try
+        return new RestAction<String>(this, Route.Misc.GATEWAY.compile())
         {
-            RestAction<Pair<String, Integer>> gateway = new RestAction<Pair<String, Integer>>(this, route)
+            @Override
+            protected void handleResponse(Response response, Request<String> request)
             {
-                @Override
-                protected void handleResponse(Response response, Request<Pair<String, Integer>> request)
+                try
                 {
-                    try
+                    if (response.isOk())
+                        request.onSuccess(response.getObject().getString("url"));
+                    else
+                        request.onFailure(new Exception("Failed to get gateway url"));
+                }
+                catch (Exception e)
+                {
+                    request.onFailure(e);
+                }
+            }
+        };
+    }
+
+    public RestAction<Pair<String, Integer>> getGatewayBot()
+    {
+        Checks.check(accountType == AccountType.BOT, "Only bots can use this endpoint");
+
+        return new RestAction<Pair<String, Integer>>(this, Route.Misc.GATEWAY_BOT.compile())
+        {
+            @Override
+            protected void handleResponse(Response response, Request<Pair<String, Integer>> request)
+            {
+                try
+                {
+                    if (response.isOk())
                     {
-                        if (response.isOk())
-                        {
-                            JSONObject object = response.getObject();
+                        JSONObject object = response.getObject();
 
-                            Pair<String, Integer> pair;
-                            if (accountType == AccountType.BOT)
-                                pair = Pair.of(object.getString("url") + "?encoding=json&compress=zlib-stream&v=" + WebSocketClient.DISCORD_GATEWAY_VERSION, object.getInt("shards"));
-                            else
-                                pair = Pair.of(object.getString("url") + "?encoding=json&compress=zlib-stream&v=" + WebSocketClient.DISCORD_GATEWAY_VERSION, null);
+                        String url = object.getString("url");
+                        int shards = object.getInt("shards");
 
-                            request.onSuccess(pair);
-                        }
-                        else
-                        {
-                            request.onFailure(new Exception("Failed to get gateway url"));
-                        }
+                        request.onSuccess(Pair.of(url, shards));
                     }
-                    catch (Exception e)
+                    else
                     {
-                        request.onFailure(e);
+                        request.onFailure(new Exception("Failed to get gateway url"));
                     }
                 }
-            };
-
-            return gateway.complete(false);
-        }
-        catch (Exception e)
-        {
-            throw new RuntimeException(e);
-        }
+                catch (Exception e)
+                {
+                    request.onFailure(e);
+                }
+            }
+        };
     }
 
     public void setStatus(Status status)
@@ -788,60 +777,8 @@ public class JDAImpl implements JDA
         return akap;
     }
 
-    public String getGateway()
+    public String getGatewayUrl()
     {
         return gatewayUrl;
-    }
-
-    public static class ShardInfoImpl implements ShardInfo {
-        int shardId;
-        int shardTotal;
-
-        public ShardInfoImpl(int shardId, int shardTotal)
-        {
-            this.shardId = shardId;
-            this.shardTotal = shardTotal;
-        }
-
-        public int getShardId()
-        {
-            return shardId;
-        }
-
-        public int getShardTotal()
-        {
-            return shardTotal;
-        }
-
-        public String getShardString()
-        {
-            return "[" + shardId + " / " + shardTotal + "]";
-        }
-
-        public void setShardTotal(int shardTotal)
-        {
-            this.shardTotal = shardTotal;
-        }
-
-        public void setShardId(int shardId)
-        {
-            this.shardId = shardId;
-        }
-
-        @Override
-        public String toString()
-        {
-            return "Shard " + getShardString();
-        }
-
-        @Override
-        public boolean equals(Object o)
-        {
-            if (!(o instanceof ShardInfo))
-                return false;
-
-            ShardInfo oInfo = (ShardInfo) o;
-            return shardId == oInfo.getShardId() && shardTotal == oInfo.getShardTotal();
-        }
     }
 }

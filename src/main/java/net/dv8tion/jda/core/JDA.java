@@ -100,15 +100,27 @@ public interface JDA
     /**
      * Represents the information used to create this shard.
      */
-    interface ShardInfo
+    class ShardInfo
     {
+        int shardId;
+        int shardTotal;
+
+        public ShardInfo(int shardId, int shardTotal)
+        {
+            this.shardId = shardId;
+            this.shardTotal = shardTotal;
+        }
+
         /**
          * Represents the id of the shard of the current instance.
          * <br>This value will be between 0 and ({@link #getShardTotal()} - 1).
          *
          * @return The id of the currently logged in shard.
          */
-        public int getShardId();
+        public int getShardId()
+        {
+            return shardId;
+        }
 
         /**
          * The total amount of shards based on the value provided during JDA instance creation using
@@ -121,7 +133,10 @@ public interface JDA
          *
          * @return The total of shards based on the total provided by the developer during JDA initialization.
          */
-        public int getShardTotal();
+        public int getShardTotal()
+        {
+            return shardTotal;
+        }
 
         /**
          * Provides a shortcut method for easily printing shard info.
@@ -130,8 +145,26 @@ public interface JDA
          *
          * @return A String representing the information used to build this shard.
          */
-        public String getShardString();
+        public String getShardString()
+        {
+            return "[" + shardId + " / " + shardTotal + "]";
+        }
 
+        @Override
+        public String toString()
+        {
+            return "Shard " + getShardString();
+        }
+
+        @Override
+        public boolean equals(Object o)
+        {
+            if (!(o instanceof ShardInfo))
+                return false;
+
+            ShardInfo oInfo = (ShardInfo) o;
+            return shardId == oInfo.getShardId() && shardTotal == oInfo.getShardTotal();
+        }
     }
 
     /**
