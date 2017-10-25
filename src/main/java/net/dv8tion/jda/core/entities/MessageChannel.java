@@ -973,75 +973,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     }
 
     /**
-     * Uses the provided {@link net.dv8tion.jda.core.entities.Message Message} as a marker and retrieves messages around
-     * the marker. The {@code limit} determines the amount of message retrieved near the marker. Discord will
-     * attempt to evenly split the limit between before and after the marker, however in the case that the marker is set
-     * near the beginning or near the end of the channel's history the amount of messages on each side of the marker may
-     * be different, and their total count may not equal the provided {@code limit}.
-     *
-     * <p><b>Examples:</b>
-     * <br>Retrieve 100 messages from the middle of history. {@literal >}100 message exist in history and the marker is {@literal >}50 messages
-     * from the edge of history.
-     * <br>{@code getHistoryAround(message, 100)} - This will retrieve 100 messages from history, 50 before the marker
-     * and 50 after the marker.
-     *
-     * <p>Retrieve 10 messages near the end of history. Provided message is the 3rd most recent message.
-     * <br>{@code getHistoryAround(message, 10)} - This will retrieve 10 messages from history, 8 before the marker
-     * and 2 after the marker.
-     *
-     * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.core.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
-     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
-     *         was revoked in the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}</li>
-     *
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The request was attempted after the account lost
-     *         {@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the
-     *         {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The provided {@code message} has already been deleted, thus could not be used as a marker.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>The request was attempted after the channel was deleted.</li>
-     * </ul>
-     *
-     * @param message
-     *        The {@link net.dv8tion.jda.core.entities.Message Message} that will act as a marker. The provided Message
-     *        must be from this MessageChannel.
-     * @param limit
-     *        The amount of message to be retrieved around the marker. Minimum: 1, Max: 100.
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         <ul>
-     *             <li>Provided {@code message} is {@code null}.</li>
-     *             <li>Provided {@code message} is not from this MessageChannel.</li>
-     *             <li>Provided {@code limit} is less than {@code 1} or greater than {@code 100}.</li>
-     *         </ul>
-     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
-     *         <ul>
-     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
-     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
-     *         </ul>
-     *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.MessageHistory MessageHistory}
-     *         <br>Provides a MessageHistory object with message around the provided message loaded into it.
-     */
-    @CheckReturnValue
-    default RestAction<MessageHistory> getHistoryAround(Message message, int limit)
-    {
-        Checks.notNull(message, "Provided target message");
-        Checks.check(message.getChannel().equals(this), "The provided Message is not from the MessageChannel!");
-
-        return getHistoryAround(message.getId(), limit);
-    }
-
-    /**
-     * Uses the provided {@code id} of a message as a marker and retrieves messages around
+     * Uses the provided {@code id} of a message as a marker and retrieves messages sent around
      * the marker. The {@code limit} determines the amount of message retrieved near the marker. Discord will
      * attempt to evenly split the limit between before and after the marker, however in the case that the marker is set
      * near the beginning or near the end of the channel's history the amount of messages on each side of the marker may
@@ -1079,7 +1011,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * </ul>
      *
      * @param messageId
-     *        The id of the message that will act as a marker. The id must refer to a message from this MessageChannel.
+     *        The id of the message that will act as a marker.
      * @param limit
      *        The amount of message to be retrieved around the marker. Minimum: 1, Max: 100.
      *
@@ -1095,41 +1027,13 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.MessageHistory MessageHistory}
+     * @return {@link net.dv8tion.jda.core.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
      *         <br>Provides a MessageHistory object with message around the provided message loaded into it.
      */
     @CheckReturnValue
-    default RestAction<MessageHistory> getHistoryAround(String messageId, int limit)
+    default MessageHistory.MessageRetrieveAction getHistoryAround(String messageId, int limit)
     {
-        Checks.notEmpty(messageId, "Provided messageId");
-        Checks.check(limit >= 1 && limit <= 100, "Provided limit was out of bounds. Minimum: 1, Max: 100. Provided: %d", limit);
-
-        Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY.compile(this.getId()).withQueryParams("limit", Integer.toString(limit), "around", messageId);
-
-        return new RestAction<MessageHistory>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<MessageHistory> request)
-            {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                }
-
-                MessageHistory mHistory = new MessageHistory(MessageChannel.this);
-
-                EntityBuilder builder = api.getEntityBuilder();;
-                LinkedList<Message> msgs  = new LinkedList<>();
-                JSONArray historyJson = response.getArray();
-
-                for (int i = 0; i < historyJson.length(); i++)
-                    msgs.add(builder.createMessage(historyJson.getJSONObject(i), MessageChannel.this, false));
-
-                msgs.forEach(msg -> mHistory.history.put(msg.getIdLong(), msg));
-                request.onSuccess(mHistory);
-            }
-        };
+        return MessageHistory.getHistoryAround(this, messageId).limit(limit);
     }
 
     /**
@@ -1191,9 +1095,409 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         <br>Provides a MessageHistory object with message around the provided message loaded into it.
      */
     @CheckReturnValue
-    default RestAction<MessageHistory> getHistoryAround(long messageId, int limit)
+    default MessageHistory.MessageRetrieveAction getHistoryAround(long messageId, int limit)
     {
         return getHistoryAround(Long.toUnsignedString(messageId), limit);
+    }
+
+    /**
+     * Uses the provided {@link net.dv8tion.jda.core.entities.Message Message} as a marker and retrieves messages around
+     * the marker. The {@code limit} determines the amount of message retrieved near the marker. Discord will
+     * attempt to evenly split the limit between before and after the marker, however in the case that the marker is set
+     * near the beginning or near the end of the channel's history the amount of messages on each side of the marker may
+     * be different, and their total count may not equal the provided {@code limit}.
+     *
+     * <p><b>Examples:</b>
+     * <br>Retrieve 100 messages from the middle of history. {@literal >}100 message exist in history and the marker is {@literal >}50 messages
+     * from the edge of history.
+     * <br>{@code getHistoryAround(message, 100)} - This will retrieve 100 messages from history, 50 before the marker
+     * and 50 after the marker.
+     *
+     * <p>Retrieve 10 messages near the end of history. Provided message is the 3rd most recent message.
+     * <br>{@code getHistoryAround(message, 10)} - This will retrieve 10 messages from history, 8 before the marker
+     * and 2 after the marker.
+     *
+     * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the
+     *         {@link net.dv8tion.jda.core.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *         was revoked in the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The request was attempted after the account lost
+     *         {@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the
+     *         {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code message} has already been deleted, thus could not be used as a marker.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * @param message
+     *        The {@link net.dv8tion.jda.core.entities.Message Message} that will act as a marker. The provided Message
+     *        must be from this MessageChannel.
+     * @param limit
+     *        The amount of message to be retrieved around the marker. Minimum: 1, Max: 100.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>Provided {@code message} is {@code null}.</li>
+     *             <li>Provided {@code limit} is less than {@code 1} or greater than {@code 100}.</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.MessageHistory MessageHistory}
+     *         <br>Provides a MessageHistory object with message around the provided message loaded into it.
+     */
+    @CheckReturnValue
+    default MessageHistory.MessageRetrieveAction getHistoryAround(Message message, int limit)
+    {
+        Checks.notNull(message, "Provided target message");
+        return getHistoryAround(message.getId(), limit);
+    }
+
+    /**
+     * Uses the provided {@code id} of a message as a marker and retrieves messages sent after
+     * the marker ID. The {@code limit} determines the amount of message retrieved near the marker.
+     *
+     * <p><b>Examples:</b>
+     * <br>Retrieve 100 messages from the middle of history. {@literal >}100 message exist in history and the marker is {@literal >}50 messages
+     * from the edge of history.
+     * <br>{@code getHistoryAfter(messageId, 100)} - This will retrieve 100 messages from history sent after the marker.
+     *
+     * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the
+     *         {@link net.dv8tion.jda.core.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *         was revoked in the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The request was attempted after the account lost
+     *         {@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the
+     *         {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted, thus could not be used as a marker.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * @param messageId
+     *        The id of the message that will act as a marker.
+     * @param limit
+     *        The amount of message to be retrieved after the marker. Minimum: 1, Max: 100.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>Provided {@code messageId} is {@code null} or empty.</li>
+     *             <li>Provided {@code limit} is less than {@code 1} or greater than {@code 100}.</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.core.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
+     *         <br>Provides a MessageHistory object with message after the provided message loaded into it.
+     */
+    @CheckReturnValue
+    default MessageHistory.MessageRetrieveAction getHistoryAfter(String messageId, int limit)
+    {
+        return MessageHistory.getHistoryAfter(this, messageId).limit(limit);
+    }
+
+    /**
+     * Uses the provided {@code id} of a message as a marker and retrieves messages sent after
+     * the marker ID. The {@code limit} determines the amount of message retrieved near the marker.
+     *
+     * <p><b>Examples:</b>
+     * <br>Retrieve 100 messages from the middle of history. {@literal >}100 message exist in history and the marker is {@literal >}50 messages
+     * from the edge of history.
+     * <br>{@code getHistoryAfter(messageId, 100)} - This will retrieve 100 messages from history sent after the marker.
+     *
+     * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the
+     *         {@link net.dv8tion.jda.core.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *         was revoked in the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The request was attempted after the account lost
+     *         {@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the
+     *         {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted, thus could not be used as a marker.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * @param messageId
+     *        The id of the message that will act as a marker.
+     * @param limit
+     *        The amount of message to be retrieved after the marker. Minimum: 1, Max: 100.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         Provided {@code limit} is less than {@code 1} or greater than {@code 100}.
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.core.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
+     *         <br>Provides a MessageHistory object with message after the provided message loaded into it.
+     */
+    @CheckReturnValue
+    default MessageHistory.MessageRetrieveAction getHistoryAfter(long messageId, int limit)
+    {
+        return getHistoryAfter(Long.toUnsignedString(messageId), limit);
+    }
+
+    /**
+     * Uses the provided message as a marker and retrieves messages sent after
+     * the marker. The {@code limit} determines the amount of message retrieved near the marker.
+     *
+     * <p><b>Examples:</b>
+     * <br>Retrieve 100 messages from the middle of history. {@literal >}100 message exist in history and the marker is {@literal >}50 messages
+     * from the edge of history.
+     * <br>{@code getHistoryAfter(message, 100)} - This will retrieve 100 messages from history sent after the marker.
+     *
+     * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the
+     *         {@link net.dv8tion.jda.core.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *         was revoked in the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The request was attempted after the account lost
+     *         {@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the
+     *         {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted, thus could not be used as a marker.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * @param message
+     *        The message that will act as a marker.
+     * @param limit
+     *        The amount of message to be retrieved after the marker. Minimum: 1, Max: 100.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>Provided {@code message} is {@code null}.</li>
+     *             <li>Provided {@code limit} is less than {@code 1} or greater than {@code 100}.</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.core.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
+     *         <br>Provides a MessageHistory object with message after the provided message loaded into it.
+     */
+    @CheckReturnValue
+    default MessageHistory.MessageRetrieveAction getHistoryAfter(Message message, int limit)
+    {
+        Checks.notNull(message, "Message");
+        return getHistoryAfter(message.getId(), limit);
+    }
+
+    /**
+     * Uses the provided {@code id} of a message as a marker and retrieves messages sent before
+     * the marker ID. The {@code limit} determines the amount of message retrieved near the marker.
+     *
+     * <p><b>Examples:</b>
+     * <br>Retrieve 100 messages from the middle of history. {@literal >}100 message exist in history and the marker is {@literal >}50 messages
+     * from the edge of history.
+     * <br>{@code getHistoryBefore(messageId, 100)} - This will retrieve 100 messages from history sent before the marker.
+     *
+     * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the
+     *         {@link net.dv8tion.jda.core.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *         was revoked in the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The request was attempted after the account lost
+     *         {@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the
+     *         {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted, thus could not be used as a marker.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * @param messageId
+     *        The id of the message that will act as a marker.
+     * @param limit
+     *        The amount of message to be retrieved after the marker. Minimum: 1, Max: 100.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>Provided {@code messageId} is {@code null} or empty.</li>
+     *             <li>Provided {@code limit} is less than {@code 1} or greater than {@code 100}.</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.core.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
+     *         <br>Provides a MessageHistory object with message before the provided message loaded into it.
+     */
+    @CheckReturnValue
+    default MessageHistory.MessageRetrieveAction getHistoryBefore(String messageId, int limit)
+    {
+        return MessageHistory.getHistoryBefore(this, messageId).limit(limit);
+    }
+
+    /**
+     * Uses the provided {@code id} of a message as a marker and retrieves messages sent before
+     * the marker ID. The {@code limit} determines the amount of message retrieved near the marker.
+     *
+     * <p><b>Examples:</b>
+     * <br>Retrieve 100 messages from the middle of history. {@literal >}100 message exist in history and the marker is {@literal >}50 messages
+     * from the edge of history.
+     * <br>{@code getHistoryBefore(messageId, 100)} - This will retrieve 100 messages from history sent before the marker.
+     *
+     * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the
+     *         {@link net.dv8tion.jda.core.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *         was revoked in the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The request was attempted after the account lost
+     *         {@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the
+     *         {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted, thus could not be used as a marker.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * @param messageId
+     *        The id of the message that will act as a marker.
+     * @param limit
+     *        The amount of message to be retrieved after the marker. Minimum: 1, Max: 100.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>Provided {@code messageId} is {@code null} or empty.</li>
+     *             <li>Provided {@code limit} is less than {@code 1} or greater than {@code 100}.</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.core.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
+     *         <br>Provides a MessageHistory object with message before the provided message loaded into it.
+     */
+    @CheckReturnValue
+    default MessageHistory.MessageRetrieveAction getHistoryBefore(long messageId, int limit)
+    {
+        return getHistoryBefore(Long.toUnsignedString(messageId), limit);
+    }
+
+    /**
+     * Uses the provided message as a marker and retrieves messages sent before
+     * the marker. The {@code limit} determines the amount of message retrieved near the marker.
+     *
+     * <p><b>Examples:</b>
+     * <br>Retrieve 100 messages from the middle of history. {@literal >}100 message exist in history and the marker is {@literal >}50 messages
+     * from the edge of history.
+     * <br>{@code getHistoryAfter(message, 100)} - This will retrieve 100 messages from history sent before the marker.
+     *
+     * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the
+     *         {@link net.dv8tion.jda.core.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *         was revoked in the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The request was attempted after the account lost
+     *         {@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the
+     *         {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted, thus could not be used as a marker.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * @param message
+     *        The message that will act as a marker.
+     * @param limit
+     *        The amount of message to be retrieved after the marker. Minimum: 1, Max: 100.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>Provided {@code message} is {@code null}.</li>
+     *             <li>Provided {@code limit} is less than {@code 1} or greater than {@code 100}.</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
+     *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.core.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
+     *         <br>Provides a MessageHistory object with message before the provided message loaded into it.
+     */
+    @CheckReturnValue
+    default MessageHistory.MessageRetrieveAction getHistoryBefore(Message message, int limit)
+    {
+        Checks.notNull(message, "Message");
+        return getHistoryBefore(message.getId(), limit);
     }
 
     /**
