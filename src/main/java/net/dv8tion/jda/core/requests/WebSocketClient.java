@@ -39,6 +39,9 @@ import net.dv8tion.jda.core.handle.*;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
+import net.dv8tion.jda.core.requests.factory.DefaultGatewayProviderFactory;
+import net.dv8tion.jda.core.requests.factory.IGatewayProvider;
+import net.dv8tion.jda.core.requests.factory.IGatewayProviderFactory;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import org.json.JSONArray;
@@ -110,7 +113,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         this.shardInfo = api.getShardInfo();
         this.shouldReconnect = api.isAutoReconnect();
         this.reconnectQueue = reconnectQueue;
-        this.gatewayProviderFactory = gatewayProviderFactory;
+        this.gatewayProviderFactory = gatewayProviderFactory == null ? new DefaultGatewayProviderFactory() : gatewayProviderFactory;
         setupHandlers();
         setupSendingThread();
         connect();
@@ -432,13 +435,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     gatewayProvider = gatewayProviderFactory.createGatewayProvider(api);
                     if (gatewayProvider == null)
                     {
-                        throw new RuntimeException("IGatewayProviderFactory returned a null IGatewayProvider!");
+                        throw new IllegalArgumentException("IGatewayProviderFactory returned a null IGatewayProvider!");
                     }
                 }
                 gatewayUrl = gatewayProvider.getGatewayUrl();
                 if (gatewayUrl == null)
                 {
-                    throw new RuntimeException("Could not fetch WS-Gateway!");
+                    throw new IllegalArgumentException("Could not fetch WS-Gateway!");
                 }
             }
             socket = api.getWebSocketFactory()

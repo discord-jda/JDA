@@ -24,9 +24,8 @@ import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
-import net.dv8tion.jda.core.requests.DefaultGatewayProviderFactory;
-import net.dv8tion.jda.core.requests.IGatewayProvider;
-import net.dv8tion.jda.core.requests.IGatewayProviderFactory;
+import net.dv8tion.jda.core.requests.factory.IGatewayProvider;
+import net.dv8tion.jda.core.requests.factory.IGatewayProviderFactory;
 import net.dv8tion.jda.core.requests.SessionReconnectQueue;
 import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.OkHttpClient;
@@ -89,9 +88,12 @@ public class JDABuilder
 
     /**
      * Sets the gateway provider that will be used to get the URL to connect the websocket to.
+     * <br>This can be used to change the URL JDA connects to when logging in.
+     * <br>Custom implementations can be used for separating the actual discord gateway connection to, for example,
+     * another process which doesn't need to be restarted as often and potentially speeding up bot restarts.
      *
      * @param  factory
-     *         {@link net.dv8tion.jda.core.requests.IGatewayProviderFactory IGatewayProviderFactory} to use
+     *         {@link IGatewayProviderFactory IGatewayProviderFactory} to use
      *         when creating {@link IGatewayProvider IGatewayProviders}
      *
      * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
@@ -557,7 +559,6 @@ public class JDABuilder
                 .setCacheGame(game)
                 .setCacheIdle(idle)
                 .setCacheStatus(status);
-        IGatewayProviderFactory gatewayProviderFactory = this.gatewayProviderFactory == null ? new DefaultGatewayProviderFactory() : this.gatewayProviderFactory;
         jda.login(token, shardInfo, reconnectQueue, gatewayProviderFactory);
         return jda;
     }
