@@ -67,6 +67,7 @@ public class JDABuilder
     protected boolean enableBulkDeleteSplitting = true;
     protected boolean autoReconnect = true;
     protected boolean idle = false;
+    protected boolean requestTimeoutRetry = true;
 
     /**
      * Creates a completely empty JDABuilder.
@@ -153,6 +154,24 @@ public class JDABuilder
     }
 
     /**
+     * Whether the Requester should retry when
+     * a {@link java.net.SocketTimeoutException SocketTimeoutException} occurs.
+     * <br><b>Default</b>: {@code true}
+     *
+     * <p>This value can be changed at any time with {@link net.dv8tion.jda.core.JDA#setRequestTimeoutRetry(boolean) JDA.setRequestTimeoutRetry(boolean)}!
+     *
+     * @param  retryOnTimeout
+     *         True, if the Request should retry once on a socket timeout
+     *
+     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public JDABuilder setRequestTimeoutRetry(boolean retryOnTimeout)
+    {
+        this.requestTimeoutRetry = retryOnTimeout;
+        return this;
+    }
+
+    /**
      * Sets the token that will be used by the {@link net.dv8tion.jda.core.JDA} instance to log in when
      * {@link net.dv8tion.jda.core.JDABuilder#buildAsync() buildAsync()}
      * or {@link net.dv8tion.jda.core.JDABuilder#buildBlocking() buildBlocking()}
@@ -181,7 +200,7 @@ public class JDABuilder
      * @param  token
      *         The token of the account that you would like to login with.
      *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      */
     public JDABuilder setToken(String token)
     {
@@ -541,9 +560,8 @@ public class JDABuilder
     {
         OkHttpClient.Builder httpClientBuilder = this.httpClientBuilder == null ? new OkHttpClient.Builder() : this.httpClientBuilder;
         WebSocketFactory wsFactory = this.wsFactory == null ? new WebSocketFactory() : this.wsFactory;
-        JDAImpl jda = new JDAImpl(accountType, httpClientBuilder, wsFactory, shardRateLimiter,
-                                  autoReconnect, enableVoice, enableShutdownHook, enableBulkDeleteSplitting,
-                                  corePoolSize, maxReconnectDelay);
+        JDAImpl jda = new JDAImpl(accountType, httpClientBuilder, wsFactory, shardRateLimiter, autoReconnect, enableVoice, enableShutdownHook,
+                enableBulkDeleteSplitting, requestTimeoutRetry, corePoolSize, maxReconnectDelay);
 
         if (eventManager != null)
             jda.setEventManager(eventManager);
