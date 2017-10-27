@@ -61,7 +61,7 @@ public class DefaultGatewayProvider implements IGatewayProvider
                 }
             };
 
-            return gateway.complete(false) + "?encoding=json&v=" + WebSocketClient.DISCORD_GATEWAY_VERSION;
+            return gateway.complete(false) + "?encoding=json&compress=zlib-stream&v=" + WebSocketClient.DISCORD_GATEWAY_VERSION;
         }
         catch (Exception ex)
         {
