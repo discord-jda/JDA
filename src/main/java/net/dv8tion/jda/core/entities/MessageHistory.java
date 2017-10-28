@@ -336,7 +336,18 @@ public class MessageHistory
     /**
      * Constructs a {@link net.dv8tion.jda.core.entities.MessageHistory MessageHistory} with the initially retrieved history
      * of messages sent after the mentioned message ID (exclusive).
-     * <br>The provided id need not be valid!
+     * <br>The provided ID need not be valid!
+     *
+     * <p><b>Example</b>
+     * <br>{@code MessageHistory history = MessageHistory.getHistoryAfter(channel, messageId).limit(60).complete()}
+     * <br>Will return a MessageHistory instance with the first 60 messages sent after the provided message ID.
+     *
+     * <p>Alternatively you can provide an epoch millisecond timestamp using {@link net.dv8tion.jda.core.utils.MiscUtil#getDiscordTimestamp(long) MiscUtil.getDiscordTimestamp(long)}:
+     * <br><pre><code>
+     * long timestamp = System.currentTimeMillis(); // or any other epoch millis timestamp
+     * String discordTimestamp = Long.toUnsignedString(MiscUtil.getDiscordTimestamp(timestamp));
+     * MessageHistory history = MessageHistory.getHistoryAfter(channel, discordTimestamp).complete();
+     * </code></pre>
      *
      * @param  channel
      *         The {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}
@@ -344,7 +355,8 @@ public class MessageHistory
      *         The pivot ID to use
      *
      * @throws java.lang.IllegalArgumentException
-     *         If any of the provided arguments is {@code null}
+     *         If any of the provided arguments is {@code null};
+     *         Or if the provided messageId contains whitespace
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a TextChannel and the currently logged in account does not
      *         have the permission {@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
@@ -353,14 +365,7 @@ public class MessageHistory
      */
     public static MessageRetrieveAction getHistoryAfter(MessageChannel channel, String messageId)
     {
-        Checks.noWhitespace(messageId, "Message ID");
-        Checks.notNull(channel, "Channel");
-        if (channel.getType() == ChannelType.TEXT )
-        {
-            TextChannel t = (TextChannel) channel;
-            if (!t.getGuild().getSelfMember().hasPermission(t, Permission.MESSAGE_HISTORY, Permission.MESSAGE_READ))
-                throw new InsufficientPermissionException(Permission.MESSAGE_HISTORY);
-        }
+        checkArguments(channel, messageId);
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId()).withQueryParams("after", messageId);
         return new MessageRetrieveAction(route, channel);
     }
@@ -368,7 +373,18 @@ public class MessageHistory
     /**
      * Constructs a {@link net.dv8tion.jda.core.entities.MessageHistory MessageHistory} with the initially retrieved history
      * of messages sent before the mentioned message ID (exclusive).
-     * <br>The provided id need not be valid!
+     * <br>The provided ID need not be valid!
+     *
+     * <p><b>Example</b>
+     * <br>{@code MessageHistory history = MessageHistory.getHistoryBefore(channel, messageId).limit(60).complete()}
+     * <br>Will return a MessageHistory instance with the first 60 messages sent before the provided message ID.
+     *
+     * <p>Alternatively you can provide an epoch millisecond timestamp using {@link net.dv8tion.jda.core.utils.MiscUtil#getDiscordTimestamp(long) MiscUtil.getDiscordTimestamp(long)}:
+     * <br><pre><code>
+     * long timestamp = System.currentTimeMillis(); // or any other epoch millis timestamp
+     * String discordTimestamp = Long.toUnsignedString(MiscUtil.getDiscordTimestamp(timestamp));
+     * MessageHistory history = MessageHistory.getHistoryBefore(channel, discordTimestamp).complete();
+     * </code></pre>
      *
      * @param  channel
      *         The {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}
@@ -376,7 +392,8 @@ public class MessageHistory
      *         The pivot ID to use
      *
      * @throws java.lang.IllegalArgumentException
-     *         If any of the provided arguments is {@code null}
+     *         If any of the provided arguments is {@code null};
+     *         Or if the provided messageId contains whitespace
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a TextChannel and the currently logged in account does not
      *         have the permission {@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
@@ -385,14 +402,7 @@ public class MessageHistory
      */
     public static MessageRetrieveAction getHistoryBefore(MessageChannel channel, String messageId)
     {
-        Checks.noWhitespace(messageId, "Message ID");
-        Checks.notNull(channel, "Channel");
-        if (channel.getType() == ChannelType.TEXT )
-        {
-            TextChannel t = (TextChannel) channel;
-            if (!t.getGuild().getSelfMember().hasPermission(t, Permission.MESSAGE_HISTORY, Permission.MESSAGE_READ))
-                throw new InsufficientPermissionException(Permission.MESSAGE_HISTORY);
-        }
+        checkArguments(channel, messageId);
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId()).withQueryParams("before", messageId);
         return new MessageRetrieveAction(route, channel);
     }
@@ -400,7 +410,18 @@ public class MessageHistory
     /**
      * Constructs a {@link net.dv8tion.jda.core.entities.MessageHistory MessageHistory} with the initially retrieved history
      * of messages sent around the mentioned message ID (inclusive).
-     * <br>The provided id need not be valid!
+     * <br>The provided ID need not be valid!
+     *
+     * <p><b>Example</b>
+     * <br>{@code MessageHistory history = MessageHistory.getHistoryAround(channel, messageId).limit(60).complete()}
+     * <br>Will return a MessageHistory instance with the first 60 messages sent around the provided message ID.
+     *
+     * <p>Alternatively you can provide an epoch millisecond timestamp using {@link net.dv8tion.jda.core.utils.MiscUtil#getDiscordTimestamp(long) MiscUtil.getDiscordTimestamp(long)}:
+     * <br><pre><code>
+     * long timestamp = System.currentTimeMillis(); // or any other epoch millis timestamp
+     * String discordTimestamp = Long.toUnsignedString(MiscUtil.getDiscordTimestamp(timestamp));
+     * MessageHistory history = MessageHistory.getHistoryAround(channel, discordTimestamp).complete();
+     * </code></pre>
      *
      * @param  channel
      *         The {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}
@@ -408,7 +429,8 @@ public class MessageHistory
      *         The pivot ID to use
      *
      * @throws java.lang.IllegalArgumentException
-     *         If any of the provided arguments is {@code null}
+     *         If any of the provided arguments is {@code null};
+     *         Or if the provided messageId contains whitespace
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is a TextChannel and the currently logged in account does not
      *         have the permission {@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
@@ -417,16 +439,21 @@ public class MessageHistory
      */
     public static MessageRetrieveAction getHistoryAround(MessageChannel channel, String messageId)
     {
-        Checks.noWhitespace(messageId, "Message ID");
-        Checks.notNull(channel, "Channel");
-        if (channel.getType() == ChannelType.TEXT )
-        {
-            TextChannel t = (TextChannel) channel;
-            if (!t.getGuild().getSelfMember().hasPermission(t, Permission.MESSAGE_HISTORY, Permission.MESSAGE_READ))
-                throw new InsufficientPermissionException(Permission.MESSAGE_HISTORY);
-        }
+        checkArguments(channel, messageId);
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId()).withQueryParams("around", messageId);
         return new MessageRetrieveAction(route, channel);
+    }
+
+    private static void checkArguments(MessageChannel channel, String messageId)
+    {
+        Checks.noWhitespace(messageId, "Message ID");
+        Checks.notNull(channel, "Channel");
+        if (channel.getType() == ChannelType.TEXT)
+        {
+            TextChannel t = (TextChannel) channel;
+            if (!t.getGuild().getSelfMember().hasPermission(t, Permission.MESSAGE_HISTORY))
+                throw new InsufficientPermissionException(Permission.MESSAGE_HISTORY);
+        }
     }
 
     /**
