@@ -54,7 +54,8 @@ public class UserUpdateHandler extends SocketHandler
             String oldDiscriminator = self.getDiscriminator();
             self.setName(name);
             self.setDiscriminator(discriminator);
-            api.getEventManager().handle(new SelfUpdateNameEvent(
+            api.getEventManager().handle(
+                new SelfUpdateNameEvent(
                     api, responseNumber,
                     oldName, oldDiscriminator));
         }
@@ -63,7 +64,8 @@ public class UserUpdateHandler extends SocketHandler
         {
             String oldAvatarId = self.getAvatarId();
             self.setAvatarId(avatarId);
-            api.getEventManager().handle(new SelfUpdateAvatarEvent(
+            api.getEventManager().handle(
+                new SelfUpdateAvatarEvent(
                     api, responseNumber,
                     oldAvatarId));
         }
@@ -72,7 +74,8 @@ public class UserUpdateHandler extends SocketHandler
         {
             boolean wasVerified = self.isVerified();
             self.setVerified(verified);
-            api.getEventManager().handle(new SelfUpdateVerifiedEvent(
+            api.getEventManager().handle(
+                new SelfUpdateVerifiedEvent(
                     api, responseNumber,
                     wasVerified));
         }
@@ -81,48 +84,54 @@ public class UserUpdateHandler extends SocketHandler
         {
             boolean wasMfaEnabled = self.isMfaEnabled();
             self.setMfaEnabled(mfaEnabled);
-            api.getEventManager().handle(new SelfUpdateMFAEvent(
+            api.getEventManager().handle(
+                new SelfUpdateMFAEvent(
                     api, responseNumber,
                     wasMfaEnabled));
         }
 
-        if (api.getAccountType() == AccountType.CLIENT && !Objects.equals(email, self.getEmail()))
+        if (api.getAccountType() == AccountType.CLIENT)
         {
-            String oldEmail = self.getEmail();
-            self.setEmail(email);
-            api.getEventManager().handle(new SelfUpdateEmailEvent(
-                    api, responseNumber,
-                    oldEmail));
-        }
+            if (!Objects.equals(email, self.getEmail()))
+            {
+                String oldEmail = self.getEmail();
+                self.setEmail(email);
+                api.getEventManager().handle(
+                    new SelfUpdateEmailEvent(
+                        api, responseNumber,
+                        oldEmail));
+            }
 
-        if (api.getAccountType() == AccountType.CLIENT && mobile != null && mobile != self.isMobile())
-        {
-            boolean oldMobile = self.isMobile();
-            self.setMobile(mobile);
-            api.getEventManager().handle(new SelfUpdateMobileEvent(
-                    api, responseNumber,
-                    oldMobile));
-        }
+            if (mobile != null && mobile != self.isMobile())
+            {
+                boolean oldMobile = self.isMobile();
+                self.setMobile(mobile);
+                api.getEventManager().handle(
+                    new SelfUpdateMobileEvent(
+                        api, responseNumber,
+                        oldMobile));
+            }
 
-        if (api.getAccountType() == AccountType.CLIENT && nitro != null && nitro != self.isNitro())
-        {
-            boolean oldNitro = self.isNitro();
-            self.setNitro(nitro);
-            api.getEventManager().handle(new SelfUpdateNitroEvent(
-                    api, responseNumber,
-                    oldNitro));
-        }
+            if (nitro != null && nitro != self.isNitro())
+            {
+                boolean oldNitro = self.isNitro();
+                self.setNitro(nitro);
+                api.getEventManager().handle(
+                    new SelfUpdateNitroEvent(
+                        api, responseNumber,
+                        oldNitro));
+            }
 
-        if (api.getAccountType() == AccountType.CLIENT && !Objects.equals(phoneNumber, self.getPhoneNumber()))
-        {
-            JDAImpl.LOG.debug("");
-            String oldPhoneNumber = self.getPhoneNumber();
-            self.setPhoneNumber(phoneNumber);
-            api.getEventManager().handle(new SelfUpdatePhoneNumberEvent(
-                    api, responseNumber,
-                    oldPhoneNumber));
+            if (!Objects.equals(phoneNumber, self.getPhoneNumber()))
+            {
+                String oldPhoneNumber = self.getPhoneNumber();
+                self.setPhoneNumber(phoneNumber);
+                api.getEventManager().handle(
+                    new SelfUpdatePhoneNumberEvent(
+                        api, responseNumber,
+                        oldPhoneNumber));
+            }
         }
-
         return null;
     }
 }
