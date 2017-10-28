@@ -159,7 +159,12 @@ public class EntityBuilder
             for (int i = 0; i < array.length(); i++)
             {
                 JSONObject object = array.getJSONObject(i);
-                JSONArray emoteRoles = object.getJSONArray("roles");
+                if (object.isNull("id"))
+                {
+                    LOG.fatal("Received GUILD_CREATE with an emoji with a null ID. JSON: " + object);
+                    continue;
+                }
+                JSONArray emoteRoles = object.isNull("roles") ? new JSONArray() : object.getJSONArray("roles");
                 final long emoteId = object.getLong("id");
 
                 EmoteImpl emoteObj = new EmoteImpl(emoteId, guildObj);
@@ -167,9 +172,11 @@ public class EntityBuilder
 
                 for (int j = 0; j < emoteRoles.length(); j++)
                     roleSet.add(guildObj.getRoleById(emoteRoles.getString(j)));
+                final String name = object.isNull("name") ? "" : object.getString("name");
+                final boolean managed = !object.isNull("managed") && object.getBoolean("managed");
                 emoteMap.put(emoteId, emoteObj
-                        .setName(object.getString("name"))
-                        .setManaged(object.getBoolean("managed")));
+                            .setName(name)
+                            .setManaged(managed));
             }
         }
 
