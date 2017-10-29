@@ -516,20 +516,28 @@ public class GuildImpl implements Guild
             return true;
         if(canSendVerification)
             return true;
+
+        if (api.getSelfUser().getPhoneNumber() != null)
+            return canSendVerification = true;
+
         switch (verificationLevel)
         {
+            case VERY_HIGH:
+                break; // we already checked for a verified phone number
             case HIGH:
-                if(ChronoUnit.MINUTES.between(getSelfMember().getJoinDate(), OffsetDateTime.now()) < 10)
+                if (ChronoUnit.MINUTES.between(getSelfMember().getJoinDate(), OffsetDateTime.now()) < 10)
                     break;
             case MEDIUM:
-                if(ChronoUnit.MINUTES.between(MiscUtil.getCreationTime(api.getSelfUser()), OffsetDateTime.now()) < 5)
+                if (ChronoUnit.MINUTES.between(MiscUtil.getCreationTime(api.getSelfUser()), OffsetDateTime.now()) < 5)
                     break;
             case LOW:
-                if(!api.getSelfUser().isVerified())
+                if (!api.getSelfUser().isVerified())
                     break;
             case NONE:
                 canSendVerification = true;
                 return true;
+            case UNKNOWN:
+                return true; // try and let discord decide
         }
         return false;
     }
