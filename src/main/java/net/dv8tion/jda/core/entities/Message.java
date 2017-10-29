@@ -96,9 +96,33 @@ import java.util.regex.Pattern;
  */
 public interface Message extends ISnowflake, Formattable
 {
+    /**
+     * The maximum sendable file size (8 MiB)
+     *
+     * @see net.dv8tion.jda.core.requests.restaction.MessageAction#addFile(java.io.File) MessageAction.addFile(...)
+     */
     int MAX_FILE_SIZE = 8 << 20;
+
+    /**
+     * The maximum amount of files sendable within a single message ({@value})
+     *
+     * @see net.dv8tion.jda.core.requests.restaction.MessageAction#addFile(java.io.File) MessageAction.addFile(...)
+     */
     int MAX_FILE_AMOUNT = 10;
+
+    /**
+     * The maximum amount of characters sendable in one message. ({@value})
+     * <br>This only applies to the raw content and not embeds!
+     *
+     * @see net.dv8tion.jda.core.requests.restaction.MessageAction#append(CharSequence) MessageAction.append(...)
+     */
     int MAX_CONTENT_LENGTH = 2000;
+
+    /**
+     * Pattern used to find instant invites in messages.
+     *
+     * @see #getInvites() getInvites()
+     */
     Pattern INVITE_PATTERN = Pattern.compile("(?:https?://)?discord(?:app\\.com/invite|\\.gg)/(\\S+)", Pattern.CASE_INSENSITIVE);
 
     /**

@@ -34,11 +34,58 @@ import java.util.*;
  */
 public class MessageEmbed
 {
+    /**
+     * The maximum length an embed title can have
+     *
+     * @see net.dv8tion.jda.core.EmbedBuilder#setTitle(String) EmbedBuilder.setTitle(title)
+     * @see net.dv8tion.jda.core.EmbedBuilder#addField(String, String, boolean) EmbedBuilder.addField(title, value, inline)
+     */
     public static final int TITLE_MAX_LENGTH = 256;
+
+    /**
+     * The maximum length an embed field value can have
+     *
+     * @see net.dv8tion.jda.core.EmbedBuilder#addField(String, String, boolean) EmbedBuilder.addField(title, value, inline)
+     */
     public static final int VALUE_MAX_LENGTH = 1024;
+
+    /**
+     * The maximum length the description and footer of an embed can have
+     *
+     * @see net.dv8tion.jda.core.EmbedBuilder#setFooter(String, String) EmbedBuilder.setFooter(text, iconUrl)
+     * @see net.dv8tion.jda.core.EmbedBuilder#setDescription(String) EmbedBuilder.setDescription(text)
+     */
     public static final int TEXT_MAX_LENGTH = 2048;
+
+    /**
+     * The maximum length any URL can have inside an embed
+     *
+     * @see net.dv8tion.jda.core.EmbedBuilder#setTitle(String, String) EmbedBuilder.setTitle(text, url)
+     * @see net.dv8tion.jda.core.EmbedBuilder#setAuthor(String, String, String) EmbedBuilder.setAuthor(text, url, iconUrl)
+     * @see net.dv8tion.jda.core.EmbedBuilder#setFooter(String, String) EmbedBuilder.setFooter(text, url)
+     */
     public static final int URL_MAX_LENGTH = 2000;
+
+    /**
+     * The maximum amount of total visible characters an embed can have
+     * <br>This limit depends on the current {@link net.dv8tion.jda.core.AccountType AccountType} and applies to BOT
+     *
+     * @see net.dv8tion.jda.core.EmbedBuilder#setDescription(String)
+     * @see net.dv8tion.jda.core.EmbedBuilder#setTitle(String)
+     * @see net.dv8tion.jda.core.EmbedBuilder#setFooter(String, String)
+     * @see net.dv8tion.jda.core.EmbedBuilder#addField(String, String, boolean)
+     */
     public static final int EMBED_MAX_LENGTH_BOT = 6000;
+
+    /**
+     * The maximum amount of total visible characters an embed can have
+     * <br>This limit depends on the current {@link net.dv8tion.jda.core.AccountType AccountType} and applies to CLIENT
+     *
+     * @see net.dv8tion.jda.core.EmbedBuilder#setDescription(String)
+     * @see net.dv8tion.jda.core.EmbedBuilder#setTitle(String)
+     * @see net.dv8tion.jda.core.EmbedBuilder#setFooter(String, String)
+     * @see net.dv8tion.jda.core.EmbedBuilder#addField(String, String, boolean)
+     */
     public static final int EMBED_MAX_LENGTH_CLIENT = 2000;
 
     protected final Object mutex = new Object();

@@ -395,7 +395,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
      *         or if this MessageAction will perform an edit operation on an existing Message (see {@link #isEdit()})
      * @throws java.lang.IllegalArgumentException
      *         If the provided data is {@code null} or the provided name is blank or {@code null}
-     *         or if the provided data exceeds the maximum file size of 8MB
+     *         or if the provided data exceeds the maximum file size of 8MiB
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is targeting a TextChannel and the currently logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}
@@ -423,7 +423,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
      *         If the file limit of {@value Message#MAX_FILE_AMOUNT} has been reached prior to calling this method,
      *         or if this MessageAction will perform an edit operation on an existing Message (see {@link #isEdit()})
      * @throws java.lang.IllegalArgumentException
-     *         If the provided file is {@code null} or if the provided File is bigger than 8MB
+     *         If the provided file is {@code null} or if the provided File is bigger than 8MiB
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is targeting a TextChannel and the currently logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}
@@ -454,7 +454,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
      *         or if this MessageAction will perform an edit operation on an existing Message (see {@link #isEdit()})
      * @throws java.lang.IllegalArgumentException
      *         If the provided file is {@code null} or the provided name is blank or {@code null}
-     *         or if the provided file is bigger than 8MB, or if the provided file does not exist/ is not readable
+     *         or if the provided file is bigger than 8MiB, or if the provided file does not exist/ is not readable
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is targeting a TextChannel and the currently logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}
