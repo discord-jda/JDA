@@ -24,6 +24,7 @@ import net.dv8tion.jda.client.JDAClient;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.ShardedRateLimiter;
 import net.dv8tion.jda.core.audio.AudioWebSocket;
 import net.dv8tion.jda.core.audio.factory.DefaultSendFactory;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
@@ -36,15 +37,16 @@ import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.InterfacedEventManager;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.Presence;
-import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.core.requests.restaction.GuildAction;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.core.utils.cache.impl.AbstractCacheView;
 import net.dv8tion.jda.core.utils.cache.impl.SnowflakeCacheViewImpl;
 import okhttp3.OkHttpClient;
 import org.json.JSONObject;
@@ -72,7 +74,7 @@ public class JDAImpl implements JDA
     protected final TLongObjectMap<User> fakeUsers = MiscUtil.newLongMap();
     protected final TLongObjectMap<PrivateChannel> fakePrivateChannels = MiscUtil.newLongMap();
 
-    protected final TLongObjectMap<AudioManagerImpl> audioManagers = MiscUtil.newLongMap();
+    protected final AbstractCacheView<AudioManager> audioManagers = new CacheView.SimpleCacheView<>(m -> m.getGuild().getName());
 
     protected final OkHttpClient.Builder httpClientBuilder;
     protected final WebSocketFactory wsFactory;
@@ -102,8 +104,8 @@ public class JDAImpl implements JDA
     protected long responseTotal;
     protected long ping = -1;
 
-    public JDAImpl(AccountType accountType, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory, boolean autoReconnect, boolean audioEnabled,
-            boolean useShutdownHook, boolean bulkDeleteSplittingEnabled, int corePoolSize, int maxReconnectDelay)
+    public JDAImpl(AccountType accountType, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory, ShardedRateLimiter rateLimiter,boolean autoReconnect, boolean audioEnabled,
+            boolean useShutdownHook, boolean bulkDeleteSplittingEnabled,boolean retryOnTimeout, int corePoolSize, int maxReconnectDelay)
     {
         this.accountType = accountType;
         this.httpClientBuilder = httpClientBuilder;
@@ -116,7 +118,8 @@ public class JDAImpl implements JDA
         this.maxReconnectDelay = maxReconnectDelay;
 
         this.presence = new PresenceImpl(this);
-        this.requester = new Requester(this);
+        this.requester = new Requester(this, rateLimiter);
+        this.requester.setRetryOnTimeout(retryOnTimeout);
 
         this.jdaClient = accountType == AccountType.CLIENT ? new JDAClientImpl(this) : null;
         this.jdaBot = accountType == AccountType.BOT ? new JDABotImpl(this) : null;
@@ -211,12 +214,12 @@ public class JDAImpl implements JDA
             if (getAccountType() == AccountType.BOT)
             {
                 token = token.replace("Bot ", "");
-                requester = new Requester(this, AccountType.CLIENT);
+                requester = new Requester(this, AccountType.CLIENT, null);
             }
             else    //If we attempted to login as a Client, prepend the "Bot " prefix and set the Requester to be a Bot
             {
                 token = "Bot " + token;
-                requester = new Requester(this, AccountType.BOT);
+                requester = new Requester(this, AccountType.BOT, null);
             }
 
             try
@@ -281,6 +284,12 @@ public class JDAImpl implements JDA
         this.autoReconnect = autoReconnect;
         if (client != null)
             client.setAutoReconnect(autoReconnect);
+    }
+
+    @Override
+    public void setRequestTimeoutRetry(boolean retryOnTimeout)
+    {
+        requester.setRetryOnTimeout(retryOnTimeout);
     }
 
     @Override
@@ -366,6 +375,12 @@ public class JDAImpl implements JDA
     }
 
     @Override
+    public CacheView<AudioManager> getAudioManagerCache()
+    {
+        return audioManagers;
+    }
+
+    @Override
     public SnowflakeCacheView<Guild> getGuildCache()
     {
         return guildCache;
@@ -434,7 +449,7 @@ public class JDAImpl implements JDA
             return;
 
         setStatus(Status.SHUTTING_DOWN);
-        audioManagers.valueCollection().forEach(AudioManager::closeAudioConnection);
+        audioManagers.forEach(AudioManager::closeAudioConnection);
         audioManagers.clear();
 
         if (audioKeepAlivePool != null)
@@ -540,6 +555,22 @@ public class JDAImpl implements JDA
         return Collections.unmodifiableList(eventManager.getRegisteredListeners());
     }
 
+    @Override
+    public GuildAction createGuild(String name)
+    {
+        switch (accountType)
+        {
+            case BOT:
+                if (guildCache.size() >= 10)
+                    throw new IllegalStateException("Cannot create a Guild with a Bot in more than 10 guilds!");
+                break;
+            case CLIENT:
+                if (guildCache.size() >= 100)
+                    throw new IllegalStateException("Cannot be in more than 100 guilds with AccountType.CLIENT!");
+        }
+        return new GuildAction(this, name);
+    }
+
     public EntityBuilder getEntityBuilder()
     {
         return entityBuilder;
@@ -626,9 +657,9 @@ public class JDAImpl implements JDA
         return fakePrivateChannels;
     }
 
-    public TLongObjectMap<AudioManagerImpl> getAudioManagerMap()
+    public TLongObjectMap<AudioManager> getAudioManagerMap()
     {
-        return audioManagers;
+        return audioManagers.getMap();
     }
 
     public void setSelfUser(SelfUser selfUser)

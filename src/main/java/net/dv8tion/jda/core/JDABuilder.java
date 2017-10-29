@@ -29,10 +29,7 @@ import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.OkHttpClient;
 
 import javax.security.auth.login.LoginException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Used to create new {@link net.dv8tion.jda.core.JDA} instances. This is also useful for making sure all of
@@ -50,6 +47,7 @@ public class JDABuilder
     protected final List<Object> listeners;
 
     protected SessionReconnectQueue reconnectQueue = null;
+    protected ShardedRateLimiter shardRateLimiter = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
     protected WebSocketFactory wsFactory = null;
     protected AccountType accountType;
@@ -66,6 +64,7 @@ public class JDABuilder
     protected boolean enableBulkDeleteSplitting = true;
     protected boolean autoReconnect = true;
     protected boolean idle = false;
+    protected boolean requestTimeoutRetry = true;
 
     /**
      * Creates a completely empty JDABuilder.
@@ -104,12 +103,63 @@ public class JDABuilder
     }
 
     /**
+     * Sets the {@link net.dv8tion.jda.core.ShardedRateLimiter ShardedRateLimiter} that will be used to keep
+     * track of rate limits across sessions.
+     * <br>When one shard hits the global rate limit all others will be informed by this value wrapper.
+     * This does nothing for {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}!
+     *
+     * <p>It is recommended to use the same ShardedRateLimiter for all shards and not one each. This is
+     * similar to {@link net.dv8tion.jda.core.requests.SessionReconnectQueue SessionReconnectQueue}!
+     *
+     * <p><b>This value is set when invoking {@link #setToken(String)} and cannot be unset using {@code null}. The re-use of this builder
+     * to build each shard is sufficient and setting it is not required.</b>
+     * <br>Providing {@code null} is equivalent to doing {@code setShardedRateLimiter(new ShardedRateLimiter())}.
+     *
+     * <p>When you construct multiple JDABuilder instances to build shards it is recommended to use the same ShardedRateLimiter on
+     * all of them. But it is to be <u>avoided</u> to use the same ShardedRateLimiter for different accounts/tokens!
+     *
+     * @param  rateLimiter
+     *         ShardedRateLimiter used to keep track of cross-session rate limits
+     *
+     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public JDABuilder setShardedRateLimiter(ShardedRateLimiter rateLimiter)
+    {
+        if (accountType != AccountType.BOT)
+            this.shardRateLimiter = null;
+        else
+            this.shardRateLimiter = rateLimiter == null ? new ShardedRateLimiter() : rateLimiter;
+        return this;
+    }
+
+    /**
+     * Whether the Requester should retry when
+     * a {@link java.net.SocketTimeoutException SocketTimeoutException} occurs.
+     * <br><b>Default</b>: {@code true}
+     *
+     * <p>This value can be changed at any time with {@link net.dv8tion.jda.core.JDA#setRequestTimeoutRetry(boolean) JDA.setRequestTimeoutRetry(boolean)}!
+     *
+     * @param  retryOnTimeout
+     *         True, if the Request should retry once on a socket timeout
+     *
+     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public JDABuilder setRequestTimeoutRetry(boolean retryOnTimeout)
+    {
+        this.requestTimeoutRetry = retryOnTimeout;
+        return this;
+    }
+
+    /**
      * Sets the token that will be used by the {@link net.dv8tion.jda.core.JDA} instance to log in when
      * {@link net.dv8tion.jda.core.JDABuilder#buildAsync() buildAsync()}
      * or {@link net.dv8tion.jda.core.JDABuilder#buildBlocking() buildBlocking()}
      * is called.
      *
-     * <p>For {@link net.dv8tion.jda.core.AccountType#BOT} accounts:
+     * <p><u><b>This will reset the prior provided {@link #setShardedRateLimiter(ShardedRateLimiter)} setting
+     * if this token is different to the previously set token!</b></u>
+     *
+     * <h2>For {@link net.dv8tion.jda.core.AccountType#BOT}</h2>
      * <ol>
      *     <li>Go to your <a href="https://discordapp.com/developers/applications/me">Discord Applications</a></li>
      *     <li>Create or select an already existing application</li>
@@ -117,7 +167,7 @@ public class JDABuilder
      *     <li>Click the <i>click to reveal</i> link beside the <b>Token</b> label to show your Bot's {@code token}</li>
      * </ol>
      *
-     * <p>For {@link net.dv8tion.jda.core.AccountType#CLIENT} accounts:
+     * <h2>For {@link net.dv8tion.jda.core.AccountType#CLIENT}</h2>
      * <br>Using either the Discord desktop app or the Browser Webapp
      * <ol>
      *     <li>Press {@code Ctrl-Shift-i} which will bring up the developer tools.</li>
@@ -129,10 +179,15 @@ public class JDABuilder
      * @param  token
      *         The token of the account that you would like to login with.
      *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      */
     public JDABuilder setToken(String token)
     {
+        //Share ratelimit for the same token
+        // when this builder is used to build different accounts this makes sure we don't use the
+        // same ratelimiter on them as it would be inaccurate
+        if (accountType == AccountType.BOT && !Objects.equals(token, this.token))
+            shardRateLimiter = new ShardedRateLimiter();
         this.token = token;
         return this;
     }
@@ -470,12 +525,12 @@ public class JDABuilder
      * {@link net.dv8tion.jda.core.hooks.EventListener EventListener} to listen for the
      * {@link net.dv8tion.jda.core.events.ReadyEvent ReadyEvent} .
      *
-     * @throws  LoginException
-     *          If the provided token is invalid.
-     * @throws  IllegalArgumentException
-     *          If the provided token is empty or null.
-     * @throws  RateLimitedException
-     *          If we are being Rate limited.
+     * @throws LoginException
+     *         If the provided token is invalid.
+     * @throws IllegalArgumentException
+     *         If the provided token is empty or null.
+     * @throws RateLimitedException
+     *         If we are being Rate limited.
      *
      * @return A {@link net.dv8tion.jda.core.JDA} instance that has started the login process. It is unknown as
      *         to whether or not loading has finished when this returns.
@@ -484,8 +539,8 @@ public class JDABuilder
     {
         OkHttpClient.Builder httpClientBuilder = this.httpClientBuilder == null ? new OkHttpClient.Builder() : this.httpClientBuilder;
         WebSocketFactory wsFactory = this.wsFactory == null ? new WebSocketFactory() : this.wsFactory;
-        JDAImpl jda = new JDAImpl(accountType, httpClientBuilder, wsFactory, autoReconnect, enableVoice, enableShutdownHook,
-                enableBulkDeleteSplitting, corePoolSize, maxReconnectDelay);
+        JDAImpl jda = new JDAImpl(accountType, httpClientBuilder, wsFactory, shardRateLimiter, autoReconnect, enableVoice, enableShutdownHook,
+                enableBulkDeleteSplitting, requestTimeoutRetry, corePoolSize, maxReconnectDelay);
 
         if (eventManager != null)
             jda.setEventManager(eventManager);
@@ -507,28 +562,72 @@ public class JDABuilder
 
     /**
      * Builds a new {@link net.dv8tion.jda.core.JDA} instance and uses the provided token to start the login process.
+     * <br>This method will block until JDA has reached the specified connection status.
+     *
+     * <h2>Login Cycle</h2>
+     * <ol>
+     *     <li>{@link net.dv8tion.jda.core.JDA.Status#INITIALIZING INITIALIZING}</li>
+     *     <li>{@link net.dv8tion.jda.core.JDA.Status#INITIALIZED INITIALIZED}</li>
+     *     <li>{@link net.dv8tion.jda.core.JDA.Status#LOGGING_IN LOGGING_IN}</li>
+     *     <li>{@link net.dv8tion.jda.core.JDA.Status#CONNECTING_TO_WEBSOCKET CONNECTING_TO_WEBSOCKET}</li>
+     *     <li>{@link net.dv8tion.jda.core.JDA.Status#IDENTIFYING_SESSION IDENTIFYING_SESSION}</li>
+     *     <li>{@link net.dv8tion.jda.core.JDA.Status#AWAITING_LOGIN_CONFIRMATION AWAITING_LOGIN_CONFIRMATION}</li>
+     *     <li>{@link net.dv8tion.jda.core.JDA.Status#LOADING_SUBSYSTEMS LOADING_SUBSYSTEMS}</li>
+     *     <li>{@link net.dv8tion.jda.core.JDA.Status#CONNECTED CONNECTED}</li>
+     * </ol>
+     *
+     * @param  status
+     *         The {@link JDA.Status Status} to wait for, once JDA has reached the specified
+     *         stage of the startup cycle this method will return.
+     *
+     * @throws LoginException
+     *         If the provided token is invalid.
+     * @throws IllegalArgumentException
+     *         If the provided token is empty or {@code null} or
+     *         the provided status is not part of the login cycle.
+     * @throws InterruptedException
+     *         If an interrupt request is received while waiting for {@link net.dv8tion.jda.core.JDA} to finish logging in.
+     *         This would most likely be caused by a JVM shutdown request.
+     * @throws RateLimitedException
+     *         If we are being Rate limited.
+     *
+     * @return A {@link net.dv8tion.jda.core.JDA} Object that is <b>guaranteed</b> to be logged in and finished loading.
+     */
+    public JDA buildBlocking(JDA.Status status) throws LoginException, IllegalArgumentException, InterruptedException, RateLimitedException
+    {
+        Checks.notNull(status, "Status");
+        Checks.check(status.isInit(), "Cannot await the status %s as it is not part of the login cycle!", status);
+        JDA jda = buildAsync();
+        while (!jda.getStatus().isInit()                      // JDA might disconnect while starting
+             || jda.getStatus().ordinal() < status.ordinal()) // Wait until status is bypassed
+        {
+            if (jda.getStatus() == Status.SHUTDOWN)
+                throw new IllegalStateException("JDA was unable to finish starting up!");
+            Thread.sleep(50);
+        }
+
+        return jda;
+    }
+
+    /**
+     * Builds a new {@link net.dv8tion.jda.core.JDA} instance and uses the provided token to start the login process.
      * <br>This method will block until JDA has logged in and finished loading all resources. This is an alternative
      * to using {@link net.dv8tion.jda.core.events.ReadyEvent ReadyEvent}.
      *
-     * @throws  LoginException
-     *          If the provided token is invalid.
-     * @throws  IllegalArgumentException
-     *          If the provided token is empty or null.
-     * @throws  InterruptedException
-     *          If an interrupt request is received while waiting for {@link net.dv8tion.jda.core.JDA} to finish logging in.
-     *          This would most likely be caused by a JVM shutdown request.
-     * @throws  RateLimitedException
-     *          If we are being Rate limited.
+     * @throws LoginException
+     *         If the provided token is invalid.
+     * @throws IllegalArgumentException
+     *         If the provided token is empty or null.
+     * @throws InterruptedException
+     *         If an interrupt request is received while waiting for {@link net.dv8tion.jda.core.JDA} to finish logging in.
+     *         This would most likely be caused by a JVM shutdown request.
+     * @throws RateLimitedException
+     *         If we are being Rate limited.
      *
      * @return A {@link net.dv8tion.jda.core.JDA} Object that is <b>guaranteed</b> to be logged in and finished loading.
      */
     public JDA buildBlocking() throws LoginException, IllegalArgumentException, InterruptedException, RateLimitedException
     {
-        JDA jda = buildAsync();
-        while(jda.getStatus() != Status.CONNECTED)
-        {
-            Thread.sleep(50);
-        }
-        return jda;
+        return buildBlocking(Status.CONNECTED);
     }
 }

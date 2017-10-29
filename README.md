@@ -106,6 +106,9 @@ has the ID 0. The **shardTotal** is the total amount of shards (not 0-based) whi
 When using sharding it is also recommended to use a `SessionReconnectQueue` instance for all shards. This allows JDA to properly
 handle reconnecting multiple shards without violating Discord limitations (not using this might cause an IP ban on bad days).
 
+Additionally to keep track of the global REST rate-limit JDA has a `ShardedRateLimiter` which is set by default when using the same JDABuilder
+for all shards. If you want to use multiple builders to build your shards you should use the same ShardedRateLimiter instance!
+
 **Logins between shards _must_ happen with a minimum of _5 SECONDS_ of backoff time. JDA will inform you if the backoff is too short
 with a log message:**
 
@@ -121,14 +124,21 @@ public static void main(String[] args) throws Exception
 {
     JDABuilder shardBuilder = new JDABuilder(AccountType.BOT).setToken(args[0]).setReconnectQueue(new SessionReconnectQueue());
     //register your listeners here using shardBuilder.addEventListener(...)
+    shardBuilder.addEventListener(new MessageListener());
     for (int i = 0; i < 10; i++)
     {
+        //using buildBlocking(JDA.Status.AWAITING_LOGIN_CONFIRMATION)
+        // makes sure we start to delay the next shard once the current one actually
+        // sent the login information, otherwise we might hit nasty race conditions
         shardBuilder.useSharding(i, 10)
-                    .buildAsync();
+                    .buildBlocking(JDA.Status.AWAITING_LOGIN_CONFIRMATION);
         Thread.sleep(5000); //sleep 5 seconds between each login
     }
 }
 ```
+
+> Note: We are not setting a `ShardedRateLimiter` here as it isn't necessary when we use the same builder!<br>
+> When you use multiple builders you should use JDABuilder.setShardedRateLimiter(ShardedRateLimiter) with a shared instance of the same ShardedRateLimiter!
 
 ## More Examples
 We provide a small set of Examples in the [Example Directory](https://github.com/DV8FromTheWorld/JDA/tree/master/src/examples/java).

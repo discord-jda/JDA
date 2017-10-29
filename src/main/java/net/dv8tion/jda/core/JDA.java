@@ -20,8 +20,11 @@ import net.dv8tion.jda.bot.JDABot;
 import net.dv8tion.jda.client.JDAClient;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.hooks.IEventManager;
+import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.restaction.GuildAction;
+import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
@@ -41,18 +44,22 @@ public interface JDA
     enum Status
     {
         /**JDA is currently setting up supporting systems like the AudioSystem.*/
-        INITIALIZING,
+        INITIALIZING(true),
         /**JDA has finished setting up supporting systems and is ready to log in.*/
-        INITIALIZED,
+        INITIALIZED(true),
         /**JDA is currently attempting to log in.*/
-        LOGGING_IN,
+        LOGGING_IN(true),
         /**JDA is currently attempting to connect it's websocket to Discord.*/
-        CONNECTING_TO_WEBSOCKET,
-        /**JDA has successfully connected it's websocket to Discord and is populating internal objects.
+        CONNECTING_TO_WEBSOCKET(true),
+        /**JDA has successfully connected it's websocket to Discord and is sending authentication*/
+        IDENTIFYING_SESSION(true),
+        /**JDA has sent authentication to discord and is awaiting confirmation*/
+        AWAITING_LOGIN_CONFIRMATION(true),
+        /**JDA is populating internal objects.
          * This process often takes the longest of all Statuses (besides CONNECTED)*/
-        LOADING_SUBSYSTEMS,
+        LOADING_SUBSYSTEMS(true),
         /**JDA has finished loading everything, is receiving information from Discord and is firing events.*/
-        CONNECTED,
+        CONNECTED(true),
         /**JDA's main websocket has been disconnected. This <b>DOES NOT</b> mean JDA has shutdown permanently.
          * This is an in-between status. Most likely ATTEMPTING_TO_RECONNECT or SHUTTING_DOWN/SHUTDOWN will soon follow.*/
         DISCONNECTED,
@@ -70,7 +77,24 @@ public interface JDA
         /**JDA has finished shutting down and this instance can no longer be used to communicate with the Discord servers.*/
         SHUTDOWN,
         /**While attempting to authenticate, Discord reported that the provided authentication information was invalid.*/
-        FAILED_TO_LOGIN,
+        FAILED_TO_LOGIN;
+
+        private final boolean isInit;
+
+        Status(boolean isInit)
+        {
+            this.isInit = isInit;
+        }
+
+        Status()
+        {
+            this.isInit = false;
+        }
+
+        public boolean isInit()
+        {
+            return isInit;
+        }
     }
 
     /**
@@ -219,6 +243,54 @@ public interface JDA
      * @return List of currently registered Objects acting as EventListeners.
      */
     List<Object> getRegisteredListeners();
+
+    /**
+     * Constructs a new {@link net.dv8tion.jda.core.entities.Guild Guild} with the specified name
+     * <br>Use the returned {@link net.dv8tion.jda.core.requests.restaction.GuildAction GuildAction} to provide
+     * further details and settings for the resulting Guild!
+     *
+     * <p>This RestAction does not provide the resulting Guild!
+     * It will be in a following {@link net.dv8tion.jda.core.events.guild.GuildJoinEvent GuildJoinEvent}.
+     *
+     * @param  name
+     *         The name of the resulting guild
+     *
+     * @throws java.lang.IllegalStateException
+     *         If the currently logged in account is from
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT} and the account is in 100 or more guilds</li>
+     *             <li>{@link net.dv8tion.jda.core.AccountType#BOT AccountType.BOT} and the account is in 10 or more guilds</li>
+     *         </ul>
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided name is empty, {@code null} or not between 2-100 characters
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.GuildAction GuildAction}
+     *         <br>Allows for setting various details for the resulting Guild
+     */
+    GuildAction createGuild(String name);
+
+    /**
+     * {@link net.dv8tion.jda.core.utils.cache.CacheView CacheView} of
+     * all cached {@link net.dv8tion.jda.core.managers.AudioManager AudioManagers} created for this JDA instance.
+     * <br>AudioManagers are created when first retrieved via {@link net.dv8tion.jda.core.entities.Guild#getAudioManager() Guild.getAudioManager()}.
+     * <u>Using this will perform better than calling {@code Guild.getAudioManager()} iteratively as that would cause many useless audio managers to be created!</u>
+     *
+     * <p>AudioManagers are cross-session persistent!
+     *
+     * @return {@link net.dv8tion.jda.core.utils.cache.CacheView CacheView}
+     */
+    CacheView<AudioManager> getAudioManagerCache();
+
+    /**
+     * Immutable list of all created {@link net.dv8tion.jda.core.managers.AudioManager AudioManagers} for this JDA instance!
+     *
+     * @return Immutable list of all created AudioManager instances
+     */
+    default List<AudioManager> getAudioManagers()
+    {
+        return getAudioManagerCache().asList();
+    }
+
 
     /**
      * {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
@@ -918,6 +990,15 @@ public interface JDA
      * @param  reconnect If true - enables autoReconnect
      */
     void setAutoReconnect(boolean reconnect);
+
+    /**
+     * Whether the Requester should retry when
+     * a {@link java.net.SocketTimeoutException SocketTimeoutException} occurs.
+     *
+     * @param  retryOnTimeout
+     *         True, if the Request should retry once on a socket timeout
+     */
+    void setRequestTimeoutRetry(boolean retryOnTimeout);
 
     /**
      * USed to determine whether or not autoReconnect is enabled for JDA.

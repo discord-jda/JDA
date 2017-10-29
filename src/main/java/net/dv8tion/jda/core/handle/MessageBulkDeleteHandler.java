@@ -41,6 +41,7 @@ public class MessageBulkDeleteHandler extends SocketHandler
             content.getJSONArray("ids").forEach(id ->
             {
                 handler.handle(responseNumber, new JSONObject()
+                    .put("t", "MESSAGE_DELETE")
                     .put("d", new JSONObject()
                         .put("channel_id", Long.toUnsignedString(channelId))
                         .put("id", id)));

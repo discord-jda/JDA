@@ -92,13 +92,13 @@ public class PresenceImpl implements Presence
     @Override
     public void setGame(Game game)
     {
-        setPresence(status, game, idle);
+        setPresence(status, game);
     }
 
     @Override
     public void setIdle(boolean idle)
     {
-        setPresence(status, game, idle);
+        setPresence(status, idle);
     }
 
     @Override
@@ -129,59 +129,19 @@ public class PresenceImpl implements Presence
     @Override
     public void setPresence(OnlineStatus status, Game game)
     {
-        JSONObject gameObj = getGameJson(game);
-
-        Checks.check(status != OnlineStatus.UNKNOWN,
-                "Cannot set the presence status to an unknown OnlineStatus!");
-        if (status == OnlineStatus.OFFLINE || status == null)
-            status = OnlineStatus.INVISIBLE;
-
-        JSONObject object = new JSONObject();
-
-        if (gameObj == null)
-            object.put("game", JSONObject.NULL);
-        else
-            object.put("game", gameObj);
-        object.put("status", status.getKey());
-        object.put("since", System.currentTimeMillis());
-        update(object);
-        this.status = status;
-        this.game = gameObj == null ? null : game;
+        setPresence(status, game, idle);
     }
 
     @Override
     public void setPresence(OnlineStatus status, boolean idle)
     {
-        Checks.check(status != OnlineStatus.UNKNOWN,
-                "Cannot set the presence status to an unknown OnlineStatus!");
-        if (status == OnlineStatus.OFFLINE || status == null)
-            status = OnlineStatus.INVISIBLE;
-
-        JSONObject object = new JSONObject();
-
-        object.put("afk", idle);
-        object.put("status", status.getKey());
-        object.put("since", System.currentTimeMillis());
-        update(object);
-        this.idle = idle;
-        this.status = status;
+        setPresence(status, game, idle);
     }
 
     @Override
     public void setPresence(Game game, boolean idle)
     {
-        JSONObject gameObj = getGameJson(game);
-        JSONObject object = new JSONObject();
-
-        if (gameObj == null)
-            object.put("game", JSONObject.NULL);
-        else
-            object.put("game", gameObj);
-        object.put("afk", idle);
-        object.put("since", System.currentTimeMillis());
-        update(object);
-        this.idle = idle;
-        this.game = gameObj == null ? null : game;
+        setPresence(status, game, idle);
     }
 
 

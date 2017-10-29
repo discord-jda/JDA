@@ -315,6 +315,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    @Deprecated
     public TextChannel getPublicChannel()
     {
         return textChannelCache.getElementById(id);
@@ -455,8 +456,8 @@ public class GuildImpl implements Guild
         if (!api.isAudioEnabled())
             throw new IllegalStateException("Audio is disabled. Cannot retrieve an AudioManager while audio is disabled.");
 
-        final TLongObjectMap<AudioManagerImpl> managerMap = api.getAudioManagerMap();
-        AudioManagerImpl mng = managerMap.get(id);
+        final TLongObjectMap<AudioManager> managerMap = api.getAudioManagerMap();
+        AudioManager mng = managerMap.get(id);
         if (mng == null)
         {
             // No previous manager found -> create one

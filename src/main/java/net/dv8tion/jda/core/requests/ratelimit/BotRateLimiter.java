@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.requests.ratelimit;
 
+import net.dv8tion.jda.core.ShardedRateLimiter;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.requests.RateLimiter;
@@ -37,16 +38,16 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class BotRateLimiter extends RateLimiter
 {
-    volatile Long timeOffset = null;
-    volatile AtomicLong globalCooldown = new AtomicLong(Long.MIN_VALUE);
+    protected final ShardedRateLimiter shardRateLimit;
+    protected volatile Long timeOffset = null;
 
-    public BotRateLimiter(Requester requester, int poolSize)
+    public BotRateLimiter(Requester requester, int poolSize, ShardedRateLimiter globalRatelimit)
     {
         super(requester, poolSize);
+        this.shardRateLimit = globalRatelimit == null ? new ShardedRateLimiter() : globalRatelimit;
     }
 
     @Override
@@ -104,7 +105,7 @@ public class BotRateLimiter extends RateLimiter
                 else
                 {
                     //If it is global, lock down the threads.
-                    globalCooldown.set(getNow() + retryAfter);
+                    shardRateLimit.setGlobalRatelimit(getNow() + retryAfter);
                 }
 
                 return retryAfter;
@@ -251,17 +252,19 @@ public class BotRateLimiter extends RateLimiter
 
         Long getRateLimit()
         {
-            long gCooldown = globalCooldown.get();
-            if (gCooldown != Long.MIN_VALUE) //Are we on global cooldown?
+            long gCooldown = shardRateLimit.getGlobalRatelimit();
+            if (gCooldown > 0) //Are we on global cooldown?
             {
                 long now = getNow();
                 if (now > gCooldown)   //Verify that we should still be on cooldown.
                 {
-                    globalCooldown.set(Long.MIN_VALUE);  //If we are done cooling down, reset the globalCooldown and continue.
+                    //If we are done cooling down, reset the globalCooldown and continue.
+                    shardRateLimit.setGlobalRatelimit(Long.MIN_VALUE);
                 }
                 else
                 {
-                    return gCooldown - now;    //If we should still be on cooldown, return when we can go again.
+                    //If we should still be on cooldown, return when we can go again.
+                    return gCooldown - now;
                 }
             }
             if (this.routeUsageRemaining <= 0)
@@ -303,6 +306,9 @@ public class BotRateLimiter extends RateLimiter
                 {
                     for (Iterator<Request> it = requests.iterator(); it.hasNext(); )
                     {
+                        Long limit = getRateLimit();
+                        if (limit != null && limit > 0)
+                            break; // possible global cooldown here
                         Request request = null;
                         try
                         {

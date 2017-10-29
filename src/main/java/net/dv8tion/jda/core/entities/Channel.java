@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.managers.ChannelManager;
 import net.dv8tion.jda.core.managers.ChannelManagerUpdatable;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.core.requests.restaction.ChannelAction;
 import net.dv8tion.jda.core.requests.restaction.InviteAction;
 import net.dv8tion.jda.core.requests.restaction.PermissionOverrideAction;
 
@@ -161,6 +162,79 @@ public interface Channel extends ISnowflake
      *         for this {@link net.dv8tion.jda.core.entities.Channel Channel}.
      */
     List<PermissionOverride> getRolePermissionOverrides();
+
+    /**
+     * Creates a copy of the specified {@link net.dv8tion.jda.core.entities.Channel Channel}
+     * in the specified {@link net.dv8tion.jda.core.entities.Guild Guild}.
+     * <br>If the provided target guild is not the same Guild this channel is in then
+     * the parent category and permissions will not be copied due to technical difficulty and ambiguity.
+     *
+     * <p>This copies the following elements:
+     * <ol>
+     *     <li>Name</li>
+     *     <li>Parent Category (if present)</li>
+     *     <li>Voice Elements (Bitrate, Userlimit)</li>
+     *     <li>Text Elements (Topic, NSFW)</li>
+     *     <li>All permission overrides for Members/Roles</li>
+     * </ol>
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The channel could not be created due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>We were removed from the Guild before finishing the task</li>
+     * </ul>
+     *
+     * @param  guild
+     *         The {@link net.dv8tion.jda.core.entities.Guild Guild} to create the channel in
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided guild is {@code null}
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If the currently logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission
+     *
+     * @return A specific {@link net.dv8tion.jda.core.requests.restaction.ChannelAction ChannelAction}
+     *         <br>This action allows to set fields for the new Channel before creating it!
+     */
+    @CheckReturnValue
+    ChannelAction createCopy(Guild guild);
+
+    /**
+     * Creates a copy of the specified {@link net.dv8tion.jda.core.entities.Channel Channel}.
+     *
+     * <p>This copies the following elements:
+     * <ol>
+     *     <li>Name</li>
+     *     <li>Parent Category (if present)</li>
+     *     <li>Voice Elements (Bitrate, Userlimit)</li>
+     *     <li>Text Elements (Topic, NSFW)</li>
+     *     <li>All permission overrides for Members/Roles</li>
+     * </ol>
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The channel could not be created due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>We were removed from the Guild before finishing the task</li>
+     * </ul>
+     *
+     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     *         If the currently logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission
+     *
+     * @return A specific {@link net.dv8tion.jda.core.requests.restaction.ChannelAction ChannelAction}
+     *         <br>This action allows to set fields for the new Channel before creating it!
+     */
+    @CheckReturnValue
+    default ChannelAction createCopy()
+    {
+        return createCopy(getGuild());
+    }
 
     /**
      * Returns the {@link net.dv8tion.jda.core.managers.ChannelManager ChannelManager} for this Channel.

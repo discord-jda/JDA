@@ -362,8 +362,9 @@ public class PermissionUtil
         }
         else if (!isApplied(permission, Permission.VIEW_CHANNEL.getRawValue()))
         {
-            // When the permission to view the channel is not applied it is not granted
-            return permission & ~Permission.ALL_TEXT_PERMISSIONS;
+            //When the permission to view the channel is not applied it is not granted
+            // This means that we have no access to this channel at all
+            return 0;
         }
 
         final boolean isPerms = isApplied(permission, Permission.MANAGE_PERMISSIONS.getRawValue());
