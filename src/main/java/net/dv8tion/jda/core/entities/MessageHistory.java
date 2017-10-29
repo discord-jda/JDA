@@ -486,7 +486,7 @@ public class MessageHistory
         {
             if (limit != null)
             {
-                Checks.notNegative(limit, "Limit");
+                Checks.positive(limit, "Limit");
                 Checks.check(limit <= 100, "Limit may not exceed 100!");
             }
             this.limit = limit;
