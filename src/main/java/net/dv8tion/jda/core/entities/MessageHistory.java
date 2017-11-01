@@ -338,6 +338,8 @@ public class MessageHistory
      * of messages sent after the mentioned message ID (exclusive).
      * <br>The provided ID need not be valid!
      *
+     * <p>Alternatively you can use {@link net.dv8tion.jda.core.entities.MessageChannel#getHistoryAfter(String, int) MessageChannel.getHistoryAfter(...)}
+     *
      * <p><b>Example</b>
      * <br>{@code MessageHistory history = MessageHistory.getHistoryAfter(channel, messageId).limit(60).complete()}
      * <br>Will return a MessageHistory instance with the first 60 messages sent after the provided message ID.
@@ -362,6 +364,10 @@ public class MessageHistory
      *         have the permission {@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
      *
      * @return {@link net.dv8tion.jda.core.entities.MessageHistory.MessageRetrieveAction MessageRetrieveAction}
+     *
+     * @see    net.dv8tion.jda.core.entities.MessageChannel#getHistoryAfter(String, int)  MessageChannel.getHistoryAfter(String, int)
+     * @see    net.dv8tion.jda.core.entities.MessageChannel#getHistoryAfter(long, int)    MessageChannel.getHistoryAfter(long, int)
+     * @see    net.dv8tion.jda.core.entities.MessageChannel#getHistoryAfter(Message, int) MessageChannel.getHistoryAfter(Message, int)
      */
     public static MessageRetrieveAction getHistoryAfter(MessageChannel channel, String messageId)
     {
@@ -374,6 +380,8 @@ public class MessageHistory
      * Constructs a {@link net.dv8tion.jda.core.entities.MessageHistory MessageHistory} with the initially retrieved history
      * of messages sent before the mentioned message ID (exclusive).
      * <br>The provided ID need not be valid!
+     *
+     * <p>Alternatively you can use {@link net.dv8tion.jda.core.entities.MessageChannel#getHistoryBefore(String, int) MessageChannel.getHistoryBefore(...)}
      *
      * <p><b>Example</b>
      * <br>{@code MessageHistory history = MessageHistory.getHistoryBefore(channel, messageId).limit(60).complete()}
@@ -399,6 +407,10 @@ public class MessageHistory
      *         have the permission {@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
      *
      * @return {@link net.dv8tion.jda.core.entities.MessageHistory.MessageRetrieveAction MessageRetrieveAction}
+     *
+     * @see    net.dv8tion.jda.core.entities.MessageChannel#getHistoryBefore(String, int)  MessageChannel.getHistoryBefore(String, int)
+     * @see    net.dv8tion.jda.core.entities.MessageChannel#getHistoryBefore(long, int)    MessageChannel.getHistoryBefore(long, int)
+     * @see    net.dv8tion.jda.core.entities.MessageChannel#getHistoryBefore(Message, int) MessageChannel.getHistoryBefore(Message, int)
      */
     public static MessageRetrieveAction getHistoryBefore(MessageChannel channel, String messageId)
     {
@@ -411,6 +423,8 @@ public class MessageHistory
      * Constructs a {@link net.dv8tion.jda.core.entities.MessageHistory MessageHistory} with the initially retrieved history
      * of messages sent around the mentioned message ID (inclusive).
      * <br>The provided ID need not be valid!
+     *
+     * <p>Alternatively you can use {@link net.dv8tion.jda.core.entities.MessageChannel#getHistoryAround(String, int) MessageChannel.getHistoryAround(...)}
      *
      * <p><b>Example</b>
      * <br>{@code MessageHistory history = MessageHistory.getHistoryAround(channel, messageId).limit(60).complete()}
@@ -436,6 +450,10 @@ public class MessageHistory
      *         have the permission {@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
      *
      * @return {@link net.dv8tion.jda.core.entities.MessageHistory.MessageRetrieveAction MessageRetrieveAction}
+     *
+     * @see    net.dv8tion.jda.core.entities.MessageChannel#getHistoryAround(String, int)  MessageChannel.getHistoryAround(String, int)
+     * @see    net.dv8tion.jda.core.entities.MessageChannel#getHistoryAround(long, int)    MessageChannel.getHistoryAround(long, int)
+     * @see    net.dv8tion.jda.core.entities.MessageChannel#getHistoryAround(Message, int) MessageChannel.getHistoryAround(Message, int)
      */
     public static MessageRetrieveAction getHistoryAround(MessageChannel channel, String messageId)
     {
