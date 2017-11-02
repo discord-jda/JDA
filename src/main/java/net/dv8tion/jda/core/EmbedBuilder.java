@@ -400,6 +400,48 @@ public class EmbedBuilder
     /**
      * Sets the Author of the embed. The author appears in the top left of the embed and can have a small
      * image beside it along with the author's name being made clickable by way of providing a url.
+     * This convenience method just sets the name.
+     *
+     * <p><b><a href="http://i.imgur.com/JgZtxIM.png">Example</a></b>
+     *
+     * @param  name
+     *         the name of the author of the embed. If this is not set, the author will not appear in the embed
+     *
+     * @return the builder after the author has been set
+     */
+    public EmbedBuilder setAuthor(String name)
+    {
+        return setAuthor(name, null, null);
+    }
+
+    /**
+     * Sets the Author of the embed. The author appears in the top left of the embed and can have a small
+     * image beside it along with the author's name being made clickable by way of providing a url.
+     * This convenience method just sets the name and the url.
+     *
+     * <p><b><a href="http://i.imgur.com/JgZtxIM.png">Example</a></b>
+     *
+     * @param  name
+     *         the name of the author of the embed. If this is not set, the author will not appear in the embed
+     * @param  url
+     *         the url of the author of the embed
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the length of {@code url} is longer than {@link net.dv8tion.jda.core.entities.MessageEmbed#URL_MAX_LENGTH}.</li>
+     *             <li>If the provided {@code url} is not a properly formatted http or https url.</li>
+     *         </ul>
+     *
+     * @return the builder after the author has been set
+     */
+    public EmbedBuilder setAuthor(String name, String url)
+    {
+        return setAuthor(name, url, null);
+    }
+
+    /**
+     * Sets the Author of the embed. The author appears in the top left of the embed and can have a small
+     * image beside it along with the author's name being made clickable by way of providing a url.
      *
      * <p><b><a href="http://i.imgur.com/JgZtxIM.png">Example</a></b>
      *

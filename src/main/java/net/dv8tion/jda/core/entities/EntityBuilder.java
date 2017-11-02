@@ -142,7 +142,7 @@ public class EntityBuilder
         guildObj.setAvailable(true)
                 .setIconId(guild.isNull("icon") ? null : guild.getString("icon"))
                 .setSplashId(guild.isNull("splash") ? null : guild.getString("splash"))
-                .setRegion(Region.fromKey(guild.getString("region")))
+                .setRegion(guild.getString("region"))
                 .setName(guild.getString("name"))
                 .setAfkTimeout(Guild.Timeout.fromKey(guild.getInt("afk_timeout")))
                 .setVerificationLevel(Guild.VerificationLevel.fromKey(guild.getInt("verification_level")))

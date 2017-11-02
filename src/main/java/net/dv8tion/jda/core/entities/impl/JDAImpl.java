@@ -521,11 +521,11 @@ public class JDAImpl implements JDA
         return presence;
     }
 
-    @Override
-    public AuditableRestAction<Void> installAuxiliaryCable(int port) throws UnsupportedOperationException
-    {
-        return new AuditableRestAction.FailedRestAction<>(new UnsupportedOperationException("nice try but next time think first :)"));
-    }
+    //@Override
+    //public AuditableRestAction<Void> installAuxiliaryCable(int port) throws UnsupportedOperationException
+    //{
+    //    return new AuditableRestAction.FailedRestAction<>(new UnsupportedOperationException("nice try but next time think first :)"));
+    //}
 
     @Override
     public AccountType getAccountType()

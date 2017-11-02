@@ -145,16 +145,32 @@ public interface Guild extends ISnowflake
     Timeout getAfkTimeout();
 
     /**
-     * The {@link net.dv8tion.jda.core.Region Region} that this {@link net.dv8tion.jda.core.entities.Guild Guild} is
+     * The Voice {@link net.dv8tion.jda.core.Region Region} that this Guild is
      * using for audio connections.
-     * <br>If the {@link net.dv8tion.jda.core.Region Region} is not recognized, returns {@link net.dv8tion.jda.core.Region#UNKNOWN UNKNOWN}.
-     * <p>
-     * This value can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setRegion(net.dv8tion.jda.core.Region)}
+     * <br>If the Region is not recognized, returns {@link net.dv8tion.jda.core.Region#UNKNOWN UNKNOWN} but you
+     * can still use the {@link #getRegionRaw()} to retrieve the raw name this region has.
+     *
+     * <p>This value can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setRegion(net.dv8tion.jda.core.Region)}
      * or {@link net.dv8tion.jda.core.managers.GuildManagerUpdatable#getRegionField()}.
      *
      * @return The the audio Region this Guild is using for audio connections. Can return Region.UNKNOWN.
      */
-    Region getRegion();
+    default Region getRegion()
+    {
+        return Region.fromKey(getRegionRaw());
+    }
+
+    /**
+     * The raw voice region name that this Guild is using
+     * for audio connections.
+     * <br>This is resolved to an enum constant of {@link net.dv8tion.jda.core.Region Region} by {@link #getRegion()}!
+     *
+     * <p>This value can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setRegion(net.dv8tion.jda.core.Region)}
+     * or {@link net.dv8tion.jda.core.managers.GuildManagerUpdatable#getRegionField()}.
+     *
+     * @return Raw region name
+     */
+    String getRegionRaw();
 
     /**
      * Used to determine if the provided {@link net.dv8tion.jda.core.entities.User User} is a member of this Guild.
