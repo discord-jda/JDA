@@ -59,14 +59,14 @@ public interface ShardManager
      *
      * @return The amount of shards queued for (re)connecting.
      */
-    int getAmountOfQueuedShards();
+    int getShardsQueued();
 
     /**
      * Returns the amount of running shards.
      *
      * @return The amount of running shards.
      */
-    default int getAmountOfRunningShards()
+    default int getShardsRunning()
     {
         return (int) this.getShardCache().size();
     }
@@ -77,9 +77,9 @@ public interface ShardManager
      *
      * @return The managed amount of shards.
      */
-    default int getAmountOfTotalShards()
+    default int getShardsTotal()
     {
-        return this.getAmountOfQueuedShards() + this.getAmountOfRunningShards();
+        return this.getShardsQueued() + this.getShardsRunning();
     }
 
     /**
@@ -101,7 +101,7 @@ public interface ShardManager
 
     /**
      * The average time in milliseconds between all shards that discord took to respond to our last heartbeat.
-     * <br>This roughly represents the WebSocket ping of this session.
+     * This roughly represents the WebSocket ping of this session. If there is no shard running this wil return {@code -1}.
      *
      * <p><b>{@link net.dv8tion.jda.core.requests.RestAction RestAction} request times do not
      * correlate to this value!</b>
@@ -115,7 +115,7 @@ public interface ShardManager
                 .mapToLong(JDA::getPing)
                 .filter(ping -> ping != -1)
                 .average()
-                .getAsDouble();
+                .orElse(-1D);
     }
 
     /**

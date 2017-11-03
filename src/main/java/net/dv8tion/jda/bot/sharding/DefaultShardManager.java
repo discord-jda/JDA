@@ -285,7 +285,7 @@ public class DefaultShardManager implements ShardManager
     }
 
     @Override
-    public int getAmountOfQueuedShards()
+    public int getShardsQueued()
     {
         return this.queue.size();
     }
