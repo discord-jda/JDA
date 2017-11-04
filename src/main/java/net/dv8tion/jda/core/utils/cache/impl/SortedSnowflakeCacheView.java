@@ -25,6 +25,8 @@ import java.util.stream.Stream;
 
 public class SortedSnowflakeCacheView<T extends ISnowflake & Comparable<T>> extends SnowflakeCacheViewImpl<T>
 {
+    protected static final int SPLIT_CHARACTERISTICS = Spliterator.IMMUTABLE | Spliterator.ORDERED | Spliterator.NONNULL;
+
     protected final Comparator<T> comparator;
 
     public SortedSnowflakeCacheView(Comparator<T> comparator)
@@ -41,9 +43,24 @@ public class SortedSnowflakeCacheView<T extends ISnowflake & Comparable<T>> exte
     @Override
     public List<T> asList()
     {
-        List<T> list = new ArrayList<>(elements.valueCollection());
+        List<T> list = new ArrayList<>(elements.size());
+        elements.forEachValue(list::add);
         list.sort(comparator);
         return Collections.unmodifiableList(list);
+    }
+
+    @Override
+    public SortedSet<T> asSet()
+    {
+        SortedSet<T> set = new TreeSet<>(comparator);
+        elements.forEachValue(set::add);
+        return Collections.unmodifiableSortedSet(set);
+    }
+
+    @Override
+    public Spliterator<T> spliterator()
+    {
+        return Spliterators.spliterator(asList(), SPLIT_CHARACTERISTICS);
     }
 
     @Override
