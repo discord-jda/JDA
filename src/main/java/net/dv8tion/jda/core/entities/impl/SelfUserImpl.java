@@ -16,6 +16,7 @@
 package net.dv8tion.jda.core.entities.impl;
 
 import net.dv8tion.jda.core.AccountType;
+import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.SelfUser;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
@@ -34,6 +35,9 @@ public class SelfUserImpl extends UserImpl implements SelfUser
 
     //Client only
     private String email;
+    private String phoneNumber;
+    private boolean mobile;
+    private boolean nitro;
 
     public SelfUserImpl(long id, JDAImpl api)
     {
@@ -79,6 +83,39 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     }
 
     @Override
+    public String getPhoneNumber() throws AccountTypeException
+    {
+        if (api.getAccountType() != AccountType.CLIENT)
+            throw new AccountTypeException(AccountType.CLIENT, "Phone number retrieval can only be done on CLIENT accounts!");
+        return this.phoneNumber;
+    }
+
+    @Override
+    public boolean isMobile() throws AccountTypeException
+    {
+        if (api.getAccountType() != AccountType.CLIENT)
+            throw new AccountTypeException(AccountType.CLIENT, "Mobile app retrieval can only be done on CLIENT accounts!");
+        return this.mobile;
+    }
+
+    @Override
+    public boolean isNitro() throws AccountTypeException
+    {
+        if (api.getAccountType() != AccountType.CLIENT)
+            throw new AccountTypeException(AccountType.CLIENT, "Nitro status retrieval can only be done on CLIENT accounts!");
+        return this.nitro;
+    }
+
+    @Override
+    public long getAllowedFileSize()
+    {
+        if (this.nitro) // by directly accessing the field we don't need to check the account type
+            return Message.MAX_FILE_SIZE_NITRO;
+        else
+            return Message.MAX_FILE_SIZE;
+    }
+
+    @Override
     public AccountManager getManager()
     {
         AccountManager mng = manager;
@@ -110,12 +147,6 @@ public class SelfUserImpl extends UserImpl implements SelfUser
         return mng;
     }
 
-//    @Override
-//    public String getAuthUrl(Permission... perms)
-//    {
-//        return ApplicationUtil.getAuthInvite(getJDA(), perms);
-//    }
-
     public SelfUserImpl setVerified(boolean verified)
     {
         this.verified = verified;
@@ -131,6 +162,24 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     public SelfUserImpl setEmail(String email)
     {
         this.email = email;
+        return this;
+    }
+
+    public SelfUserImpl setPhoneNumber(String phoneNumber)
+    {
+        this.phoneNumber = phoneNumber;
+        return this;
+    }
+
+    public SelfUserImpl setMobile(boolean mobile)
+    {
+        this.mobile = mobile;
+        return this;
+    }
+
+    public SelfUserImpl setNitro(boolean nitro)
+    {
+        this.nitro = nitro;
         return this;
     }
 }

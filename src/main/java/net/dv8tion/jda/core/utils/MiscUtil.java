@@ -41,6 +41,20 @@ public class MiscUtil
     private static final DateTimeFormatter dtFormatter = DateTimeFormatter.RFC_1123_DATE_TIME;
 
     /**
+     * Converts the provided epoch millisecond timestamp to a Discord Snowflake.
+     * <br>This can be used as a marker/pivot for {@link net.dv8tion.jda.core.entities.MessageHistory MessageHistory} creation.
+     *
+     * @param  millisTimestamp
+     *         The epoch millis to convert
+     *
+     * @return Shifted epoch millis for Discord
+     */
+    public static long getDiscordTimestamp(long millisTimestamp)
+    {
+        return (millisTimestamp << TIMESTAMP_OFFSET) + DISCORD_EPOCH;
+    }
+
+    /**
      * Gets the creation-time of a JDA-entity by doing the reverse snowflake algorithm on its id.
      * This returns the creation-time of the actual entity on Discords side, not inside JDA.
      *
@@ -51,7 +65,7 @@ public class MiscUtil
      */
     public static OffsetDateTime getCreationTime(long entityId)
     {
-        long timestamp = ((entityId >>> TIMESTAMP_OFFSET) + DISCORD_EPOCH);
+        long timestamp = (entityId >>> TIMESTAMP_OFFSET) + DISCORD_EPOCH;
         Calendar gmt = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
         gmt.setTimeInMillis(timestamp);
         return OffsetDateTime.ofInstant(gmt.toInstant(), gmt.getTimeZone().toZoneId());

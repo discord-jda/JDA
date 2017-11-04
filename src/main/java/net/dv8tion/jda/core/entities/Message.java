@@ -63,7 +63,16 @@ import java.util.List;
  */
 public interface Message extends ISnowflake, Formattable
 {
-    int MAX_FILE_SIZE = 8 << 20; // 8mb
+    /**
+     * Useful constant for the max allowed file size for message attachments on normal accounts. Value: {@value #MAX_FILE_SIZE} Bytes (8 MiB)
+     */
+    int MAX_FILE_SIZE = 8 << 20; // 8 MiB
+
+    /**
+     * Useful constant for the max allowed file size for message attachments on nitro accounts. Value: {@value #MAX_FILE_SIZE_NITRO} Bytes (50 MiB)
+     */
+    int MAX_FILE_SIZE_NITRO = 50 << 20; // 50 MiB
+
     /**
      * A immutable list of all mentioned users. if no user was mentioned, this list is empty.
      * <br>In {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel's}, this always returns an empty List

@@ -41,6 +41,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
@@ -534,7 +535,7 @@ public class AudioConnection
 
             nonEncodedBuffer.put(toShort);
         }
-        nonEncodedBuffer.flip();
+        ((Buffer) nonEncodedBuffer).flip();
 
         //TODO: check for 0 / negative value for error.
         int result = Opus.INSTANCE.opus_encode(opusEncoder, nonEncodedBuffer, OPUS_FRAME_SIZE, encoded, encoded.capacity());
