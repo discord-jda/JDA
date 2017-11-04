@@ -17,6 +17,7 @@ package net.dv8tion.jda.bot.sharding;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 import net.dv8tion.jda.bot.entities.ApplicationInfo;
 import net.dv8tion.jda.bot.utils.cache.ShardCacheView;
@@ -751,7 +752,9 @@ public interface ShardManager
     /**
      * Sets the {@link net.dv8tion.jda.core.entities.Game Game} for all shards.
      * <br>A Game can be retrieved via {@link net.dv8tion.jda.core.entities.Game#of(String)}.
-     * For streams you provide a valid streaming url as second parameter
+     * For streams you provide a valid streaming url as second parameter.
+     *
+     * <p>This will also change the game for shards that are created in the future.
      *
      * @param  game
      *         A {@link net.dv8tion.jda.core.entities.Game Game} instance or null to reset
@@ -761,7 +764,25 @@ public interface ShardManager
      */
     default void setGame(final Game game)
     {
-        this.getShardCache().forEach(jda -> jda.getPresence().setGame(game));
+        this.setGameProvider(id -> game);
+    }
+
+    /**
+     * Sets provider that provider the {@link net.dv8tion.jda.core.entities.Game Game} for all shards.
+     * <br>A Game can be retrieved via {@link net.dv8tion.jda.core.entities.Game#of(String)}.
+     * For streams you provide a valid streaming url as second parameter.
+     *
+     * <p>This will also change the provider for shards that are created in the future.
+     *
+     * @param  gameProvider
+     *         A {@link net.dv8tion.jda.core.entities.Game Game} instance or null to reset
+     *
+     * @see    net.dv8tion.jda.core.entities.Game#of(String)
+     * @see    net.dv8tion.jda.core.entities.Game#of(String, String)
+     */
+    default void setGameProvider(final IntFunction<Game> gameProvider)
+    {
+        this.getShardCache().forEach(jda -> jda.getPresence().setGame(gameProvider.apply(jda.getShardInfo().getShardId())));
     }
 
     /**
@@ -770,35 +791,33 @@ public interface ShardManager
      * <p>This is relevant to client accounts to monitor
      * whether new messages should trigger mobile push-notifications.
      *
+     * <p>This will also change the value for shards that are created in the future.
+     *
      * @param  idle
      *        boolean
      */
     default void setIdle(final boolean idle)
     {
-        this.getShardCache().forEach(jda -> jda.getPresence().setIdle(idle));
+        this.setIdleProvider(id -> idle);
     }
 
     /**
-     * Sets the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} for the given shards.
+     * Sets the provider that decides for all shards whether they should be marked as afk or not.
      *
-     * @param  id
-     *         The id of the target shard
-     * @param  status
-     *         the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus}
-     *         to be used (OFFLINE/null {@literal ->} INVISIBLE)
+     * <p>This will also change the provider for shards that are created in the future.
      *
-     * @throws IllegalArgumentException
-     *         if the provided OnlineStatus is {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}
+     * @param  idleProvider
+     *        boolean
      */
-    default void setStatus(final int id, final OnlineStatus status)
+    default void setIdleProvider(final IntFunction<Boolean> idleProvider)
     {
-        final JDA api = this.getShardById(id);
-        if (api != null)
-            api.getPresence().setStatus(status);
+        this.getShardCache().forEach(jda -> jda.getPresence().setIdle(idleProvider.apply(jda.getShardInfo().getShardId())));
     }
 
     /**
      * Sets the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} for all shards.
+     *
+     * <p>This will also change the status for shards that are created in the future.
      *
      * @throws IllegalArgumentException
      *         if the provided OnlineStatus is {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}
@@ -809,28 +828,24 @@ public interface ShardManager
      */
     default void setStatus(final OnlineStatus status)
     {
-        this.getShardCache().forEach(jda -> jda.getPresence().setStatus(status));
+        this.setStatusProvider(id -> status);
     }
 
     /**
-     * Sets the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} for the given shards.
+     * Sets the provider that provides the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} for all shards.
      *
-     * @param  id
-     *         The id of the target shard
-     * @param  status
-     *         the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus}
-     *         to be used (OFFLINE/null {@literal ->} INVISIBLE)
+     * <p>This will also change the provider for shards that are created in the future.
      *
      * @throws IllegalArgumentException
      *         if the provided OnlineStatus is {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}
+     *
+     * @param  statusProvider
+     *         the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus}
+     *         to be used (OFFLINE/null {@literal ->} INVISIBLE)
      */
-    default void setStatus(final String id, final OnlineStatus status)
+    default void setStatusProvider(final IntFunction<OnlineStatus> statusProvider)
     {
-        Checks.check(status != OnlineStatus.UNKNOWN, "Cannot set status to UNKNOWN");
-
-        final JDA api = this.getShardById(id);
-        if (api != null)
-            api.getPresence().setStatus(status);
+        this.getShardCache().forEach(jda -> jda.getPresence().setStatus(statusProvider.apply(jda.getShardInfo().getShardId())));
     }
 
     /**

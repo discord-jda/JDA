@@ -19,6 +19,7 @@ import com.neovisionaries.ws.client.WebSocketFactory;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.IntFunction;
 import javax.security.auth.login.LoginException;
 
 import net.dv8tion.jda.bot.utils.cache.ShardCacheView;
@@ -84,16 +85,6 @@ public class DefaultShardManager implements ShardManager
      * The {@link net.dv8tion.jda.core.hooks.IEventManager IEventManager} used by the ShardManager.
      */
     protected final IEventManager eventManager;
-
-    /**
-     * The game new JDA instances should have on startup.
-     */
-    protected final Game game;
-
-    /**
-     * Whether or not new JDA instances should be marked as afk on startup.
-     */
-    protected final boolean idle;
 
     /**
      * The event listeners for new JDA instances.
@@ -171,11 +162,6 @@ public class DefaultShardManager implements ShardManager
     protected final Thread shutdownHook;
 
     /**
-     * The status new JDA instances should have on startup.
-     */
-    protected final OnlineStatus status;
-
-    /**
      * The token of the account associated with this ShardManager.
      */
     protected final String token;
@@ -189,6 +175,21 @@ public class DefaultShardManager implements ShardManager
      * The gateway url for JDA to use. Will be {@code nul} until the first shard is created.
      */
     protected String gatewayURL;
+
+    /**
+     * The gameProvider new JDA instances should have on startup.
+     */
+    protected IntFunction<Game> gameProvider;
+
+    /**
+     * Whether or not new JDA instances should be marked as afk on startup.
+     */
+    protected IntFunction<Boolean> idleProvider;
+
+    /**
+     * The statusProvider new JDA instances should have on startup.
+     */
+    protected IntFunction<OnlineStatus> statusProvider;
 
     /**
      * Creates a new DefaultShardManager instance.
@@ -206,10 +207,10 @@ public class DefaultShardManager implements ShardManager
      *         The event manager
      * @param  audioSendFactory
      *         The {@link net.dv8tion.jda.core.audio.factory.IAudioSendFactory IAudioSendFactory}
-     * @param  game
+     * @param  gameProvider
      *         The games used at startup of new JDA instances
-     * @param  status
-     *         The status used at startup of new JDA instances
+     * @param  statusProvider
+     *         The statusProvider used at startup of new JDA instances
      * @param  httpClientBuilder
      *         The {@link okhttp3.OkHttpClient.Builder OkHttpClient.Builder}
      * @param  wsFactory
@@ -225,29 +226,31 @@ public class DefaultShardManager implements ShardManager
      * @param  enableShutdownHook
      *         Whether or not the shutdown hook should be enabled
      * @param  enableBulkDeleteSplitting
-     *         Whether or not {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder#setBulkDeleteSplittingEnabled(boolean) bulk delete splitting}
-     *         should be enabled
+     *         Whether or not {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder#setBulkDeleteSplittingEnabled(boolean)
+     *         bulk delete splitting} should be enabled
      * @param  autoReconnect
      *         Whether or not auto reconnect should be enabled
-     * @param  idle
+     * @param  idleProvider
      *         Whether or not new sessions should be marked as afk on startup
      * @param  reconnectQueue
      *         The {@link net.dv8tion.jda.core.requests.SessionReconnectQueue SessionReconnectQueue}
      */
-    protected DefaultShardManager(final int shardsTotal, final Collection<Integer> shardIds, final List<Object> listeners, final String token,
-                               final IEventManager eventManager, final IAudioSendFactory audioSendFactory, final Game game, final OnlineStatus status,
-                               final OkHttpClient.Builder httpClientBuilder, final WebSocketFactory wsFactory, ShardedRateLimiter shardedRateLimiter,
-                               final int maxReconnectDelay, final int corePoolSize, final boolean enableVoice, final boolean enableShutdownHook,
-                               final boolean enableBulkDeleteSplitting, final boolean autoReconnect, final boolean idle, final boolean retryOnTimeout,
-                               final SessionReconnectQueue reconnectQueue)
+    protected DefaultShardManager(final int shardsTotal, final Collection<Integer> shardIds, final List<Object> listeners,
+                                  final String token, final IEventManager eventManager, final IAudioSendFactory audioSendFactory,
+                                  final IntFunction<Game> gameProvider, final IntFunction<OnlineStatus> statusProvider,
+                                  final OkHttpClient.Builder httpClientBuilder, final WebSocketFactory wsFactory,
+                                  final ShardedRateLimiter shardedRateLimiter, final int maxReconnectDelay, final int corePoolSize,
+                                  final boolean enableVoice, final boolean enableShutdownHook, final boolean enableBulkDeleteSplitting,
+                                  final boolean autoReconnect, final IntFunction<Boolean> idleProvider, final boolean retryOnTimeout,
+                                  final SessionReconnectQueue reconnectQueue)
     {
         this.shardsTotal = shardsTotal;
         this.listeners = listeners;
         this.token = token;
         this.eventManager = eventManager;
         this.audioSendFactory = audioSendFactory;
-        this.game = game;
-        this.status = status;
+        this.gameProvider = gameProvider;
+        this.statusProvider = statusProvider;
         this.httpClientBuilder = httpClientBuilder == null ? new OkHttpClient.Builder() : httpClientBuilder;
         this.wsFactory = wsFactory == null ? new WebSocketFactory() : wsFactory;
         this.shardedRateLimiter = shardedRateLimiter == null ? new ShardedRateLimiter() : shardedRateLimiter;
@@ -257,7 +260,7 @@ public class DefaultShardManager implements ShardManager
         this.shutdownHook = enableShutdownHook ? new Thread(this::shutdown, "JDA Shutdown Hook") : null;
         this.enableBulkDeleteSplitting = enableBulkDeleteSplitting;
         this.autoReconnect = autoReconnect;
-        this.idle = idle;
+        this.idleProvider = idleProvider;
         this.retryOnTimeout = retryOnTimeout;
         this.reconnectQueue = reconnectQueue == null ? new SessionReconnectQueue() : reconnectQueue;
 
@@ -460,7 +463,7 @@ public class DefaultShardManager implements ShardManager
         }
     }
 
-        protected JDAImpl buildInstance(final int shardId) throws LoginException, RateLimitedException
+    protected JDAImpl buildInstance(final int shardId) throws LoginException, RateLimitedException
     {
         final JDAImpl jda = new JDAImpl(AccountType.BOT, this.token, this.httpClientBuilder, this.wsFactory, this.shardedRateLimiter,
             this.autoReconnect, this.enableVoice, this.enableBulkDeleteSplitting, this.enableBulkDeleteSplitting, retryOnTimeout,
@@ -478,7 +481,13 @@ public class DefaultShardManager implements ShardManager
         jda.setStatus(JDA.Status.INITIALIZED); //This is already set by JDA internally, but this is to make sure the listeners catch it.
 
         // Set the presence information before connecting to have the correct information ready when sending IDENTIFY
-        ((PresenceImpl) jda.getPresence()).setCacheGame(this.game).setCacheIdle(this.idle).setCacheStatus(this.status);
+        PresenceImpl presence = ((PresenceImpl) jda.getPresence());
+        if (gameProvider != null)
+            presence.setCacheGame(this.gameProvider.apply(shardId));
+        if (idleProvider != null)
+            presence.setCacheIdle(this.idleProvider.apply(shardId));
+        if (statusProvider != null)
+            presence.setCacheStatus(this.statusProvider.apply(shardId));
 
         if (this.gatewayURL == null)
         {
@@ -517,5 +526,29 @@ public class DefaultShardManager implements ShardManager
         }
 
         return jda;
+    }
+
+    @Override
+    public void setGameProvider(IntFunction<Game> gameProvider)
+    {
+        ShardManager.super.setGameProvider(gameProvider);
+
+        this.gameProvider = gameProvider;
+    }
+
+    @Override
+    public void setIdleProvider(IntFunction<Boolean> idleProvider)
+    {
+        ShardManager.super.setIdleProvider(idleProvider);
+
+        this.idleProvider = idleProvider;
+    }
+
+    @Override
+    public void setStatusProvider(IntFunction<OnlineStatus> statusProvider)
+    {
+        ShardManager.super.setStatusProvider(statusProvider);
+
+        this.statusProvider = statusProvider;
     }
 }
