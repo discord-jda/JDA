@@ -19,10 +19,6 @@ package net.dv8tion.jda.core.utils.cache;
 import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.utils.MiscUtil;
 
-import java.util.Collection;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
-
 /**
  * {@link net.dv8tion.jda.core.utils.cache.CacheView CacheView} implementation
  * specifically to view {@link net.dv8tion.jda.core.entities.ISnowflake ISnowflake} implementations.
@@ -54,39 +50,5 @@ public interface SnowflakeCacheView<T extends ISnowflake> extends CacheView<T>
     default T getElementById(String id)
     {
         return getElementById(MiscUtil.parseSnowflake(id));
-    }
-
-    /**
-     * Creates a combined SnowflakeCacheView for all provided SnowflakeCacheView implementations.
-     * <br>This allows to combine cache of multiple JDA sessions or Guilds.
-     *
-     * @param  generator
-     *         Stream generator of SnowflakeCacheView implementations
-     *
-     * @param  <E>
-     *         The target type of the chain
-     *
-     * @return Combined SnowflakeCacheView spanning over all provided implementation instances
-     */
-    static <E extends ISnowflake> SnowflakeCacheView<E> all(Supplier<Stream<SnowflakeCacheView<E>>> generator)
-    {
-        return CacheView.allSnowflakes(generator);
-    }
-
-    /**
-     * Creates a combined SnowflakeCacheView for all provided SnowflakeCacheView implementations.
-     * <br>This allows to combine cache of multiple JDA sessions or Guilds.
-     *
-     * @param  cacheViews
-     *         Collection of SnowflakeCacheView implementations
-     *
-     * @param  <E>
-     *         The target type of the chain
-     *
-     * @return Combined SnowflakeCacheView spanning over all provided implementation instances
-     */
-    static <E extends ISnowflake> SnowflakeCacheView<E> all(Collection<SnowflakeCacheView<E>> cacheViews)
-    {
-        return all(cacheViews::stream);
     }
 }
