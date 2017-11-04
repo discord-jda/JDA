@@ -39,6 +39,16 @@ import java.util.List;
  * Minimum - 1
  * <br>Maximum - 100
  *
+ * <h1>Example</h1>
+ * <pre><code>
+ * ReactionPaginationAction users = reaction.getUsers();
+ *
+ * {@literal Optional<User>} optUser = users.stream().skip(ThreadLocalRandom.current().nextInt(reaction.getCount())).findFirst();
+ * optUser.ifPresent( (user) {@literal ->} user.openPrivateChannel().queue(
+ *         (channel) {@literal ->} channel.sendMessage("I see you reacted to my message :eyes:").queue()
+ * ));
+ * </code></pre>
+ *
  * @since  3.1
  * @author Florian Spieß
  */
@@ -61,7 +71,7 @@ public class ReactionPaginationAction extends PaginationAction<User, ReactionPag
 
     protected static String getCode(MessageReaction reaction)
     {
-        MessageReaction.ReactionEmote emote = reaction.getEmote();
+        MessageReaction.ReactionEmote emote = reaction.getReactionEmote();
 
         return emote.isEmote()
             ? emote.getName() + ":" + emote.getId()

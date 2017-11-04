@@ -609,9 +609,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         reconnect(false, true);
     }
 
+    //public for access from SessionReconnectQueue extensions
     //callFromQueue - whether this was in SessionReconnectQueue and got polled
     //shouldHandleIdentify - whether SessionReconnectQueue already handled an IDENTIFY rate limit for this session
-    protected void reconnect(boolean callFromQueue, boolean shouldHandleIdentify)
+    public void reconnect(boolean callFromQueue, boolean shouldHandleIdentify)
     {
         if (shutdown)
         {

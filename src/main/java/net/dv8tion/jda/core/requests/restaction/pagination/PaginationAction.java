@@ -47,7 +47,7 @@ import java.util.stream.StreamSupport;
  * public static{@literal List<Message>} getMessagesByUser(MessageChannel channel, User user, int limit)
  * {
  *     <u>MessagePaginationAction</u> action = channel.<u>getIterableHistory</u>();
- *     Stream{@literal <Message>} messageStream = action.{@link #stream() stream()}
+ *     Stream{@literal <Message>} messageStream = action.stream()
  *             .limit(limit * 2) // used to limit amount of messages to check, if user hasn't sent enough messages it would go on forever
  *             .filter( message{@literal ->} message.getAuthor().equals(user) )
  *             .limit(limit); // limit on filtered stream will be checked independently from previous limit
@@ -59,13 +59,13 @@ import java.util.stream.StreamSupport;
  * /**
  *  * Iterates messages in an async stream and stops once the limit has been reached.
  *  *&#47;
- * public static void onEachMessageAsync(MessageChannel channel, {@link java.util.function.Consumer Consumer&lt;Message&gt;} consumer, int limit)
+ * public static void onEachMessageAsync(MessageChannel channel, {@literal Consumer<Message>} consumer, int limit)
  * {
  *     if (limit{@literal <} 1)
  *         return;
  *     <u>MessagePaginationAction</u> action = channel.<u>getIterableHistory</u>();
  *     AtomicInteger counter = new AtomicInteger(limit);
- *     action.{@link #forEachAsync(net.dv8tion.jda.core.utils.Procedure) forEachAsync}( (message){@literal ->}
+ *     action.forEachAsync( (message){@literal ->}
  *     {
  *         consumer.accept(message);
  *         // if false the iteration is terminated; else it continues
