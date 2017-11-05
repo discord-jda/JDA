@@ -110,19 +110,14 @@ public class DefaultShardManager implements ShardManager
     });
 
     /**
-     * The queue of new shards waiting for creation.
+     * The queue of shards waiting for creation or to be reconnected.
      */
-    protected final Queue<Integer> loginQueue = new ConcurrentLinkedQueue<>();
-
-    /**
-     * The queue of shards waiting for reconnect.
-     */
-    protected final Queue<JDA> reconnectQueue = new ConcurrentLinkedQueue<>();
+    protected final Queue<Integer> queue = new ConcurrentLinkedQueue<>();
 
     /**
      * The queue that will be used by all shards to ensure reconnects don't hit the ratelimit.
      */
-    protected final SessionReconnectQueue sessionReconnectQueue = new ForwardingSessionReconnectQueue(reconnectQueue::add);
+    protected final SessionReconnectQueue sessionReconnectQueue = new ForwardingSessionReconnectQueue(jda -> queue.add(jda.getShardInfo().getShardId()));
 
     /**
      * The {@link net.dv8tion.jda.bot.utils.cache.ShardCacheView ShardCacheView} that holds all shards.
@@ -273,12 +268,12 @@ public class DefaultShardManager implements ShardManager
             {
                 this.shards = new ShardCacheViewImpl(shardsTotal);
                 for (int i = 0; i < this.shardsTotal; i++)
-                    this.loginQueue.offer(i);
+                    this.queue.offer(i);
             }
             else
             {
                 this.shards = new ShardCacheViewImpl(shardIds.size());
-                shardIds.stream().distinct().sorted().forEach(this.loginQueue::offer);
+                shardIds.stream().distinct().sorted().forEach(this.queue::offer);
             }
         }
     }
@@ -293,7 +288,7 @@ public class DefaultShardManager implements ShardManager
     @Override
     public int getShardsQueued()
     {
-        return this.loginQueue.size();
+        return this.queue.size();
     }
 
     @Override
@@ -308,22 +303,15 @@ public class DefaultShardManager implements ShardManager
         JDAImpl jda = null;
         try
         {
-            if (this.loginQueue.isEmpty())
-            {
-                this.shards = new ShardCacheViewImpl(this.shardsTotal);
-                for (int i = 0; i < this.shardsTotal; i++)
-                    this.loginQueue.offer(i);
-            }
-
-            final int shardId = this.loginQueue.peek();
+            final int shardId = this.queue.isEmpty() ? 0 : this.queue.peek();
 
             jda = this.buildInstance(shardId);
             this.shards.getMap().put(shardId, jda);
-            this.loginQueue.remove(shardId);
+            this.queue.remove(shardId);
         }
         catch (final RateLimitedException e)
         {
-            // do not remove 'shardId' from the loginQueue and try the first one again after 5 seconds in the async thread
+            // add not remove 'shardId' from the queue and try the first one again after 5 seconds in the async thread
         }
         catch (final Exception e)
         {
@@ -354,7 +342,7 @@ public class DefaultShardManager implements ShardManager
             if (jda != null)
             {
                 jda.shutdown();
-                this.loginQueue.offer(shardId);
+                this.queue.offer(shardId);
             }
         }
     }
@@ -369,7 +357,7 @@ public class DefaultShardManager implements ShardManager
         if (jda != null)
             jda.shutdown();
 
-        this.loginQueue.add(shardId);
+        this.queue.add(shardId);
     }
 
     @Override
@@ -412,7 +400,58 @@ public class DefaultShardManager implements ShardManager
     {
         Checks.notNegative(shardId, "shardId");
         Checks.check(shardId < this.shardsTotal, "shardId must be lower than shardsTotal");
-        this.loginQueue.add(shardId);
+        this.queue.add(shardId);
+    }
+
+    protected void processQueue()
+    {
+        int shardId = -1;
+
+        if (shards == null)
+        {
+            shardId = 0;
+        }
+        else
+        {
+            Integer tmp = this.queue.peek();
+
+            shardId = tmp == null ? -1 : tmp;
+        }
+
+        if (shardId == -1)
+            return;
+
+        JDA api = null;
+        try
+        {
+            api = shards == null ? null : shards.getElementById(shardId);
+
+            if (api == null)
+                api = this.buildInstance(shardId);
+            else if (api.getStatus() == JDA.Status.RECONNECT_QUEUED)
+                ((JDAImpl) api).getClient().reconnect(true, true);
+
+            // as this happens before removing the shardId if from the queue just try again after 5 seconds
+        }
+        catch(RateLimitedException e)
+        {
+            LOG.warn("Hit the login ratelimit while creating new JDA instances");
+        }
+        catch(LoginException e)
+        {
+            // this can only happen if the token has been changed
+            // in this case the ShardManager will just shutdown itself as there currently is no way of hot-swapping the token on a running JDA instance.
+            LOG.warn("The token has been invalidated and the ShardManager will shutdown!");
+            LOG.warn(e);
+            this.shutdown();
+        }
+        catch( final Exception e)
+        {
+            LOG.fatal("Caught an exception in the ");
+        }
+
+        this.shards.getMap().put(shardId, api);
+        this.queue.remove(shardId);
     }
 
     protected JDAImpl buildInstance(final int shardId) throws LoginException, RateLimitedException
@@ -447,12 +486,14 @@ public class DefaultShardManager implements ShardManager
 
             this.gatewayURL = gateway.getLeft();
 
-            if (shardsTotal == -1)
+            if (this.shardsTotal == -1)
             {
                 this.shardsTotal = gateway.getRight();
 
-                for (int i = 1; i < shardsTotal; i++)
-                    loginQueue.offer(i);
+                this.shards = new ShardCacheViewImpl(this.shardsTotal);
+
+                for (int i = 0; i < shardsTotal; i++)
+                    queue.offer(i);
             }
         }
 
@@ -523,86 +564,5 @@ public class DefaultShardManager implements ShardManager
 
         @Override
         protected void runWorker() { /* just to overwrite */ }
-    }
-
-    protected boolean processQueue()
-    {
-        return processReconnectQueue() || processLoginQueue();
-    }
-
-    protected boolean processReconnectQueue()
-    {
-        JDA jda = reconnectQueue.poll();
-
-        if (jda == null)
-        {
-            return false;
-        }
-        else
-        {
-            ((JDAImpl) jda).getClient().reconnect(true, true);
-
-            try
-            {
-                while (jda.getStatus().ordinal() < JDA.Status.AWAITING_LOGIN_CONFIRMATION.ordinal())
-                    Thread.sleep(50);
-            }
-            catch (InterruptedException e) { /* ignored */ }
-
-            return true;
-        }
-    }
-
-    protected boolean processLoginQueue()
-    {
-        JDAImpl api = null;
-        try
-        {
-            int shardId = -1;
-
-            if (shards == null)
-            {
-                shardId = 0;
-            }
-            else
-            {
-                do
-                {
-                    final int i = this.loginQueue.peek();
-                    if (this.shards.getMap().containsKey(i))
-                        this.loginQueue.poll();
-                    else
-                        shardId = i;
-                }
-                while (shardId == -1 && !this.loginQueue.isEmpty());
-            }
-
-            if (shardId == -1)
-                return false;
-
-            api = this.buildInstance(shardId);
-            this.shards.getMap().put(shardId, api);
-            this.loginQueue.remove(shardId);
-        }
-        // as this happens before removing the shardId if from the loginQueue just try again after 5 seconds
-        catch (RateLimitedException e)
-        {
-            LOG.warn("Hit the login ratelimit while creating new JDA instances");
-        }
-        catch (LoginException e)
-        {
-            // this can only happen if the token has been changed
-            // in this case the ShardManager will just shutdown itself as there currently is no way of hot-swapping the token on a running JDA instance.
-            LOG.warn("The token has been invalidated and the ShardManager will shutdown!");
-            LOG.warn(e);
-            DefaultShardManager.this.shutdown();
-        }
-        catch (final Exception e)
-        {
-            if (api != null)
-                api.shutdown();
-        }
-
-        return true;
     }
 }
