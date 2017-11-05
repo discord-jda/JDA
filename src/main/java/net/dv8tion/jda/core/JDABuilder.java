@@ -24,6 +24,8 @@ import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
+import net.dv8tion.jda.core.requests.factory.IGatewayProvider;
+import net.dv8tion.jda.core.requests.factory.IGatewayProviderFactory;
 import net.dv8tion.jda.core.requests.SessionReconnectQueue;
 import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.OkHttpClient;
@@ -46,6 +48,7 @@ public class JDABuilder
 {
     protected final List<Object> listeners;
 
+    protected IGatewayProviderFactory gatewayProviderFactory = null;
     protected SessionReconnectQueue reconnectQueue = null;
     protected ShardedRateLimiter shardRateLimiter = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
@@ -82,6 +85,24 @@ public class JDABuilder
             throw new NullPointerException("Provided AccountType was null!");
         this.accountType = accountType;
         listeners = new LinkedList<>();
+    }
+
+    /**
+     * Sets the gateway provider that will be used to get the URL to connect the websocket to.
+     * <br>This can be used to change the URL JDA connects to when logging in.
+     * <br>Custom implementations can be used for separating the actual discord gateway connection to, for example,
+     * another process which doesn't need to be restarted as often and potentially speeding up bot restarts.
+     *
+     * @param  factory
+     *         {@link IGatewayProviderFactory IGatewayProviderFactory} to use
+     *         when creating {@link IGatewayProvider IGatewayProviders}
+     *
+     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public JDABuilder setGatewayProviderFactory(IGatewayProviderFactory factory)
+    {
+        this.gatewayProviderFactory = factory;
+        return this;
     }
 
     /**
@@ -556,7 +577,7 @@ public class JDABuilder
                 .setCacheGame(game)
                 .setCacheIdle(idle)
                 .setCacheStatus(status);
-        jda.login(token, shardInfo, reconnectQueue);
+        jda.login(token, shardInfo, reconnectQueue, gatewayProviderFactory);
         return jda;
     }
 

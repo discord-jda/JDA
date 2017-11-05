@@ -39,6 +39,9 @@ import net.dv8tion.jda.core.handle.*;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
+import net.dv8tion.jda.core.requests.factory.DefaultGatewayProviderFactory;
+import net.dv8tion.jda.core.requests.factory.IGatewayProvider;
+import net.dv8tion.jda.core.requests.factory.IGatewayProviderFactory;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import org.json.JSONArray;
@@ -66,11 +69,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected final JDAImpl api;
     protected final JDA.ShardInfo shardInfo;
+    protected final IGatewayProviderFactory gatewayProviderFactory;
     protected final Map<String, SocketHandler> handlers = new HashMap<>();
     protected final Set<String> cfRays = new HashSet<>();
     protected final Set<String> traces = new HashSet<>();
 
     protected WebSocket socket;
+    protected IGatewayProvider gatewayProvider = null;
     protected String gatewayUrl = null;
     protected String sessionId = null;
     protected Inflater zlibContext = new Inflater();
@@ -105,12 +110,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected boolean firstInit = true;
     protected boolean processingReady = true;
 
-    public WebSocketClient(JDAImpl api, SessionReconnectQueue reconnectQueue)
+    public WebSocketClient(JDAImpl api, SessionReconnectQueue reconnectQueue, IGatewayProviderFactory gatewayProviderFactory)
     {
         this.api = api;
         this.shardInfo = api.getShardInfo();
         this.shouldReconnect = api.isAutoReconnect();
         this.reconnectQueue = reconnectQueue;
+        this.gatewayProviderFactory = gatewayProviderFactory == null ? new DefaultGatewayProviderFactory() : gatewayProviderFactory;
         setupHandlers();
         setupSendingThread();
         connect();
@@ -439,10 +445,18 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             if (gatewayUrl == null)
             {
-                gatewayUrl = getGateway();
+                if (gatewayProvider == null)
+                {
+                    gatewayProvider = gatewayProviderFactory.createGatewayProvider(api);
+                    if (gatewayProvider == null)
+                    {
+                        throw new IllegalArgumentException("IGatewayProviderFactory returned a null IGatewayProvider!");
+                    }
+                }
+                gatewayUrl = gatewayProvider.getGatewayUrl();
                 if (gatewayUrl == null)
                 {
-                    throw new RuntimeException("Could not fetch WS-Gateway!");
+                    throw new IllegalArgumentException("Could not fetch WS-Gateway!");
                 }
             }
             socket = api.getWebSocketFactory()
@@ -455,37 +469,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             //Completely fail here. We couldn't make the connection.
             throw new IllegalStateException(e);
-        }
-    }
-
-    protected String getGateway()
-    {
-        try
-        {
-            RestAction<String> gateway = new RestAction<String>(api, Route.Misc.GATEWAY.compile())
-            {
-                @Override
-                protected void handleResponse(Response response, Request<String> request)
-                {
-                    try
-                    {
-                        if (response.isOk())
-                            request.onSuccess(response.getObject().getString("url"));
-                        else
-                            request.onFailure(new Exception("Failed to get gateway url"));
-                    }
-                    catch (Exception e)
-                    {
-                        request.onFailure(e);
-                    }
-                }
-            };
-
-            return gateway.complete(false) + "?encoding=json&compress=zlib-stream&v=" + DISCORD_GATEWAY_VERSION;
-        }
-        catch (Exception ex)
-        {
-            return null;
         }
     }
 

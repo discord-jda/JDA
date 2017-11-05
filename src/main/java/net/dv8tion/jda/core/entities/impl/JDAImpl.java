@@ -39,6 +39,7 @@ import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.*;
+import net.dv8tion.jda.core.requests.factory.IGatewayProviderFactory;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.GuildAction;
 import net.dv8tion.jda.core.utils.Checks;
@@ -125,7 +126,7 @@ public class JDAImpl implements JDA
         this.jdaBot = accountType == AccountType.BOT ? new JDABotImpl(this) : null;
     }
 
-    public void login(String token, ShardInfo shardInfo, SessionReconnectQueue reconnectQueue) throws LoginException, RateLimitedException
+    public void login(String token, ShardInfo shardInfo, SessionReconnectQueue reconnectQueue, IGatewayProviderFactory gatewayProviderFactory) throws LoginException, RateLimitedException
     {
         setStatus(Status.LOGGING_IN);
         if (token == null || token.isEmpty())
@@ -136,7 +137,7 @@ public class JDAImpl implements JDA
         this.shardInfo = shardInfo;
         LOG.info("Login Successful!");
 
-        client = new WebSocketClient(this, reconnectQueue);
+        client = new WebSocketClient(this, reconnectQueue, gatewayProviderFactory);
 
         if (shutdownHook != null)
         {
