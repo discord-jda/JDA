@@ -47,7 +47,7 @@ public class DefaultShardManagerBuilder
     protected boolean enableVoice = true;
     protected boolean autoReconnect = true;
     protected IntFunction<Boolean> idleProvider = null;
-    protected int shardsTotal = 1;
+    protected int shardsTotal = -1;
     protected int maxReconnectDelay = 900;
     protected int corePoolSize = 2;
     protected Collection<Integer> shards = null;
@@ -599,7 +599,7 @@ public class DefaultShardManagerBuilder
 
     /**
      * This will set the total amount of shards the {@link DefaultShardManager DefaultShardManager} should use.
-     * <p> If this is set to {@code -1} JDA will automatically retrieve the recommended amount of shards from discord.
+     * <p> If this is set to {@code -1} JDA will automatically retrieve the recommended amount of shards from discord (default behavior).
      *
      * @param  shardsTotal
      *         The number of overall shards or {@code -1} if JDA should use the recommended amount from discord.
