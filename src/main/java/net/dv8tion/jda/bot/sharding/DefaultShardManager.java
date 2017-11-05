@@ -19,6 +19,7 @@ import com.neovisionaries.ws.client.WebSocketFactory;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import javax.security.auth.login.LoginException;
 
@@ -35,6 +36,7 @@ import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.SessionReconnectQueue;
+import net.dv8tion.jda.core.requests.WebSocketClient;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import net.dv8tion.jda.core.utils.tuple.Pair;
@@ -110,7 +112,17 @@ public class DefaultShardManager implements ShardManager
     /**
      * The queue of new shards waiting for creation.
      */
-    protected final Queue<Integer> queue = new ConcurrentLinkedQueue<>();
+    protected final Queue<Integer> loginQueue = new ConcurrentLinkedQueue<>();
+
+    /**
+     * The queue of shards waiting for reconnect.
+     */
+    protected final Queue<JDA> reconnectQueue = new ConcurrentLinkedQueue<>();
+
+    /**
+     * The queue that will be used by all shards to ensure reconnects don't hit the ratelimit.
+     */
+    protected final SessionReconnectQueue sessionReconnectQueue = new ForwardingSessionReconnectQueue(reconnectQueue::add);
 
     /**
      * The {@link net.dv8tion.jda.bot.utils.cache.ShardCacheView ShardCacheView} that holds all shards.
@@ -133,11 +145,6 @@ public class DefaultShardManager implements ShardManager
      * The {@link com.neovisionaries.ws.client.WebSocketFactory WebSocketFactory} that will be used by JDA's websocket client.
      */
     protected final WebSocketFactory wsFactory;
-
-    /**
-     * The queue that will be used by all shards to ensure reconnects don't hit the ratelimit.
-     */
-    protected final SessionReconnectQueue reconnectQueue;
 
     /**
      * Whether the Requester should retry when
@@ -232,8 +239,6 @@ public class DefaultShardManager implements ShardManager
      *         Whether or not auto reconnect should be enabled
      * @param  idleProvider
      *         Whether or not new sessions should be marked as afk on startup
-     * @param  reconnectQueue
-     *         The {@link net.dv8tion.jda.core.requests.SessionReconnectQueue SessionReconnectQueue}
      */
     protected DefaultShardManager(final int shardsTotal, final Collection<Integer> shardIds, final List<Object> listeners,
                                   final String token, final IEventManager eventManager, final IAudioSendFactory audioSendFactory,
@@ -241,8 +246,7 @@ public class DefaultShardManager implements ShardManager
                                   final OkHttpClient.Builder httpClientBuilder, final WebSocketFactory wsFactory,
                                   final ShardedRateLimiter shardedRateLimiter, final int maxReconnectDelay, final int corePoolSize,
                                   final boolean enableVoice, final boolean enableShutdownHook, final boolean enableBulkDeleteSplitting,
-                                  final boolean autoReconnect, final IntFunction<Boolean> idleProvider, final boolean retryOnTimeout,
-                                  final SessionReconnectQueue reconnectQueue)
+                                  final boolean autoReconnect, final IntFunction<Boolean> idleProvider, final boolean retryOnTimeout)
     {
         this.shardsTotal = shardsTotal;
         this.listeners = listeners;
@@ -262,7 +266,6 @@ public class DefaultShardManager implements ShardManager
         this.autoReconnect = autoReconnect;
         this.idleProvider = idleProvider;
         this.retryOnTimeout = retryOnTimeout;
-        this.reconnectQueue = reconnectQueue == null ? new SessionReconnectQueue() : reconnectQueue;
 
         if (shardsTotal != -1)
         {
@@ -270,12 +273,12 @@ public class DefaultShardManager implements ShardManager
             {
                 this.shards = new ShardCacheViewImpl(shardsTotal);
                 for (int i = 0; i < this.shardsTotal; i++)
-                    this.queue.offer(i);
+                    this.loginQueue.offer(i);
             }
             else
             {
                 this.shards = new ShardCacheViewImpl(shardIds.size());
-                shardIds.stream().distinct().sorted().forEach(this.queue::offer);
+                shardIds.stream().distinct().sorted().forEach(this.loginQueue::offer);
             }
         }
     }
@@ -290,7 +293,7 @@ public class DefaultShardManager implements ShardManager
     @Override
     public int getShardsQueued()
     {
-        return this.queue.size();
+        return this.loginQueue.size();
     }
 
     @Override
@@ -305,22 +308,22 @@ public class DefaultShardManager implements ShardManager
         JDAImpl jda = null;
         try
         {
-            if (this.queue.isEmpty())
+            if (this.loginQueue.isEmpty())
             {
                 this.shards = new ShardCacheViewImpl(this.shardsTotal);
                 for (int i = 0; i < this.shardsTotal; i++)
-                    this.queue.offer(i);
+                    this.loginQueue.offer(i);
             }
 
-            final int shardId = this.queue.peek();
+            final int shardId = this.loginQueue.peek();
 
             jda = this.buildInstance(shardId);
             this.shards.getMap().put(shardId, jda);
-            this.queue.remove(shardId);
+            this.loginQueue.remove(shardId);
         }
         catch (final RateLimitedException e)
         {
-            // do not remove 'shardId' from the queue and try the first one again after 5 seconds in the async thread
+            // do not remove 'shardId' from the loginQueue and try the first one again after 5 seconds in the async thread
         }
         catch (final Exception e)
         {
@@ -351,7 +354,7 @@ public class DefaultShardManager implements ShardManager
             if (jda != null)
             {
                 jda.shutdown();
-                this.queue.offer(shardId);
+                this.loginQueue.offer(shardId);
             }
         }
     }
@@ -366,7 +369,7 @@ public class DefaultShardManager implements ShardManager
         if (jda != null)
             jda.shutdown();
 
-        this.queue.add(shardId);
+        this.loginQueue.add(shardId);
     }
 
     @Override
@@ -409,58 +412,7 @@ public class DefaultShardManager implements ShardManager
     {
         Checks.notNegative(shardId, "shardId");
         Checks.check(shardId < this.shardsTotal, "shardId must be lower than shardsTotal");
-        this.queue.add(shardId);
-    }
-
-    protected void processQueue()
-    {
-        JDAImpl api = null;
-        try
-        {
-            int shardId = -1;
-
-            if (shards == null)
-            {
-                shardId = 0;
-            }
-            else
-            {
-                do
-                {
-                    final int i = this.queue.peek();
-                    if (this.shards.getMap().containsKey(i))
-                        this.queue.poll();
-                    else
-                        shardId = i;
-                }
-                while (shardId == -1 && !this.queue.isEmpty());
-            }
-
-            if (shardId == -1)
-                return;
-
-            api = this.buildInstance(shardId);
-            this.shards.getMap().put(shardId, api);
-            this.queue.remove(shardId);
-        }
-        // as this happens before removing the shardId if from the queue just try again after 5 seconds
-        catch (RateLimitedException e)
-        {
-            LOG.warn("Hit the login ratelimit while creating new JDA instances");
-        }
-        catch (LoginException e)
-        {
-            // this can only happen if the token has been changed
-            // in this case the ShardManager will just shutdown itself as there currently is no way of hot-swapping the token on a running JDA instance.
-            LOG.warn("The token has been invalidated and the ShardManager will shutdown!");
-            LOG.warn(e);
-            this.shutdown();
-        }
-        catch (final Exception e)
-        {
-            if (api != null)
-                api.shutdown();
-        }
+        this.loginQueue.add(shardId);
     }
 
     protected JDAImpl buildInstance(final int shardId) throws LoginException, RateLimitedException
@@ -500,13 +452,13 @@ public class DefaultShardManager implements ShardManager
                 this.shardsTotal = gateway.getRight();
 
                 for (int i = 1; i < shardsTotal; i++)
-                    queue.offer(i);
+                    loginQueue.offer(i);
             }
         }
 
         final JDA.ShardInfo shardInfo = new JDA.ShardInfo(shardId, this.shardsTotal);
 
-        final int shardTotal = jda.login(this.gatewayURL, shardInfo, this.reconnectQueue);
+        final int shardTotal = jda.login(this.gatewayURL, shardInfo, this.sessionReconnectQueue);
         if (this.shardsTotal == -1)
             this.shardsTotal = shardTotal;
 
@@ -550,5 +502,107 @@ public class DefaultShardManager implements ShardManager
         ShardManager.super.setStatusProvider(statusProvider);
 
         this.statusProvider = statusProvider;
+    }
+
+    public class ForwardingSessionReconnectQueue extends SessionReconnectQueue
+    {
+        private final Consumer<JDA> consumer;
+
+        public ForwardingSessionReconnectQueue(Consumer<JDA> consumer)
+        {
+            super(null);
+
+            this.consumer = consumer;
+        }
+
+        @Override
+        protected void appendSession(final WebSocketClient client)
+        {
+            this.consumer.accept(client.getJDA());
+        }
+
+        @Override
+        protected void runWorker() { /* just to overwrite */ }
+    }
+
+    protected boolean processQueue()
+    {
+        return processReconnectQueue() || processLoginQueue();
+    }
+
+    protected boolean processReconnectQueue()
+    {
+        JDA jda = reconnectQueue.poll();
+
+        if (jda == null)
+        {
+            return false;
+        }
+        else
+        {
+            ((JDAImpl) jda).getClient().reconnect(true, true);
+
+            try
+            {
+                while (jda.getStatus().ordinal() < JDA.Status.AWAITING_LOGIN_CONFIRMATION.ordinal())
+                    Thread.sleep(50);
+            }
+            catch (InterruptedException e) { /* ignored */ }
+
+            return true;
+        }
+    }
+
+    protected boolean processLoginQueue()
+    {
+        JDAImpl api = null;
+        try
+        {
+            int shardId = -1;
+
+            if (shards == null)
+            {
+                shardId = 0;
+            }
+            else
+            {
+                do
+                {
+                    final int i = this.loginQueue.peek();
+                    if (this.shards.getMap().containsKey(i))
+                        this.loginQueue.poll();
+                    else
+                        shardId = i;
+                }
+                while (shardId == -1 && !this.loginQueue.isEmpty());
+            }
+
+            if (shardId == -1)
+                return false;
+
+            api = this.buildInstance(shardId);
+            this.shards.getMap().put(shardId, api);
+            this.loginQueue.remove(shardId);
+        }
+        // as this happens before removing the shardId if from the loginQueue just try again after 5 seconds
+        catch (RateLimitedException e)
+        {
+            LOG.warn("Hit the login ratelimit while creating new JDA instances");
+        }
+        catch (LoginException e)
+        {
+            // this can only happen if the token has been changed
+            // in this case the ShardManager will just shutdown itself as there currently is no way of hot-swapping the token on a running JDA instance.
+            LOG.warn("The token has been invalidated and the ShardManager will shutdown!");
+            LOG.warn(e);
+            DefaultShardManager.this.shutdown();
+        }
+        catch (final Exception e)
+        {
+            if (api != null)
+                api.shutdown();
+        }
+
+        return true;
     }
 }

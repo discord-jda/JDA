@@ -56,7 +56,6 @@ public class DefaultShardManagerBuilder
     protected IntFunction<Game> gameProvider = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
     protected IntFunction<OnlineStatus> statusProvider = null;
-    protected SessionReconnectQueue reconnectQueue;
     protected ShardedRateLimiter shardedRateLimiter = null;
     protected String token = null;
     protected WebSocketFactory wsFactory = null;
@@ -138,7 +137,7 @@ public class DefaultShardManagerBuilder
         final DefaultShardManager manager = new DefaultShardManager(this.shardsTotal, this.shards, this.listeners, this.token, this.eventManager,
             this.audioSendFactory, this.gameProvider, this.statusProvider, this.httpClientBuilder, this.wsFactory, this.shardedRateLimiter,
             this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting,
-            this.autoReconnect, this.idleProvider, this.retryOnTimeout, this.reconnectQueue);
+            this.autoReconnect, this.idleProvider, this.retryOnTimeout);
 
         manager.login();
 
@@ -467,23 +466,6 @@ public class DefaultShardManagerBuilder
         Checks.check(maxReconnectDelay >= 32, "Max reconnect delay must be 32 seconds or greater. You provided %d.", maxReconnectDelay);
 
         this.maxReconnectDelay = maxReconnectDelay;
-        return this;
-    }
-
-    /**
-     * This can be used to set a custom queue that will be used to reconnect sessions.
-     * <br>This will ensure that sessions do not reconnect at the same time!
-     *
-     * <p><b>If none is provided the ShardManager will use fall back to JDA's default implementation!</b>
-     *
-     * @param  queue
-     *         {@link net.dv8tion.jda.core.requests.SessionReconnectQueue SessionReconnectQueue} to use
-     *
-     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
-     */
-    public DefaultShardManagerBuilder setReconnectQueue(SessionReconnectQueue queue)
-    {
-        this.reconnectQueue = queue;
         return this;
     }
 

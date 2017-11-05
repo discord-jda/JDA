@@ -70,7 +70,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected final Set<String> cfRays = new HashSet<>();
     protected final Set<String> traces = new HashSet<>();
 
-    protected WebSocket socket;
+    public WebSocket socket;
     protected String sessionId = null;
     protected Inflater zlibContext = new Inflater();
     protected ByteArrayOutputStream readBuffer;
@@ -571,9 +571,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         reconnect(false, true);
     }
 
-    //callFromQueue - whether this was in SessionReconnectQueue and got polled
-    //shouldHandleIdentify - whether SessionReconnectQueue already handled an IDENTIFY rate limit for this session
-    protected void reconnect(boolean callFromQueue, boolean shouldHandleIdentify)
+    /**
+     * @param  callFromQueue
+     *         whether this was in SessionReconnectQueue and got polled
+     * @param  shouldHandleIdentify
+     *         whether SessionReconnectQueue already handled an IDENTIFY rate limit for this session
+     */
+    public void reconnect(boolean callFromQueue, boolean shouldHandleIdentify)
     {
         if (shutdown)
         {
