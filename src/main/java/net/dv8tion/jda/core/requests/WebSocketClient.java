@@ -418,7 +418,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         shutdown = true;
         shouldReconnect = false;
         if (reconnectQueue != null) // remove if in queue
-            reconnectQueue.reconnectQueue.remove(this);
+            reconnectQueue.removeSession(this);
         close(1000, "Shutting down");
     }
 

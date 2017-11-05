@@ -46,6 +46,11 @@ public class SessionReconnectQueue
         runWorker();
     }
 
+    protected void removeSession(final WebSocketClient client)
+    {
+        reconnectQueue.remove(client);
+    }
+
     protected void runWorker()
     {
         synchronized (lock)

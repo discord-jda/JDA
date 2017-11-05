@@ -117,7 +117,7 @@ public class DefaultShardManager implements ShardManager
     /**
      * The queue that will be used by all shards to ensure reconnects don't hit the ratelimit.
      */
-    protected final SessionReconnectQueue sessionReconnectQueue = new ForwardingSessionReconnectQueue(jda -> queue.add(jda.getShardInfo().getShardId()));
+    protected final SessionReconnectQueue sessionReconnectQueue = new ForwardingSessionReconnectQueue(jda -> queue.add(jda.getShardInfo().getShardId()), jda -> queue.remove(jda.getShardInfo().getShardId()));
 
     /**
      * The {@link net.dv8tion.jda.bot.utils.cache.ShardCacheView ShardCacheView} that holds all shards.
@@ -547,19 +547,27 @@ public class DefaultShardManager implements ShardManager
 
     public class ForwardingSessionReconnectQueue extends SessionReconnectQueue
     {
-        private final Consumer<JDA> consumer;
+        private final Consumer<JDA> appender;
+        private final Consumer<JDA> remover;
 
-        public ForwardingSessionReconnectQueue(Consumer<JDA> consumer)
+        public ForwardingSessionReconnectQueue(Consumer<JDA> appender, Consumer<JDA> remover)
         {
             super(null);
 
-            this.consumer = consumer;
+            this.appender = appender == null ? jda -> {} : appender;
+            this.remover = remover == null ? jda -> {} : remover;
         }
 
         @Override
         protected void appendSession(final WebSocketClient client)
         {
-            this.consumer.accept(client.getJDA());
+            this.appender.accept(client.getJDA());
+        }
+
+        @Override
+        protected void removeSession(final WebSocketClient client)
+        {
+            this.remover.accept(client.getJDA());
         }
 
         @Override
