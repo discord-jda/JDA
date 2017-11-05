@@ -395,18 +395,21 @@ public class MessageAction extends RestAction<Message> implements Appendable
      *         or if this MessageAction will perform an edit operation on an existing Message (see {@link #isEdit()})
      * @throws java.lang.IllegalArgumentException
      *         If the provided data is {@code null} or the provided name is blank or {@code null}
-     *         or if the provided data exceeds the maximum file size of 8MiB
+     *         or if the provided data exceeds the maximum file size of the currently logged in account
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is targeting a TextChannel and the currently logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}
      *
      * @return Updated MessageAction for chaining convenience
+     *
+     * @see    net.dv8tion.jda.core.entities.SelfUser#getAllowedFileSize() SelfUser.getAllowedFileSize()
      */
     @CheckReturnValue
     public MessageAction addFile(final byte[] data, final String name)
     {
         Checks.notNull(data, "Data");
-        Checks.check(data.length <= Message.MAX_FILE_SIZE, "File may not exceed the maximum file length of %dMiB!", Message.MAX_FILE_SIZE);
+        final long maxSize = getJDA().getSelfUser().getAllowedFileSize();
+        Checks.check(data.length <= maxSize, "File may not exceed the maximum file length of %d bytes!", maxSize);
         return addFile(new ByteArrayInputStream(data), name);
     }
 
@@ -423,12 +426,14 @@ public class MessageAction extends RestAction<Message> implements Appendable
      *         If the file limit of {@value Message#MAX_FILE_AMOUNT} has been reached prior to calling this method,
      *         or if this MessageAction will perform an edit operation on an existing Message (see {@link #isEdit()})
      * @throws java.lang.IllegalArgumentException
-     *         If the provided file is {@code null} or if the provided File is bigger than 8MiB
+     *         If the provided file is {@code null} or if the provided File is bigger than the maximum file size of the currently logged in account
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is targeting a TextChannel and the currently logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}
      *
      * @return Updated MessageAction for chaining convenience
+     *
+     * @see    net.dv8tion.jda.core.entities.SelfUser#getAllowedFileSize() SelfUser.getAllowedFileSize()
      */
     @CheckReturnValue
     public MessageAction addFile(final File file)
@@ -454,19 +459,23 @@ public class MessageAction extends RestAction<Message> implements Appendable
      *         or if this MessageAction will perform an edit operation on an existing Message (see {@link #isEdit()})
      * @throws java.lang.IllegalArgumentException
      *         If the provided file is {@code null} or the provided name is blank or {@code null}
-     *         or if the provided file is bigger than 8MiB, or if the provided file does not exist/ is not readable
+     *         or if the provided file is bigger than the maximum file size of the currently logged in account,
+     *         or if the provided file does not exist/ is not readable
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this is targeting a TextChannel and the currently logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}
      *
      * @return Updated MessageAction for chaining convenience
+     *
+     * @see    net.dv8tion.jda.core.entities.SelfUser#getAllowedFileSize() SelfUser.getAllowedFileSize()
      */
     @CheckReturnValue
     public MessageAction addFile(final File file, final String name)
     {
         Checks.notNull(file, "File");
         Checks.check(file.exists() && file.canRead(), "Provided file either does not exist or cannot be read from!");
-        Checks.check(file.length() <= Message.MAX_FILE_SIZE, "File may not exceed the maximum file length of %dMiB!", Message.MAX_FILE_SIZE);
+        final long maxSize = getJDA().getSelfUser().getAllowedFileSize();
+        Checks.check(file.length() <= maxSize, "File may not exceed the maximum file length of %d bytes!", maxSize);
         try
         {
             return addFile(new FileInputStream(file), name);

@@ -97,21 +97,18 @@ import java.util.regex.Pattern;
 public interface Message extends ISnowflake, Formattable
 {
     /**
-     * Useful constant for the max allowed file size for message attachments on normal accounts. Value: {@value #MAX_FILE_SIZE} Bytes (8 MiB)
-     */
-    int MAX_FILE_SIZE = 8 << 20; // 8 MiB
-
-    /**
-     * Useful constant for the max allowed file size for message attachments on nitro accounts. Value: {@value #MAX_FILE_SIZE_NITRO} Bytes (50 MiB)
-     */
-    int MAX_FILE_SIZE_NITRO = 50 << 20; // 50 MiB
-
-    /**
      * The maximum sendable file size (8 MiB)
      *
      * @see net.dv8tion.jda.core.requests.restaction.MessageAction#addFile(java.io.File) MessageAction.addFile(...)
      */
     int MAX_FILE_SIZE = 8 << 20;
+
+    /**
+     * The maximum sendable file size for nitro (50 MiB)
+     *
+     * @see net.dv8tion.jda.core.requests.restaction.MessageAction#addFile(java.io.File) MessageAction.addFile(...)
+     */
+    int MAX_FILE_SIZE_NITRO = 50 << 20;
 
     /**
      * The maximum amount of files sendable within a single message ({@value})
