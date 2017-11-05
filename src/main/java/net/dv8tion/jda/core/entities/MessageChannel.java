@@ -382,7 +382,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>Provided {@code file} is null.</li>
      *             <li>Provided {@code file} does not exist.</li>
      *             <li>Provided {@code file} is unreadable.</li>
-     *             <li>Provided {@code file} is greater than 8MB.</li>
+     *             <li>Provided {@code file} is greater than 8MiB for normal and 50MiB for nitro accounts.</li>
      *             <li>Provided {@link net.dv8tion.jda.core.entities.Message Message} is not {@code null} <b>and</b>
      *                 contains a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} which
      *                 is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
@@ -437,7 +437,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>Provided {@code file} is null.</li>
      *             <li>Provided {@code file} does not exist.</li>
      *             <li>Provided {@code file} is unreadable.</li>
-     *             <li>Provided {@code file} is greater than 8MB.</li>
+     *             <li>Provided {@code file} is greater than 8MiB for normal and 50MiB for nitro accounts.</li>
      *             <li>Provided {@link net.dv8tion.jda.core.entities.Message Message} is not {@code null} <b>and</b>
      *                 contains a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} which
      *                 is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
@@ -518,7 +518,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
-     *             <li>If the provided filename is {@code null} or {@code empty} or the provided data is larger than 8MB.</li>
+     *             <li>If the provided filename is {@code null} or {@code empty} or the provided data is larger than 8MiB on normal or 50MiB on nitro accounts.</li>
      *             <li>If the provided {@link net.dv8tion.jda.core.entities.Message Message}
      *                 contains an {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed}
      *                 that is not {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
