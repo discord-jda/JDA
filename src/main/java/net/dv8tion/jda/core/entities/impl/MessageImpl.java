@@ -104,7 +104,7 @@ public class MessageImpl implements Message
         Checks.notNull(emote, "Emote");
 
         MessageReaction reaction = reactions.parallelStream()
-                .filter(r -> Objects.equals(r.getEmote().getId(), emote.getId()))
+                .filter(r -> Objects.equals(r.getReactionEmote().getId(), emote.getId()))
                 .findFirst().orElse(null);
 
         if (reaction == null)
@@ -127,7 +127,7 @@ public class MessageImpl implements Message
         Checks.notEmpty(unicode, "Provided Unicode");
 
         MessageReaction reaction = reactions.parallelStream()
-                .filter(r -> Objects.equals(r.getEmote().getName(), unicode))
+                .filter(r -> Objects.equals(r.getReactionEmote().getName(), unicode))
                 .findFirst().orElse(null);
 
         if (reaction != null && reaction.isSelf())

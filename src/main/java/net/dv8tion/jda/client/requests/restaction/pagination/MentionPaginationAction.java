@@ -40,6 +40,16 @@ import java.util.List;
  * Minimum - 1
  * <br>Maximum - 100
  *
+ * <h1>Example</h1>
+ * <pre><code>
+ * MentionPaginationAction mentions = guild.getRecentMentions();
+ * mentions.setEveryone(false);
+ * for (Message message : mentions)
+ * {
+ *     System.out.printf("%#s: %s\n", message.getAuthor(), message.getContent());
+ * }
+ * </code></pre>
+ *
  * @since  3.0
  * @author Florian Spieß
  */

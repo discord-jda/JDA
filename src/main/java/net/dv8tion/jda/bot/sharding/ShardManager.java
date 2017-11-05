@@ -19,6 +19,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.stream.Collectors;
+
 import net.dv8tion.jda.bot.entities.ApplicationInfo;
 import net.dv8tion.jda.bot.utils.cache.ShardCacheView;
 import net.dv8tion.jda.core.JDA;
@@ -27,6 +28,7 @@ import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 
 /**
@@ -182,7 +184,7 @@ public interface ShardManager
      */
     default SnowflakeCacheView<Category> getCategoryCache()
     {
-        return SnowflakeCacheView.all(() -> this.getShardCache().stream().map(JDA::getCategoryCache));
+        return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getCategoryCache));
     }
 
     /**
@@ -225,7 +227,7 @@ public interface ShardManager
      */
     default SnowflakeCacheView<Emote> getEmoteCache()
     {
-        return SnowflakeCacheView.all(() -> this.getShardCache().stream().map(JDA::getEmoteCache));
+        return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getEmoteCache));
     }
 
     /**
@@ -300,7 +302,7 @@ public interface ShardManager
      */
     default SnowflakeCacheView<Guild> getGuildCache()
     {
-        return SnowflakeCacheView.all(() -> this.getShardCache().stream().map(JDA::getGuildCache));
+        return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getGuildCache));
     }
     /**
      * An unmodifiable List of all {@link net.dv8tion.jda.core.entities.Guild Guilds} that the logged account is connected to.
@@ -386,7 +388,7 @@ public interface ShardManager
      */
     default SnowflakeCacheView<PrivateChannel> getPrivateChannelCache()
     {
-        return SnowflakeCacheView.all(() -> this.getShardCache().stream().map(JDA::getPrivateChannelCache));
+        return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getPrivateChannelCache));
     }
 
     /**
@@ -437,7 +439,7 @@ public interface ShardManager
      */
     default SnowflakeCacheView<Role> getRoleCache()
     {
-        return SnowflakeCacheView.all(() -> this.getShardCache().stream().map(JDA::getRoleCache));
+        return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getRoleCache));
     }
 
     /**
@@ -593,7 +595,7 @@ public interface ShardManager
      */
     default SnowflakeCacheView<TextChannel> getTextChannelCache()
     {
-        return SnowflakeCacheView.all(() -> this.getShardCache().stream().map(JDA::getTextChannelCache));
+        return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getTextChannelCache));
     }
 
     /**
@@ -649,7 +651,7 @@ public interface ShardManager
      */
     default SnowflakeCacheView<User> getUserCache()
     {
-        return SnowflakeCacheView.all(() -> this.getShardCache().stream().map(JDA::getUserCache));
+        return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getUserCache));
     }
 
     /**
@@ -704,7 +706,7 @@ public interface ShardManager
      */
     default SnowflakeCacheView<VoiceChannel> getVoiceChannelCache()
     {
-        return SnowflakeCacheView.all(() -> this.getShardCache().stream().map(JDA::getVoiceChannelCache));
+        return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getVoiceChannelCache));
     }
 
     /**

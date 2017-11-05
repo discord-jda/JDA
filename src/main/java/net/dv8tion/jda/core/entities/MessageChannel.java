@@ -390,6 +390,21 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>This is a shortcut to {@link #sendFile(java.io.File, String, Message)} by way of using {@link java.io.File#getName()}.
      * <pre>sendFile(file, file.getName(), message)</pre>
      *
+     * <p><b>Uploading images with Embeds</b>
+     * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
+     *
+     * <p><u>Example</u>
+     * <pre><code>
+     * MessageChannel channel; // = reference of a MessageChannel
+     * MessageBuilder message = new MessageBuilder();
+     * EmbedBuilder embed = new EmbedBuilder();
+     * File file = new File("cat.gif");
+     * embed.setImage("attachment://cat.gif")
+     *      .setDescription("This is a cute cat :3");
+     * message.setEmbed(embed.build());
+     * channel.sendFile(file, message.build()).queue();
+     * </code></pre>
+     *
      * <p>For {@link net.dv8tion.jda.core.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String, Message)}.
      *
      * @param  file
@@ -446,6 +461,21 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         a full name for the file and instead ONLY provide the extension like "png" or "gif" and Discord will generate
      *         a name for the upload and append the fileName as the extension.</li>
      * </ol>
+     *
+     * <p><b>Uploading images with Embeds</b>
+     * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
+     *
+     * <p><u>Example</u>
+     * <pre><code>
+     * MessageChannel channel; // = reference of a MessageChannel
+     * MessageBuilder message = new MessageBuilder();
+     * EmbedBuilder embed = new EmbedBuilder();
+     * File file = new File("cat_01.gif");
+     * embed.setImage("attachment://cat.gif") // we specify this in sendFile as "cat.gif"
+     *      .setDescription("This is a cute cat :3");
+     * message.setEmbed(embed.build());
+     * channel.sendFile(file, "cat.gif", message.build()).queue();
+     * </code></pre>
      *
      * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -555,6 +585,21 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>For information about the {@code fileName} parameter, Refer to the documentation for {@link #sendFile(java.io.File, String, Message)}.
      * <br>For {@link net.dv8tion.jda.core.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String, Message)}.
      *
+     * <p><b>Uploading images with Embeds</b>
+     * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
+     *
+     * <p><u>Example</u>
+     * <pre><code>
+     * MessageChannel channel; // = reference of a MessageChannel
+     * MessageBuilder message = new MessageBuilder();
+     * EmbedBuilder embed = new EmbedBuilder();
+     * InputStream file = new URL("https://http.cat/500").openStream();
+     * embed.setImage("attachment://cat.png") // we specify this in sendFile as "cat.png"
+     *      .setDescription("This is a cute cat :3");
+     * message.setEmbed(embed.build());
+     * channel.sendFile(file, "cat.png", message.build()).queue();
+     * </code></pre>
+     *
      * @param  data
      *         The InputStream data to upload to the {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.
      * @param  fileName
@@ -627,6 +672,21 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * <p>For information about the {@code fileName} parameter, Refer to the documentation for {@link #sendFile(java.io.File, String, Message)}.
      * <br>For {@link net.dv8tion.jda.core.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String, Message)}.
+     *
+     * <p><b>Uploading images with Embeds</b>
+     * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
+     *
+     * <p><u>Example</u>
+     * <pre><code>
+     * MessageChannel channel; // = reference of a MessageChannel
+     * MessageBuilder message = new MessageBuilder();
+     * EmbedBuilder embed = new EmbedBuilder();
+     * byte[] file = IOUtil.readFully(new URL("https://http.cat/500").openStream());
+     * embed.setImage("attachment://cat.png") // we specify this in sendFile as "cat.png"
+     *      .setDescription("This is a cute cat :3");
+     * message.setEmbed(embed.build());
+     * channel.sendFile(file, "cat.png", message.build()).queue();
+     * </code></pre>
      *
      * @param  data
      *         The {@code byte[]} data to upload to the {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.
