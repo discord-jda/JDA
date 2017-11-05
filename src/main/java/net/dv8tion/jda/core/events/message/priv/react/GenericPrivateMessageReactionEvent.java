@@ -46,6 +46,6 @@ public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEve
 
     public MessageReaction.ReactionEmote getReactionEmote()
     {
-        return reaction.getEmote();
+        return reaction.getReactionEmote();
     }
 }

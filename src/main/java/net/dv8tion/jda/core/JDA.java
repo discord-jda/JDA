@@ -1047,15 +1047,15 @@ public interface JDA
      */
     void shutdownNow();
 
-    /**
-     * Installs an auxiliary cable into the given port of your system.
-     *
-     * @param  port
-     *         The port in which the cable should be installed.
-     *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}{@literal <}{@link Void}{@literal >}
-     */
-    AuditableRestAction<Void> installAuxiliaryCable(int port);
+    ///**
+    // * Installs an auxiliary cable into the given port of your system.
+    // *
+    // * @param  port
+    // *         The port in which the cable should be installed.
+    // *
+    // * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}{@literal <}{@link Void}{@literal >}
+    // */
+    //AuditableRestAction<Void> installAuxiliaryCable(int port);
 
     /**
      * The {@link net.dv8tion.jda.core.AccountType} of the currently logged in account.

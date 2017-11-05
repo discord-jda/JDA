@@ -15,7 +15,6 @@
  */
 package net.dv8tion.jda.core.handle;
 
-import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -47,7 +46,7 @@ public class GuildUpdateHandler extends SocketHandler
         String name = content.getString("name");
         String iconId = content.isNull("icon") ? null : content.getString("icon");
         String splashId = content.isNull("splash") ? null : content.getString("splash");
-        Region region = Region.fromKey(content.getString("region"));
+        String region = content.getString("region");
         Guild.VerificationLevel verificationLevel = Guild.VerificationLevel.fromKey(content.getInt("verification_level"));
         Guild.NotificationLevel notificationLevel = Guild.NotificationLevel.fromKey(content.getInt("default_message_notifications"));
         Guild.MFALevel mfaLevel = Guild.MFALevel.fromKey(content.getInt("mfa_level"));
@@ -95,14 +94,14 @@ public class GuildUpdateHandler extends SocketHandler
                             api, responseNumber,
                             guild, oldSplashId));
         }
-        if (!Objects.equals(region, guild.getRegion()))
+        if (!Objects.equals(region, guild.getRegionRaw()))
         {
-            Region oldRegion = guild.getRegion();
+            String oldRegion = guild.getRegionRaw();
             guild.setRegion(region);
             api.getEventManager().handle(
                     new GuildUpdateRegionEvent(
                             api, responseNumber,
-                            guild, oldRegion));
+                            guild, oldRegion, region));
         }
         if (!Objects.equals(verificationLevel, guild.getVerificationLevel()))
         {

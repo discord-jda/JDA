@@ -133,45 +133,4 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
         @Override
         protected void handleResponse(Response response, Request<T> request) { }
     }
-
-    /**
-     * Specialized form of {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction} that is used to provide information that
-     * an error has occurred while attempting to execute a request.
-     * <br>Basically: Allows you to provide an exception directly to the failure consumer.
-     *
-     * @param <T>
-     *        The generic response type for this RestAction
-     */
-    public static class FailedRestAction<T> extends AuditableRestAction<T>
-    {
-        private final Throwable throwable;
-
-        public FailedRestAction(Throwable throwable)
-        {
-            super(null, null);
-            this.throwable = throwable;
-        }
-
-        @Override
-        public void queue(Consumer<T> success, Consumer<Throwable> failure)
-        {
-            if (failure != null)
-                failure.accept(throwable);
-        }
-
-        @Override
-        public RequestFuture<T> submit(boolean shouldQueue)
-        {
-            return new RestFuture<>(throwable);
-        }
-
-        @Override
-        public T complete(boolean shouldQueue)
-        {
-            throw new RuntimeException(throwable);
-        }
-
-        @Override
-        protected void handleResponse(Response response, Request<T> request) {}
-    }
 }

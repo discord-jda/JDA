@@ -420,6 +420,23 @@ public class EmbedBuilder
      *
      * <p><b><a href="http://i.imgur.com/Zc3qwqB.png">Example</a></b>
      *
+     * <p><b>Uploading images with Embeds</b>
+     * <br>When uploading an <u>image</u>
+     * (using {@link net.dv8tion.jda.core.entities.MessageChannel#sendFile(java.io.File, net.dv8tion.jda.core.entities.Message) MessageChannel.sendFile(...)})
+     * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
+     *
+     * <p><u>Example</u>
+     * <pre><code>
+     * MessageChannel channel; // = reference of a MessageChannel
+     * MessageBuilder message = new MessageBuilder();
+     * EmbedBuilder embed = new EmbedBuilder();
+     * InputStream file = new URL("https://http.cat/500").openStream();
+     * embed.setThumbnail("attachment://cat.png") // we specify this in sendFile as "cat.png"
+     *      .setDescription("This is a cute cat :3");
+     * message.setEmbed(embed.build());
+     * channel.sendFile(file, "cat.png", message.build()).queue();
+     * </code></pre>
+     *
      * @param  url
      *         the url of the thumbnail of the embed
      *
@@ -450,6 +467,23 @@ public class EmbedBuilder
      *
      * <p><b><a href="http://i.imgur.com/2hzuHFJ.png">Example</a></b>
      *
+     * <p><b>Uploading images with Embeds</b>
+     * <br>When uploading an <u>image</u>
+     * (using {@link net.dv8tion.jda.core.entities.MessageChannel#sendFile(java.io.File, net.dv8tion.jda.core.entities.Message) MessageChannel.sendFile(...)})
+     * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
+     *
+     * <p><u>Example</u>
+     * <pre><code>
+     * MessageChannel channel; // = reference of a MessageChannel
+     * MessageBuilder message = new MessageBuilder();
+     * EmbedBuilder embed = new EmbedBuilder();
+     * InputStream file = new URL("https://http.cat/500").openStream();
+     * embed.setImage("attachment://cat.png") // we specify this in sendFile as "cat.png"
+     *      .setDescription("This is a cute cat :3");
+     * message.setEmbed(embed.build());
+     * channel.sendFile(file, "cat.png", message.build()).queue();
+     * </code></pre>
+     *
      * @param  url
      *         the url of the image of the embed
      *
@@ -460,6 +494,8 @@ public class EmbedBuilder
      *         </ul>
      *
      * @return the builder after the image has been set
+     *
+     * @see    net.dv8tion.jda.core.entities.MessageChannel#sendFile(java.io.File, String, net.dv8tion.jda.core.entities.Message) MessageChannel.sendFile(...)
      */
     public EmbedBuilder setImage(String url)
     {
@@ -478,8 +514,67 @@ public class EmbedBuilder
     /**
      * Sets the Author of the embed. The author appears in the top left of the embed and can have a small
      * image beside it along with the author's name being made clickable by way of providing a url.
+     * This convenience method just sets the name.
      *
      * <p><b><a href="http://i.imgur.com/JgZtxIM.png">Example</a></b>
+     *
+     * @param  name
+     *         the name of the author of the embed. If this is not set, the author will not appear in the embed
+     *
+     * @return the builder after the author has been set
+     */
+    public EmbedBuilder setAuthor(String name)
+    {
+        return setAuthor(name, null, null);
+    }
+
+    /**
+     * Sets the Author of the embed. The author appears in the top left of the embed and can have a small
+     * image beside it along with the author's name being made clickable by way of providing a url.
+     * This convenience method just sets the name and the url.
+     *
+     * <p><b><a href="http://i.imgur.com/JgZtxIM.png">Example</a></b>
+     *
+     * @param  name
+     *         the name of the author of the embed. If this is not set, the author will not appear in the embed
+     * @param  url
+     *         the url of the author of the embed
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the length of {@code url} is longer than {@link net.dv8tion.jda.core.entities.MessageEmbed#URL_MAX_LENGTH}.</li>
+     *             <li>If the provided {@code url} is not a properly formatted http or https url.</li>
+     *         </ul>
+     *
+     * @return the builder after the author has been set
+     */
+    public EmbedBuilder setAuthor(String name, String url)
+    {
+        return setAuthor(name, url, null);
+    }
+
+    /**
+     * Sets the Author of the embed. The author appears in the top left of the embed and can have a small
+     * image beside it along with the author's name being made clickable by way of providing a url.
+     *
+     * <p><b><a href="http://i.imgur.com/JgZtxIM.png">Example</a></b>
+     *
+     * <p><b>Uploading images with Embeds</b>
+     * <br>When uploading an <u>image</u>
+     * (using {@link net.dv8tion.jda.core.entities.MessageChannel#sendFile(java.io.File, net.dv8tion.jda.core.entities.Message) MessageChannel.sendFile(...)})
+     * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
+     *
+     * <p><u>Example</u>
+     * <pre><code>
+     * MessageChannel channel; // = reference of a MessageChannel
+     * MessageBuilder message = new MessageBuilder();
+     * EmbedBuilder embed = new EmbedBuilder();
+     * InputStream file = new URL("https://http.cat/500").openStream();
+     * embed.setAuthor("Minn", null, "attachment://cat.png") // we specify this in sendFile as "cat.png"
+     *      .setDescription("This is a cute cat :3");
+     * message.setEmbed(embed.build());
+     * channel.sendFile(file, "cat.png", message.build()).queue();
+     * </code></pre>
      *
      * @param  name
      *         the name of the author of the embed. If this is not set, the author will not appear in the embed
@@ -519,6 +614,23 @@ public class EmbedBuilder
      * Sets the Footer of the embed.
      *
      * <p><b><a href="http://i.imgur.com/jdf4sbi.png">Example</a></b>
+     *
+     * <p><b>Uploading images with Embeds</b>
+     * <br>When uploading an <u>image</u>
+     * (using {@link net.dv8tion.jda.core.entities.MessageChannel#sendFile(java.io.File, net.dv8tion.jda.core.entities.Message) MessageChannel.sendFile(...)})
+     * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
+     *
+     * <p><u>Example</u>
+     * <pre><code>
+     * MessageChannel channel; // = reference of a MessageChannel
+     * MessageBuilder message = new MessageBuilder();
+     * EmbedBuilder embed = new EmbedBuilder();
+     * InputStream file = new URL("https://http.cat/500").openStream();
+     * embed.setFooter("Cool footer!", "attachment://cat.png") // we specify this in sendFile as "cat.png"
+     *      .setDescription("This is a cute cat :3");
+     * message.setEmbed(embed.build());
+     * channel.sendFile(file, "cat.png", message.build()).queue();
+     * </code></pre>
      *
      * @param  text
      *         the text of the footer of the embed. If this is not set, the footer will not appear in the embed.

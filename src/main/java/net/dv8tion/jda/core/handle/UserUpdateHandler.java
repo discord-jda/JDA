@@ -42,6 +42,12 @@ public class UserUpdateHandler extends SocketHandler
         Boolean verified = content.has("verified") ? content.getBoolean("verified") : null;
         Boolean mfaEnabled = content.has("mfa_enabled") ? content.getBoolean("mfa_enabled") : null;
 
+        //Client only
+        String email = !content.isNull("email") ? content.getString("email") : null;
+        Boolean mobile = content.has("mobile") ? content.getBoolean("mobile") : null; // mobile device
+        Boolean nitro = content.has("premium") ? content.getBoolean("premium") : null; // nitro
+        String phoneNumber = !content.isNull("phone") ? content.getString("phone") : null; // verified phone number (verification level !)
+
         if (!Objects.equals(name, self.getName()) || !Objects.equals(discriminator, self.getDiscriminator()))
         {
             String oldName = self.getName();
@@ -49,51 +55,83 @@ public class UserUpdateHandler extends SocketHandler
             self.setName(name);
             self.setDiscriminator(discriminator);
             api.getEventManager().handle(
-                    new SelfUpdateNameEvent(
-                            api, responseNumber,
-                            oldName, oldDiscriminator));
+                new SelfUpdateNameEvent(
+                    api, responseNumber,
+                    oldName, oldDiscriminator));
         }
+
         if (!Objects.equals(avatarId, self.getAvatarId()))
         {
             String oldAvatarId = self.getAvatarId();
             self.setAvatarId(avatarId);
             api.getEventManager().handle(
-                    new SelfUpdateAvatarEvent(
-                            api, responseNumber,
-                            oldAvatarId));
+                new SelfUpdateAvatarEvent(
+                    api, responseNumber,
+                    oldAvatarId));
         }
+
         if (verified != null && verified != self.isVerified())
         {
             boolean wasVerified = self.isVerified();
             self.setVerified(verified);
             api.getEventManager().handle(
-                    new SelfUpdateVerifiedEvent(
-                            api, responseNumber,
-                            wasVerified));
+                new SelfUpdateVerifiedEvent(
+                    api, responseNumber,
+                    wasVerified));
         }
+
         if (mfaEnabled != null && mfaEnabled != self.isMfaEnabled())
         {
             boolean wasMfaEnabled = self.isMfaEnabled();
             self.setMfaEnabled(mfaEnabled);
             api.getEventManager().handle(
-                    new SelfUpdateMFAEvent(
-                            api, responseNumber,
-                            wasMfaEnabled));
-        }
-        if (api.getAccountType() == AccountType.CLIENT)
-        {
-            //Client only
-            String email = content.isNull("email") ? null : content.getString("email");
-            if (Objects.equals(email, self.getEmail()))
-                return null;
-            String oldEmail = self.getEmail();
-            self.setEmail(email);
-            api.getEventManager().handle(
-                    new SelfUpdateEmailEvent(
-                            api, responseNumber,
-                            oldEmail));
+                new SelfUpdateMFAEvent(
+                    api, responseNumber,
+                    wasMfaEnabled));
         }
 
+        if (api.getAccountType() == AccountType.CLIENT)
+        {
+            if (!Objects.equals(email, self.getEmail()))
+            {
+                String oldEmail = self.getEmail();
+                self.setEmail(email);
+                api.getEventManager().handle(
+                    new SelfUpdateEmailEvent(
+                        api, responseNumber,
+                        oldEmail));
+            }
+
+            if (mobile != null && mobile != self.isMobile())
+            {
+                boolean oldMobile = self.isMobile();
+                self.setMobile(mobile);
+                api.getEventManager().handle(
+                    new SelfUpdateMobileEvent(
+                        api, responseNumber,
+                        oldMobile));
+            }
+
+            if (nitro != null && nitro != self.isNitro())
+            {
+                boolean oldNitro = self.isNitro();
+                self.setNitro(nitro);
+                api.getEventManager().handle(
+                    new SelfUpdateNitroEvent(
+                        api, responseNumber,
+                        oldNitro));
+            }
+
+            if (!Objects.equals(phoneNumber, self.getPhoneNumber()))
+            {
+                String oldPhoneNumber = self.getPhoneNumber();
+                self.setPhoneNumber(phoneNumber);
+                api.getEventManager().handle(
+                    new SelfUpdatePhoneNumberEvent(
+                        api, responseNumber,
+                        oldPhoneNumber));
+            }
+        }
         return null;
     }
 }

@@ -38,6 +38,42 @@ import java.util.stream.StreamSupport;
  * {@link net.dv8tion.jda.core.requests.RestAction RestAction} specification used
  * to retrieve entities for paginated endpoints (before, after, limit).
  *
+ * <p><b>Examples</b>
+ * <pre><code>
+ * /**
+ *   * Retrieves messages until the specified limit is reached. The messages will be limited after being filtered by the user.
+ *   * If the user hasn't sent enough messages this will go through all messages so it is recommended to add an additional end condition.
+ *   *&#47;
+ * public static{@literal List<Message>} getMessagesByUser(MessageChannel channel, User user, int limit)
+ * {
+ *     <u>MessagePaginationAction</u> action = channel.<u>getIterableHistory</u>();
+ *     Stream{@literal <Message>} messageStream = action.stream()
+ *             .limit(limit * 2) // used to limit amount of messages to check, if user hasn't sent enough messages it would go on forever
+ *             .filter( message{@literal ->} message.getAuthor().equals(user) )
+ *             .limit(limit); // limit on filtered stream will be checked independently from previous limit
+ *     return messageStream.collect(Collectors.toList());
+ * }
+ * </code></pre>
+ *
+ * <pre><code>
+ * /**
+ *  * Iterates messages in an async stream and stops once the limit has been reached.
+ *  *&#47;
+ * public static void onEachMessageAsync(MessageChannel channel, {@literal Consumer<Message>} consumer, int limit)
+ * {
+ *     if (limit{@literal <} 1)
+ *         return;
+ *     <u>MessagePaginationAction</u> action = channel.<u>getIterableHistory</u>();
+ *     AtomicInteger counter = new AtomicInteger(limit);
+ *     action.forEachAsync( (message){@literal ->}
+ *     {
+ *         consumer.accept(message);
+ *         // if false the iteration is terminated; else it continues
+ *         return counter.decrementAndGet() == 0;
+ *     });
+ * }
+ * </code></pre>
+ *
  * @param  <M>
  *         The current implementation used as chaining return value
  * @param  <T>

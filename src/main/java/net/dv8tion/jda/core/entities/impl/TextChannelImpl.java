@@ -325,16 +325,6 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     }
 
     @Override
-    public RestAction<MessageHistory> getHistoryAround(String messageId, int limit)
-    {
-        checkPermission(Permission.MESSAGE_READ);
-        checkPermission(Permission.MESSAGE_HISTORY);
-
-        //Call MessageChannel's default method
-        return TextChannel.super.getHistoryAround(messageId, limit);
-    }
-
-    @Override
     public RestAction<Void> pinMessageById(String messageId)
     {
         checkPermission(Permission.MESSAGE_READ, "You cannot pin a message in a channel you can't access. (MESSAGE_READ)");

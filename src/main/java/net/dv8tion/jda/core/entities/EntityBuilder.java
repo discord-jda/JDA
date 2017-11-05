@@ -70,18 +70,27 @@ public class EntityBuilder
             selfUser = new SelfUserImpl(id, api);
             api.setSelfUser(selfUser);
         }
+
         if (!api.getUserMap().containsKey(selfUser.getIdLong()))
-        {
             api.getUserMap().put(selfUser.getIdLong(), selfUser);
-        }
-        return (SelfUser) selfUser
-                .setVerified(self.getBoolean("verified"))
+
+        selfUser.setVerified(self.getBoolean("verified"))
                 .setMfaEnabled(self.getBoolean("mfa_enabled"))
-                .setEmail(!self.isNull("email") ? self.getString("email") : null)
                 .setName(self.getString("username"))
                 .setDiscriminator(self.getString("discriminator"))
                 .setAvatarId(self.isNull("avatar") ? null : self.getString("avatar"))
                 .setBot(self.has("bot") && self.getBoolean("bot"));
+
+        if (this.api.getAccountType() == AccountType.CLIENT)
+        {
+            selfUser
+                .setEmail(!self.isNull("email") ? self.getString("email") : null)
+                .setMobile(!self.isNull("mobile") ? self.getBoolean("mobile") : false)
+                .setNitro(!self.isNull("premium") ? self.getBoolean("premium") : false)
+                .setPhoneNumber(!self.isNull("phone") ? self.getString("phone") : null);
+        }
+
+        return selfUser;
     }
 
     public Game createGame(String name, String url, Game.GameType type)
@@ -132,7 +141,7 @@ public class EntityBuilder
         guildObj.setAvailable(true)
                 .setIconId(guild.isNull("icon") ? null : guild.getString("icon"))
                 .setSplashId(guild.isNull("splash") ? null : guild.getString("splash"))
-                .setRegion(Region.fromKey(guild.getString("region")))
+                .setRegion(guild.getString("region"))
                 .setName(guild.getString("name"))
                 .setAfkTimeout(Guild.Timeout.fromKey(guild.getInt("afk_timeout")))
                 .setVerificationLevel(Guild.VerificationLevel.fromKey(guild.getInt("verification_level")))
