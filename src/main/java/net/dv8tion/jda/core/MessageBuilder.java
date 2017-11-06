@@ -96,7 +96,7 @@ public class MessageBuilder implements Appendable
      * @param  tts
      *         whether the created Message should be a tts message
      *
-     * @return The {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
+     * @return The MessageBuilder instance. Useful for chaining.
      */
     public MessageBuilder setTTS(boolean tts)
     {
@@ -111,7 +111,7 @@ public class MessageBuilder implements Appendable
      * @param  embed
      *         the embed to add, or null to remove
      *
-     * @return The {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
+     * @return The MessageBuilder instance. Useful for chaining.
      */
     public MessageBuilder setEmbed(MessageEmbed embed)
     {
@@ -129,7 +129,7 @@ public class MessageBuilder implements Appendable
      * @param  nonce
      *         Validation nonce string
      *
-     * @return The {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
+     * @return The MessageBuilder instance. Useful for chaining.
      *
      * @see    net.dv8tion.jda.core.entities.Message#getNonce()
      * @see    <a href="https://en.wikipedia.org/wiki/Cryptographic_nonce" target="_blank">Cryptographic Nonce - Wikipedia</a>
@@ -137,6 +137,35 @@ public class MessageBuilder implements Appendable
     public MessageBuilder setNonce(String nonce)
     {
         this.nonce = nonce;
+        return this;
+    }
+
+    /**
+     * Sets the content of the resulting Message
+     * <br>This will replace already added content.
+     *
+     * @param  content
+     *         The content to use, or {@code null} to reset the content
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided content exceeds {@link net.dv8tion.jda.core.entities.Message#MAX_CONTENT_LENGTH Message.MAX_CONTENT_LENGTH}
+     *
+     * @return The MessageBuilder instance. Useful for chaining.
+     *
+     * @see    net.dv8tion.jda.core.entities.Message#getContentRaw()
+     */
+    public MessageBuilder setContent(String content)
+    {
+        if (content == null)
+        {
+            builder.setLength(0);
+        }
+        else
+        {
+            Checks.check(content.length() <= Message.MAX_CONTENT_LENGTH, "Content length may not exceed %d!", Message.MAX_CONTENT_LENGTH);
+            final int newLength = Math.max(builder.length(), content.length());
+            builder.replace(0, newLength, content);
+        }
         return this;
     }
 
@@ -168,7 +197,7 @@ public class MessageBuilder implements Appendable
      * @param  object
      *         the object to append
      *
-     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
+     * @return The MessageBuilder instance. Useful for chaining.
      */
     public MessageBuilder append(Object object)
     {
@@ -183,7 +212,7 @@ public class MessageBuilder implements Appendable
      * @param  mention
      *         the mention to append
      *
-     * @return The {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
+     * @return The MessageBuilder instance. Useful for chaining.
      */
     public MessageBuilder append(IMentionable mention)
     {
@@ -199,7 +228,7 @@ public class MessageBuilder implements Appendable
      * @param  format
      *         the format(s) to apply to the text.
      *
-     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
+     * @return The MessageBuilder instance. Useful for chaining.
      */
     public MessageBuilder append(CharSequence text, Formatting... format)
     {
@@ -277,7 +306,7 @@ public class MessageBuilder implements Appendable
      *         see the <a href="../util/Formatter.html#detail">Details</a>
      *         section of the formatter class specification.
      *
-     * @return The {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
+     * @return The MessageBuilder instance. Useful for chaining.
      */
     public MessageBuilder appendFormat(String format, Object... args)
     {
@@ -296,7 +325,7 @@ public class MessageBuilder implements Appendable
      * @param  language
      *         the language of the code. If unknown use an empty string
      *
-     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
+     * @return The MessageBuilder instance. Useful for chaining.
      */
     public MessageBuilder appendCodeBlock(CharSequence text, CharSequence language)
     {
@@ -367,7 +396,7 @@ public class MessageBuilder implements Appendable
      * @param  replacement
      *         the replacement sequence of char values
      *
-     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
+     * @return The MessageBuilder instance. Useful for chaining.
      */
     public MessageBuilder replaceAll(String target, String replacement)
     {
@@ -387,7 +416,7 @@ public class MessageBuilder implements Appendable
      * @param  replacement
      *         the replacement sequence of char values
      *
-     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
+     * @return The MessageBuilder instance. Useful for chaining.
      */
     public MessageBuilder replaceFirst(String target, String replacement)
     {
@@ -407,7 +436,7 @@ public class MessageBuilder implements Appendable
      * @param  replacement
      *         the replacement sequence of char values
      *
-     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
+     * @return The MessageBuilder instance. Useful for chaining.
      */
     public MessageBuilder replaceLast(String target, String replacement)
     {
@@ -428,7 +457,7 @@ public class MessageBuilder implements Appendable
      * @param jda
      *        The JDA instance used to resolve the mentions.
      *
-     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
+     * @return The MessageBuilder instance. Useful for chaining.
      */
     public MessageBuilder stripMentions(JDA jda)
     {
@@ -447,7 +476,7 @@ public class MessageBuilder implements Appendable
      * @param  guild
      *         the guild for {@link net.dv8tion.jda.core.entities.User User} mentions
      *
-     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
+     * @return The MessageBuilder instance. Useful for chaining.
      */
     public MessageBuilder stripMentions(Guild guild)
     {
@@ -468,7 +497,7 @@ public class MessageBuilder implements Appendable
      * @param  types
      *         the {@link MentionType MentionTypes} that should be stripped
      *
-     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
+     * @return The MessageBuilder instance. Useful for chaining.
      */
     public MessageBuilder stripMentions(Guild guild, Message.MentionType... types)
     {
@@ -496,7 +525,7 @@ public class MessageBuilder implements Appendable
      * @param  types
      *         the {@link MentionType MentionTypes} that should be stripped
      *
-     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
+     * @return The MessageBuilder instance. Useful for chaining.
      */
     public MessageBuilder stripMentions(JDA jda, Message.MentionType... types)
     {
@@ -609,7 +638,7 @@ public class MessageBuilder implements Appendable
     /**
      * Returns the underlying {@link StringBuilder}.
      * 
-     * @return the {@link StringBuilder} used by this {@link MessageBuilder}
+     * @return The {@link StringBuilder} used by this {@link MessageBuilder}
      */
     public StringBuilder getStringBuilder()
     {
@@ -619,7 +648,7 @@ public class MessageBuilder implements Appendable
     /**
      * Clears the current builder. Useful for mass message creation.
      *
-     * @return Returns the {@link net.dv8tion.jda.core.MessageBuilder MessageBuilder} instance. Useful for chaining.
+     * @return The MessageBuilder instance. Useful for chaining.
      */
     public MessageBuilder clear() {
         this.builder.setLength(0);

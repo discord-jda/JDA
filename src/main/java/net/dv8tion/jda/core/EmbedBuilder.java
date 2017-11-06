@@ -312,7 +312,8 @@ public class EmbedBuilder
         {
             Checks.check(description.length() <= MessageEmbed.TEXT_MAX_LENGTH,
                 "Description cannot be longer than %d characters.", MessageEmbed.TEXT_MAX_LENGTH);
-            this.description.replace(0, this.description.length(), description);
+            final int newLength = Math.max(description.length(), this.description.length());
+            this.description.replace(0, newLength, description);
         }
         return this;
     }

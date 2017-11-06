@@ -232,14 +232,12 @@ public class GuildImpl implements Guild
     @Override
     public SnowflakeCacheView<VoiceChannel> getVoiceChannelCache()
     {
-
         return voiceChannelCache;
     }
 
     @Override
     public SnowflakeCacheView<Role> getRoleCache()
     {
-
         return roleCache;
     }
 
