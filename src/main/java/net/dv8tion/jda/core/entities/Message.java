@@ -978,15 +978,35 @@ public interface Message extends ISnowflake, Formattable
     MessageType getType();
 
     /**
-     * Represents a {@link net.dv8tion.jda.core.entities.Message Message} file attachment.
+     * Mention formatting constants, useful for use with {@link java.util.regex.Pattern Patterns}
      */
     enum MentionType
     {
+        /**
+         * Represents a mention for a {@link net.dv8tion.jda.core.entities.User User}/{@link net.dv8tion.jda.core.entities.Member Member}
+         */
         USER("<@!?(\\d+)>"),
+        /**
+         * Represents a mention for a {@link net.dv8tion.jda.core.entities.Role Role}
+         */
         ROLE("<@&(\\d+)>"),
+        /**
+         * Represents a mention for a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
+         */
         CHANNEL("<#(\\d+)>"),
+        /**
+         * Represents a mention for a {@link net.dv8tion.jda.core.entities.Emote Emote}
+         */
         EMOTE("<:([a-zA-Z0-9_]+):([0-9]+)>"),
+        /**
+         * Represents a mention for all active users, literal {@code @here}
+         */
         HERE("@here"),
+        /**
+         * Represents a mention for all users in a server, literal {@code @everyone}.
+         *
+         * <p>This is not the same as {@code guild.getPublicRole().getAsMention()}!
+         */
         EVERYONE("@everyone");
 
         private final Pattern pattern;
@@ -1002,6 +1022,9 @@ public interface Message extends ISnowflake, Formattable
         }
     }
 
+    /**
+     * Represents a {@link net.dv8tion.jda.core.entities.Message Message} file attachment.
+     */
     class Attachment implements ISnowflake
     {
         private final long id;
