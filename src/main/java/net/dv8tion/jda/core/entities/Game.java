@@ -112,19 +112,42 @@ public class Game
     /**
      * Creates a new Game instance with the specified name.
      * <br>In order to appear as "streaming" in the official client you must
-     * provide a valid (see documentation of method) streaming URL in {@link #of(String, String) Game.of(String, String)}.
+     * provide a valid (see documentation of method) streaming URL in {@link #streaming(String, String) Game.streaming(String, String)}.
      *
      * @param  name
      *         The not-null name of the newly created game
      *
      * @throws IllegalArgumentException
-     *         if the specified name is null or empty
+     *         if the specified name is null, empty or blank
      *
      * @return A valid Game instance with the provided name with {@link GameType#DEFAULT}
      */
+    public static Game playing(String name)
+    {
+        Checks.notBlank(name, "Name");
+        return new Game(name, null, GameType.DEFAULT);
+    }
+
+    /**
+     * Creates a new Game instance with the specified name.
+     * <br>In order to appear as "streaming" in the official client you must
+     * provide a valid (see documentation of method) streaming URL in {@link #streaming(String, String) Game.of(String, String)}.
+     *
+     * @param  name
+     *         The not-null name of the newly created game
+     *
+     * @throws IllegalArgumentException
+     *         if the specified name is null, empty or blank
+     *
+     * @return A valid Game instance with the provided name with {@link GameType#DEFAULT}
+     *
+     * @deprecated
+     *        Use {@link #playing(String)} instead
+     */
+    @Deprecated
     public static Game of(String name)
     {
-        return of(name, null);
+        return playing(name);
     }
 
     /**
@@ -138,13 +161,13 @@ public class Game
      *         The streaming url to use, required to display as "streaming"
      *
      * @throws IllegalArgumentException
-     *         if the specified name is null or empty
+     *         If the specified name is null or empty
      *
      * @return A valid Game instance with the provided name and url
      *
      * @see    #isValidStreamingUrl(String)
      */
-    public static Game of(String name, String url)
+    public static Game streaming(String name, String url)
     {
         Checks.notEmpty(name, "Provided game name");
         GameType type;
@@ -153,6 +176,68 @@ public class Game
         else
             type = GameType.DEFAULT;
         return new Game(name, url, type);
+    }
+
+    /**
+     * Creates a new Game instance with the specified name and url.
+     * <br>The specified URL must be valid according to discord standards in order to display as "streaming" in the official client.
+     * A valid streaming URL must be derived from {@code https://twitch.tv/} and can be verified using {@link #isValidStreamingUrl(String)}. (see documentation)
+     *
+     * @param  name
+     *         The not-null name of the newly created game
+     * @param  url
+     *         The streaming url to use, required to display as "streaming"
+     *
+     * @throws IllegalArgumentException
+     *         If the specified name is null or empty
+     *
+     * @return A valid Game instance with the provided name and url
+     *
+     * @see    #isValidStreamingUrl(String)
+     *
+     * @deprecated
+     *         Use {@link #streaming(String, String)} instead!
+     */
+    @Deprecated
+    public static Game of(String name, String url)
+    {
+        return streaming(name, url);
+    }
+
+    /**
+     * Creates a new Game instance with the specified name.
+     * <br>This will display as {@code Listening name} in the official client
+     *
+     * @param  name
+     *         The not-null name of the newly created game
+     *
+     * @throws IllegalArgumentException
+     *         if the specified name is null, empty or blank
+     *
+     * @return A valid Game instance with the provided name with {@link GameType#LISTENING}
+     */
+    public static Game listening(String name)
+    {
+        Checks.notBlank(name, "Name");
+        return new Game(name, null, GameType.LISTENING);
+    }
+
+    /**
+     * Creates a new Game instance with the specified name.
+     * <br>This will display as {@code Watching name} in the official client
+     *
+     * @param  name
+     *         The not-null name of the newly created game
+     *
+     * @throws IllegalArgumentException
+     *         if the specified name is null, empty or blank
+     *
+     * @return A valid Game instance with the provided name with {@link GameType#WATCHING}
+     */
+    public static Game watching(String name)
+    {
+        Checks.notBlank(name, "Name");
+        return new Game(name, null, GameType.WATCHING);
     }
 
     /**
@@ -183,14 +268,15 @@ public class Game
          */
         STREAMING(1),
         /**
-         * Used to indicate that the {@link net.dv8tion.jda.core.entities.Game Game} is a stream, specifically for
-         * <a href="https://www.twitch.tv">https://www.twitch.tv</a>.
-         * <br>This type is displayed as "Streaming" in the discord client.
-         *
-         * @deprecated This might be removed when discord introduces more activity types. Use {@link #STREAMING} instead.
+         * Used to indicate that the {@link net.dv8tion.jda.core.entities.Game Game} should display
+         * as {@code Listening...} in the official client.
          */
-        @Deprecated
-        TWITCH(1);
+        LISTENING(2),
+        /**
+         * Used to indicate that the {@link net.dv8tion.jda.core.entities.Game Game} should display
+         * as {@code Watching...} in the official client.
+         */
+        WATCHING(3);
 
         private final int key;
 
