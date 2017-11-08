@@ -30,6 +30,7 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -206,13 +207,21 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
         }
         for (int i = 0; i < entries.length(); i++)
         {
-            JSONObject entry = entries.getJSONObject(i);
-            JSONObject user  = userMap.get(entry.getLong("user_id"));
-            AuditLogEntry result = builder.createAuditLogEntry((GuildImpl) guild, entry, user);
-            list.add(result);
-            if (this.useCache)
-                this.cached.add(result);
-            this.last = result;
+            try
+            {
+                JSONObject entry = entries.getJSONObject(i);
+                JSONObject user = userMap.get(entry.getLong("user_id"));
+                AuditLogEntry result = builder.createAuditLogEntry((GuildImpl) guild, entry, user);
+                list.add(result);
+                if (this.useCache)
+                    this.cached.add(result);
+                this.last = result;
+            }
+            catch (JSONException | NullPointerException e)
+            {
+                //TODO replace
+                LOG.warn("Encountered exception in AuditLogPagination " + e);
+            }
         }
 
         request.onSuccess(list);

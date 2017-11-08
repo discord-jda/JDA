@@ -27,6 +27,7 @@ import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.commons.collections4.map.ListOrderedMap;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
@@ -531,8 +532,16 @@ public class MessageHistory
             final EntityBuilder builder = api.getEntityBuilder();
             for (int i = 0; i < array.length(); i++)
             {
-                JSONObject obj = array.getJSONObject(i);
-                result.history.put(obj.getLong("id"), builder.createMessage(obj, channel, false));
+                try
+                {
+                    JSONObject obj = array.getJSONObject(i);
+                    result.history.put(obj.getLong("id"), builder.createMessage(obj, channel, false));
+                }
+                catch (JSONException | NullPointerException e)
+                {
+                    //TODO replace
+                    LOG.warn("Encountered exception in MessagePagination " + e);
+                }
             }
             request.onSuccess(result);
         }
