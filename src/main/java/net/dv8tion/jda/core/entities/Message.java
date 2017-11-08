@@ -136,6 +136,9 @@ public interface Message extends ISnowflake, Formattable
      * An immutable list of all mentioned {@link net.dv8tion.jda.core.entities.User Users}.
      * <br>If no user was mentioned, this list is empty.
      *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.core.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *
      * @return immutable list of mentioned users
      */
     List<User> getMentionedUsers();
@@ -146,6 +149,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * <p><b>This may include TextChannels from other {@link net.dv8tion.jda.core.entities.Guild Guilds}</b>
      *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.core.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *
      * @return immutable list of mentioned TextChannels
      */
     List<TextChannel> getMentionedChannels();
@@ -155,6 +161,9 @@ public interface Message extends ISnowflake, Formattable
      * <br>If none were mentioned, this list is empty.
      *
      * <p><b>This may include Roles from other {@link net.dv8tion.jda.core.entities.Guild Guilds}</b>
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.core.entities.MessageType#DEFAULT MessageType.DEFAULT}
      *
      * @return immutable list of mentioned Roles
      */
@@ -171,6 +180,8 @@ public interface Message extends ISnowflake, Formattable
      *         Non-null {@link net.dv8tion.jda.core.entities.Guild Guild}
      *         that will be used to retrieve Members.
      *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.core.entities.MessageType#DEFAULT MessageType.DEFAULT}
      * @throws java.lang.IllegalArgumentException
      *         If the specified Guild is {@code null}
      *
@@ -185,7 +196,8 @@ public interface Message extends ISnowflake, Formattable
      * <br>This is only a convenience method and will skip all users that are not in the specified Guild.
      * <br>It will provide the {@link #getGuild()} output Guild to {@link #getMentionedMembers(Guild)}.
      *
-     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.core.entities.MessageType#DEFAULT MessageType.DEFAULT}
      * @throws java.lang.IllegalStateException
      *         If this message was not sent in a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      *
@@ -204,6 +216,8 @@ public interface Message extends ISnowflake, Formattable
      *         Amount of {@link net.dv8tion.jda.core.entities.Message.MentionType MentionTypes}
      *         to include in the list of mentions
      *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.core.entities.MessageType#DEFAULT MessageType.DEFAULT}
      * @throws java.lang.IllegalArgumentException
      *         If provided with {@code null}
      *
@@ -222,6 +236,9 @@ public interface Message extends ISnowflake, Formattable
      * @param  types
      *         The types to include when checking whether this type was mentioned.
      *         This will be used with {@link #getMentions(Message.MentionType...) getMentions(MentionType...)}
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.core.entities.MessageType#DEFAULT MessageType.DEFAULT}
      *
      * @return True, if the given mentionable was mentioned in this message
      */
@@ -253,6 +270,9 @@ public interface Message extends ISnowflake, Formattable
     /**
      * The author of this Message
      *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.core.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *
      * @return Message author
      */
     User getAuthor();
@@ -263,6 +283,9 @@ public interface Message extends ISnowflake, Formattable
      * <br><b>This is only valid if the Message was actually sent in a TextChannel.</b> This will return {@code null}
      * if it was not sent from a TextChannel.
      * <br>You can check the type of channel this message was sent from using {@link #isFromType(ChannelType)} or {@link #getChannelType()}.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.core.entities.MessageType#DEFAULT MessageType.DEFAULT}
      *
      * @return Message author, or {@code null} if the message was not sent from a TextChannel.
      */
@@ -282,6 +305,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * <p>If you want the actual Content (mentions as {@literal <@id>}), use {@link #getContentRaw()} instead
      *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.core.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *
      * @return The textual content of the message with mentions resolved to be visually like the Discord client.
      */
     String getContentDisplay();
@@ -299,6 +325,9 @@ public interface Message extends ISnowflake, Formattable
      * <br>{@link net.dv8tion.jda.core.entities.Emote Emotes} (not emojis!) to their {@code :name:} format.
      *
      * <p>If you want the actual Content (mentions as {@literal <@id>}), use {@link #getContentRaw()} instead
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.core.entities.MessageType#DEFAULT MessageType.DEFAULT}
      *
      * @return Output of {@link #getContentDisplay()}
      *
@@ -403,6 +432,9 @@ public interface Message extends ISnowflake, Formattable
      * @param  type
      *         The {@link net.dv8tion.jda.core.entities.ChannelType ChannelType} to check against.
      *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.core.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *
      * @return True if the {@link net.dv8tion.jda.core.entities.ChannelType ChannelType} which this message was received
      *         from is the same as the one specified by {@code type}.
      */
@@ -412,6 +444,9 @@ public interface Message extends ISnowflake, Formattable
      * Gets the {@link net.dv8tion.jda.core.entities.ChannelType ChannelType} that this message was received from.
      * <br>This will never be {@link net.dv8tion.jda.core.entities.ChannelType#VOICE} as Messages can't be sent to
      * {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels}.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.core.entities.MessageType#DEFAULT MessageType.DEFAULT}
      *
      * @return The ChannelType which this message was received from.
      */
@@ -429,6 +464,9 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Returns the {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel} that this message was sent in.
      *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.core.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *
      * @return The MessageChannel of this Message
      */
     MessageChannel getChannel();
@@ -441,6 +479,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * <p>Use {@link #getChannel()} for an ambiguous {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}
      * if you do not need functionality specific to {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.core.entities.MessageType#DEFAULT MessageType.DEFAULT}
      *
      * @return The PrivateChannel this message was sent in, or {@code null} if it was not sent from a PrivateChannel.
      */
@@ -455,6 +496,9 @@ public interface Message extends ISnowflake, Formattable
      * <p>Use {@link #getChannel()} for an ambiguous {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}
      * if you do not need functionality specific to {@link net.dv8tion.jda.client.entities.Group Group}.
      *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.core.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *
      * @return The Group this message was sent in, or {@code null} if it was not sent from a Group.
      */
     Group getGroup();
@@ -468,6 +512,9 @@ public interface Message extends ISnowflake, Formattable
      * <p>Use {@link #getChannel()} for an ambiguous {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}
      * if you do not need functionality specific to {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
      *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.core.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *
      * @return The TextChannel this message was sent in, or {@code null} if it was not sent from a TextChannel.
      */
     TextChannel getTextChannel();
@@ -476,6 +523,9 @@ public interface Message extends ISnowflake, Formattable
      * The {@link net.dv8tion.jda.core.entities.Category Category} this
      * message was sent in. This will always be {@code null} for DMs and Groups.
      * <br>Equivalent to {@code getTextChannel().getParent()}.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.core.entities.MessageType#DEFAULT MessageType.DEFAULT}
      *
      * @return {@link net.dv8tion.jda.core.entities.Category Category} for this message
      */
@@ -487,6 +537,9 @@ public interface Message extends ISnowflake, Formattable
      * <br><b>This is only valid if the Message was actually sent in a TextChannel.</b> This will return {@code null}
      * if it was not sent from a TextChannel.
      * <br>You can check the type of channel this message was sent from using {@link #isFromType(ChannelType)} or {@link #getChannelType()}.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.core.entities.MessageType#DEFAULT MessageType.DEFAULT}
      *
      * @return The Guild this message was sent in, or {@code null} if it was not sent from a TextChannel.
      */
@@ -518,6 +571,9 @@ public interface Message extends ISnowflake, Formattable
      * To check whether an Emote is fake you can test if {@link Emote#isFake()} returns true.
      *
      * <p><b><u>Unicode emojis are not included as {@link net.dv8tion.jda.core.entities.Emote Emote}!</u></b>
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.core.entities.MessageType#DEFAULT MessageType.DEFAULT}
      *
      * @return An immutable list of the Emotes used in this message (example match {@literal <:jda:230988580904763393>})
      */
@@ -739,6 +795,9 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * Returns the {@link net.dv8tion.jda.core.JDA JDA} instance related to this Message.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.core.entities.MessageType#DEFAULT MessageType.DEFAULT}
      *
      * @return  the corresponding JDA instance
      */

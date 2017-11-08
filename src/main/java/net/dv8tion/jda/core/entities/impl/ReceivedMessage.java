@@ -125,7 +125,7 @@ public class ReceivedMessage implements Message
         if (reaction == null)
         {
             checkFake(emote, "Emote");
-            if (!emote.canInteract(api.getSelfUser(), channel))
+            if (!emote.canInteract(getJDA().getSelfUser(), channel))
                 throw new IllegalArgumentException("Cannot react with the provided emote because it is not available in the current channel.");
         }
         else if (reaction.isSelf())
@@ -183,7 +183,7 @@ public class ReceivedMessage implements Message
                 try
                 {
                     long id = MiscUtil.parseSnowflake(matcher.group(1));
-                    User user = api.getUserById(id);
+                    User user = getJDA().getUserById(id);
                     if (user == null)
                         user = api.getFakeUserMap().get(id);
                     if (user != null)
@@ -208,7 +208,7 @@ public class ReceivedMessage implements Message
                 try
                 {
                     String id = matcher.group(1);
-                    TextChannel channel = api.getTextChannelById(id);
+                    TextChannel channel = getJDA().getTextChannelById(id);
                     if (channel != null)
                         channelMentions.add(channel);
                 }
@@ -236,7 +236,7 @@ public class ReceivedMessage implements Message
                     if (isFromType(ChannelType.TEXT)) // role lookup is faster if its in the same guild (no global map)
                         role = getGuild().getRoleById(id);
                     if (role == null)
-                        role = api.getRoleById(id);
+                        role = getJDA().getRoleById(id);
                     if (role != null)
                         roleMentions.add(role);
                 }
@@ -672,7 +672,7 @@ public class ReceivedMessage implements Message
                     final long emoteId = MiscUtil.parseSnowflake(matcher.group(2));
                     final String emoteName = matcher.group(1);
 
-                    Emote emote = api.getEmoteById(emoteId);
+                    Emote emote = getJDA().getEmoteById(emoteId);
                     if (emote == null)
                         emote = new EmoteImpl(emoteId, api).setName(emoteName);
                     emoteMentions.add(emote);
@@ -724,7 +724,7 @@ public class ReceivedMessage implements Message
     @Override
     public MessageAction editMessage(Message newContent)
     {
-        if (!api.getSelfUser().equals(getAuthor()))
+        if (!getJDA().getSelfUser().equals(getAuthor()))
             throw new IllegalStateException("Attempted to update message that was not sent by this account. You cannot modify other User's messages!");
 
         return getChannel().editMessageById(getIdLong(), newContent);

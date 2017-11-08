@@ -25,6 +25,7 @@ import net.dv8tion.jda.core.requests.restaction.MessageAction;
 import org.json.JSONObject;
 
 import java.util.Collections;
+import java.util.List;
 
 public class DataMessage extends ReceivedMessage implements Message
 {
@@ -87,6 +88,55 @@ public class DataMessage extends ReceivedMessage implements Message
 
     // UNSUPPORTED OPERATIONS ON MESSAGE BUILDER OUTPUT
 
+
+    @Override
+    public synchronized List<User> getMentionedUsers()
+    {
+        throw new UnsupportedOperationException(UNSUPPORTED);
+    }
+
+    @Override
+    public synchronized List<TextChannel> getMentionedChannels()
+    {
+        throw new UnsupportedOperationException(UNSUPPORTED);
+    }
+
+    @Override
+    public synchronized List<Role> getMentionedRoles()
+    {
+        throw new UnsupportedOperationException(UNSUPPORTED);
+    }
+
+    @Override
+    public synchronized List<Emote> getEmotes()
+    {
+        throw new UnsupportedOperationException(UNSUPPORTED);
+    }
+
+    @Override
+    public List<Member> getMentionedMembers(Guild guild)
+    {
+        throw new UnsupportedOperationException(UNSUPPORTED);
+    }
+
+    @Override
+    public List<Member> getMentionedMembers()
+    {
+        throw new UnsupportedOperationException(UNSUPPORTED);
+    }
+
+    @Override
+    public List<IMentionable> getMentions(MentionType... types)
+    {
+        throw new UnsupportedOperationException(UNSUPPORTED);
+    }
+
+    @Override
+    public boolean isMentioned(IMentionable mentionable, MentionType... types)
+    {
+        throw new UnsupportedOperationException(UNSUPPORTED);
+    }
+
     @Override
     public User getAuthor()
     {
@@ -95,6 +145,12 @@ public class DataMessage extends ReceivedMessage implements Message
 
     @Override
     public Member getMember()
+    {
+        throw new UnsupportedOperationException(UNSUPPORTED);
+    }
+
+    @Override
+    public String getContentDisplay()
     {
         throw new UnsupportedOperationException(UNSUPPORTED);
     }
