@@ -241,6 +241,61 @@ public class Game
     }
 
     /**
+     * Creates a new Game instance with the specified name and url.
+     *
+     * @param  type
+     *         The {@link net.dv8tion.jda.core.entities.Game.GameType GameType} to use
+     * @param  name
+     *         The not-null name of the newly created game
+     *
+     * @throws IllegalArgumentException
+     *         If the specified name is null or empty
+     *
+     * @return A valid Game instance with the provided name and url
+     */
+    public static Game of(GameType type, String name)
+    {
+        return of(type, name, null);
+    }
+
+    /**
+     * Creates a new Game instance with the specified name and url.
+     * <br>The provided url would only be used for {@link net.dv8tion.jda.core.entities.Game.GameType#STREAMING GameType.STREAMING}
+     * and should be a twitch url.
+     *
+     * @param  type
+     *         The {@link net.dv8tion.jda.core.entities.Game.GameType GameType} to use
+     * @param  name
+     *         The not-null name of the newly created game
+     * @param  url
+     *         The streaming url to use, required to display as "streaming".
+     *
+     * @throws IllegalArgumentException
+     *         If the specified name is null or empty
+     *
+     * @return A valid Game instance with the provided name and url
+     *
+     * @see    #isValidStreamingUrl(String)
+     */
+    public static Game of(GameType type, String name, String url)
+    {
+        Checks.notNull(type, "Type");
+        switch (type)
+        {
+            case DEFAULT:
+                return playing(name);
+            case STREAMING:
+                return streaming(name, url);
+            case LISTENING:
+                return listening(name);
+            case WATCHING:
+                return watching(name);
+            default:
+                throw new IllegalArgumentException("GameType " + type + " is not supported!");
+        }
+    }
+
+    /**
      * Checks if a given String is a valid Twitch url (ie, one that will display "Streaming" on the Discord client).
      *
      * @param  url
@@ -306,12 +361,18 @@ public class Game
          */
         public static GameType fromKey(int key)
         {
-            for (GameType level : GameType.values())
+            switch (key)
             {
-                if (level.getKey() == key)
-                    return level;
+                case 0:
+                default:
+                    return DEFAULT;
+                case 1:
+                    return STREAMING;
+                case 2:
+                    return LISTENING;
+                case 3:
+                    return WATCHING;
             }
-            return DEFAULT;
         }
     }
 }
