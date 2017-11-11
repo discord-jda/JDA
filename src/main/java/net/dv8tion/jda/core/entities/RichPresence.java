@@ -16,9 +16,12 @@
 
 package net.dv8tion.jda.core.entities;
 
+import net.dv8tion.jda.core.utils.Checks;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.Instant;
+import java.time.temporal.TemporalUnit;
 
 /**
  * Used to hold additional information about a users {@link net.dv8tion.jda.core.entities.Game Game}
@@ -266,6 +269,34 @@ public class RichPresence extends Game
         public Instant getEndTime()
         {
             return end <= 0 ? null : Instant.ofEpochSecond(end);
+        }
+
+        /**
+         * Calculates the amount of time until {@link #getEndTime()} in terms of the specified unit.
+         * <br>If {@link #getEndTime()} is {@code null} this will be negative.
+         *
+         * @param  unit
+         *         The {@link java.time.temporal.TemporalUnit TemporalUnit} to return
+         *
+         * @throws IllegalArgumentException
+         *         If the provided unit is {@code null}
+         * @throws ArithmeticException
+         *         If a numeric overflow occurs
+         * @throws java.time.DateTimeException
+         *         If the amount cannot be calculated
+         * @throws java.time.temporal.UnsupportedTemporalTypeException
+         *         If the provided unit is not supported
+         *
+         * @return Remaining time in the provided {@link java.time.temporal.TemporalUnit TemporalUnit} or {@code -1} if unset
+         *
+         * @see    java.time.Instant#until(java.time.temporal.Temporal, java.time.temporal.TemporalUnit) Instant.until(Temporal, TemporalUnit)
+         * @see    java.time.temporal.TemporalUnit
+         */
+        public long getRemainingTime(TemporalUnit unit)
+        {
+            Checks.notNull(unit, "TemporalUnit");
+            Instant end = getEndTime();
+            return end != null ? Instant.now().until(getEndTime(), unit) : -1;
         }
 
         public String toString()
