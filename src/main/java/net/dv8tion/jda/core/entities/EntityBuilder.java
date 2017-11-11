@@ -21,7 +21,10 @@ import net.dv8tion.jda.bot.entities.ApplicationInfo;
 import net.dv8tion.jda.bot.entities.impl.ApplicationInfoImpl;
 import net.dv8tion.jda.client.entities.*;
 import net.dv8tion.jda.client.entities.impl.*;
-import net.dv8tion.jda.core.*;
+import net.dv8tion.jda.core.AccountType;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.OnlineStatus;
+import net.dv8tion.jda.core.WebSocketCode;
 import net.dv8tion.jda.core.audit.ActionType;
 import net.dv8tion.jda.core.audit.AuditLogChange;
 import net.dv8tion.jda.core.audit.AuditLogEntry;
@@ -546,22 +549,7 @@ public class EntityBuilder
 
         if (gameJson != null && !gameJson.isNull("name"))
         {
-            String gameName = gameJson.get("name").toString();
-            String url = gameJson.isNull("url") ? null : gameJson.get("url").toString();
-
-            Game.GameType gameType;
-            try
-            {
-                gameType = gameJson.isNull("type")
-                           ? Game.GameType.DEFAULT
-                           : Game.GameType.fromKey(Integer.parseInt(gameJson.get("type").toString()));
-            }
-            catch (NumberFormatException e)
-            {
-                gameType = Game.GameType.DEFAULT;
-            }
-
-            game = createGame(gameName, url, gameType);
+            game = createGame(gameJson);
         }
         if (memberOrFriend instanceof Member)
         {
@@ -583,6 +571,71 @@ public class EntityBuilder
         }
         else
             throw new IllegalArgumentException("An object was provided to EntityBuilder#createPresence that wasn't a Member or Friend. JSON: " + presenceJson);
+    }
+
+    public static Game createGame(JSONObject gameJson)
+    {
+        String name = String.valueOf(gameJson.get("name"));
+        String url = gameJson.isNull("url") ? null : String.valueOf(gameJson.get("url"));
+        Game.GameType type;
+        try
+        {
+            type = gameJson.isNull("type")
+                ? Game.GameType.DEFAULT
+                : Game.GameType.fromKey(Integer.parseInt(gameJson.get("type").toString()));
+        }
+        catch (NumberFormatException e)
+        {
+            type = Game.GameType.DEFAULT;
+        }
+
+        if (gameJson.isNull("application_id"))
+            return new Game(name, url, type);
+        long id = gameJson.getLong("application_id");
+        String details = gameJson.isNull("details") ? null : String.valueOf(gameJson.get("details"));
+        String state = gameJson.isNull("state") ? null : String.valueOf(gameJson.get("state"));
+        RichPresence.Timestamps timestamps = null;
+        if (!gameJson.isNull("timestamps"))
+        {
+            JSONObject obj = gameJson.getJSONObject("timestamps");
+            long start, end;
+            start = obj.isNull("start") ? 0 : obj.getLong("start");
+            end = obj.isNull("end") ? 0 : obj.getLong("end");
+            timestamps = new RichPresence.Timestamps(start, end);
+        }
+
+        RichPresence.Party party = null;
+        if (!gameJson.isNull("party"))
+        {
+            JSONObject obj = gameJson.getJSONObject("party");
+            String partyId = obj.isNull("id") ? null : obj.getString("id");
+            JSONArray sizeArr = obj.isNull("size") ? null : obj.getJSONArray("size");
+            int size = 0, max = 0;
+            if (sizeArr != null && sizeArr.length() > 0)
+            {
+                size = sizeArr.getInt(0);
+                max = sizeArr.length() > 1 ? sizeArr.getInt(1) : size;
+            }
+            party = new RichPresence.Party(partyId, size, max);
+        }
+
+        String smallImageKey = null, smallImageText = null;
+        String largeImageKey = null, largeImageText = null;
+        if (!gameJson.isNull("assets"))
+        {
+            JSONObject assets = gameJson.getJSONObject("assets");
+            if (!assets.isNull("small_image"))
+            {
+                smallImageKey = String.valueOf(assets.get("small_image"));
+                smallImageText = assets.isNull("small_text") ? null : String.valueOf(assets.get("small_text"));
+            }
+            if (!assets.isNull("large_image"))
+            {
+                largeImageKey = String.valueOf(assets.get("large_image"));
+                largeImageText = assets.isNull("large_text") ? null : String.valueOf(assets.get("large_text"));
+            }
+        }
+        return new RichPresence(type, name, url, id, party, details, state, timestamps, largeImageKey, largeImageText, smallImageKey, smallImageText);
     }
 
     public Category createCategory(JSONObject json, long guildId)

@@ -1,0 +1,331 @@
+/*
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package net.dv8tion.jda.core.entities;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.time.Instant;
+
+/**
+ * Used to hold additional information about a users {@link net.dv8tion.jda.core.entities.Game Game}
+ * relevant to <a href="https://discordapp.com/developers/docs/rich-presence/best-practices" target="_blank">Rich Presence</a>.
+ */
+public class RichPresence extends Game
+{
+    protected final long applicationId;
+
+    protected final Party party;
+    protected final String details;
+    protected final String state;
+    protected final Timestamps timestamps;
+    protected final Image largeImage;
+    protected final Image smallImage;
+
+    protected RichPresence(
+        GameType type, String name, String url, long applicationId,
+        Party party, String details, String state, Timestamps timestamps,
+        String largeImageKey, String largeImageText, String smallImageKey, String smallImageText)
+    {
+        super(name, url, type);
+        this.applicationId = applicationId;
+        this.party = party;
+        this.details = details;
+        this.state = state;
+        this.timestamps = timestamps;
+        this.largeImage = largeImageKey != null ? new Image(largeImageKey, largeImageText) : null;
+        this.smallImage = smallImageKey != null ? new Image(smallImageKey, smallImageText) : null;
+    }
+
+    @Override
+    public boolean isRich()
+    {
+        return true;
+    }
+
+    @Override
+    public RichPresence asRichPresence()
+    {
+        return this;
+    }
+
+    /**
+     * The ID for the responsible application.
+     *
+     * @return The ID for the application
+     */
+    public long getApplicationIdLong()
+    {
+        return applicationId;
+    }
+
+    /**
+     * The ID for the responsible application.
+     *
+     * @return The ID for the application
+     */
+    @Nonnull
+    public String getApplicationId()
+    {
+        return Long.toUnsignedString(applicationId);
+    }
+
+    /**
+     * The user's current party status
+     * <br>Example: "Looking to Play", "Playing Solo", "In a Group"
+     *
+     * @return The user's current party status
+     */
+    @Nullable
+    public String getState()
+    {
+        return state;
+    }
+
+    /**
+     * What the player is currently doing
+     * <br>Example: "Competitive - Captain's Mode", "In Queue", "Unranked PvP"
+     *
+     * @return What the player is currently doing
+     */
+    @Nullable
+    public String getDetails()
+    {
+        return details;
+    }
+
+    /**
+     * Information on the active party of the player
+     *
+     * @return {@link net.dv8tion.jda.core.entities.RichPresence.Party Party} wrapper or {@code null} if unset
+     */
+    @Nullable
+    public Party getParty()
+    {
+        return party;
+    }
+
+    /**
+     * Information on the match duration, start, and end.
+     *
+     * @return {@link net.dv8tion.jda.core.entities.RichPresence.Timestamps Timestamps} wrapper of {@code null} if unset
+     */
+    @Nullable
+    public Timestamps getTimestamps()
+    {
+        return timestamps;
+    }
+
+    /**
+     * Information on the large image displayed in the profile view
+     *
+     * @return {@link net.dv8tion.jda.core.entities.RichPresence.Image Image} wrapper or {@code null} if unset
+     */
+    @Nullable
+    public Image getLargeImage()
+    {
+        return largeImage;
+    }
+
+    /**
+     * Information on the small corner image displayed in the profile view
+     *
+     * @return {@link net.dv8tion.jda.core.entities.RichPresence.Image Image} wrapper or {@code null} if unset
+     */
+    @Nullable
+    public Image getSmallImage()
+    {
+        return smallImage;
+    }
+
+    @Override
+    public String toString()
+    {
+        return String.format("RichPresence(%s / %s)", name, getApplicationId());
+    }
+
+    /**
+     * Used to hold information on images within a Rich Presence profile
+     */
+    public class Image
+    {
+        protected final String key;
+        protected final String text;
+
+        public Image(String key, String text)
+        {
+            this.key = key;
+            this.text = text;
+        }
+
+        /**
+         * The key for this image, used for {@link #getUrl()}
+         *
+         * @return The key for this image
+         */
+        @Nonnull
+        public String getKey()
+        {
+            return key;
+        }
+
+        /**
+         * Text which is displayed when hovering the image in the official client
+         *
+         * @return Hover text for this image, or {@code null}
+         */
+        @Nullable
+        public String getText()
+        {
+            return text;
+        }
+
+        /**
+         * URL for this image, combination of {@link #getApplicationId()} and {@link #getKey()}
+         *
+         * @return URL for this image
+         */
+        @Nonnull
+        public String getUrl()
+        {
+            return "https://cdn.discordapp.com/app-assets/" + applicationId + "/" + key + ".png";
+        }
+
+        @Override
+        public String toString()
+        {
+            return String.format("RichPresenceImage(%s | %s)", key, text);
+        }
+    }
+
+    /**
+     * Represents the start and end timestamps for a running match
+     */
+    public static class Timestamps
+    {
+        protected final long start;
+
+        protected final long end;
+
+        public Timestamps(long start, long end)
+        {
+            this.start = start;
+            this.end = end;
+        }
+
+        /**
+         * Epoch second timestamp of match start, or {@code 0} of unset.
+         *
+         * @return Epoch second timestamp of match start, or {@code 0} of unset.
+         */
+        public long getStart()
+        {
+            return start;
+        }
+
+        /**
+         * Shortcut for {@code Instant.ofEpochSecond(start)}
+         *
+         * @return Instant of match start, or {@code null} if unset
+         */
+        @Nullable
+        public Instant getStartTime()
+        {
+            return start <= 0 ? null : Instant.ofEpochSecond(start);
+        }
+
+        /**
+         * Epoch second timestamp of match end, or {@code 0} of unset.
+         *
+         * @return Epoch second timestamp of match end, or {@code 0} of unset.
+         */
+        public long getEnd()
+        {
+            return end;
+        }
+
+        /**
+         * Shortcut for {@code Instant.ofEpochSecond(start)}
+         *
+         * @return Instant of match start, or {@code null} if unset
+         */
+        @Nullable
+        public Instant getEndTime()
+        {
+            return end <= 0 ? null : Instant.ofEpochSecond(end);
+        }
+
+        public String toString()
+        {
+            return String.format("RichPresenceTimestamp(%d-%d)", start, end);
+        }
+    }
+
+    /**
+     * Holds information on a player's party
+     */
+    public static class Party
+    {
+        protected final String id;
+        protected final int size;
+
+        protected final int max;
+
+        public Party(String id, int size, int max)
+        {
+            this.id = id;
+            this.size = size;
+            this.max = max;
+        }
+
+        /**
+         * ID for this party, relevant to the game.
+         *
+         * @return The ID for this party, or {@code null} if unset
+         */
+        @Nullable
+        public String getId()
+        {
+            return id;
+        }
+
+        /**
+         * The current size of this party, or {@code 0} if unset
+         *
+         * @return The current size of this party, or {@code 0} if unset
+         */
+        public int getSize()
+        {
+            return size;
+        }
+
+        /**
+         * The maximum size of this party, or {@code 0} if unset
+         *
+         * @return The maximum size of this party, or {@code 0} if unset
+         */
+        public int getMax()
+        {
+            return max;
+        }
+
+        @Override
+        public String toString()
+        {
+            return String.format("RichPresenceParty(%s | [%d, %d])", id, size, max);
+        }
+    }
+}
