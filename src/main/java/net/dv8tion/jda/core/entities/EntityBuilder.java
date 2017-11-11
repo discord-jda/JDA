@@ -614,7 +614,7 @@ public class EntityBuilder
             if (sizeArr != null && sizeArr.length() > 0)
             {
                 size = sizeArr.getInt(0);
-                max = sizeArr.length() > 1 ? sizeArr.getInt(1) : size;
+                max = sizeArr.length() > 1 ? sizeArr.getInt(1) : 0;
             }
             party = new RichPresence.Party(partyId, size, max);
         }

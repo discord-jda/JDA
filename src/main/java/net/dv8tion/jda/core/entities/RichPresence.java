@@ -299,6 +299,7 @@ public class RichPresence extends Game
             return end != null ? Instant.now().until(getEndTime(), unit) : -1;
         }
 
+        @Override
         public String toString()
         {
             return String.format("RichPresenceTimestamp(%d-%d)", start, end);
