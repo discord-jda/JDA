@@ -296,7 +296,35 @@ public class RichPresence extends Game
         {
             Checks.notNull(unit, "TemporalUnit");
             Instant end = getEndTime();
-            return end != null ? Instant.now().until(getEndTime(), unit) : -1;
+            return end != null ? Instant.now().until(end, unit) : -1;
+        }
+
+        /**
+         * Calculates the elapsed time from {@link #getStartTime()} to now in terms of the specified unit.
+         * <br>If {@link #getStartTime()} is {@code null} this will be negative.
+         *
+         * @param  unit
+         *         The {@link java.time.temporal.TemporalUnit TemporalUnit} to return
+         *
+         * @throws IllegalArgumentException
+         *         If the provided unit is {@code null}
+         * @throws ArithmeticException
+         *         If a numeric overflow occurs
+         * @throws java.time.DateTimeException
+         *         If the amount cannot be calculated
+         * @throws java.time.temporal.UnsupportedTemporalTypeException
+         *         If the provided unit is not supported
+         *
+         * @return Elapsed time in the provided {@link java.time.temporal.TemporalUnit TemporalUnit} or {@code -1} if unset
+         *
+         * @see    java.time.Instant#until(java.time.temporal.Temporal, java.time.temporal.TemporalUnit) Instant.until(Temporal, TemporalUnit)
+         * @see    java.time.temporal.TemporalUnit
+         */
+        public long getElapsedTime(TemporalUnit unit)
+        {
+            Checks.notNull(unit, "TemporalUnit");
+            Instant start = getStartTime();
+            return start != null ? start.until(Instant.now(), unit) : -1;
         }
 
         @Override
