@@ -199,9 +199,24 @@ public class MessageReaction
      *
      * @return The final instance of this Reaction's Emote/Emoji
      */
-    public ReactionEmote getEmote()
+    public ReactionEmote getReactionEmote()
     {
         return emote;
+    }
+
+    /**
+     * The {@link net.dv8tion.jda.core.entities.MessageReaction.ReactionEmote ReactionEmote}
+     * of this Reaction
+     *
+     * @return The final instance of this Reaction's Emote/Emoji
+     *
+     * @deprecated
+     *         This will be replaced due to the new naming convention; Use {@link #getReactionEmote()} instead
+     */
+    @Deprecated
+    public ReactionEmote getEmote()
+    {
+        return getReactionEmote();
     }
 
     /**

@@ -18,11 +18,13 @@ package net.dv8tion.jda.core.utils.cache;
 
 import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.cache.impl.AbstractCacheView;
 import net.dv8tion.jda.core.utils.cache.impl.UnifiedCacheViewImpl;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
@@ -258,5 +260,20 @@ public interface CacheView<T> extends Iterable<T>
     {
         Checks.notNull(generator, "Generator");
         return new UnifiedCacheViewImpl.UnifiedMemberCacheViewImpl(generator);
+    }
+
+    /**
+     * Basic implementation of {@link net.dv8tion.jda.core.utils.cache.CacheView CacheView} interface.
+     * <br>Using {@link gnu.trove.map.TLongObjectMap TLongObjectMap} to cache entities!
+     *
+     * @param <T>
+     *        The type this should cache
+     */
+    class SimpleCacheView<T> extends AbstractCacheView<T>
+    {
+        public SimpleCacheView(Function<T, String> nameMapper)
+        {
+            super(nameMapper);
+        }
     }
 }

@@ -723,45 +723,4 @@ public abstract class RestAction<T>
         @Override
         protected void handleResponse(Response response, Request<T> request) { }
     }
-
-    /**
-     * Specialized form of {@link net.dv8tion.jda.core.requests.RestAction} that is used to provide information that
-     * an error has occurred while attempting to execute a request.
-     * <br>Basically: Allows you to provide an exception directly to the failure consumer.
-     *
-     * @param <T>
-     *        The generic response type for this RestAction
-     */
-    public static class FailedRestAction<T> extends RestAction<T>
-    {
-        private final Exception exception;
-
-        public FailedRestAction(Exception exception)
-        {
-            super(null, null);
-            this.exception = exception;
-        }
-
-        @Override
-        public void queue(Consumer<T> success, Consumer<Throwable> failure)
-        {
-            if (failure != null)
-                failure.accept(exception);
-        }
-
-        @Override
-        public RequestFuture<T> submit(boolean shouldQueue)
-        {
-            return new RestFuture<>(exception);
-        }
-
-        @Override
-        public T complete(boolean shouldQueue)
-        {
-            throw new RuntimeException(exception);
-        }
-
-        @Override
-        protected void handleResponse(Response response, Request<T> request) {}
-    }
 }

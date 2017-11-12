@@ -23,8 +23,6 @@ import net.dv8tion.jda.core.utils.MiscUtil;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 /**
  * {@link net.dv8tion.jda.core.utils.cache.CacheView CacheView} implementation
@@ -153,34 +151,4 @@ public interface MemberCacheView extends CacheView<Member>
      * @return Immutable list of members with the given roles
      */
     List<Member> getElementsWithRoles(Collection<Role> roles);
-
-    /**
-     * Creates a combined {@link UnifiedMemberCacheView UnifiedMemberCacheView}
-     * for all provided MemberCacheView implementations.
-     * <br>This allows to combine cache of multiple JDA sessions or Guilds.
-     *
-     * @param  generator
-     *         Stream generator of {@link net.dv8tion.jda.core.utils.cache.MemberCacheView MemberCacheView} instances
-     *
-     * @return Combined MemberCacheView spanning over all provided instances
-     */
-    static UnifiedMemberCacheView all(Supplier<Stream<MemberCacheView>> generator)
-    {
-        return CacheView.allMembers(generator);
-    }
-
-    /**
-     * Creates a combined {@link UnifiedMemberCacheView UnifiedMemberCacheView}
-     * for all provided MemberCacheView implementations.
-     * <br>This allows to combine cache of multiple JDA sessions or Guilds.
-     *
-     * @param  cacheViews
-     *         Collection of MemberCacheView instances
-     *
-     * @return Combined MemberCacheView spanning over all provided instances
-     */
-    static UnifiedMemberCacheView all(Collection<MemberCacheView> cacheViews)
-    {
-        return all(cacheViews::stream);
-    }
 }

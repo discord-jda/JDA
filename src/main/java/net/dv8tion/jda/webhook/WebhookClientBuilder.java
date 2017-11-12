@@ -18,6 +18,7 @@ package net.dv8tion.jda.webhook;
 
 import net.dv8tion.jda.core.entities.Webhook;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.MiscUtil;
 import okhttp3.OkHttpClient;
 
 import javax.annotation.Nonnull;
@@ -25,6 +26,8 @@ import javax.annotation.Nullable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Builder that creates a new {@link net.dv8tion.jda.webhook.WebhookClient WebhookClient} instance
@@ -32,6 +35,7 @@ import java.util.concurrent.ThreadFactory;
 public class WebhookClientBuilder
 {
     public static final OkHttpClient.Builder DEFAULT_HTTP_BUILDER = new OkHttpClient.Builder();
+    private static final Pattern WEBHOOK_PATTERN = Pattern.compile("(?:https?://)?(?:\\w+\\.)?discordapp\\.com/api(?:/v\\d+)?/webhooks/(\\d+)/([\\w-]+)(?:/(?:\\w+)?)?");
 
     protected final long id;
     protected final String token;
@@ -59,6 +63,30 @@ public class WebhookClientBuilder
         Checks.noWhitespace(token, "Token");
         this.id = id;
         this.token = token;
+    }
+
+    /**
+     * Creates a new WebhookClientBuilder with the provided webhook URL
+     *
+     * @param  url
+     *         The URL of the webhook. May be directly copied from Discord's UI
+     *         <br>Example: {@code https://discordapp.com/api/webhooks/123456789012345678/my-webhook-token}
+     *         <br>This constructor also parses URLs pointing to subdomains of {@code discordapp.com}
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided URL is {@code null}
+     *         or is incorrectly formatted
+     */
+    public WebhookClientBuilder(@Nonnull String url)
+    {
+        Matcher matcher = WEBHOOK_PATTERN.matcher(url);
+        if (!matcher.matches())
+        {
+            throw new IllegalArgumentException("Failed to parse webhook URL");
+        }
+
+        this.id = MiscUtil.parseSnowflake(matcher.group(1));
+        this.token = matcher.group(2);
     }
 
     /**

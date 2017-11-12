@@ -33,6 +33,7 @@ import net.dv8tion.jda.core.entities.impl.PrivateChannelImpl;
 import net.dv8tion.jda.core.entities.impl.UserImpl;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.guild.GuildUnavailableEvent;
+import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import org.json.JSONObject;
 
@@ -76,10 +77,10 @@ public class GuildDeleteHandler extends SocketHandler
         }
 
         api.getClient().removeAudioConnection(id);
-        final TLongObjectMap<AudioManagerImpl> audioManagerMap = api.getAudioManagerMap();
+        final TLongObjectMap<AudioManager> audioManagerMap = api.getAudioManagerMap();
         synchronized (audioManagerMap)
         {
-            final AudioManagerImpl manager = audioManagerMap.get(id);
+            final AudioManagerImpl manager = (AudioManagerImpl) audioManagerMap.get(id);
             if (manager != null) // close existing audio connection if needed
                 manager.closeAudioConnection(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD);
             // remove manager from central map to avoid old guild references

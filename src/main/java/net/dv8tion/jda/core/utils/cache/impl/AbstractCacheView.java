@@ -20,11 +20,13 @@ import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.cache.CacheView;
+import org.apache.commons.collections4.iterators.ArrayIterator;
 
 import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public abstract class AbstractCacheView<T> implements CacheView<T>
 {
@@ -49,13 +51,17 @@ public abstract class AbstractCacheView<T> implements CacheView<T>
     @Override
     public List<T> asList()
     {
-        return Collections.unmodifiableList(new ArrayList<>(elements.valueCollection()));
+        ArrayList<T> list = new ArrayList<>(elements.size());
+        elements.forEachValue(list::add);
+        return Collections.unmodifiableList(list);
     }
 
     @Override
     public Set<T> asSet()
     {
-        return Collections.unmodifiableSet(new HashSet<>(elements.valueCollection()));
+        HashSet<T> set = new HashSet<>(elements.size());
+        elements.forEachValue(set::add);
+        return Collections.unmodifiableSet(set);
     }
 
     @Override
@@ -102,21 +108,27 @@ public abstract class AbstractCacheView<T> implements CacheView<T>
     }
 
     @Override
+    public Spliterator<T> spliterator()
+    {
+        return Spliterators.spliterator(elements.values(), Spliterator.IMMUTABLE);
+    }
+
+    @Override
     public Stream<T> stream()
     {
-        return elements.valueCollection().stream();
+        return StreamSupport.stream(spliterator(), false);
     }
 
     @Override
     public Stream<T> parallelStream()
     {
-        return elements.valueCollection().parallelStream();
+        return StreamSupport.stream(spliterator(), true);
     }
 
     @Nonnull
     @Override
     public Iterator<T> iterator()
     {
-        return elements.valueCollection().iterator();
+        return new ArrayIterator<>(elements.values());
     }
 }

@@ -30,10 +30,9 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.LinkedHashSet;
+import java.net.SocketTimeoutException;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
@@ -49,6 +48,8 @@ public class Requester
     private final RateLimiter rateLimiter;
 
     private final OkHttpClient httpClient;
+
+    private volatile boolean retryOnTimeout = false;
 
     public Requester(JDA api, ShardedRateLimiter shardedRateLimiter)
     {
@@ -95,12 +96,19 @@ public class Requester
      *
      * @param  apiRequest
      *         The API request that needs to be sent
+     * @param  handleOnRateLimit
+     *         Whether to forward rate-limits, false if rate limit handling should take over
      *
      * @return Non-null if the request was ratelimited. Returns a Long containing retry_after milliseconds until
      *         the request can be made again. This could either be for the Per-Route ratelimit or the Global ratelimit.
      *         <br>Check if globalCooldown is {@code null} to determine if it was Per-Route or Global.
      */
-    public Long execute(Request<?> apiRequest, boolean handleOnRatelimit)
+    public Long execute(Request<?> apiRequest, boolean handleOnRateLimit)
+    {
+        return execute(apiRequest, false, handleOnRateLimit);
+    }
+
+    public Long execute(Request<?> apiRequest, boolean retried, boolean handleOnRatelimit)
     {
         Route.CompiledRoute route = apiRequest.getRoute();
         Long retryAfter = rateLimiter.getRateLimit(route);
@@ -193,6 +201,14 @@ public class Requester
 
             return retryAfter;
         }
+        catch (SocketTimeoutException e)
+        {
+            if (retryOnTimeout && !retried)
+                return execute(apiRequest, true, handleOnRatelimit);
+            LOG.error("Requester timed out while executing a request", e);
+            apiRequest.handleResponse(new Response(firstSuccess, e, rays));
+            return null;
+        }
         catch (Exception e)
         {
             LOG.error("There was an exception while executing a REST request", e); //This originally only printed on DEBUG in 2.x
@@ -218,6 +234,11 @@ public class Requester
     public RateLimiter getRateLimiter()
     {
         return rateLimiter;
+    }
+
+    public void setRetryOnTimeout(boolean retryOnTimeout)
+    {
+        this.retryOnTimeout = retryOnTimeout;
     }
 
     public void shutdown(long time, TimeUnit unit)

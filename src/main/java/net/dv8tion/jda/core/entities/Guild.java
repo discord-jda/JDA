@@ -145,16 +145,32 @@ public interface Guild extends ISnowflake
     Timeout getAfkTimeout();
 
     /**
-     * The {@link net.dv8tion.jda.core.Region Region} that this {@link net.dv8tion.jda.core.entities.Guild Guild} is
+     * The Voice {@link net.dv8tion.jda.core.Region Region} that this Guild is
      * using for audio connections.
-     * <br>If the {@link net.dv8tion.jda.core.Region Region} is not recognized, returns {@link net.dv8tion.jda.core.Region#UNKNOWN UNKNOWN}.
-     * <p>
-     * This value can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setRegion(net.dv8tion.jda.core.Region)}
+     * <br>If the Region is not recognized, returns {@link net.dv8tion.jda.core.Region#UNKNOWN UNKNOWN} but you
+     * can still use the {@link #getRegionRaw()} to retrieve the raw name this region has.
+     *
+     * <p>This value can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setRegion(net.dv8tion.jda.core.Region)}
      * or {@link net.dv8tion.jda.core.managers.GuildManagerUpdatable#getRegionField()}.
      *
      * @return The the audio Region this Guild is using for audio connections. Can return Region.UNKNOWN.
      */
-    Region getRegion();
+    default Region getRegion()
+    {
+        return Region.fromKey(getRegionRaw());
+    }
+
+    /**
+     * The raw voice region name that this Guild is using
+     * for audio connections.
+     * <br>This is resolved to an enum constant of {@link net.dv8tion.jda.core.Region Region} by {@link #getRegion()}!
+     *
+     * <p>This value can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setRegion(net.dv8tion.jda.core.Region)}
+     * or {@link net.dv8tion.jda.core.managers.GuildManagerUpdatable#getRegionField()}.
+     *
+     * @return Raw region name
+     */
+    String getRegionRaw();
 
     /**
      * Used to determine if the provided {@link net.dv8tion.jda.core.entities.User User} is a member of this Guild.
@@ -756,10 +772,11 @@ public interface Guild extends ISnowflake
 
     /**
      * The @everyone {@link net.dv8tion.jda.core.entities.Role Role} of this {@link net.dv8tion.jda.core.entities.Guild Guild}.
-     * <br>This role is special because its {@link net.dv8tion.jda.core.entities.Role#getPosition()} is calculated as
+     * <br>This role is special because its {@link net.dv8tion.jda.core.entities.Role#getPosition() position} is calculated as
      * {@code -1}. All other role positions are 0 or greater. This implies that the public role is <b>always</b> below
      * any custom roles created in this Guild. Additionally, all members of this guild are implied to have this role so
-     * it is not included in the list returned by {@link net.dv8tion.jda.core.entities.Member#getRoles()}.
+     * it is not included in the list returned by {@link net.dv8tion.jda.core.entities.Member#getRoles() Member.getRoles()}.
+     * <br>The ID of this Role is the Guild's ID thus it is equivalent to using {@link #getRoleById(long) getRoleById(getIdLong())}.
      *
      * @return The @everyone {@link net.dv8tion.jda.core.entities.Role Role}
      */
@@ -940,10 +957,15 @@ public interface Guild extends ISnowflake
     RestAction<Void> delete(String mfaCode);
 
     /**
-     * Returns the {@link net.dv8tion.jda.core.managers.AudioManager AudioManager} that represents the
+     * The {@link net.dv8tion.jda.core.managers.AudioManager AudioManager} that represents the
      * audio connection for this Guild.
+     * <br>If no AudioManager exists for this Guild, this will create a new one.
+     * <br>This operation is synchronized on all audio managers for this JDA instance,
+     * this means that calling getAudioManager() on any other guild while a thread is accessing this method may be locked.
      *
      * @return The AudioManager for this Guild.
+     *
+     * @see    net.dv8tion.jda.core.JDA#getAudioManagerCache() JDA.getAudioManagerCache()
      */
     AudioManager getAudioManager();
 

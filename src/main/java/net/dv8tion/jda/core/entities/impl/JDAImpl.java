@@ -37,15 +37,16 @@ import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.InterfacedEventManager;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.Presence;
-import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.core.requests.restaction.GuildAction;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.core.utils.cache.impl.AbstractCacheView;
 import net.dv8tion.jda.core.utils.cache.impl.SnowflakeCacheViewImpl;
 import okhttp3.OkHttpClient;
 import org.json.JSONObject;
@@ -74,7 +75,7 @@ public class JDAImpl implements JDA
     protected final TLongObjectMap<User> fakeUsers = MiscUtil.newLongMap();
     protected final TLongObjectMap<PrivateChannel> fakePrivateChannels = MiscUtil.newLongMap();
 
-    protected final TLongObjectMap<AudioManagerImpl> audioManagers = MiscUtil.newLongMap();
+    protected final AbstractCacheView<AudioManager> audioManagers = new CacheView.SimpleCacheView<>(m -> m.getGuild().getName());
 
     protected final OkHttpClient.Builder httpClientBuilder;
     protected final WebSocketFactory wsFactory;
@@ -104,9 +105,8 @@ public class JDAImpl implements JDA
     protected long responseTotal;
     protected long ping = -1;
 
-    public JDAImpl(AccountType accountType, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory, ShardedRateLimiter rateLimiter,
-                   boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled,
-                   int corePoolSize, int maxReconnectDelay)
+    public JDAImpl(AccountType accountType, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory, ShardedRateLimiter rateLimiter,boolean autoReconnect, boolean audioEnabled,
+            boolean useShutdownHook, boolean bulkDeleteSplittingEnabled,boolean retryOnTimeout, int corePoolSize, int maxReconnectDelay)
     {
         this.accountType = accountType;
         this.httpClientBuilder = httpClientBuilder;
@@ -120,6 +120,7 @@ public class JDAImpl implements JDA
 
         this.presence = new PresenceImpl(this);
         this.requester = new Requester(this, rateLimiter);
+        this.requester.setRetryOnTimeout(retryOnTimeout);
 
         this.jdaClient = accountType == AccountType.CLIENT ? new JDAClientImpl(this) : null;
         this.jdaBot = accountType == AccountType.BOT ? new JDABotImpl(this) : null;
@@ -289,6 +290,12 @@ public class JDAImpl implements JDA
     }
 
     @Override
+    public void setRequestTimeoutRetry(boolean retryOnTimeout)
+    {
+        requester.setRetryOnTimeout(retryOnTimeout);
+    }
+
+    @Override
     public boolean isAutoReconnect()
     {
         return autoReconnect;
@@ -373,6 +380,12 @@ public class JDAImpl implements JDA
     }
 
     @Override
+    public CacheView<AudioManager> getAudioManagerCache()
+    {
+        return audioManagers;
+    }
+
+    @Override
     public SnowflakeCacheView<Guild> getGuildCache()
     {
         return guildCache;
@@ -441,7 +454,7 @@ public class JDAImpl implements JDA
             return;
 
         setStatus(Status.SHUTTING_DOWN);
-        audioManagers.valueCollection().forEach(AudioManager::closeAudioConnection);
+        audioManagers.forEach(AudioManager::closeAudioConnection);
         audioManagers.clear();
 
         if (audioKeepAlivePool != null)
@@ -509,11 +522,11 @@ public class JDAImpl implements JDA
         return presence;
     }
 
-    @Override
-    public AuditableRestAction<Void> installAuxiliaryCable(int port) throws UnsupportedOperationException
-    {
-        return new AuditableRestAction.FailedRestAction<>(new UnsupportedOperationException("nice try but next time think first :)"));
-    }
+    //@Override
+    //public AuditableRestAction<Void> installAuxiliaryCable(int port) throws UnsupportedOperationException
+    //{
+    //    return new AuditableRestAction.FailedRestAction<>(new UnsupportedOperationException("nice try but next time think first :)"));
+    //}
 
     @Override
     public AccountType getAccountType()
@@ -545,6 +558,22 @@ public class JDAImpl implements JDA
     public List<Object> getRegisteredListeners()
     {
         return Collections.unmodifiableList(eventManager.getRegisteredListeners());
+    }
+
+    @Override
+    public GuildAction createGuild(String name)
+    {
+        switch (accountType)
+        {
+            case BOT:
+                if (guildCache.size() >= 10)
+                    throw new IllegalStateException("Cannot create a Guild with a Bot in more than 10 guilds!");
+                break;
+            case CLIENT:
+                if (guildCache.size() >= 100)
+                    throw new IllegalStateException("Cannot be in more than 100 guilds with AccountType.CLIENT!");
+        }
+        return new GuildAction(this, name);
     }
 
     public EntityBuilder getEntityBuilder()
@@ -633,9 +662,9 @@ public class JDAImpl implements JDA
         return fakePrivateChannels;
     }
 
-    public TLongObjectMap<AudioManagerImpl> getAudioManagerMap()
+    public TLongObjectMap<AudioManager> getAudioManagerMap()
     {
-        return audioManagers;
+        return audioManagers.getMap();
     }
 
     public void setSelfUser(SelfUser selfUser)
