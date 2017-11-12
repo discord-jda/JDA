@@ -212,6 +212,12 @@ public class ChannelUpdateHandler extends SocketHandler
             case CATEGORY:
             {
                 CategoryImpl category = (CategoryImpl) api.getCategoryById(channelId);
+                if (category == null)
+                {
+                    api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a Category that does not exist. JSON: {}", content);
+                    return null;
+                }
                 final String oldName = category.getName();
                 final int oldPosition = category.getPositionRaw();
 
