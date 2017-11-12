@@ -118,7 +118,7 @@ public class Decoder
             default:
                 b.append(result);
         }
-        AudioConnection.LOG.debug(b.toString());
+        AudioConnection.LOG.debug("{}", b);
     }
 
     protected synchronized void close()
