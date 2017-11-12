@@ -19,7 +19,6 @@ package net.dv8tion.jda.core.entities.impl;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.MessageAction;
-import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -87,12 +86,6 @@ public class SystemMessage extends ReceivedMessage
     public MessageAction editMessage(Message newContent)
     {
         throw new UnsupportedOperationException("Cannot edit message of this Message Type. MessageType: " + getType());
-    }
-
-    @Override
-    public JSONObject toJSONObject()
-    {
-        throw new UnsupportedOperationException("Cannot create JSONObject for this Message Type. MessageType: " + getType());
     }
 
     @Override

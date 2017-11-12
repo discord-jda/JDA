@@ -769,7 +769,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.notNull(fileName, "fileName");
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
-        return new MessageAction(getJDA(), route, this).addFile(data, fileName).apply(message);
+        return new MessageAction(getJDA(), route, this).apply(message).addFile(data, fileName);
     }
 
     /**

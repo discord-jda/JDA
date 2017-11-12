@@ -16,27 +16,19 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
-import net.dv8tion.jda.client.entities.Group;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.core.requests.restaction.MessageAction;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.entities.MessageEmbed;
+import net.dv8tion.jda.core.entities.MessageType;
 
 import java.util.Collections;
 import java.util.List;
 
-public class DataMessage extends ReceivedMessage implements Message
+public class DataMessage extends AbstractMessage
 {
-    private static final String UNSUPPORTED = "This operation is not supported for Messages that were created by a MessageBuilder!";
     private MessageEmbed embed;
 
     public DataMessage(boolean tts, String content, String nonce, MessageEmbed embed)
     {
-        super(0, null, null, false, content.contains("@everyone"), tts, false,
-            content, nonce, null, null, Collections.emptyList(), Collections.emptyList(),
-            embed != null ? Collections.singletonList(embed) : Collections.emptyList());
+        super(content, nonce, tts);
         this.embed = embed;
     }
 
@@ -74,193 +66,17 @@ public class DataMessage extends ReceivedMessage implements Message
     }
 
     @Override
-    public JSONObject toJSONObject()
+    public List<MessageEmbed> getEmbeds()
     {
-        JSONObject obj = new JSONObject();
-        obj.put("content", content);
-        obj.put("tts", isTTS);
-        if (embed != null)
-            obj.put("embed", embed.toJSONObject());
-        if (nonce != null)
-            obj.put("nonce", nonce);
-        return obj;
+        return Collections.singletonList(embed);
     }
 
     // UNSUPPORTED OPERATIONS ON MESSAGE BUILDER OUTPUT
 
-
     @Override
-    public synchronized List<User> getMentionedUsers()
+    protected void unsupported()
     {
-        throw new UnsupportedOperationException(UNSUPPORTED);
-    }
-
-    @Override
-    public synchronized List<TextChannel> getMentionedChannels()
-    {
-        throw new UnsupportedOperationException(UNSUPPORTED);
-    }
-
-    @Override
-    public synchronized List<Role> getMentionedRoles()
-    {
-        throw new UnsupportedOperationException(UNSUPPORTED);
-    }
-
-    @Override
-    public synchronized List<Emote> getEmotes()
-    {
-        throw new UnsupportedOperationException(UNSUPPORTED);
-    }
-
-    @Override
-    public List<Member> getMentionedMembers(Guild guild)
-    {
-        throw new UnsupportedOperationException(UNSUPPORTED);
-    }
-
-    @Override
-    public List<Member> getMentionedMembers()
-    {
-        throw new UnsupportedOperationException(UNSUPPORTED);
-    }
-
-    @Override
-    public List<IMentionable> getMentions(MentionType... types)
-    {
-        throw new UnsupportedOperationException(UNSUPPORTED);
-    }
-
-    @Override
-    public boolean isMentioned(IMentionable mentionable, MentionType... types)
-    {
-        throw new UnsupportedOperationException(UNSUPPORTED);
-    }
-
-    @Override
-    public User getAuthor()
-    {
-        throw new UnsupportedOperationException(UNSUPPORTED);
-    }
-
-    @Override
-    public Member getMember()
-    {
-        throw new UnsupportedOperationException(UNSUPPORTED);
-    }
-
-    @Override
-    public String getContentDisplay()
-    {
-        throw new UnsupportedOperationException(UNSUPPORTED);
-    }
-
-    @Override
-    public boolean isFromType(ChannelType type)
-    {
-        throw new UnsupportedOperationException(UNSUPPORTED);
-    }
-
-    @Override
-    public ChannelType getChannelType()
-    {
-        throw new UnsupportedOperationException(UNSUPPORTED);
-    }
-
-    @Override
-    public MessageChannel getChannel()
-    {
-        throw new UnsupportedOperationException(UNSUPPORTED);
-    }
-
-    @Override
-    public PrivateChannel getPrivateChannel()
-    {
-        throw new UnsupportedOperationException(UNSUPPORTED);
-    }
-
-    @Override
-    public Group getGroup()
-    {
-        throw new UnsupportedOperationException(UNSUPPORTED);
-    }
-
-    @Override
-    public TextChannel getTextChannel()
-    {
-        throw new UnsupportedOperationException(UNSUPPORTED);
-    }
-
-    @Override
-    public Guild getGuild()
-    {
-        throw new UnsupportedOperationException(UNSUPPORTED);
-    }
-
-    @Override
-    public MessageAction editMessage(CharSequence newContent)
-    {
-        throw new UnsupportedOperationException(UNSUPPORTED);
-    }
-
-    @Override
-    public MessageAction editMessage(MessageEmbed newContent)
-    {
-        throw new UnsupportedOperationException(UNSUPPORTED);
-    }
-
-    @Override
-    public MessageAction editMessageFormat(String format, Object... args)
-    {
-        throw new UnsupportedOperationException(UNSUPPORTED);
-    }
-
-    @Override
-    public MessageAction editMessage(Message newContent)
-    {
-        throw new UnsupportedOperationException(UNSUPPORTED);
-    }
-
-    @Override
-    public AuditableRestAction<Void> delete()
-    {
-        throw new UnsupportedOperationException(UNSUPPORTED);
-    }
-
-    @Override
-    public JDA getJDA()
-    {
-        throw new UnsupportedOperationException(UNSUPPORTED);
-    }
-
-    @Override
-    public RestAction<Void> pin()
-    {
-        throw new UnsupportedOperationException(UNSUPPORTED);
-    }
-
-    @Override
-    public RestAction<Void> unpin()
-    {
-        throw new UnsupportedOperationException(UNSUPPORTED);
-    }
-
-    @Override
-    public RestAction<Void> addReaction(Emote emote)
-    {
-        throw new UnsupportedOperationException(UNSUPPORTED);
-    }
-
-    @Override
-    public RestAction<Void> addReaction(String unicode)
-    {
-        throw new UnsupportedOperationException(UNSUPPORTED);
-    }
-
-    @Override
-    public AuditableRestAction<Void> clearReactions()
-    {
-        throw new UnsupportedOperationException(UNSUPPORTED);
+        throw new UnsupportedOperationException("This operation is not supported for Messages that were created by a MessageBuilder!");
     }
 
     @Override

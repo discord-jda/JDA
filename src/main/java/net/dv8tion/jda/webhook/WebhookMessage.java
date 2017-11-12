@@ -108,7 +108,7 @@ public class WebhookMessage
     public static WebhookMessage from(Message message)
     {
         Checks.notNull(message, "Message");
-        final String content = message.getRawContent();
+        final String content = message.getContentRaw();
         final List<MessageEmbed> embeds = message.getEmbeds();
         final boolean isTTS = message.isTTS();
         return new WebhookMessage(null, null, content, embeds, isTTS, null, null);

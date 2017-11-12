@@ -20,7 +20,6 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.utils.Checks;
@@ -121,6 +120,8 @@ public class MessageAction extends RestAction<Message> implements Appendable
      * to this MessageAction settings.
      * <br>This will override all existing settings <b>if</b> new settings are available.
      *
+     * <p><b>This does not copy files!</b>
+     *
      * @param  message
      *         The nullable Message to apply settings from
      *
@@ -139,18 +140,8 @@ public class MessageAction extends RestAction<Message> implements Appendable
         final List<MessageEmbed> embeds = message.getEmbeds();
         if (embeds != null && !embeds.isEmpty())
             embed(embeds.get(0));
+        files.clear();
 
-        for (Message.Attachment a : message.getAttachments())
-        {
-            try
-            {
-                addFile(a.getInputStream(), a.getFileName());
-            }
-            catch (IOException ex)
-            {
-                JDAImpl.LOG.fatal(ex);
-            }
-        }
         return content(message.getContentRaw()).tts(message.isTTS());
     }
 

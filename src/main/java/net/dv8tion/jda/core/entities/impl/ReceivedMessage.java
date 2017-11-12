@@ -25,19 +25,16 @@ import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.MessageAction;
+import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.commons.collections4.CollectionUtils;
-import net.dv8tion.jda.core.utils.Checks;
-import net.dv8tion.jda.core.utils.Helpers;
-import org.json.JSONObject;
 
-import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ReceivedMessage implements Message
+public class ReceivedMessage extends AbstractMessage
 {
     private final Object mutex = new Object();
 
@@ -47,9 +44,7 @@ public class ReceivedMessage implements Message
     protected final MessageChannel channel;
     protected final boolean fromWebhook;
     protected final boolean mentionsEveryone;
-    protected final boolean isTTS;
     protected final boolean pinned;
-    protected final String content, nonce;
     protected final User author;
     protected final OffsetDateTime editedTime;
     protected final List<MessageReaction> reactions;
@@ -72,16 +67,14 @@ public class ReceivedMessage implements Message
         String content, String nonce, User author, OffsetDateTime editTime,
         List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds)
     {
+        super(content, nonce, tts);
         this.id = id;
         this.channel = channel;
         this.type = type;
         this.api = (channel != null) ? (JDAImpl) channel.getJDA() : null;
         this.fromWebhook = fromWebhook;
         this.mentionsEveryone = mentionsEveryone || (content != null && content.contains("@everyone"));
-        this.isTTS = tts;
         this.pinned = pinned;
-        this.content = content;
-        this.nonce = nonce;
         this.author = author;
         this.editedTime = editTime;
         this.reactions = Collections.unmodifiableList(reactions);
@@ -767,16 +760,10 @@ public class ReceivedMessage implements Message
             : String.format("M:%.20s", this); // this message was made using MessageBuilder
     }
 
-    public JSONObject toJSONObject()
+    @Override
+    protected void unsupported()
     {
-        JSONObject obj = new JSONObject();
-        obj.put("content", content);
-        obj.put("tts",     isTTS);
-        if (!embeds.isEmpty())
-            obj.put("embed", embeds.get(0).toJSONObject());
-        //we don't attach nonce here because this was a received message
-        // and nonce should be 100% unique for each message sent
-        return obj;
+        throw new UnsupportedOperationException("This operation is not supported on received messages!");
     }
 
     private boolean hasPermission(Permission permission)
@@ -818,24 +805,7 @@ public class ReceivedMessage implements Message
         if (upper)
             out = out.toUpperCase(formatter.locale());
 
-        try
-        {
-            Appendable appendable = formatter.out();
-            if (precision > -1 && out.length() > precision)
-            {
-                appendable.append(Helpers.truncate(out, precision - 3)).append("...");
-                return;
-            }
-
-            if (leftJustified)
-                appendable.append(Helpers.rightPad(out, width));
-            else
-                appendable.append(Helpers.leftPad(out, width));
-        }
-        catch (IOException e)
-        {
-            throw new AssertionError(e);
-        }
+        appendFormat(formatter, width, precision, leftJustified, out);
     }
 
     private static class FormatToken

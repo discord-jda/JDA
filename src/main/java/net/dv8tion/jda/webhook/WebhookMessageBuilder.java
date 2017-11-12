@@ -53,7 +53,7 @@ public class WebhookMessageBuilder
         if (message != null)
         {
             embeds.addAll(message.getEmbeds());
-            setContent(message.getRawContent());
+            setContent(message.getContentRaw());
             isTTS = message.isTTS();
         }
     }
