@@ -56,6 +56,8 @@ public class JDALogger
 
     private static final Map<String, Logger> LOGS = new CaseInsensitiveMap<>();
 
+    private JDALogger() {}
+
     /**
      * Will get the {@link org.slf4j.Logger} with the given log-name
      * or create and cache a fallback logger if there is no SLF4J implementation present.
@@ -71,9 +73,9 @@ public class JDALogger
     {
         synchronized (LOGS)
         {
-            if(SLF4J_ENABLED)
+            if (SLF4J_ENABLED)
                 return LoggerFactory.getLogger(name);
-            return LOGS.computeIfAbsent(name, (n) -> new SimpleLogger(name));
+            return LOGS.computeIfAbsent(name, SimpleLogger::new);
         }
     }
 
@@ -92,7 +94,7 @@ public class JDALogger
     {
         synchronized (LOGS)
         {
-            if(SLF4J_ENABLED)
+            if (SLF4J_ENABLED)
                 return LoggerFactory.getLogger(clazz);
             return LOGS.computeIfAbsent(clazz.getName(), (n) -> new SimpleLogger(clazz.getSimpleName()));
         }
@@ -144,9 +146,6 @@ public class JDALogger
          * @return The String for log message
          */
         String getString() throws Exception;
-    }
-
-    private JDALogger() {
     }
 }
 

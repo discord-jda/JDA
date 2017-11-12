@@ -672,53 +672,61 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public void onTextMessage(WebSocket websocket, String message)
     {
         JSONObject content = new JSONObject(message);
-        int opCode = content.getInt("op");
-
-        if (!content.isNull("s"))
+        try
         {
-            api.setResponseTotal(content.getInt("s"));
+            int opCode = content.getInt("op");
+
+            if (!content.isNull("s"))
+            {
+                api.setResponseTotal(content.getInt("s"));
+            }
+
+            switch (opCode)
+            {
+                case WebSocketCode.DISPATCH:
+                    handleEvent(content);
+                    break;
+                case WebSocketCode.HEARTBEAT:
+                    LOG.debug("Got Keep-Alive request (OP 1). Sending response...");
+                    sendKeepAlive();
+                    break;
+                case WebSocketCode.RECONNECT:
+                    LOG.debug("Got Reconnect request (OP 7). Closing connection now...");
+                    close(4000, "OP 7: RECONNECT");
+                    break;
+                case WebSocketCode.INVALIDATE_SESSION:
+                    LOG.debug("Got Invalidate request (OP 9). Invalidating...");
+                    sentAuthInfo = false;
+                    final boolean isResume = content.getBoolean("d");
+                    // When d: true we can wait a bit and then try to resume again
+                    //sending 4000 to not drop session
+                    int closeCode = isResume ? 4000 : 1000;
+                    if (isResume)
+                        LOG.debug("Session can be recovered... Closing and sending new RESUME request");
+                    else
+                        invalidate();
+
+                    close(closeCode, INVALIDATE_REASON);
+                    break;
+                case WebSocketCode.HELLO:
+                    LOG.debug("Got HELLO packet (OP 10). Initializing keep-alive.");
+                    final JSONObject data = content.getJSONObject("d");
+                    setupKeepAlive(data.getLong("heartbeat_interval"));
+                    if (!data.isNull("_trace"))
+                        updateTraces(data.getJSONArray("_trace"), "HELLO", WebSocketCode.HELLO);
+                    break;
+                case WebSocketCode.HEARTBEAT_ACK:
+                    LOG.trace("Got Heartbeat Ack (OP 11).");
+                    api.setPing(System.currentTimeMillis() - heartbeatStartTime);
+                    break;
+                default:
+                    LOG.debug("Got unknown op-code: {} with content: {}", opCode, message);
+            }
         }
-
-        switch (opCode)
+        catch (Exception ex)
         {
-            case WebSocketCode.DISPATCH:
-                handleEvent(content);
-                break;
-            case WebSocketCode.HEARTBEAT:
-                LOG.debug("Got Keep-Alive request (OP 1). Sending response...");
-                sendKeepAlive();
-                break;
-            case WebSocketCode.RECONNECT:
-                LOG.debug("Got Reconnect request (OP 7). Closing connection now...");
-                close(4000, "OP 7: RECONNECT");
-                break;
-            case WebSocketCode.INVALIDATE_SESSION:
-                LOG.debug("Got Invalidate request (OP 9). Invalidating...");
-                sentAuthInfo = false;
-                final boolean isResume = content.getBoolean("d");
-                // When d: true we can wait a bit and then try to resume again
-                //sending 4000 to not drop session
-                int closeCode = isResume ? 4000 : 1000;
-                if (isResume)
-                    LOG.debug("Session can be recovered... Closing and sending new RESUME request");
-                else
-                    invalidate();
-
-                close(closeCode, INVALIDATE_REASON);
-                break;
-            case WebSocketCode.HELLO:
-                LOG.debug("Got HELLO packet (OP 10). Initializing keep-alive.");
-                final JSONObject data = content.getJSONObject("d");
-                setupKeepAlive(data.getLong("heartbeat_interval"));
-                if (!data.isNull("_trace"))
-                    updateTraces(data.getJSONArray("_trace"), "HELLO", WebSocketCode.HELLO);
-                break;
-            case WebSocketCode.HEARTBEAT_ACK:
-                LOG.trace("Got Heartbeat Ack (OP 11).");
-                api.setPing(System.currentTimeMillis() - heartbeatStartTime);
-                break;
-            default:
-                LOG.debug("Got unknown op-code: {} with content: {}", opCode, message);
+            LOG.error("Encountered exception on lifecycle level\nJSON: {}", content, ex);
+            api.getEventManager().handle(new ExceptionEvent(api, ex, true));
         }
     }
 
