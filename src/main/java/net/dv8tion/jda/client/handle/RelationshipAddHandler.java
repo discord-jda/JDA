@@ -40,7 +40,7 @@ public class RelationshipAddHandler extends SocketHandler
         Relationship relationship = api.getEntityBuilder().createRelationship(content);
         if (relationship == null)
         {
-            WebSocketClient.LOG.warn("Received a RELATIONSHIP_ADD with an unknown type! JSON: " + content);
+            WebSocketClient.LOG.warn("Received a RELATIONSHIP_ADD with an unknown type! JSON: {}", content);
             return null;
         }
         switch (relationship.getType())
@@ -70,7 +70,7 @@ public class RelationshipAddHandler extends SocketHandler
                                 relationship));
                 break;
             default:
-                WebSocketClient.LOG.warn("Received a RELATIONSHIP_ADD with an unknown type! JSON: " + content);
+                WebSocketClient.LOG.warn("Received a RELATIONSHIP_ADD with an unknown type! JSON: {}", content);
                 return null;
         }
         api.getEventCache().playbackCache(EventCache.Type.RELATIONSHIP, relationship.getUser().getIdLong());

@@ -366,23 +366,20 @@ public class AudioManagerImpl implements AudioManager
         catch (Throwable e)
         {
             if (e instanceof UnsupportedOperationException)
-                LOG.fatal("Sorry, JDA's audio system doesn't support this system.\n" +
+                LOG.error("Sorry, JDA's audio system doesn't support this system.\n" +
                         "Supported Systems: Windows(x86, x64), Mac(x86, x64) and Linux(x86, x64)\n" +
                         "Operating system: " + Platform.RESOURCE_PREFIX);
             else if (e instanceof  IOException)
             {
-                LOG.fatal("There was an IO Exception when setting up the temp files for audio.");
-                LOG.fatal(e);
+                LOG.error("There was an IO Exception when setting up the temp files for audio.", e);
             }
             else if (e instanceof UnsatisfiedLinkError)
             {
-                LOG.fatal("JDA encountered a problem when attempting to load the Native libraries. Contact a DEV.");
-                LOG.fatal(e);
+                LOG.error("JDA encountered a problem when attempting to load the Native libraries. Contact a DEV.", e);
             }
             else
             {
-                LOG.fatal("An unknown error occurred while attempting to setup JDA's audio system!");
-                LOG.fatal(e);
+                LOG.error("An unknown error occurred while attempting to setup JDA's audio system!", e);
             }
 
             nativesRoot = null;

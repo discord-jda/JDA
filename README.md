@@ -184,6 +184,22 @@ repositories {
 
 The builds are distributed using JCenter through Bintray [JDA JCenter Bintray](https://bintray.com/dv8fromtheworld/maven/JDA/)
 
+### Logging Framework - SLF4J
+JDA is using [SLF4J](https://www.slf4j.org/) to log its messages. 
+
+That means you should add some SLF4J implementation to your build path in addition to JDA.
+If no implementation is found, following message will be printed to the console on startup:
+```
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+```
+
+JDA currently provides a fallback Logger in case that no SLF4J implementation is present.
+We strongly recommend to use one though, as that can improve speed and allows you to customize the Logger as well as log to files
+
+The most popular implementations are [Log4j 2](https://logging.apache.org/log4j/2.x/) and [Logback](https://logback.qos.ch/)
+
 ## Documentation
 Docs can be found on the [Jenkins](http://home.dv8tion.net:8080/) or directly [here](http://home.dv8tion.net:8080/job/JDA/javadoc/)
 <br>A simple Wiki can also be found in this repository's [Wiki section](https://github.com/DV8FromTheWorld/JDA/wiki)
@@ -286,6 +302,10 @@ All dependencies are managed automatically by Gradle.
    * Version: **3.0.3**
    * [BitBucket](https://bitbucket.org/trove4j/trove)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/net.sf.trove4j%3Atrove4j/view)
+ * slf4j-api
+   * Version: **1.7.25**
+   * [Website](https://www.slf4j.org/)
+   * [JCenter Repository](https://bintray.com/bintray/jcenter/org.slf4j%3Aslf4j-api/view)
    
 ## Related Projects
 

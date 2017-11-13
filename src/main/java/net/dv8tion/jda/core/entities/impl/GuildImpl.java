@@ -166,7 +166,7 @@ public class GuildImpl implements Guild
                     }
                     catch (JSONException | NullPointerException e)
                     {
-                        JDAImpl.LOG.fatal(e);
+                        JDAImpl.LOG.error("Error creating webhook from json", e);
                     }
                 }
 

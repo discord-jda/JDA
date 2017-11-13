@@ -38,9 +38,11 @@ import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.SessionReconnectQueue;
 import net.dv8tion.jda.core.requests.WebSocketClient;
 import net.dv8tion.jda.core.utils.Checks;
-import net.dv8tion.jda.core.utils.SimpleLog;
+import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.tuple.Pair;
 import okhttp3.OkHttpClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * JDA's default {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} implementation.
@@ -51,7 +53,7 @@ import okhttp3.OkHttpClient;
  */
 public class DefaultShardManager implements ShardManager
 {
-    public static final SimpleLog LOG = SimpleLog.getLog(ShardManager.class);
+    public static final Logger LOG = JDALogger.getLog(ShardManager.class);
 
     /**
      * The factory used to create {@link net.dv8tion.jda.core.audio.factory.IAudioSendSystem IAudioSendSystem}
@@ -433,21 +435,20 @@ public class DefaultShardManager implements ShardManager
 
             // as this happens before removing the shardId if from the queue just try again after 5 seconds
         }
-        catch(RateLimitedException e)
+        catch (RateLimitedException e)
         {
             LOG.warn("Hit the login ratelimit while creating new JDA instances");
         }
-        catch(LoginException e)
+        catch (LoginException e)
         {
             // this can only happen if the token has been changed
             // in this case the ShardManager will just shutdown itself as there currently is no way of hot-swapping the token on a running JDA instance.
-            LOG.warn("The token has been invalidated and the ShardManager will shutdown!");
-            LOG.warn(e);
+            LOG.warn("The token has been invalidated and the ShardManager will shutdown!", e);
             this.shutdown();
         }
-        catch( final Exception e)
+        catch (final Exception e)
         {
-            LOG.fatal("Caught an exception in the ");
+            LOG.error("Caught an exception in the queue processing thread", e);
         }
 
         this.shards.getMap().put(shardId, api);

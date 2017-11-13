@@ -23,7 +23,9 @@ import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
-import net.dv8tion.jda.core.utils.SimpleLog;
+import net.dv8tion.jda.core.utils.JDALogger;
+import org.slf4j.Logger;
+
 
 /**
  * AudioManager deals with creating, managing and severing audio connections to
@@ -32,7 +34,7 @@ import net.dv8tion.jda.core.utils.SimpleLog;
 public interface AudioManager
 {
     long DEFAULT_CONNECTION_TIMEOUT = 10000;
-    SimpleLog LOG = SimpleLog.getLog(AudioManager.class);
+    Logger LOG = JDALogger.getLog(AudioManager.class);
 
     /**
      * Starts the process to create an audio connection with a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}

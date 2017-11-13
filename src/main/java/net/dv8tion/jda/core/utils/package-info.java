@@ -18,9 +18,7 @@
  * Package which contains all utilities for the JDA library.
  * These are used by JDA itself and can also be useful for the library consumer!
  *
- * <p>This contains the JDA logger implementation {@link net.dv8tion.jda.core.utils.SimpleLog SimpleLog}
- * <br>Which is currently planned to be rewritten to be more end-user friendly.
- * <br>List of utilities:
+ * <p>List of utilities:
  * <ul>
  *     <li>{@link net.dv8tion.jda.core.utils.IOUtil IOUtil}
  *     <br>Allows to read from files (use case: sending files)</li>
