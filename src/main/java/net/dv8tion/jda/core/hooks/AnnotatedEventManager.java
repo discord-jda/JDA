@@ -93,12 +93,11 @@ public class AnnotatedEventManager implements IEventManager
                     }
                     catch (IllegalAccessException | InvocationTargetException e1)
                     {
-                        JDAImpl.LOG.fatal(e1);
+                        JDAImpl.LOG.error("Couldn't access annotated eventlistener method", e1);
                     }
                     catch (Throwable throwable)
                     {
-                        JDAImpl.LOG.fatal("One of the EventListeners had an uncaught exception");
-                        JDAImpl.LOG.fatal(throwable);
+                        JDAImpl.LOG.error("One of the EventListeners had an uncaught exception", throwable);
                     }
                 }));
             }
