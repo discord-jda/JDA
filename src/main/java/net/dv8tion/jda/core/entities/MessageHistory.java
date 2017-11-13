@@ -539,8 +539,7 @@ public class MessageHistory
                 }
                 catch (JSONException | NullPointerException e)
                 {
-                    //TODO replace
-                    LOG.warn("Encountered exception in MessagePagination " + e);
+                    LOG.warn("Encountered exception in MessagePagination", e);
                 }
             }
             request.onSuccess(result);

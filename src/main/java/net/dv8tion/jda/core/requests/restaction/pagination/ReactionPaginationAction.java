@@ -132,8 +132,7 @@ public class ReactionPaginationAction extends PaginationAction<User, ReactionPag
             }
             catch (JSONException | NullPointerException e)
             {
-                //TODO replace
-                LOG.warn("Encountered exception in ReactionPagination " + e);
+                LOG.warn("Encountered exception in ReactionPagination", e);
             }
         }
 

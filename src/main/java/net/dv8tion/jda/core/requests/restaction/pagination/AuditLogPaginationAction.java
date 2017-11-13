@@ -219,8 +219,7 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
             }
             catch (JSONException | NullPointerException e)
             {
-                //TODO replace
-                LOG.warn("Encountered exception in AuditLogPagination " + e);
+                LOG.warn("Encountered exception in AuditLogPagination", e);
             }
         }
 

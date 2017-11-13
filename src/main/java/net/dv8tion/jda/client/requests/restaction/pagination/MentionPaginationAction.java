@@ -191,8 +191,7 @@ public class MentionPaginationAction extends PaginationAction<Message, MentionPa
             }
             catch (JSONException | NullPointerException e)
             {
-                //TODO replace
-                LOG.warn("Encountered exception in MentionPagination " + e);
+                LOG.warn("Encountered exception in MentionPagination", e);
             }
         }
 

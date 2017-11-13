@@ -141,8 +141,7 @@ public class MessagePaginationAction extends PaginationAction<Message, MessagePa
             }
             catch (JSONException | NullPointerException e)
             {
-                //TODO replace in logging changes
-                LOG.warn("Encountered an exception in MessagePagination " + e);
+                LOG.warn("Encountered an exception in MessagePagination", e);
             }
         }
 
