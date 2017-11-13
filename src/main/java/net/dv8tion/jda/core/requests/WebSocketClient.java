@@ -39,11 +39,12 @@ import net.dv8tion.jda.core.handle.*;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
+import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.MiscUtil;
-import net.dv8tion.jda.core.utils.SimpleLog;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -57,7 +58,7 @@ import java.util.zip.InflaterOutputStream;
 
 public class WebSocketClient extends WebSocketAdapter implements WebSocketListener
 {
-    public static final SimpleLog LOG = SimpleLog.getLog(WebSocketClient.class);
+    public static final Logger LOG = JDALogger.getLog(WebSocketClient.class);
     public static final int DISCORD_GATEWAY_VERSION = 6;
     public static final int IDENTIFY_DELAY = 5;
     public static final int ZLIB_SUFFIX = 0x0000FFFF;
@@ -133,8 +134,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected void updateTraces(JSONArray arr, String type, int opCode)
     {
-        final String msg = String.format("Received a _trace for %s (OP: %d) with %s", type, opCode, arr);
-        WebSocketClient.LOG.debug(msg);
+        WebSocketClient.LOG.debug("Received a _trace for {} (OP: {}) with {}", type, opCode, arr);
         traces.clear();
         for (Object o : arr)
             traces.add(String.valueOf(o));
@@ -199,7 +199,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             api.getEventManager().handle(new ResumedEvent(api, api.getResponseTotal()));
         }
         api.setStatus(JDA.Status.CONNECTED);
-        LOG.debug("Resending " + cachedEvents.size() + " cached events...");
+        LOG.debug("Resending {} cached events...", cachedEvents.size());
         handle(cachedEvents);
         LOG.debug("Sending of cached events finished.");
         cachedEvents.clear();
@@ -242,7 +242,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         //Allows 115 messages to be sent before limiting.
         if (this.messagesSent <= 115 || (skipQueue && this.messagesSent <= 119))   //technically we could go to 120, but we aren't going to chance it
         {
-            LOG.trace("<- " + message);
+            LOG.trace("<- {}", message);
             socket.sendText(message);
             this.messagesSent++;
             return true;
@@ -501,7 +501,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             {
                 String ray = values.get(0);
                 cfRays.add(ray);
-                LOG.debug("Received new CF-RAY: " + ray);
+                LOG.debug("Received new CF-RAY: {}", ray);
             }
         }
         connected = true;
@@ -537,11 +537,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             rawCloseCode = serverCloseFrame.getCloseCode();
             closeCode = CloseCode.from(rawCloseCode);
             if (closeCode == CloseCode.RATE_LIMITED)
-                LOG.fatal("WebSocket connection closed due to ratelimit! Sent more than 120 websocket messages in under 60 seconds!");
+                LOG.error("WebSocket connection closed due to ratelimit! Sent more than 120 websocket messages in under 60 seconds!");
             else if (closeCode != null)
-                LOG.debug("WebSocket connection closed with code " + closeCode);
+                LOG.debug("WebSocket connection closed with code {}", closeCode);
             else
-                LOG.warn("WebSocket connection closed with unknown meaning for close-code " + rawCloseCode);
+                LOG.warn("WebSocket connection closed with unknown meaning for close-code {}", rawCloseCode);
         }
         if (clientCloseFrame != null
             && clientCloseFrame.getCloseCode() == 1000
@@ -564,8 +564,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 //it is possible that a token can be invalidated due to too many reconnect attempts
                 //or that a bot reached a new shard minimum and cannot connect with the current settings
                 //if that is the case we have to drop our connection and inform the user with a fatal error message
-                LOG.fatal("WebSocket connection was closed and cannot be recovered due to identification issues");
-                LOG.fatal(closeCode);
+                LOG.error("WebSocket connection was closed and cannot be recovered due to identification issues\n{}", closeCode);
             }
 
             api.setStatus(JDA.Status.SHUTDOWN);
@@ -597,7 +596,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         catch (IllegalStateException ex)
         {
-            LOG.fatal("Reconnect queue rejected session. Shutting down...");
+            LOG.error("Reconnect queue rejected session. Shutting down...");
             api.setStatus(JDA.Status.SHUTDOWN);
             api.getEventManager().handle(
                 new ShutdownEvent(api, OffsetDateTime.now(), 1006));
@@ -623,10 +622,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         if (!handleIdentifyRateLimit)
         {
             if (callFromQueue)
-                LOG.warn("Queue is attempting to reconnect a shard..." + (shardInfo != null ? " Shard: " + shardInfo.getShardString() : ""));
+                LOG.warn("Queue is attempting to reconnect a shard...{}",
+                    JDALogger.getLazyString(() -> shardInfo != null ? " Shard: " + shardInfo.getShardString() : ""));
             else
                 LOG.warn("Got disconnected from WebSocket (Internet?!)...");
-            LOG.warn("Attempting to reconnect in " + reconnectTimeoutS + "s");
+            LOG.warn("Attempting to reconnect in {}s", reconnectTimeoutS);
         }
         while (shouldReconnect)
         {
@@ -635,8 +635,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 api.setStatus(JDA.Status.WAITING_TO_RECONNECT);
                 if (handleIdentifyRateLimit && shouldHandleIdentify)
                 {
-                    LOG.fatal("Encountered IDENTIFY (OP " + WebSocketCode.IDENTIFY + ") Rate Limit! " +
-                        "Waiting " + IDENTIFY_DELAY + " seconds before trying again!");
+                    LOG.error("Encountered IDENTIFY (OP {}) Rate Limit! Waiting {} seconds before trying again!",
+                        WebSocketCode.IDENTIFY, IDENTIFY_DELAY);
                     Thread.sleep(IDENTIFY_DELAY * 1000);
                 }
                 else
@@ -663,7 +663,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             catch (RuntimeException ex)
             {
                 reconnectTimeoutS = Math.min(reconnectTimeoutS << 1, api.getMaxReconnectDelay());
-                LOG.warn("Reconnect failed! Next attempt in " + reconnectTimeoutS + "s");
+                LOG.warn("Reconnect failed! Next attempt in {}s", reconnectTimeoutS);
             }
         }
     }
@@ -672,53 +672,61 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public void onTextMessage(WebSocket websocket, String message)
     {
         JSONObject content = new JSONObject(message);
-        int opCode = content.getInt("op");
-
-        if (!content.isNull("s"))
+        try
         {
-            api.setResponseTotal(content.getInt("s"));
+            int opCode = content.getInt("op");
+
+            if (!content.isNull("s"))
+            {
+                api.setResponseTotal(content.getInt("s"));
+            }
+
+            switch (opCode)
+            {
+                case WebSocketCode.DISPATCH:
+                    handleEvent(content);
+                    break;
+                case WebSocketCode.HEARTBEAT:
+                    LOG.debug("Got Keep-Alive request (OP 1). Sending response...");
+                    sendKeepAlive();
+                    break;
+                case WebSocketCode.RECONNECT:
+                    LOG.debug("Got Reconnect request (OP 7). Closing connection now...");
+                    close(4000, "OP 7: RECONNECT");
+                    break;
+                case WebSocketCode.INVALIDATE_SESSION:
+                    LOG.debug("Got Invalidate request (OP 9). Invalidating...");
+                    sentAuthInfo = false;
+                    final boolean isResume = content.getBoolean("d");
+                    // When d: true we can wait a bit and then try to resume again
+                    //sending 4000 to not drop session
+                    int closeCode = isResume ? 4000 : 1000;
+                    if (isResume)
+                        LOG.debug("Session can be recovered... Closing and sending new RESUME request");
+                    else
+                        invalidate();
+
+                    close(closeCode, INVALIDATE_REASON);
+                    break;
+                case WebSocketCode.HELLO:
+                    LOG.debug("Got HELLO packet (OP 10). Initializing keep-alive.");
+                    final JSONObject data = content.getJSONObject("d");
+                    setupKeepAlive(data.getLong("heartbeat_interval"));
+                    if (!data.isNull("_trace"))
+                        updateTraces(data.getJSONArray("_trace"), "HELLO", WebSocketCode.HELLO);
+                    break;
+                case WebSocketCode.HEARTBEAT_ACK:
+                    LOG.trace("Got Heartbeat Ack (OP 11).");
+                    api.setPing(System.currentTimeMillis() - heartbeatStartTime);
+                    break;
+                default:
+                    LOG.debug("Got unknown op-code: {} with content: {}", opCode, message);
+            }
         }
-
-        switch (opCode)
+        catch (Exception ex)
         {
-            case WebSocketCode.DISPATCH:
-                handleEvent(content);
-                break;
-            case WebSocketCode.HEARTBEAT:
-                LOG.debug("Got Keep-Alive request (OP 1). Sending response...");
-                sendKeepAlive();
-                break;
-            case WebSocketCode.RECONNECT:
-                LOG.debug("Got Reconnect request (OP 7). Closing connection now...");
-                close(4000, "OP 7: RECONNECT");
-                break;
-            case WebSocketCode.INVALIDATE_SESSION:
-                LOG.debug("Got Invalidate request (OP 9). Invalidating...");
-                sentAuthInfo = false;
-                final boolean isResume = content.getBoolean("d");
-                // When d: true we can wait a bit and then try to resume again
-                //sending 4000 to not drop session
-                int closeCode = isResume ? 4000 : 1000;
-                if (isResume)
-                    LOG.debug("Session can be recovered... Closing and sending new RESUME request");
-                else
-                    invalidate();
-
-                close(closeCode, INVALIDATE_REASON);
-                break;
-            case WebSocketCode.HELLO:
-                LOG.debug("Got HELLO packet (OP 10). Initializing keep-alive.");
-                final JSONObject data = content.getJSONObject("d");
-                setupKeepAlive(data.getLong("heartbeat_interval"));
-                if (!data.isNull("_trace"))
-                    updateTraces(data.getJSONArray("_trace"), "HELLO", WebSocketCode.HELLO);
-                break;
-            case WebSocketCode.HEARTBEAT_ACK:
-                LOG.trace("Got Heartbeat Ack (OP 11).");
-                api.setPing(System.currentTimeMillis() - heartbeatStartTime);
-                break;
-            default:
-                LOG.debug("Got unknown op-code: " + opCode + " with content: " + message);
+            LOG.error("Encountered exception on lifecycle level\nJSON: {}", content, ex);
+            api.getEventManager().handle(new ExceptionEvent(api, ex, true));
         }
     }
 
@@ -944,7 +952,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             }
             else
             {
-                LOG.debug("Caching " + type + " event during init!");
+                LOG.debug("Caching {} event during init!", type);
                 cachedEvents.add(raw);
                 return;
             }
@@ -969,7 +977,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
 
         JSONObject content = raw.getJSONObject("d");
-        LOG.trace(String.format("%s -> %s", type, content.toString()));
+        LOG.trace("{} -> {}", type, content);
 
         try
         {
@@ -1001,20 +1009,17 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     if (handler != null)
                         handler.handle(responseTotal, raw);
                     else
-                        LOG.debug("Unrecognized event:\n" + raw);
+                        LOG.debug("Unrecognized event:\n{}", raw);
             }
         }
         catch (JSONException ex)
         {
-            LOG.warn("Got an unexpected Json-parse error. Please redirect following message to the devs:\n\t"
-                    + ex.getMessage() + "\n\t" + type + " -> " + content);
-            LOG.warn(ex);
+            LOG.warn("Got an unexpected Json-parse error. Please redirect following message to the devs:\n\t{}\n\t{} -> {}",
+                ex.getMessage(), type, content, ex);
         }
         catch (Exception ex)
         {
-            LOG.fatal("Got an unexpected error. Please redirect following message to the devs:\n\t"
-                    + type + " -> " + content);
-            LOG.fatal(ex);
+            LOG.error("Got an unexpected error. Please redirect following message to the devs:\n\t{} -> {}", type, content, ex);
         }
     }
 
@@ -1079,7 +1084,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     @Override
     public void handleCallbackError(WebSocket websocket, Throwable cause)
     {
-        LOG.fatal(cause);
+        LOG.error("There was an error in the WebSocket connection", cause);
         api.getEventManager().handle(new ExceptionEvent(api, cause, true));
     }
 
@@ -1135,7 +1140,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         catch (InterruptedException e)
         {
-            LOG.fatal(e);
+            LOG.error("There was an error queueing the audio reconnect", e);
         }
         finally
         {
@@ -1168,7 +1173,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         catch (InterruptedException e)
         {
-            LOG.fatal(e);
+            LOG.error("There was an error queueing the audio connect", e);
         }
         finally
         {
@@ -1198,7 +1203,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         catch (InterruptedException e)
         {
-            LOG.fatal(e);
+            LOG.error("There was an error queueing the audio disconnect", e);
         }
         finally
         {
@@ -1218,7 +1223,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         catch (InterruptedException e)
         {
-            LOG.fatal(e);
+            LOG.error("There was an error cleaning up audio connections for deleted guild", e);
         }
         finally
         {
@@ -1236,7 +1241,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         catch (InterruptedException e)
         {
-            LOG.fatal(e);
+            LOG.error("There was an error updating the audio connection", e);
         }
         finally
         {

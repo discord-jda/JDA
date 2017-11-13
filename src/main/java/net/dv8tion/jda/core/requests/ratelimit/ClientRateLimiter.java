@@ -211,7 +211,7 @@ public class ClientRateLimiter extends RateLimiter
                         }
                         catch (Throwable t)
                         {
-                            Requester.LOG.fatal(t);
+                            Requester.LOG.error("Error executing REST request", t);
                             it.remove();
                             if (request != null)
                                 request.onFailure(t);
@@ -237,7 +237,7 @@ public class ClientRateLimiter extends RateLimiter
             }
             catch (Throwable err)
             {
-                Requester.LOG.fatal(err);
+                Requester.LOG.error("There was some exception in the ClientRateLimiter", err);
                 if (err instanceof Error)
                 {
                     JDAImpl api = requester.getJDA();

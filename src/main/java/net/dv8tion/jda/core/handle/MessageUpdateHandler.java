@@ -54,7 +54,7 @@ public class MessageUpdateHandler extends SocketHandler
                     case DEFAULT:
                         return handleMessage(content);
                     default:
-                        WebSocketClient.LOG.debug("JDA received a message of unknown type. Type: " + type + "  JSON: " + content);
+                        WebSocketClient.LOG.debug("JDA received a message of unknown type. Type: {} JSON: {}", type, content);
                         return null;
                 }
             }
@@ -137,7 +137,7 @@ public class MessageUpdateHandler extends SocketHandler
             }
 
             default:
-                WebSocketClient.LOG.warn("Received a MESSAGE_UPDATE with a unknown MessageChannel ChannelType. JSON: " + content);
+                WebSocketClient.LOG.warn("Received a MESSAGE_UPDATE with a unknown MessageChannel ChannelType. JSON: {}", content);
                 return null;
         }
 
@@ -214,7 +214,7 @@ public class MessageUpdateHandler extends SocketHandler
 
     public void handleCallMessage(JSONObject content)
     {
-        WebSocketClient.LOG.debug("Received a MESSAGE_UPDATE of type CALL:  " + content.toString());
+        WebSocketClient.LOG.debug("Received a MESSAGE_UPDATE of type CALL: {}", content);
         //Called when someone joins call for first time.
         //  It is not called when they leave or rejoin. That is all dictated by VOICE_STATE_UPDATE.
         //  Probably can ignore the above due to VOICE_STATE_UPDATE

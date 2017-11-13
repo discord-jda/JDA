@@ -24,8 +24,8 @@ import net.dv8tion.jda.core.requests.RequestFuture;
 import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.IOUtil;
+import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.Promise;
-import net.dv8tion.jda.core.utils.SimpleLog;
 import net.dv8tion.jda.core.utils.tuple.ImmutablePair;
 import net.dv8tion.jda.core.utils.tuple.Pair;
 import okhttp3.OkHttpClient;
@@ -34,6 +34,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,7 +56,7 @@ public class WebhookClient implements AutoCloseable
 {
     public static final String WEBHOOK_URL = "https://discordapp.com/api/v6/webhooks/%s/%s";
     public static final String USER_AGENT = "JDA Webhook(https://github.com/DV8FromTheWorld/JDA | " + JDAInfo.VERSION + ")";
-    public static final SimpleLog LOG = SimpleLog.getLog(WebhookClient.class);
+    public static final Logger LOG = JDALogger.getLog(WebhookClient.class);
 
     protected final String url;
     protected final long id;
@@ -404,7 +405,7 @@ public class WebhookClient implements AutoCloseable
                 else if (!response.isSuccessful())
                 {
                     final HttpException exception = failure(response);
-                    LOG.fatal(exception);
+                    LOG.error("Sending a webhook message failed with non-OK http response", exception);
                     queue.poll().getRight().completeExceptionally(exception);
                     continue;
                 }
@@ -417,7 +418,7 @@ public class WebhookClient implements AutoCloseable
             }
             catch (IOException e)
             {
-                LOG.fatal(e);
+                LOG.error("There was some error while sending a webhook message", e);
                 queue.poll().getRight().completeExceptionally(e);
             }
         }
@@ -469,8 +470,8 @@ public class WebhookClient implements AutoCloseable
             }
             else if (!response.isSuccessful())
             {
-                LOG.debug("Failed to update buckets due to unsuccessful response with code: " + response.code() + " and body: ");
-                LOG.debug(new String(IOUtil.readFully(Requester.getBody(response))));
+                LOG.debug("Failed to update buckets due to unsuccessful response with code: {} and body: \n{}",
+                    response.code(), JDALogger.getLazyString(() -> new String(IOUtil.readFully(Requester.getBody(response)))));
                 return;
             }
             remainingUses = Integer.parseInt(response.header("X-RateLimit-Remaining"));
@@ -494,7 +495,7 @@ public class WebhookClient implements AutoCloseable
             }
             catch (Exception ex)
             {
-                LOG.fatal(ex);
+                LOG.error("Could not read http response", ex);
             }
         }
     }

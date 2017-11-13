@@ -34,7 +34,7 @@ public class GuildSyncHandler extends SocketHandler
         final long guildId = content.getLong("id");
         if (!api.getGuildMap().containsKey(guildId))
         {
-            JDAImpl.LOG.fatal("Received a GUILD_SYNC for a Guild that does not yet exist in JDA's guild cache. This is a BAD ERROR FOR CLIENTS!");
+            JDAImpl.LOG.error("Received a GUILD_SYNC for a Guild that does not yet exist in JDA's guild cache. This is a BAD ERROR FOR CLIENTS!");
             return null;
         }
 
