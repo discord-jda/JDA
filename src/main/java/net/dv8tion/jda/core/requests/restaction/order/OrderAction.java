@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 
 /**
  * Extension of {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
@@ -48,7 +49,6 @@ import java.util.List;
  */
 public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAction<Void>
 {
-    protected final JDA api;
     protected final List<T> orderList;
     protected final boolean ascendingOrder;
     protected int selectedPosition = -1;
@@ -83,20 +83,14 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
     public OrderAction(JDA api, boolean ascendingOrder, Route.CompiledRoute route)
     {
         super(api, route);
-        this.api = api;
         this.orderList = new ArrayList<>();
         this.ascendingOrder = ascendingOrder;
     }
 
-    /**
-     * The corresponding JDA instance for the entities of
-     * this OrderAction instance
-     *
-     * @return The corresponding JDA instance
-     */
-    public JDA getJDA()
+    @Override
+    public M setCheck(BooleanSupplier checks)
     {
-        return api;
+        return (M) super.setCheck(checks);
     }
 
     /**

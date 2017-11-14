@@ -17,7 +17,6 @@
 package net.dv8tion.jda.client.requests.restaction;
 
 import net.dv8tion.jda.client.entities.Application;
-import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.Request;
@@ -26,6 +25,8 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
+
+import java.util.function.BooleanSupplier;
 
 /**
  * Extension of {@link net.dv8tion.jda.core.requests.RestAction RestAction} specifically
@@ -46,6 +47,12 @@ public class ApplicationAction extends RestAction<Application>
         super(api, Route.Applications.CREATE_APPLICATION.compile());
 
        this.setName(name);
+    }
+
+    @Override
+    public ApplicationAction setCheck(BooleanSupplier checks)
+    {
+        return (ApplicationAction) super.setCheck(checks);
     }
 
     @Override

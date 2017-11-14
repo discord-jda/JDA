@@ -27,7 +27,6 @@ import net.dv8tion.jda.core.requests.Route.RateLimit;
 import okhttp3.Headers;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import org.slf4j.event.Level;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -311,6 +310,11 @@ public class BotRateLimiter extends RateLimiter
                         try
                         {
                             request = it.next();
+                            if (!request.runChecks())
+                            {
+                                it.remove();
+                                continue;
+                            }
                             Long retryAfter = requester.execute(request);
                             if (retryAfter != null)
                                 break;

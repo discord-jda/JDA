@@ -36,6 +36,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 import java.awt.Color;
 import java.util.*;
+import java.util.function.BooleanSupplier;
 
 /**
  * {@link net.dv8tion.jda.core.requests.RestAction RestAction} extension
@@ -63,6 +64,12 @@ public class GuildAction extends RestAction<Void>
         this.channels = new LinkedList<>();
         // public role is the first element
         this.roles.add(new RoleData(0));
+    }
+
+    @Override
+    public GuildAction setCheck(BooleanSupplier checks)
+    {
+        return (GuildAction) super.setCheck(checks);
     }
 
     /**

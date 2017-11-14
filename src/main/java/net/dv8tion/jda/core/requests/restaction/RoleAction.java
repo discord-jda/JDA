@@ -30,6 +30,7 @@ import org.json.JSONObject;
 import javax.annotation.CheckReturnValue;
 import java.awt.Color;
 import java.util.Collection;
+import java.util.function.BooleanSupplier;
 
 /**
  * Extension of {@link net.dv8tion.jda.core.requests.RestAction RestAction} specifically
@@ -62,6 +63,12 @@ public class RoleAction extends AuditableRestAction<Role>
     {
         super(guild.getJDA(), route);
         this.guild = guild;
+    }
+
+    @Override
+    public RoleAction setCheck(BooleanSupplier checks)
+    {
+        return (RoleAction) super.setCheck(checks);
     }
 
     /**

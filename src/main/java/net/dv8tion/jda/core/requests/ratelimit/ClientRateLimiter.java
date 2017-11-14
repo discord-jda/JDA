@@ -203,6 +203,11 @@ public class ClientRateLimiter extends RateLimiter
                         try
                         {
                             request = it.next();
+                            if (!request.runChecks())
+                            {
+                                it.remove();
+                                continue;
+                            }
                             Long retryAfter = requester.execute(request);
                             if (retryAfter != null)
                                 break;

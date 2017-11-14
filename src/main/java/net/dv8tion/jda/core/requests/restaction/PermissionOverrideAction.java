@@ -32,6 +32,7 @@ import javax.annotation.CheckReturnValue;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 
 /**
  * Extension of {@link net.dv8tion.jda.core.requests.RestAction RestAction} specifically
@@ -70,6 +71,12 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
         this.channel = channel;
         this.member = member;
         this.role = null;
+    }
+
+    @Override
+    public PermissionOverrideAction setCheck(BooleanSupplier checks)
+    {
+        return (PermissionOverrideAction) super.setCheck(checks);
     }
 
     /**

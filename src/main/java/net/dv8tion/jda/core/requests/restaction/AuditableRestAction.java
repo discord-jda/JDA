@@ -24,6 +24,7 @@ import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 public abstract class AuditableRestAction<T> extends RestAction<T>
@@ -44,6 +45,12 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
     public AuditableRestAction(JDA api, Route.CompiledRoute route, JSONObject data)
     {
         super(api, route, data);
+    }
+
+    @Override
+    public AuditableRestAction<T> setCheck(BooleanSupplier checks)
+    {
+        return (AuditableRestAction) super.setCheck(checks);
     }
 
     /**

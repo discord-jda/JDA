@@ -30,6 +30,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import java.util.concurrent.*;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 /**
@@ -161,6 +162,7 @@ public abstract class RestAction<T>
             LOG.error("RestAction queue returned failure: [{}] {}", t.getClass().getSimpleName(), t.getMessage());
         }
     };
+    protected static boolean passContext = false;
 
     protected final JDAImpl api;
 
@@ -168,6 +170,23 @@ public abstract class RestAction<T>
     private final RequestBody data;
 
     private Object rawData;
+    private BooleanSupplier checks;
+
+    /**
+     * If enabled this will pass a {@link net.dv8tion.jda.core.exceptions.ContextException ContextException}
+     * as root-cause to all failure consumers.
+     * Note that the {@link #DEFAULT_FAILURE} does not print a stack-trace at all unless specified!
+     * <br>This might cause performance decrease due to the creation of exceptions for <b>every</b> execution.
+     *
+     * <p>It is recommended to pass a context consumer as failure manually using {@code queue(success, ContextException.here(failure))}
+     *
+     * @param  enable
+     *         True, if context should be passed to all failure consumers
+     */
+    public static void setPassContext(boolean enable)
+    {
+        passContext = enable;
+    }
 
     /**
      * Creates a new RestAction instance
@@ -232,6 +251,32 @@ public abstract class RestAction<T>
     }
 
     /**
+     * Sets the last-second checks before finally executing the http request in the queue.
+     * <br>If the provided supplier evaluates to {@code false} or throws an exception this will not be finished.
+     * When an exception is thrown from the supplier it will be provided to the failure callback.
+     *
+     * <p><b>Warning</b>
+     * <br>If the checks are not met and the rest action is not executed by the queue worker,
+     * the success and failure consumers for {@link #queue(Consumer, Consumer)} will not be executed
+     * and the RequestFuture for {@link #submit()} will never finish!
+     * <br>If set to a non-null value, the methods {@link #complete()} and {@link #complete(boolean)} will throw
+     * a {@link java.lang.IllegalStateException IllegalStateException} to counter possible deadlocks.
+     * A RestAction cannot complete if the checks evaluate to false thus making it unsafe to be used.
+     * Keep in mind that some JDA internals require the use of {@link #complete(boolean)} to retrieve volatile information
+     * from the API to continue with the lifecycle events.
+     *
+     * @param  checks
+     *         The checks to run before executing the request, or {@code null} to run no checks
+     *
+     * @return The current RestAction for chaining convenience
+     */
+    public RestAction<T> setCheck(BooleanSupplier checks)
+    {
+        this.checks = checks;
+        return this;
+    }
+
+    /**
      * Submits a Request for execution.
      * <br>Using the default callback functions:
      * {@link #DEFAULT_SUCCESS DEFAULT_SUCCESS} and
@@ -277,11 +322,12 @@ public abstract class RestAction<T>
         Checks.notNull(route, "Route");
         RequestBody data = finalizeData();
         CaseInsensitiveMap<String, String> headers = finalizeHeaders();
+        BooleanSupplier checks = finalizeChecks();
         if (success == null)
             success = DEFAULT_SUCCESS;
         if (failure == null)
             failure = DEFAULT_FAILURE;
-        api.getRequester().request(new Request<>(this, success, failure, true, data, rawData, route, headers));
+        api.getRequester().request(new Request<>(this, success, failure, checks, true, data, rawData, route, headers));
     }
 
     /**
@@ -316,7 +362,8 @@ public abstract class RestAction<T>
         Checks.notNull(route, "Route");
         RequestBody data = finalizeData();
         CaseInsensitiveMap<String, String> headers = finalizeHeaders();
-        return new RestFuture<>(this, shouldQueue, data, rawData, route, headers);
+        BooleanSupplier checks = finalizeChecks();
+        return new RestFuture<>(this, shouldQueue, checks, data, rawData, route, headers);
     }
 
     /**
@@ -325,6 +372,10 @@ public abstract class RestAction<T>
      * <br>Used for synchronous logic.
      *
      * <p><b>This might throw {@link java.lang.RuntimeException RuntimeExceptions}</b>
+     *
+     * @throws java.lang.IllegalStateException
+     *         If the current RestAction has checks enabled;
+     *         use {@code setCheck(null)} to disable all last-second checks before using
      *
      * @return The response value
      */
@@ -352,13 +403,18 @@ public abstract class RestAction<T>
      *         Whether this should automatically handle rate limitations (default true)
      *
      * @throws RateLimitedException
-     *         If we were rate limited and the {@code shouldQueue} is false
-     *         <br>Use {@link #complete()} to avoid this Exception.
+     *         If we were rate limited and the {@code shouldQueue} is false.
+     *         Use {@link #complete()} to avoid this Exception.
+     * @throws java.lang.IllegalStateException
+     *         If the current RestAction has checks enabled;
+     *         use {@code setCheck(null)} to disable all last-second checks before using
      *
      * @return The response value
      */
     public T complete(boolean shouldQueue) throws RateLimitedException
     {
+        if (checks != null)
+            throw new IllegalStateException("Cannot complete RestAction with set checks! Use setCheck(null) before trying again!");
         try
         {
             return submit(shouldQueue).get();
@@ -666,6 +722,7 @@ public abstract class RestAction<T>
     protected RequestBody finalizeData() { return data; }
     protected Route.CompiledRoute finalizeRoute() { return route; }
     protected CaseInsensitiveMap<String, String> finalizeHeaders() { return null; }
+    protected BooleanSupplier finalizeChecks() { return checks; }
 
     protected RequestBody getRequestBody(JSONObject object)
     {

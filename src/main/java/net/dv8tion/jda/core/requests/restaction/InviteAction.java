@@ -27,6 +27,7 @@ import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 
 /**
  * {@link net.dv8tion.jda.core.entities.Invite Invite} Builder system created as an extension of {@link net.dv8tion.jda.core.requests.RestAction}
@@ -42,6 +43,12 @@ public class InviteAction extends AuditableRestAction<Invite>
     public InviteAction(final JDA api, final String channelId)
     {
         super(api, Route.Invites.CREATE_INVITE.compile(channelId));
+    }
+
+    @Override
+    public InviteAction setCheck(BooleanSupplier checks)
+    {
+        return (InviteAction) super.setCheck(checks);
     }
 
     @Override

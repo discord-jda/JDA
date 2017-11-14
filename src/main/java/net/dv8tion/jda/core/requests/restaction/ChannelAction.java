@@ -30,6 +30,7 @@ import javax.annotation.CheckReturnValue;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.BooleanSupplier;
 
 /**
  * Extension of {@link net.dv8tion.jda.core.requests.RestAction RestAction} specifically
@@ -74,6 +75,12 @@ public class ChannelAction extends AuditableRestAction<Channel>
         this.guild = guild;
         this.type = type;
         this.name = name;
+    }
+
+    @Override
+    public ChannelAction setCheck(BooleanSupplier checks)
+    {
+        return (ChannelAction) super.setCheck(checks);
     }
 
     /**
