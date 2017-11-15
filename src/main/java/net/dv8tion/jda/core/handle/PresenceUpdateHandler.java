@@ -19,6 +19,7 @@ import net.dv8tion.jda.client.JDAClient;
 import net.dv8tion.jda.client.entities.impl.FriendImpl;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.OnlineStatus;
+import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.impl.*;
 import net.dv8tion.jda.core.events.user.UserAvatarUpdateEvent;
@@ -99,26 +100,8 @@ public class PresenceUpdateHandler extends SocketHandler
 
             //Now that we've update the User's info, lets see if we need to set the specific Presence information.
             // This is stored in the Member or Relation objects.
-            String gameName = null;
-            String gameUrl = null;
-            Game.GameType type = null;
             final JSONObject game = content.optJSONObject("game");
-            if (game != null && !game.isNull("name"))
-            {
-                gameName = game.get("name").toString();
-                gameUrl = game.isNull("url") ? null : game.get("url").toString();
-                try
-                {
-                    type = game.isNull("type")
-                            ? Game.GameType.DEFAULT
-                            : Game.GameType.fromKey(Integer.parseInt(game.get("type").toString()));
-                }
-                catch (NumberFormatException ex)
-                {
-                    type = Game.GameType.DEFAULT;
-                }
-            }
-            Game nextGame = gameName == null ? null : api.getEntityBuilder().createGame(gameName, gameUrl, type);
+            Game nextGame = EntityBuilder.createGame(game);
             OnlineStatus status = OnlineStatus.fromKey(content.getString("status"));
 
             //If we are in a Guild, then we will use Member.
