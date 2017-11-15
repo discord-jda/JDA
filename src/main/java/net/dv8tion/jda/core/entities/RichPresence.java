@@ -22,6 +22,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.Instant;
 import java.time.temporal.TemporalUnit;
+import java.util.Objects;
 
 /**
  * Used to hold additional information about a users {@link net.dv8tion.jda.core.entities.Game Game}
@@ -160,6 +161,30 @@ public class RichPresence extends Game
         return String.format("RichPresence(%s / %s)", name, getApplicationId());
     }
 
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(applicationId, state, details, party, timestamps, largeImage, smallImage);
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof RichPresence))
+            return false;
+        RichPresence p = (RichPresence) o;
+        return applicationId == p.applicationId
+            && Objects.equals(name, p.name)
+            && Objects.equals(url, p.url)
+            && Objects.equals(type, p.type)
+            && Objects.equals(state, p.state)
+            && Objects.equals(details, p.details)
+            && Objects.equals(party, p.party)
+            && Objects.equals(timestamps, p.timestamps)
+            && Objects.equals(largeImage, p.largeImage)
+            && Objects.equals(smallImage, p.smallImage);
+    }
+
     /**
      * Used to hold information on images within a Rich Presence profile
      */
@@ -211,6 +236,21 @@ public class RichPresence extends Game
         public String toString()
         {
             return String.format("RichPresenceImage(%s | %s)", key, text);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (!(obj instanceof Image))
+                return false;
+            Image i = (Image) obj;
+            return Objects.equals(key, i.key) && Objects.equals(text, i.text);
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(key, text);
         }
     }
 
@@ -332,6 +372,21 @@ public class RichPresence extends Game
         {
             return String.format("RichPresenceTimestamp(%d-%d)", start, end);
         }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (!(obj instanceof Timestamps))
+                return false;
+            Timestamps t = (Timestamps) obj;
+            return start == t.start && end == t.end;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(start, end);
+        }
     }
 
     /**
@@ -386,6 +441,21 @@ public class RichPresence extends Game
         public String toString()
         {
             return String.format("RichPresenceParty(%s | [%d, %d])", id, size, max);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (!(obj instanceof Party))
+                return false;
+            Party p = (Party) obj;
+            return size == p.size && max == p.max && Objects.equals(id, p.id);
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(id, size, max);
         }
     }
 }
