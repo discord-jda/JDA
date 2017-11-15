@@ -100,8 +100,8 @@ public class PresenceUpdateHandler extends SocketHandler
 
             //Now that we've update the User's info, lets see if we need to set the specific Presence information.
             // This is stored in the Member or Relation objects.
-            final JSONObject game = content.optJSONObject("game");
-            Game nextGame = EntityBuilder.createGame(game);
+            final JSONObject game = content.isNull("game") ? null : content.optJSONObject("game");
+            Game nextGame = game == null ? null : EntityBuilder.createGame(game);
             OnlineStatus status = OnlineStatus.fromKey(content.getString("status"));
 
             //If we are in a Guild, then we will use Member.
