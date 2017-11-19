@@ -831,7 +831,7 @@ public interface Message extends ISnowflake, Formattable
             {
                 if (in != null)
                 {
-                    try {in.close();} catch (Exception ignored) {}
+                    try {in.close();} catch(Exception ignored) {}
                 }
             }
             return false;

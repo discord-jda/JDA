@@ -226,6 +226,9 @@ public interface JDA
      *
      * @param  listeners
      *         The listener(s) which will react to events.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If either listeners or one of it's objects is {@code null}.
      */
     void addEventListener(Object... listeners);
 
@@ -234,6 +237,9 @@ public interface JDA
      *
      * @param  listeners
      *         The listener(s) to be removed.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If either listeners or one of it's objects is {@code null}.
      */
     void removeEventListener(Object... listeners);
 

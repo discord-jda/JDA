@@ -51,10 +51,29 @@ public interface ShardManager
      *
      * @param  listeners
      *         The listener(s) which will react to events.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If either listeners or one of it's objects is {@code null}.
      */
     default void addEventListener(final Object... listeners)
     {
+        Checks.noneNull(listeners, "listeners");
         this.getShardCache().forEach(jda -> jda.addEventListener(listeners));
+    }
+
+    /**
+     * Removes all provided listeners from the event-listeners and no longer uses them to handle events.
+     *
+     * @param  listeners
+     *         The listener(s) to be removed.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If either listeners or one of it's objects is {@code null}.
+     */
+    default void removeEventListener(final Object... listeners)
+    {
+        Checks.noneNull(listeners, "listeners");
+        this.getShardCache().forEach(jda -> jda.removeEventListener(listeners));
     }
 
     /**
@@ -721,23 +740,16 @@ public interface ShardManager
     }
 
     /**
-     * Removes all provided listeners from the event-listeners and no longer uses them to handle events.
-     *
-     * @param  listeners
-     *         The listener(s) to be removed.
-     */
-    default void removeEventListener(final Object... listeners)
-    {
-        this.getShardCache().forEach(jda -> jda.removeEventListener(listeners));
-    }
-
-    /**
      * Restarts all shards, shutting old ones down first.
      * 
      * As all shards need to connect to discord again this will take equally long as the startup of a new ShardManager
      * (using the 5000ms + backoff as delay between starting new JDA instances). 
      */
-    void restart();
+    default void restart()
+    {
+        for (JDA jda : this.getShardCache())
+            this.restart(jda.getShardInfo().getShardId());
+    }
 
     /**
      * Restarts the shards with the given id only.

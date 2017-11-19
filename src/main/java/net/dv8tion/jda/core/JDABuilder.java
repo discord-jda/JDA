@@ -75,6 +75,9 @@ public class JDABuilder
      *
      * @param  accountType
      *         The {@link net.dv8tion.jda.core.AccountType AccountType}.
+     *
+     * @throws IllegalArgumentException
+     *         If the given AccountType is {@code null}
      */
     public JDABuilder(AccountType accountType)
     {
@@ -427,12 +430,17 @@ public class JDABuilder
      * @param   listeners
      *          The listener(s) to add to the list.
      *
+     * @throws java.lang.IllegalArgumentException
+     *         If either listeners or one of it's objects is {@code null}.
+     *
      * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      *
      * @see    net.dv8tion.jda.core.JDA#addEventListener(Object...) JDA.addEventListener(Object...)
      */
     public JDABuilder addEventListener(Object... listeners)
     {
+        Checks.noneNull(listeners, "listeners");
+
         Collections.addAll(this.listeners, listeners);
         return this;
     }
@@ -443,12 +451,17 @@ public class JDABuilder
      * @param  listeners
      *         The listener(s) to remove from the list.
      *
+     * @throws java.lang.IllegalArgumentException
+     *         If either listeners or one of it's objects is {@code null}.
+     *
      * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      *
      * @see    net.dv8tion.jda.core.JDA#removeEventListener(Object...) JDA.removeEventListener(Object...)
      */
     public JDABuilder removeEventListener(Object... listeners)
     {
+        Checks.noneNull(listeners, "listeners");
+
         this.listeners.removeAll(Arrays.asList(listeners));
         return this;
     }

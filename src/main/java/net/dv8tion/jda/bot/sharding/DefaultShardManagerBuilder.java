@@ -25,16 +25,14 @@ import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.ShardedRateLimiter;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Game;
-import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.IEventManager;
-import net.dv8tion.jda.core.requests.SessionReconnectQueue;
 import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.OkHttpClient;
 
 /**
  * Used to create new instances of JDA's default {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} implementation.
  *
- * <p>A single DefaultShardManagerBuilder can be reused multiple times. Each call to {@link #buildAsync()}
+ * <p>A single DefaultShardManagerBuilder can be reused multiple times. Each call to {@link #build()}
  * creates a new {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} instance using the same information.
  *
  * @since  3.4
@@ -46,27 +44,27 @@ public class DefaultShardManagerBuilder
     protected boolean enableShutdownHook = true;
     protected boolean enableVoice = true;
     protected boolean autoReconnect = true;
-    protected IntFunction<Boolean> idleProvider = null;
+    protected boolean retryOnTimeout = true;
     protected int shardsTotal = -1;
     protected int maxReconnectDelay = 900;
     protected int corePoolSize = 2;
-    protected Collection<Integer> shards = null;
-    protected IAudioSendFactory audioSendFactory = null;
-    protected IEventManager eventManager = null;
-    protected IntFunction<Game> gameProvider = null;
-    protected OkHttpClient.Builder httpClientBuilder = null;
-    protected IntFunction<OnlineStatus> statusProvider = null;
-    protected ShardedRateLimiter shardedRateLimiter = null;
     protected String token = null;
-    protected WebSocketFactory wsFactory = null;
-    protected boolean retryOnTimeout = true;
+    protected IntFunction<Boolean> idleProvider = null;
+    protected IntFunction<Game> gameProvider = null;
+    protected IntFunction<OnlineStatus> statusProvider = null;
     protected final List<Object> listeners = new ArrayList<>();
+    protected Collection<Integer> shards = null;
+    protected IEventManager eventManager = null;
+    protected ShardedRateLimiter shardedRateLimiter = null;
+    protected OkHttpClient.Builder httpClientBuilder = null;
+    protected WebSocketFactory wsFactory = null;
+    protected IAudioSendFactory audioSendFactory = null;
 
     /**
      * Creates a completely empty DefaultShardManagerBuilder.
      * <br>You need to set the token using
      * {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder#setToken(String) setToken(String)}
-     * before calling {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder#buildAsync() buildAsync()}.
+     * before calling {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder#build() build()}.
      */
     public DefaultShardManagerBuilder() {}
 
@@ -116,35 +114,6 @@ public class DefaultShardManagerBuilder
     }
 
     /**
-     * Builds a new {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} instance and uses the provided token to start the login process.
-     * <br>The login process runs in a different thread, so while this will return immediately, {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} has not
-     * finished loading, thus many {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} methods have the chance to return incorrect information.
-     * <br>The main use of this method is to start the JDA connect process and do other things in parallel while startup is
-     * being performed like database connection or local resource loading.
-     *
-     * @throws  LoginException
-     *          If the provided token is invalid.
-     * @throws  IllegalArgumentException
-     *          If the provided token is empty or null.
-     * @throws  RateLimitedException
-     *          If we are being Rate limited.
-     *
-     * @return A {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} instance that has started the login process. It is unknown as
-     *         to whether or not loading has finished when this returns.
-     */
-    public ShardManager buildAsync() throws LoginException, IllegalArgumentException, RateLimitedException
-    {
-        final DefaultShardManager manager = new DefaultShardManager(this.shardsTotal, this.shards, this.listeners, this.token, this.eventManager,
-            this.audioSendFactory, this.gameProvider, this.statusProvider, this.httpClientBuilder, this.wsFactory, this.shardedRateLimiter,
-            this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting,
-            this.autoReconnect, this.idleProvider, this.retryOnTimeout);
-
-        manager.login();
-
-        return manager;
-    }
-
-    /**
      * Removes all provided listeners from the list of listeners.
      *
      * @param  listeners
@@ -175,6 +144,35 @@ public class DefaultShardManagerBuilder
 
         this.listeners.removeAll(listeners);
         return this;
+    }
+
+    /**
+     * Builds a new {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} instance and uses the provided token to start the login process.
+     * <br>The login process runs in a different thread, so while this will return immediately, {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} has not
+     * finished loading, thus many {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} methods have the chance to return incorrect information.
+     * <br>The main use of this method is to start the JDA connect process and do other things in parallel while startup is
+     * being performed like database connection or local resource loading.
+     *
+     * <p>Note that this method is async and as such will <b>not</b> block until all shards are started.
+     *
+     * @throws  LoginException
+     *          If the provided token is invalid.
+     * @throws  IllegalArgumentException
+     *          If the provided token is empty or null.
+     *
+     * @return A {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} instance that has started the login process. It is unknown as
+     *         to whether or not loading has finished when this returns.
+     */
+    public ShardManager build() throws LoginException, IllegalArgumentException
+    {
+        final DefaultShardManager manager = new DefaultShardManager(this.shardsTotal, this.shards, this.listeners, this.token, this.eventManager,
+            this.audioSendFactory, this.gameProvider, this.statusProvider, this.httpClientBuilder, this.wsFactory, this.shardedRateLimiter,
+            this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting,
+            this.autoReconnect, this.idleProvider, this.retryOnTimeout);
+
+        manager.login();
+
+        return manager;
     }
 
     /**
@@ -618,7 +616,7 @@ public class DefaultShardManagerBuilder
 
     /**
      * Sets the token that will be used by the {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} instance to log in when
-     * {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder#buildAsync() buildAsync()} is called.
+     * {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder#build() build()} is called.
      *
      * <p>To get a bot token:
      * <ol>

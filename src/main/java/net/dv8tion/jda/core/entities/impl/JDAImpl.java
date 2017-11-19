@@ -190,7 +190,10 @@ public class JDAImpl implements JDA
                     }
                     else
                     {
-                        request.onFailure(new Exception("Failed to get gateway url"));
+                        if (response.getException() == null)
+                            request.onFailure(new Exception("Failed to get gateway url"));
+                        else
+                            request.onFailure(new Exception("Failed to get gateway url", response.getException()));
                     }
                 }
                 catch (Exception e)
@@ -599,6 +602,8 @@ public class JDAImpl implements JDA
     @Override
     public void addEventListener(Object... listeners)
     {
+        Checks.noneNull(listeners, "listeners");
+
         for (Object listener: listeners)
             eventManager.register(listener);
     }
@@ -606,6 +611,8 @@ public class JDAImpl implements JDA
     @Override
     public void removeEventListener(Object... listeners)
     {
+        Checks.noneNull(listeners, "listeners");
+
         for (Object listener: listeners)
             eventManager.unregister(listener);
     }

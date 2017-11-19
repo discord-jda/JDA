@@ -42,7 +42,6 @@ import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.tuple.Pair;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * JDA's default {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} implementation.
@@ -103,13 +102,7 @@ public class DefaultShardManager implements ShardManager
     /**
      * The executor that is used by the ShardManager internally to create new JDA instances.
      */
-    protected final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(r ->
-    {
-        final Thread t = new Thread(r, "DefaultShardManager");
-        t.setDaemon(true);
-        t.setPriority(Thread.NORM_PRIORITY + 1);
-        return t;
-    });
+    protected final ScheduledExecutorService executor = createExecutor();
 
     /**
      * The queue of shards waiting for creation or to be reconnected.
@@ -119,7 +112,7 @@ public class DefaultShardManager implements ShardManager
     /**
      * The queue that will be used by all shards to ensure reconnects don't hit the ratelimit.
      */
-    protected final SessionReconnectQueue sessionReconnectQueue = new ForwardingSessionReconnectQueue(jda -> queue.add(jda.getShardInfo().getShardId()), jda -> queue.remove(jda.getShardInfo().getShardId()));
+    protected final SessionReconnectQueue sessionReconnectQueue = createReconnectQueue();
 
     /**
      * The {@link net.dv8tion.jda.bot.utils.cache.ShardCacheView ShardCacheView} that holds all shards.
@@ -270,12 +263,12 @@ public class DefaultShardManager implements ShardManager
             {
                 this.shards = new ShardCacheViewImpl(shardsTotal);
                 for (int i = 0; i < this.shardsTotal; i++)
-                    this.queue.offer(i);
+                    this.queue.add(i);
             }
             else
             {
                 this.shards = new ShardCacheViewImpl(shardIds.size());
-                shardIds.stream().distinct().sorted().forEach(this.queue::offer);
+                shardIds.stream().distinct().sorted().forEach(this.queue::add);
             }
         }
     }
@@ -283,8 +276,15 @@ public class DefaultShardManager implements ShardManager
     @Override
     public void addEventListener(final Object... listeners)
     {
-        Collections.addAll(this.listeners, listeners);
         ShardManager.super.addEventListener(listeners);
+        Collections.addAll(this.listeners, listeners);
+    }
+
+    @Override
+    public void removeEventListener(final Object... listeners)
+    {
+        ShardManager.super.removeEventListener(listeners);
+        this.listeners.removeAll(Arrays.asList(listeners));
     }
 
     @Override
@@ -329,27 +329,6 @@ public class DefaultShardManager implements ShardManager
     }
 
     @Override
-    public void removeEventListener(final Object... listeners)
-    {
-        this.listeners.removeAll(Arrays.asList(listeners));
-        ShardManager.super.removeEventListener(listeners);
-    }
-
-    @Override
-    public void restart()
-    {
-        for (final int shardId : this.shards.getMap().keys())
-        {
-            final JDA jda = this.shards.getMap().remove(shardId);
-            if (jda != null)
-            {
-                jda.shutdown();
-                this.queue.offer(shardId);
-            }
-        }
-    }
-
-    @Override
     public void restart(final int shardId)
     {
         Checks.notNegative(shardId, "shardId");
@@ -377,7 +356,7 @@ public class DefaultShardManager implements ShardManager
             {
                 Runtime.getRuntime().removeShutdownHook(this.shutdownHook);
             }
-            catch (final Exception e) { /* ignored */ }
+            catch (final Exception ignored) {}
         }
 
         this.executor.shutdown();
@@ -407,7 +386,7 @@ public class DefaultShardManager implements ShardManager
 
     protected void processQueue()
     {
-        int shardId = -1;
+        int shardId;
 
         if (shards == null)
         {
@@ -423,15 +402,15 @@ public class DefaultShardManager implements ShardManager
         if (shardId == -1)
             return;
 
-        JDA api = null;
+        JDAImpl api = null;
         try
         {
-            api = shards == null ? null : shards.getElementById(shardId);
+            api = shards == null ? null : (JDAImpl) shards.getElementById(shardId);
 
             if (api == null)
                 api = this.buildInstance(shardId);
             else if (api.getStatus() == JDA.Status.RECONNECT_QUEUED)
-                ((JDAImpl) api).getClient().reconnect(true, true);
+                api.getClient().reconnect(true, true);
 
             // as this happens before removing the shardId if from the queue just try again after 5 seconds
         }
@@ -484,17 +463,15 @@ public class DefaultShardManager implements ShardManager
         if (this.gatewayURL == null)
         {
             Pair<String, Integer> gateway = jda.getGatewayBot().complete();
-
             this.gatewayURL = gateway.getLeft();
 
             if (this.shardsTotal == -1)
             {
                 this.shardsTotal = gateway.getRight();
-
                 this.shards = new ShardCacheViewImpl(this.shardsTotal);
 
                 for (int i = 0; i < shardsTotal; i++)
-                    queue.offer(i);
+                    queue.add(i);
             }
         }
 
@@ -516,7 +493,7 @@ public class DefaultShardManager implements ShardManager
             {
                 Thread.sleep(50);
             }
-            catch (InterruptedException e) { /* ignored */ }
+            catch (InterruptedException ignored) {}
         }
 
         return jda;
@@ -544,6 +521,39 @@ public class DefaultShardManager implements ShardManager
         ShardManager.super.setStatusProvider(statusProvider);
 
         this.statusProvider = statusProvider;
+    }
+
+    /**
+     * This method creates the internal {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService}.
+     * It is intended as a hook for custom implementations to create their own executor.
+     *
+     * @return A new ScheduledExecutorService
+     */
+    protected ScheduledExecutorService createExecutor()
+    {
+        return Executors.newSingleThreadScheduledExecutor(r ->
+        {
+            final Thread t = new Thread(r, "DefaultShardManager");
+            t.setDaemon(true);
+            t.setPriority(Thread.NORM_PRIORITY + 1);
+            return t;
+        });
+    }
+
+    /**
+     * This method creates the internal {@link net.dv8tion.jda.core.requests.SessionReconnectQueue SessionReconnectQueue}.
+     * It is intended as a hook for custom implementations to create their own queue.
+     *
+     * <p><b>NOTE: The default implementation will add reconnects to the same queue as connects so they don't interfere with each other
+     * (they share the same rate limit). If you override this you need to take care of it yourself.</b>
+     *
+     * @return A new ScheduledExecutorService
+     */
+    protected SessionReconnectQueue createReconnectQueue()
+    {
+        return new ForwardingSessionReconnectQueue(
+            jda -> queue.add(jda.getShardInfo().getShardId()),
+            jda -> queue.remove(jda.getShardInfo().getShardId()));
     }
 
     public class ForwardingSessionReconnectQueue extends SessionReconnectQueue
