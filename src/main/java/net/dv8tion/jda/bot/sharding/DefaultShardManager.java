@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import javax.security.auth.login.LoginException;
 
+import gnu.trove.map.TIntObjectMap;
 import net.dv8tion.jda.bot.utils.cache.ShardCacheView;
 import net.dv8tion.jda.bot.utils.cache.impl.ShardCacheViewImpl;
 import net.dv8tion.jda.core.AccountType;
@@ -342,6 +343,25 @@ public class DefaultShardManager implements ShardManager
     }
 
     @Override
+    public void restart()
+    {
+        TIntObjectMap<JDA> map = this.shards.getMap();
+        synchronized (map)
+        {
+            Arrays.stream(map.keys())
+                .sorted() // this ensures shards are started in natural order
+                .forEach(id ->
+                {
+                    final JDA jda = map.remove(id);
+                    if (jda != null)
+                        jda.shutdown();
+
+                    this.queue.add(id);
+                });
+        }
+    }
+
+    @Override
     public void shutdown()
     {
         if (this.shutdown.getAndSet(true))
@@ -388,7 +408,7 @@ public class DefaultShardManager implements ShardManager
     {
         int shardId;
 
-        if (shards == null)
+        if (this.shards == null)
         {
             shardId = 0;
         }
@@ -405,7 +425,7 @@ public class DefaultShardManager implements ShardManager
         JDAImpl api = null;
         try
         {
-            api = shards == null ? null : (JDAImpl) shards.getElementById(shardId);
+            api = this.shards == null ? null : (JDAImpl) this.shards.getElementById(shardId);
 
             if (api == null)
                 api = this.buildInstance(shardId);

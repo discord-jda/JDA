@@ -745,11 +745,7 @@ public interface ShardManager
      * As all shards need to connect to discord again this will take equally long as the startup of a new ShardManager
      * (using the 5000ms + backoff as delay between starting new JDA instances). 
      */
-    default void restart()
-    {
-        for (JDA jda : this.getShardCache())
-            this.restart(jda.getShardInfo().getShardId());
-    }
+    void restart();
 
     /**
      * Restarts the shards with the given id only.
