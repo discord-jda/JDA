@@ -43,6 +43,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
@@ -776,6 +777,10 @@ public class EntityBuilder
         final OffsetDateTime editTime = jsonObject.isNull("edited_timestamp") ? null : OffsetDateTime.parse(jsonObject.getString("edited_timestamp"));
         final String nonce = jsonObject.isNull("nonce") ? null : jsonObject.get("nonce").toString();
 
+        final List<Message.Attachment> attachments = map(jsonObject, "attachments", this::createMessageAttachment);
+        final List<MessageEmbed>       embeds      = map(jsonObject, "embeds",      this::createMessageEmbed);
+        final List<MessageReaction>    reactions   = map(jsonObject, "reactions",   (obj) -> createMessageReaction(chan, id, obj));
+
         User user;
         switch (chan.getType())
         {
@@ -812,55 +817,6 @@ public class EntityBuilder
                 }
                 break;
             default: throw new IllegalArgumentException("Invalid Channel for creating a Message [" + chan.getType() + ']');
-        }
-
-        final List<Message.Attachment> attachments;
-        if (!jsonObject.isNull("attachments"))
-        {
-            JSONArray arr = jsonObject.getJSONArray("attachments");
-            attachments = new ArrayList<>(arr.length());
-            for (int i = 0; i < arr.length(); i++)
-            {
-                JSONObject obj = arr.getJSONObject(i);
-                attachments.add(createMessageAttachment(obj));
-            }
-        }
-        else
-        {
-            attachments = Collections.emptyList();
-        }
-
-        final List<MessageEmbed> embeds;
-        if (!jsonObject.isNull("embeds"))
-        {
-            JSONArray arr = jsonObject.getJSONArray("embeds");
-            embeds = new ArrayList<>(arr.length());
-            for (int i = 0; i < arr.length(); i++)
-            {
-                JSONObject obj = arr.getJSONObject(i);
-                embeds.add(createMessageEmbed(obj));
-            }
-        }
-        else
-        {
-            embeds = Collections.emptyList();
-        }
-
-        List<MessageReaction> reactions;
-        if (!jsonObject.isNull("reactions"))
-        {
-            JSONArray arr = jsonObject.getJSONArray("reactions");
-            reactions = new ArrayList<>(arr.length());
-            for (int i = 0; i < arr.length(); i++)
-            {
-                JSONObject obj = arr.getJSONObject(i);
-                final MessageReaction reaction = createMessageReaction(chan, id, obj);
-                reactions.add(reaction);
-            }
-        }
-        else
-        {
-            reactions = Collections.emptyList();
         }
 
         MessageType type = MessageType.fromId(jsonObject.getInt("type"));
@@ -1356,5 +1312,21 @@ public class EntityBuilder
     private Map<String, AuditLogChange> changeToMap(Set<AuditLogChange> changesList)
     {
         return changesList.stream().collect(Collectors.toMap(AuditLogChange::getKey, UnaryOperator.identity()));
+    }
+
+    private <T> List<T> map(JSONObject jsonObject, String key, Function<JSONObject, T> convert)
+    {
+        if (jsonObject.isNull(key))
+            return Collections.emptyList();
+
+        final JSONArray arr = jsonObject.getJSONArray(key);
+        final List<T> mappedObjects = new ArrayList<>(arr.length());
+        for (int i = 0; i < arr.length(); i++)
+        {
+            JSONObject obj = arr.getJSONObject(i);
+            mappedObjects.add(convert.apply(obj));
+        }
+
+        return mappedObjects;
     }
 }
