@@ -371,14 +371,12 @@ public class ReceivedMessage extends AbstractMessage
     {
         if (mentionable instanceof User)
         {
-            if (getMentionedUsers().contains(mentionable))
-                return true;
+            return getMentionedUsers().contains(mentionable);
         }
         else if (mentionable instanceof Member)
         {
             final Member member = (Member) mentionable;
-            if (getMentionedUsers().contains(member.getUser()))
-                return true;
+            return getMentionedUsers().contains(member.getUser());
         }
         return false;
     }
@@ -387,20 +385,17 @@ public class ReceivedMessage extends AbstractMessage
     {
         if (mentionable instanceof Role)
         {
-            if (getMentionedRoles().contains(mentionable))
-                return true;
+            return getMentionedRoles().contains(mentionable);
         }
         else if (mentionable instanceof Member)
         {
             final Member member = (Member) mentionable;
-            if (CollectionUtils.containsAny(getMentionedRoles(), member.getRoles()))
-                return true;
+            return CollectionUtils.containsAny(getMentionedRoles(), member.getRoles());
         }
         else if (isFromType(ChannelType.TEXT) && mentionable instanceof User)
         {
             final Member member = getGuild().getMember((User) mentionable);
-            if (CollectionUtils.containsAny(getMentionedRoles(), member.getRoles()))
-                return true;
+            return member != null && CollectionUtils.containsAny(getMentionedRoles(), member.getRoles());
         }
         return false;
     }
