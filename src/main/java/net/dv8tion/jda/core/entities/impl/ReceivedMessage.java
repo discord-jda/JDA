@@ -73,7 +73,7 @@ public class ReceivedMessage extends AbstractMessage
         this.type = type;
         this.api = (channel != null) ? (JDAImpl) channel.getJDA() : null;
         this.fromWebhook = fromWebhook;
-        this.mentionsEveryone = mentionsEveryone || (content != null && content.contains("@everyone"));
+        this.mentionsEveryone = mentionsEveryone;
         this.pinned = pinned;
         this.author = author;
         this.editedTime = editTime;
