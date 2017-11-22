@@ -54,7 +54,7 @@ public class MessageEmbed
      * The maximum length the description and footer of an embed can have
      *
      * @see net.dv8tion.jda.core.EmbedBuilder#setFooter(String, String) EmbedBuilder.setFooter(text, iconUrl)
-     * @see net.dv8tion.jda.core.EmbedBuilder#setDescription(String) EmbedBuilder.setDescription(text)
+     * @see net.dv8tion.jda.core.EmbedBuilder#setDescription(CharSequence) EmbedBuilder.setDescription(text)
      */
     public static final int TEXT_MAX_LENGTH = 2048;
 
@@ -71,7 +71,7 @@ public class MessageEmbed
      * The maximum amount of total visible characters an embed can have
      * <br>This limit depends on the current {@link net.dv8tion.jda.core.AccountType AccountType} and applies to BOT
      *
-     * @see net.dv8tion.jda.core.EmbedBuilder#setDescription(String)
+     * @see net.dv8tion.jda.core.EmbedBuilder#setDescription(CharSequence)
      * @see net.dv8tion.jda.core.EmbedBuilder#setTitle(String)
      * @see net.dv8tion.jda.core.EmbedBuilder#setFooter(String, String)
      * @see net.dv8tion.jda.core.EmbedBuilder#addField(String, String, boolean)
@@ -82,7 +82,7 @@ public class MessageEmbed
      * The maximum amount of total visible characters an embed can have
      * <br>This limit depends on the current {@link net.dv8tion.jda.core.AccountType AccountType} and applies to CLIENT
      *
-     * @see net.dv8tion.jda.core.EmbedBuilder#setDescription(String)
+     * @see net.dv8tion.jda.core.EmbedBuilder#setDescription(CharSequence)
      * @see net.dv8tion.jda.core.EmbedBuilder#setTitle(String)
      * @see net.dv8tion.jda.core.EmbedBuilder#setFooter(String, String)
      * @see net.dv8tion.jda.core.EmbedBuilder#addField(String, String, boolean)

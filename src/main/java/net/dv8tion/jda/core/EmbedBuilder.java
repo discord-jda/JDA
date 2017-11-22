@@ -280,7 +280,7 @@ public class EmbedBuilder
     /**
      * The {@link java.lang.StringBuilder StringBuilder} used to
      * build the description for the embed.
-     * <br>Note: To reset the description use {@link #setDescription(String) setDescription(null)}
+     * <br>Note: To reset the description use {@link #setDescription(CharSequence) setDescription(null)}
      *
      * @return StringBuilder with current description context
      */
@@ -302,19 +302,11 @@ public class EmbedBuilder
      *
      * @return the builder after the description has been set
      */
-    public EmbedBuilder setDescription(String description)
+    public EmbedBuilder setDescription(CharSequence description)
     {
-        if (description == null || description.length() < 1)
-        {
-            this.description.setLength(0);
-        }
-        else
-        {
-            Checks.check(description.length() <= MessageEmbed.TEXT_MAX_LENGTH,
-                "Description cannot be longer than %d characters.", MessageEmbed.TEXT_MAX_LENGTH);
-            final int newLength = Math.max(description.length(), this.description.length());
-            this.description.replace(0, newLength, description);
-        }
+        this.description.setLength(0);
+        if (description != null && description.length() >= 1)
+            appendDescription(description);
         return this;
     }
 
