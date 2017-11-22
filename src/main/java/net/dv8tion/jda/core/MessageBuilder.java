@@ -360,33 +360,6 @@ public class MessageBuilder implements Appendable
     }
 
     /**
-     * Creates a {@link net.dv8tion.jda.core.entities.Message Message} object from this MessageBuilder
-     *
-     * <p><b>Hint:</b> You can use {@link #build(int, int)} or
-     * {@link #buildAll(net.dv8tion.jda.core.MessageBuilder.SplitPolicy...) buildAll(SplitPolicy...)} as possible ways to
-     * deal with the 2000 character cap.
-     *
-     * @throws java.lang.IllegalStateException
-     *         <ul>
-     *             <li>If you attempt to build() an empty Message ({@link #length()} is {@code 0} and no
-     *             {@link net.dv8tion.jda.core.entities.MessageEmbed} was provided to {@link #setEmbed(net.dv8tion.jda.core.entities.MessageEmbed)})</li>
-     *             <li>If you attempt to build() a Message with more than 2000 characters of content.</li>
-     *         </ul>
-     *
-     * @return the created {@link net.dv8tion.jda.core.entities.Message Message}
-     */
-    public Message build()
-    {
-        String message = builder.toString();
-        if (this.isEmpty())
-            throw new IllegalStateException("Cannot build a Message with no content. (You never added any content to the message)");
-        if (message.length() > Message.MAX_CONTENT_LENGTH)
-            throw new IllegalStateException("Cannot build a Message with more than 2000 characters. Please limit your input.");
-
-        return new DataMessage(isTTS, message, nonce, embed);
-    }
-
-    /**
      * Replaces each substring that matches the target string with the specified replacement string.
      * The replacement proceeds from the beginning of the string to the end, for example, replacing
      * "aa" with "b" in the message "aaa" will result in "ba" rather than "ab".
@@ -519,7 +492,7 @@ public class MessageBuilder implements Appendable
      *
      * <p>Use this over {@link #stripMentions(Guild, MentionType...)} if {@link net.dv8tion.jda.core.entities.User User}
      * mentions should be replaced with their {@link net.dv8tion.jda.core.entities.User#getName()}.
-     * 
+     *
      * @param  jda
      *         The JDA instance used to resolve the mentions.
      * @param  types
@@ -567,7 +540,7 @@ public class MessageBuilder implements Appendable
                         {
                             string = builder.toString();
                         }
-                        
+
                         Matcher matcher = Message.MentionType.CHANNEL.getPattern().matcher(string);
                         while (matcher.find())
                         {
@@ -580,7 +553,7 @@ public class MessageBuilder implements Appendable
                         break;
                     }
                     case ROLE:
-                    {    
+                    {
                         if (string == null)
                         {
                             string = builder.toString();
@@ -631,13 +604,13 @@ public class MessageBuilder implements Appendable
                 }
             }
         }
-        
+
         return this;
     }
 
     /**
      * Returns the underlying {@link StringBuilder}.
-     * 
+     *
      * @return The {@link StringBuilder} used by this {@link MessageBuilder}
      */
     public StringBuilder getStringBuilder()
@@ -690,7 +663,7 @@ public class MessageBuilder implements Appendable
             throw new IndexOutOfBoundsException("fromIndex > length()");
         if (fromIndex > endIndex)
             throw new IndexOutOfBoundsException("fromIndex > endIndex");
-        
+
         if (endIndex >= builder.length())
         {
             endIndex = builder.length() - 1;
@@ -756,7 +729,7 @@ public class MessageBuilder implements Appendable
             throw new IndexOutOfBoundsException("fromIndex > length()");
         if (fromIndex > endIndex)
             throw new IndexOutOfBoundsException("fromIndex > endIndex");
-        
+
         if (endIndex >= builder.length())
         {
             endIndex = builder.length() - 1;
@@ -835,6 +808,33 @@ public class MessageBuilder implements Appendable
         final Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(channel.getId());
         final MessageAction action = new MessageAction(channel.getJDA(), route, channel, builder);
         return action.tts(isTTS).embed(embed).nonce(nonce);
+    }
+
+    /**
+     * Creates a {@link net.dv8tion.jda.core.entities.Message Message} object from this MessageBuilder
+     *
+     * <p><b>Hint:</b> You can use {@link #build(int, int)} or
+     * {@link #buildAll(net.dv8tion.jda.core.MessageBuilder.SplitPolicy...) buildAll(SplitPolicy...)} as possible ways to
+     * deal with the 2000 character cap.
+     *
+     * @throws java.lang.IllegalStateException
+     *         <ul>
+     *             <li>If you attempt to build() an empty Message ({@link #length()} is {@code 0} and no
+     *             {@link net.dv8tion.jda.core.entities.MessageEmbed} was provided to {@link #setEmbed(net.dv8tion.jda.core.entities.MessageEmbed)})</li>
+     *             <li>If you attempt to build() a Message with more than 2000 characters of content.</li>
+     *         </ul>
+     *
+     * @return the created {@link net.dv8tion.jda.core.entities.Message Message}
+     */
+    public Message build()
+    {
+        String message = builder.toString();
+        if (this.isEmpty())
+            throw new IllegalStateException("Cannot build a Message with no content. (You never added any content to the message)");
+        if (message.length() > Message.MAX_CONTENT_LENGTH)
+            throw new IllegalStateException("Cannot build a Message with more than 2000 characters. Please limit your input.");
+
+        return new DataMessage(isTTS, message, nonce, embed);
     }
 
     /**

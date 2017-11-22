@@ -655,6 +655,7 @@ public abstract class ListenerAdapter implements EventListener
         else if (event instanceof GenericEmoteEvent)
             onGenericEmote((GenericEmoteEvent) event);
 
+        //Generic events that have 2 levels of generic subclasses
         if (event instanceof GenericGuildEvent)
             onGenericGuild((GenericGuildEvent) event);
 

@@ -60,7 +60,6 @@ public class MessageUpdateHandler extends SocketHandler
             }
             else
             {
-//                WebSocketClient.LOG.warn("Received MESSAGE_UPDATE with no specified \"type\" field. JSON: " + content);
                 //Received update with no "type" field which means its an update for a rich embed message
                 handleMessageEmbed(content);
                 return null;
@@ -164,10 +163,7 @@ public class MessageUpdateHandler extends SocketHandler
             channel = api.asClient().getGroupById(channelId);
         if (channel == null)
         {
-            api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () ->
-            {
-                handle(responseNumber, allContent);
-            });
+            api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Received message update for embeds for a channel/group that JDA does not have cached yet.");
             return null;
         }
@@ -182,9 +178,7 @@ public class MessageUpdateHandler extends SocketHandler
         {
             TextChannel tChannel = (TextChannel) channel;
             if (api.getGuildLock().isLocked(tChannel.getGuild().getIdLong()))
-            {
                 return tChannel.getGuild().getIdLong();
-            }
             api.getEventManager().handle(
                     new GuildMessageEmbedEvent(
                             api, responseNumber,

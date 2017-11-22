@@ -82,6 +82,7 @@ public class DataMessage extends AbstractMessage
     @Override
     public long getIdLong()
     {
-        throw new UnsupportedOperationException(UNSUPPORTED);
+        unsupported();
+        return 0;
     }
 }

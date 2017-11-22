@@ -42,8 +42,7 @@ public class MessageReactionBulkRemoveHandler extends SocketHandler
         if (channel == null)
         {
             api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
-            EventCache.LOG.debug("Received a reaction for a channel that JDA does not currently have cached " +
-                "channel_id: " + channelId + " message_id: " + messageId);
+            EventCache.LOG.debug("Received a reaction for a channel that JDA does not currently have cached channel_id: {} message_id: {}", channelId, messageId);
             return null;
         }
         IEventManager manager = api.getEventManager();

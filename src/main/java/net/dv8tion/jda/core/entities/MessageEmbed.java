@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.entities;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.Helpers;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -372,30 +373,7 @@ public class MessageEmbed
             && Objects.equals(image, other.image)
             && Objects.equals(color, other.color)
             && Objects.equals(timestamp, other.timestamp)
-            && deepEquals(fields, other.fields);
-    }
-
-    private static <T> boolean deepEquals(Collection<T> first, Collection<T> second)
-    {
-        if (first != null)
-        {
-            if (second == null)
-                return false;
-            if (first.size() != second.size())
-                return false;
-            for (Iterator<T> itFirst = first.iterator(), itSecond = second.iterator(); itFirst.hasNext(); )
-            {
-                T elementFirst = itFirst.next();
-                T elementSecond = itSecond.next();
-                if (!Objects.equals(elementFirst, elementSecond))
-                    return false;
-            }
-        }
-        else if (second != null)
-        {
-            return false;
-        }
-        return true;
+            && Helpers.deepEquals(fields, other.fields);
     }
 
     /**

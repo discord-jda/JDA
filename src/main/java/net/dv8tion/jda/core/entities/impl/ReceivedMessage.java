@@ -306,7 +306,7 @@ public class ReceivedMessage extends AbstractMessage
                     emote = true;
             }
         }
-        return Arrays.asList(mentions.toArray(new IMentionable[mentions.size()]));
+        return Collections.unmodifiableList(mentions);
     }
 
     @Override
@@ -339,7 +339,7 @@ public class ReceivedMessage extends AbstractMessage
                 }
                 case ROLE:
                 {
-                    if (isRoleMentioning(mentionable))
+                    if (isRoleMentioned(mentionable))
                         return true;
                     break;
                 }
@@ -383,7 +383,7 @@ public class ReceivedMessage extends AbstractMessage
         return false;
     }
 
-    private boolean isRoleMentioning(IMentionable mentionable)
+    private boolean isRoleMentioned(IMentionable mentionable)
     {
         if (mentionable instanceof Role)
         {
@@ -407,7 +407,7 @@ public class ReceivedMessage extends AbstractMessage
 
     private boolean isMass(String s)
     {
-        return hasPermission(Permission.MESSAGE_MENTION_EVERYONE) && content.contains(s);
+        return mentionsEveryone && content.contains(s);
     }
 
     @Override
@@ -531,20 +531,13 @@ public class ReceivedMessage extends AbstractMessage
             String tmp = content;
             for (User user : getMentionedUsers())
             {
-                if (isFromType(ChannelType.PRIVATE) || isFromType(ChannelType.GROUP))
-                {
-                    tmp = tmp.replace("<@" + user.getId() + '>', '@' + user.getName())
-                            .replace("<@!" + user.getId() + '>', '@' + user.getName());
-                }
+                String name;
+                if (isFromType(ChannelType.TEXT) && getGuild().isMember(user))
+                    name = getGuild().getMember(user).getEffectiveName();
                 else
-                {
-                    String name;
-                    if (getGuild().isMember(user))
-                        name = getGuild().getMember(user).getEffectiveName();
-                    else name = user.getName();
-                    tmp = tmp.replace("<@" + user.getId() + '>', '@' + name)
-                            .replace("<@!" + user.getId() + '>', '@' + name);
-                }
+                    name = user.getName();
+                tmp = tmp.replace("<@" + user.getId() + '>', '@' + name)
+                         .replace("<@!" + user.getId() + '>', '@' + name);
             }
             for (Emote emote : getEmotes())
             {
@@ -552,11 +545,11 @@ public class ReceivedMessage extends AbstractMessage
             }
             for (TextChannel mentionedChannel : getMentionedChannels())
             {
-                tmp = tmp.replace("<#" + mentionedChannel.getId() + '>', '#' + mentionedChannel.getName());
+                tmp = tmp.replace(mentionedChannel.getAsMention(), '#' + mentionedChannel.getName());
             }
             for (Role mentionedRole : getMentionedRoles())
             {
-                tmp = tmp.replace("<@&" + mentionedRole.getId() + '>', '@' + mentionedRole.getName());
+                tmp = tmp.replace(mentionedRole.getAsMention(), '@' + mentionedRole.getName());
             }
             return altContent = tmp;
         }

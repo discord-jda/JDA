@@ -766,7 +766,7 @@ public class EntityBuilder
     public Message createMessage(JSONObject jsonObject, MessageChannel chan, boolean exceptionOnMissingUser)
     {
         final long id = jsonObject.getLong("id");
-        String content = jsonObject.isNull("content") ? "" : jsonObject.getString("content");
+        String content = jsonObject.optString("content");
 
         JSONObject author = jsonObject.getJSONObject("author");
         final long authorId = author.getLong("id");
@@ -802,6 +802,15 @@ public class EntityBuilder
                         throw new IllegalArgumentException(MISSING_USER); // Specifically for MESSAGE_CREATE
                     else
                         user = createFakeUser(author, false); // Any other message creation
+                }
+
+                if (user.isFake() && !fromWebhook)
+                {
+                    UserImpl impl = (UserImpl) user;
+                    impl.setName(author.getString("name"))
+                        .setDiscriminator(author.get("discriminator").toString())
+                        .setAvatarId(author.optString("avatar", null))
+                        .setBot(author.has("bot") && author.getBoolean("bot"));
                 }
                 break;
             case TEXT:
@@ -840,8 +849,8 @@ public class EntityBuilder
     {
         JSONObject emoji = obj.getJSONObject("emoji");
         final Long emojiID = emoji.isNull("id") ? null : emoji.getLong("id");
-        final String name = emoji.isNull("name") ? null : emoji.getString("name");
-        final int count = !obj.isNull("count") ? obj.getInt("count") : -1;
+        final String name = emoji.optString("name", null);
+        final int count = obj.optInt("count", -1);
         final boolean me = !obj.isNull("me") && obj.getBoolean("me");
 
         final MessageReaction.ReactionEmote reactionEmote;
@@ -866,8 +875,8 @@ public class EntityBuilder
         final int width = jsonObject.isNull("width") ? 0 : jsonObject.getInt("width");
         final int height = jsonObject.isNull("height") ? 0 : jsonObject.getInt("height");
         final int size = jsonObject.getInt("size");
-        final String url = jsonObject.isNull("url") ? null : jsonObject.getString("url");
-        final String proxyUrl = jsonObject.isNull("proxy_url") ? null : jsonObject.getString("proxy_url");
+        final String url = jsonObject.optString("url", null);
+        final String proxyUrl = jsonObject.optString("proxy_url", null);
         final String filename = jsonObject.getString("filename");
         final long id = jsonObject.getLong("id");
         return new Message.Attachment(id, url, proxyUrl, filename, size, height, width, api);
