@@ -797,6 +797,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         chunkingAndSyncing = false;
         sentAuthInfo = false;
 
+        chunkSyncQueue.clear();
         api.getTextChannelMap().clear();
         api.getVoiceChannelMap().clear();
         api.getCategoryMap().clear();
