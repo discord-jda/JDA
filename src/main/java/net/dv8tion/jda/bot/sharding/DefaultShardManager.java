@@ -103,7 +103,7 @@ public class DefaultShardManager implements ShardManager
     /**
      * The executor that is used by the ShardManager internally to create new JDA instances.
      */
-    protected final ScheduledExecutorService executor = createExecutor();
+    protected final ScheduledExecutorService executor;
 
     /**
      * The queue of shards waiting for creation or to be reconnected.
@@ -191,8 +191,7 @@ public class DefaultShardManager implements ShardManager
 
     /**
      * Creates a new DefaultShardManager instance.
-     *
-     * @param  shardsTotal
+     *  @param  shardsTotal
      *         The total amount of shards or {@code -1} to retrieve the recommended amount from discord.
      * @param  shardIds
      *         A {@link java.util.Collection Collection} of all shard ids that should be started in the beginning or {@code null}
@@ -213,6 +212,8 @@ public class DefaultShardManager implements ShardManager
      *         The {@link okhttp3.OkHttpClient.Builder OkHttpClient.Builder}
      * @param  wsFactory
      *         The {@link com.neovisionaries.ws.client.WebSocketFactory WebSocketFactory}
+     * @param  threadFactory
+     *         The {@link java.util.concurrent.ThreadFactory ThreadFactory}
      * @param  shardedRateLimiter
      *         The {@link net.dv8tion.jda.core.ShardedRateLimiter ShardedRateLimiter}
      * @param  maxReconnectDelay
@@ -224,19 +225,19 @@ public class DefaultShardManager implements ShardManager
      * @param  enableShutdownHook
      *         Whether or not the shutdown hook should be enabled
      * @param  enableBulkDeleteSplitting
-     *         Whether or not {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder#setBulkDeleteSplittingEnabled(boolean)
+     *         Whether or not {@link DefaultShardManagerBuilder#setBulkDeleteSplittingEnabled(boolean)
      *         bulk delete splitting} should be enabled
      * @param  autoReconnect
      *         Whether or not auto reconnect should be enabled
      * @param  idleProvider
-     *         Whether or not new sessions should be marked as afk on startup
      */
     protected DefaultShardManager(final int shardsTotal, final Collection<Integer> shardIds, final List<Object> listeners,
                                   final String token, final IEventManager eventManager, final IAudioSendFactory audioSendFactory,
                                   final IntFunction<Game> gameProvider, final IntFunction<OnlineStatus> statusProvider,
                                   final OkHttpClient.Builder httpClientBuilder, final WebSocketFactory wsFactory,
-                                  final ShardedRateLimiter shardedRateLimiter, final int maxReconnectDelay, final int corePoolSize,
-                                  final boolean enableVoice, final boolean enableShutdownHook, final boolean enableBulkDeleteSplitting,
+                                  final ThreadFactory threadFactory, final ShardedRateLimiter shardedRateLimiter,
+                                  final int maxReconnectDelay, final int corePoolSize, final boolean enableVoice,
+                                  final boolean enableShutdownHook, final boolean enableBulkDeleteSplitting,
                                   final boolean autoReconnect, final IntFunction<Boolean> idleProvider, final boolean retryOnTimeout)
     {
         this.shardsTotal = shardsTotal;
@@ -248,6 +249,7 @@ public class DefaultShardManager implements ShardManager
         this.statusProvider = statusProvider;
         this.httpClientBuilder = httpClientBuilder == null ? new OkHttpClient.Builder() : httpClientBuilder;
         this.wsFactory = wsFactory == null ? new WebSocketFactory() : wsFactory;
+        this.executor = createExecutor(threadFactory);
         this.shardedRateLimiter = shardedRateLimiter == null ? new ShardedRateLimiter() : shardedRateLimiter;
         this.maxReconnectDelay = maxReconnectDelay;
         this.corePoolSize = corePoolSize;
@@ -549,15 +551,19 @@ public class DefaultShardManager implements ShardManager
      *
      * @return A new ScheduledExecutorService
      */
-    protected ScheduledExecutorService createExecutor()
+    protected ScheduledExecutorService createExecutor(ThreadFactory threadFactory)
     {
-        return Executors.newSingleThreadScheduledExecutor(r ->
-        {
-            final Thread t = new Thread(r, "DefaultShardManager");
-            t.setDaemon(true);
-            t.setPriority(Thread.NORM_PRIORITY + 1);
-            return t;
-        });
+        ThreadFactory factory = threadFactory == null
+            ? r ->
+                {
+                    final Thread t = new Thread(r, "DefaultShardManager");
+                    t.setDaemon(true);
+                    t.setPriority(Thread.NORM_PRIORITY + 1);
+                    return t;
+                }
+            : threadFactory;
+
+        return Executors.newSingleThreadScheduledExecutor(factory);
     }
 
     /**

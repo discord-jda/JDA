@@ -17,6 +17,7 @@ package net.dv8tion.jda.bot.sharding;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
 import java.util.*;
+import java.util.concurrent.ThreadFactory;
 import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 import javax.security.auth.login.LoginException;
@@ -59,6 +60,7 @@ public class DefaultShardManagerBuilder
     protected OkHttpClient.Builder httpClientBuilder = null;
     protected WebSocketFactory wsFactory = null;
     protected IAudioSendFactory audioSendFactory = null;
+    protected ThreadFactory threadFactory = null;
 
     /**
      * Creates a completely empty DefaultShardManagerBuilder.
@@ -166,7 +168,7 @@ public class DefaultShardManagerBuilder
     public ShardManager build() throws LoginException, IllegalArgumentException
     {
         final DefaultShardManager manager = new DefaultShardManager(this.shardsTotal, this.shards, this.listeners, this.token, this.eventManager,
-            this.audioSendFactory, this.gameProvider, this.statusProvider, this.httpClientBuilder, this.wsFactory, this.shardedRateLimiter,
+            this.audioSendFactory, this.gameProvider, this.statusProvider, this.httpClientBuilder, this.wsFactory, this.threadFactory, this.shardedRateLimiter,
             this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting,
             this.autoReconnect, this.idleProvider, this.retryOnTimeout);
 
@@ -403,7 +405,7 @@ public class DefaultShardManagerBuilder
      */
     public DefaultShardManagerBuilder setStatus(final OnlineStatus status)
     {
-        Checks.check(status != null, "OnlineStatus cannot be null!");
+        Checks.notNull(status, "status");
         Checks.check(status != OnlineStatus.UNKNOWN, "OnlineStatus cannot be unknown!");
 
         return this.setStatusProvider(id -> status);
@@ -429,6 +431,22 @@ public class DefaultShardManagerBuilder
     public DefaultShardManagerBuilder setStatusProvider(final IntFunction<OnlineStatus> statusProvider)
     {
         this.statusProvider = statusProvider;
+        return this;
+    }
+
+    /**
+     * Sets the {@link java.util.concurrent.ThreadFactory ThreadFactory} that will be used by the internal executor
+     * of the ShardManager.
+     * <p>Note: This will not affect Threads created by any JDA instance.
+     *
+     * @param  threadFactory
+     *         The ThreadFactory or {@code null} to reset to the default value.
+     *
+     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     */
+    public DefaultShardManagerBuilder setThreadFactory(final ThreadFactory threadFactory)
+    {
+        this.threadFactory = threadFactory;
         return this;
     }
 
