@@ -73,7 +73,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>This value is updated on each {@link net.dv8tion.jda.core.events.message.MessageReceivedEvent MessageReceivedEvent}
      * and <u><b>will be reset to {@code null} if the message associated with this ID gets deleted</b></u>
      *
-     * @throws java.util.NoSuchElementException
+     * @throws java.lang.IllegalStateException
      *         If no message id is available
      *
      * @return The most recent message's id
@@ -91,7 +91,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>This value is updated on each {@link net.dv8tion.jda.core.events.message.MessageReceivedEvent MessageReceivedEvent}
      * and <u><b>will be reset to {@code null} if the message associated with this ID gets deleted</b></u>
      *
-     * @throws java.util.NoSuchElementException
+     * @throws java.lang.IllegalStateException
      *         If no message id is available
      *
      * @return The most recent message's id

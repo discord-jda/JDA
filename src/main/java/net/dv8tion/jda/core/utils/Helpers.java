@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.utils;
 
+import org.json.JSONObject;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Collection;
@@ -146,5 +148,22 @@ public final class Helpers
             return false;
         }
         return true;
+    }
+
+    // ## JSONObject ##
+
+    public static boolean optBoolean(JSONObject object, String key)
+    {
+        return !object.isNull(key) && object.getBoolean(key);
+    }
+
+    public static int optInt(JSONObject object, String key, int defaultValue)
+    {
+        return object.isNull(key) ? defaultValue : object.getInt(key);
+    }
+
+    public static long optLong(JSONObject object, String key, long defaultValue)
+    {
+        return object.isNull(key) ? defaultValue : object.getLong(key);
     }
 }

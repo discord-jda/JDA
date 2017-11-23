@@ -199,7 +199,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
     {
         final long userId = content.getLong("user_id");
         final Long channelId = content.isNull("channel_id") ? null : content.getLong("channel_id");
-        String sessionId = content.isNull("session_id") ? null : content.getString("session_id");
+        String sessionId = content.optString("session_id", null);
         boolean selfMuted = content.getBoolean("self_mute");
         boolean selfDeafened = content.getBoolean("self_deaf");
 

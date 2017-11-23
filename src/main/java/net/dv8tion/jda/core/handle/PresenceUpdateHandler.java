@@ -72,7 +72,7 @@ public class PresenceUpdateHandler extends SocketHandler
             {
                 String name = jsonUser.getString("username");
                 String discriminator = jsonUser.get("discriminator").toString();
-                String avatarId = jsonUser.isNull("avatar") ? null : jsonUser.getString("avatar");
+                String avatarId = jsonUser.optString("avatar", null);
 
                 if (!user.getName().equals(name))
                 {

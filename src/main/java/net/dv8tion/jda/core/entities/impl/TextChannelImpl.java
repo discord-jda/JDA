@@ -187,7 +187,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     {
         final long messageId = lastMessageId;
         if (messageId == 0)
-            throw new NoSuchElementException("No last message id found.");
+            throw new IllegalStateException("No last message id found.");
         return messageId;
     }
 
