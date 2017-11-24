@@ -144,6 +144,12 @@ public class DefaultShardManager implements ShardManager
     protected final boolean retryOnTimeout;
 
     /**
+     * Whether this ShardManager should use {@link net.dv8tion.jda.core.JDA#shutdownNow() JDA#shutdownNow()} instead of
+     * {@link net.dv8tion.jda.core.JDA#shutdown() JDA#shutdown()} to shutdown it's shards.
+     */
+    protected final boolean useShutdownNow;
+
+    /**
      * The {@link net.dv8tion.jda.core.ShardedRateLimiter ShardedRateLimiter} that will be used to keep
      * track of rate limits across all shards.
      */
@@ -191,7 +197,7 @@ public class DefaultShardManager implements ShardManager
 
     /**
      * Creates a new DefaultShardManager instance.
-     *  @param  shardsTotal
+     * @param  shardsTotal
      *         The total amount of shards or {@code -1} to retrieve the recommended amount from discord.
      * @param  shardIds
      *         A {@link java.util.Collection Collection} of all shard ids that should be started in the beginning or {@code null}
@@ -225,11 +231,16 @@ public class DefaultShardManager implements ShardManager
      * @param  enableShutdownHook
      *         Whether or not the shutdown hook should be enabled
      * @param  enableBulkDeleteSplitting
-     *         Whether or not {@link DefaultShardManagerBuilder#setBulkDeleteSplittingEnabled(boolean)
+     *         Whether or not {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder#setBulkDeleteSplittingEnabled(boolean)
      *         bulk delete splitting} should be enabled
      * @param  autoReconnect
      *         Whether or not auto reconnect should be enabled
      * @param  idleProvider
+     *         The Function that is used to set a shards idle state
+     * @param  retryOnTimeout
+     *         hether the Requester should retry when a {@link java.net.SocketTimeoutException SocketTimeoutException} occurs.
+     * @param  useShutdownNow
+     *         Whether the ShardManager should use JDA#shutdown() or not
      */
     protected DefaultShardManager(final int shardsTotal, final Collection<Integer> shardIds, final List<Object> listeners,
                                   final String token, final IEventManager eventManager, final IAudioSendFactory audioSendFactory,
@@ -238,7 +249,8 @@ public class DefaultShardManager implements ShardManager
                                   final ThreadFactory threadFactory, final ShardedRateLimiter shardedRateLimiter,
                                   final int maxReconnectDelay, final int corePoolSize, final boolean enableVoice,
                                   final boolean enableShutdownHook, final boolean enableBulkDeleteSplitting,
-                                  final boolean autoReconnect, final IntFunction<Boolean> idleProvider, final boolean retryOnTimeout)
+                                  final boolean autoReconnect, final IntFunction<Boolean> idleProvider,
+                                  final boolean retryOnTimeout, boolean useShutdownNow)
     {
         this.shardsTotal = shardsTotal;
         this.listeners = listeners;
@@ -259,6 +271,7 @@ public class DefaultShardManager implements ShardManager
         this.autoReconnect = autoReconnect;
         this.idleProvider = idleProvider;
         this.retryOnTimeout = retryOnTimeout;
+        this.useShutdownNow = useShutdownNow;
 
         if (shardsTotal != -1)
         {
@@ -321,7 +334,11 @@ public class DefaultShardManager implements ShardManager
         catch (final Exception e)
         {
             if (jda != null)
-                jda.shutdown();
+                if (this.useShutdownNow)
+                    jda.shutdownNow();
+                else
+                    jda.shutdown();
+
             throw e;
         }
 
@@ -339,7 +356,10 @@ public class DefaultShardManager implements ShardManager
 
         final JDA jda = this.shards.getMap().remove(shardId);
         if (jda != null)
-            jda.shutdown();
+            if (this.useShutdownNow)
+                jda.shutdownNow();
+            else
+                jda.shutdown();
 
         this.queue.add(shardId);
     }
@@ -356,7 +376,10 @@ public class DefaultShardManager implements ShardManager
                 {
                     final JDA jda = map.remove(id);
                     if (jda != null)
-                        jda.shutdown();
+                        if (this.useShutdownNow)
+                            jda.shutdownNow();
+                        else
+                            jda.shutdown();
 
                     this.queue.add(id);
                 });
@@ -386,7 +409,10 @@ public class DefaultShardManager implements ShardManager
         if (this.shards != null)
         {
             for (final JDA jda : this.shards)
-                jda.shutdown();
+                if (this.useShutdownNow)
+                    jda.shutdownNow();
+                else
+                    jda.shutdown();
         }
     }
 
@@ -395,7 +421,10 @@ public class DefaultShardManager implements ShardManager
     {
         final JDA jda = this.shards.getMap().remove(shardId);
         if (jda != null)
-            jda.shutdown();
+            if (this.useShutdownNow)
+                jda.shutdownNow();
+            else
+                jda.shutdown();
     }
 
     @Override

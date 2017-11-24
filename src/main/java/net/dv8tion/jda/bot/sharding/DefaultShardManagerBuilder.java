@@ -46,6 +46,7 @@ public class DefaultShardManagerBuilder
     protected boolean enableVoice = true;
     protected boolean autoReconnect = true;
     protected boolean retryOnTimeout = true;
+    protected boolean useShutdownNow = false;
     protected int shardsTotal = -1;
     protected int maxReconnectDelay = 900;
     protected int corePoolSize = 2;
@@ -170,7 +171,7 @@ public class DefaultShardManagerBuilder
         final DefaultShardManager manager = new DefaultShardManager(this.shardsTotal, this.shards, this.listeners, this.token, this.eventManager,
             this.audioSendFactory, this.gameProvider, this.statusProvider, this.httpClientBuilder, this.wsFactory, this.threadFactory, this.shardedRateLimiter,
             this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting,
-            this.autoReconnect, this.idleProvider, this.retryOnTimeout);
+            this.autoReconnect, this.idleProvider, this.retryOnTimeout, this.useShutdownNow);
 
         manager.login();
 
@@ -657,6 +658,26 @@ public class DefaultShardManagerBuilder
         Checks.notBlank(token, "token");
 
         this.token = token;
+        return this;
+    }
+
+    /**
+     * Whether the {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} should use
+     * {@link net.dv8tion.jda.core.JDA#shutdownNow() JDA#shutdownNow()} instead of
+     * {@link net.dv8tion.jda.core.JDA#shutdown() JDA#shutdown()} to shutdown it's shards.
+     * <br><b>Default</b>: {@code false}
+     *
+     * @param  useShutdownNow
+     *         Whether the ShardManager should use JDA#shutdown() or not
+     *
+     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     *
+     * @see net.dv8tion.jda.core.JDA#shutdown()
+     * @see net.dv8tion.jda.core.JDA#shutdownNow()
+     */
+    public DefaultShardManagerBuilder setUseShutdownNow(final boolean useShutdownNow)
+    {
+        this.useShutdownNow = useShutdownNow;
         return this;
     }
 
