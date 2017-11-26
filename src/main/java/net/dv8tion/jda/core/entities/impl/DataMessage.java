@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.entities.MessageType;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class DataMessage extends AbstractMessage
 {
@@ -41,10 +42,15 @@ public class DataMessage extends AbstractMessage
     @Override
     public boolean equals(Object o)
     {
+        if (this == o)
+            return true;
         if (!(o instanceof DataMessage))
             return false;
         DataMessage other = (DataMessage) o;
-        return other.getContentRaw().equals(getContentRaw());
+        return isTTS == other.isTTS
+            && other.content.equals(content)
+            && Objects.equals(other.nonce, nonce)
+            && Objects.equals(other.embed, embed);
     }
 
     @Override
