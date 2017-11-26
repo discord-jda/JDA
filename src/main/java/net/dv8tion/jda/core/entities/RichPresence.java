@@ -170,6 +170,8 @@ public class RichPresence extends Game
     @Override
     public boolean equals(Object o)
     {
+        if (this == o)
+            return true;
         if (!(o instanceof RichPresence))
             return false;
         RichPresence p = (RichPresence) o;
