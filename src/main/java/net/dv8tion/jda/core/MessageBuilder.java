@@ -370,13 +370,35 @@ public class MessageBuilder implements Appendable
      *         the replacement sequence of char values
      *
      * @return The MessageBuilder instance. Useful for chaining.
+     *
+     * @deprecated
+     *         Deprecated in favor to {@link #replace(String, String)} due to clearer naming (not using regex)
      */
+    @Deprecated
     public MessageBuilder replaceAll(String target, String replacement)
     {
-        int index;
-        while ((index = builder.indexOf(target)) != -1)
+        return replace(target, replacement);
+    }
+
+    /**
+     * Replaces each substring that matches the target string with the specified replacement string.
+     * The replacement proceeds from the beginning of the string to the end, for example, replacing
+     * "aa" with "b" in the message "aaa" will result in "ba" rather than "ab".
+     *
+     * @param  target
+     *         the sequence of char values to be replaced
+     * @param  replacement
+     *         the replacement sequence of char values
+     *
+     * @return The MessageBuilder instance. Useful for chaining.
+     */
+    public MessageBuilder replace(String target, String replacement)
+    {
+        int index = builder.indexOf(target);
+        while (index != -1)
         {
             builder.replace(index, index + target.length(), replacement);
+            index = builder.indexOf(target, index + replacement.length());
         }
         return this;
     }
@@ -529,10 +551,10 @@ public class MessageBuilder implements Appendable
                 switch (mention)
                 {
                     case EVERYONE:
-                        replaceAll("@everyone", "@\u0435veryone");
+                        replace("@everyone", "@\u0435veryone");
                         break;
                     case HERE:
-                        replaceAll("@here", "@h\u0435re");
+                        replace("@here", "@h\u0435re");
                         break;
                     case CHANNEL:
                     {
@@ -547,7 +569,7 @@ public class MessageBuilder implements Appendable
                             TextChannel channel = jda.getTextChannelById(matcher.group(1));
                             if (channel != null)
                             {
-                                replaceAll(matcher.group(), "#" + channel.getName());
+                                replace(matcher.group(), "#" + channel.getName());
                             }
                         }
                         break;
@@ -567,7 +589,7 @@ public class MessageBuilder implements Appendable
                                 Role role = g.getRoleById(matcher.group(1));
                                 if (role != null)
                                 {
-                                    replaceAll(matcher.group(), "@"+role.getName());
+                                    replace(matcher.group(), "@"+role.getName());
                                     break;
                                 }
                             }
@@ -597,7 +619,7 @@ public class MessageBuilder implements Appendable
                             else
                                 replacement = user.getName();
 
-                            replaceAll(matcher.group(), "@" + replacement);
+                            replace(matcher.group(), "@" + replacement);
                         }
                         break;
                     }
