@@ -483,7 +483,26 @@ public class MessageBuilder implements Appendable
     /**
      * Removes all mentions of the specified types and replaces them with the closest looking textual representation.
      *
-     * <p>Use this over {@link #stripMentions(JDA, MentionType...)} if {@link net.dv8tion.jda.core.entities.User User} mentions should
+     * <p>Use this over {@link #stripMentions(JDA, Message.MentionType...)} if {@link net.dv8tion.jda.core.entities.User User} mentions should
+     * be replaced with their nicknames in a specific guild based.
+     * <br>Uses {@link net.dv8tion.jda.core.entities.Member#getEffectiveName()}
+     *
+     * @param  guild
+     *         the guild for {@link net.dv8tion.jda.core.entities.User User} mentions
+     * @param  types
+     *         the {@link net.dv8tion.jda.core.entities.Message.MentionType MentionTypes} that should be stripped
+     *
+     * @return The MessageBuilder instance. Useful for chaining.
+     */
+    public MessageBuilder stripMentions(Guild guild, Message.MentionType... types)
+    {
+        return this.stripMentions(guild.getJDA(), guild, types);
+    }
+
+    /**
+     * Removes all mentions of the specified types and replaces them with the closest looking textual representation.
+     *
+     * <p>Use this over {@link #stripMentions(JDA, Message.MentionType...)} if {@link net.dv8tion.jda.core.entities.User User} mentions should
      * be replaced with their nicknames in a specific guild based.
      * <br>Uses {@link net.dv8tion.jda.core.entities.Member#getEffectiveName()}
      *
@@ -493,12 +512,10 @@ public class MessageBuilder implements Appendable
      *         the {@link MentionType MentionTypes} that should be stripped
      *
      * @return The MessageBuilder instance. Useful for chaining.
+     *
+     * @deprecated
+     *         Use {@link #stripMentions(Guild, Message.MentionType...)} instead.
      */
-    public MessageBuilder stripMentions(Guild guild, Message.MentionType... types)
-    {
-        return this.stripMentions(guild.getJDA(), guild, types);
-    }
-
     @Deprecated
     public MessageBuilder stripMentions(Guild guild, MentionType... types)
     {
@@ -512,13 +529,13 @@ public class MessageBuilder implements Appendable
     /**
      * Removes all mentions of the specified types and replaces them with the closest looking textual representation.
      *
-     * <p>Use this over {@link #stripMentions(Guild, MentionType...)} if {@link net.dv8tion.jda.core.entities.User User}
+     * <p>Use this over {@link #stripMentions(Guild, Message.MentionType...)} if {@link net.dv8tion.jda.core.entities.User User}
      * mentions should be replaced with their {@link net.dv8tion.jda.core.entities.User#getName()}.
      *
      * @param  jda
      *         The JDA instance used to resolve the mentions.
      * @param  types
-     *         the {@link MentionType MentionTypes} that should be stripped
+     *         the {@link net.dv8tion.jda.core.entities.Message.MentionType MentionTypes} that should be stripped
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
@@ -527,6 +544,22 @@ public class MessageBuilder implements Appendable
         return this.stripMentions(jda, null, types);
     }
 
+    /**
+     * Removes all mentions of the specified types and replaces them with the closest looking textual representation.
+     *
+     * <p>Use this over {@link #stripMentions(Guild, Message.MentionType...)} if {@link net.dv8tion.jda.core.entities.User User}
+     * mentions should be replaced with their {@link net.dv8tion.jda.core.entities.User#getName()}.
+     *
+     * @param  jda
+     *         The JDA instance used to resolve the mentions.
+     * @param  types
+     *         the {@link MentionType MentionTypes} that should be stripped
+     *
+     * @return The MessageBuilder instance. Useful for chaining.
+     *
+     * @deprecated
+     *         Use {@link #stripMentions(JDA, Message.MentionType...)} instead
+     */
     @Deprecated
     public MessageBuilder stripMentions(JDA jda, MentionType... types)
     {
