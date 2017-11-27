@@ -75,7 +75,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
         if (guild == null)
         {
             api.getEventCache().cache(EventCache.Type.GUILD, guildId, () -> handle(responseNumber, allContent));
-            EventCache.LOG.debug("Received a VOICE_STATE_UPDATE for a Guild that has yet to be cached. JSON: " + content);
+            EventCache.LOG.debug("Received a VOICE_STATE_UPDATE for a Guild that has yet to be cached. JSON: {}", content);
             return;
         }
 
@@ -83,7 +83,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
         if (channel == null && channelId != null)
         {
             api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
-            EventCache.LOG.debug("Received VOICE_STATE_UPDATE for a VoiceChannel that has yet to be cached. JSON: " + content);
+            EventCache.LOG.debug("Received VOICE_STATE_UPDATE for a VoiceChannel that has yet to be cached. JSON: {}", content);
             return;
         }
 
@@ -101,7 +101,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
             // it we will preserve the integrity of the cache in the event that it was actually a mis-ordering of
             // GUILD_MEMBER_ADD and VOICE_STATE_UPDATE. I'll take some bad-data events over an invalid cache.
             api.getEventCache().cache(EventCache.Type.USER, userId, () -> handle(responseNumber, allContent));
-            EventCache.LOG.debug("Received VOICE_STATE_UPDATE for a Member that has yet to be cached. JSON: " + content);
+            EventCache.LOG.debug("Received VOICE_STATE_UPDATE for a Member that has yet to be cached. JSON: {}", content);
             return;
         }
 
@@ -215,7 +215,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
             if (channel == null)
             {
                 api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
-                EventCache.LOG.debug("Received a VOICE_STATE_UPDATE for a Group/PrivateChannel that was not yet cached! JSON: " + content);
+                EventCache.LOG.debug("Received a VOICE_STATE_UPDATE for a Group/PrivateChannel that was not yet cached! JSON: {}", content);
                 return;
             }
 
@@ -223,14 +223,14 @@ public class VoiceStateUpdateHandler extends SocketHandler
             if (call == null)
             {
                 api.getEventCache().cache(EventCache.Type.CALL, channelId, () -> handle(responseNumber, allContent));
-                EventCache.LOG.debug("Received a VOICE_STATE_UPDATE for a Call that is not yet cached. JSON: " + content);
+                EventCache.LOG.debug("Received a VOICE_STATE_UPDATE for a Call that is not yet cached. JSON: {}", content);
                 return;
             }
 
             CallUser cUser = ((JDAClientImpl) api.asClient()).getCallUserMap().get(userId);
             if (cUser != null && channelId != cUser.getCall().getCallableChannel().getIdLong())
             {
-                WebSocketClient.LOG.fatal("Received a VOICE_STATE_UPDATE for a user joining a call, but the user was already in a different call! Big error! JSON: " + content);
+                WebSocketClient.LOG.error("Received a VOICE_STATE_UPDATE for a user joining a call, but the user was already in a different call! Big error! JSON: {}", content);
                 ((CallVoiceStateImpl) cUser.getVoiceState()).setInCall(false);
             }
 
@@ -238,7 +238,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
             if (cUser == null)
             {
                 api.getEventCache().cache(EventCache.Type.USER, userId, () -> handle(responseNumber, allContent));
-                EventCache.LOG.debug("Received a VOICE_STATE_UPDATE for a user that is not yet a a cached CallUser for the call. (groups only). JSON: " + content);
+                EventCache.LOG.debug("Received a VOICE_STATE_UPDATE for a user that is not yet a a cached CallUser for the call. (groups only). JSON: {}", content);
                 return;
             }
 
@@ -258,7 +258,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
             if (cUser == null)
             {
                 api.getEventCache().cache(EventCache.Type.USER, userId, () -> handle(responseNumber, allContent));
-                EventCache.LOG.debug("Received a VOICE_STATE_UPDATE for a User leaving a Call, but the Call was not yet cached! JSON: " + content);
+                EventCache.LOG.debug("Received a VOICE_STATE_UPDATE for a User leaving a Call, but the Call was not yet cached! JSON: {}", content);
                 return;
             }
 

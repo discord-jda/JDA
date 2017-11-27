@@ -33,12 +33,13 @@ import net.dv8tion.jda.core.entities.impl.*;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.handle.GuildMembersChunkHandler;
 import net.dv8tion.jda.core.handle.ReadyHandler;
+import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.MiscUtil;
-import net.dv8tion.jda.core.utils.SimpleLog;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
 
 import java.awt.Color;
 import java.time.Instant;
@@ -52,7 +53,7 @@ import java.util.stream.Collectors;
 
 public class EntityBuilder
 {
-    public static final SimpleLog LOG = SimpleLog.getLog(EntityBuilder.class);
+    public static final Logger LOG = JDALogger.getLog(EntityBuilder.class);
     public static final String MISSING_CHANNEL = "MISSING_CHANNEL";
     public static final String MISSING_USER = "MISSING_USER";
 
@@ -171,7 +172,7 @@ public class EntityBuilder
                 JSONObject object = array.getJSONObject(i);
                 if (object.isNull("id"))
                 {
-                    LOG.fatal("Received GUILD_CREATE with an emoji with a null ID. JSON: " + object);
+                    LOG.error("Received GUILD_CREATE with an emoji with a null ID. JSON: {}", object);
                     continue;
                 }
                 JSONArray emoteRoles = object.isNull("roles") ? new JSONArray() : object.getJSONArray("roles");
@@ -211,7 +212,7 @@ public class EntityBuilder
                 MemberImpl member = (MemberImpl) guildObj.getMembersMap().get(userId);
 
                 if (member == null)
-                    LOG.debug("Received a ghost presence in GuildFirstPass! Guild: " + guildObj + " UserId: " + userId);
+                    LOG.debug("Received a ghost presence in GuildFirstPass! UserId: {} Guild: {}", userId, guildObj);
                 else
                     createPresence(member, presence);
             }
@@ -237,7 +238,7 @@ public class EntityBuilder
                         createCategory(channel, guildObj.getIdLong(), false);
                         break;
                     default:
-                        LOG.fatal("Received a channel for a guild that isn't a text, voice or category channel. JSON: " + channel);
+                        LOG.error("Received a channel for a guild that isn't a text, voice or category channel. JSON: {}", channel);
                 }
             }
         }
@@ -343,7 +344,7 @@ public class EntityBuilder
             guildObj.setOwner(owner);
 
         if (guildObj.getOwner() == null)
-            LOG.fatal("Never set the Owner of the Guild: " + guildObj.getId() + " because we don't have the owner User object! How?!");
+            LOG.error("Never set the Owner of the Guild: {} because we don't have the owner User object! How?!", guildObj.getId());
 
         JSONArray channels = guildJson.getJSONArray("channels");
         createGuildChannelPass(guildObj, channels);
@@ -370,7 +371,7 @@ public class EntityBuilder
 
             MemberImpl member = (MemberImpl) guild.getMembersMap().get(userId);
             if (member == null)
-                LOG.fatal("Received a Presence for a non-existent Member when dealing with GuildSync!");
+                LOG.error("Received a Presence for a non-existent Member when dealing with GuildSync!");
             else
                 this.createPresence(member, presenceJson);
         }
@@ -404,7 +405,7 @@ public class EntityBuilder
                     channelObj = api.getCategoryMap().get(channel.getLong("id"));
                     break;
                 default:
-                    LOG.fatal("Received a channel for a guild that isn't a text, voice or category channel (ChannelPass). JSON: " + channel);
+                    LOG.error("Received a channel for a guild that isn't a text, voice or category channel (ChannelPass). JSON: {}", channel);
             }
 
             if (channelObj != null)
@@ -414,7 +415,7 @@ public class EntityBuilder
             }
             else
             {
-                LOG.fatal("Got permission_override for unknown channel with id: " + channel.getString("id"));
+                LOG.error("Got permission_override for unknown channel with id: {}", channel.getString("id"));
             }
         }
     }
@@ -428,7 +429,7 @@ public class EntityBuilder
             Member member = guildObj.getMembersMap().get(userId);
             if (member == null)
             {
-                LOG.fatal("Received a VoiceState for a unknown Member! GuildId: "
+                LOG.error("Received a VoiceState for a unknown Member! GuildId: "
                         + guildObj.getId() + " MemberId: " + voiceStateJson.getString("user_id"));
                 continue;
             }
@@ -439,8 +440,8 @@ public class EntityBuilder
             if (voiceChannel != null)
                 voiceChannel.getConnectedMembersMap().put(member.getUser().getIdLong(), member);
             else
-                LOG.fatal("Received a GuildVoiceState with a channel ID for a non-existent channel! " +
-                    "ChannelId: " + channelId + " GuildId: " + guildObj.getId() + " UserId:" + userId);
+                LOG.error("Received a GuildVoiceState with a channel ID for a non-existent channel! ChannelId: {} GuildId: {} UserId: {}",
+                    channelId, guildObj.getId(), userId);
 
             // VoiceState is considered volatile so we don't expect anything to actually exist
             GuildVoiceStateImpl voiceState = (GuildVoiceStateImpl) member.getVoiceState();
@@ -525,8 +526,8 @@ public class EntityBuilder
             Role r = guild.getRolesMap().get(roleId);
             if (r == null)
             {
-                LOG.debug("Received a Member with an unknown Role. MemberId: "
-                        + member.getUser().getId() + " GuildId: " + guild.getId() + " roleId: " + roleId);
+                LOG.debug("Received a Member with an unknown Role. MemberId: {} GuildId: {} roleId: {}",
+                    member.getUser().getId(), guild.getId(), roleId);
             }
             else
             {
@@ -769,12 +770,12 @@ public class EntityBuilder
             catch (NoSuchElementException e)
             {
                 //Caused by Discord not properly clearing PermissionOverrides when a Member leaves a Guild.
-                LOG.debug(e.getMessage() + ". Ignoring PermissionOverride.");
+                LOG.debug("{}. Ignoring PermissionOverride.", e.getMessage());
             }
             catch (IllegalArgumentException e)
             {
                 //Missing handling for a type
-                LOG.warn(e.getMessage() + ". Ignoring PermissionOverride.");
+                LOG.warn("{}. Ignoring PermissionOverride.", e.getMessage());
             }
         }
     }

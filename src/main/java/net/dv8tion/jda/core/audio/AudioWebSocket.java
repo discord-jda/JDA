@@ -25,9 +25,10 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
-import net.dv8tion.jda.core.utils.SimpleLog;
+import net.dv8tion.jda.core.utils.JDALogger;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.net.*;
@@ -40,7 +41,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class AudioWebSocket extends WebSocketAdapter
 {
-    public static final SimpleLog LOG = SimpleLog.getLog(AudioWebSocket.class);
+    public static final Logger LOG = JDALogger.getLog(AudioWebSocket.class);
     public static final int DISCORD_SECRET_KEY_LENGTH = 32;
     public static final int AUDIO_GATEWAY_VERSION = 3;
 
@@ -92,7 +93,7 @@ public class AudioWebSocket extends WebSocketAdapter
 
     protected void send(String message)
     {
-        LOG.trace("<- " + message);
+        LOG.trace("<- {}", message);
         socket.sendText(message);
     }
 
@@ -136,7 +137,7 @@ public class AudioWebSocket extends WebSocketAdapter
         {
             case VoiceCode.HELLO:
             {
-                LOG.trace("-> HELLO " + contentAll);
+                LOG.trace("-> HELLO {}", contentAll);
                 final JSONObject payload = contentAll.getJSONObject("d");
                 final int interval = payload.getInt("heartbeat_interval");
                 stopKeepAlive();
@@ -146,7 +147,7 @@ public class AudioWebSocket extends WebSocketAdapter
             }
             case VoiceCode.READY:
             {
-                LOG.trace("-> READY " + contentAll);
+                LOG.trace("-> READY {}", contentAll);
                 JSONObject content = contentAll.getJSONObject("d");
                 ssrc = content.getInt("ssrc");
                 int port = content.getInt("port");
@@ -179,7 +180,7 @@ public class AudioWebSocket extends WebSocketAdapter
             }
             case VoiceCode.RESUMED:
             {
-                LOG.trace("-> RESUMED " + contentAll);
+                LOG.trace("-> RESUMED {}", contentAll);
                 LOG.debug("Successfully resumed session!");
                 changeStatus(ConnectionStatus.CONNECTED);
                 ready = true;
@@ -187,7 +188,7 @@ public class AudioWebSocket extends WebSocketAdapter
             }
             case VoiceCode.SESSION_DESCRIPTION:
             {
-                LOG.trace("-> SESSION_DESCRIPTION " + contentAll);
+                LOG.trace("-> SESSION_DESCRIPTION {}", contentAll);
                 //secret_key is an array of 32 ints that are less than 256, so they are bytes.
                 JSONArray keyArray = contentAll.getJSONObject("d").getJSONArray("secret_key");
 
@@ -202,20 +203,20 @@ public class AudioWebSocket extends WebSocketAdapter
             }
             case VoiceCode.HEARTBEAT:
             {
-                LOG.trace("-> HEARTBEAT " + contentAll);
+                LOG.trace("-> HEARTBEAT {}", contentAll);
                 send(VoiceCode.HEARTBEAT, System.currentTimeMillis());
                 break;
             }
             case VoiceCode.HEARTBEAT_ACK:
             {
-                LOG.trace("-> HEARTBEAT_ACK " + contentAll);
+                LOG.trace("-> HEARTBEAT_ACK {}", contentAll);
                 final long ping = System.currentTimeMillis() - contentAll.getLong("d");
                 listener.onPing(ping);
                 break;
             }
             case VoiceCode.USER_SPEAKING_UPDATE:
             {
-                LOG.trace("-> USER_SPEAKING_UPDATE " + contentAll);
+                LOG.trace("-> USER_SPEAKING_UPDATE {}", contentAll);
                 final JSONObject content = contentAll.getJSONObject("d");
                 final boolean speaking = content.getBoolean("speaking");
                 final int ssrc = content.getInt("ssrc");
@@ -225,7 +226,7 @@ public class AudioWebSocket extends WebSocketAdapter
                 if (user == null)
                 {
                     //more relevant for audio connection
-                    AudioConnection.LOG.trace("Got an Audio USER_SPEAKING_UPDATE for a non-existent User. JSON: " + contentAll);
+                    AudioConnection.LOG.trace("Got an Audio USER_SPEAKING_UPDATE for a non-existent User. JSON: {}", contentAll);
                     break;
                 }
 
@@ -235,7 +236,7 @@ public class AudioWebSocket extends WebSocketAdapter
             }
             case VoiceCode.USER_DISCONNECT:
             {
-                LOG.trace("-> USER_DISCONNECT " + contentAll);
+                LOG.trace("-> USER_DISCONNECT {}", contentAll);
                 final JSONObject payload = contentAll.getJSONObject("d");
                 final long userId = payload.getLong("user_id");
                 audioConnection.removeUserSSRC(userId);
@@ -243,24 +244,22 @@ public class AudioWebSocket extends WebSocketAdapter
             }
             case 12:
             {
-                LOG.trace("-> OP 12 " + contentAll);
+                LOG.trace("-> OP 12 {}", contentAll);
                 // ignore op 12 for now
                 break;
             }
             default:
-                LOG.debug("Unknown Audio OP code.\n" + contentAll.toString(4));
+                LOG.debug("Unknown Audio OP code.\n{}", contentAll);
         }
     }
 
     @Override
     public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer)
     {
-        LOG.debug("The Audio connection was closed!");
-        LOG.debug("By remote? " + closedByServer);
+        LOG.debug("The Audio connection was closed!\nBy remote? {}", closedByServer);
         if (serverCloseFrame != null)
         {
-            LOG.debug("Reason: " + serverCloseFrame.getCloseReason());
-            LOG.debug("Close code: " + serverCloseFrame.getCloseCode());
+            LOG.debug("Reason: {}\nClose code: {}", serverCloseFrame.getCloseReason(), serverCloseFrame.getCloseCode());
             final int code = serverCloseFrame.getCloseCode();
             final VoiceCode.Close closeCode = VoiceCode.Close.from(code);
             switch (closeCode)
@@ -280,8 +279,7 @@ public class AudioWebSocket extends WebSocketAdapter
         }
         if (clientCloseFrame != null)
         {
-            LOG.debug("ClientReason: " + clientCloseFrame.getCloseReason());
-            LOG.debug("ClientCode: " + clientCloseFrame.getCloseCode());
+            LOG.debug("ClientReason: {}\nClientCode: {}", clientCloseFrame.getCloseReason(), clientCloseFrame.getCloseCode());
             if (clientCloseFrame.getCloseCode() != 1000)
             {
                 // unexpected close -> error -> attempt resume
@@ -301,7 +299,7 @@ public class AudioWebSocket extends WebSocketAdapter
     @Override
     public void handleCallbackError(WebSocket websocket, Throwable cause)
     {
-        LOG.fatal(cause);
+        LOG.error("There was some audio websocket error", cause);
         api.getEventManager().handle(new ExceptionEvent(api, cause, true));
     }
 
@@ -332,8 +330,8 @@ public class AudioWebSocket extends WebSocketAdapter
     @Override
     public void onConnectError(WebSocket webSocket, WebSocketException e)
     {
-        LOG.warn("Failed to establish websocket connection: " + e.getError() + " - " + e.getMessage()
-                + "\nClosing connection and attempting to reconnect.");
+        LOG.warn("Failed to establish websocket connection: {} - {}\nClosing connection and attempting to reconnect.",
+            e.getError(), e.getMessage());
         this.close(ConnectionStatus.ERROR_WEBSOCKET_UNABLE_TO_CONNECT);
     }
 
@@ -372,8 +370,8 @@ public class AudioWebSocket extends WebSocketAdapter
         }
         catch (IOException e)
         {
-            LOG.warn("Encountered IOException while attempting to connect: " + e.getMessage()
-                    + "\nClosing connection and attempting to reconnect.");
+            LOG.warn("Encountered IOException while attempting to connect: {}\nClosing connection and attempting to reconnect.",
+                e.getMessage());
             this.close(ConnectionStatus.ERROR_WEBSOCKET_UNABLE_TO_CONNECT);
         }
     }
@@ -554,7 +552,7 @@ public class AudioWebSocket extends WebSocketAdapter
     private void setupKeepAlive(final int keepAliveInterval)
     {
         if (keepAliveHandle != null)
-            LOG.fatal("Setting up a KeepAlive runnable while the previous one seems to still be active!!");
+            LOG.error("Setting up a KeepAlive runnable while the previous one seems to still be active!!");
 
         Runnable keepAliveRunnable = () ->
         {
@@ -580,7 +578,7 @@ public class AudioWebSocket extends WebSocketAdapter
                 }
                 catch (IOException e)
                 {
-                    LOG.fatal(e);
+                    LOG.error("There was some error sending an audio keepalive packet", e);
                 }
             }
         };
@@ -622,7 +620,7 @@ public class AudioWebSocket extends WebSocketAdapter
     {
         if (!shutdown)
         {
-            LOG.fatal("Finalization hook of AudioWebSocket was triggered without properly shutting down");
+            LOG.error("Finalization hook of AudioWebSocket was triggered without properly shutting down");
             close(ConnectionStatus.NOT_CONNECTED);
         }
     }

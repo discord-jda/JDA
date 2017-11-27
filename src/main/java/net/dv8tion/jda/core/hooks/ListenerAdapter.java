@@ -212,6 +212,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildUpdateAfkChannel(GuildUpdateAfkChannelEvent event) {}
     public void onGuildUpdateSystemChannel(GuildUpdateSystemChannelEvent event) {}
     public void onGuildUpdateAfkTimeout(GuildUpdateAfkTimeoutEvent event) {}
+    public void onGuildUpdateExplicitContentLevel(GuildUpdateExplicitContentLevelEvent event) {}
     public void onGuildUpdateIcon(GuildUpdateIconEvent event) {}
     public void onGuildUpdateMFALevel(GuildUpdateMFALevelEvent event) {}
     public void onGuildUpdateName(GuildUpdateNameEvent event){}
@@ -522,6 +523,8 @@ public abstract class ListenerAdapter implements EventListener
             onGuildUpdateSystemChannel((GuildUpdateSystemChannelEvent) event);
         else if (event instanceof GuildUpdateAfkTimeoutEvent)
             onGuildUpdateAfkTimeout((GuildUpdateAfkTimeoutEvent) event);
+        else if (event instanceof GuildUpdateExplicitContentLevelEvent)
+            onGuildUpdateExplicitContentLevel((GuildUpdateExplicitContentLevelEvent) event);
         else if (event instanceof GuildUpdateIconEvent)
             onGuildUpdateIcon((GuildUpdateIconEvent) event);
         else if (event instanceof GuildUpdateMFALevelEvent)
