@@ -547,22 +547,43 @@ public class EntityBuilder
         JSONObject gameJson = presenceJson.isNull("game") ? null : presenceJson.getJSONObject("game");
         OnlineStatus onlineStatus = OnlineStatus.fromKey(presenceJson.getString("status"));
         Game game = null;
+        boolean parsedGame = false;
 
         if (gameJson != null && !gameJson.isNull("name"))
         {
-            game = createGame(gameJson);
+            try
+            {
+                game = createGame(gameJson);
+                parsedGame = true;
+            }
+            catch (Exception ex)
+            {
+                String userId;
+                if (memberOrFriend instanceof Member)
+                    userId = ((Member) memberOrFriend).getUser().getId();
+                else if (memberOrFriend instanceof Friend)
+                    userId = ((Friend) memberOrFriend).getUser().getId();
+                else
+                    userId = "unknown";
+                if (LOG.isDebugEnabled())
+                    LOG.warn("Encountered exception trying to parse a presence! UserId: {} JSON: {}", userId, gameJson, ex);
+                else
+                    LOG.warn("Encountered exception trying to parse a presence! UserId: {} Message: {} Enable debug for details", userId, ex.getMessage());
+            }
         }
         if (memberOrFriend instanceof Member)
         {
             MemberImpl member = (MemberImpl) memberOrFriend;
             member.setOnlineStatus(onlineStatus);
-            member.setGame(game);
+            if (parsedGame)
+                member.setGame(game);
         }
         else if (memberOrFriend instanceof Friend)
         {
             FriendImpl friend = (FriendImpl) memberOrFriend;
             friend.setOnlineStatus(onlineStatus);
-            friend.setGame(game);
+            if (parsedGame)
+                friend.setGame(game);
 
             OffsetDateTime lastModified = OffsetDateTime.ofInstant(
                     Instant.ofEpochMilli(presenceJson.getLong("last_modified")),
@@ -590,9 +611,15 @@ public class EntityBuilder
             type = Game.GameType.DEFAULT;
         }
 
-        if (gameJson.isNull("application_id"))
+        long id;
+        try
+        {
+            id = gameJson.getLong("application_id");
+        }
+        catch (JSONException ex)
+        {
             return new Game(name, url, type);
-        long id = gameJson.getLong("application_id");
+        }
         String details = gameJson.isNull("details") ? null : String.valueOf(gameJson.get("details"));
         String state = gameJson.isNull("state") ? null : String.valueOf(gameJson.get("state"));
         RichPresence.Timestamps timestamps = null;

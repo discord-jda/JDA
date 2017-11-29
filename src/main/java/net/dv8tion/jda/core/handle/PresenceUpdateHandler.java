@@ -101,7 +101,20 @@ public class PresenceUpdateHandler extends SocketHandler
             //Now that we've update the User's info, lets see if we need to set the specific Presence information.
             // This is stored in the Member or Relation objects.
             final JSONObject game = content.isNull("game") ? null : content.optJSONObject("game");
-            Game nextGame = game == null ? null : EntityBuilder.createGame(game);
+            Game nextGame = null;
+            boolean parsedGame = false;
+            try
+            {
+                nextGame = game == null ? null : EntityBuilder.createGame(game);
+                parsedGame = true;
+            }
+            catch (Exception ex)
+            {
+                if (EntityBuilder.LOG.isDebugEnabled())
+                    EntityBuilder.LOG.warn("Encountered exception trying to parse a presence! UserID: {} JSON: {}", userId, game, ex);
+                else
+                    EntityBuilder.LOG.warn("Encountered exception trying to parse a presence! UserID: {} Message: {} Enable debug for details", userId, ex.getMessage());
+            }
             OnlineStatus status = OnlineStatus.fromKey(content.getString("status"));
 
             //If we are in a Guild, then we will use Member.
@@ -137,7 +150,7 @@ public class PresenceUpdateHandler extends SocketHandler
                                         api, responseNumber,
                                         user, guild, oldStatus));
                     }
-                    if (!Objects.equals(member.getGame(), nextGame))
+                    if (parsedGame && !Objects.equals(member.getGame(), nextGame))
                     {
                         Game oldGame = member.getGame();
                         member.setGame(nextGame);
@@ -167,7 +180,7 @@ public class PresenceUpdateHandler extends SocketHandler
                                 api, responseNumber,
                                 user, null, oldStatus));
                     }
-                    if (!Objects.equals(friend.getGame(), nextGame))
+                    if (parsedGame && !Objects.equals(friend.getGame(), nextGame))
                     {
                         Game oldGame = friend.getGame();
                         friend.setGame(nextGame);
