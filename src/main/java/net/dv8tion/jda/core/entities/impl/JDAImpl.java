@@ -136,7 +136,11 @@ public class JDAImpl implements JDA
             throw new LoginException("Provided token was null or empty!");
 
         if (shardInfo != null)
+        {
             contextMap.put("jda.shard", shardInfo.getShardString());
+            contextMap.put("jda.shard.id", String.valueOf(shardInfo.getShardId()));
+            contextMap.put("jda.shard.total", String.valueOf(shardInfo.getShardTotal()));
+        }
         MDC.setContextMap(contextMap);
         setToken(token);
         verifyToken();

@@ -89,6 +89,7 @@ public class JDABuilder
      * Sets the {@link org.slf4j.MDC MDC} mappings to use in JDA.
      * <br>If sharding is enabled JDA will automatically add a {@code jda.shard} context with the format {@code [SHARD_ID / TOTAL]}
      * where {@code SHARD_ID} and {@code TOTAL} are the shard configuration.
+     * Additionally it will provide context for the id via {@code jda.shard.id} and the total via {@code jda.shard.total}.
      *
      * @param  map
      *         The <b>modifiable</b> context map to use in JDA, or {@code null} to reset
