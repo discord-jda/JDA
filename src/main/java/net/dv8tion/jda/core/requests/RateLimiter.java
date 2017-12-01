@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.requests;
 
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.ratelimit.IBucket;
+import org.slf4j.MDC;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -97,7 +98,11 @@ public abstract class RateLimiter
         @Override
         public Thread newThread(Runnable r)
         {
-            Thread t = new Thread(r, identifier + " - Thread " + threadCount.getAndIncrement());
+            Thread t = new Thread(() ->
+            {
+                MDC.setContextMap(requester.api.getContextMap());
+                r.run();
+            }, identifier + " - Thread " + threadCount.getAndIncrement());
             t.setDaemon(true);
 
             return t;

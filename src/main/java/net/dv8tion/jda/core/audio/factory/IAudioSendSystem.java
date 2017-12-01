@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.audio.factory;
 
+import java.util.Map;
+
 /**
  * Interface that acts as a UDP audio packet sending loop.
  * <br>This interface is provided so that developers can provide their own implementation for different management
@@ -44,4 +46,6 @@ public interface IAudioSendSystem
      * and it is possible that this method could be called more than once due to edge-case shutdown conditions.
      */
     void shutdown();
+
+    default void setContextMap(Map<String, String> contextMap) {}
 }

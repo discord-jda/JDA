@@ -19,11 +19,13 @@ package net.dv8tion.jda.core.audio.factory;
 import net.dv8tion.jda.core.audio.AudioConnection;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.utils.JDALogger;
+import org.slf4j.MDC;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.NoRouteToHostException;
 import java.net.SocketException;
+import java.util.Map;
 
 import static net.dv8tion.jda.core.audio.AudioConnection.OPUS_FRAME_TIME_AMOUNT;
 
@@ -35,10 +37,17 @@ public class DefaultSendSystem implements IAudioSendSystem
 {
     private final IPacketProvider packetProvider;
     private Thread sendThread;
+    private Map<String, String> contextMap;
 
     public DefaultSendSystem(IPacketProvider packetProvider)
     {
         this.packetProvider = packetProvider;
+    }
+
+    @Override
+    public void setContextMap(Map<String, String> contextMap)
+    {
+        this.contextMap = contextMap;
     }
 
     @Override
@@ -48,6 +57,8 @@ public class DefaultSendSystem implements IAudioSendSystem
 
         sendThread = new Thread(AudioManagerImpl.AUDIO_THREADS, () ->
         {
+            if (contextMap != null)
+                MDC.setContextMap(contextMap);
             long lastFrameSent = System.currentTimeMillis();
             while (!udpSocket.isClosed() && !sendThread.isInterrupted())
             {

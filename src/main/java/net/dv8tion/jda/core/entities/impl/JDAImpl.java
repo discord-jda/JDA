@@ -39,7 +39,6 @@ import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.*;
-import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.GuildAction;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.JDALogger;
@@ -51,6 +50,7 @@ import net.dv8tion.jda.core.utils.cache.impl.SnowflakeCacheViewImpl;
 import okhttp3.OkHttpClient;
 import org.json.JSONObject;
 import org.slf4j.Logger;
+import org.slf4j.MDC;
 
 import javax.security.auth.login.LoginException;
 import java.util.*;
@@ -77,6 +77,7 @@ public class JDAImpl implements JDA
 
     protected final AbstractCacheView<AudioManager> audioManagers = new CacheView.SimpleCacheView<>(m -> m.getGuild().getName());
 
+    protected final Map<String, String> contextMap;
     protected final OkHttpClient.Builder httpClientBuilder;
     protected final WebSocketFactory wsFactory;
     protected final AccountType accountType;
@@ -105,8 +106,9 @@ public class JDAImpl implements JDA
     protected long responseTotal;
     protected long ping = -1;
 
-    public JDAImpl(AccountType accountType, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory, ShardedRateLimiter rateLimiter,boolean autoReconnect, boolean audioEnabled,
-            boolean useShutdownHook, boolean bulkDeleteSplittingEnabled,boolean retryOnTimeout, int corePoolSize, int maxReconnectDelay)
+    public JDAImpl(AccountType accountType, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory, ShardedRateLimiter rateLimiter,
+                   boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled,
+                   boolean retryOnTimeout, int corePoolSize, int maxReconnectDelay, Map<String, String> contextMap)
     {
         this.accountType = accountType;
         this.httpClientBuilder = httpClientBuilder;
@@ -117,6 +119,7 @@ public class JDAImpl implements JDA
         this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
         this.pool = new ScheduledThreadPoolExecutor(corePoolSize, new JDAThreadFactory());
         this.maxReconnectDelay = maxReconnectDelay;
+        this.contextMap = contextMap == null ? new HashMap<>() : contextMap;
 
         this.presence = new PresenceImpl(this);
         this.requester = new Requester(this, rateLimiter);
@@ -132,6 +135,9 @@ public class JDAImpl implements JDA
         if (token == null || token.isEmpty())
             throw new LoginException("Provided token was null or empty!");
 
+        if (shardInfo != null)
+            contextMap.put("jda.shard", shardInfo.getShardString());
+        MDC.setContextMap(contextMap);
         setToken(token);
         verifyToken();
         this.shardInfo = shardInfo;
@@ -143,6 +149,11 @@ public class JDAImpl implements JDA
         {
             Runtime.getRuntime().addShutdownHook(shutdownHook);
         }
+    }
+
+    public Map<String, String> getContextMap()
+    {
+        return contextMap;
     }
 
     public void setStatus(Status status)
@@ -700,7 +711,11 @@ public class JDAImpl implements JDA
         @Override
         public Thread newThread(Runnable r)
         {
-            final Thread thread = new Thread(r, "JDA-Thread " + getIdentifierString());
+            final Thread thread = new Thread(() ->
+            {
+                MDC.setContextMap(contextMap);
+                r.run();
+            }, "JDA-Thread " + getIdentifierString());
             thread.setDaemon(true);
             return thread;
         }
