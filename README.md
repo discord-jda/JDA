@@ -282,10 +282,6 @@ All dependencies are managed automatically by Gradle.
    * Version: **3.8.1**
    * [Github](https://github.com/square/okhttp)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/com.squareup.okhttp:okhttp)
- * Apache Commons Lang3
-   * Version: **3.5**
-   * [Website](https://commons.apache.org/proper/commons-lang/)
-   * [JCenter Repository](https://bintray.com/bintray/jcenter/org.apache.commons%3Acommons-lang3/view)
  * Apache Commons Collections4
    * Version: **4.1**
    * [Website](https://commons.apache.org/proper/commons-collections/)
