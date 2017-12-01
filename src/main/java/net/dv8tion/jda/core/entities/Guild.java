@@ -71,6 +71,22 @@ public interface Guild extends ISnowflake
     String getIconUrl();
 
     /**
+     * The Features of the {@link net.dv8tion.jda.core.entities.Guild Guild}.
+     * <p>
+     * <b>Possible known features:</b>
+     * <ul>
+     *     <li>VIP_REGIONS - Guild has VIP voice regions</li>
+     *     <li>VANITY_URL - Guild a vanity URL (custom invite link)</li>
+     *     <li>INVITE_SPLASH - Guild has custom invite splash. See {@link #getSplashId()} and {@link #getSplashUrl()}</li>
+     *     <li>VERIFIED - Guild is "verified"</li>
+     *     <li>MORE_EMOJI - Guild is able to use more than 50 emoji</li>
+     * </ul>
+     *
+     * @return Never-null, unmodifiable List containing all of the Guild's features.
+     */
+    List<String> getFeatures();
+
+    /**
      * The Discord hash-id of the splash image for this Guild. A Splash image is an image displayed when viewing a
      * Discord Guild Invite on the web or in client just before accepting or declining the invite.
      * If no splash has been set, this returns {@code null}.

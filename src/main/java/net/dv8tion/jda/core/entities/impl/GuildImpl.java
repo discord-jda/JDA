@@ -76,6 +76,7 @@ public class GuildImpl implements Guild
     private String iconId;
     private String splashId;
     private String region;
+    private List<String> features;
     private VoiceChannel afkChannel;
     private TextChannel systemChannel;
     private Role publicRole;
@@ -109,6 +110,12 @@ public class GuildImpl implements Guild
     public String getIconUrl()
     {
         return iconId == null ? null : "https://cdn.discordapp.com/icons/" + id + "/" + iconId + ".jpg";
+    }
+
+    @Override
+    public List<String> getFeatures()
+    {
+        return features;
     }
 
     @Override
@@ -577,6 +584,12 @@ public class GuildImpl implements Guild
     public GuildImpl setIconId(String iconId)
     {
         this.iconId = iconId;
+        return this;
+    }
+
+    public GuildImpl setFeatures(List<String> features)
+    {
+        this.features = Collections.unmodifiableList(features);
         return this;
     }
 

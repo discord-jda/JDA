@@ -151,6 +151,17 @@ public class EntityBuilder
                 .setRequiredMFALevel(Guild.MFALevel.fromKey(guild.getInt("mfa_level")))
                 .setExplicitContentLevel(Guild.ExplicitContentLevel.fromKey(guild.getInt("explicit_content_filter")));
 
+
+        if(guild.isNull("features"))
+            guildObj.setFeatures(Collections.emptyList());
+        else
+        {
+            JSONArray features = guild.getJSONArray("features");
+            List<String> featureList = new ArrayList<>(features.length());
+            features.forEach(o -> featureList.add(String.valueOf(o)));
+            guildObj.setFeatures(featureList);
+        }
+
         JSONArray roles = guild.getJSONArray("roles");
         for (int i = 0; i < roles.length(); i++)
         {
