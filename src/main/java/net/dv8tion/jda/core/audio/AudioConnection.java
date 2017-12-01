@@ -269,6 +269,7 @@ public class AudioConnection
 
             IAudioSendFactory factory = ((JDAImpl) channel.getJDA()).getAudioSendFactory();
             sendSystem = factory.createSendSystem(new PacketProvider());
+            sendSystem.setContextMap(contextMap);
             sendSystem.start();
         }
         else if (sendHandler == null && sendSystem != null)
