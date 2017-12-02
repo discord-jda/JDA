@@ -141,13 +141,18 @@ public class JDAImpl implements JDA
             contextMap.put("jda.shard.id", String.valueOf(shardInfo.getShardId()));
             contextMap.put("jda.shard.total", String.valueOf(shardInfo.getShardTotal()));
         }
-        MDC.setContextMap(contextMap);
+        // set MDC metadata for build thread
+        Map<String, String> previousContext = MDC.getCopyOfContextMap();
+        contextMap.forEach(MDC::put);
         setToken(token);
         verifyToken();
         this.shardInfo = shardInfo;
         LOG.info("Login Successful!");
 
         client = new WebSocketClient(this, reconnectQueue);
+        // remove our MDC metadata when we exit our code
+        if (previousContext != null)
+            MDC.setContextMap(previousContext);
 
         if (shutdownHook != null)
         {
