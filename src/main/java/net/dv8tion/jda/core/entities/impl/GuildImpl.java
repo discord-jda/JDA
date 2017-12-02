@@ -131,6 +131,34 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public RestAction<String> getVanityUrl()
+    {
+        if (!isAvailable())
+            throw new GuildUnavailableException();
+        if (!getSelfMember().hasPermission(Permission.MANAGE_SERVER))
+            throw new InsufficientPermissionException(Permission.MANAGE_SERVER);
+        if (!getFeatures().contains("VANITY_URL"))
+            throw new IllegalStateException("This guild doesn't have a vanity url");
+
+        Route.CompiledRoute route = Route.Guilds.GET_VANITY_URL.compile(getId());
+
+        return new RestAction<String>(api, route)
+        {
+            @Override
+            protected void handleResponse(Response response, Request<String> request)
+            {
+                if (!response.isOk())
+                {
+                    request.onFailure(response);
+                    return;
+                }
+
+                request.onSuccess(response.getObject().getString("code"));
+            }
+        };
+    }
+
+    @Override
     public VoiceChannel getAfkChannel()
     {
         return afkChannel;
