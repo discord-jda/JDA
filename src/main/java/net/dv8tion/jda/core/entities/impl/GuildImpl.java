@@ -76,7 +76,7 @@ public class GuildImpl implements Guild
     private String iconId;
     private String splashId;
     private String region;
-    private List<String> features;
+    private Set<String> features;
     private VoiceChannel afkChannel;
     private TextChannel systemChannel;
     private Role publicRole;
@@ -113,7 +113,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public List<String> getFeatures()
+    public Set<String> getFeatures()
     {
         return features;
     }
@@ -587,9 +587,9 @@ public class GuildImpl implements Guild
         return this;
     }
 
-    public GuildImpl setFeatures(List<String> features)
+    public GuildImpl setFeatures(Set<String> features)
     {
-        this.features = Collections.unmodifiableList(features);
+        this.features = Collections.unmodifiableSet(features);
         return this;
     }
 

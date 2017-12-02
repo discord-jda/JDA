@@ -22,9 +22,14 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.guild.update.*;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.Collections;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class GuildUpdateHandler extends SocketHandler
 {
@@ -58,6 +63,16 @@ public class GuildUpdateHandler extends SocketHandler
         TextChannel systemChannel = !content.isNull("system_channel_id")
                 ? guild.getTextChannelsMap().get(content.getLong("system_channel_id"))
                 : null;
+        Set<String> features;
+        if(!content.isNull("features"))
+        {
+            JSONArray featureArr = content.getJSONArray("features");
+            features = StreamSupport.stream(featureArr.spliterator(), false).map(String::valueOf).collect(Collectors.toSet());
+        }
+        else
+        {
+            features = Collections.emptySet();
+        }
 
         if (!Objects.equals(owner, guild.getOwner()))
         {
@@ -85,6 +100,16 @@ public class GuildUpdateHandler extends SocketHandler
                     new GuildUpdateIconEvent(
                             api, responseNumber,
                             guild, oldIconId));
+        }
+        if(!features.equals(guild.getFeatures()))
+        {
+            Set<String> oldFeatures = guild.getFeatures();
+            guild.setFeatures(features);
+            api.getEventManager().handle(
+                    new GuildUpdateFeaturesEvent(
+                            api, responseNumber, guild, oldFeatures
+                    )
+            );
         }
         if (!Objects.equals(splashId, guild.getSplashId()))
         {

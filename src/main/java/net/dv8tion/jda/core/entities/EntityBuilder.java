@@ -47,6 +47,7 @@ import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class EntityBuilder
 {
@@ -153,13 +154,14 @@ public class EntityBuilder
 
 
         if(guild.isNull("features"))
-            guildObj.setFeatures(Collections.emptyList());
+            guildObj.setFeatures(Collections.emptySet());
         else
         {
-            JSONArray features = guild.getJSONArray("features");
-            List<String> featureList = new ArrayList<>(features.length());
-            features.forEach(o -> featureList.add(String.valueOf(o)));
-            guildObj.setFeatures(featureList);
+            guildObj.setFeatures(
+                StreamSupport.stream(guild.getJSONArray("features").spliterator(), false)
+                    .map(String::valueOf)
+                    .collect(Collectors.toSet())
+            );
         }
 
         JSONArray roles = guild.getJSONArray("roles");

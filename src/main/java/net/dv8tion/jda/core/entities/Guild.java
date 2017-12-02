@@ -31,6 +31,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Represents a Discord {@link net.dv8tion.jda.core.entities.Guild Guild}.
@@ -82,9 +83,9 @@ public interface Guild extends ISnowflake
      *     <li>MORE_EMOJI - Guild is able to use more than 50 emoji</li>
      * </ul>
      *
-     * @return Never-null, unmodifiable List containing all of the Guild's features.
+     * @return Never-null, unmodifiable Set containing all of the Guild's features.
      */
-    List<String> getFeatures();
+    Set<String> getFeatures();
 
     /**
      * The Discord hash-id of the splash image for this Guild. A Splash image is an image displayed when viewing a
