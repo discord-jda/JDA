@@ -16,12 +16,13 @@
 
 package net.dv8tion.jda.client.entities;
 
+import java.time.OffsetDateTime;
+
+import javax.annotation.CheckReturnValue;
+
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.requests.RestAction;
-
-import java.time.OffsetDateTime;
-import javax.annotation.CheckReturnValue;
 
 public interface Friend extends Relationship
 {
@@ -32,7 +33,7 @@ public interface Friend extends Relationship
     Game getGame();
 
     @CheckReturnValue
-    RestAction removeFriend();
+    RestAction<?> removeFriend();
 
     //Create new Group
 }

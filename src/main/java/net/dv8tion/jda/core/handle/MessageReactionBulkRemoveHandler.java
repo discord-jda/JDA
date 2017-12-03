@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.handle;
 
+import org.json.JSONObject;
+
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.client.events.message.group.react.GroupMessageReactionRemoveAllEvent;
 import net.dv8tion.jda.core.AccountType;
@@ -27,7 +29,6 @@ import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionRemov
 import net.dv8tion.jda.core.events.message.priv.react.PrivateMessageReactionRemoveAllEvent;
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveAllEvent;
 import net.dv8tion.jda.core.hooks.IEventManager;
-import org.json.JSONObject;
 
 public class MessageReactionBulkRemoveHandler extends SocketHandler
 {
@@ -81,6 +82,11 @@ public class MessageReactionBulkRemoveHandler extends SocketHandler
                     new PrivateMessageReactionRemoveAllEvent(
                             api, responseNumber,
                             messageId, (PrivateChannel) channel));
+		case CATEGORY:
+		case UNKNOWN:
+		case VOICE:
+		default:
+			break;
         }
 
         manager.handle(

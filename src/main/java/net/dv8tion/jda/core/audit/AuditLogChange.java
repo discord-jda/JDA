@@ -49,7 +49,6 @@ public class AuditLogChange
      *
      * @return The old value
      */
-    @SuppressWarnings("unchecked")
     public <T> T getOldValue()
     {
         return (T) oldValue;
@@ -67,7 +66,6 @@ public class AuditLogChange
      *
      * @return The new value
      */
-    @SuppressWarnings("unchecked")
     public <T> T getNewValue()
     {
         return (T) newValue;

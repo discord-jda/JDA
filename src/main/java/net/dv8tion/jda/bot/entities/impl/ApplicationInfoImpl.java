@@ -16,13 +16,12 @@
 
 package net.dv8tion.jda.bot.entities.impl;
 
+import java.util.Collection;
+
 import net.dv8tion.jda.bot.entities.ApplicationInfo;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.User;
-
-import java.util.Arrays;
-import java.util.Collection;
 
 public class ApplicationInfoImpl implements ApplicationInfo
 {

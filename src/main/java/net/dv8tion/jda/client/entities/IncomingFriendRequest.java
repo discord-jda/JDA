@@ -16,15 +16,15 @@
 
 package net.dv8tion.jda.client.entities;
 
-import net.dv8tion.jda.core.requests.RestAction;
-
 import javax.annotation.CheckReturnValue;
+
+import net.dv8tion.jda.core.requests.RestAction;
 
 public interface IncomingFriendRequest extends Relationship
 {
     @CheckReturnValue
-    RestAction accept();
+    RestAction<?> accept();
 
     @CheckReturnValue
-    RestAction ignore();
+    RestAction<?> ignore();
 }

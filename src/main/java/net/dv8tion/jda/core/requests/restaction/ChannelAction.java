@@ -16,20 +16,29 @@
 
 package net.dv8tion.jda.core.requests.restaction;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.annotation.CheckReturnValue;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.Category;
+import net.dv8tion.jda.core.entities.Channel;
+import net.dv8tion.jda.core.entities.ChannelType;
+import net.dv8tion.jda.core.entities.EntityBuilder;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.IPermissionHolder;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.RequestBody;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import javax.annotation.CheckReturnValue;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Extension of {@link net.dv8tion.jda.core.requests.RestAction RestAction} specifically
@@ -318,6 +327,8 @@ public class ChannelAction extends AuditableRestAction<Channel>
                     object.put("topic", topic);
                 if (nsfw != null)
                     object.put("nsfw", nsfw);
+		default:
+			break;
         }
         if (type != ChannelType.CATEGORY && parent != null)
             object.put("parent_id", parent.getId());

@@ -16,13 +16,13 @@
 
 package net.dv8tion.jda.bot.entities;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.utils.MiscUtil;
-import java.util.Arrays;
-import java.util.Collection;
 
 /**
  * Represents a Discord Application from its bot's point of view.

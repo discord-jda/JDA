@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.handle;
 
+import org.json.JSONObject;
+
 import net.dv8tion.jda.client.events.message.group.react.GroupMessageReactionAddEvent;
 import net.dv8tion.jda.client.events.message.group.react.GroupMessageReactionRemoveEvent;
 import net.dv8tion.jda.core.AccountType;
@@ -34,7 +36,6 @@ import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.requests.WebSocketClient;
 import net.dv8tion.jda.core.utils.JDALogger;
-import org.json.JSONObject;
 
 public class MessageReactionHandler extends SocketHandler
 {
@@ -150,6 +151,8 @@ public class MessageReactionHandler extends SocketHandler
                     new PrivateMessageReactionAddEvent(
                             api, responseNumber,
                             user, reaction));
+		default:
+			break;
         }
 
         manager.handle(
@@ -180,6 +183,8 @@ public class MessageReactionHandler extends SocketHandler
                     new PrivateMessageReactionRemoveEvent(
                             api, responseNumber,
                             user, reaction));
+		default:
+			break;
         }
 
         manager.handle(

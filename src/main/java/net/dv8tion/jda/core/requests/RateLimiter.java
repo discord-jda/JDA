@@ -16,14 +16,18 @@
 
 package net.dv8tion.jda.core.requests;
 
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.requests.ratelimit.IBucket;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.requests.ratelimit.IBucket;
 
 public abstract class RateLimiter
 {
@@ -44,7 +48,7 @@ public abstract class RateLimiter
 
     // -- Required Implementations --
     public abstract Long getRateLimit(Route.CompiledRoute route);
-    protected abstract void queueRequest(Request request);
+    protected abstract void queueRequest(Request<?> request);
     protected abstract Long handleResponse(Route.CompiledRoute route, okhttp3.Response response);
 
 

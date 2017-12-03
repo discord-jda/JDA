@@ -16,6 +16,10 @@
 
 package net.dv8tion.jda.client.entities.impl;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.client.entities.Call;
 import net.dv8tion.jda.client.entities.Friend;
@@ -28,10 +32,6 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.core.utils.cache.impl.SnowflakeCacheViewImpl;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class GroupImpl implements Group
 {
@@ -152,7 +152,7 @@ public class GroupImpl implements Group
     }
 
     @Override
-    public RestAction leaveGroup()
+    public RestAction<?> leaveGroup()
     {
         return null;
     }
