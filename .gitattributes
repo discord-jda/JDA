@@ -1,2 +1,9 @@
 # Preserve gradlew's line ending
-gradlew eol=lf
+.gitattributes text eol=crlf
+
+gradlew binary
+
+*.java text eol=crlf
+*.gradle text eol=crlf
+
+* text=auto

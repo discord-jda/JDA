@@ -166,8 +166,6 @@ public abstract class ListenerAdapter implements EventListener
     public void onMessageReactionRemove(MessageReactionRemoveEvent event) {}
     public void onMessageReactionRemoveAll(MessageReactionRemoveAllEvent event) {}
 
-//    public void onInviteReceived(InviteReceivedEvent event) {}
-
     //TextChannel Events
     public void onTextChannelDelete(TextChannelDeleteEvent event) {}
     public void onTextChannelUpdateName(TextChannelUpdateNameEvent event) {}
@@ -193,7 +191,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onCategoryUpdateName(CategoryUpdateNameEvent event) {}
     public void onCategoryUpdatePosition(CategoryUpdatePositionEvent event) {}
     public void onCategoryUpdatePermissions(CategoryUpdatePermissionsEvent event) {}
-    public void onCategoryCreate(CategoryCreateEvent evnet) {}
+    public void onCategoryCreate(CategoryCreateEvent event) {}
 
     //PrivateChannel Events
     public void onPrivateChannelCreate(PrivateChannelCreateEvent event) {}
@@ -230,6 +228,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildMemberNickChange(GuildMemberNickChangeEvent event) {}
 
     //Guild Voice Events
+    public void onGuildVoiceUpdate(GuildVoiceUpdateEvent event) {}
     public void onGuildVoiceJoin(GuildVoiceJoinEvent event) {}
     public void onGuildVoiceMove(GuildVoiceMoveEvent event) {}
     public void onGuildVoiceLeave(GuildVoiceLeaveEvent event) {}
@@ -611,6 +610,10 @@ public abstract class ListenerAdapter implements EventListener
         // Debug Events
         else if (event instanceof HttpRequestEvent)
             onHttpRequest((HttpRequestEvent) event);
+
+        //Generic subclasses - combining multiple events
+        if (event instanceof GuildVoiceUpdateEvent)
+            onGuildVoiceUpdate((GuildVoiceUpdateEvent) event);
 
         //Generic Events
         //Start a new if statement so that these are no overridden by the above events.
