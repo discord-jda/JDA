@@ -16,10 +16,25 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.json.JSONArray;
+
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.Category;
+import net.dv8tion.jda.core.entities.Channel;
+import net.dv8tion.jda.core.entities.EntityBuilder;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Invite;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.PermissionOverride;
+import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.ChannelManager;
 import net.dv8tion.jda.core.managers.ChannelManagerUpdatable;
@@ -32,13 +47,6 @@ import net.dv8tion.jda.core.requests.restaction.InviteAction;
 import net.dv8tion.jda.core.requests.restaction.PermissionOverrideAction;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
-import org.json.JSONArray;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> implements Channel
 {
@@ -276,21 +284,18 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         return overrides;
     }
 
-    @SuppressWarnings("unchecked")
     public T setName(String name)
     {
         this.name = name;
         return (T) this;
     }
 
-    @SuppressWarnings("unchecked")
     public T setParent(long parentId)
     {
         this.parentId = parentId;
         return (T) this;
     }
 
-    @SuppressWarnings("unchecked")
     public T setRawPosition(int rawPosition)
     {
         this.rawPosition = rawPosition;

@@ -15,13 +15,20 @@
  */
 package net.dv8tion.jda.core.hooks;
 
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.events.Event;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.events.Event;
 
 /**
  * Implementation for {@link net.dv8tion.jda.core.hooks.IEventManager IEventManager}
@@ -75,7 +82,6 @@ public class AnnotatedEventManager implements IEventManager
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void handle(Event event)
     {
         Class<? extends Event> eventClass = event.getClass();
@@ -112,7 +118,7 @@ public class AnnotatedEventManager implements IEventManager
         for (Object listener : listeners)
         {
             boolean isClass = listener instanceof Class;
-            Class<?> c = isClass ? (Class) listener : listener.getClass();
+            Class<?> c = isClass ? (Class<?>) listener : listener.getClass();
             Method[] allMethods = c.getDeclaredMethods();
             for (Method m : allMethods)
             {
@@ -123,7 +129,6 @@ public class AnnotatedEventManager implements IEventManager
                 Class<?>[] pType  = m.getParameterTypes();
                 if (pType.length == 1 && Event.class.isAssignableFrom(pType[0]))
                 {
-                    @SuppressWarnings("unchecked")
                     Class<? extends Event> eventClass = (Class<? extends Event>) pType[0];
                     if (!methods.containsKey(eventClass))
                     {

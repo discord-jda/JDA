@@ -16,6 +16,18 @@
 
 package net.dv8tion.jda.core.requests;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+
+import org.apache.commons.collections4.map.CaseInsensitiveMap;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
@@ -24,13 +36,6 @@ import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.JDALogger;
 import okhttp3.RequestBody;
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.slf4j.Logger;
-
-import java.util.concurrent.*;
-import java.util.function.Consumer;
 
 /**
  * A class representing a terminal between the user and the discord API.
@@ -149,7 +154,8 @@ public abstract class RestAction<T>
 {
     public static final Logger LOG = JDALogger.getLog(RestAction.class);
 
-    public static Consumer DEFAULT_SUCCESS = o -> {};
+    @SuppressWarnings("rawtypes")
+	public static Consumer DEFAULT_SUCCESS = o -> {};
     public static Consumer<Throwable> DEFAULT_FAILURE = t ->
     {
         if (LOG.isDebugEnabled())

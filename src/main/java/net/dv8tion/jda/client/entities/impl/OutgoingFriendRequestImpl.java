@@ -43,7 +43,7 @@ public class OutgoingFriendRequestImpl implements OutgoingFriendRequest
     }
 
     @Override
-    public RestAction cancel()
+    public RestAction<?> cancel()
     {
         return null;
     }

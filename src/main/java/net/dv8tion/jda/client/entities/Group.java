@@ -16,13 +16,14 @@
 
 package net.dv8tion.jda.client.entities;
 
+import java.util.List;
+
+import javax.annotation.CheckReturnValue;
+
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
-
-import javax.annotation.CheckReturnValue;
-import java.util.List;
 
 public interface Group extends MessageChannel, CallableChannel
 {
@@ -46,5 +47,5 @@ public interface Group extends MessageChannel, CallableChannel
     //getGroupManager()
 
     @CheckReturnValue
-    RestAction leaveGroup();
+    RestAction<?> leaveGroup();
 }

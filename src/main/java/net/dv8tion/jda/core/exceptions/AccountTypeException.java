@@ -24,7 +24,11 @@ import net.dv8tion.jda.core.AccountType;
  */
 public class AccountTypeException extends RuntimeException
 {
-    private final AccountType requiredType;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -6419655797104001418L;
+	private final AccountType requiredType;
 
     /**
      * Creates a new AccountTypeException instance

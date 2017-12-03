@@ -16,9 +16,23 @@
 
 package net.dv8tion.jda.client.entities.impl;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.json.JSONArray;
+
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.client.JDAClient;
-import net.dv8tion.jda.client.entities.*;
+import net.dv8tion.jda.client.entities.Application;
+import net.dv8tion.jda.client.entities.AuthorizedApplication;
+import net.dv8tion.jda.client.entities.CallUser;
+import net.dv8tion.jda.client.entities.Friend;
+import net.dv8tion.jda.client.entities.Group;
+import net.dv8tion.jda.client.entities.Relationship;
+import net.dv8tion.jda.client.entities.RelationshipType;
+import net.dv8tion.jda.client.entities.UserSettings;
 import net.dv8tion.jda.client.requests.restaction.ApplicationAction;
 import net.dv8tion.jda.client.requests.restaction.pagination.MentionPaginationAction;
 import net.dv8tion.jda.core.JDA;
@@ -36,12 +50,6 @@ import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.core.utils.cache.impl.SnowflakeCacheViewImpl;
-import org.json.JSONArray;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class JDAClientImpl implements JDAClient
 {
@@ -152,17 +160,15 @@ public class JDAClientImpl implements JDAClient
 
 
     @Override
-    @SuppressWarnings("unchecked")
     public List<Friend> getFriends()
     {
-        return (List<Friend>) (List) getRelationships(RelationshipType.FRIEND);
+        return (List<Friend>) (List<?>) getRelationships(RelationshipType.FRIEND);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public List<Friend> getFriendsByName(String name, boolean ignoreCase)
     {
-        return (List<Friend>) (List) getRelationships(RelationshipType.FRIEND, name, ignoreCase);
+        return (List<Friend>) (List<?>) getRelationships(RelationshipType.FRIEND, name, ignoreCase);
     }
 
     @Override

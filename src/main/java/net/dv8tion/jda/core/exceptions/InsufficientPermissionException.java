@@ -20,7 +20,12 @@ import net.dv8tion.jda.core.Permission;
 
 public class InsufficientPermissionException extends PermissionException
 {
-    public InsufficientPermissionException(Permission permission)
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 6448936837869917826L;
+
+	public InsufficientPermissionException(Permission permission)
     {
         super(permission, "Cannot perform action due to a lack of Permission. Missing permission: " + permission.toString());
     }

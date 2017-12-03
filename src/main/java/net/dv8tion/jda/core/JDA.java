@@ -26,8 +26,6 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.GuildAction;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
-import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
-
 import javax.annotation.CheckReturnValue;
 import java.util.Collection;
 import java.util.List;

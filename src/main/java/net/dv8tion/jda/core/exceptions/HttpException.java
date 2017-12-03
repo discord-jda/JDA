@@ -18,7 +18,12 @@ package net.dv8tion.jda.core.exceptions;
 
 public class HttpException extends RuntimeException
 {
-    public HttpException(String message)
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -2850303945569720349L;
+
+	public HttpException(String message)
     {
         super(message);
     }

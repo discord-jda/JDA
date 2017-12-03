@@ -16,19 +16,6 @@
 
 package net.dv8tion.jda.core.requests.ratelimit;
 
-import net.dv8tion.jda.core.ShardedRateLimiter;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.events.ExceptionEvent;
-import net.dv8tion.jda.core.requests.RateLimiter;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Requester;
-import net.dv8tion.jda.core.requests.Route;
-import net.dv8tion.jda.core.requests.Route.RateLimit;
-import okhttp3.Headers;
-import org.json.JSONObject;
-import org.json.JSONTokener;
-import org.slf4j.event.Level;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.OffsetDateTime;
@@ -38,6 +25,19 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
+
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
+import net.dv8tion.jda.core.ShardedRateLimiter;
+import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.events.ExceptionEvent;
+import net.dv8tion.jda.core.requests.RateLimiter;
+import net.dv8tion.jda.core.requests.Request;
+import net.dv8tion.jda.core.requests.Requester;
+import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.Route.RateLimit;
+import okhttp3.Headers;
 
 public class BotRateLimiter extends RateLimiter
 {
@@ -61,7 +61,7 @@ public class BotRateLimiter extends RateLimiter
     }
 
     @Override
-    protected void queueRequest(Request request)
+    protected void queueRequest(Request<?> request)
     {
         Bucket bucket = getBucket(request.getRoute());
         synchronized (bucket)
@@ -213,7 +213,7 @@ public class BotRateLimiter extends RateLimiter
         volatile long resetTime = 0;
         volatile int routeUsageRemaining = 1;    //These are default values to only allow 1 request until we have properly
         volatile int routeUsageLimit = 1;        // ratelimit information.
-        volatile ConcurrentLinkedQueue<Request> requests = new ConcurrentLinkedQueue<>();
+        volatile ConcurrentLinkedQueue<Request<?>> requests = new ConcurrentLinkedQueue<>();
 
         public Bucket(String route, RateLimit rateLimit)
         {
@@ -226,7 +226,7 @@ public class BotRateLimiter extends RateLimiter
             }
         }
 
-        void addToQueue(Request request)
+        void addToQueue(Request<?> request)
         {
             requests.add(request);
             submitForProcessing();
@@ -302,12 +302,12 @@ public class BotRateLimiter extends RateLimiter
             {
                 synchronized (requests)
                 {
-                    for (Iterator<Request> it = requests.iterator(); it.hasNext(); )
+                    for (Iterator<Request<?>> it = requests.iterator(); it.hasNext(); )
                     {
                         Long limit = getRateLimit();
                         if (limit != null && limit > 0)
                             break; // possible global cooldown here
-                        Request request = null;
+                        Request<?> request = null;
                         try
                         {
                             request = it.next();
@@ -367,7 +367,7 @@ public class BotRateLimiter extends RateLimiter
         }
 
         @Override
-        public Queue<Request> getRequests()
+        public Queue<Request<?>> getRequests()
         {
             return requests;
         }

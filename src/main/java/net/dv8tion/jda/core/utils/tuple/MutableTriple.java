@@ -18,7 +18,11 @@ package net.dv8tion.jda.core.utils.tuple;
 
 public class MutableTriple<LEFT, MIDDLE, RIGHT> extends MutablePair<LEFT, RIGHT>
 {
-    // public because it is also public in pair
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -3454880022450109123L;
+	// public because it is also public in pair
     public MIDDLE middle;
 
     private MutableTriple(LEFT left, MIDDLE middle, RIGHT right)

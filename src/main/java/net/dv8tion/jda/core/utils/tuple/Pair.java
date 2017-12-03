@@ -38,6 +38,11 @@ import java.util.Objects;
 public abstract class Pair<L, R> implements /*Map.Entry<L, R>, Comparable<Pair<L, R>>,*/ Serializable {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = -8030533744986380289L;
+
+	/**
      * <p>Obtains an immutable pair of from two objects inferring the generic types.</p>
      *
      * <p>This factory allows the pair to be created using inference to

@@ -16,14 +16,14 @@
 
 package net.dv8tion.jda.client.entities.impl;
 
+import java.time.OffsetDateTime;
+
 import net.dv8tion.jda.client.entities.Friend;
 import net.dv8tion.jda.client.entities.RelationshipType;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.requests.RestAction;
-
-import java.time.OffsetDateTime;
 
 public class FriendImpl implements Friend
 {
@@ -63,7 +63,7 @@ public class FriendImpl implements Friend
     }
 
     @Override
-    public RestAction removeFriend()
+    public RestAction<?> removeFriend()
     {
         return null;
     }

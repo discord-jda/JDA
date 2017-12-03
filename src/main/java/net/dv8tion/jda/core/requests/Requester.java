@@ -16,6 +16,18 @@
 
 package net.dv8tion.jda.core.requests;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.SocketTimeoutException;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.zip.GZIPInputStream;
+
+import org.slf4j.Logger;
+
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDAInfo;
@@ -24,17 +36,11 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.ratelimit.BotRateLimiter;
 import net.dv8tion.jda.core.requests.ratelimit.ClientRateLimiter;
 import net.dv8tion.jda.core.utils.JDALogger;
-import okhttp3.*;
+import okhttp3.Call;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
 import okhttp3.internal.http.HttpMethod;
-import org.slf4j.Logger;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.SocketTimeoutException;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.TimeUnit;
-import java.util.zip.GZIPInputStream;
 
 public class Requester
 {
@@ -108,7 +114,8 @@ public class Requester
         return execute(apiRequest, false, handleOnRateLimit);
     }
 
-    public Long execute(Request<?> apiRequest, boolean retried, boolean handleOnRatelimit)
+    @SuppressWarnings("resource")
+	public Long execute(Request<?> apiRequest, boolean retried, boolean handleOnRatelimit)
     {
         Route.CompiledRoute route = apiRequest.getRoute();
         Long retryAfter = rateLimiter.getRateLimit(route);
@@ -160,8 +167,9 @@ public class Requester
             do
             {
                 //If the request has been canceled via the Future, don't execute.
-                if (apiRequest.isCanceled())
-                    return null;
+                if (apiRequest.isCanceled()) {
+                	return null;
+				}
                 Call call = httpClient.newCall(request);
                 firstSuccess = call.execute();
                 responses[attempt] = firstSuccess;

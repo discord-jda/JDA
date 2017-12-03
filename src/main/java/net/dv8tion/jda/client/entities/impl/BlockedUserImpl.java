@@ -43,7 +43,7 @@ public class BlockedUserImpl implements BlockedUser
     }
 
     @Override
-    public RestAction unblockUser()
+    public RestAction<?> unblockUser()
     {
         return null;
     }

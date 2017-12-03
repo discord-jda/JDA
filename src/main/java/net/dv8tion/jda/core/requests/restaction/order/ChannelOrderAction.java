@@ -16,6 +16,11 @@
 
 package net.dv8tion.jda.core.requests.restaction.order;
 
+import java.util.Collection;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.ChannelType;
@@ -25,10 +30,6 @@ import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.RequestBody;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.util.Collection;
 
 /**
  * Implementation of {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction OrderAction}
@@ -66,7 +67,8 @@ public class ChannelOrderAction<T extends Channel> extends OrderAction<T, Channe
         this.guild = guild;
         this.type = type;
 
-        Collection chans;
+        @SuppressWarnings("rawtypes")
+		Collection chans;
         switch (type)
         {
             case TEXT:

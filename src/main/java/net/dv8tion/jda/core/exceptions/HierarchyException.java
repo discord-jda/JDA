@@ -18,7 +18,12 @@ package net.dv8tion.jda.core.exceptions;
 
 public class HierarchyException extends PermissionException
 {
-    public HierarchyException(String reason)
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 5881878872017899866L;
+
+	public HierarchyException(String reason)
     {
         super(reason);
     }

@@ -34,7 +34,11 @@ package net.dv8tion.jda.core.utils.tuple;
  */
 public final class ImmutablePair<L, R> extends Pair<L, R>
 {
-    /** Left object */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 5380955329074073598L;
+	/** Left object */
     public final L left;
     /** Right object */
     public final R right;
