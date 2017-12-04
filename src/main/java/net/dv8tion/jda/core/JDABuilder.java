@@ -26,6 +26,7 @@ import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.SessionReconnectQueue;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.SessionController;
 import okhttp3.OkHttpClient;
 
 import javax.security.auth.login.LoginException;
@@ -46,6 +47,7 @@ public class JDABuilder
 {
     protected final List<Object> listeners;
 
+    protected SessionController controller = null;
     protected SessionReconnectQueue reconnectQueue = null;
     protected ShardedRateLimiter shardRateLimiter = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
@@ -513,6 +515,12 @@ public class JDABuilder
         return this;
     }
 
+    public JDABuilder setSessionController(SessionController controller)
+    {
+        this.controller = controller;
+        return this;
+    }
+
     /**
      * Builds a new {@link net.dv8tion.jda.core.JDA} instance and uses the provided token to start the login process.
      * <br>The login process runs in a different thread, so while this will return immediately, {@link net.dv8tion.jda.core.JDA} has not
@@ -539,7 +547,7 @@ public class JDABuilder
     {
         OkHttpClient.Builder httpClientBuilder = this.httpClientBuilder == null ? new OkHttpClient.Builder() : this.httpClientBuilder;
         WebSocketFactory wsFactory = this.wsFactory == null ? new WebSocketFactory() : this.wsFactory;
-        JDAImpl jda = new JDAImpl(accountType, httpClientBuilder, wsFactory, shardRateLimiter, autoReconnect, enableVoice, enableShutdownHook,
+        JDAImpl jda = new JDAImpl(accountType, controller, httpClientBuilder, wsFactory, shardRateLimiter, autoReconnect, enableVoice, enableShutdownHook,
                 enableBulkDeleteSplitting, requestTimeoutRetry, corePoolSize, maxReconnectDelay);
 
         if (eventManager != null)
@@ -556,7 +564,7 @@ public class JDABuilder
                 .setCacheGame(game)
                 .setCacheIdle(idle)
                 .setCacheStatus(status);
-        jda.login(token, shardInfo, reconnectQueue);
+        jda.login(token, shardInfo);
         return jda;
     }
 

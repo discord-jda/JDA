@@ -63,7 +63,7 @@ public class Requester
 
         this.api = (JDAImpl) api;
         if (accountType == AccountType.BOT)
-            rateLimiter = new BotRateLimiter(this, 5, shardedRateLimiter);
+            rateLimiter = new BotRateLimiter(this, 5);
         else
             rateLimiter = new ClientRateLimiter(this, 5);
         

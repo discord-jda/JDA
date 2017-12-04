@@ -39,11 +39,8 @@ import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.*;
-import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.GuildAction;
-import net.dv8tion.jda.core.utils.Checks;
-import net.dv8tion.jda.core.utils.JDALogger;
-import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.core.utils.*;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.core.utils.cache.impl.AbstractCacheView;
@@ -90,6 +87,8 @@ public class JDAImpl implements JDA
     protected final GuildLock guildLock = new GuildLock(this);
     protected final Object akapLock = new Object();
 
+    protected final SessionController sessionController;
+
     protected WebSocketClient client;
     protected Requester requester;
     protected IEventManager eventManager = new InterfacedEventManager();
@@ -105,7 +104,7 @@ public class JDAImpl implements JDA
     protected long responseTotal;
     protected long ping = -1;
 
-    public JDAImpl(AccountType accountType, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory, ShardedRateLimiter rateLimiter,boolean autoReconnect, boolean audioEnabled,
+    public JDAImpl(AccountType accountType, SessionController controller, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory, ShardedRateLimiter rateLimiter,boolean autoReconnect, boolean audioEnabled,
             boolean useShutdownHook, boolean bulkDeleteSplittingEnabled,boolean retryOnTimeout, int corePoolSize, int maxReconnectDelay)
     {
         this.accountType = accountType;
@@ -117,6 +116,7 @@ public class JDAImpl implements JDA
         this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
         this.pool = new ScheduledThreadPoolExecutor(corePoolSize, new JDAThreadFactory());
         this.maxReconnectDelay = maxReconnectDelay;
+        this.sessionController = controller == null ? new SessionControllerAdapter() : controller;
 
         this.presence = new PresenceImpl(this);
         this.requester = new Requester(this, rateLimiter);
@@ -126,7 +126,12 @@ public class JDAImpl implements JDA
         this.jdaBot = accountType == AccountType.BOT ? new JDABotImpl(this) : null;
     }
 
-    public void login(String token, ShardInfo shardInfo, SessionReconnectQueue reconnectQueue) throws LoginException, RateLimitedException
+    public SessionController getSessionController()
+    {
+        return sessionController;
+    }
+
+    public void login(String token, ShardInfo shardInfo) throws LoginException, RateLimitedException
     {
         setStatus(Status.LOGGING_IN);
         if (token == null || token.isEmpty())
@@ -137,7 +142,7 @@ public class JDAImpl implements JDA
         this.shardInfo = shardInfo;
         LOG.info("Login Successful!");
 
-        client = new WebSocketClient(this, reconnectQueue);
+        client = new WebSocketClient(this);
 
         if (shutdownHook != null)
         {

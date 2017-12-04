@@ -41,6 +41,7 @@ import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.core.utils.SessionController;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -90,7 +91,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected final LinkedList<String> chunkSyncQueue = new LinkedList<>();
     protected final LinkedList<String> ratelimitQueue = new LinkedList<>();
-    protected final SessionReconnectQueue reconnectQueue;
     protected volatile Thread ratelimitThread = null;
     protected volatile long ratelimitResetTime;
     protected volatile int messagesSent;
@@ -106,15 +106,44 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected boolean firstInit = true;
     protected boolean processingReady = true;
 
-    public WebSocketClient(JDAImpl api, SessionReconnectQueue reconnectQueue)
+    protected volatile SessionController.SessionConnectNode connectNode = null;
+
+    public WebSocketClient(JDAImpl api)
     {
         this.api = api;
         this.shardInfo = api.getShardInfo();
         this.shouldReconnect = api.isAutoReconnect();
-        this.reconnectQueue = reconnectQueue;
-        setupHandlers();
-        setupSendingThread();
-        connect();
+        connectNode = new SessionController.SessionConnectNode()
+        {
+            @Override
+            public boolean isReconnect()
+            {
+                return false;
+            }
+
+            @Override
+            public JDA getJDA()
+            {
+                return api;
+            }
+
+            @Override
+            public JDA.ShardInfo getShardInfo()
+            {
+                return api.getShardInfo();
+            }
+
+            @Override
+            public void run(boolean isLast) throws InterruptedException
+            {
+                setupHandlers();
+                setupSendingThread();
+                connect();
+                while (!isLast && api.getStatus().ordinal() < JDA.Status.AWAITING_LOGIN_CONFIRMATION.ordinal())
+                    Thread.sleep(50);
+            }
+        };
+        api.getSessionController().appendSession(connectNode);
     }
 
     public JDA getJDA()
@@ -414,12 +443,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         socket.sendClose(code, reason);
     }
 
-    public void shutdown()
+    public synchronized void shutdown()
     {
         shutdown = true;
         shouldReconnect = false;
-        if (reconnectQueue != null) // remove if in queue
-            reconnectQueue.reconnectQueue.remove(this);
+        if (connectNode != null)
+            api.getSessionController().removeSession(connectNode);
         close(1000, "Shutting down");
     }
 
@@ -427,7 +456,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         ### Start Internal methods ###
      */
 
-    protected void connect()
+    protected synchronized void connect()
     {
         if (api.getStatus() != JDA.Status.ATTEMPTING_TO_RECONNECT)
             api.setStatus(JDA.Status.CONNECTING_TO_WEBSOCKET);
@@ -462,26 +491,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         try
         {
-            RestAction<String> gateway = new RestAction<String>(api, Route.Misc.GATEWAY.compile())
-            {
-                @Override
-                protected void handleResponse(Response response, Request<String> request)
-                {
-                    try
-                    {
-                        if (response.isOk())
-                            request.onSuccess(response.getObject().getString("url"));
-                        else
-                            request.onFailure(new Exception("Failed to get gateway url"));
-                    }
-                    catch (Exception e)
-                    {
-                        request.onFailure(e);
-                    }
-                }
-            };
-
-            return gateway.complete(false) + "?encoding=json&compress=zlib-stream&v=" + DISCORD_GATEWAY_VERSION;
+            return api.getSessionController().getGateway(api)
+                + "?encoding=json&compress=zlib-stream&v=" + DISCORD_GATEWAY_VERSION;
         }
         catch (Exception ex)
         {
@@ -578,9 +589,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             if (isInvalidate)
                 invalidate(); // 1000 means our session is dropped so we cannot resume
             api.getEventManager().handle(new DisconnectEvent(api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now()));
-            if (sessionId == null && reconnectQueue != null)
+            if (sessionId == null)
                 queueReconnect();
-            else
+            else // if resume is possible
                 reconnect();
         }
     }
@@ -592,7 +603,36 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         try
         {
             api.setStatus(JDA.Status.RECONNECT_QUEUED);
-            reconnectQueue.appendSession(this);
+            //TODO move into class
+            connectNode = new SessionController.SessionConnectNode()
+            {
+                @Override
+                public boolean isReconnect()
+                {
+                    return true;
+                }
+
+                @Override
+                public JDA getJDA()
+                {
+                    return api;
+                }
+
+                @Override
+                public JDA.ShardInfo getShardInfo()
+                {
+                    return api.getShardInfo();
+                }
+
+                @Override
+                public void run(boolean isLast) throws InterruptedException
+                {
+                    reconnect(true, !isLast);
+                    while (!isLast && api.getStatus().ordinal() < JDA.Status.AWAITING_LOGIN_CONFIRMATION.ordinal())
+                        Thread.sleep(50);
+                }
+            };
+            api.getSessionController().appendSession(connectNode);
         }
         catch (IllegalStateException ex)
         {
