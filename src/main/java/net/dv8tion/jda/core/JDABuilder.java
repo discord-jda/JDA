@@ -561,7 +561,7 @@ public class JDABuilder
 
         if (controller == null && (reconnectQueue != null || shardRateLimiter != null))
             controller = new ProvidingSessionController();
-        JDAImpl jda = new JDAImpl(accountType, controller, httpClientBuilder, wsFactory, shardRateLimiter, autoReconnect, enableVoice, enableShutdownHook,
+        JDAImpl jda = new JDAImpl(accountType, controller, httpClientBuilder, wsFactory, autoReconnect, enableVoice, enableShutdownHook,
                 enableBulkDeleteSplitting, requestTimeoutRetry, corePoolSize, maxReconnectDelay);
 
         if (eventManager != null)
