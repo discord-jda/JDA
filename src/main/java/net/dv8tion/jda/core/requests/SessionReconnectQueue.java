@@ -38,11 +38,16 @@ public class SessionReconnectQueue
         this.reconnectQueue = reconnectQueue;
     }
 
-    protected void appendSession(final WebSocketClient client)
+    public void appendSession(final WebSocketClient client)
     {
         if (!reconnectQueue.offer(client))
             throw new IllegalStateException("Queue rejected session");
         runWorker();
+    }
+
+    public void removeSession(final WebSocketClient client)
+    {
+        reconnectQueue.remove(client);
     }
 
     protected void runWorker()

@@ -27,6 +27,7 @@ import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.SessionReconnectQueue;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.SessionController;
+import net.dv8tion.jda.core.utils.SessionControllerAdapter;
 import okhttp3.OkHttpClient;
 
 import javax.security.auth.login.LoginException;
@@ -97,7 +98,12 @@ public class JDABuilder
      *         {@link net.dv8tion.jda.core.requests.SessionReconnectQueue SessionReconnectQueue} to use
      *
      * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     *
+     * @deprecated
+     *         This system has been completely moved into a new central object {@link net.dv8tion.jda.core.utils.SessionController SessionController}.
+     *         <br>Use {@link #setSessionController(SessionController)} instead!
      */
+    @Deprecated
     public JDABuilder setReconnectQueue(SessionReconnectQueue queue)
     {
         this.reconnectQueue = queue;
@@ -124,7 +130,12 @@ public class JDABuilder
      *         ShardedRateLimiter used to keep track of cross-session rate limits
      *
      * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     *
+     * @deprecated
+     *         This system has been completely moved into a new central object {@link net.dv8tion.jda.core.utils.SessionController SessionController}.
+     *         <br>Use {@link #setSessionController(SessionController)} instead!
      */
+    @Deprecated
     public JDABuilder setShardedRateLimiter(ShardedRateLimiter rateLimiter)
     {
         if (accountType != AccountType.BOT)
@@ -547,6 +558,9 @@ public class JDABuilder
     {
         OkHttpClient.Builder httpClientBuilder = this.httpClientBuilder == null ? new OkHttpClient.Builder() : this.httpClientBuilder;
         WebSocketFactory wsFactory = this.wsFactory == null ? new WebSocketFactory() : this.wsFactory;
+
+        if (controller == null && (reconnectQueue != null || shardRateLimiter != null))
+            controller = new ProvidingSessionController();
         JDAImpl jda = new JDAImpl(accountType, controller, httpClientBuilder, wsFactory, shardRateLimiter, autoReconnect, enableVoice, enableShutdownHook,
                 enableBulkDeleteSplitting, requestTimeoutRetry, corePoolSize, maxReconnectDelay);
 
@@ -637,5 +651,44 @@ public class JDABuilder
     public JDA buildBlocking() throws LoginException, IllegalArgumentException, InterruptedException, RateLimitedException
     {
         return buildBlocking(Status.CONNECTED);
+    }
+
+    protected class ProvidingSessionController extends SessionControllerAdapter
+    {
+        @Override
+        public void appendSession(SessionConnectNode node)
+        {
+            if (reconnectQueue != null && node.isReconnect())
+                reconnectQueue.appendSession(((JDAImpl) node.getJDA()).getClient());
+            else
+                super.appendSession(node);
+        }
+
+        @Override
+        public void removeSession(SessionConnectNode node)
+        {
+            if (reconnectQueue != null && node.isReconnect())
+                reconnectQueue.removeSession(((JDAImpl) node.getJDA()).getClient());
+            else
+                super.removeSession(node);
+        }
+
+        @Override
+        public long getGlobalRatelimit()
+        {
+            if (shardRateLimiter != null)
+                return shardRateLimiter.getGlobalRatelimit();
+            else
+                return super.getGlobalRatelimit();
+        }
+
+        @Override
+        public void setGlobalRatelimit(long ratelimit)
+        {
+            if (shardRateLimiter != null)
+                shardRateLimiter.setGlobalRatelimit(ratelimit);
+            else
+                super.setGlobalRatelimit(ratelimit);
+        }
     }
 }
