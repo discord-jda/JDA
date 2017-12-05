@@ -135,7 +135,7 @@ public class JDAImpl implements JDA
         if (token == null || token.isEmpty())
             throw new LoginException("Provided token was null or empty!");
 
-        verifyToken();
+        verifyToken(false);
         LOG.info("Login Successful!");
 
         client = new WebSocketClient(this, reconnectQueue);
@@ -168,7 +168,10 @@ public class JDAImpl implements JDA
         };
     }
 
-    public RestAction<Pair<String, Integer>> getGatewayBot()
+    /**
+     * This method also checks for a valid bot token as it is required to get the recommended shard count.
+     */
+    public RestAction<Pair<String, Integer>> getGatewayBot() throws LoginException
     {
         Checks.check(accountType == AccountType.BOT, "Only bots can use this endpoint");
 
@@ -190,10 +193,7 @@ public class JDAImpl implements JDA
                     }
                     else
                     {
-                        if (response.getException() == null)
-                            request.onFailure(new Exception("Failed to get gateway url"));
-                        else
-                            request.onFailure(new Exception("Failed to get gateway url", response.getException()));
+                        verifyToken(true);
                     }
                 }
                 catch (Exception e)
@@ -223,8 +223,13 @@ public class JDAImpl implements JDA
             this.token = token;
     }
 
-    public void verifyToken() throws LoginException, RateLimitedException
+    /**
+     *
+     * @param alreadyFailed If has already been a failed attempt with the current configuration
+     */
+    public void verifyToken(boolean alreadyFailed) throws LoginException, RateLimitedException
     {
+
         RestAction<JSONObject> login = new RestAction<JSONObject>(this, Route.Self.GET_SELF.compile())
         {
             @Override
@@ -243,18 +248,26 @@ public class JDAImpl implements JDA
         };
 
         JSONObject userResponse;
-        try
+
+        if (!alreadyFailed)
         {
-            userResponse = login.complete(false);
+            try
+            {
+                userResponse = login.complete(false);
+            }
+            catch (RuntimeException e)
+            {
+                //We check if the LoginException is masked inside of a ExecutionException which is masked inside of the RuntimeException
+                Throwable ex = e.getCause() != null ? e.getCause().getCause() : null;
+                if (ex instanceof LoginException)
+                    throw (LoginException) ex;
+                else
+                    throw e;
+            }
         }
-        catch (RuntimeException e)
+        else
         {
-            //We check if the LoginException is masked inside of a ExecutionException which is masked inside of the RuntimeException
-            Throwable ex = e.getCause() != null ? e.getCause().getCause() : null;
-            if (ex instanceof LoginException)
-                throw (LoginException) ex;
-            else
-                throw e;
+            userResponse = null;
         }
 
         if (userResponse != null)
@@ -264,7 +277,7 @@ public class JDAImpl implements JDA
         else
         {
             //If we received a null return for userResponse, then that means we hit a 401.
-            // 401 occurs we attempt to access the users/@me endpoint with the wrong token prefix.
+            // 401 occurs when we attempt to access the users/@me endpoint with the wrong token prefix.
             // e.g: If we use a Client token and prefix it with "Bot ", or use a bot token and don't prefix it.
             // It also occurs when we attempt to access the endpoint with an invalid token.
             //The code below already knows that something is wrong with the token. We want to determine if it is invalid
