@@ -65,12 +65,12 @@ public class HttpRequestEvent extends Event
 
     public Headers getRequestHeaders()
     {
-        return this.response.getRawResponse().request().headers();
+        return this.response == null ? null : this.response.getRawResponse() == null ? null : this.response.getRawResponse().request().headers();
     }
 
     public okhttp3.Request getRequestRaw()
     {
-        return this.response == null ? null : this.response.getRawResponse().request();
+        return this.response == null ? null : this.response.getRawResponse() == null ? null : this.response.getRawResponse().request();
     }
 
     public Response getResponse()
@@ -80,7 +80,7 @@ public class HttpRequestEvent extends Event
 
     public ResponseBody getResponseBody()
     {
-        return this.response == null ? null : this.response.getRawResponse().body();
+        return this.response == null ? null : this.response.getRawResponse() == null ? null : this.response.getRawResponse().body();
     }
 
     public JSONArray getResponseBodyAsArray()
