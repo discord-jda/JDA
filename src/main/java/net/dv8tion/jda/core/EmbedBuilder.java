@@ -113,10 +113,10 @@ public class EmbedBuilder
             throw new IllegalStateException("Cannot build an empty embed!");
         if (description.length() > MessageEmbed.TEXT_MAX_LENGTH)
             throw new IllegalStateException(String.format("Description is longer than %d! Please limit your input!", MessageEmbed.TEXT_MAX_LENGTH));
-        final String description = this.description.length() < 1 ? null : this.description.toString();
+        final String descrip = this.description.length() < 1 ? null : this.description.toString();
 
-        return EntityBuilder.createMessageEmbed(url, title, description, EmbedType.RICH, timestamp,
-                color, thumbnail, null, author, null, footer, image, fields);
+        return EntityBuilder.createMessageEmbed(url, title, descrip, EmbedType.RICH, timestamp,
+                color, thumbnail, null, author, null, footer, image, new LinkedList<>(fields));
     }
 
     /**
@@ -169,8 +169,7 @@ public class EmbedBuilder
         int length = description.length();
         synchronized (fields)
         {
-            for (MessageEmbed.Field f : fields)
-                length += f.getName().length() + f.getValue().length();
+            length = fields.stream().map(f -> f.getName().length() + f.getValue().length()).reduce(length, Integer::sum);
         }
         if (title != null)
             length += title.length();
@@ -302,7 +301,7 @@ public class EmbedBuilder
      *
      * @return the builder after the description has been set
      */
-    public EmbedBuilder setDescription(CharSequence description)
+    public final EmbedBuilder setDescription(CharSequence description)
     {
         this.description.setLength(0);
         if (description != null && description.length() >= 1)
