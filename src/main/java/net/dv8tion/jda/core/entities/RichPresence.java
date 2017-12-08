@@ -289,7 +289,7 @@ public class RichPresence extends Game
         @Nullable
         public Instant getStartTime()
         {
-            return start <= 0 ? null : Instant.ofEpochSecond(start);
+            return start <= 0 ? null : Instant.ofEpochMilli(start);
         }
 
         /**
@@ -310,7 +310,7 @@ public class RichPresence extends Game
         @Nullable
         public Instant getEndTime()
         {
-            return end <= 0 ? null : Instant.ofEpochSecond(end);
+            return end <= 0 ? null : Instant.ofEpochMilli(end);
         }
 
         /**
