@@ -16,13 +16,6 @@
 package net.dv8tion.jda.bot.sharding;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
-import java.util.function.IntFunction;
-import javax.security.auth.login.LoginException;
-
 import gnu.trove.map.TIntObjectMap;
 import net.dv8tion.jda.bot.utils.cache.ShardCacheView;
 import net.dv8tion.jda.bot.utils.cache.impl.ShardCacheViewImpl;
@@ -43,6 +36,13 @@ import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.tuple.Pair;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
+
+import javax.security.auth.login.LoginException;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
+import java.util.function.IntFunction;
 
 /**
  * JDA's default {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} implementation.
@@ -513,16 +513,28 @@ public class DefaultShardManager implements ShardManager
 
         if (this.gatewayURL == null)
         {
-            Pair<String, Integer> gateway = jda.getGatewayBot().complete();
-            this.gatewayURL = gateway.getLeft();
-
-            if (this.shardsTotal == -1)
+            try
             {
-                this.shardsTotal = gateway.getRight();
-                this.shards = new ShardCacheViewImpl(this.shardsTotal);
+                Pair<String, Integer> gateway = jda.getGatewayBot().complete();
+                this.gatewayURL = gateway.getLeft();
 
-                for (int i = 0; i < shardsTotal; i++)
-                    queue.add(i);
+                if (this.shardsTotal == -1)
+                {
+                    this.shardsTotal = gateway.getRight();
+                    this.shards = new ShardCacheViewImpl(this.shardsTotal);
+
+                    for (int i = 0; i < shardsTotal; i++)
+                        queue.add(i);
+                }
+            }
+            catch (RuntimeException e)
+            {
+                //We check if the LoginException is masked inside of a ExecutionException which is masked inside of the RuntimeException
+                Throwable ex = e.getCause() instanceof ExecutionException ? e.getCause().getCause() : null;
+                if (ex instanceof LoginException)
+                    throw new LoginException(ex.getMessage());
+                else
+                    throw e;
             }
         }
 

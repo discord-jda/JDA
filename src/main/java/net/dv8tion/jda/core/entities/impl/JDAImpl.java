@@ -52,6 +52,7 @@ import org.slf4j.Logger;
 
 import javax.security.auth.login.LoginException;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
@@ -322,9 +323,9 @@ public class JDAImpl implements JDA
         catch (RuntimeException e)
         {
             //We check if the LoginException is masked inside of a ExecutionException which is masked inside of the RuntimeException
-            Throwable ex = e.getCause() != null ? e.getCause().getCause() : null;
+            Throwable ex = e.getCause() instanceof ExecutionException ? e.getCause().getCause() : null;
             if (ex instanceof LoginException)
-                throw (LoginException) ex;
+                throw new LoginException(ex.getMessage());
             else
                 throw e;
         }
