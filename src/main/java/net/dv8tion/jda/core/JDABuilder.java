@@ -516,8 +516,7 @@ public class JDABuilder
      */
     public JDABuilder useSharding(int shardId, int shardTotal)
     {
-        if (accountType != AccountType.BOT)
-            throw new AccountTypeException(AccountType.BOT);
+        AccountTypeException.check(accountType, AccountType.BOT);
         Checks.notNegative(shardId, "Shard ID");
         Checks.positive(shardTotal, "Shard Total");
         Checks.check(shardId < shardTotal,

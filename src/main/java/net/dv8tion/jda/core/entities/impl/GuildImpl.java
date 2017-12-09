@@ -381,8 +381,7 @@ public class GuildImpl implements Guild
     @Override
     public MentionPaginationAction getRecentMentions()
     {
-        if (getJDA().getAccountType() != AccountType.CLIENT)
-            throw new AccountTypeException(AccountType.CLIENT);
+        AccountTypeException.check(getJDA().getAccountType(), AccountType.CLIENT);
         return getJDA().asClient().getRecentMentions(this);
     }
 
