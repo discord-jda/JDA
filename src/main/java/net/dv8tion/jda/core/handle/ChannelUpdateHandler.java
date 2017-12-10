@@ -26,6 +26,9 @@ import net.dv8tion.jda.client.events.group.update.GroupUpdateNameEvent;
 import net.dv8tion.jda.client.events.group.update.GroupUpdateOwnerEvent;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.*;
+import net.dv8tion.jda.core.events.channel.category.update.CategoryUpdateNameEvent;
+import net.dv8tion.jda.core.events.channel.category.update.CategoryUpdatePermissionsEvent;
+import net.dv8tion.jda.core.events.channel.category.update.CategoryUpdatePositionEvent;
 import net.dv8tion.jda.core.events.channel.text.update.*;
 import net.dv8tion.jda.core.events.channel.voice.update.*;
 import org.json.JSONArray;
@@ -56,6 +59,7 @@ public class ChannelUpdateHandler extends SocketHandler
         List<IPermissionHolder> contained = new ArrayList<>();
 
         final long channelId = content.getLong("id");
+        final Long parentId = content.isNull("parent_id") ? null : content.getLong("parent_id");
         final int position = content.getInt("position");
         final String name = content.getString("name");
         final boolean nsfw = !content.isNull("nsfw") && content.getBoolean("nsfw");
@@ -69,11 +73,13 @@ public class ChannelUpdateHandler extends SocketHandler
                 if (textChannel == null)
                 {
                     api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
-                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a TextChannel that does not exist. JSON: " + content);
+                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a TextChannel that does not exist. JSON: {}", content);
                     return null;
                 }
 
                 //If any properties changed, update the values and fire the proper events.
+                final Category parent = textChannel.getParent();
+                final Long oldParent = parent == null ? null : parent.getIdLong();
                 final String oldName = textChannel.getName();
                 final String oldTopic = textChannel.getTopic();
                 final int oldPosition = textChannel.getPositionRaw();
@@ -85,6 +91,14 @@ public class ChannelUpdateHandler extends SocketHandler
                             new TextChannelUpdateNameEvent(
                                     api, responseNumber,
                                     textChannel, oldName));
+                }
+                if (!Objects.equals(oldParent, parentId))
+                {
+                    textChannel.setParent(parentId == null ? 0 : parentId);
+                    api.getEventManager().handle(
+                           new TextChannelUpdateParentEvent(
+                               api, responseNumber,
+                               textChannel, parent));
                 }
                 if (!Objects.equals(oldTopic, topic))
                 {
@@ -132,10 +146,12 @@ public class ChannelUpdateHandler extends SocketHandler
                 if (voiceChannel == null)
                 {
                     api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
-                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a VoiceChannel that does not exist. JSON: " + content);
+                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a VoiceChannel that does not exist. JSON: {}", content);
                     return null;
                 }
                 //If any properties changed, update the values and fire the proper events.
+                final Category parent = voiceChannel.getParent();
+                final Long oldParent = parent == null ? null : parent.getIdLong();
                 final String oldName = voiceChannel.getName();
                 final int oldPosition = voiceChannel.getPositionRaw();
                 final int oldLimit = voiceChannel.getUserLimit();
@@ -147,6 +163,14 @@ public class ChannelUpdateHandler extends SocketHandler
                             new VoiceChannelUpdateNameEvent(
                                     api, responseNumber,
                                     voiceChannel, oldName));
+                }
+                if (!Objects.equals(oldParent, parentId))
+                {
+                    voiceChannel.setParent(parentId == null ? 0 : parentId);
+                    api.getEventManager().handle(
+                            new VoiceChannelUpdateParentEvent(
+                                    api, responseNumber,
+                                    voiceChannel, parent));
                 }
                 if (oldPosition != position)
                 {
@@ -184,6 +208,46 @@ public class ChannelUpdateHandler extends SocketHandler
                                     voiceChannel, changed));
                 }
                 break;  //Finish the VoiceChannelUpdate case
+            }
+            case CATEGORY:
+            {
+                CategoryImpl category = (CategoryImpl) api.getCategoryById(channelId);
+                if (category == null)
+                {
+                    api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a Category that does not exist. JSON: {}", content);
+                    return null;
+                }
+                final String oldName = category.getName();
+                final int oldPosition = category.getPositionRaw();
+
+                if (!Objects.equals(oldName, name))
+                {
+                    category.setName(name);
+                    api.getEventManager().handle(
+                            new CategoryUpdateNameEvent(
+                                api, responseNumber,
+                                category, oldName));
+                }
+                if (!Objects.equals(oldPosition, position))
+                {
+                    category.setRawPosition(position);
+                    api.getEventManager().handle(
+                            new CategoryUpdatePositionEvent(
+                                api, responseNumber,
+                                category, oldPosition));
+                }
+
+                applyPermissions(category, content, permOverwrites, contained, changed);
+                //If this update modified permissions in any way.
+                if (!changed.isEmpty())
+                {
+                    api.getEventManager().handle(
+                            new CategoryUpdatePermissionsEvent(
+                                api, responseNumber,
+                                category, changed));
+                }
+                break;  //Finish the CategoryUpdate case
             }
             default:
                 throw new IllegalArgumentException("CHANNEL_UPDATE provided an unrecognized channel type JSON: " + content);
@@ -258,7 +322,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 {
                     api.getEventCache().cache(EventCache.Type.ROLE, id, () ->
                             handlePermissionOverride(override, channel, content, changedPermHolders, containedPermHolders));
-                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to create or update a PermissionOverride for a Role that doesn't exist! RoleId: " + id + " JSON: " + content);
+                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to create or update a PermissionOverride for a Role that doesn't exist! RoleId: {} JSON: {}", id, content);
                     return;
                 }
                 break;
@@ -270,7 +334,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 {
                     api.getEventCache().cache(EventCache.Type.USER, id, () ->
                             handlePermissionOverride(override, channel, content, changedPermHolders, containedPermHolders));
-                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to create or update a PermissionOverride for Member that doesn't exist in this Guild! MemberId: " + id + " JSON: " + content);
+                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to create or update a PermissionOverride for Member that doesn't exist in this Guild! MemberId: {} JSON: {}", id, content);
                     return;
                 }
                 break;
@@ -306,7 +370,7 @@ public class ChannelUpdateHandler extends SocketHandler
         if (group == null)
         {
             api.getEventCache().cache(EventCache.Type.CHANNEL, groupId, () -> handle(responseNumber, allContent));
-            EventCache.LOG.debug("Received CHANNEL_UPDATE for a group that was not yet cached. JSON: " + content);
+            EventCache.LOG.debug("Received CHANNEL_UPDATE for a group that was not yet cached. JSON: {}", content);
             return;
         }
 
@@ -317,7 +381,7 @@ public class ChannelUpdateHandler extends SocketHandler
 
         if (owner == null)
         {
-            EventCache.LOG.warn("Received CHANNEL_UPDATE for a group with an owner_id for a user that is not cached. owner_id: " + ownerId);
+            EventCache.LOG.warn("Received CHANNEL_UPDATE for a group with an owner_id for a user that is not cached. owner_id: {}", ownerId);
         }
         else
         {

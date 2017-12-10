@@ -60,6 +60,6 @@ public class GenericGuildMessageReactionEvent extends GenericMessageEvent
 
     public MessageReaction.ReactionEmote getReactionEmote()
     {
-        return reaction.getEmote();
+        return reaction.getReactionEmote();
     }
 }

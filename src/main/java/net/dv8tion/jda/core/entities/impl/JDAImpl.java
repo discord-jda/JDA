@@ -18,12 +18,11 @@ package net.dv8tion.jda.core.entities.impl;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
 import gnu.trove.map.TLongObjectMap;
-import net.dv8tion.jda.bot.JDABot;
 import net.dv8tion.jda.bot.entities.impl.JDABotImpl;
-import net.dv8tion.jda.client.JDAClient;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.ShardedRateLimiter;
 import net.dv8tion.jda.core.audio.AudioWebSocket;
 import net.dv8tion.jda.core.audio.factory.DefaultSendFactory;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
@@ -36,44 +35,53 @@ import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.InterfacedEventManager;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.Presence;
-import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.*;
-import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.core.utils.MiscUtil;
-import net.dv8tion.jda.core.utils.SimpleLog;
-import okhttp3.OkHttpClient;
+import net.dv8tion.jda.core.requests.restaction.GuildAction;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.JDALogger;
+import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.core.utils.tuple.Pair;
+import okhttp3.OkHttpClient;
+import net.dv8tion.jda.core.utils.cache.CacheView;
+import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.core.utils.cache.impl.AbstractCacheView;
+import net.dv8tion.jda.core.utils.cache.impl.SnowflakeCacheViewImpl;
 import org.json.JSONObject;
+import org.slf4j.Logger;
 
 import javax.security.auth.login.LoginException;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class JDAImpl implements JDA
 {
-    public static final SimpleLog LOG = SimpleLog.getLog("JDA");
+    public static final Logger LOG = JDALogger.getLog(JDA.class);
 
     public final ScheduledThreadPoolExecutor pool;
 
-    protected final TLongObjectMap<User> users = MiscUtil.newLongMap();
-    protected final TLongObjectMap<Guild> guilds = MiscUtil.newLongMap();
-    protected final TLongObjectMap<TextChannel> textChannels = MiscUtil.newLongMap();
-    protected final TLongObjectMap<VoiceChannel> voiceChannels = MiscUtil.newLongMap();
-    protected final TLongObjectMap<PrivateChannel> privateChannels = MiscUtil.newLongMap();
+    protected final SnowflakeCacheViewImpl<User> userCache = new SnowflakeCacheViewImpl<>(User::getName);
+    protected final SnowflakeCacheViewImpl<Guild> guildCache = new SnowflakeCacheViewImpl<>(Guild::getName);
+    protected final SnowflakeCacheViewImpl<Category> categories = new SnowflakeCacheViewImpl<>(Channel::getName);
+    protected final SnowflakeCacheViewImpl<TextChannel> textChannelCache = new SnowflakeCacheViewImpl<>(Channel::getName);
+    protected final SnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SnowflakeCacheViewImpl<>(Channel::getName);
+    protected final SnowflakeCacheViewImpl<PrivateChannel> privateChannelCache = new SnowflakeCacheViewImpl<>(MessageChannel::getName);
 
     protected final TLongObjectMap<User> fakeUsers = MiscUtil.newLongMap();
     protected final TLongObjectMap<PrivateChannel> fakePrivateChannels = MiscUtil.newLongMap();
 
-    protected final TLongObjectMap<AudioManagerImpl> audioManagers = MiscUtil.newLongMap();
+    protected final AbstractCacheView<AudioManager> audioManagers = new CacheView.SimpleCacheView<>(m -> m.getGuild().getName());
 
     protected final OkHttpClient.Builder httpClientBuilder;
     protected final WebSocketFactory wsFactory;
     protected final AccountType accountType;
     protected final PresenceImpl presence;
-    protected final JDAClient jdaClient;
-    protected final JDABot jdaBot;
+    protected final JDAClientImpl jdaClient;
+    protected final JDABotImpl jdaBot;
     protected final int maxReconnectDelay;
     protected final Thread shutdownHook;
     protected final EntityBuilder entityBuilder = new EntityBuilder(this);
@@ -89,17 +97,19 @@ public class JDAImpl implements JDA
     protected Status status = Status.INITIALIZING;
     protected SelfUser selfUser;
     protected ShardInfo shardInfo;
-    protected String token = null;
     protected boolean audioEnabled;
     protected boolean bulkDeleteSplittingEnabled;
     protected boolean autoReconnect;
     protected long responseTotal;
     protected long ping = -1;
+    protected String token;
+    protected String gatewayUrl;
 
-    public JDAImpl(AccountType accountType, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory, boolean autoReconnect, boolean audioEnabled,
-            boolean useShutdownHook, boolean bulkDeleteSplittingEnabled, int corePoolSize, int maxReconnectDelay)
+    public JDAImpl(AccountType accountType, String token, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory, ShardedRateLimiter rateLimiter,boolean autoReconnect, boolean audioEnabled,
+            boolean useShutdownHook, boolean bulkDeleteSplittingEnabled,boolean retryOnTimeout, int corePoolSize, int maxReconnectDelay)
     {
         this.accountType = accountType;
+        this.setToken(token);
         this.httpClientBuilder = httpClientBuilder;
         this.wsFactory = wsFactory;
         this.autoReconnect = autoReconnect;
@@ -110,33 +120,101 @@ public class JDAImpl implements JDA
         this.maxReconnectDelay = maxReconnectDelay;
 
         this.presence = new PresenceImpl(this);
-        this.requester = new Requester(this);
+        this.requester = new Requester(this, rateLimiter);
+        this.requester.setRetryOnTimeout(retryOnTimeout);
 
         this.jdaClient = accountType == AccountType.CLIENT ? new JDAClientImpl(this) : null;
         this.jdaBot = accountType == AccountType.BOT ? new JDABotImpl(this) : null;
     }
 
-    public void login(String token, ShardInfo shardInfo) throws LoginException, RateLimitedException
+    public int login(String gatewayUrl, ShardInfo shardInfo, SessionReconnectQueue reconnectQueue) throws LoginException, RateLimitedException
     {
+        this.gatewayUrl = gatewayUrl;
+        this.shardInfo = shardInfo;
+
         setStatus(Status.LOGGING_IN);
         if (token == null || token.isEmpty())
             throw new LoginException("Provided token was null or empty!");
 
-        setToken(token);
         verifyToken();
-        this.shardInfo = shardInfo;
         LOG.info("Login Successful!");
 
-        client = new WebSocketClient(this);
+        client = new WebSocketClient(this, reconnectQueue);
 
         if (shutdownHook != null)
-        {
             Runtime.getRuntime().addShutdownHook(shutdownHook);
-        }
+
+        return shardInfo == null ? -1 : shardInfo.getShardTotal();
+    }
+
+    public RestAction<String> getGateway()
+    {
+        return new RestAction<String>(this, Route.Misc.GATEWAY.compile())
+        {
+            @Override
+            protected void handleResponse(Response response, Request<String> request)
+            {
+                try
+                {
+                    if (response.isOk())
+                        request.onSuccess(response.getObject().getString("url"));
+                    else
+                        request.onFailure(new Exception("Failed to get gateway url"));
+                }
+                catch (Exception e)
+                {
+                    request.onFailure(e);
+                }
+            }
+        };
+    }
+
+
+    // This method also checks for a valid bot token as it is required to get the recommended shard count.
+    public RestAction<Pair<String, Integer>> getGatewayBot() throws LoginException
+    {
+        AccountTypeException.check(accountType, AccountType.BOT);
+        return new RestAction<Pair<String, Integer>>(this, Route.Misc.GATEWAY_BOT.compile())
+        {
+            @Override
+            protected void handleResponse(Response response, Request<Pair<String, Integer>> request)
+            {
+                try
+                {
+                    if (response.isOk())
+                    {
+                        JSONObject object = response.getObject();
+
+                        String url = object.getString("url");
+                        int shards = object.getInt("shards");
+
+                        request.onSuccess(Pair.of(url, shards));
+                    }
+                    else if (response.isRateLimit())
+                    {
+                        request.onFailure(new RateLimitedException(request.getRoute(), response.retryAfter));
+                    }
+                    else if (response.code == 401)
+                    {
+                        verifyToken(true);
+                    }
+                    else
+                    {
+                        request.onFailure(new LoginException("When verifying the authenticity of the provided token, Discord returned an unknown response:\n" +
+                            response.toString()));
+                    }
+                }
+                catch (Exception e)
+                {
+                    request.onFailure(e);
+                }
+            }
+        };
     }
 
     public void setStatus(Status status)
     {
+        //noinspection SynchronizeOnNonFinalField
         synchronized (this.status)
         {
             Status oldStatus = this.status;
@@ -156,6 +234,13 @@ public class JDAImpl implements JDA
 
     public void verifyToken() throws LoginException, RateLimitedException
     {
+        this.verifyToken(false);
+    }
+
+    // @param alreadyFailed If has already been a failed attempt with the current configuration
+    public void verifyToken(boolean alreadyFailed) throws LoginException, RateLimitedException
+    {
+
         RestAction<JSONObject> login = new RestAction<JSONObject>(this, Route.Self.GET_SELF.compile())
         {
             @Override
@@ -174,70 +259,47 @@ public class JDAImpl implements JDA
         };
 
         JSONObject userResponse;
-        try
-        {
-            userResponse = login.complete(false);
-        }
-        catch (RuntimeException e)
-        {
-            //We check if the LoginException is masked inside of a ExecutionException which is masked inside of the RuntimeException
-            Throwable ex = e.getCause() != null ? e.getCause().getCause() : null;
-            if (ex instanceof LoginException)
-                throw (LoginException) ex;
-            else
-                throw e;
-        }
 
-        if (userResponse != null)
+        if (!alreadyFailed)
         {
-            verifyToken(userResponse);
-        }
-        else
-        {
-            //If we received a null return for userResponse, then that means we hit a 401.
-            // 401 occurs we attempt to access the users/@me endpoint with the wrong token prefix.
-            // e.g: If we use a Client token and prefix it with "Bot ", or use a bot token and don't prefix it.
-            // It also occurs when we attempt to access the endpoint with an invalid token.
-            //The code below already knows that something is wrong with the token. We want to determine if it is invalid
-            // or if the developer attempted to login with a token using the wrong AccountType.
-
-            //If we attempted to login as a Bot, remove the "Bot " prefix and set the Requester to be a client.
-            if (getAccountType() == AccountType.BOT)
-            {
-                token = token.replace("Bot ", "");
-                requester = new Requester(this, AccountType.CLIENT);
-            }
-            else    //If we attempted to login as a Client, prepend the "Bot " prefix and set the Requester to be a Bot
-            {
-                token = "Bot " + token;
-                requester = new Requester(this, AccountType.BOT);
-            }
-
-            try
-            {
-                //Now that we have reversed the AccountTypes, attempt to get User info again.
-                userResponse = login.complete(false);
-            }
-            catch (RuntimeException e)
-            {
-                //We check if the LoginException is masked inside of a ExecutionException which is masked inside of the RuntimeException
-                Throwable ex = e.getCause() != null ? e.getCause().getCause() : null;
-                if (ex instanceof LoginException)
-                    throw (LoginException) ex;
-                else
-                    throw e;
-            }
-
-            //If the response isn't null (thus it didn't 401) send it to the secondary verify method to determine
-            // which account type the developer wrongly attempted to login as
+            userResponse = checkToken(login);
             if (userResponse != null)
-                verifyToken(userResponse);
-            else    //We 401'd again. This is an invalid token
-                throw new LoginException("The provided token is invalid!");
+            {
+                verifyAccountType(userResponse);
+                return;
+            }
         }
+
+        //If we received a null return for userResponse, then that means we hit a 401.
+        // 401 occurs when we attempt to access the users/@me endpoint with the wrong token prefix.
+        // e.g: If we use a Client token and prefix it with "Bot ", or use a bot token and don't prefix it.
+        // It also occurs when we attempt to access the endpoint with an invalid token.
+        //The code below already knows that something is wrong with the token. We want to determine if it is invalid
+        // or if the developer attempted to login with a token using the wrong AccountType.
+
+        //If we attempted to login as a Bot, remove the "Bot " prefix and set the Requester to be a client.
+        if (getAccountType() == AccountType.BOT)
+        {
+            token = token.substring("Bot ".length());
+            requester = new Requester(this, AccountType.CLIENT, null);
+        }
+        else    //If we attempted to login as a Client, prepend the "Bot " prefix and set the Requester to be a Bot
+        {
+            token = "Bot " + token;
+            requester = new Requester(this, AccountType.BOT, null);
+        }
+
+        userResponse = checkToken(login);
+
+        //If the response isn't null (thus it didn't 401) send it to the secondary verify method to determine
+        // which account type the developer wrongly attempted to login as
+        if (userResponse != null)
+            verifyAccountType(userResponse);
+        else    //We 401'd again. This is an invalid token
+            throw new LoginException("The provided token is invalid!");
     }
 
-    private void verifyToken(JSONObject userResponse)
+    private void verifyAccountType(JSONObject userResponse)
     {
         if (getAccountType() == AccountType.BOT)
         {
@@ -249,6 +311,25 @@ public class JDAImpl implements JDA
             if (userResponse.has("bot") && userResponse.getBoolean("bot"))
                 throw new AccountTypeException(AccountType.CLIENT, "Attempted to login as a CLIENT with a BOT token!");
         }
+    }
+
+    private JSONObject checkToken(RestAction<JSONObject> login) throws RateLimitedException, LoginException
+    {
+        JSONObject userResponse;
+        try
+        {
+            userResponse = login.complete(false);
+        }
+        catch (RuntimeException e)
+        {
+            //We check if the LoginException is masked inside of a ExecutionException which is masked inside of the RuntimeException
+            Throwable ex = e.getCause() instanceof ExecutionException ? e.getCause().getCause() : null;
+            if (ex instanceof LoginException)
+                throw new LoginException(ex.getMessage());
+            else
+                throw e;
+        }
+        return userResponse;
     }
 
     @Override
@@ -277,6 +358,12 @@ public class JDAImpl implements JDA
         {
             client.setAutoReconnect(autoReconnect);
         }
+    }
+
+    @Override
+    public void setRequestTimeoutRetry(boolean retryOnTimeout)
+    {
+        requester.setRetryOnTimeout(retryOnTimeout);
     }
 
     @Override
@@ -310,24 +397,6 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public List<User> getUsers()
-    {
-        return Collections.unmodifiableList(new ArrayList<>(users.valueCollection()));
-    }
-
-    @Override
-    public User getUserById(String id)
-    {
-        return users.get(MiscUtil.parseSnowflake(id));
-    }
-
-    @Override
-    public User getUserById(long id)
-    {
-        return users.get(id);
-    }
-
-    @Override
     public List<Guild> getMutualGuilds(User... users)
     {
         Checks.notNull(users, "users");
@@ -348,16 +417,6 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public List<User> getUsersByName(String name, boolean ignoreCase)
-    {
-        return users.valueCollection().stream().filter(u ->
-            ignoreCase
-            ? name.equalsIgnoreCase(u.getName())
-            : name.equals(u.getName()))
-        .collect(Collectors.toList());
-    }
-
-    @Override
     public RestAction<User> retrieveUserById(String id)
     {
         return retrieveUserById(MiscUtil.parseSnowflake(id));
@@ -366,8 +425,7 @@ public class JDAImpl implements JDA
     @Override
     public RestAction<User> retrieveUserById(long id)
     {
-        if (accountType != AccountType.BOT)
-            throw new AccountTypeException(AccountType.BOT);
+        AccountTypeException.check(accountType, AccountType.BOT);
 
         // check cache
         User user = this.getUserById(id);
@@ -392,185 +450,62 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public List<Guild> getGuilds()
+    public CacheView<AudioManager> getAudioManagerCache()
     {
-        return Collections.unmodifiableList(new ArrayList<>(guilds.valueCollection()));
+        return audioManagers;
     }
 
     @Override
-    public Guild getGuildById(String id)
+    public SnowflakeCacheView<Guild> getGuildCache()
     {
-        return guilds.get(MiscUtil.parseSnowflake(id));
+        return guildCache;
     }
 
     @Override
-    public Guild getGuildById(long id)
+    public SnowflakeCacheView<Role> getRoleCache()
     {
-        return guilds.get(id);
+        return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getRoleCache));
     }
 
     @Override
-    public List<Guild> getGuildsByName(String name, boolean ignoreCase)
+    public SnowflakeCacheView<Emote> getEmoteCache()
     {
-        return guilds.valueCollection().stream().filter(g ->
-                ignoreCase
-                        ? name.equalsIgnoreCase(g.getName())
-                        : name.equals(g.getName()))
-                .collect(Collectors.toList());
+        return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getEmoteCache));
     }
 
     @Override
-    public List<Role> getRoles()
+    public SnowflakeCacheView<Category> getCategoryCache()
     {
-        return guilds.valueCollection().stream()
-                .flatMap(guild -> guild.getRoles().stream())
-                .collect(Collectors.toList());
+        return categories;
     }
 
     @Override
-    public Role getRoleById(String id)
+    public SnowflakeCacheView<TextChannel> getTextChannelCache()
     {
-        return getRoleById(MiscUtil.parseSnowflake(id));
+        return textChannelCache;
     }
 
     @Override
-    public Role getRoleById(long id)
+    public SnowflakeCacheView<VoiceChannel> getVoiceChannelCache()
     {
-        for (Guild guild : guilds.valueCollection())
-        {
-            Role r = guild.getRoleById(id);
-            if (r != null)
-                return r;
-        }
-        return null;
+        return voiceChannelCache;
     }
 
     @Override
-    public List<Role> getRolesByName(String name, boolean ignoreCase)
+    public SnowflakeCacheView<PrivateChannel> getPrivateChannelCache()
     {
-        return guilds.valueCollection().stream()
-                .flatMap(guild -> guild.getRolesByName(name, ignoreCase).stream())
-                .collect(Collectors.toList());
+        return privateChannelCache;
     }
 
     @Override
-    public List<TextChannel> getTextChannels()
+    public SnowflakeCacheView<User> getUserCache()
     {
-        return Collections.unmodifiableList(new ArrayList<>(textChannels.valueCollection()));
-    }
-
-    @Override
-    public TextChannel getTextChannelById(String id)
-    {
-        return textChannels.get(MiscUtil.parseSnowflake(id));
-    }
-
-    @Override
-    public TextChannel getTextChannelById(long id)
-    {
-        return textChannels.get(id);
-    }
-
-    @Override
-    public List<TextChannel> getTextChannelsByName(String name, boolean ignoreCase)
-    {
-        return textChannels.valueCollection().stream().filter(tc ->
-                ignoreCase
-                        ? name.equalsIgnoreCase(tc.getName())
-                        : name.equals(tc.getName()))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<VoiceChannel> getVoiceChannels()
-    {
-        return Collections.unmodifiableList(new ArrayList<>(voiceChannels.valueCollection()));
-    }
-
-    @Override
-    public VoiceChannel getVoiceChannelById(String id)
-    {
-        return voiceChannels.get(MiscUtil.parseSnowflake(id));
-    }
-
-    @Override
-    public VoiceChannel getVoiceChannelById(long id)
-    {
-        return voiceChannels.get(id);
-    }
-
-    @Override
-    public List<VoiceChannel> getVoiceChannelByName(String name, boolean ignoreCase)
-    {
-        return voiceChannels.valueCollection().stream().filter(vc ->
-                ignoreCase
-                        ? name.equalsIgnoreCase(vc.getName())
-                        : name.equals(vc.getName()))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<PrivateChannel> getPrivateChannels()
-    {
-        return Collections.unmodifiableList(new ArrayList<>(privateChannels.valueCollection()));
-    }
-
-    @Override
-    public PrivateChannel getPrivateChannelById(String id)
-    {
-        return privateChannels.get(MiscUtil.parseSnowflake(id));
-    }
-
-    @Override
-    public PrivateChannel getPrivateChannelById(long id)
-    {
-        return privateChannels.get(id);
-    }
-
-    @Override
-    public List<Emote> getEmotes()
-    {
-        return guilds.valueCollection().stream()
-                .flatMap(guild -> guild.getEmotes().stream())
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<Emote> getEmotesByName(String name, boolean ignoreCase)
-    {
-        return guilds.valueCollection().stream()
-                .flatMap(guild -> guild.getEmotesByName(name, ignoreCase).stream())
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public Emote getEmoteById(String id)
-    {
-        return getEmoteById(MiscUtil.parseSnowflake(id));
-    }
-
-    @Override
-    public Emote getEmoteById(long id)
-    {
-        for (Guild guild : getGuilds())
-        {
-            Emote emote = guild.getEmoteById(id);
-            if (emote != null)
-                return emote;
-        }
-        return null;
+        return userCache;
     }
 
     public SelfUser getSelfUser()
     {
         return selfUser;
-    }
-
-    @Override
-    @Deprecated
-    public void shutdown(boolean free)
-    {
-        shutdown();
     }
 
     @Override
@@ -589,13 +524,13 @@ public class JDAImpl implements JDA
             return;
 
         setStatus(Status.SHUTTING_DOWN);
-        audioManagers.valueCollection().forEach(AudioManager::closeAudioConnection);
+        audioManagers.forEach(AudioManager::closeAudioConnection);
+        audioManagers.clear();
 
         if (audioKeepAlivePool != null)
             audioKeepAlivePool.shutdownNow();
 
-        getClient().setAutoReconnect(false);
-        getClient().close();
+        getClient().shutdown();
 
         final long time = 5L;
         final TimeUnit unit = TimeUnit.SECONDS;
@@ -616,20 +551,16 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public JDAClient asClient()
+    public JDAClientImpl asClient()
     {
-        if (getAccountType() != AccountType.CLIENT)
-            throw new AccountTypeException(AccountType.CLIENT);
-
+        AccountTypeException.check(getAccountType(), AccountType.CLIENT);
         return jdaClient;
     }
 
     @Override
-    public JDABot asBot()
+    public JDABotImpl asBot()
     {
-        if (getAccountType() != AccountType.BOT)
-            throw new AccountTypeException(AccountType.BOT);
-
+        AccountTypeException.check(getAccountType(), AccountType.BOT);
         return jdaBot;
     }
 
@@ -657,11 +588,11 @@ public class JDAImpl implements JDA
         return presence;
     }
 
-    @Override
-    public AuditableRestAction<Void> installAuxiliaryCable(int port) throws UnsupportedOperationException
-    {
-        return new AuditableRestAction.FailedRestAction<>(new UnsupportedOperationException("nice try but next time think first :)"));
-    }
+    //@Override
+    //public AuditableRestAction<Void> installAuxiliaryCable(int port) throws UnsupportedOperationException
+    //{
+    //    return new AuditableRestAction.FailedRestAction<>(new UnsupportedOperationException("nice try but next time think first :)"));
+    //}
 
     @Override
     public AccountType getAccountType()
@@ -678,6 +609,8 @@ public class JDAImpl implements JDA
     @Override
     public void addEventListener(Object... listeners)
     {
+        Checks.noneNull(listeners, "listeners");
+
         for (Object listener: listeners)
             eventManager.register(listener);
     }
@@ -685,6 +618,8 @@ public class JDAImpl implements JDA
     @Override
     public void removeEventListener(Object... listeners)
     {
+        Checks.noneNull(listeners, "listeners");
+
         for (Object listener: listeners)
             eventManager.unregister(listener);
     }
@@ -693,6 +628,22 @@ public class JDAImpl implements JDA
     public List<Object> getRegisteredListeners()
     {
         return Collections.unmodifiableList(eventManager.getRegisteredListeners());
+    }
+
+    @Override
+    public GuildAction createGuild(String name)
+    {
+        switch (accountType)
+        {
+            case BOT:
+                if (guildCache.size() >= 10)
+                    throw new IllegalStateException("Cannot create a Guild with a Bot in more than 10 guilds!");
+                break;
+            case CLIENT:
+                if (guildCache.size() >= 100)
+                    throw new IllegalStateException("Cannot be in more than 100 guilds with AccountType.CLIENT!");
+        }
+        return new GuildAction(this, name);
     }
 
     public EntityBuilder getEntityBuilder()
@@ -743,27 +694,32 @@ public class JDAImpl implements JDA
 
     public TLongObjectMap<User> getUserMap()
     {
-        return users;
+        return userCache.getMap();
     }
 
     public TLongObjectMap<Guild> getGuildMap()
     {
-        return guilds;
+        return guildCache.getMap();
+    }
+
+    public TLongObjectMap<Category> getCategoryMap()
+    {
+        return categories.getMap();
     }
 
     public TLongObjectMap<TextChannel> getTextChannelMap()
     {
-        return textChannels;
+        return textChannelCache.getMap();
     }
 
     public TLongObjectMap<VoiceChannel> getVoiceChannelMap()
     {
-        return voiceChannels;
+        return voiceChannelCache.getMap();
     }
 
     public TLongObjectMap<PrivateChannel> getPrivateChannelMap()
     {
-        return privateChannels;
+        return privateChannelCache.getMap();
     }
 
     public TLongObjectMap<User> getFakeUserMap()
@@ -776,9 +732,9 @@ public class JDAImpl implements JDA
         return fakePrivateChannels;
     }
 
-    public TLongObjectMap<AudioManagerImpl> getAudioManagerMap()
+    public TLongObjectMap<AudioManager> getAudioManagerMap()
     {
-        return audioManagers;
+        return audioManagers.getMap();
     }
 
     public void setSelfUser(SelfUser selfUser)
@@ -833,5 +789,10 @@ public class JDAImpl implements JDA
             }
         }
         return akap;
+    }
+
+    public String getGatewayUrl()
+    {
+        return gatewayUrl;
     }
 }

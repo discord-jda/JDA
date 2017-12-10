@@ -219,7 +219,7 @@ public class WidgetUtil
                     }
                     catch (IOException e)
                     {
-                        throw new RuntimeException(e);
+                        throw new IllegalStateException(e);
                     }
                 }
                 case 400: // not valid snowflake
@@ -241,12 +241,12 @@ public class WidgetUtil
                     throw new RateLimitedException(WIDGET_URL, retryAfter);
                 }
                 default:
-                    throw new RuntimeException("An unknown status was returned: " + code + " " + response.message());
+                    throw new IllegalStateException("An unknown status was returned: " + code + " " + response.message());
             }
         }
         catch (IOException e)
         {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
     
@@ -551,7 +551,7 @@ public class WidgetUtil
                 this.status = OnlineStatus.fromKey(json.getString("status"));
                 this.game = json.isNull("game") ? null : 
                             json.getJSONObject("game").isNull("name") || json.getJSONObject("game").getString("name").isEmpty() ? null :
-                            Game.of(json.getJSONObject("game").getString("name"));
+                            Game.playing(json.getJSONObject("game").getString("name"));
             }
             
             private void setVoiceState(VoiceState voiceState)

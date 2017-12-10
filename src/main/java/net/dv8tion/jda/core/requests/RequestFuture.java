@@ -19,6 +19,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Future;
 
+/**
+ * Future allowing for use of continuations.
+ *
+ * @param <T>
+ *        The completion type for this Future
+ */
 public interface RequestFuture<T> extends Future<T>, CompletionStage<T>
 {
     /**
@@ -27,5 +33,5 @@ public interface RequestFuture<T> extends Future<T>, CompletionStage<T>
      * <p>{@inheritDoc}
      */
     @Override
-    public CompletableFuture<T> toCompletableFuture();
+    CompletableFuture<T> toCompletableFuture();
 }

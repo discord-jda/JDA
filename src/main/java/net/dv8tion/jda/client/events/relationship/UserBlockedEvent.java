@@ -29,6 +29,6 @@ public class UserBlockedEvent extends GenericRelationshipAddEvent
 
     public BlockedUser getBlockedUser()
     {
-        return (BlockedUser) getBlockedUser();
+        return (BlockedUser) getRelationship();
     }
 }

@@ -90,9 +90,11 @@ public class RoleManager
      * @param  name
      *         The new name for the selected {@link net.dv8tion.jda.core.entities.Role Role}
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES}
-     *         or does not meet the required hierarchy position to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
+     *         If the currently logged in account does not meet the required hierarchy position
+     *         to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
      * @throws IllegalArgumentException
      *         If the provided name is {@code null} or not between 1-32 characters long
      *
@@ -118,10 +120,12 @@ public class RoleManager
      * @param  perms
      *         The new raw permission value for the selected {@link net.dv8tion.jda.core.entities.Role Role}
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES}
-     *         <br>or does not meet the required hierarchy position to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
      *         <br>or does not have permission to apply one of the specified permissions
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
+     *         If the currently logged in account does not meet the required hierarchy position
+     *         to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link RoleManagerUpdatable#update() #update()}
@@ -147,10 +151,12 @@ public class RoleManager
      * @param  permissions
      *         The new permission for the selected {@link net.dv8tion.jda.core.entities.Role Role}
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES}
-     *         <br>or does not meet the required hierarchy position to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
      *         <br>or does not have permission to apply one of the specified permissions
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
+     *         If the currently logged in account does not meet the required hierarchy position
+     *         to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
      * @throws java.lang.IllegalArgumentException
      *         If any of the provided values is {@code null}
      *
@@ -178,10 +184,12 @@ public class RoleManager
      * @param  permissions
      *         The new permission for the selected {@link net.dv8tion.jda.core.entities.Role Role}
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES}
-     *         <br>or does not meet the required hierarchy position to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
      *         <br>or does not have permission to apply one of the specified permissions
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
+     *         If the currently logged in account does not meet the required hierarchy position
+     *         to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
      * @throws java.lang.IllegalArgumentException
      *         If any of the provided values is {@code null}
      *
@@ -206,9 +214,11 @@ public class RoleManager
      * @param  color
      *         The new color for the selected {@link net.dv8tion.jda.core.entities.Role Role}
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES}
-     *         or does not meet the required hierarchy position to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
+     *         If the currently logged in account does not meet the required hierarchy position
+     *         to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link RoleManagerUpdatable#update() #update()}
@@ -229,9 +239,11 @@ public class RoleManager
      * @param  hoisted
      *         Whether the selected {@link net.dv8tion.jda.core.entities.Role Role} should be hoisted
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES}
-     *         or does not meet the required hierarchy position to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
+     *         If the currently logged in account does not meet the required hierarchy position
+     *         to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link RoleManagerUpdatable#update() #update()}
@@ -252,9 +264,11 @@ public class RoleManager
      * @param  mentionable
      *         Whether the selected {@link net.dv8tion.jda.core.entities.Role Role} should be mentionable
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES}
-     *         or does not meet the required hierarchy position to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
+     *         If the currently logged in account does not meet the required hierarchy position
+     *         to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link RoleManagerUpdatable#update() #update()}
@@ -278,10 +292,12 @@ public class RoleManager
      * @param  perms
      *         The permission to give to the selected {@link net.dv8tion.jda.core.entities.Role Role}
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES}
-     *         <br>or does not meet the required hierarchy position to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
      *         <br>or does not have permission to apply one of the specified permissions
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
+     *         If the currently logged in account does not meet the required hierarchy position
+     *         to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link RoleManagerUpdatable#update() #update()}
@@ -307,10 +323,12 @@ public class RoleManager
      * @param  perms
      *         The permission to give to the selected {@link net.dv8tion.jda.core.entities.Role Role}
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES}
-     *         <br>or does not meet the required hierarchy position to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
      *         <br>or does not have permission to apply one of the specified permissions
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
+     *         If the currently logged in account does not meet the required hierarchy position
+     *         to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link RoleManagerUpdatable#update() #update()}
@@ -336,10 +354,12 @@ public class RoleManager
      * @param  perms
      *         The permission to give to the selected {@link net.dv8tion.jda.core.entities.Role Role}
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES}
-     *         <br>or does not meet the required hierarchy position to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
      *         <br>or does not have permission to revoke one of the specified permissions
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
+     *         If the currently logged in account does not meet the required hierarchy position
+     *         to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link RoleManagerUpdatable#update() #update()}
@@ -365,10 +385,12 @@ public class RoleManager
      * @param  perms
      *         The permission to give to the selected {@link net.dv8tion.jda.core.entities.Role Role}
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES}
-     *         <br>or does not meet the required hierarchy position to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
      *         <br>or does not have permission to revoke one of the specified permissions
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
+     *         If the currently logged in account does not meet the required hierarchy position
+     *         to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link RoleManagerUpdatable#update() #update()}

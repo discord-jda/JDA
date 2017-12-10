@@ -21,12 +21,14 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
-import net.dv8tion.jda.core.utils.SimpleLog;
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
-import okhttp3.RequestBody;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.JDALogger;
+import okhttp3.RequestBody;
+import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+
 import java.util.concurrent.*;
 import java.util.function.Consumer;
 
@@ -145,18 +147,18 @@ import java.util.function.Consumer;
  */
 public abstract class RestAction<T>
 {
-    public static final SimpleLog LOG = SimpleLog.getLog("RestAction");
+    public static final Logger LOG = JDALogger.getLog(RestAction.class);
 
     public static Consumer DEFAULT_SUCCESS = o -> {};
     public static Consumer<Throwable> DEFAULT_FAILURE = t ->
     {
-        if (LOG.getEffectiveLevel().getPriority() <= SimpleLog.Level.DEBUG.getPriority())
+        if (LOG.isDebugEnabled())
         {
-            LOG.log(t);
+            LOG.error("RestAction queue returned failure", t);
         }
         else
         {
-            LOG.fatal("RestAction queue returned failure: [" + t.getClass().getSimpleName() + "] " + t.getMessage());
+            LOG.error("RestAction queue returned failure: [{}] {}", t.getClass().getSimpleName(), t.getMessage());
         }
     };
 
@@ -337,7 +339,7 @@ public abstract class RestAction<T>
             //This is so beyond impossible, but on the off chance that the laws of nature are rewritten
             // after the writing of this code, I'm placing this here.
             //Better safe than sorry?
-            throw new RuntimeException(ignored);
+            throw new AssertionError(ignored);
         }
     }
 
@@ -720,46 +722,5 @@ public abstract class RestAction<T>
 
         @Override
         protected void handleResponse(Response response, Request<T> request) { }
-    }
-
-    /**
-     * Specialized form of {@link net.dv8tion.jda.core.requests.RestAction} that is used to provide information that
-     * an error has occurred while attempting to execute a request.
-     * <br>Basically: Allows you to provide an exception directly to the failure consumer.
-     *
-     * @param <T>
-     *        The generic response type for this RestAction
-     */
-    public static class FailedRestAction<T> extends RestAction<T>
-    {
-        private final Exception exception;
-
-        public FailedRestAction(Exception exception)
-        {
-            super(null, null);
-            this.exception = exception;
-        }
-
-        @Override
-        public void queue(Consumer<T> success, Consumer<Throwable> failure)
-        {
-            if (failure != null)
-                failure.accept(exception);
-        }
-
-        @Override
-        public RequestFuture<T> submit(boolean shouldQueue)
-        {
-            return new RestFuture<>(exception);
-        }
-
-        @Override
-        public T complete(boolean shouldQueue)
-        {
-            throw new RuntimeException(exception);
-        }
-
-        @Override
-        protected void handleResponse(Response response, Request<T> request) {}
     }
 }

@@ -15,9 +15,9 @@
  */
 package net.dv8tion.jda.core.handle;
 
-import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
@@ -46,14 +46,17 @@ public class GuildUpdateHandler extends SocketHandler
         String name = content.getString("name");
         String iconId = !content.isNull("icon") ? content.getString("icon") : null;
         String splashId = !content.isNull("splash") ? content.getString("splash") : null;
-        Region region = Region.fromKey(content.getString("region"));
+        String region = content.getString("region");
         Guild.VerificationLevel verificationLevel = Guild.VerificationLevel.fromKey(content.getInt("verification_level"));
         Guild.NotificationLevel notificationLevel = Guild.NotificationLevel.fromKey(content.getInt("default_message_notifications"));
         Guild.MFALevel mfaLevel = Guild.MFALevel.fromKey(content.getInt("mfa_level"));
         Guild.ExplicitContentLevel explicitContentLevel = Guild.ExplicitContentLevel.fromKey(content.getInt("explicit_content_filter"));
         Guild.Timeout afkTimeout = Guild.Timeout.fromKey(content.getInt("afk_timeout"));
         VoiceChannel afkChannel = !content.isNull("afk_channel_id")
-                ? guild.getVoiceChannelMap().get(content.getLong("afk_channel_id"))
+                ? guild.getVoiceChannelsMap().get(content.getLong("afk_channel_id"))
+                : null;
+        TextChannel systemChannel = !content.isNull("system_channel_id")
+                ? guild.getTextChannelsMap().get(content.getLong("system_channel_id"))
                 : null;
 
         if (!Objects.equals(owner, guild.getOwner()))
@@ -92,14 +95,14 @@ public class GuildUpdateHandler extends SocketHandler
                             api, responseNumber,
                             guild, oldSplashId));
         }
-        if (!Objects.equals(region, guild.getRegion()))
+        if (!Objects.equals(region, guild.getRegionRaw()))
         {
-            Region oldRegion = guild.getRegion();
+            String oldRegion = guild.getRegionRaw();
             guild.setRegion(region);
             api.getEventManager().handle(
                     new GuildUpdateRegionEvent(
                             api, responseNumber,
-                            guild, oldRegion));
+                            guild, oldRegion, region));
         }
         if (!Objects.equals(verificationLevel, guild.getVerificationLevel()))
         {
@@ -154,6 +157,15 @@ public class GuildUpdateHandler extends SocketHandler
                     new GuildUpdateAfkChannelEvent(
                             api, responseNumber,
                             guild, oldAfkChannel));
+        }
+        if (!Objects.equals(systemChannel, guild.getSystemChannel()))
+        {
+            TextChannel oldSystemChannel = guild.getSystemChannel();
+            guild.setSystemChannel(systemChannel);
+            api.getEventManager().handle(
+                    new GuildUpdateSystemChannelEvent(
+                            api, responseNumber,
+                            guild, oldSystemChannel));
         }
         return null;
     }

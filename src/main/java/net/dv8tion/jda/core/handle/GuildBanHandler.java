@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.guild.GuildBanEvent;
 import net.dv8tion.jda.core.events.guild.GuildUnbanEvent;
+import net.dv8tion.jda.core.utils.JDALogger;
 import org.json.JSONObject;
 
 public class GuildBanHandler extends SocketHandler
@@ -43,11 +44,8 @@ public class GuildBanHandler extends SocketHandler
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
         if (guild == null)
         {
-            api.getEventCache().cache(EventCache.Type.GUILD, id, () ->
-            {
-                handle(responseNumber, allContent);
-            });
-            EventCache.LOG.debug("Received Guild Member " + (banned ? "Ban" : "Unban") + " event for a Guild not yet cached.");
+            api.getEventCache().cache(EventCache.Type.GUILD, id, () -> handle(responseNumber, allContent));
+            EventCache.LOG.debug("Received Guild Member {} event for a Guild not yet cached.", JDALogger.getLazyString(() -> banned ? "Ban" : "Unban"));
             return null;
         }
 

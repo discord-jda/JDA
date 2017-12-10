@@ -51,7 +51,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
             {
                 handle(responseNumber, allContent);
             });
-            EventCache.LOG.debug("Got GuildMember update but JDA currently does not have the Guild cached. " + content.toString());
+            EventCache.LOG.debug("Got GuildMember update but JDA currently does not have the Guild cached. {}", content);
             return null;
         }
 
@@ -62,7 +62,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
             {
                 handle(responseNumber, allContent);
             });
-            EventCache.LOG.debug("Got GuildMember update but Member is not currently present in Guild. " + content.toString());
+            EventCache.LOG.debug("Got GuildMember update but Member is not currently present in Guild. {}", content);
             return null;
         }
 

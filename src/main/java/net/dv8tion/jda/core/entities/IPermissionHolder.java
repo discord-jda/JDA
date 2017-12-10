@@ -26,7 +26,8 @@ import java.util.List;
  *
  * @since 3.0
  */
-public interface IPermissionHolder {
+public interface IPermissionHolder
+{
 
     /**
      * The Guild to which this PermissionHolder is related

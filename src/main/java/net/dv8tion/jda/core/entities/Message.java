@@ -23,6 +23,8 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import okhttp3.Request;
 import okhttp3.Response;
+
+import javax.annotation.CheckReturnValue;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -30,7 +32,6 @@ import java.nio.file.Paths;
 import java.time.OffsetDateTime;
 import java.util.Formattable;
 import java.util.List;
-import javax.annotation.CheckReturnValue;
 
 /**
  * Represents a Text message received from Discord.
@@ -62,7 +63,16 @@ import javax.annotation.CheckReturnValue;
  */
 public interface Message extends ISnowflake, Formattable
 {
-    int MAX_FILE_SIZE = 8 << 20; // 8mb
+    /**
+     * Useful constant for the max allowed file size for message attachments on normal accounts. Value: {@value #MAX_FILE_SIZE} Bytes (8 MiB)
+     */
+    int MAX_FILE_SIZE = 8 << 20; // 8 MiB
+
+    /**
+     * Useful constant for the max allowed file size for message attachments on nitro accounts. Value: {@value #MAX_FILE_SIZE_NITRO} Bytes (50 MiB)
+     */
+    int MAX_FILE_SIZE_NITRO = 50 << 20; // 50 MiB
+
     /**
      * A immutable list of all mentioned users. if no user was mentioned, this list is empty.
      * <br>In {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel's}, this always returns an empty List
@@ -257,6 +267,15 @@ public interface Message extends ISnowflake, Formattable
      * @return The TextChannel this message was sent in, or {@code null} if it was not sent from a TextChannel.
      */
     TextChannel getTextChannel();
+
+    /**
+     * The {@link net.dv8tion.jda.core.entities.Category Category} this
+     * message was sent in. This will always be {@code null} for DMs and Groups.
+     * <br>Equivalent to {@code getTextChannel().getParent()}.
+     *
+     * @return {@link net.dv8tion.jda.core.entities.Category Category} for this message
+     */
+    Category getCategory();
 
     /**
      * Returns the {@link net.dv8tion.jda.core.entities.Guild Guild} that this message was sent in.
@@ -475,7 +494,7 @@ public interface Message extends ISnowflake, Formattable
      *         The pin was attempted after the Message had been deleted.</li>
      * </ul>
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this Message was not sent by the currently logged in account, the Message was sent in a
      *         {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}, and the currently logged in account
      *         does not have {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in
@@ -525,7 +544,7 @@ public interface Message extends ISnowflake, Formattable
      *         The pin request was attempted after the Message had been deleted.</li>
      * </ul>
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this Message is from a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and:
      *         <br><ul>
      *             <li>Missing {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}.
@@ -561,7 +580,7 @@ public interface Message extends ISnowflake, Formattable
      *         The unpin request was attempted after the Message had been deleted.</li>
      * </ul>
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this Message is from a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and:
      *         <br><ul>
      *             <li>Missing {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}.
@@ -605,7 +624,7 @@ public interface Message extends ISnowflake, Formattable
      * @param emote
      *        The {@link net.dv8tion.jda.core.entities.Emote Emote} to add as a reaction to this Message.
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      *         and the logged in account does not have
      *         <ul>
@@ -655,7 +674,7 @@ public interface Message extends ISnowflake, Formattable
      * @param unicode
      *        The UTF8 emoji to add as a reaction to this Message.
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      *         and the logged in account does not have
      *         <ul>
@@ -694,7 +713,7 @@ public interface Message extends ISnowflake, Formattable
      *         The clear-reactions request was attempted after the Message had been deleted.</li>
      * </ul>
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      *         and the currently logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in the channel.
@@ -806,7 +825,7 @@ public interface Message extends ISnowflake, Formattable
             }
             catch (Exception e)
             {
-                JDAImpl.LOG.log(e);
+                JDAImpl.LOG.error("Error while downloading an attachment", e);
             }
             finally
             {

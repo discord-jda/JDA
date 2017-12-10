@@ -58,10 +58,10 @@ public class RelationshipRemoveHandler extends SocketHandler
         if (relationship == null)
         {
             api.getEventCache().cache(EventCache.Type.RELATIONSHIP, userId, () -> handle(responseNumber, allContent));
-            EventCache.LOG.debug("Received a RELATIONSHIP_REMOVE for a relationship that was not yet cached! JSON: " + content);
+            EventCache.LOG.debug("Received a RELATIONSHIP_REMOVE for a relationship that was not yet cached! JSON: {}", content);
             return null;
         }
-        ((JDAClientImpl) api.asClient()).getRelationshipMap().remove(userId);
+        api.asClient().getRelationshipMap().remove(userId);
 
         if (relationship.getType() == RelationshipType.FRIEND)
         {
@@ -92,6 +92,7 @@ public class RelationshipRemoveHandler extends SocketHandler
                         }
                     }
                 }
+                api.getEventCache().clear(EventCache.Type.USER, userId);
             }
         }
         else
@@ -135,9 +136,10 @@ public class RelationshipRemoveHandler extends SocketHandler
                                 relationship));
                 break;
             default:
-                WebSocketClient.LOG.warn("Received a RELATIONSHIP_REMOVE with an unknown RelationshipType! JSON: " + content);
+                WebSocketClient.LOG.warn("Received a RELATIONSHIP_REMOVE with an unknown RelationshipType! JSON: {}", content);
                 return null;
         }
+        api.getEventCache().clear(EventCache.Type.RELATIONSHIP, userId);
         return null;
     }
 }

@@ -53,7 +53,7 @@ public class CallUpdateHandler extends SocketHandler
         if (channel == null)
         {
             api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
-            EventCache.LOG.debug("Received a CALL_UPDATE for a Group/PrivateChannel that has not yet been cached. JSON: " + content);
+            EventCache.LOG.debug("Received a CALL_UPDATE for a Group/PrivateChannel that has not yet been cached. JSON: {}", content);
             return null;
         }
 
@@ -61,7 +61,7 @@ public class CallUpdateHandler extends SocketHandler
         if (call == null)
         {
             api.getEventCache().cache(EventCache.Type.CALL, channelId, () -> handle(responseNumber, allContent));
-            EventCache.LOG.debug("Received a CALL_UPDATE for a Call that has not yet been cached. JSON: " + content);
+            EventCache.LOG.debug("Received a CALL_UPDATE for a Call that has not yet been cached. JSON: {}", content);
             return null;
         }
 

@@ -17,7 +17,8 @@ package net.dv8tion.jda.core.handle;
 
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
-import net.dv8tion.jda.core.utils.SimpleLog;
+import net.dv8tion.jda.core.utils.JDALogger;
+import org.slf4j.Logger;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -26,7 +27,7 @@ import java.util.Map;
 
 public class EventCache
 {
-    public static final SimpleLog LOG = SimpleLog.getLog("EventCache");
+    public static final Logger LOG = JDALogger.getLog(EventCache.class);
     private final Map<Type, TLongObjectMap<List<Runnable>>> eventCache = new HashMap<>();
 
     public void cache(Type type, long triggerId, Runnable handler)
@@ -59,7 +60,8 @@ public class EventCache
 
         if (items != null && !items.isEmpty())
         {
-            EventCache.LOG.debug("Replaying " + items.size() + " events from the EventCache for a " + type + " with id: " + triggerId);
+            EventCache.LOG.debug("Replaying {} events from the EventCache for a {} with id: {}",
+                items.size(), type, triggerId);
             List<Runnable> itemsCopy = new LinkedList<>(items);
             items.clear();
             for (Runnable item : itemsCopy)
@@ -80,6 +82,16 @@ public class EventCache
     public void clear()
     {
         eventCache.clear();
+    }
+
+    public void clear(Type type, long id)
+    {
+        try
+        {
+            List<Runnable> events = eventCache.get(type).remove(id);
+            LOG.debug("Clearing cache for type {} with ID {} (Size: {})", type, id, events.size());
+        }
+        catch (NullPointerException ignored) {}
     }
 
     public enum Type

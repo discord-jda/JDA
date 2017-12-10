@@ -18,14 +18,12 @@ package net.dv8tion.jda.core.entities.impl;
 
 import net.dv8tion.jda.client.managers.EmoteManager;
 import net.dv8tion.jda.client.managers.EmoteManagerUpdatable;
-import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.exceptions.AccountTypeException;
-import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
@@ -152,14 +150,12 @@ public class EmoteImpl implements Emote
     @Override
     public AuditableRestAction<Void> delete()
     {
-        if (getJDA().getAccountType() != AccountType.CLIENT)
-            throw new AccountTypeException(AccountType.CLIENT);
         if (isFake())
             throw new IllegalStateException("The emote you are trying to delete is not an actual emote we have access to (it is fake)!");
         if (managed)
             throw new UnsupportedOperationException("You cannot delete a managed emote!");
         if (!guild.getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
-            throw new PermissionException(Permission.MANAGE_EMOTES);
+            throw new InsufficientPermissionException(Permission.MANAGE_EMOTES);
 
         Route.CompiledRoute route = Route.Emotes.DELETE_EMOTE.compile(getGuild().getId(), getId());
         return new AuditableRestAction<Void>(getJDA(), route)

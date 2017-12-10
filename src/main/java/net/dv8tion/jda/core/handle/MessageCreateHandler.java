@@ -48,7 +48,7 @@ public class MessageCreateHandler extends SocketHandler
             case DEFAULT:
                 return handleDefaultMessage(content);
             default:
-                WebSocketClient.LOG.debug("JDA received a message of unknown type. Type: " + type + "  JSON: " + content);
+                WebSocketClient.LOG.debug("JDA received a message of unknown type. Type: {}  JSON: {}", type, content);
         }
         return null;
     }
@@ -120,7 +120,7 @@ public class MessageCreateHandler extends SocketHandler
                 break;
             }
             default:
-                WebSocketClient.LOG.warn("Received a MESSAGE_CREATE with a unknown MessageChannel ChannelType. JSON: " + content);
+                WebSocketClient.LOG.warn("Received a MESSAGE_CREATE with a unknown MessageChannel ChannelType. JSON: {}", content);
                 return null;
         }
 

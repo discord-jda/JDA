@@ -19,6 +19,7 @@ package net.dv8tion.jda.core.entities;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
@@ -94,10 +95,19 @@ public class MessageReaction
      * The amount of users that already reacted with this Reaction
      * <br><b>This is not updated, it is a {@code final int} per Reaction instance</b>
      *
+     * <p>This value is not available in events such as {@link net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent MessageReactionAddEvent}
+     * and {@link net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent MessageReactionRemoveEvent} in which case an
+     * {@link java.lang.IllegalStateException IllegalStateException} is thrown!
+     *
+     * @throws java.lang.IllegalStateException
+     *         If this MessageReaction is from an event which does not provide a count
+     *
      * @return The amount of users that reacted with this Reaction
      */
     public int getCount()
     {
+        if (count < 0)
+            throw new IllegalStateException("Cannot retrieve count for this MessageReaction!");
         return count;
     }
 
@@ -189,9 +199,24 @@ public class MessageReaction
      *
      * @return The final instance of this Reaction's Emote/Emoji
      */
-    public ReactionEmote getEmote()
+    public ReactionEmote getReactionEmote()
     {
         return emote;
+    }
+
+    /**
+     * The {@link net.dv8tion.jda.core.entities.MessageReaction.ReactionEmote ReactionEmote}
+     * of this Reaction
+     *
+     * @return The final instance of this Reaction's Emote/Emoji
+     *
+     * @deprecated
+     *         This will be replaced due to the new naming convention; Use {@link #getReactionEmote()} instead
+     */
+    @Deprecated
+    public ReactionEmote getEmote()
+    {
+        return getReactionEmote();
     }
 
     /**
@@ -322,7 +347,7 @@ public class MessageReaction
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided {@code user} is null.
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         if the provided User is not us and we do not have permission to
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE manage messages}
      *         in the channel this reaction was used in
@@ -341,7 +366,7 @@ public class MessageReaction
             {
                 Channel channel = (Channel) this.channel;
                 if (!channel.getGuild().getSelfMember().hasPermission(channel, Permission.MESSAGE_MANAGE))
-                    throw new PermissionException(Permission.MESSAGE_MANAGE);
+                    throw new InsufficientPermissionException(Permission.MESSAGE_MANAGE);
             }
             else
             {
@@ -433,6 +458,7 @@ public class MessageReaction
 
         /**
          * The name for this emote/emoji
+         * <br>For unicode emojis this will be the unicode of said emoji.
          *
          * @return The name for this emote/emoji
          */

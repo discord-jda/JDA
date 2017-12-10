@@ -58,8 +58,7 @@ public class WebhookAction extends AuditableRestAction<Webhook>
     public WebhookAction setName(String name)
     {
         Checks.notNull(name, "Webhook name");
-        if (name.length() < 2 || name.length() > 100)
-            throw new IllegalArgumentException("The webhook name must be in the range of 2-100!");
+        Checks.check(name.length() >= 2 && name.length() <= 100, "The webhook name must be in the range of 2-100!");
 
         this.name = name;
         return this;

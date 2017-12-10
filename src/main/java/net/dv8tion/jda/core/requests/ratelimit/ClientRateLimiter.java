@@ -87,7 +87,7 @@ public class ClientRateLimiter extends RateLimiter
                 }
                 catch (IOException e)
                 {
-                    throw new RuntimeException(e);
+                    throw new IllegalStateException(e);
                 }
             }
             else
@@ -211,8 +211,7 @@ public class ClientRateLimiter extends RateLimiter
                         }
                         catch (Throwable t)
                         {
-                            Requester.LOG.fatal("Requester system encountered an internal error");
-                            Requester.LOG.log(t);
+                            Requester.LOG.error("Error executing REST request", t);
                             it.remove();
                             if (request != null)
                                 request.onFailure(t);
@@ -238,8 +237,7 @@ public class ClientRateLimiter extends RateLimiter
             }
             catch (Throwable err)
             {
-                Requester.LOG.fatal("Requester system encountered an internal error from beyond the synchronized execution blocks. NOT GOOD!");
-                Requester.LOG.log(err);
+                Requester.LOG.error("There was some exception in the ClientRateLimiter", err);
                 if (err instanceof Error)
                 {
                     JDAImpl api = requester.getJDA();

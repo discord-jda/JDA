@@ -19,15 +19,18 @@ package net.dv8tion.jda.core.requests;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDAInfo;
+import net.dv8tion.jda.core.ShardedRateLimiter;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.ratelimit.BotRateLimiter;
 import net.dv8tion.jda.core.requests.ratelimit.ClientRateLimiter;
-import net.dv8tion.jda.core.utils.SimpleLog;
+import net.dv8tion.jda.core.utils.JDALogger;
 import okhttp3.*;
 import okhttp3.internal.http.HttpMethod;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.SocketTimeoutException;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
@@ -35,9 +38,9 @@ import java.util.zip.GZIPInputStream;
 
 public class Requester
 {
-    public static final SimpleLog LOG = SimpleLog.getLog("JDARequester");
+    public static final Logger LOG = JDALogger.getLog(Requester.class);
     public static final String DISCORD_API_PREFIX = String.format("https://discordapp.com/api/v%d/", JDAInfo.DISCORD_REST_VERSION);
-    public static String USER_AGENT = "JDA DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
+    public static final String USER_AGENT = "DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
     public static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");
     public static final RequestBody EMPTY_BODY = RequestBody.create(null, new byte[]{});
 
@@ -46,19 +49,21 @@ public class Requester
 
     private final OkHttpClient httpClient;
 
-    public Requester(JDA api)
+    private volatile boolean retryOnTimeout = false;
+
+    public Requester(JDA api, ShardedRateLimiter shardedRateLimiter)
     {
-        this(api, api.getAccountType());
+        this(api, api.getAccountType(), shardedRateLimiter);
     }
 
-    public Requester(JDA api, AccountType accountType)
+    public Requester(JDA api, AccountType accountType, ShardedRateLimiter shardedRateLimiter)
     {
         if (accountType == null)
             throw new NullPointerException("Provided accountType was null!");
 
         this.api = (JDAImpl) api;
         if (accountType == AccountType.BOT)
-            rateLimiter = new BotRateLimiter(this, 5);
+            rateLimiter = new BotRateLimiter(this, 5, shardedRateLimiter);
         else
             rateLimiter = new ClientRateLimiter(this, 5);
         
@@ -91,12 +96,19 @@ public class Requester
      *
      * @param  apiRequest
      *         The API request that needs to be sent
+     * @param  handleOnRateLimit
+     *         Whether to forward rate-limits, false if rate limit handling should take over
      *
      * @return Non-null if the request was ratelimited. Returns a Long containing retry_after milliseconds until
      *         the request can be made again. This could either be for the Per-Route ratelimit or the Global ratelimit.
      *         <br>Check if globalCooldown is {@code null} to determine if it was Per-Route or Global.
      */
-    public Long execute(Request<?> apiRequest, boolean handleOnRatelimit)
+    public Long execute(Request<?> apiRequest, boolean handleOnRateLimit)
+    {
+        return execute(apiRequest, false, handleOnRateLimit);
+    }
+
+    public Long execute(Request<?> apiRequest, boolean retried, boolean handleOnRatelimit)
     {
         Route.CompiledRoute route = apiRequest.getRoute();
         Long retryAfter = rateLimiter.getRateLimit(route);
@@ -161,9 +173,9 @@ public class Requester
                     break; // break loop, got a successful response!
 
                 attempt++;
-                LOG.debug(String.format("Requesting %s -> %s returned status %d... retrying (attempt %d)",
-                        apiRequest.getRoute().getMethod().toString(),
-                        url, firstSuccess.code(), attempt));
+                LOG.debug("Requesting {} -> {} returned status {}... retrying (attempt {})",
+                        apiRequest.getRoute().getMethod(),
+                        url, firstSuccess.code(), attempt);
                 try
                 {
                     Thread.sleep(50 * attempt);
@@ -180,7 +192,7 @@ public class Requester
 
             retryAfter = rateLimiter.handleResponse(route, firstSuccess);
             if (!rays.isEmpty())
-                LOG.debug("Received response with following cf-rays: " + rays);
+                LOG.debug("Received response with following cf-rays: {}", rays);
 
             if (retryAfter == null)
                 apiRequest.handleResponse(new Response(firstSuccess, -1, rays));
@@ -189,9 +201,17 @@ public class Requester
 
             return retryAfter;
         }
+        catch (SocketTimeoutException e)
+        {
+            if (retryOnTimeout && !retried)
+                return execute(apiRequest, true, handleOnRatelimit);
+            LOG.error("Requester timed out while executing a request", e);
+            apiRequest.handleResponse(new Response(firstSuccess, e, rays));
+            return null;
+        }
         catch (Exception e)
         {
-            LOG.log(e); //This originally only printed on DEBUG in 2.x
+            LOG.error("There was an exception while executing a REST request", e); //This originally only printed on DEBUG in 2.x
             apiRequest.handleResponse(new Response(firstSuccess, e, rays));
             return null;
         }
@@ -214,6 +234,11 @@ public class Requester
     public RateLimiter getRateLimiter()
     {
         return rateLimiter;
+    }
+
+    public void setRetryOnTimeout(boolean retryOnTimeout)
+    {
+        this.retryOnTimeout = retryOnTimeout;
     }
 
     public void shutdown(long time, TimeUnit unit)

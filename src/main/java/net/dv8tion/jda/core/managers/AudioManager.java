@@ -23,7 +23,9 @@ import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
-import net.dv8tion.jda.core.utils.SimpleLog;
+import net.dv8tion.jda.core.utils.JDALogger;
+import org.slf4j.Logger;
+
 
 /**
  * AudioManager deals with creating, managing and severing audio connections to
@@ -32,7 +34,7 @@ import net.dv8tion.jda.core.utils.SimpleLog;
 public interface AudioManager
 {
     long DEFAULT_CONNECTION_TIMEOUT = 10000;
-    SimpleLog LOG = SimpleLog.getLog("JDAAudioManager");
+    Logger LOG = JDALogger.getLog(AudioManager.class);
 
     /**
      * Starts the process to create an audio connection with a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
@@ -61,7 +63,7 @@ public interface AudioManager
      *         If audio is disabled due to an internal JDA error
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the Guild is temporarily unavailable
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         <ul>
      *             <li>If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#VOICE_CONNECT VOICE_CONNECT}</li>
      *             <li>If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#VOICE_MOVE_OTHERS VOICE_MOVE_OTHERS}

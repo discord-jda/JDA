@@ -25,7 +25,6 @@ import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.RequestBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONString;
 
 import javax.annotation.CheckReturnValue;
 import java.util.Collection;
@@ -42,13 +41,11 @@ import java.util.Set;
  */
 public class ChannelAction extends AuditableRestAction<Channel>
 {
-    public static final int ROLE_TYPE = 0;
-    public static final int MEMBER_TYPE = 1;
-
-    protected final Set<PromisePermissionOverride> overrides = new HashSet<>();
+    protected final Set<PermOverrideData> overrides = new HashSet<>();
     protected final Guild guild;
-    protected final boolean voice;
+    protected final ChannelType type;
     protected String name;
+    protected Category parent;
 
     // --text only--
     protected String topic = null;
@@ -68,14 +65,14 @@ public class ChannelAction extends AuditableRestAction<Channel>
      *         The name for the new {@link net.dv8tion.jda.core.entities.Channel Channel}
      * @param  guild
      *         The {@link net.dv8tion.jda.core.entities.Guild Guild} the channel should be created in
-     * @param  voice
-     *         Whether the new channel should be a VoiceChannel (false {@literal ->} TextChannel)
+     * @param  type
+     *         What kind of channel should be created
      */
-    public ChannelAction(Route.CompiledRoute route, String name, Guild guild, boolean voice)
+    public ChannelAction(Route.CompiledRoute route, String name, Guild guild, ChannelType type)
     {
         super(guild.getJDA(), route);
         this.guild = guild;
-        this.voice = voice;
+        this.type = type;
         this.name = name;
     }
 
@@ -102,13 +99,35 @@ public class ChannelAction extends AuditableRestAction<Channel>
     }
 
     /**
+     * Sets the {@link net.dv8tion.jda.core.entities.Category Category} for the new Channel
+     *
+     * @param  category
+     *         The parent for the new Channel
+     *
+     * @throws UnsupportedOperationException
+     *         If this ChannelAction is for a Category
+     * @throws IllegalArgumentException
+     *         If the provided category is {@code null}
+     *         or not from this Guild
+     *
+     * @return The current ChannelAction, for chaining convenience
+     */
+    @CheckReturnValue
+    public ChannelAction setParent(Category category)
+    {
+        Checks.check(category == null || category.getGuild().equals(guild), "Category is not from same guild!");
+        this.parent = category;
+        return this;
+    }
+
+    /**
      * Sets the topic for the new TextChannel
      *
      * @param  topic
      *         The topic for the new Channel (max 1024 chars)
      *
      * @throws UnsupportedOperationException
-     *         If this ChannelAction is for a VoiceChannel
+     *         If this ChannelAction is not for a TextChannel
      * @throws IllegalArgumentException
      *         If the provided topic is longer than 1024 chars
      *
@@ -117,8 +136,8 @@ public class ChannelAction extends AuditableRestAction<Channel>
     @CheckReturnValue
     public ChannelAction setTopic(String topic)
     {
-        if (voice)
-            throw new UnsupportedOperationException("Cannot set the topic for a VoiceChannel!");
+        if (type != ChannelType.TEXT)
+            throw new UnsupportedOperationException("Can only set the topic for a TextChannel!");
         if (topic != null && topic.length() > 1024)
             throw new IllegalArgumentException("Channel Topic must not be greater than 1024 in length!");
         this.topic = topic;
@@ -132,14 +151,15 @@ public class ChannelAction extends AuditableRestAction<Channel>
      *         The NSFW flag for the new Channel
      *
      * @throws UnsupportedOperationException
-     *         If this ChannelAction is for a VoiceChannel
+     *         If this ChannelAction is not for a TextChannel
      *
      * @return The current ChannelAction, for chaining convenience
      */
+    @CheckReturnValue
     public ChannelAction setNSFW(boolean nsfw)
     {
-        if (voice)
-            throw new UnsupportedOperationException("Cannot set nsfw for a VoiceChannel!");
+        if (type != ChannelType.TEXT)
+            throw new UnsupportedOperationException("Can only set nsfw for a TextChannel!");
         this.nsfw = nsfw;
         return this;
     }
@@ -148,8 +168,8 @@ public class ChannelAction extends AuditableRestAction<Channel>
      * Adds a new Role-{@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
      * for the new Channel.
      *
-     * @param  role
-     *         The not-null {@link net.dv8tion.jda.core.entities.Role Role} for the override
+     * @param  target
+     *         The not-null {@link net.dv8tion.jda.core.entities.Role Role} or {@link net.dv8tion.jda.core.entities.Member Member} for the override
      * @param  allow
      *         The granted {@link net.dv8tion.jda.core.Permission Permissions} for the override or null
      * @param  deny
@@ -162,49 +182,21 @@ public class ChannelAction extends AuditableRestAction<Channel>
      * @return The current ChannelAction, for chaining convenience
      */
     @CheckReturnValue
-    public ChannelAction addPermissionOverride(Role role, Collection<Permission> allow, Collection<Permission> deny)
+    public ChannelAction addPermissionOverride(IPermissionHolder target, Collection<Permission> allow, Collection<Permission> deny)
     {
         checkPermissions(allow);
         checkPermissions(deny);
         final long allowRaw = allow != null ? Permission.getRaw(allow) : 0;
         final long denyRaw = deny != null ? Permission.getRaw(deny) : 0;
 
-        return addPermissionOverride(role, allowRaw, denyRaw);
-    }
-
-    /**
-     * Adds a new Member-{@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
-     * for the new Channel.
-     *
-     * @param  member
-     *         The not-null {@link net.dv8tion.jda.core.entities.Member Member} for the override
-     * @param  allow
-     *         The granted {@link net.dv8tion.jda.core.Permission Permissions} for the override or null
-     * @param  deny
-     *         The denied {@link net.dv8tion.jda.core.Permission Permissions} for the override or null
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the specified {@link net.dv8tion.jda.core.entities.Member Member} is null
-     *         or not within the same guild.
-     *
-     * @return The current ChannelAction, for chaining convenience
-     */
-    @CheckReturnValue
-    public ChannelAction addPermissionOverride(Member member, Collection<Permission> allow, Collection<Permission> deny)
-    {
-        checkPermissions(allow);
-        checkPermissions(deny);
-        final long allowRaw = allow != null ? Permission.getRaw(allow) : 0;
-        final long denyRaw = deny != null ? Permission.getRaw(deny) : 0;
-
-        return addPermissionOverride(member, allowRaw, denyRaw);
+        return addPermissionOverride(target, allowRaw, denyRaw);
     }
 
     /**
      * Adds a new Role-{@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
      * for the new Channel.
      *
-     * @param  role
+     * @param  target
      *         The not-null {@link net.dv8tion.jda.core.entities.Role Role} for the override
      * @param  allow
      *         The granted {@link net.dv8tion.jda.core.Permission Permissions} for the override
@@ -227,58 +219,27 @@ public class ChannelAction extends AuditableRestAction<Channel>
      * @see    net.dv8tion.jda.core.Permission#getRaw(net.dv8tion.jda.core.Permission...)
      */
     @CheckReturnValue
-    public ChannelAction addPermissionOverride(Role role, long allow, long deny)
+    public ChannelAction addPermissionOverride(IPermissionHolder target, long allow, long deny)
     {
-        Checks.notNull(role, "Override Role");
+        Checks.notNull(target, "Override Role");
         Checks.notNegative(allow, "Granted permissions value");
         Checks.notNegative(deny, "Denied permissions value");
         Checks.check(allow <= Permission.ALL_PERMISSIONS, "Specified allow value may not be greater than a full permission set");
         Checks.check(deny <= Permission.ALL_PERMISSIONS,  "Specified deny value may not be greater than a full permission set");
-        Checks.check(role.getGuild().equals(guild), "Specified Role is not in the same Guild!");
+        Checks.check(target.getGuild().equals(guild), "Specified Role is not in the same Guild!");
 
-        String id = role.getId();
-        overrides.add(new PromisePermissionOverride(ROLE_TYPE, id, allow, deny));
-        return this;
-    }
-
-    /**
-     * Adds a new Member-{@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
-     * for the new Channel.
-     *
-     * @param  member
-     *         The not-null {@link net.dv8tion.jda.core.entities.Member Member} for the override
-     * @param  allow
-     *         The granted {@link net.dv8tion.jda.core.Permission Permissions} for the override
-     *         Use {@link net.dv8tion.jda.core.Permission#getRawValue()} to retrieve these Permissions.
-     * @param  deny
-     *         The denied {@link net.dv8tion.jda.core.Permission Permissions} for the override
-     *         Use {@link net.dv8tion.jda.core.Permission#getRawValue()} to retrieve these Permissions.
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         <ul>
-     *             <li>If the specified {@link net.dv8tion.jda.core.entities.Member Member} is null
-     *                 or not within the same guild.</li>
-     *             <li>If one of the provided Permission values is invalid</li>
-     *         </ul>
-     *
-     * @return The current ChannelAction, for chaining convenience
-     *
-     * @see    net.dv8tion.jda.core.Permission#getRawValue()
-     * @see    net.dv8tion.jda.core.Permission#getRaw(java.util.Collection)
-     * @see    net.dv8tion.jda.core.Permission#getRaw(net.dv8tion.jda.core.Permission...)
-     */
-    @CheckReturnValue
-    public ChannelAction addPermissionOverride(Member member, long allow, long deny)
-    {
-        Checks.notNull(member, "Override Member");
-        Checks.notNegative(allow, "Granted permissions value");
-        Checks.notNegative(deny, "Denied permissions value");
-        Checks.check(allow <= Permission.ALL_PERMISSIONS, "Specified allow value may not be greater than a full permission set");
-        Checks.check(deny <= Permission.ALL_PERMISSIONS,  "Specified deny value may not be greater than a full permission set");
-        Checks.check(member.getGuild().equals(guild), "Specified Member is not in the same Guild!");
-
-        String id = member.getUser().getId();
-        overrides.add(new PromisePermissionOverride(MEMBER_TYPE, id, allow, deny));
+        if (target instanceof Role)
+        {
+            Role r = (Role) target;
+            long id = r.getIdLong();
+            overrides.add(new PermOverrideData(PermOverrideData.ROLE_TYPE, id, allow, deny));
+        }
+        else
+        {
+            Member m = (Member) target;
+            long id = m.getUser().getIdLong();
+            overrides.add(new PermOverrideData(PermOverrideData.MEMBER_TYPE, id, allow, deny));
+        }
         return this;
     }
 
@@ -290,7 +251,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
      *         The bitrate for the new Channel (min 8000) or null to use default (64000)
      *
      * @throws UnsupportedOperationException
-     *         If this ChannelAction is for a TextChannel
+     *         If this ChannelAction is not for a VoiceChannel
      * @throws IllegalArgumentException
      *         If the provided bitrate is less than 8000 or greater than 128000
      *
@@ -299,8 +260,8 @@ public class ChannelAction extends AuditableRestAction<Channel>
     @CheckReturnValue
     public ChannelAction setBitrate(Integer bitrate)
     {
-        if (!voice)
-            throw new UnsupportedOperationException("Cannot set the bitrate for a TextChannel!");
+        if (type != ChannelType.VOICE)
+            throw new UnsupportedOperationException("Can only set the bitrate for a VoiceChannel!");
         if (bitrate != null)
         {
             if (bitrate < 8000)
@@ -320,7 +281,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
      *         The userlimit for the new VoiceChannel or {@code null}/{@code 0} to use no limit,
      *
      * @throws UnsupportedOperationException
-     *         If this ChannelAction is for a TextChannel
+     *         If this ChannelAction is not for a VoiceChannel
      * @throws IllegalArgumentException
      *         If the provided userlimit is negative or above {@code 99}
      *
@@ -329,8 +290,8 @@ public class ChannelAction extends AuditableRestAction<Channel>
     @CheckReturnValue
     public ChannelAction setUserlimit(Integer userlimit)
     {
-        if (!voice)
-            throw new UnsupportedOperationException("Cannot set the userlimit for a TextChannel!");
+        if (type != ChannelType.VOICE)
+            throw new UnsupportedOperationException("Can only set the userlimit for a VoiceChannel!");
         if (userlimit != null && (userlimit < 0 || userlimit > 99))
             throw new IllegalArgumentException("Userlimit must be between 0-99!");
         this.userlimit = userlimit;
@@ -342,22 +303,24 @@ public class ChannelAction extends AuditableRestAction<Channel>
     {
         JSONObject object = new JSONObject();
         object.put("name", name);
-        object.put("type", voice ? 2 : 0);
+        object.put("type", type.getId());
         object.put("permission_overwrites", new JSONArray(overrides));
-        if (voice)
+        switch (type)
         {
-            if (bitrate != null)
-                object.put("bitrate", bitrate.intValue());
-            if (userlimit != null)
-                object.put("user_limit", userlimit.intValue());
+            case VOICE:
+                if (bitrate != null)
+                    object.put("bitrate", bitrate.intValue());
+                if (userlimit != null)
+                    object.put("user_limit", userlimit.intValue());
+                break;
+            case TEXT:
+                if (topic != null && !topic.isEmpty())
+                    object.put("topic", topic);
+                if (nsfw != null)
+                    object.put("nsfw", nsfw);
         }
-        else
-        {
-            if (topic != null && !topic.isEmpty())
-                object.put("topic", topic);
-            if (nsfw != null)
-                object.put("nsfw", nsfw);
-        }
+        if (type != ChannelType.CATEGORY && parent != null)
+            object.put("parent_id", parent.getId());
 
         return getRequestBody(object);
     }
@@ -372,10 +335,22 @@ public class ChannelAction extends AuditableRestAction<Channel>
         }
 
         EntityBuilder builder = api.getEntityBuilder();;
-        Channel channel = voice
-                ? builder.createVoiceChannel(response.getObject(), guild.getIdLong())
-                : builder.createTextChannel(response.getObject(),  guild.getIdLong());
-
+        Channel channel;
+        switch (type)
+        {
+            case VOICE:
+                channel = builder.createVoiceChannel(response.getObject(), guild.getIdLong());
+                break;
+            case TEXT:
+                channel = builder.createTextChannel(response.getObject(), guild.getIdLong());
+                break;
+            case CATEGORY:
+                channel = builder.createCategory(response.getObject(), guild.getIdLong());
+                break;
+            default:
+                request.onFailure(new IllegalStateException("Created channel of unknown type!"));
+                return;
+        }
         request.onSuccess(channel);
     }
 
@@ -393,33 +368,5 @@ public class ChannelAction extends AuditableRestAction<Channel>
             return;
         for (Permission p : permissions)
             Checks.notNull(p, "Permissions");
-    }
-
-    protected final class PromisePermissionOverride implements JSONString
-    {
-        protected final String id;
-        protected final long deny;
-        protected final long allow;
-        protected final int type;
-
-        public PromisePermissionOverride(int type, String id, long allow, long deny)
-        {
-            this.type = type;
-            this.id = id;
-            this.deny  = deny;
-            this.allow = allow;
-        }
-
-        @Override
-        public String toJSONString()
-        {
-            JSONObject object = new JSONObject();
-            object.put("id",    id);
-            object.put("type",  type);
-            object.put("deny",  deny);
-            object.put("allow", allow);
-
-            return object.toString();
-        }
     }
 }

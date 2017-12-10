@@ -30,12 +30,13 @@ import net.dv8tion.jda.core.entities.impl.*;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.handle.GuildMembersChunkHandler;
 import net.dv8tion.jda.core.handle.ReadyHandler;
-import net.dv8tion.jda.core.requests.WebSocketClient;
+import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
 
 import java.awt.Color;
 import java.time.Instant;
@@ -49,6 +50,7 @@ import java.util.stream.Collectors;
 
 public class EntityBuilder
 {
+    public static final Logger LOG = JDALogger.getLog(EntityBuilder.class);
     public static final String MISSING_CHANNEL = "MISSING_CHANNEL";
     public static final String MISSING_USER = "MISSING_USER";
 
@@ -72,18 +74,30 @@ public class EntityBuilder
             selfUser = new SelfUserImpl(id, api);
             api.setSelfUser(selfUser);
         }
+
         if (!api.getUserMap().containsKey(selfUser.getIdLong()))
-        {
             api.getUserMap().put(selfUser.getIdLong(), selfUser);
-        }
-        return (SelfUser) selfUser
-                .setVerified(self.getBoolean("verified"))
+
+        selfUser.setVerified(self.getBoolean("verified"))
                 .setMfaEnabled(self.getBoolean("mfa_enabled"))
-                .setEmail(!self.isNull("email") ? self.getString("email") : null)
                 .setName(self.getString("username"))
                 .setDiscriminator(self.getString("discriminator"))
                 .setAvatarId(self.isNull("avatar") ? null : self.getString("avatar"))
                 .setBot(self.has("bot") && self.getBoolean("bot"));
+
+        if (this.api.getAccountType() == AccountType.CLIENT)
+            selfUser
+                .setEmail(!self.isNull("email") ? self.getString("email") : null)
+                .setMobile(!self.isNull("mobile") ? self.getBoolean("mobile") : false)
+                .setNitro(!self.isNull("premium") ? self.getBoolean("premium") : false)
+                .setPhoneNumber(!self.isNull("phone") ? self.getString("phone") : null);
+
+        return selfUser;
+    }
+
+    public Game createGame(String name, String url, Game.GameType type)
+    {
+        return new Game(name, url, type);
     }
 
     public void createGuildFirstPass(JSONObject guild, Consumer<Guild> secondPassCallback)
@@ -129,7 +143,7 @@ public class EntityBuilder
         guildObj.setAvailable(true)
                 .setIconId(guild.isNull("icon") ? null : guild.getString("icon"))
                 .setSplashId(guild.isNull("splash") ? null : guild.getString("splash"))
-                .setRegion(Region.fromKey(guild.getString("region")))
+                .setRegion(guild.getString("region"))
                 .setName(guild.getString("name"))
                 .setAfkTimeout(Guild.Timeout.fromKey(guild.getInt("afk_timeout")))
                 .setVerificationLevel(Guild.VerificationLevel.fromKey(guild.getInt("verification_level")))
@@ -153,7 +167,12 @@ public class EntityBuilder
             for (int i = 0; i < array.length(); i++)
             {
                 JSONObject object = array.getJSONObject(i);
-                JSONArray emoteRoles = object.getJSONArray("roles");
+                if (object.isNull("id"))
+                {
+                    LOG.error("Received GUILD_CREATE with an emoji with a null ID. JSON: {}", object);
+                    continue;
+                }
+                JSONArray emoteRoles = object.isNull("roles") ? new JSONArray() : object.getJSONArray("roles");
                 final long emoteId = object.getLong("id");
 
                 EmoteImpl emoteObj = new EmoteImpl(emoteId, guildObj);
@@ -161,9 +180,11 @@ public class EntityBuilder
 
                 for (int j = 0; j < emoteRoles.length(); j++)
                     roleSet.add(guildObj.getRoleById(emoteRoles.getString(j)));
+                final String name = object.isNull("name") ? "" : object.getString("name");
+                final boolean managed = !object.isNull("managed") && object.getBoolean("managed");
                 emoteMap.put(emoteId, emoteObj
-                        .setName(object.getString("name"))
-                        .setManaged(object.getBoolean("managed")));
+                            .setName(name)
+                            .setManaged(managed));
             }
         }
 
@@ -188,7 +209,7 @@ public class EntityBuilder
                 MemberImpl member = (MemberImpl) guildObj.getMembersMap().get(userId);
 
                 if (member == null)
-                    WebSocketClient.LOG.debug("Received a ghost presence in GuildFirstPass! Guild: " + guildObj + " UserId: " + userId);
+                    LOG.debug("Received a ghost presence in GuildFirstPass! UserId: {} Guild: {}", userId, guildObj);
                 else
                     createPresence(member, presence);
             }
@@ -202,23 +223,28 @@ public class EntityBuilder
             {
                 JSONObject channel = channels.getJSONObject(i);
                 ChannelType type = ChannelType.fromId(channel.getInt("type"));
-                if (type == ChannelType.TEXT)
+                switch (type)
                 {
-                    TextChannel newChannel = createTextChannel(channel, guildObj.getIdLong(), false);
-                    if (newChannel.getIdLong() == guildObj.getIdLong())
-                        guildObj.setPublicChannel(newChannel);
+                    case TEXT:
+                        createTextChannel(channel, guildObj.getIdLong(), false);
+                        break;
+                    case VOICE:
+                        createVoiceChannel(channel, guildObj.getIdLong(), false);
+                        break;
+                    case CATEGORY:
+                        createCategory(channel, guildObj.getIdLong(), false);
+                        break;
+                    default:
+                        LOG.error("Received a channel for a guild that isn't a text, voice or category channel. JSON: {}", channel);
                 }
-                else if (type == ChannelType.VOICE)
-                {
-                    VoiceChannel newChannel = createVoiceChannel(channel, guildObj.getIdLong(), false);
-                    if (!guild.isNull("afk_channel_id")
-                            && newChannel.getId().equals(guild.getString("afk_channel_id")))
-                        guildObj.setAfkChannel(newChannel);
-                }
-                else
-                    WebSocketClient.LOG.fatal("Received a channel for a guild that isn't a text or voice channel. JSON: " + channel);
             }
         }
+
+        if (!guild.isNull("system_channel_id"))
+            guildObj.setSystemChannel(guildObj.getTextChannelsMap().get(guild.getLong("system_channel_id")));
+
+        if (!guild.isNull("afk_channel_id"))
+            guildObj.setAfkChannel(guildObj.getVoiceChannelsMap().get(guild.getLong("afk_channel_id")));
 
         //If the members that we were provided with (and loaded above) were not all of the
         //  the members in this guild, then we need to request more users from Discord using
@@ -308,16 +334,14 @@ public class EntityBuilder
             throw new IllegalArgumentException("No callback provided for the second pass on the Guild!");
 
         for (JSONArray chunk : memberChunks)
-        {
             createGuildMemberPass(guildObj, chunk);
-        }
 
         Member owner = guildObj.getMemberById(guildJson.getLong("owner_id"));
         if (owner != null)
             guildObj.setOwner(owner);
 
         if (guildObj.getOwner() == null)
-            WebSocketClient.LOG.fatal("Never set the Owner of the Guild: " + guildObj.getId() + " because we don't have the owner User object! How?!");
+            LOG.error("Never set the Owner of the Guild: {} because we don't have the owner User object! How?!", guildObj.getId());
 
         JSONArray channels = guildJson.getJSONArray("channels");
         createGuildChannelPass(guildObj, channels);
@@ -344,7 +368,7 @@ public class EntityBuilder
 
             MemberImpl member = (MemberImpl) guild.getMembersMap().get(userId);
             if (member == null)
-                WebSocketClient.LOG.fatal("Received a Presence for a non-existent Member when dealing with GuildSync!");
+                LOG.error("Received a Presence for a non-existent Member when dealing with GuildSync!");
             else
                 this.createPresence(member, presenceJson);
         }
@@ -366,36 +390,29 @@ public class EntityBuilder
             JSONObject channel = channels.getJSONObject(i);
             ChannelType type = ChannelType.fromId(channel.getInt("type"));
             Channel channelObj = null;
-            if (type == ChannelType.TEXT)
+            switch (type)
             {
-                channelObj = api.getTextChannelById(channel.getLong("id"));
+                case TEXT:
+                    channelObj = api.getTextChannelById(channel.getLong("id"));
+                    break;
+                case VOICE:
+                    channelObj = api.getVoiceChannelById(channel.getLong("id"));
+                    break;
+                case CATEGORY:
+                    channelObj = api.getCategoryMap().get(channel.getLong("id"));
+                    break;
+                default:
+                    LOG.error("Received a channel for a guild that isn't a text, voice or category channel (ChannelPass). JSON: {}", channel);
             }
-            else if (type == ChannelType.VOICE)
-            {
-                channelObj = api.getVoiceChannelById(channel.getLong("id"));
-            }
-            else
-                WebSocketClient.LOG.fatal("Received a channel for a guild that isn't a text or voice channel (ChannelPass). JSON: " + channel);
 
             if (channelObj != null)
             {
                 JSONArray permissionOverwrites = channel.getJSONArray("permission_overwrites");
-                for (int j = 0; j < permissionOverwrites.length(); j++)
-                {
-                    try
-                    {
-                        createPermissionOverride(permissionOverwrites.getJSONObject(j), channelObj);
-                    }
-                    catch (IllegalArgumentException e)
-                    {
-                        //Caused by Discord not properly clearing PermissionOverrides when a Member leaves a Guild.
-                        WebSocketClient.LOG.debug(e.getMessage() + ". Ignoring PermissionOverride.");
-                    }
-                }
+                createOverridesPass((AbstractChannelImpl<?>) channelObj, permissionOverwrites);
             }
             else
             {
-                throw new RuntimeException("Got permission_override for unknown channel with id: " + channel.getString("id"));
+                LOG.error("Got permission_override for unknown channel with id: {}", channel.getString("id"));
             }
         }
     }
@@ -409,24 +426,29 @@ public class EntityBuilder
             Member member = guildObj.getMembersMap().get(userId);
             if (member == null)
             {
-                WebSocketClient.LOG.fatal("Received a VoiceState for a unknown Member! GuildId: "
+                LOG.error("Received a VoiceState for a unknown Member! GuildId: "
                         + guildObj.getId() + " MemberId: " + voiceStateJson.getString("user_id"));
                 continue;
             }
 
             final long channelId = voiceStateJson.getLong("channel_id");
             VoiceChannelImpl voiceChannel =
-                    (VoiceChannelImpl) guildObj.getVoiceChannelMap().get(channelId);
-            voiceChannel.getConnectedMembersMap().put(member.getUser().getIdLong(), member);
+                    (VoiceChannelImpl) guildObj.getVoiceChannelsMap().get(channelId);
+            if (voiceChannel != null)
+                voiceChannel.getConnectedMembersMap().put(member.getUser().getIdLong(), member);
+            else
+                LOG.error("Received a GuildVoiceState with a channel ID for a non-existent channel! ChannelId: {} GuildId: {} UserId: {}",
+                    channelId, guildObj.getId(), userId);
 
+            // VoiceState is considered volatile so we don't expect anything to actually exist
             GuildVoiceStateImpl voiceState = (GuildVoiceStateImpl) member.getVoiceState();
-            voiceState.setSelfMuted(voiceStateJson.getBoolean("self_mute"))
-                    .setSelfDeafened(voiceStateJson.getBoolean("self_deaf"))
-                    .setGuildMuted(voiceStateJson.getBoolean("mute"))
-                    .setGuildDeafened(voiceStateJson.getBoolean("deaf"))
-                    .setSuppressed(voiceStateJson.getBoolean("suppress"))
-                    .setSessionId(voiceStateJson.getString("session_id"))
-                    .setConnectedChannel(voiceChannel);
+            voiceState.setSelfMuted(!voiceStateJson.isNull("self_mute") && voiceStateJson.getBoolean("self_mute"))
+                      .setSelfDeafened(!voiceStateJson.isNull("self_deaf") && voiceStateJson.getBoolean("self_deaf"))
+                      .setGuildMuted(!voiceStateJson.isNull("mute") && voiceStateJson.getBoolean("mute"))
+                      .setGuildDeafened(!voiceStateJson.isNull("deaf") && voiceStateJson.getBoolean("deaf"))
+                      .setSuppressed(!voiceStateJson.isNull("suppress") && voiceStateJson.getBoolean("suppress"))
+                      .setSessionId(voiceStateJson.isNull("session_id") ? "" : voiceStateJson.getString("session_id"))
+                      .setConnectedChannel(voiceChannel);
         }
     }
 
@@ -492,9 +514,7 @@ public class EntityBuilder
             .setGuildDeafened(memberJson.getBoolean("deaf"));
 
         member.setJoinDate(OffsetDateTime.parse(memberJson.getString("joined_at")))
-            .setNickname(memberJson.has("nick") && !memberJson.isNull("nick")
-                ? memberJson.getString("nick")
-                : null);
+              .setNickname(memberJson.isNull("nick") ? null : memberJson.getString("nick"));
 
         JSONArray rolesJson = memberJson.getJSONArray("roles");
         for (int k = 0; k < rolesJson.length(); k++)
@@ -503,8 +523,8 @@ public class EntityBuilder
             Role r = guild.getRolesMap().get(roleId);
             if (r == null)
             {
-                WebSocketClient.LOG.debug("Received a Member with an unknown Role. MemberId: "
-                        + member.getUser().getId() + " GuildId: " + guild.getId() + " roleId: " + roleId);
+                LOG.debug("Received a Member with an unknown Role. MemberId: {} GuildId: {} roleId: {}",
+                    member.getUser().getId(), guild.getId(), roleId);
             }
             else
             {
@@ -521,30 +541,28 @@ public class EntityBuilder
         if (memberOrFriend == null)
             throw new NullPointerException("Provided memberOrFriend was null!");
 
-        JSONObject gameJson = presenceJson.isNull("game") ? null: presenceJson.getJSONObject("game");
+        JSONObject gameJson = presenceJson.isNull("game") ? null : presenceJson.getJSONObject("game");
         OnlineStatus onlineStatus = OnlineStatus.fromKey(presenceJson.getString("status"));
         Game game = null;
 
         if (gameJson != null && !gameJson.isNull("name"))
         {
             String gameName = gameJson.get("name").toString();
-            String url = gameJson.isNull("url")
-                    ? null
-                    : gameJson.get("url").toString();
+            String url = gameJson.isNull("url") ? null : gameJson.get("url").toString();
 
             Game.GameType gameType;
             try
             {
                 gameType = gameJson.isNull("type")
-                        ? Game.GameType.DEFAULT
-                        : Game.GameType.fromKey(Integer.parseInt(gameJson.get("type").toString()));
+                           ? Game.GameType.DEFAULT
+                           : Game.GameType.fromKey(Integer.parseInt(gameJson.get("type").toString()));
             }
             catch (NumberFormatException e)
             {
                 gameType = Game.GameType.DEFAULT;
             }
 
-            game = new GameImpl(gameName, url, gameType);
+            game = createGame(gameName, url, gameType);
         }
         if (memberOrFriend instanceof Member)
         {
@@ -568,11 +586,40 @@ public class EntityBuilder
             throw new IllegalArgumentException("An object was provided to EntityBuilder#createPresence that wasn't a Member or Friend. JSON: " + presenceJson);
     }
 
+    public Category createCategory(JSONObject json, long guildId)
+    {
+        return createCategory(json, guildId, true);
+    }
+
+    public Category createCategory(JSONObject json, long guildId, boolean guildIsLoaded)
+    {
+        final long id = json.getLong("id");
+        CategoryImpl channel = (CategoryImpl) api.getCategoryMap().get(id);
+        if (channel == null)
+        {
+            GuildImpl guild = ((GuildImpl) api.getGuildMap().get(guildId));
+            channel = new CategoryImpl(id, guild);
+            guild.getCategoriesMap().put(id, channel);
+            api.getCategoryMap().put(id, channel);
+        }
+
+        if (!json.isNull("permission_overwrites") && guildIsLoaded)
+        {
+            JSONArray overrides = json.getJSONArray("permission_overwrites");
+            createOverridesPass(channel, overrides);
+        }
+
+        return channel
+                .setName(json.getString("name"))
+                .setRawPosition(json.getInt("position"));
+    }
+
     public TextChannel createTextChannel(JSONObject json, long guildId)
     {
         return createTextChannel(json, guildId, true);
 
     }
+
     public TextChannel createTextChannel(JSONObject json, long guildId, boolean guildIsLoaded)
     {
         final long id = json.getLong("id");
@@ -588,14 +635,12 @@ public class EntityBuilder
         if (!json.isNull("permission_overwrites") && guildIsLoaded)
         {
             JSONArray overrides = json.getJSONArray("permission_overwrites");
-            for (int i = 0; i < overrides.length(); i++)
-            {
-                createPermissionOverride(overrides.getJSONObject(i), channel);
-            }
+            createOverridesPass(channel, overrides);
         }
 
         return channel
-                .setLastMessageId(json.isNull("last_message_id") ? -1 : json.getLong("last_message_id"))
+                .setParent(json.isNull("parent_id") ? 0 : json.getLong("parent_id"))
+                .setLastMessageId(json.isNull("last_message_id") ? 0 : json.getLong("last_message_id"))
                 .setName(json.getString("name"))
                 .setTopic(json.isNull("topic") ? "" : json.getString("topic"))
                 .setRawPosition(json.getInt("position"))
@@ -606,6 +651,7 @@ public class EntityBuilder
     {
         return createVoiceChannel(json, guildId, true);
     }
+
     public VoiceChannel createVoiceChannel(JSONObject json, long guildId, boolean guildIsLoaded)
     {
         final long id = json.getLong("id");
@@ -614,20 +660,18 @@ public class EntityBuilder
         {
             GuildImpl guild = (GuildImpl) api.getGuildMap().get(guildId);
             channel = new VoiceChannelImpl(id, guild);
-            guild.getVoiceChannelMap().put(id, channel);
+            guild.getVoiceChannelsMap().put(id, channel);
             api.getVoiceChannelMap().put(id, channel);
         }
 
         if (!json.isNull("permission_overwrites") && guildIsLoaded)
         {
             JSONArray overrides = json.getJSONArray("permission_overwrites");
-            for (int i = 0; i < overrides.length(); i++)
-            {
-                createPermissionOverride(overrides.getJSONObject(i), channel);
-            }
+            createOverridesPass(channel, overrides);
         }
 
         return channel
+                .setParent(json.isNull("parent_id") ? 0 : json.getLong("parent_id"))
                 .setName(json.getString("name"))
                 .setRawPosition(json.getInt("position"))
                 .setUserLimit(json.getInt("user_limit"))
@@ -636,7 +680,7 @@ public class EntityBuilder
 
     public PrivateChannel createPrivateChannel(JSONObject privatechat)
     {
-        JSONObject recipient = privatechat.has("recipients") ? 
+        JSONObject recipient = privatechat.has("recipients") ?
             privatechat.getJSONArray("recipients").getJSONObject(0) :
             privatechat.getJSONObject("recipient");
         final long userId = recipient.getLong("id");
@@ -660,6 +704,27 @@ public class EntityBuilder
         else
             api.getPrivateChannelMap().put(channelId, priv);
         return priv;
+    }
+
+    public void createOverridesPass(AbstractChannelImpl<?> channel, JSONArray overrides)
+    {
+        for (int i = 0; i < overrides.length(); i++)
+        {
+            try
+            {
+                createPermissionOverride(overrides.getJSONObject(i), channel);
+            }
+            catch (NoSuchElementException e)
+            {
+                //Caused by Discord not properly clearing PermissionOverrides when a Member leaves a Guild.
+                LOG.debug("{}. Ignoring PermissionOverride.", e.getMessage());
+            }
+            catch (IllegalArgumentException e)
+            {
+                //Missing handling for a type
+                LOG.warn("{}. Ignoring PermissionOverride.", e.getMessage());
+            }
+        }
     }
 
     public Role createRole(JSONObject roleJson, long guildId)
@@ -802,7 +867,7 @@ public class EntityBuilder
                 final Long emojiId = emoji.isNull("id") ? null : emoji.getLong("id");
                 String emojiName = emoji.getString("name");
 
-                boolean self = obj.has("self") && obj.getBoolean("self");
+                boolean self = obj.has("me") && obj.getBoolean("me");
                 int count = obj.getInt("count");
                 Emote emote = null;
                 if (emojiId != null)
@@ -868,10 +933,14 @@ public class EntityBuilder
             Matcher matcher = channelMentionPattern.matcher(content);
             while (matcher.find())
             {
-                TextChannel channel = chanMap.get(Long.parseLong(matcher.group(1)));
-                if(channel != null && !mentionedChannels.contains(channel))
+                try
                 {
-                    mentionedChannels.add(channel);
+                    TextChannel channel = chanMap.get(Long.parseUnsignedLong(matcher.group(1)));
+                    if (channel != null && !mentionedChannels.contains(channel))
+                    {
+                        mentionedChannels.add(channel);
+                    }
+                } catch (NumberFormatException ignored) {
                 }
             }
             message.setMentionedChannels(mentionedChannels);
@@ -935,7 +1004,7 @@ public class EntityBuilder
                     imageJson.isNull("height") ? -1 : imageJson.getInt("height")));
         }
         else embed.setImage(null);
-        
+
         if (messageEmbed.has("footer"))
         {
             JSONObject footerJson = messageEmbed.getJSONObject("footer");
@@ -945,7 +1014,7 @@ public class EntityBuilder
                     footerJson.isNull("proxy_icon_url") ? null : footerJson.getString("proxy_icon_url")));
         }
         else embed.setFooter(null);
-        
+
         if (messageEmbed.has("fields"))
         {
             JSONArray fieldsJson = messageEmbed.getJSONArray("fields");
@@ -962,7 +1031,7 @@ public class EntityBuilder
             embed.setFields(fields);
         }
         else embed.setFields(Collections.emptyList());
-        
+
         if (messageEmbed.has("video"))
         {
             JSONObject videoJson = messageEmbed.getJSONObject("video");
@@ -976,17 +1045,19 @@ public class EntityBuilder
 
     public PermissionOverride createPermissionOverride(JSONObject override, Channel chan)
     {
-        PermissionOverrideImpl permOverride = null;
+        PermissionOverrideImpl permOverride;
         final long id = override.getLong("id");
         long allow = override.getLong("allow");
         long deny = override.getLong("deny");
 
+        //Throwing NoSuchElementException for common issues with overrides that are not cleared properly by discord
+        // when a member leaves or a role is deleted
         switch (override.getString("type"))
         {
             case "member":
                 Member member = chan.getGuild().getMemberById(id);
                 if (member == null)
-                    throw new IllegalArgumentException("Attempted to create a PermissionOverride for a non-existent user. Guild: " + chan.getGuild() + ", Channel: " + chan + ", JSON: " + override);
+                    throw new NoSuchElementException("Attempted to create a PermissionOverride for a non-existent user. Guild: " + chan.getGuild() + ", Channel: " + chan + ", JSON: " + override);
 
                 permOverride = (PermissionOverrideImpl) chan.getPermissionOverride(member);
                 if (permOverride == null)
@@ -998,7 +1069,7 @@ public class EntityBuilder
             case "role":
                 Role role = ((GuildImpl) chan.getGuild()).getRolesMap().get(id);
                 if (role == null)
-                    throw new IllegalArgumentException("Attempted to create a PermissionOverride for a non-existent role! JSON: " + override);
+                    throw new NoSuchElementException("Attempted to create a PermissionOverride for a non-existent role! JSON: " + override);
 
                 permOverride = (PermissionOverrideImpl) chan.getPermissionOverride(role);
                 if (permOverride == null)
@@ -1010,8 +1081,7 @@ public class EntityBuilder
             default:
                 throw new IllegalArgumentException("Provided with an unknown PermissionOverride type! JSON: " + override);
         }
-        return permOverride.setAllow(allow)
-                .setDeny(deny);
+        return permOverride.setAllow(allow).setDeny(deny);
     }
 
     public Webhook createWebhook(JSONObject object)
@@ -1081,7 +1151,7 @@ public class EntityBuilder
                 default:
                     return null;
             }
-            ((JDAClientImpl) api.asClient()).getRelationshipMap().put(user.getIdLong(), relationship);
+            api.asClient().getRelationshipMap().put(user.getIdLong(), relationship);
         }
         return relationship;
     }
@@ -1102,7 +1172,7 @@ public class EntityBuilder
         if (group == null)
         {
             group = new GroupImpl(groupId, api);
-            ((JDAClientImpl) api.asClient()).getGroupMap().put(groupId, group);
+            api.asClient().getGroupMap().put(groupId, group);
         }
 
         TLongObjectMap<User> groupUsers = group.getUserMap();

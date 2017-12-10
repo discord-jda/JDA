@@ -33,6 +33,7 @@ import net.dv8tion.jda.core.entities.impl.PrivateChannelImpl;
 import net.dv8tion.jda.core.entities.impl.UserImpl;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.guild.GuildUnavailableEvent;
+import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import org.json.JSONObject;
 
@@ -49,9 +50,16 @@ public class GuildDeleteHandler extends SocketHandler
         final long id = content.getLong("id");
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
 
+        if (guild == null)
+        {
+            api.getEventCache().cache(EventCache.Type.GUILD, id, () -> handle(responseNumber, allContent));
+            EventCache.LOG.debug("Received GUILD_DELETE for a Guild that is not currently cached. ID: {}", id);
+            return null;
+        }
+
         //If the event is attempting to mark the guild as unavailable, but it is already unavailable,
         // ignore the event
-        if ((guild == null || !guild.isAvailable()) && content.has("unavailable") && content.getBoolean("unavailable"))
+        if (!guild.isAvailable() && content.has("unavailable") && content.getBoolean("unavailable"))
             return null;
 
         if (api.getGuildLock().isLocked(id))
@@ -68,10 +76,16 @@ public class GuildDeleteHandler extends SocketHandler
             return null;
         }
 
-        final TLongObjectMap<AudioManagerImpl> audioManagerMap = api.getAudioManagerMap();
-        final AudioManagerImpl manager = audioManagerMap.remove(id); // remove manager from central map to avoid old guild references
-        if (manager != null) // close existing audio connection if needed
-            manager.closeAudioConnection(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD);
+        api.getClient().removeAudioConnection(id);
+        final TLongObjectMap<AudioManager> audioManagerMap = api.getAudioManagerMap();
+        synchronized (audioManagerMap)
+        {
+            final AudioManagerImpl manager = (AudioManagerImpl) audioManagerMap.get(id);
+            if (manager != null) // close existing audio connection if needed
+                manager.closeAudioConnection(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD);
+            // remove manager from central map to avoid old guild references
+            audioManagerMap.remove(id);
+        }
 
         //cleaning up all users that we do not share a guild with anymore
         // Anything left in memberIds will be removed from the main userMap
@@ -85,7 +99,6 @@ public class GuildDeleteHandler extends SocketHandler
 
             for (TLongIterator it = memberIds.iterator(); it.hasNext();)
             {
-
                 if (g.getMembersMap().containsKey(it.next()))
                     it.remove();
             }
@@ -95,7 +108,7 @@ public class GuildDeleteHandler extends SocketHandler
         // Remember, everything left in memberIds is removed from the userMap
         if (api.getAccountType() == AccountType.CLIENT)
         {
-            TLongObjectMap<Relationship> relationships = ((JDAClientImpl) api.asClient()).getRelationshipMap();
+            TLongObjectMap<Relationship> relationships = api.asClient().getRelationshipMap();
             for (TLongIterator it = memberIds.iterator(); it.hasNext();)
             {
                 Relationship rel = relationships.get(it.next());
@@ -133,17 +146,19 @@ public class GuildDeleteHandler extends SocketHandler
                     }
                 }
             }
-
+            api.getEventCache().clear(EventCache.Type.USER, memberId);
             return true;
         });
 
-        api.getGuildMap().remove(guild.getIdLong());
-        guild.getTextChannels().forEach(chan -> api.getTextChannelMap().remove(chan.getIdLong()));
-        guild.getVoiceChannels().forEach(chan -> api.getVoiceChannelMap().remove(chan.getIdLong()));
+        api.getGuildMap().remove(id);
+        guild.getTextChannelCache().forEach(chan -> api.getTextChannelMap().remove(chan.getIdLong()));
+        guild.getVoiceChannelCache().forEach(chan -> api.getVoiceChannelMap().remove(chan.getIdLong()));
+        guild.getCategoryCache().forEach(chan -> api.getCategoryMap().remove(chan.getIdLong()));
         api.getEventManager().handle(
                 new GuildLeaveEvent(
                         api, responseNumber,
                         guild));
+        api.getEventCache().clear(EventCache.Type.GUILD, id);
         return null;
     }
 }

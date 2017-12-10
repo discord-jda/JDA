@@ -24,10 +24,13 @@ import net.dv8tion.jda.core.managers.GuildManager;
 import net.dv8tion.jda.core.managers.GuildManagerUpdatable;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAction;
+import net.dv8tion.jda.core.utils.cache.MemberCacheView;
+import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
-import javax.annotation.CheckReturnValue;
 
 /**
  * Represents a Discord {@link net.dv8tion.jda.core.entities.Guild Guild}.
@@ -107,6 +110,18 @@ public interface Guild extends ISnowflake
     VoiceChannel getAfkChannel();
 
     /**
+     * Provides the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} that has been set as the channel
+     * which newly joined {@link net.dv8tion.jda.core.entities.Member Members} will be announced in.
+     * <br>If no channel has been set as the system channel, this returns {@code null}.
+     * <p>
+     * This value can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setSystemChannel(TextChannel)}
+     * or {@link net.dv8tion.jda.core.managers.GuildManagerUpdatable#getSystemChannelField()}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} that is the system Channel.
+     */
+    TextChannel getSystemChannel();
+
+    /**
      * The {@link net.dv8tion.jda.core.entities.Member Member} object of the owner of this {@link net.dv8tion.jda.core.entities.Guild Guild}.
      * <p>
      * Ownership can be transferred using {@link GuildController#transferOwnership(Member)}.
@@ -130,16 +145,32 @@ public interface Guild extends ISnowflake
     Timeout getAfkTimeout();
 
     /**
-     * The {@link net.dv8tion.jda.core.Region Region} that this {@link net.dv8tion.jda.core.entities.Guild Guild} is
+     * The Voice {@link net.dv8tion.jda.core.Region Region} that this Guild is
      * using for audio connections.
-     * <br>If the {@link net.dv8tion.jda.core.Region Region} is not recognized, returns {@link net.dv8tion.jda.core.Region#UNKNOWN UNKNOWN}.
-     * <p>
-     * This value can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setRegion(net.dv8tion.jda.core.Region)}
+     * <br>If the Region is not recognized, returns {@link net.dv8tion.jda.core.Region#UNKNOWN UNKNOWN} but you
+     * can still use the {@link #getRegionRaw()} to retrieve the raw name this region has.
+     *
+     * <p>This value can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setRegion(net.dv8tion.jda.core.Region)}
      * or {@link net.dv8tion.jda.core.managers.GuildManagerUpdatable#getRegionField()}.
      *
      * @return The the audio Region this Guild is using for audio connections. Can return Region.UNKNOWN.
      */
-    Region getRegion();
+    default Region getRegion()
+    {
+        return Region.fromKey(getRegionRaw());
+    }
+
+    /**
+     * The raw voice region name that this Guild is using
+     * for audio connections.
+     * <br>This is resolved to an enum constant of {@link net.dv8tion.jda.core.Region Region} by {@link #getRegion()}!
+     *
+     * <p>This value can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setRegion(net.dv8tion.jda.core.Region)}
+     * or {@link net.dv8tion.jda.core.managers.GuildManagerUpdatable#getRegionField()}.
+     *
+     * @return Raw region name
+     */
+    String getRegionRaw();
 
     /**
      * Used to determine if the provided {@link net.dv8tion.jda.core.entities.User User} is a member of this Guild.
@@ -185,7 +216,10 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Member Member} with the related {@code userId}.
      */
-    Member getMemberById(String userId);
+    default Member getMemberById(String userId)
+    {
+        return getMemberCache().getElementById(userId);
+    }
 
     /**
      * Gets a {@link net.dv8tion.jda.core.entities.Member Member} object via the id of the user. The id relates to
@@ -198,7 +232,10 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Member Member} with the related {@code userId}.
      */
-    Member getMemberById(long userId);
+    default Member getMemberById(long userId)
+    {
+        return getMemberCache().getElementById(userId);
+    }
 
     /**
      * A list of all {@link net.dv8tion.jda.core.entities.Member Members} in this Guild.
@@ -206,7 +243,10 @@ public interface Guild extends ISnowflake
      *
      * @return Immutable list of all members in this Guild.
      */
-    List<Member> getMembers();
+    default List<Member> getMembers()
+    {
+        return getMemberCache().asList();
+    }
 
     /**
      * Gets a list of all {@link net.dv8tion.jda.core.entities.Member Members} who have the same name as the one provided.
@@ -220,7 +260,10 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-empty immutable list of all Members with the same name as the name provided.
      */
-    List<Member> getMembersByName(String name, boolean ignoreCase);
+    default List<Member> getMembersByName(String name, boolean ignoreCase)
+    {
+        return getMemberCache().getElementsByUsername(name, ignoreCase);
+    }
 
     /**
      * Gets a list of all {@link net.dv8tion.jda.core.entities.Member Members} who have the same nickname as the one provided.
@@ -234,7 +277,10 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-empty immutable list of all Members with the same nickname as the nickname provided.
      */
-    List<Member> getMembersByNickname(String nickname, boolean ignoreCase);
+    default List<Member> getMembersByNickname(String nickname, boolean ignoreCase)
+    {
+        return getMemberCache().getElementsByNickname(nickname, ignoreCase);
+    }
 
     /**
      * Gets a list of all {@link net.dv8tion.jda.core.entities.Member Members} who have the same effective name as the one provided.
@@ -249,7 +295,10 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-empty immutable list of all Members with the same effective name as the name provided.
      */
-    List<Member> getMembersByEffectiveName(String name, boolean ignoreCase);
+    default List<Member> getMembersByEffectiveName(String name, boolean ignoreCase)
+    {
+        return getMemberCache().getElementsByName(name, ignoreCase);
+    }
 
     /**
      * Gets a list of {@link net.dv8tion.jda.core.entities.Member Members} that have all
@@ -265,7 +314,10 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-empty immutable list of Members with all provided Roles.
      */
-    List<Member> getMembersWithRoles(Role... roles);
+    default List<Member> getMembersWithRoles(Role... roles)
+    {
+        return getMemberCache().getElementsWithRoles(roles);
+    }
 
     /**
      * Gets a list of {@link net.dv8tion.jda.core.entities.Member Members} that have all provided
@@ -281,7 +333,87 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-empty immutable list of Members with all provided Roles.
      */
-    List<Member> getMembersWithRoles(Collection<Role> roles);
+    default List<Member> getMembersWithRoles(Collection<Role> roles)
+    {
+        return getMemberCache().getElementsWithRoles(roles);
+    }
+
+    /**
+     * {@link net.dv8tion.jda.core.utils.cache.MemberCacheView MemberCacheView} for all cached
+     * {@link net.dv8tion.jda.core.entities.Member Members} of this Guild.
+     *
+     * @return {@link net.dv8tion.jda.core.utils.cache.MemberCacheView MemberCacheView}
+     */
+    MemberCacheView getMemberCache();
+
+    /**
+     * Gets the {@link net.dv8tion.jda.core.entities.Category Category} from this guild that matches the provided id.
+     * This method is similar to {@link net.dv8tion.jda.core.JDA#getCategoryById(String)}, but it only checks in this
+     * specific Guild. <br>If there is no matching {@link net.dv8tion.jda.core.entities.Category Category} this returns
+     * {@code null}.
+     *
+     * @param id
+     *         The snowflake ID of the wanted Category
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Category Category} for the provided ID.
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided ID is not a valid {@code long}
+     */
+    default Category getCategoryById(String id)
+    {
+        return getCategoryCache().getElementById(id);
+    }
+
+    /**
+     * Gets the {@link net.dv8tion.jda.core.entities.Category Category} from this guild that matches the provided id.
+     * This method is similar to {@link net.dv8tion.jda.core.JDA#getCategoryById(String)}, but it only checks in this
+     * specific Guild. <br>If there is no matching {@link net.dv8tion.jda.core.entities.Category Category} this returns
+     * {@code null}.
+     *
+     * @param id
+     *         The snowflake ID of the wanted Category
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Category Category} for the provided ID.
+     */
+    default Category getCategoryById(long id)
+    {
+        return getCategoryCache().getElementById(id);
+    }
+
+    /**
+     * Gets all {@link net.dv8tion.jda.core.entities.Category Categories} in this {@link net.dv8tion.jda.core.entities.Guild Guild}.
+     * <br>The returned categories will be sorted according to their position.
+     *
+     * @return An immutable list of all {@link net.dv8tion.jda.core.entities.Category Categories} in this Guild.
+     */
+    default List<Category> getCategories()
+    {
+        return getCategoryCache().asList();
+    }
+
+    /**
+     * Gets a list of all {@link net.dv8tion.jda.core.entities.Category Categories} in this Guild that have the same
+     * name as the one provided. <br>If there are no matching categories this will return an empty list.
+     *
+     * @param name
+     *         The name to check
+     * @param ignoreCase
+     *         Whether to ignore case on name checking
+     * @return Immutable list of all categories matching the provided name
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided name is {@code null}
+     */
+    default List<Category> getCategoriesByName(String name, boolean ignoreCase)
+    {
+        return getCategoryCache().getElementsByName(name, ignoreCase);
+    }
+
+    /**
+     * Sorted {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link net.dv8tion.jda.core.entities.Category Categories} of this Guild.
+     * <br>Categories are sorted according to their position.
+     *
+     * @return Sorted {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     */
+    SnowflakeCacheView<Category> getCategoryCache();
 
     /**
      * Gets a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} from this guild that has the same id as the
@@ -298,7 +430,10 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} with matching id.
      */
-    TextChannel getTextChannelById(String id);
+    default TextChannel getTextChannelById(String id)
+    {
+        return getTextChannelCache().getElementById(id);
+    }
 
     /**
      * Gets a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} from this guild that has the same id as the
@@ -312,7 +447,10 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} with matching id.
      */
-    TextChannel getTextChannelById(long id);
+    default TextChannel getTextChannelById(long id)
+    {
+        return getTextChannelCache().getElementById(id);
+    }
 
     /**
      * Gets all {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} in this {@link net.dv8tion.jda.core.entities.Guild Guild}.
@@ -320,7 +458,10 @@ public interface Guild extends ISnowflake
      *
      * @return An immutable List of all {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} in this Guild.
      */
-    List<TextChannel> getTextChannels();
+    default List<TextChannel> getTextChannels()
+    {
+        return getTextChannelCache().asList();
+    }
 
     /**
      * Gets a list of all {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} in this Guild that have the same
@@ -334,7 +475,19 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-empty immutable list of all TextChannels names that match the provided name.
      */
-    List<TextChannel> getTextChannelsByName(String name, boolean ignoreCase);
+    default List<TextChannel> getTextChannelsByName(String name, boolean ignoreCase)
+    {
+        return getTextChannelCache().getElementsByName(name, ignoreCase);
+    }
+
+    /**
+     * Sorted {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} of this Guild.
+     * <br>TextChannels are sorted according to their position.
+     *
+     * @return Sorted {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     */
+    SnowflakeCacheView<TextChannel> getTextChannelCache();
 
     /**
      * Gets a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} from this guild that has the same id as the
@@ -351,7 +504,10 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} with matching id.
      */
-    VoiceChannel getVoiceChannelById(String id);
+    default VoiceChannel getVoiceChannelById(String id)
+    {
+        return getVoiceChannelCache().getElementById(id);
+    }
 
     /**
      * Gets a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} from this guild that has the same id as the
@@ -365,7 +521,10 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} with matching id.
      */
-    VoiceChannel getVoiceChannelById(long id);
+    default VoiceChannel getVoiceChannelById(long id)
+    {
+        return getVoiceChannelCache().getElementById(id);
+    }
 
     /**
      * Gets all {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels} in this {@link net.dv8tion.jda.core.entities.Guild Guild}.
@@ -373,7 +532,10 @@ public interface Guild extends ISnowflake
      *
      * @return An immutable List of {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels}.
      */
-    List<VoiceChannel> getVoiceChannels();
+    default List<VoiceChannel> getVoiceChannels()
+    {
+        return getVoiceChannelCache().asList();
+    }
 
     /**
      * Gets a list of all {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels} in this Guild that have the same
@@ -387,7 +549,19 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-empty immutable list of all VoiceChannel names that match the provided name.
      */
-    List<VoiceChannel> getVoiceChannelsByName(String name, boolean ignoreCase);
+    default List<VoiceChannel> getVoiceChannelsByName(String name, boolean ignoreCase)
+    {
+        return getVoiceChannelCache().getElementsByName(name, ignoreCase);
+    }
+
+    /**
+     * Sorted {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels} of this Guild.
+     * <br>VoiceChannels are sorted according to their position.
+     *
+     * @return Sorted {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     */
+    SnowflakeCacheView<VoiceChannel> getVoiceChannelCache();
 
     /**
      * Gets a {@link net.dv8tion.jda.core.entities.Role Role} from this guild that has the same id as the
@@ -403,7 +577,10 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Role Role} with matching id.
      */
-    Role getRoleById(String id);
+    default Role getRoleById(String id)
+    {
+        return getRoleCache().getElementById(id);
+    }
 
     /**
      * Gets a {@link net.dv8tion.jda.core.entities.Role Role} from this guild that has the same id as the
@@ -416,7 +593,10 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Role Role} with matching id.
      */
-    Role getRoleById(long id);
+    default Role getRoleById(long id)
+    {
+        return getRoleCache().getElementById(id);
+    }
 
     /**
      * Gets all {@link net.dv8tion.jda.core.entities.Role Roles} in this {@link net.dv8tion.jda.core.entities.Guild Guild}.
@@ -424,7 +604,10 @@ public interface Guild extends ISnowflake
      *
      * @return An immutable List of {@link net.dv8tion.jda.core.entities.Role Roles}.
      */
-    List<Role> getRoles();
+    default List<Role> getRoles()
+    {
+        return getRoleCache().asList();
+    }
 
     /**
      * Gets a list of all {@link net.dv8tion.jda.core.entities.Role Roles} in this Guild that have the same
@@ -438,7 +621,19 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-empty immutable list of all Role names that match the provided name.
      */
-    List<Role> getRolesByName(String name, boolean ignoreCase);
+    default List<Role> getRolesByName(String name, boolean ignoreCase)
+    {
+        return getRoleCache().getElementsByName(name, ignoreCase);
+    }
+
+    /**
+     * Sorted {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link net.dv8tion.jda.core.entities.Role Roles} of this Guild.
+     * <br>Roles are sorted according to their position.
+     *
+     * @return Sorted {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     */
+    SnowflakeCacheView<Role> getRoleCache();
 
     /**
      * Gets an {@link net.dv8tion.jda.core.entities.Emote Emote} from this guild that has the same id as the
@@ -456,7 +651,10 @@ public interface Guild extends ISnowflake
      *
      * @return An Emote matching the specified Id.
      */
-    Emote getEmoteById(String id);
+    default Emote getEmoteById(String id)
+    {
+        return getEmoteCache().getElementById(id);
+    }
 
     /**
      * Gets an {@link net.dv8tion.jda.core.entities.Emote Emote} from this guild that has the same id as the
@@ -471,7 +669,10 @@ public interface Guild extends ISnowflake
      *
      * @return An Emote matching the specified Id.
      */
-    Emote getEmoteById(long id);
+    default Emote getEmoteById(long id)
+    {
+        return getEmoteCache().getElementById(id);
+    }
 
     /**
      * Gets all custom {@link net.dv8tion.jda.core.entities.Emote Emotes} belonging to this {@link net.dv8tion.jda.core.entities.Guild Guild}.
@@ -481,7 +682,10 @@ public interface Guild extends ISnowflake
      *
      * @return An immutable List of {@link net.dv8tion.jda.core.entities.Emote Emotes}.
      */
-    List<Emote> getEmotes();
+    default List<Emote> getEmotes()
+    {
+        return getEmoteCache().asList();
+    }
 
     /**
      * Gets a list of all {@link net.dv8tion.jda.core.entities.Emote Emotes} in this Guild that have the same
@@ -497,7 +701,18 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-empty immutable list of all Role names that match the provided name.
      */
-    List<Emote> getEmotesByName(String name, boolean ignoreCase);
+    default List<Emote> getEmotesByName(String name, boolean ignoreCase)
+    {
+        return getEmoteCache().getElementsByName(name, ignoreCase);
+    }
+
+    /**
+     * {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link net.dv8tion.jda.core.entities.Emote Emotes} of this Guild.
+     *
+     * @return {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     */
+    SnowflakeCacheView<Emote> getEmoteCache();
 
     /**
      * Gets an unmodifiable list of the currently banned {@link net.dv8tion.jda.core.entities.User Users}.
@@ -514,7 +729,7 @@ public interface Guild extends ISnowflake
      *     <br>We were removed from the Guild before finishing the task</li>
      * </ul>
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link #isAvailable() available}
@@ -542,7 +757,7 @@ public interface Guild extends ISnowflake
      * @param  days
      *         Minimum number of days since a member has been offline to get affected.
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the account doesn't have {@link net.dv8tion.jda.core.Permission#KICK_MEMBERS KICK_MEMBER} Permission.
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link #isAvailable() available}
@@ -557,10 +772,11 @@ public interface Guild extends ISnowflake
 
     /**
      * The @everyone {@link net.dv8tion.jda.core.entities.Role Role} of this {@link net.dv8tion.jda.core.entities.Guild Guild}.
-     * <br>This role is special because its {@link net.dv8tion.jda.core.entities.Role#getPosition()} is calculated as
+     * <br>This role is special because its {@link net.dv8tion.jda.core.entities.Role#getPosition() position} is calculated as
      * {@code -1}. All other role positions are 0 or greater. This implies that the public role is <b>always</b> below
      * any custom roles created in this Guild. Additionally, all members of this guild are implied to have this role so
-     * it is not included in the list returned by {@link net.dv8tion.jda.core.entities.Member#getRoles()}.
+     * it is not included in the list returned by {@link net.dv8tion.jda.core.entities.Member#getRoles() Member.getRoles()}.
+     * <br>The ID of this Role is the Guild's ID thus it is equivalent to using {@link #getRoleById(long) getRoleById(getIdLong())}.
      *
      * @return The @everyone {@link net.dv8tion.jda.core.entities.Role Role}
      */
@@ -573,9 +789,32 @@ public interface Guild extends ISnowflake
      * <br>This channel cannot be deleted and the {@link #getPublicRole() Public Role} always has the ability to
      * {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ} this channel.
      *
+     * @deprecated
+     *         As the concept of a public channel has been removed from discord this method may return null for newer guild.
+     *         <br>The default channel is now different for each user and depends on their permissions, see
+     *         {@link net.dv8tion.jda.core.entities.Member#getDefaultChannel() Member#getDefaultChannel()} for more details.
+     *         <br>If you want to get the default channel of old guilds you can use {@code guild.getTextChannelById(guild.getIdLong())}.
+     *         <br><b>This will be removed in a future version!</b>
+     *
      * @return The {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} representing the public channel for this guild.
+     *
+     * @see    net.dv8tion.jda.core.entities.Member#getDefaultChannel()
      */
+    @Deprecated
     TextChannel getPublicChannel();
+
+    /**
+     * The default {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} for a {@link net.dv8tion.jda.core.entities.Guild Guild}.
+     * <br>This is the channel that the Discord client will default to opening when a Guild is opened for the first time when accepting an invite
+     * that is not directed at a specific {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
+     *
+     * <p>Note: This channel is the first channel in the guild (ordered by position) that the {@link #getPublicRole()}
+     * has the {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ} in.
+     *
+     * @return The {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} representing the default channel for this guild
+     */
+    @Nullable
+    TextChannel getDefaultChannel();
 
     /**
      * Returns the {@link net.dv8tion.jda.core.managers.GuildManager GuildManager} for this Guild, used to modify
@@ -661,7 +900,7 @@ public interface Guild extends ISnowflake
      * }
      * </code></pre>
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account
      *         does not have the permission {@link net.dv8tion.jda.core.Permission#VIEW_AUDIT_LOGS VIEW_AUDIT_LOGS}
      *
@@ -718,10 +957,15 @@ public interface Guild extends ISnowflake
     RestAction<Void> delete(String mfaCode);
 
     /**
-     * Returns the {@link net.dv8tion.jda.core.managers.AudioManager AudioManager} that represents the
+     * The {@link net.dv8tion.jda.core.managers.AudioManager AudioManager} that represents the
      * audio connection for this Guild.
+     * <br>If no AudioManager exists for this Guild, this will create a new one.
+     * <br>This operation is synchronized on all audio managers for this JDA instance,
+     * this means that calling getAudioManager() on any other guild while a thread is accessing this method may be locked.
      *
      * @return The AudioManager for this Guild.
+     *
+     * @see    net.dv8tion.jda.core.JDA#getAudioManagerCache() JDA.getAudioManagerCache()
      */
     AudioManager getAudioManager();
 
@@ -735,12 +979,12 @@ public interface Guild extends ISnowflake
     /**
      * Retrieves all {@link net.dv8tion.jda.core.entities.Invite Invites} for this guild.
      * <br>Requires {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER MANAGE_SERVER} in this guild.
-     * Will throw a {@link net.dv8tion.jda.core.exceptions.PermissionException PermissionException} otherwise.
+     * Will throw a {@link net.dv8tion.jda.core.exceptions.InsufficientPermissionException InsufficientPermissionException} otherwise.
      *
      * <p>To get all invites for a {@link net.dv8tion.jda.core.entities.Channel Channel}
      * use {@link net.dv8tion.jda.core.entities.Channel#getInvites() Channel.getInvites()}
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         if the account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER MANAGE_SERVER} in this Guild.
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.core.entities.Invite Invite}{@literal >}
@@ -758,7 +1002,7 @@ public interface Guild extends ISnowflake
      * <p>To get all webhooks for a specific {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}, use
      * {@link TextChannel#getWebhooks()}
      *
-     * @throws net.dv8tion.jda.core.exceptions.PermissionException
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         if the account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_WEBHOOKS MANAGE_WEBHOOKS} in this Guild.
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.core.entities.Webhook Webhook}{@literal >}

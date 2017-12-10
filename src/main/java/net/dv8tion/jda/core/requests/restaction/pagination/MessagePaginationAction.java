@@ -18,7 +18,7 @@ package net.dv8tion.jda.core.requests.restaction.pagination;
 
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
@@ -38,6 +38,26 @@ import java.util.List;
  * Minimum - 1
  * <br>Maximum - 100
  *
+ * <h1>Example</h1>
+ * <pre><code>
+ * /**
+ *  * Iterates messages in an async stream and stops once the limit has been reached.
+ *  *&#47;
+ * public static void onEachMessageAsync(MessageChannel channel, {@literal Consumer<Message>} consumer, int limit)
+ * {
+ *     if (limit{@literal <} 1)
+ *         return;
+ *     <u>MessagePaginationAction</u> action = channel.<u>getIterableHistory</u>();
+ *     AtomicInteger counter = new AtomicInteger(limit);
+ *     action.forEachAsync( (message){@literal ->}
+ *     {
+ *         consumer.accept(message);
+ *         // if false the iteration is terminated; else it continues
+ *         return counter.decrementAndGet() == 0;
+ *     });
+ * }
+ * </code></pre>
+ *
  * @since  3.1
  * @author Florian Spieß
  */
@@ -53,7 +73,7 @@ public class MessagePaginationAction extends PaginationAction<Message, MessagePa
         {
             TextChannel textChannel = (TextChannel) channel;
             if (!textChannel.getGuild().getSelfMember().hasPermission(textChannel, Permission.MESSAGE_HISTORY))
-                throw new PermissionException(Permission.MESSAGE_HISTORY);
+                throw new InsufficientPermissionException(Permission.MESSAGE_HISTORY);
         }
 
         this.channel = channel;

@@ -21,7 +21,6 @@ import net.dv8tion.jda.client.events.relationship.FriendAddedEvent;
 import net.dv8tion.jda.client.events.relationship.FriendRequestReceivedEvent;
 import net.dv8tion.jda.client.events.relationship.FriendRequestSentEvent;
 import net.dv8tion.jda.client.events.relationship.UserBlockedEvent;
-import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.handle.EventCache;
 import net.dv8tion.jda.core.handle.SocketHandler;
@@ -41,7 +40,7 @@ public class RelationshipAddHandler extends SocketHandler
         Relationship relationship = api.getEntityBuilder().createRelationship(content);
         if (relationship == null)
         {
-            WebSocketClient.LOG.warn("Received a RELATIONSHIP_ADD with an unknown type! JSON: " + content);
+            WebSocketClient.LOG.warn("Received a RELATIONSHIP_ADD with an unknown type! JSON: {}", content);
             return null;
         }
         switch (relationship.getType())
@@ -71,7 +70,7 @@ public class RelationshipAddHandler extends SocketHandler
                                 relationship));
                 break;
             default:
-                WebSocketClient.LOG.warn("Received a RELATIONSHIP_ADD with an unknown type! JSON: " + content);
+                WebSocketClient.LOG.warn("Received a RELATIONSHIP_ADD with an unknown type! JSON: {}", content);
                 return null;
         }
         api.getEventCache().playbackCache(EventCache.Type.RELATIONSHIP, relationship.getUser().getIdLong());

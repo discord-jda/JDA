@@ -15,16 +15,16 @@
  */
 package net.dv8tion.jda.core.utils;
 
-import gnu.trove.TCollections;
+import gnu.trove.impl.sync.TSynchronizedLongObjectMap;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.ISnowflake;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okio.BufferedSink;
 import okio.Okio;
 import okio.Source;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -42,6 +42,20 @@ public class MiscUtil
     private static final DateTimeFormatter dtFormatter = DateTimeFormatter.RFC_1123_DATE_TIME;
 
     /**
+     * Converts the provided epoch millisecond timestamp to a Discord Snowflake.
+     * <br>This can be used as a marker/pivot for {@link net.dv8tion.jda.core.entities.MessageHistory MessageHistory} creation.
+     *
+     * @param  millisTimestamp
+     *         The epoch millis to convert
+     *
+     * @return Shifted epoch millis for Discord
+     */
+    public static long getDiscordTimestamp(long millisTimestamp)
+    {
+        return (millisTimestamp << TIMESTAMP_OFFSET) + DISCORD_EPOCH;
+    }
+
+    /**
      * Gets the creation-time of a JDA-entity by doing the reverse snowflake algorithm on its id.
      * This returns the creation-time of the actual entity on Discords side, not inside JDA.
      *
@@ -52,7 +66,7 @@ public class MiscUtil
      */
     public static OffsetDateTime getCreationTime(long entityId)
     {
-        long timestamp = ((entityId >>> TIMESTAMP_OFFSET) + DISCORD_EPOCH);
+        long timestamp = (entityId >>> TIMESTAMP_OFFSET) + DISCORD_EPOCH;
         Calendar gmt = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
         gmt.setTimeInMillis(timestamp);
         return OffsetDateTime.ofInstant(gmt.toInstant(), gmt.getTimeZone().toZoneId());
@@ -90,7 +104,65 @@ public class MiscUtil
     }
 
     /**
+     * Returns the shard id the given guild will be loaded on for the given amount of shards.
+     *
+     * Discord determines which guilds a shard is connect to using the following format:
+     * {@code shardId == (guildId >>> 22) % totalShards}
+     * <br>Source for formula: <a href="https://discordapp.com/developers/docs/topics/gateway#sharding">Discord Documentation</a>
+     *
+     * @param guildId
+     *        The guild id.
+     * @param shards
+     *        The amount of shards.
+     * 
+     * @return The shard id for the guild.
+     */
+    public static int getShardForGuild(long guildId, int shards)
+    {
+        return (int) ((guildId >>> 22) % shards);
+    }
+
+    /**
+     * Returns the shard id the given guild will be loaded on for the given amount of shards.
+     *
+     * Discord determines which guilds a shard is connect to using the following format:
+     * {@code shardId == (guildId >>> 22) % totalShards}
+     * <br>Source for formula: <a href="https://discordapp.com/developers/docs/topics/gateway#sharding">Discord Documentation</a>
+     *
+     * @param guildId
+     *        The guild id.
+     * @param shards
+     *        The amount of shards.
+     *
+     * @return The shard id for the guild.
+     */
+    public static int getShardForGuild(String guildId, int shards)
+    {
+        return getShardForGuild(parseSnowflake(guildId), shards);
+    }
+
+    /**
+     * Returns the shard id the given {@link net.dv8tion.jda.core.entities.Guild Guild} will be loaded on for the given amount of shards.
+     *
+     * Discord determines which guilds a shard is connect to using the following format:
+     * {@code shardId == (guildId >>> 22) % totalShards}
+     * <br>Source for formula: <a href="https://discordapp.com/developers/docs/topics/gateway#sharding">Discord Documentation</a>
+     *
+     * @param guild
+     *        The guild.
+     * @param shards
+     *        The amount of shards.
+     *
+     * @return The shard id for the guild.
+     */
+    public static int getShardForGuild(Guild guild, int shards)
+    {
+        return getShardForGuild(guild.getIdLong(), shards);
+    }
+
+    /**
      * Generates a new thread-safe {@link gnu.trove.map.TLongObjectMap TLongObjectMap}
+     *
      * @param  <T>
      *         The Object type
      *
@@ -98,7 +170,7 @@ public class MiscUtil
      */
     public static <T> TLongObjectMap<T> newLongMap()
     {
-        return TCollections.synchronizedMap(new TLongObjectHashMap<T>());
+        return new TSynchronizedLongObjectMap<>(new TLongObjectHashMap<T>(), new Object());
     }
 
     /**
@@ -107,9 +179,6 @@ public class MiscUtil
      *
      * @param  chars
      *         The characters to encode
-     *
-     * @throws java.lang.RuntimeException
-     *         If somehow the encoding fails
      *
      * @return The encoded String
      */
@@ -121,7 +190,7 @@ public class MiscUtil
         }
         catch (UnsupportedEncodingException e)
         {
-            throw new RuntimeException(e); // thanks JDK 1.4
+            throw new AssertionError(e); // thanks JDK 1.4
         }
     }
 

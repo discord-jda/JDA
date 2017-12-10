@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Icon;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
@@ -169,6 +170,28 @@ public class GuildManager
     public AuditableRestAction<Void> setAfkChannel(VoiceChannel afkChannel)
     {
         return updatable.getAfkChannelField().setValue(afkChannel).update();
+    }
+
+    /**
+     * Sets the system {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} of this {@link net.dv8tion.jda.core.entities.Guild Guild}.
+     * More information can be found {@link GuildManagerUpdatable#getSystemChannelField() here}!
+     *
+     * <p>For information on possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses}
+     * by the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} see {@link GuildManagerUpdatable#update() #update()}
+     *
+     * @param  systemChannel
+     *         The new system channel for this {@link net.dv8tion.jda.core.entities.Guild Guild}
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     *         <br>Update RestAction from {@link GuildManagerUpdatable#update() #update()}
+     *
+     * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#getSystemChannelField()
+     * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#update()
+     */
+    @CheckReturnValue
+    public AuditableRestAction<Void> setSystemChannel(TextChannel systemChannel)
+    {
+        return updatable.getSystemChannelField().setValue(systemChannel).update();
     }
 
     /**

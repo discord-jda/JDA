@@ -19,6 +19,7 @@ package net.dv8tion.jda.core.handle;
 import net.dv8tion.jda.client.events.group.GroupJoinEvent;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.events.channel.category.CategoryCreateEvent;
 import net.dv8tion.jda.core.events.channel.priv.PrivateChannelCreateEvent;
 import net.dv8tion.jda.core.events.channel.text.TextChannelCreateEvent;
 import net.dv8tion.jda.core.events.channel.voice.VoiceChannelCreateEvent;
@@ -49,33 +50,41 @@ public class ChannelCreateHandler extends SocketHandler
             case TEXT:
             {
                 api.getEventManager().handle(
-                        new TextChannelCreateEvent(
-                                api, responseNumber,
-                                api.getEntityBuilder().createTextChannel(content, guildId)));
+                    new TextChannelCreateEvent(
+                        api, responseNumber,
+                        api.getEntityBuilder().createTextChannel(content, guildId)));
                 break;
             }
             case VOICE:
             {
                 api.getEventManager().handle(
-                        new VoiceChannelCreateEvent(
-                                api, responseNumber,
-                                api.getEntityBuilder().createVoiceChannel(content, guildId)));
+                    new VoiceChannelCreateEvent(
+                        api, responseNumber,
+                        api.getEntityBuilder().createVoiceChannel(content, guildId)));
+                break;
+            }
+            case CATEGORY:
+            {
+                api.getEventManager().handle(
+                    new CategoryCreateEvent(
+                        api, responseNumber,
+                        api.getEntityBuilder().createCategory(content, guildId)));
                 break;
             }
             case PRIVATE:
             {
                 api.getEventManager().handle(
-                        new PrivateChannelCreateEvent(
-                                api, responseNumber,
-                                api.getEntityBuilder().createPrivateChannel(content)));
+                    new PrivateChannelCreateEvent(
+                        api, responseNumber,
+                        api.getEntityBuilder().createPrivateChannel(content)));
                 break;
             }
             case GROUP:
             {
                 api.getEventManager().handle(
-                        new GroupJoinEvent(
-                                api, responseNumber,
-                                api.getEntityBuilder().createGroup(content)));
+                    new GroupJoinEvent(
+                        api, responseNumber,
+                        api.getEntityBuilder().createGroup(content)));
                 break;
             }
             default:
