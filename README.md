@@ -156,22 +156,24 @@ Latest Version:
 
 Be sure to replace the **VERSION** key below with the latest version shown above!
 
-Maven
+**Maven**
 ```xml
 <dependency>
     <groupId>net.dv8tion</groupId>
     <artifactId>JDA</artifactId>
     <version>VERSION</version>
 </dependency>
-
+```
+```xml
 <repository>
     <id>jcenter</id>
     <name>jcenter-bintray</name>
     <url>http://jcenter.bintray.com</url>
 </repository>
+
 ```
 
-Gradle
+**Gradle**
 ```gradle
 dependencies {
     compile 'net.dv8tion:JDA:VERSION'
@@ -183,6 +185,49 @@ repositories {
 ```
 
 The builds are distributed using JCenter through Bintray [JDA JCenter Bintray](https://bintray.com/dv8fromtheworld/maven/JDA/)
+
+### Development Builds
+
+The builds on the `development` branch can be found on [jitpack](https://jitpack.io/#DV8FromTheWorld/JDA)
+
+**Maven**
+```xml
+<dependency>
+    <groupId>com.github.DV8FromTheWorld</groupId>
+    <artifactId>JDA</artifactId>
+    <version>COMMIT</version>
+</dependency>
+```
+```xml
+<repository>
+    <id>jcenter</id>
+    <name>jcenter-bintray</name>
+    <url>http://jcenter.bintray.com</url>
+</repository>
+<repository>
+    <name>jitpack</name>
+    <url>https://jitpack.io</url>
+</repository>
+
+```
+
+**Gradle**
+```gradle
+dependencies {
+    compile 'com.github.DV8FromTheWorld:JDA:COMMIT'
+}
+
+repositories {
+    jcenter()
+    maven {
+        name 'jitpack'
+        url 'https://jitpack.io'
+    }
+}
+```
+
+> Replace `COMMIT` with the first 7 characters of the commit to use, alternatively you can also choose
+> to use the build in the format: `feature~something` where `~` is used to replace the reserved `/` character.
 
 ### Logging Framework - SLF4J
 JDA is using [SLF4J](https://www.slf4j.org/) to log its messages. 
@@ -239,15 +284,6 @@ Features include:
 - Paginated Message using Reactions
 - EventWaiter allowing to wait for a response and other events
 
-### [Kotlin-JDA](https://github.com/JDA-Applications/Kotlin-JDA)
-
-Created and maintained by [MinnDevelopment](https://github.com/MinnDevelopment)
-<br>Kotlin-JDA provides several extensions allowing to easily use kotlin idioms with JDA.
-
-Features include:
-- Groovy-style Builders
-- Coroutine RestActions
-
 ### [JDAction](https://github.com/sedmelluq/jdaction)
 
 Created and maintained by [sedmelluq](https://github.com/sedmelluq)
@@ -263,8 +299,8 @@ More info about RestAction: [Wiki](https://github.com/DV8FromTheWorld/JDA/wiki/7
 More can be found in our github organization: [JDA-Applications](https://github.com/JDA-Applications)
 
 ## Contributing to JDA
-If you want to contribute to JDA, make sure to base your branch off of our master branch (or a feature-branch)
-and create your PR into that **same** branch. **We will be rejecting any PRs between branches!**
+If you want to contribute to JDA, make sure to base your branch off of our **development** branch (or a feature-branch)
+and create your PR into that **same** branch. **We will be rejecting any PRs between branches or into release branches!**
 
 It is also highly recommended to get in touch with the Devs before opening Pull Requests (either through an issue or the Discord servers mentioned above).<br>
 It is very possible that your change might already be in development or you missed something.

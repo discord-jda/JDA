@@ -14,12 +14,14 @@ Hey there! Before you report a bug or suggest a new feature,
 > This is not the place to learn Java. Please refer to [StackOverflow][stack overflow]
   for your general programming questions.
 
-## Template
+## Description
 
 ### Issue Type
 
 - [ ] Bug Report
 - [ ] Feature Request
+
+> For questions join the official JDA discord server: https://discord.gg/0hMr4ce0tIl3SLv5
 
 ### Description
 

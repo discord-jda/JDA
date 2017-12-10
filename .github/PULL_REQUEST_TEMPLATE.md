@@ -12,8 +12,6 @@ There are several guidelines you should follow in order for your
   If you find yourself having an overwhelming amount of commits, you
   can **rebase** your branch.
 
-## Template
-
-### Pull Request
+## Description
 
 Replace this sentence with general description of what your Pull Request does.

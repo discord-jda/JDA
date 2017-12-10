@@ -5,7 +5,7 @@ Depending on your changes there are certain rules you have to follow if you expe
 your Pull Request to be merged.
 
 **Note**: It is recommended to create a new remote branch for each Pull Request. 
-Based on the current `upstream/master` changes!
+Based on the current `upstream/development` changes!
 
 1. Adding a new Method or Class
     - If your addition is not internal (e.g. an impl class or private method) you have to write documentation.
