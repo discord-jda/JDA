@@ -1679,11 +1679,12 @@ public class GuildController
             "Cannot add the PublicRole of a Guild to a Member. All members have this role by default!");
 
         // Return an empty rest action if there were no changes
-        if (member.getRoles().size() == roles.size() && member.getRoles().containsAll(roles))
+        final List<Role> memberRoles = member.getRoles();
+        if (memberRoles.size() == roles.size() && memberRoles.containsAll(roles))
             return new AuditableRestAction.EmptyRestAction<>(guild.getJDA());
 
         //Make sure that the current managed roles are preserved and no new ones are added.
-        List<Role> currentManaged = member.getRoles().stream().filter(Role::isManaged).collect(Collectors.toList());
+        List<Role> currentManaged = memberRoles.stream().filter(Role::isManaged).collect(Collectors.toList());
         List<Role> newManaged = roles.stream().filter(Role::isManaged).collect(Collectors.toList());
         if (!currentManaged.isEmpty() || !newManaged.isEmpty())
         {
