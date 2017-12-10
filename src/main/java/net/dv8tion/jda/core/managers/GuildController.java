@@ -1523,29 +1523,28 @@ public class GuildController
             Checks.notNull(role, "role in rolesToAdd");
             checkGuild(role.getGuild(), "role: " + role.toString());
             checkPosition(role);
-            if (role.isManaged())
-                throw new IllegalArgumentException("Cannot add a Managed role to a Member. Role: " + role.toString());
+            Checks.check(!role.isManaged(), "Cannot add a Managed role to a Member. Role: %s", role.toString());
         });
         rolesToRemove.forEach(role ->
         {
             Checks.notNull(role, "role in rolesToRemove");
             checkGuild(role.getGuild(), "role: " + role.toString());
             checkPosition(role);
-            if (role.isManaged())
-                throw new IllegalArgumentException("Cannot remove a Managed role from a Member. Role: " + role.toString());
+            Checks.check(!role.isManaged(), "Cannot remove a Managed role from a Member. Role: %s", role.toString());
         });
 
         Set<Role> currentRoles = new HashSet<>(((MemberImpl) member).getRoleSet());
-        Collection netRolesToAdd = new HashSet<>(rolesToAdd);
-        netRolesToAdd.removeAll(rolesToRemove);
-        
-        if(currentRoles.addAll(netRolesToAdd))
+        Set<Role> newRolesToAdd = new HashSet<>(rolesToAdd);
+        newRolesToAdd.removeAll(rolesToRemove);
+
+        // If no changes have been made we return an EmptyRestAction instead
+        if (currentRoles.addAll(newRolesToAdd))
             currentRoles.removeAll(rolesToRemove);
-        else if(!currentRoles.removeAll(rolesToRemove))
+        else if (!currentRoles.removeAll(rolesToRemove))
             return new AuditableRestAction.EmptyRestAction<>(guild.getJDA());
 
-        if (currentRoles.contains(guild.getPublicRole()))
-            throw new IllegalArgumentException("Cannot add the PublicRole of a Guild to a Member. All members have this role by default!");
+        Checks.check(!currentRoles.contains(guild.getPublicRole()),
+            "Cannot add the PublicRole of a Guild to a Member. All members have this role by default!");
 
         JSONObject body = new JSONObject()
                 .put("roles", currentRoles.stream().map(Role::getId).collect(Collectors.toList()));
