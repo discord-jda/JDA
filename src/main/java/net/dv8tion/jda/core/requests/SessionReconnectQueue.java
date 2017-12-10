@@ -23,7 +23,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class SessionReconnectQueue
 {
-    private static final int RECONNECT_DELAY = WebSocketClient.IDENTIFY_DELAY * 1000;
+    public static final int RECONNECT_DELAY = WebSocketClient.IDENTIFY_DELAY * 1000;
+
     protected final Object lock = new Object();
     protected final BlockingQueue<WebSocketClient> reconnectQueue;
     protected volatile Thread reconnectThread;
@@ -43,6 +44,11 @@ public class SessionReconnectQueue
         if (!reconnectQueue.offer(client))
             throw new IllegalStateException("Queue rejected session");
         runWorker();
+    }
+
+    protected void removeSession(final WebSocketClient client)
+    {
+        reconnectQueue.remove(client);
     }
 
     protected void runWorker()

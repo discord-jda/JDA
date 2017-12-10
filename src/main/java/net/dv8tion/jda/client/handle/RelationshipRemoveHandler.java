@@ -61,7 +61,7 @@ public class RelationshipRemoveHandler extends SocketHandler
             EventCache.LOG.debug("Received a RELATIONSHIP_REMOVE for a relationship that was not yet cached! JSON: {}", content);
             return null;
         }
-        ((JDAClientImpl) api.asClient()).getRelationshipMap().remove(userId);
+        api.asClient().getRelationshipMap().remove(userId);
 
         if (relationship.getType() == RelationshipType.FRIEND)
         {

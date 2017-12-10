@@ -803,8 +803,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     @CheckReturnValue
     default RestAction<Message> getMessageById(String messageId)
     {
-        if (getJDA().getAccountType() != AccountType.BOT)
-            throw new AccountTypeException(AccountType.BOT);
+        AccountTypeException.check(getJDA().getAccountType(), AccountType.BOT);
         Checks.notEmpty(messageId, "Provided messageId");
 
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(getId(), messageId);

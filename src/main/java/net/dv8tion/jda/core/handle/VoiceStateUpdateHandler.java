@@ -227,7 +227,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
                 return;
             }
 
-            CallUser cUser = ((JDAClientImpl) api.asClient()).getCallUserMap().get(userId);
+            CallUser cUser = api.asClient().getCallUserMap().get(userId);
             if (cUser != null && channelId != cUser.getCall().getCallableChannel().getIdLong())
             {
                 WebSocketClient.LOG.error("Received a VOICE_STATE_UPDATE for a user joining a call, but the user was already in a different call! Big error! JSON: {}", content);
@@ -242,7 +242,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
                 return;
             }
 
-            ((JDAClientImpl) api.asClient()).getCallUserMap().put(userId, cUser);
+            api.asClient().getCallUserMap().put(userId, cUser);
             vState = (CallVoiceStateImpl) cUser.getVoiceState();
             vState.setSessionId(sessionId);
             vState.setInCall(true);
@@ -254,7 +254,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
         }
         else //Leaving a call
         {
-            CallUser cUser = ((JDAClientImpl) api.asClient()).getCallUserMap().remove(userId);
+            CallUser cUser = api.asClient().getCallUserMap().remove(userId);
             if (cUser == null)
             {
                 api.getEventCache().cache(EventCache.Type.USER, userId, () -> handle(responseNumber, allContent));

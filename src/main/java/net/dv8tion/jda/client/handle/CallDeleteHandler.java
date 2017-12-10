@@ -63,7 +63,7 @@ public class CallDeleteHandler extends SocketHandler
             group.setCurrentCall(null);
             call.getCallUserMap().forEachKey(userId ->
             {
-                ((JDAClientImpl) api.asClient()).getCallUserMap().remove(userId);
+                api.asClient().getCallUserMap().remove(userId);
                 return true;
             });
         }
@@ -71,8 +71,8 @@ public class CallDeleteHandler extends SocketHandler
         {
             PrivateChannelImpl priv = (PrivateChannelImpl) channel;
             priv.setCurrentCall(null);
-            ((JDAClientImpl) api.asClient()).getCallUserMap().remove(priv.getUser().getIdLong());
-            ((JDAClientImpl) api.asClient()).getCallUserMap().remove(api.getSelfUser().getIdLong());
+            api.asClient().getCallUserMap().remove(priv.getUser().getIdLong());
+            api.asClient().getCallUserMap().remove(api.getSelfUser().getIdLong());
         }
 
         api.getEventManager().handle(

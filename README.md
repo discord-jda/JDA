@@ -100,7 +100,7 @@ Sharding will limit the amount of Guilds/Channels/Users visible to the JDA sessi
 access information of other shards.
 
 To use sharding in JDA you will need to use `JDABuilder.useSharding(int shardId, int shardTotal)`. The **shardId** is 0-based which means the first shard
-has the ID 0. The **shardTotal** is the total amount of shards (not 0-based) which can be seen similar to the length of an array, the last shard has the ID of 
+has the ID 0. The **shardTotal** is the total amount of shards (not 0-based) which can be seen similar to the length of an array, the last shard has the ID of
 `shardTotal - 1`.
 
 When using sharding it is also recommended to use a `SessionReconnectQueue` instance for all shards. This allows JDA to properly
@@ -185,7 +185,7 @@ repositories {
 The builds are distributed using JCenter through Bintray [JDA JCenter Bintray](https://bintray.com/dv8fromtheworld/maven/JDA/)
 
 ### Logging Framework - SLF4J
-JDA is using [SLF4J](https://www.slf4j.org/) to log its messages. 
+JDA is using [SLF4J](https://www.slf4j.org/) to log its messages.
 
 That means you should add some SLF4J implementation to your build path in addition to JDA.
 If no implementation is found, following message will be printed to the console on startup:
@@ -221,7 +221,7 @@ and [Setup](https://github.com/DV8FromTheWorld/JDA/wiki/2\)-Setup) Pages.
 Created and maintained by [sedmelluq](https://github.com/sedmelluq)
 <br>LavaPlayer is the most popular library used by Music Bots created in Java.
 It is highly compatible with JDA and Discord4J and allows to play audio from
-Youtube, Soundcloud, Twitch, Bandcamp and [more providers](https://github.com/sedmelluq/lavaplayer#supported-formats). 
+Youtube, Soundcloud, Twitch, Bandcamp and [more providers](https://github.com/sedmelluq/lavaplayer#supported-formats).
 <br>The library can easily be expanded to more services by implementing your own AudioSourceManager and registering it.
 
 It is recommended to read the [Usage](https://github.com/sedmelluq/lavaplayer#usage) section of LavaPlayer
@@ -302,7 +302,7 @@ All dependencies are managed automatically by Gradle.
    * Version: **1.7.25**
    * [Website](https://www.slf4j.org/)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/org.slf4j%3Aslf4j-api/view)
-   
+
 ## Related Projects
 
 - [Discord4J](https://github.com/austinv11/Discord4J)
