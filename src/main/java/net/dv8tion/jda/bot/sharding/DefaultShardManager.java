@@ -36,6 +36,7 @@ import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.tuple.Pair;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
+import org.slf4j.MDC;
 
 import javax.security.auth.login.LoginException;
 import java.util.*;
@@ -196,6 +197,11 @@ public class DefaultShardManager implements ShardManager
     protected IntFunction<OnlineStatus> statusProvider;
 
     /**
+     * The MDC context new JDA instances should have on startup.
+     */
+    protected Map<String, String> contextMap;
+
+    /**
      * Creates a new DefaultShardManager instance.
      * @param  shardsTotal
      *         The total amount of shards or {@code -1} to retrieve the recommended amount from discord.
@@ -250,7 +256,8 @@ public class DefaultShardManager implements ShardManager
                                   final int maxReconnectDelay, final int corePoolSize, final boolean enableVoice,
                                   final boolean enableShutdownHook, final boolean enableBulkDeleteSplitting,
                                   final boolean autoReconnect, final IntFunction<Boolean> idleProvider,
-                                  final boolean retryOnTimeout, boolean useShutdownNow)
+                                  final boolean retryOnTimeout, final boolean useShutdownNow,
+                                  final Map<String, String> contextMap)
     {
         this.shardsTotal = shardsTotal;
         this.listeners = listeners;
@@ -272,6 +279,7 @@ public class DefaultShardManager implements ShardManager
         this.idleProvider = idleProvider;
         this.retryOnTimeout = retryOnTimeout;
         this.useShutdownNow = useShutdownNow;
+        this.contextMap = contextMap;
 
         if (shardsTotal != -1)
         {
@@ -489,7 +497,7 @@ public class DefaultShardManager implements ShardManager
     {
         final JDAImpl jda = new JDAImpl(AccountType.BOT, this.token, this.httpClientBuilder, this.wsFactory, this.shardedRateLimiter,
             this.autoReconnect, this.enableVoice, this.enableBulkDeleteSplitting, this.enableBulkDeleteSplitting, retryOnTimeout,
-            this.corePoolSize, this.maxReconnectDelay);
+            this.corePoolSize, this.maxReconnectDelay, this.contextMap == null ? null : new ConcurrentHashMap<>(this.contextMap));
 
         jda.asBot().setShardManager(this);
 
@@ -597,7 +605,12 @@ public class DefaultShardManager implements ShardManager
         ThreadFactory factory = threadFactory == null
             ? r ->
                 {
-                    final Thread t = new Thread(r, "DefaultShardManager");
+                    final Thread t = new Thread(() ->
+                    {
+                        MDC.setContextMap(contextMap);
+                        r.run();
+                    });
+                    t.setName("DefaultShardManager");
                     t.setDaemon(true);
                     t.setPriority(Thread.NORM_PRIORITY + 1);
                     return t;

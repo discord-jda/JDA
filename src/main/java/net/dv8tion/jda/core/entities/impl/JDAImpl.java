@@ -53,10 +53,7 @@ import org.slf4j.MDC;
 
 import javax.security.auth.login.LoginException;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 public class JDAImpl implements JDA
@@ -121,7 +118,7 @@ public class JDAImpl implements JDA
         this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
         this.pool = new ScheduledThreadPoolExecutor(corePoolSize, new JDAThreadFactory());
         this.maxReconnectDelay = maxReconnectDelay;
-        this.contextMap = contextMap == null ? new HashMap<>() : contextMap;
+        this.contextMap = contextMap == null ? new ConcurrentHashMap<>() : contextMap;
 
         this.presence = new PresenceImpl(this);
         this.requester = new Requester(this, rateLimiter);
