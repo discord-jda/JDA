@@ -819,7 +819,7 @@ public class EntityBuilder
                 if (user.isFake() && !fromWebhook)
                 {
                     UserImpl impl = (UserImpl) user;
-                    impl.setName(author.getString("name"))
+                    impl.setName(author.getString("username"))
                         .setDiscriminator(author.get("discriminator").toString())
                         .setAvatarId(author.optString("avatar", null))
                         .setBot(Helpers.optBoolean(author, "bot"));
