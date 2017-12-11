@@ -16,8 +16,12 @@
 
 package net.dv8tion.jda.core.utils;
 
+import org.json.JSONObject;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Objects;
 
 /**
@@ -119,5 +123,47 @@ public final class Helpers
         final PrintWriter pw = new PrintWriter(sw, true);
         throwable.printStackTrace(pw);
         return sw.getBuffer().toString();
+    }
+
+    // ## CollectionUtils ##
+
+    public static boolean deepEquals(Collection<?> first, Collection<?> second)
+    {
+        if (first != null)
+        {
+            if (second == null)
+                return false;
+            if (first.size() != second.size())
+                return false;
+            for (Iterator<?> itFirst = first.iterator(), itSecond = second.iterator(); itFirst.hasNext(); )
+            {
+                Object elementFirst = itFirst.next();
+                Object elementSecond = itSecond.next();
+                if (!Objects.equals(elementFirst, elementSecond))
+                    return false;
+            }
+        }
+        else if (second != null)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    // ## JSONObject ##
+
+    public static boolean optBoolean(JSONObject object, String key)
+    {
+        return !object.isNull(key) && object.getBoolean(key);
+    }
+
+    public static int optInt(JSONObject object, String key, int defaultValue)
+    {
+        return object.isNull(key) ? defaultValue : object.getInt(key);
+    }
+
+    public static long optLong(JSONObject object, String key, long defaultValue)
+    {
+        return object.isNull(key) ? defaultValue : object.getLong(key);
     }
 }

@@ -24,6 +24,9 @@ import net.dv8tion.jda.core.entities.*;
  * Fired if a Message was deleted in a {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.<br>
  * <br>
  * Use: Detect when a Message is deleted. No matter if private or guild.
+ *
+ * <p><b>JDA does not have a cache for messages and is not able to provide previous information due to limitations by the
+ * Discord API!</b>
  */
 public class MessageDeleteEvent extends GenericMessageEvent
 {

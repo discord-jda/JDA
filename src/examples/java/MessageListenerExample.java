@@ -96,7 +96,7 @@ public class MessageListenerExample extends ListenerAdapter
         MessageChannel channel = event.getChannel();    //This is the MessageChannel that the message was sent to.
                                                         //  This could be a TextChannel, PrivateChannel, or Group!
 
-        String msg = message.getContent();              //This returns a human readable version of the Message. Similar to
+        String msg = message.getContentDisplay();              //This returns a human readable version of the Message. Similar to
                                                         // what you would see in the client.
 
         boolean bot = author.isBot();                    //This boolean is useful to determine if the User that
@@ -147,7 +147,7 @@ public class MessageListenerExample extends ListenerAdapter
         //This will be an extremely simplified example of command processing.
 
         //Remember, in all of these .equals checks it is actually comparing
-        // message.getContent().equals, which is comparing a string to a string.
+        // message.getContentDisplay().equals, which is comparing a string to a string.
         // If you did message.equals() it will fail because you would be comparing a Message to a String!
         if (msg.equals("!ping"))
         {

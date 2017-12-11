@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.events.message.guild.react;
+package net.dv8tion.jda.core.utils;
 
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
+import java.io.IOException;
 
-public class GuildMessageReactionRemoveAllEvent extends GenericGuildMessageEvent
+public interface IOConsumer<T>
 {
-    public GuildMessageReactionRemoveAllEvent(JDA api, long responseNumber, long messageId, TextChannel channel)
-    {
-        super(api, responseNumber, messageId, channel);
-    }
+    void accept(T t) throws IOException;
 }

@@ -394,10 +394,14 @@ public class MessageReaction
     @Override
     public boolean equals(Object obj)
     {
-        return obj instanceof MessageReaction
-                && ((MessageReaction) obj).emote.equals(emote)
-                && (((MessageReaction) obj).self == self)
-                && ((MessageReaction) obj).messageId == messageId;
+        if (obj == this)
+            return true;
+        if (!(obj instanceof MessageReaction))
+            return false;
+        MessageReaction r = (MessageReaction) obj;
+        return r.emote.equals(emote)
+            && r.self == self
+            && r.messageId == messageId;
     }
 
     @Override

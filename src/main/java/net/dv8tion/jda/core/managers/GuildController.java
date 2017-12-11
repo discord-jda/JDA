@@ -37,6 +37,7 @@ import net.dv8tion.jda.core.requests.restaction.WebhookAction;
 import net.dv8tion.jda.core.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.core.requests.restaction.order.RoleOrderAction;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.Helpers;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.json.JSONArray;
@@ -2139,7 +2140,7 @@ public class GuildController
                 JSONObject obj = response.getObject();
                 final long id = obj.getLong("id");
                 final String name = obj.getString("name");
-                final boolean managed = !obj.isNull("managed") && obj.getBoolean("managed");
+                final boolean managed = Helpers.optBoolean(obj, "managed");
                 EmoteImpl emote = new EmoteImpl(id, guild).setName(name).setManaged(managed);
 
                 JSONArray rolesArr = obj.getJSONArray("roles");

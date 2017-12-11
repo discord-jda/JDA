@@ -189,8 +189,8 @@ public class GuildImpl implements Guild
                     return;
                 }
 
-                List<Webhook> webhooks = new LinkedList<>();
                 JSONArray array = response.getArray();
+                List<Webhook> webhooks = new ArrayList<>(array.length());
                 EntityBuilder builder = api.getEntityBuilder();
 
                 for (Object object : array)
@@ -205,7 +205,7 @@ public class GuildImpl implements Guild
                     }
                 }
 
-                request.onSuccess(webhooks);
+                request.onSuccess(Collections.unmodifiableList(webhooks));
             }
         };
     }
@@ -761,10 +761,8 @@ public class GuildImpl implements Guild
                     JSONArray array = response.getArray();
                     List<Invite> invites = new ArrayList<>(array.length());
                     for (int i = 0; i < array.length(); i++)
-                    {
                         invites.add(entityBuilder.createInvite(array.getJSONObject(i)));
-                    }
-                    request.onSuccess(invites);
+                    request.onSuccess(Collections.unmodifiableList(invites));
                 }
                 else
                 {

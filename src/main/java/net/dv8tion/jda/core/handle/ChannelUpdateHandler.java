@@ -31,6 +31,7 @@ import net.dv8tion.jda.core.events.channel.category.update.CategoryUpdatePermiss
 import net.dv8tion.jda.core.events.channel.category.update.CategoryUpdatePositionEvent;
 import net.dv8tion.jda.core.events.channel.text.update.*;
 import net.dv8tion.jda.core.events.channel.voice.update.*;
+import net.dv8tion.jda.core.utils.Helpers;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -62,13 +63,13 @@ public class ChannelUpdateHandler extends SocketHandler
         final Long parentId = content.isNull("parent_id") ? null : content.getLong("parent_id");
         final int position = content.getInt("position");
         final String name = content.getString("name");
-        final boolean nsfw = !content.isNull("nsfw") && content.getBoolean("nsfw");
+        final boolean nsfw = Helpers.optBoolean(content, "nsfw");
         JSONArray permOverwrites = content.getJSONArray("permission_overwrites");
         switch (type)
         {
             case TEXT:
             {
-                String topic = content.isNull("topic") ? null : content.getString("topic");
+                String topic = content.optString("topic", null);
                 TextChannelImpl textChannel = (TextChannelImpl) api.getTextChannelMap().get(channelId);
                 if (textChannel == null)
                 {
@@ -363,8 +364,8 @@ public class ChannelUpdateHandler extends SocketHandler
     {
         final long groupId = content.getLong("id");
         final long ownerId = content.getLong("owner_id");
-        final String name   = content.isNull("name") ? null : content.getString("name");
-        final String iconId = content.isNull("icon") ? null : content.getString("icon");
+        final String name   = content.optString("name", null);
+        final String iconId = content.optString("icon", null);
 
         GroupImpl group = (GroupImpl) api.asClient().getGroupById(groupId);
         if (group == null)

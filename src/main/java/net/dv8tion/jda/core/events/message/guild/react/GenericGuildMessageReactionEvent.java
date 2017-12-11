@@ -18,16 +18,16 @@ package net.dv8tion.jda.core.events.message.guild.react;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.events.message.GenericMessageEvent;
+import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
 
-public class GenericGuildMessageReactionEvent extends GenericMessageEvent
+public class GenericGuildMessageReactionEvent extends GenericGuildMessageEvent
 {
-    protected User issuer;
-    protected MessageReaction reaction;
+    protected final User issuer;
+    protected final MessageReaction reaction;
 
     public GenericGuildMessageReactionEvent(JDA api, long responseNumber, User user, MessageReaction reaction)
     {
-        super(api, responseNumber, reaction.getMessageIdLong(), reaction.getChannel());
+        super(api, responseNumber, reaction.getMessageIdLong(), (TextChannel) reaction.getChannel());
         this.issuer = user;
         this.reaction = reaction;
     }
@@ -35,12 +35,6 @@ public class GenericGuildMessageReactionEvent extends GenericMessageEvent
     public Guild getGuild()
     {
         return getChannel().getGuild();
-    }
-
-    @Override
-    public TextChannel getChannel()
-    {
-        return (TextChannel) channel;
     }
 
     public User getUser()
