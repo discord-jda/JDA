@@ -219,6 +219,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildUpdateRegion(GuildUpdateRegionEvent event) {}
     public void onGuildUpdateSplash(GuildUpdateSplashEvent event) {}
     public void onGuildUpdateVerificationLevel(GuildUpdateVerificationLevelEvent event) {}
+    public void onGuildUpdateFeatures(GuildUpdateFeaturesEvent event) {}
 
     //Guild Member Events
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {}
@@ -540,6 +541,8 @@ public abstract class ListenerAdapter implements EventListener
             onGuildUpdateSplash((GuildUpdateSplashEvent) event);
         else if (event instanceof GuildUpdateVerificationLevelEvent)
             onGuildUpdateVerificationLevel((GuildUpdateVerificationLevelEvent) event);
+        else if (event instanceof GuildUpdateFeaturesEvent)
+            onGuildUpdateFeatures((GuildUpdateFeaturesEvent) event);
 
         //Guild Member Events
         else if (event instanceof GuildMemberJoinEvent)

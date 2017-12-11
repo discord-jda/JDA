@@ -224,6 +224,7 @@ public class ChannelManagerUpdatable
      * on the returned {@link net.dv8tion.jda.core.managers.fields.ChannelField ChannelField} instance.
      *
      * <p>A channel bitrate <b>must not</b> be less than {@code 8000} and cannot exceed {@code 96000} (for non-vip Guilds)!
+     * {@link net.dv8tion.jda.core.entities.Guild#getFeatures() VIP Guilds} allow a bitrate for up to {@code 128000}.
      * <br>Otherwise {@link net.dv8tion.jda.core.managers.fields.Field#setValue(Object) Field.setValue(...)} will
      * throw an {@link IllegalArgumentException IllegalArgumentException}.
      *
@@ -233,6 +234,8 @@ public class ChannelManagerUpdatable
      *         If the selected {@link net.dv8tion.jda.core.entities.Channel Channel}'s type is not {@link net.dv8tion.jda.core.entities.ChannelType#VOICE VOICE}
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.ChannelField ChannelField} - Type: {@code Integer}
+     *
+     * @see    net.dv8tion.jda.core.entities.Guild#getFeatures()
      */
     public ChannelField<Integer> getBitrateField()
     {
@@ -450,8 +453,8 @@ public class ChannelManagerUpdatable
                 public void checkValue(Integer value)
                 {
                     Checks.notNull(value, "bitrate");
-                    if (value < 8000 || value > 96000) // TODO: vip servers can go up to 128000
-                        throw new IllegalArgumentException("Provided bitrate must be 8000 to 96000");
+                    if (value < 8000 || value > (getGuild().getFeatures().contains("VIP_REGIONS") ? 128000 : 96000))
+                        throw new IllegalArgumentException("Provided bitrate must be 8000 to 96000 (128000 for VIP Guilds)");
                 }
             };
         }
