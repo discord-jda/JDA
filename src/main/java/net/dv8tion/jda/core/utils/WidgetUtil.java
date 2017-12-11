@@ -551,7 +551,7 @@ public class WidgetUtil
                 this.status = OnlineStatus.fromKey(json.getString("status"));
                 this.game = json.isNull("game") ? null : 
                             json.getJSONObject("game").isNull("name") || json.getJSONObject("game").getString("name").isEmpty() ? null :
-                            Game.of(json.getJSONObject("game").getString("name"));
+                            Game.playing(json.getJSONObject("game").getString("name"));
             }
             
             private void setVoiceState(VoiceState voiceState)

@@ -47,6 +47,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class EntityBuilder
 {
@@ -151,6 +152,18 @@ public class EntityBuilder
                 .setDefaultNotificationLevel(Guild.NotificationLevel.fromKey(guild.getInt("default_message_notifications")))
                 .setRequiredMFALevel(Guild.MFALevel.fromKey(guild.getInt("mfa_level")))
                 .setExplicitContentLevel(Guild.ExplicitContentLevel.fromKey(guild.getInt("explicit_content_filter")));
+
+
+        if(guild.isNull("features"))
+            guildObj.setFeatures(Collections.emptySet());
+        else
+        {
+            guildObj.setFeatures(
+                StreamSupport.stream(guild.getJSONArray("features").spliterator(), false)
+                    .map(String::valueOf)
+                    .collect(Collectors.toSet())
+            );
+        }
 
         JSONArray roles = guild.getJSONArray("roles");
         for (int i = 0; i < roles.length(); i++)
@@ -1099,7 +1112,7 @@ public class EntityBuilder
                 default:
                     return null;
             }
-            ((JDAClientImpl) api.asClient()).getRelationshipMap().put(user.getIdLong(), relationship);
+            api.asClient().getRelationshipMap().put(user.getIdLong(), relationship);
         }
         return relationship;
     }
@@ -1120,7 +1133,7 @@ public class EntityBuilder
         if (group == null)
         {
             group = new GroupImpl(groupId, api);
-            ((JDAClientImpl) api.asClient()).getGroupMap().put(groupId, group);
+            api.asClient().getGroupMap().put(groupId, group);
         }
 
         TLongObjectMap<User> groupUsers = group.getUserMap();

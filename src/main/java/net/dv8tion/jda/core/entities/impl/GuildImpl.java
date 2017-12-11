@@ -76,6 +76,7 @@ public class GuildImpl implements Guild
     private String iconId;
     private String splashId;
     private String region;
+    private Set<String> features;
     private VoiceChannel afkChannel;
     private TextChannel systemChannel;
     private Role publicRole;
@@ -112,6 +113,12 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public Set<String> getFeatures()
+    {
+        return features;
+    }
+
+    @Override
     public String getSplashId()
     {
         return splashId;
@@ -121,6 +128,34 @@ public class GuildImpl implements Guild
     public String getSplashUrl()
     {
         return splashId == null ? null : "https://cdn.discordapp.com/splashes/" + id + "/" + splashId + ".jpg";
+    }
+
+    @Override
+    public RestAction<String> getVanityUrl()
+    {
+        if (!isAvailable())
+            throw new GuildUnavailableException();
+        if (!getSelfMember().hasPermission(Permission.MANAGE_SERVER))
+            throw new InsufficientPermissionException(Permission.MANAGE_SERVER);
+        if (!getFeatures().contains("VANITY_URL"))
+            throw new IllegalStateException("This guild doesn't have a vanity url");
+
+        Route.CompiledRoute route = Route.Guilds.GET_VANITY_URL.compile(getId());
+
+        return new RestAction<String>(api, route)
+        {
+            @Override
+            protected void handleResponse(Response response, Request<String> request)
+            {
+                if (!response.isOk())
+                {
+                    request.onFailure(response);
+                    return;
+                }
+
+                request.onSuccess(response.getObject().getString("code"));
+            }
+        };
     }
 
     @Override
@@ -381,8 +416,7 @@ public class GuildImpl implements Guild
     @Override
     public MentionPaginationAction getRecentMentions()
     {
-        if (getJDA().getAccountType() != AccountType.CLIENT)
-            throw new AccountTypeException(AccountType.CLIENT);
+        AccountTypeException.check(getJDA().getAccountType(), AccountType.CLIENT);
         return getJDA().asClient().getRecentMentions(this);
     }
 
@@ -577,6 +611,12 @@ public class GuildImpl implements Guild
     public GuildImpl setIconId(String iconId)
     {
         this.iconId = iconId;
+        return this;
+    }
+
+    public GuildImpl setFeatures(Set<String> features)
+    {
+        this.features = Collections.unmodifiableSet(features);
         return this;
     }
 

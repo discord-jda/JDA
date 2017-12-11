@@ -105,7 +105,7 @@ public interface JDA
         int shardId;
         int shardTotal;
 
-        ShardInfo(int shardId, int shardTotal)
+        public ShardInfo(int shardId, int shardTotal)
         {
             this.shardId = shardId;
             this.shardTotal = shardTotal;
@@ -163,7 +163,7 @@ public interface JDA
                 return false;
 
             ShardInfo oInfo = (ShardInfo) o;
-            return shardId == oInfo.shardId && shardTotal == oInfo.shardTotal;
+            return shardId == oInfo.getShardId() && shardTotal == oInfo.getShardTotal();
         }
     }
 
@@ -226,6 +226,9 @@ public interface JDA
      *
      * @param  listeners
      *         The listener(s) which will react to events.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If either listeners or one of it's objects is {@code null}.
      */
     void addEventListener(Object... listeners);
 
@@ -234,6 +237,9 @@ public interface JDA
      *
      * @param  listeners
      *         The listener(s) to be removed.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If either listeners or one of it's objects is {@code null}.
      */
     void removeEventListener(Object... listeners);
 
@@ -888,7 +894,7 @@ public interface JDA
      * @param id
      *         The id of the requested {@link net.dv8tion.jda.core.entities.Emote}.
      * @return An {@link net.dv8tion.jda.core.entities.Emote Emote} represented by this id or null if none is found in
-     * our cache.
+     *         our cache.
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      */
@@ -905,7 +911,7 @@ public interface JDA
      * @param id
      *         The id of the requested {@link net.dv8tion.jda.core.entities.Emote}.
      * @return An {@link net.dv8tion.jda.core.entities.Emote Emote} represented by this id or null if none is found in
-     * our cache.
+     *         our cache.
      */
     default Emote getEmoteById(long id)
     {
@@ -925,7 +931,7 @@ public interface JDA
      *         Whether to ignore case or not when comparing the provided name to each {@link
      *         net.dv8tion.jda.core.entities.Emote#getName()}.
      * @return Possibly-empty list of all the {@link net.dv8tion.jda.core.entities.Emote Emotes} that all have the same
-     * name as the provided name.
+     *         name as the provided name.
      */
     default List<Emote> getEmotesByName(String name, boolean ignoreCase)
     {
@@ -1040,8 +1046,11 @@ public interface JDA
     void shutdown();
 
     /**
-     * Shuts down this JDA instance instantly.
+     * Shuts down this JDA instance instantly, closing all its connections.
+     * After this command is issued the JDA Instance can not be used anymore.
      * This will also cancel all queued {@link net.dv8tion.jda.core.requests.RestAction RestActions}.
+     *
+     * <p>If you want this instance to shutdown without cancelling enqueued RestActions use {@link #shutdown() shutdown()}
      *
      * @see #shutdown()
      */

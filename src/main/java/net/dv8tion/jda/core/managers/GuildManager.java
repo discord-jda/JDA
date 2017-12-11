@@ -94,9 +94,15 @@ public class GuildManager
      * @param  region
      *         The new region for this {@link net.dv8tion.jda.core.entities.Guild Guild}
      *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided region is a {@link net.dv8tion.jda.core.Region#isVip() VIP Region} but the guild does not support VIP regions.
+     *         Use {@link net.dv8tion.jda.core.entities.Guild#getFeatures() Guild#getFeatures()} to check if VIP regions are supported.
+     *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link GuildManagerUpdatable#update() #update()}
      *
+     * @see    net.dv8tion.jda.core.Region#isVip()
+     * @see    net.dv8tion.jda.core.entities.Guild#getFeatures()
      * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#getRegionField()
      * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#update()
      */

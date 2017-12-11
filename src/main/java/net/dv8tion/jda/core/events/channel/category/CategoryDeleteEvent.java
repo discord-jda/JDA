@@ -18,7 +18,6 @@ package net.dv8tion.jda.core.events.channel.category;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Category;
-import net.dv8tion.jda.core.entities.Guild;
 
 /**
  * <b><u>CategoryDeleteEvent</u></b>

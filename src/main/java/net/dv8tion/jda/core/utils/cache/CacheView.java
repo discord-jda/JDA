@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.utils.cache;
 
+import net.dv8tion.jda.bot.utils.cache.ShardCacheView;
+import net.dv8tion.jda.bot.utils.cache.impl.ShardCacheViewImpl;
 import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.cache.impl.AbstractCacheView;
@@ -190,6 +192,36 @@ public interface CacheView<T> extends Iterable<T>
     {
         Checks.notNull(generator, "Generator");
         return new UnifiedCacheViewImpl<>(generator);
+    }
+
+    /**
+     * Creates a combined {@link net.dv8tion.jda.bot.utils.cache.ShardCacheView ShardCacheView}
+     * for all provided ShardCacheView implementations.
+     *
+     * @param  cacheViews
+     *         Collection of {@link net.dv8tion.jda.bot.utils.cache.ShardCacheView ShardCacheView} implementations
+     *
+     * @return Combined ShardCacheView spanning over all provided implementation instances
+     */
+    static ShardCacheView allShards(Collection<ShardCacheView> cacheViews)
+    {
+        Checks.noneNull(cacheViews, "Collection");
+        return new ShardCacheViewImpl.UnifiedShardCacheViewImpl(cacheViews::stream);
+    }
+
+    /**
+     * Creates a combined {@link net.dv8tion.jda.bot.utils.cache.ShardCacheView ShardCacheView}
+     * for all provided ShardCacheView implementations.
+     *
+     * @param  generator
+     *         Stream generator of {@link net.dv8tion.jda.bot.utils.cache.ShardCacheView ShardCacheView} implementations
+     *
+     * @return Combined ShardCacheView spanning over all provided implementation instances
+     */
+    static ShardCacheView allShards(Supplier<Stream<ShardCacheView>> generator)
+    {
+        Checks.notNull(generator, "Generator");
+        return new ShardCacheViewImpl.UnifiedShardCacheViewImpl(generator);
     }
 
     /**

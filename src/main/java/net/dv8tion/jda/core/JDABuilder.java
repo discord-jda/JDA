@@ -75,13 +75,16 @@ public class JDABuilder
      *
      * @param  accountType
      *         The {@link net.dv8tion.jda.core.AccountType AccountType}.
+     *
+     * @throws IllegalArgumentException
+     *         If the given AccountType is {@code null}
      */
     public JDABuilder(AccountType accountType)
     {
-        if (accountType == null)
-            throw new NullPointerException("Provided AccountType was null!");
+        Checks.notNull(accountType, "accountType");
+
         this.accountType = accountType;
-        listeners = new LinkedList<>();
+        this.listeners = new LinkedList<>();
     }
 
     /**
@@ -375,7 +378,7 @@ public class JDABuilder
      * <br>This value can be changed at any time in the {@link net.dv8tion.jda.core.managers.Presence Presence} from a JDA instance.
      *
      * <p><b>Hint:</b> You can create a {@link net.dv8tion.jda.core.entities.Game Game} object using
-     * {@link net.dv8tion.jda.core.entities.Game#of(String)} or {@link net.dv8tion.jda.core.entities.Game#of(String, String)}.
+     * {@link net.dv8tion.jda.core.entities.Game#playing(String)} or {@link net.dv8tion.jda.core.entities.Game#streaming(String, String)}.
      *
      * @param  game
      *         An instance of {@link net.dv8tion.jda.core.entities.Game Game} (null allowed)
@@ -416,7 +419,7 @@ public class JDABuilder
     }
 
     /**
-     * Adds all provided listeners to the list of listeners that will be used to populate the {@link net.dv8tion.jda.core.JDA} object.
+     * Adds all provided listeners to the list of listeners that will be used to populate the {@link net.dv8tion.jda.core.JDA JDA} object.
      * <br>This uses the {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventListener} by default.
      * <br>To switch to the {@link net.dv8tion.jda.core.hooks.AnnotatedEventManager AnnotatedEventManager},
      * use {@link #setEventManager(net.dv8tion.jda.core.hooks.IEventManager) setEventManager(new AnnotatedEventManager())}.
@@ -427,12 +430,17 @@ public class JDABuilder
      * @param   listeners
      *          The listener(s) to add to the list.
      *
+     * @throws java.lang.IllegalArgumentException
+     *         If either listeners or one of it's objects is {@code null}.
+     *
      * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      *
      * @see    net.dv8tion.jda.core.JDA#addEventListener(Object...) JDA.addEventListener(Object...)
      */
     public JDABuilder addEventListener(Object... listeners)
     {
+        Checks.noneNull(listeners, "listeners");
+
         Collections.addAll(this.listeners, listeners);
         return this;
     }
@@ -443,12 +451,17 @@ public class JDABuilder
      * @param  listeners
      *         The listener(s) to remove from the list.
      *
+     * @throws java.lang.IllegalArgumentException
+     *         If either listeners or one of it's objects is {@code null}.
+     *
      * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
      *
      * @see    net.dv8tion.jda.core.JDA#removeEventListener(Object...) JDA.removeEventListener(Object...)
      */
     public JDABuilder removeEventListener(Object... listeners)
     {
+        Checks.noneNull(listeners, "listeners");
+
         this.listeners.removeAll(Arrays.asList(listeners));
         return this;
     }
@@ -503,8 +516,7 @@ public class JDABuilder
      */
     public JDABuilder useSharding(int shardId, int shardTotal)
     {
-        if (accountType != AccountType.BOT)
-            throw new AccountTypeException(AccountType.BOT);
+        AccountTypeException.check(accountType, AccountType.BOT);
         Checks.notNegative(shardId, "Shard ID");
         Checks.positive(shardTotal, "Shard Total");
         Checks.check(shardId < shardTotal,
@@ -539,7 +551,7 @@ public class JDABuilder
     {
         OkHttpClient.Builder httpClientBuilder = this.httpClientBuilder == null ? new OkHttpClient.Builder() : this.httpClientBuilder;
         WebSocketFactory wsFactory = this.wsFactory == null ? new WebSocketFactory() : this.wsFactory;
-        JDAImpl jda = new JDAImpl(accountType, httpClientBuilder, wsFactory, shardRateLimiter, autoReconnect, enableVoice, enableShutdownHook,
+        JDAImpl jda = new JDAImpl(accountType, token, httpClientBuilder, wsFactory, shardRateLimiter, autoReconnect, enableVoice, enableShutdownHook,
                 enableBulkDeleteSplitting, requestTimeoutRetry, corePoolSize, maxReconnectDelay);
 
         if (eventManager != null)
@@ -551,12 +563,14 @@ public class JDABuilder
         listeners.forEach(jda::addEventListener);
         jda.setStatus(JDA.Status.INITIALIZED);  //This is already set by JDA internally, but this is to make sure the listeners catch it.
 
+        String gateway = jda.getGateway().complete();
+
         // Set the presence information before connecting to have the correct information ready when sending IDENTIFY
         ((PresenceImpl) jda.getPresence())
                 .setCacheGame(game)
                 .setCacheIdle(idle)
                 .setCacheStatus(status);
-        jda.login(token, shardInfo, reconnectQueue);
+        jda.login(gateway, shardInfo, reconnectQueue);
         return jda;
     }
 
