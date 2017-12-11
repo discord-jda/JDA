@@ -125,6 +125,7 @@ public class MessageUpdateHandler extends SocketHandler
                         new PrivateMessageUpdateEvent(
                                 api, responseNumber,
                                 message));
+                break;
             }
             case GROUP:
             {
