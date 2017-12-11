@@ -18,10 +18,7 @@ package net.dv8tion.jda.core.utils;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.core.OnlineStatus;
-import net.dv8tion.jda.core.entities.Game;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.IMentionable;
-import net.dv8tion.jda.core.entities.ISnowflake;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.UserImpl;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.requests.Requester;
@@ -549,9 +546,7 @@ public class WidgetUtil
                 this.avatar = json.optString("avatar", null);
                 this.nickname = json.optString("nick", null);
                 this.status = OnlineStatus.fromKey(json.getString("status"));
-                this.game = json.isNull("game") ? null : 
-                            json.getJSONObject("game").isNull("name") || json.getJSONObject("game").getString("name").isEmpty() ? null :
-                            Game.playing(json.getJSONObject("game").getString("name"));
+                this.game = json.isNull("game") ? null : EntityBuilder.createGame(json.getJSONObject("game"));
             }
             
             private void setVoiceState(VoiceState voiceState)
