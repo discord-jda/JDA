@@ -151,10 +151,11 @@ In addition you can look at the many Discord Bots that were implemented using JD
 [And many more!](https://github.com/search?q=JDA+discord+bot&type=Repositories&utf8=%E2%9C%93)
 
 ## Download
+Latest Stable Version: [GitHub Release](https://github.com/DV8FromTheWorld/JDA/releases/latest)
 Latest Version:
 [ ![version][] ][download]
 
-Be sure to replace the **VERSION** key below with the latest version shown above!
+Be sure to replace the **VERSION** key below with the one of the versions shown above!
 
 **Maven**
 ```xml
@@ -185,49 +186,6 @@ repositories {
 ```
 
 The builds are distributed using JCenter through Bintray [JDA JCenter Bintray](https://bintray.com/dv8fromtheworld/maven/JDA/)
-
-### Development Builds
-
-The builds on the `development` branch can be found on [jitpack](https://jitpack.io/#DV8FromTheWorld/JDA)
-
-**Maven**
-```xml
-<dependency>
-    <groupId>com.github.DV8FromTheWorld</groupId>
-    <artifactId>JDA</artifactId>
-    <version>COMMIT</version>
-</dependency>
-```
-```xml
-<repository>
-    <id>jcenter</id>
-    <name>jcenter-bintray</name>
-    <url>http://jcenter.bintray.com</url>
-</repository>
-<repository>
-    <name>jitpack</name>
-    <url>https://jitpack.io</url>
-</repository>
-
-```
-
-**Gradle**
-```gradle
-dependencies {
-    compile 'com.github.DV8FromTheWorld:JDA:COMMIT'
-}
-
-repositories {
-    jcenter()
-    maven {
-        name 'jitpack'
-        url 'https://jitpack.io'
-    }
-}
-```
-
-> Replace `COMMIT` with the first 7 characters of the commit to use, alternatively you can also choose
-> to use the build in the format: `feature~something` where `~` is used to replace the reserved `/` character.
 
 ### Logging Framework - SLF4J
 JDA is using [SLF4J](https://www.slf4j.org/) to log its messages. 
