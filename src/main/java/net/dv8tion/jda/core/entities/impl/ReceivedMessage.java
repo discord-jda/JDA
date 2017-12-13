@@ -531,7 +531,7 @@ public class ReceivedMessage extends AbstractMessage
                     name = getGuild().getMember(user).getEffectiveName();
                 else
                     name = user.getName();
-                tmp = tmp.replaceAll("<@!?" + user.getId() + '>', '@' + name);
+                tmp = tmp.replaceAll("<@!?" + Pattern.quote(user.getId()) + '>', '@' + Matcher.quoteReplacement(name));
             }
             for (Emote emote : getEmotes())
             {
