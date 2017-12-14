@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 public class DefaultShardManagerBuilder
 {
     protected final List<Object> listeners = new ArrayList<>();
-    protected Map<String, String> mdcContext = null;
+    protected IntFunction<Map<String, String>> contextProvider = null;
     protected boolean enableBulkDeleteSplitting = true;
     protected boolean enableShutdownHook = true;
     protected boolean enableVoice = true;
@@ -73,23 +73,23 @@ public class DefaultShardManagerBuilder
     public DefaultShardManagerBuilder() {}
 
     /**
-     * Sets the {@link org.slf4j.MDC MDC} mappings to use in JDA.
+     * Sets the {@link org.slf4j.MDC MDC} mappings provider to use in JDA.
      * <br>If sharding is enabled JDA will automatically add a {@code jda.shard} context with the format {@code [SHARD_ID / TOTAL]}
      * where {@code SHARD_ID} and {@code TOTAL} are the shard configuration.
      * Additionally it will provide context for the id via {@code jda.shard.id} and the total via {@code jda.shard.total}.
      *
-     * <p><b>The manager will create a copy of this map for every JDA instance so it is recommended to use a thread-safe map implementation!</b>
+     * <p><b>The manager will call this with a shardId and it is recommended to provide a different context map for each shard!</b>
      *
-     * @param  map
-     *         The <b>modifiable</b> context map to use in JDA, or {@code null} to reset
+     * @param  provider
+     *         The provider for <b>modifiable</b> context maps to use in JDA, or {@code null} to reset
      *
      * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
      *
      * @see    <a href="https://www.slf4j.org/api/org/slf4j/MDC.html" target="_blank">MDC Javadoc</a>
      */
-    public DefaultShardManagerBuilder setContextMap(Map<String, String> map)
+    public DefaultShardManagerBuilder setContextMap(IntFunction<Map<String, String>> provider)
     {
-        this.mdcContext = map;
+        this.contextProvider = provider;
         return this;
     }
 
@@ -711,7 +711,7 @@ public class DefaultShardManagerBuilder
         final DefaultShardManager manager = new DefaultShardManager(this.shardsTotal, this.shards, this.listeners, this.token, this.eventManager,
             this.audioSendFactory, this.gameProvider, this.statusProvider, this.httpClientBuilder, this.wsFactory, this.threadFactory, this.shardedRateLimiter,
             this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting,
-            this.autoReconnect, this.idleProvider, this.retryOnTimeout, this.useShutdownNow, this.mdcContext);
+            this.autoReconnect, this.idleProvider, this.retryOnTimeout, this.useShutdownNow, this.contextProvider);
 
         manager.login();
 
