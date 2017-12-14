@@ -152,7 +152,7 @@ public class JDAImpl implements JDA
         client = new WebSocketClient(this, reconnectQueue);
         // remove our MDC metadata when we exit our code
         if (previousContext != null)
-            MDC.setContextMap(previousContext);
+            previousContext.forEach(MDC::put);
 
         if (shutdownHook != null)
             Runtime.getRuntime().addShutdownHook(shutdownHook);
