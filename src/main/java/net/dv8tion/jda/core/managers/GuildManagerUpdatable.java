@@ -134,6 +134,12 @@ public class GuildManagerUpdatable
      * <br>Otherwise {@link net.dv8tion.jda.core.managers.fields.Field#setValue(Object) Field.setValue(...)} will
      * throw an {@link IllegalArgumentException IllegalArgumentException}.
      *
+     * <p>{@link net.dv8tion.jda.core.Region#isVip() VIP regions} are only allowed if supported by the Guild.
+     * Use {@link net.dv8tion.jda.core.entities.Guild#getFeatures() Guild#getFeatures()} to check if VIP regions are supported.
+     * <br>If a VIP region is supplied to a Guild that doesn't support VIP regions,
+     * {@link net.dv8tion.jda.core.managers.fields.Field#setValue(Object) Field.setValue(...)} will
+     * throw an {@link IllegalArgumentException IllegalArgumentException}.
+     *
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the Guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      *
@@ -539,6 +545,8 @@ public class GuildManagerUpdatable
                 Checks.notNull(value, "Region");
                 if (value == Region.UNKNOWN)
                     throw new IllegalArgumentException("Cannot set Guild Region to UNKNOWN!");
+                if (value.isVip() && !guild.getFeatures().contains("VIP_REGIONS"))
+                    throw new IllegalArgumentException("VIP regions are not supported by this Guild");
             }
         };
 

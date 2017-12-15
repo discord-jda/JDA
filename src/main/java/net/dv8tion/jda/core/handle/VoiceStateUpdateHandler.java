@@ -198,8 +198,8 @@ public class VoiceStateUpdateHandler extends SocketHandler
     private void handleCallVoiceState(JSONObject content)
     {
         final long userId = content.getLong("user_id");
-        final Long channelId = !content.isNull("channel_id") ? content.getLong("channel_id") : null;
-        String sessionId = !content.isNull("session_id") ? content.getString("session_id") : null;
+        final Long channelId = content.isNull("channel_id") ? null : content.getLong("channel_id");
+        String sessionId = content.optString("session_id", null);
         boolean selfMuted = content.getBoolean("self_mute");
         boolean selfDeafened = content.getBoolean("self_deaf");
 

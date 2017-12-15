@@ -57,7 +57,7 @@ public class MessageReactionHandler extends SocketHandler
         final long channelId = content.getLong("channel_id");
 
         final Long emojiId = emoji.isNull("id") ? null : emoji.getLong("id");
-        String emojiName = emoji.isNull("name") ? null : emoji.getString("name");
+        String emojiName = emoji.optString("name", null);
 
         if (emojiId == null && emojiName == null)
         {
@@ -81,13 +81,13 @@ public class MessageReactionHandler extends SocketHandler
         {
             channel = api.getPrivateChannelById(channelId);
         }
-        if (channel == null && api.getAccountType() == AccountType.CLIENT)
-        {
-            channel = api.asClient().getGroupById(channelId);
-        }
         if (channel == null)
         {
             channel = api.getFakePrivateChannelMap().get(channelId);
+        }
+        if (channel == null && api.getAccountType() == AccountType.CLIENT)
+        {
+            channel = api.asClient().getGroupById(channelId);
         }
         if (channel == null)
         {

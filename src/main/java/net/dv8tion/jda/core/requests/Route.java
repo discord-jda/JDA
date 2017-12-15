@@ -96,6 +96,7 @@ public class Route
     {
         public static final Route GET_GUILD =          new Route(GET,    "guilds/{guild_id}",                   "guild_id");
         public static final Route MODIFY_GUILD =       new Route(PATCH,  "guilds/{guild_id}",                   "guild_id");
+        public static final Route GET_VANITY_URL =     new Route(GET,    "guilds/{guild_id}/vanity-url",        "guild_id");
         public static final Route CREATE_CHANNEL =     new Route(POST,   "guilds/{guild_id}/channels",          "guild_id");
         public static final Route GET_CHANNELS =       new Route(GET,    "guilds/{guild_id}/channels",          "guild_id");
         public static final Route MODIFY_CHANNELS =    new Route(PATCH,  "guilds/{guild_id}/channels",          "guild_id");

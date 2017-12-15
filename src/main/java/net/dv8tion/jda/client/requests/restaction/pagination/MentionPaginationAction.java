@@ -25,6 +25,7 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction;
 import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -180,11 +181,18 @@ public class MentionPaginationAction extends PaginationAction<Message, MentionPa
         JSONArray arr = response.getArray();
         for (int i = 0; i < arr.length(); i++)
         {
-            final Message msg = builder.createMessage(arr.getJSONObject(i), false);
-            mentions.add(msg);
-            if (useCache)
-                cached.add(msg);
-            last = msg;
+            try
+            {
+                final Message msg = builder.createMessage(arr.getJSONObject(i), false);
+                mentions.add(msg);
+                if (useCache)
+                    cached.add(msg);
+                last = msg;
+            }
+            catch (JSONException | NullPointerException e)
+            {
+                LOG.warn("Encountered exception in MentionPagination", e);
+            }
         }
 
         request.onSuccess(mentions);

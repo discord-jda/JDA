@@ -18,19 +18,13 @@ package net.dv8tion.jda.core.events.message.priv.react;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.PrivateChannel;
-import net.dv8tion.jda.core.events.message.GenericMessageEvent;
+import net.dv8tion.jda.core.events.message.priv.GenericPrivateMessageEvent;
 
-public class PrivateMessageReactionRemoveAllEvent extends GenericMessageEvent
+@Deprecated
+public class PrivateMessageReactionRemoveAllEvent extends GenericPrivateMessageEvent
 {
-
     public PrivateMessageReactionRemoveAllEvent(JDA api, long responseNumber, long messageId, PrivateChannel channel)
     {
         super(api, responseNumber, messageId, channel);
-    }
-
-    @Override
-    public PrivateChannel getChannel()
-    {
-        return (PrivateChannel) channel;
     }
 }
