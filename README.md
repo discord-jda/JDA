@@ -265,6 +265,27 @@ It is very possible that your change might already be in development or you miss
 
 More information can be found at the wiki page [Contributing](https://github.com/DV8FromTheWorld/JDA/wiki/5\)-Contributing)
 
+### Deprecation Policy
+
+When a feature is introduced to replace or enhance existing functionality we might deprecate old functionality.
+
+A deprecated method/class usually has a replacement mentioned in its documentation which should be switched to. Deprecated
+functionality might or might not exist in the next minor release. (Hint: The minor version is the `MM` of `XX.MM.RR_BB` in our version format)
+
+It is possible that some features are deprecated without replacement, in this case the functionality is no longer supported by either the JDA structure
+due to fundamental changes (for example automation of a feature) or due to discord API changes that cause it to be removed.
+
+We highly recommend to discontinue usage of deprecated functionality and update by going through each minor release instead of jumping.
+For instance, when updating from version 3.3.0 to version 3.5.1 you should do the following:
+
+- Update to `3.4.RR_BB` and check for deprecation, replace
+- Update to `3.5.1_BB` and check for deprecation, replace
+
+The `BB` indicates the build number specified in the release details.
+
+The `RR` in version `3.4.RR` should be replaced by the latest version that was published for `3.4`, you can find out which the latest
+version was by looking at the [release page](https://github.com/DV8FromTheWorld/JDA/releases)
+
 ## Dependencies:
 This project requires **Java 8**.<br>
 All dependencies are managed automatically by Gradle.
