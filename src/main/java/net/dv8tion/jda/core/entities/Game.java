@@ -30,19 +30,9 @@ public class Game
 {
     protected final String name;
     protected final String url;
-    protected final Game.GameType type;
+    protected final int type;
 
-    protected Game(String name)
-    {
-        this(name, null, GameType.DEFAULT);
-    }
-
-    protected Game(String name, String url)
-    {
-        this(name, url, GameType.STREAMING);
-    }
-
-    protected Game(String name, String url, GameType type)
+    protected Game(String name, String url, int type)
     {
         this.name = name;
         this.url = url;
@@ -95,11 +85,35 @@ public class Game
     /**
      * The type of {@link net.dv8tion.jda.core.entities.Game Game}.
      *
-     * @return Never-null {@link net.dv8tion.jda.core.entities.Game.GameType GameType} representing the type of Game
+     * @return Never-null {@link net.dv8tion.jda.core.entities.Game.ActivityType ActivityType} representing the type of Game
      */
-    public GameType getType()
+    public ActivityType getActivityType()
+    {
+        return ActivityType.fromKey(type);
+    }
+
+    /**
+     * The raw key for this Game's {@link net.dv8tion.jda.core.entities.Game.ActivityType ActivityType}
+     *
+     * @return The integer key for this Game's activity type
+     */
+    public int getActivityTypeRaw()
     {
         return type;
+    }
+
+    /**
+     * The type of {@link net.dv8tion.jda.core.entities.Game Game}.
+     *
+     * @return Never-null {@link net.dv8tion.jda.core.entities.Game.GameType GameType} representing the type of Game
+     *
+     * @deprecated
+     *         Use {@link #getActivityType()} instead
+     */
+    @Deprecated
+    public GameType getType()
+    {
+        return GameType.fromKey(type);
     }
 
     @Override
@@ -111,7 +125,7 @@ public class Game
             return true;
 
         Game oGame = (Game) o;
-        return oGame.getType() == type
+        return oGame.type == type
             && Objects.equals(name, oGame.getName())
             && Objects.equals(url, oGame.getUrl());
     }
@@ -142,12 +156,12 @@ public class Game
      * @throws IllegalArgumentException
      *         if the specified name is null, empty or blank
      *
-     * @return A valid Game instance with the provided name with {@link GameType#DEFAULT}
+     * @return A valid Game instance with the provided name with {@link ActivityType#DEFAULT}
      */
     public static Game playing(String name)
     {
         Checks.notBlank(name, "Name");
-        return new Game(name, null, GameType.DEFAULT);
+        return new Game(name, null, ActivityType.DEFAULT.key);
     }
 
     /**
@@ -192,12 +206,12 @@ public class Game
     public static Game streaming(String name, String url)
     {
         Checks.notEmpty(name, "Provided game name");
-        GameType type;
+        ActivityType type;
         if (isValidStreamingUrl(url))
-            type = GameType.STREAMING;
+            type = ActivityType.STREAMING;
         else
-            type = GameType.DEFAULT;
-        return new Game(name, url, type);
+            type = ActivityType.DEFAULT;
+        return new Game(name, url, type.key);
     }
 
     /**
@@ -236,12 +250,12 @@ public class Game
      * @throws IllegalArgumentException
      *         if the specified name is null, empty or blank
      *
-     * @return A valid Game instance with the provided name with {@link GameType#LISTENING}
+     * @return A valid Game instance with the provided name with {@link ActivityType#LISTENING}
      */
     public static Game listening(String name)
     {
         Checks.notBlank(name, "Name");
-        return new Game(name, null, GameType.LISTENING);
+        return new Game(name, null, ActivityType.LISTENING.key);
     }
 
     /**
@@ -254,52 +268,52 @@ public class Game
      * @throws IllegalArgumentException
      *         if the specified name is null, empty or blank
      *
-     * @return A valid Game instance with the provided name with {@link GameType#WATCHING}
+     * @return A valid Game instance with the provided name with {@link ActivityType#WATCHING}
      */
     public static Game watching(String name)
     {
         Checks.notBlank(name, "Name");
-        return new Game(name, null, GameType.WATCHING);
+        return new Game(name, null, ActivityType.WATCHING.key);
     }
 
     /**
      * Creates a new Game instance with the specified name and url.
      *
      * @param  type
-     *         The {@link net.dv8tion.jda.core.entities.Game.GameType GameType} to use
+     *         The {@link net.dv8tion.jda.core.entities.Game.ActivityType ActivityType} to use
      * @param  name
      *         The not-null name of the newly created game
      *
      * @throws IllegalArgumentException
-     *         If the specified name is null or empty
+     *         If the specified name or type is null or empty
      *
      * @return A valid Game instance with the provided name and url
      */
-    public static Game of(GameType type, String name)
+    public static Game of(ActivityType type, String name)
     {
         return of(type, name, null);
     }
 
     /**
      * Creates a new Game instance with the specified name and url.
-     * <br>The provided url would only be used for {@link net.dv8tion.jda.core.entities.Game.GameType#STREAMING GameType.STREAMING}
+     * <br>The provided url would only be used for {@link net.dv8tion.jda.core.entities.Game.ActivityType#STREAMING GameType.STREAMING}
      * and should be a twitch url.
      *
      * @param  type
-     *         The {@link net.dv8tion.jda.core.entities.Game.GameType GameType} to use
+     *         The {@link net.dv8tion.jda.core.entities.Game.ActivityType ActivityType} to use
      * @param  name
      *         The not-null name of the newly created game
      * @param  url
      *         The streaming url to use, required to display as "streaming".
      *
      * @throws IllegalArgumentException
-     *         If the specified name is null or empty
+     *         If the specified name or type is null or empty
      *
      * @return A valid Game instance with the provided name and url
      *
      * @see    #isValidStreamingUrl(String)
      */
-    public static Game of(GameType type, String name, String url)
+    public static Game of(ActivityType type, String name, String url)
     {
         Checks.notNull(type, "Type");
         switch (type)
@@ -318,6 +332,58 @@ public class Game
     }
 
     /**
+     * Creates a new Game instance with the specified name and url.
+     *
+     * @param  type
+     *         The {@link net.dv8tion.jda.core.entities.Game.GameType GameType} to use
+     * @param  name
+     *         The not-null name of the newly created game
+     *
+     * @throws IllegalArgumentException
+     *         If the specified name or type is null or empty
+     *
+     * @return A valid Game instance with the provided name and url
+     *
+     * @deprecated
+     *         Use {@link #of(net.dv8tion.jda.core.entities.Game.ActivityType, String)} instead
+     */
+    @Deprecated
+    public static Game of(GameType type, String name)
+    {
+        Checks.notNull(type, "GameType");
+        return of(ActivityType.fromKey(type.key), name);
+    }
+
+    /**
+     * Creates a new Game instance with the specified name and url.
+     * <br>The provided url would only be used for {@link net.dv8tion.jda.core.entities.Game.GameType#STREAMING GameType.STREAMING}
+     * and should be a twitch url.
+     *
+     * @param  type
+     *         The {@link net.dv8tion.jda.core.entities.Game.GameType GameType} to use
+     * @param  name
+     *         The not-null name of the newly created game
+     * @param  url
+     *         The streaming url to use, required to display as "streaming".
+     *
+     * @throws IllegalArgumentException
+     *         If the specified name or type is null or empty
+     *
+     * @return A valid Game instance with the provided name and url
+     *
+     * @see    #isValidStreamingUrl(String)
+     *
+     * @deprecated
+     *        Use {@link #of(net.dv8tion.jda.core.entities.Game.ActivityType, String, String)} instead
+     */
+    @Deprecated
+    public static Game of(GameType type, String name, String url)
+    {
+        Checks.notNull(type, "GameType");
+        return of(ActivityType.fromKey(type.key), name, url);
+    }
+
+    /**
      * Checks if a given String is a valid Twitch url (ie, one that will display "Streaming" on the Discord client).
      *
      * @param  url
@@ -333,6 +399,7 @@ public class Game
     /**
      * The type game being played, differentiating between a game and stream types.
      */
+    @Deprecated
     public enum GameType
     {
         /**
@@ -382,6 +449,74 @@ public class Game
          * @return The GameType that has the key provided, or {@link #DEFAULT} for unknown key.
          */
         public static GameType fromKey(int key)
+        {
+            switch (key)
+            {
+                case 0:
+                default:
+                    return DEFAULT;
+                case 1:
+                    return STREAMING;
+                case 2:
+                    return LISTENING;
+                case 3:
+                    return WATCHING;
+            }
+        }
+    }
+
+    /**
+     * The type of activity, differentiating between a game, stream, and other presence activity types.
+     */
+    public enum ActivityType
+    {
+        /**
+         * The ActivityType used to represent a normal playing status.
+         */
+        DEFAULT(0),
+        /**
+         * Used to indicate that the {@link net.dv8tion.jda.core.entities.Game Game} is a stream
+         * <br>This type is displayed as "Streaming" in the discord client.
+         */
+        STREAMING(1),
+        /**
+         * Used to indicate that the {@link net.dv8tion.jda.core.entities.Game Game} should display
+         * as {@code Listening...} in the official client.
+         */
+        LISTENING(2),
+        /**
+         * Used to indicate that the {@link net.dv8tion.jda.core.entities.Game Game} should display
+         * as {@code Watching...} in the official client.
+         */
+        WATCHING(3);
+
+        private final int key;
+
+        ActivityType(int key)
+        {
+            this.key = key;
+        }
+
+        /**
+         * The Discord defined id key for this GameType.
+         *
+         * @return the id key.
+         */
+        public int getKey()
+        {
+            return key;
+        }
+
+        /**
+         * Gets the GameType related to the provided key.
+         * <br>If an unknown key is provided, this returns {@link #DEFAULT}
+         *
+         * @param  key
+         *         The Discord key referencing a GameType.
+         *
+         * @return The GameType that has the key provided, or {@link #DEFAULT} for unknown key.
+         */
+        public static ActivityType fromKey(int key)
         {
             switch (key)
             {
