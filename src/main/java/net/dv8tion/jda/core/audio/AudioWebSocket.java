@@ -634,7 +634,7 @@ public class AudioWebSocket extends WebSocketAdapter
     {
         final String identifier;
         final AtomicInteger threadCount = new AtomicInteger(1);
-        final Map<String, String> contextMap;
+        final ConcurrentMap<String, String> contextMap;
 
         public KeepAliveThreadFactory(JDAImpl api)
         {

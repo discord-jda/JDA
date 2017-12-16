@@ -48,10 +48,7 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class AudioConnection
@@ -68,7 +65,7 @@ public class AudioConnection
 
     private final String threadIdentifier;
     private final AudioWebSocket webSocket;
-    private final Map<String, String> contextMap;
+    private final ConcurrentMap<String, String> contextMap;
     private DatagramSocket udpSocket;
     private VoiceChannel channel;
     private volatile AudioSendHandler sendHandler = null;

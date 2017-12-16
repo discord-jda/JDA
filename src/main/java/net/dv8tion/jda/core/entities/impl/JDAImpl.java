@@ -41,12 +41,12 @@ import net.dv8tion.jda.core.requests.restaction.GuildAction;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.MiscUtil;
-import net.dv8tion.jda.core.utils.tuple.Pair;
-import okhttp3.OkHttpClient;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.core.utils.cache.impl.AbstractCacheView;
 import net.dv8tion.jda.core.utils.cache.impl.SnowflakeCacheViewImpl;
+import net.dv8tion.jda.core.utils.tuple.Pair;
+import okhttp3.OkHttpClient;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
@@ -74,7 +74,7 @@ public class JDAImpl implements JDA
 
     protected final AbstractCacheView<AudioManager> audioManagers = new CacheView.SimpleCacheView<>(m -> m.getGuild().getName());
 
-    protected final Map<String, String> contextMap;
+    protected final ConcurrentMap<String, String> contextMap;
     protected final OkHttpClient.Builder httpClientBuilder;
     protected final WebSocketFactory wsFactory;
     protected final AccountType accountType;
@@ -106,7 +106,7 @@ public class JDAImpl implements JDA
 
     public JDAImpl(AccountType accountType, String token, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory, ShardedRateLimiter rateLimiter,
                    boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled,
-                   boolean retryOnTimeout, int corePoolSize, int maxReconnectDelay, Map<String, String> contextMap)
+                   boolean retryOnTimeout, int corePoolSize, int maxReconnectDelay, ConcurrentMap<String, String> contextMap)
     {
         this.accountType = accountType;
         this.setToken(token);
@@ -225,7 +225,7 @@ public class JDAImpl implements JDA
         };
     }
 
-    public Map<String, String> getContextMap()
+    public ConcurrentMap<String, String> getContextMap()
     {
         return contextMap;
     }

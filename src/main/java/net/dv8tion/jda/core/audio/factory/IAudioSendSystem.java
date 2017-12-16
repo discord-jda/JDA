@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.core.audio.factory;
 
-import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Interface that acts as a UDP audio packet sending loop.
@@ -47,5 +47,12 @@ public interface IAudioSendSystem
      */
     void shutdown();
 
-    default void setContextMap(Map<String, String> contextMap) {}
+    /**
+     * Called with the internal JDA {@link org.slf4j.MDC MDC} context map.
+     * <br>This is guaranteed to be called before {@link #start()}.
+     *
+     * @param contextMap
+     *        The JDA internal MDC context map
+     */
+    default void setContextMap(ConcurrentMap<String, String> contextMap) {}
 }

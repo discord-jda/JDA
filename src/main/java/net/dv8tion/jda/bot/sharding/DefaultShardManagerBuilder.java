@@ -25,7 +25,11 @@ import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.OkHttpClient;
 
 import javax.security.auth.login.LoginException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
 import java.util.function.IntFunction;
 import java.util.stream.Collectors;
@@ -42,7 +46,7 @@ import java.util.stream.Collectors;
 public class DefaultShardManagerBuilder
 {
     protected final List<Object> listeners = new ArrayList<>();
-    protected IntFunction<Map<String, String>> contextProvider = null;
+    protected IntFunction<ConcurrentMap<String, String>> contextProvider = null;
     protected boolean enableBulkDeleteSplitting = true;
     protected boolean enableShutdownHook = true;
     protected boolean enableVoice = true;
@@ -87,7 +91,7 @@ public class DefaultShardManagerBuilder
      *
      * @see    <a href="https://www.slf4j.org/api/org/slf4j/MDC.html" target="_blank">MDC Javadoc</a>
      */
-    public DefaultShardManagerBuilder setContextMap(IntFunction<Map<String, String>> provider)
+    public DefaultShardManagerBuilder setContextMap(IntFunction<ConcurrentMap<String, String>> provider)
     {
         this.contextProvider = provider;
         return this;

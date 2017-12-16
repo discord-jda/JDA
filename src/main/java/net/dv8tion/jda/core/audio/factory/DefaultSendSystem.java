@@ -25,7 +25,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.NoRouteToHostException;
 import java.net.SocketException;
-import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 
 import static net.dv8tion.jda.core.audio.AudioConnection.OPUS_FRAME_TIME_AMOUNT;
 
@@ -37,7 +37,7 @@ public class DefaultSendSystem implements IAudioSendSystem
 {
     private final IPacketProvider packetProvider;
     private Thread sendThread;
-    private Map<String, String> contextMap;
+    private ConcurrentMap<String, String> contextMap;
 
     public DefaultSendSystem(IPacketProvider packetProvider)
     {
@@ -45,7 +45,7 @@ public class DefaultSendSystem implements IAudioSendSystem
     }
 
     @Override
-    public void setContextMap(Map<String, String> contextMap)
+    public void setContextMap(ConcurrentMap<String, String> contextMap)
     {
         this.contextMap = contextMap;
     }

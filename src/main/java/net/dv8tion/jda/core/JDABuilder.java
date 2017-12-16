@@ -30,6 +30,7 @@ import okhttp3.OkHttpClient;
 
 import javax.security.auth.login.LoginException;
 import java.util.*;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Used to create new {@link net.dv8tion.jda.core.JDA} instances. This is also useful for making sure all of
@@ -46,7 +47,7 @@ public class JDABuilder
 {
     protected final List<Object> listeners;
 
-    protected Map<String, String> contextMap = null;
+    protected ConcurrentMap<String, String> contextMap = null;
     protected SessionReconnectQueue reconnectQueue = null;
     protected ShardedRateLimiter shardRateLimiter = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
@@ -101,7 +102,7 @@ public class JDABuilder
      *
      * @see    <a href="https://www.slf4j.org/api/org/slf4j/MDC.html" target="_blank">MDC Javadoc</a>
      */
-    public JDABuilder setContextMap(Map<String, String> map)
+    public JDABuilder setContextMap(ConcurrentMap<String, String> map)
     {
         this.contextMap = map;
         return this;

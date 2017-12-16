@@ -36,7 +36,6 @@ import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.tuple.Pair;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
-import org.slf4j.MDC;
 
 import javax.security.auth.login.LoginException;
 import java.util.*;
@@ -206,7 +205,7 @@ public class DefaultShardManager implements ShardManager
     /**
      * The MDC context provider new JDA instances should use on startup.
      */
-    protected IntFunction<Map<String, String>> contextProvider;
+    protected IntFunction<ConcurrentMap<String, String>> contextProvider;
 
     /**
      * Creates a new DefaultShardManager instance.
@@ -266,7 +265,7 @@ public class DefaultShardManager implements ShardManager
                                   final boolean enableShutdownHook, final boolean enableBulkDeleteSplitting,
                                   final boolean autoReconnect, final IntFunction<Boolean> idleProvider,
                                   final boolean retryOnTimeout, final boolean useShutdownNow,
-                                  final IntFunction<Map<String, String>> contextProvider)
+                                  final IntFunction<ConcurrentMap<String, String>> contextProvider)
     {
         this.shardsTotal = shardsTotal;
         this.listeners = listeners;
