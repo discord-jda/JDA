@@ -505,7 +505,7 @@ public class DefaultShardManager implements ShardManager
     protected JDAImpl buildInstance(final int shardId) throws LoginException, RateLimitedException
     {
         final JDAImpl jda = new JDAImpl(AccountType.BOT, this.token, this.httpClientBuilder, this.wsFactory, this.shardedRateLimiter,
-            this.autoReconnect, this.enableVoice, this.enableBulkDeleteSplitting, this.enableBulkDeleteSplitting, retryOnTimeout,
+            this.autoReconnect, this.enableVoice, false, this.enableBulkDeleteSplitting, retryOnTimeout,
             this.corePoolSize, this.maxReconnectDelay, this.contextProvider == null ? null : contextProvider.apply(shardId));
 
         jda.asBot().setShardManager(this);
