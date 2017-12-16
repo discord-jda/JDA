@@ -106,7 +106,7 @@ public class JDAImpl implements JDA
 
     public JDAImpl(AccountType accountType, String token, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory, ShardedRateLimiter rateLimiter,
                    boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled,
-                   boolean retryOnTimeout, int corePoolSize, int maxReconnectDelay, ConcurrentMap<String, String> contextMap)
+                   boolean retryOnTimeout, boolean enableMDC, int corePoolSize, int maxReconnectDelay, ConcurrentMap<String, String> contextMap)
     {
         this.accountType = accountType;
         this.setToken(token);
@@ -118,7 +118,10 @@ public class JDAImpl implements JDA
         this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
         this.pool = new ScheduledThreadPoolExecutor(corePoolSize, new JDAThreadFactory());
         this.maxReconnectDelay = maxReconnectDelay;
-        this.contextMap = contextMap == null ? new ConcurrentHashMap<>() : contextMap;
+        if (enableMDC)
+            this.contextMap = contextMap == null ? new ConcurrentHashMap<>() : contextMap;
+        else
+            this.contextMap = null;
 
         this.presence = new PresenceImpl(this);
         this.requester = new Requester(this, rateLimiter);
@@ -137,15 +140,19 @@ public class JDAImpl implements JDA
         if (token == null || token.isEmpty())
             throw new LoginException("Provided token was null or empty!");
 
-        if (shardInfo != null)
+        Map<String, String> previousContext = null;
+        if (contextMap != null)
         {
-            contextMap.put("jda.shard", shardInfo.getShardString());
-            contextMap.put("jda.shard.id", String.valueOf(shardInfo.getShardId()));
-            contextMap.put("jda.shard.total", String.valueOf(shardInfo.getShardTotal()));
+            if (shardInfo != null)
+            {
+                contextMap.put("jda.shard", shardInfo.getShardString());
+                contextMap.put("jda.shard.id", String.valueOf(shardInfo.getShardId()));
+                contextMap.put("jda.shard.total", String.valueOf(shardInfo.getShardTotal()));
+            }
+            // set MDC metadata for build thread
+            previousContext = MDC.getCopyOfContextMap();
+            contextMap.forEach(MDC::put);
         }
-        // set MDC metadata for build thread
-        Map<String, String> previousContext = MDC.getCopyOfContextMap();
-        contextMap.forEach(MDC::put);
         verifyToken();
         LOG.info("Login Successful!");
 
@@ -786,7 +793,8 @@ public class JDAImpl implements JDA
         {
             final Thread thread = new Thread(() ->
             {
-                MDC.setContextMap(contextMap);
+                if (contextMap != null)
+                    MDC.setContextMap(contextMap);
                 r.run();
             }, "JDA-Thread " + getIdentifierString());
             thread.setDaemon(true);

@@ -110,7 +110,8 @@ public class AudioWebSocket extends WebSocketAdapter
     public void onConnected(WebSocket websocket, Map<String, List<String>> headers)
     {
         //writing thread
-        MDC.setContextMap(api.getContextMap());
+        if (api.getContextMap() != null)
+            MDC.setContextMap(api.getContextMap());
         if (shutdown)
         {
             //Somehow this AudioWebSocket was shutdown before we finished connecting....
@@ -134,7 +135,8 @@ public class AudioWebSocket extends WebSocketAdapter
     public void onTextMessage(WebSocket websocket, String message)
     {
         //reading thread
-        MDC.setContextMap(api.getContextMap());
+        if (api.getContextMap() != null)
+            MDC.setContextMap(api.getContextMap());
         JSONObject contentAll = new JSONObject(message);
         int opCode = contentAll.getInt("op");
 
@@ -647,7 +649,8 @@ public class AudioWebSocket extends WebSocketAdapter
         {
             Runnable r2 = () ->
             {
-                MDC.setContextMap(contextMap);
+                if (contextMap != null)
+                    MDC.setContextMap(contextMap);
                 r.run();
             };
             final Thread t = new Thread(AudioManagerImpl.AUDIO_THREADS, r2, identifier + " - Thread " + threadCount.getAndIncrement());

@@ -208,6 +208,11 @@ public class DefaultShardManager implements ShardManager
     protected IntFunction<ConcurrentMap<String, String>> contextProvider;
 
     /**
+     * Whether to use the MDC context provider.
+     */
+    protected boolean enableMDC;
+
+    /**
      * Creates a new DefaultShardManager instance.
      * @param  shardsTotal
      *         The total amount of shards or {@code -1} to retrieve the recommended amount from discord.
@@ -265,7 +270,7 @@ public class DefaultShardManager implements ShardManager
                                   final boolean enableShutdownHook, final boolean enableBulkDeleteSplitting,
                                   final boolean autoReconnect, final IntFunction<Boolean> idleProvider,
                                   final boolean retryOnTimeout, final boolean useShutdownNow,
-                                  final IntFunction<ConcurrentMap<String, String>> contextProvider)
+                                  final boolean enableMDC, final IntFunction<ConcurrentMap<String, String>> contextProvider)
     {
         this.shardsTotal = shardsTotal;
         this.listeners = listeners;
@@ -288,6 +293,7 @@ public class DefaultShardManager implements ShardManager
         this.retryOnTimeout = retryOnTimeout;
         this.useShutdownNow = useShutdownNow;
         this.contextProvider = contextProvider;
+        this.enableMDC = enableMDC;
 
         if (shardsTotal != -1)
         {
@@ -504,8 +510,8 @@ public class DefaultShardManager implements ShardManager
     protected JDAImpl buildInstance(final int shardId) throws LoginException, RateLimitedException
     {
         final JDAImpl jda = new JDAImpl(AccountType.BOT, this.token, this.httpClientBuilder, this.wsFactory, this.shardedRateLimiter,
-            this.autoReconnect, this.enableVoice, false, this.enableBulkDeleteSplitting, retryOnTimeout,
-            this.corePoolSize, this.maxReconnectDelay, this.contextProvider == null ? null : contextProvider.apply(shardId));
+            this.autoReconnect, this.enableVoice, false, this.enableBulkDeleteSplitting, this.retryOnTimeout, this.enableMDC,
+            this.corePoolSize, this.maxReconnectDelay, this.contextProvider == null || !this.enableMDC ? null : contextProvider.apply(shardId));
 
         jda.asBot().setShardManager(this);
 

@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.audio.factory;
 
+import javax.annotation.CheckForNull;
 import java.util.concurrent.ConcurrentMap;
 
 /**
@@ -52,7 +53,7 @@ public interface IAudioSendSystem
      * <br>This is guaranteed to be called before {@link #start()}.
      *
      * @param contextMap
-     *        The JDA internal MDC context map
+     *        The JDA internal MDC context map, or {@code null} if disabled
      */
-    default void setContextMap(ConcurrentMap<String, String> contextMap) {}
+    default void setContextMap(@CheckForNull ConcurrentMap<String, String> contextMap) {}
 }

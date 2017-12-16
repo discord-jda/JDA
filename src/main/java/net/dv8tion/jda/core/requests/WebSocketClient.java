@@ -262,7 +262,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         ratelimitThread = new Thread(() ->
         {
-            MDC.setContextMap(api.getContextMap());
+            if (api.getContextMap() != null)
+                MDC.setContextMap(api.getContextMap());
             boolean needRatelimit;
             boolean attemptedToSend;
             boolean queueLocked = false;
@@ -457,7 +458,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public void onConnected(WebSocket websocket, Map<String, List<String>> headers)
     {
         //writing thread
-        MDC.setContextMap(api.getContextMap());
+        if (api.getContextMap() != null)
+            MDC.setContextMap(api.getContextMap());
         api.setStatus(JDA.Status.IDENTIFYING_SESSION);
         LOG.info("Connected to WebSocket");
         if (headers.containsKey("cf-ray"))
@@ -644,7 +646,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public void onTextMessage(WebSocket websocket, String message)
     {
         //reading thread
-        MDC.setContextMap(api.getContextMap());
+        if (api.getContextMap() != null)
+            MDC.setContextMap(api.getContextMap());
         JSONObject content = new JSONObject(message);
         try
         {
@@ -708,7 +711,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         keepAliveThread = new Thread(() ->
         {
-            MDC.setContextMap(api.getContextMap());
+            if (api.getContextMap() != null)
+                MDC.setContextMap(api.getContextMap());
             while (connected)
             {
                 try

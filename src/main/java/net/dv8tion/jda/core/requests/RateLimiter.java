@@ -88,7 +88,7 @@ public abstract class RateLimiter
     private class RateLimitThreadFactory implements ThreadFactory
     {
         final String identifier;
-        AtomicInteger threadCount = new AtomicInteger(1);
+        final AtomicInteger threadCount = new AtomicInteger(1);
 
         public RateLimitThreadFactory(JDAImpl api)
         {
@@ -100,7 +100,8 @@ public abstract class RateLimiter
         {
             Thread t = new Thread(() ->
             {
-                MDC.setContextMap(requester.api.getContextMap());
+                if (requester.api.getContextMap() != null)
+                    MDC.setContextMap(requester.api.getContextMap());
                 r.run();
             }, identifier + " - Thread " + threadCount.getAndIncrement());
             t.setDaemon(true);

@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.utils.JDALogger;
 import org.slf4j.MDC;
 
+import javax.annotation.CheckForNull;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.NoRouteToHostException;
@@ -45,7 +46,7 @@ public class DefaultSendSystem implements IAudioSendSystem
     }
 
     @Override
-    public void setContextMap(ConcurrentMap<String, String> contextMap)
+    public void setContextMap(@CheckForNull ConcurrentMap<String, String> contextMap)
     {
         this.contextMap = contextMap;
     }

@@ -48,6 +48,7 @@ public class JDABuilder
     protected final List<Object> listeners;
 
     protected ConcurrentMap<String, String> contextMap = null;
+    protected boolean enableContext = true;
     protected SessionReconnectQueue reconnectQueue = null;
     protected ShardedRateLimiter shardRateLimiter = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
@@ -95,16 +96,39 @@ public class JDABuilder
      * where {@code SHARD_ID} and {@code TOTAL} are the shard configuration.
      * Additionally it will provide context for the id via {@code jda.shard.id} and the total via {@code jda.shard.total}.
      *
+     * <p>If provided with non-null map this automatically enables MDC context using {@link #setContextEnabled(boolean) setContextEnable(true)}!
+     *
      * @param  map
      *         The <b>modifiable</b> context map to use in JDA, or {@code null} to reset
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
      * @see    <a href="https://www.slf4j.org/api/org/slf4j/MDC.html" target="_blank">MDC Javadoc</a>
+     * @see    #setContextEnabled(boolean)
      */
     public JDABuilder setContextMap(ConcurrentMap<String, String> map)
     {
         this.contextMap = map;
+        if (map != null)
+            this.enableContext = true;
+        return this;
+    }
+
+    /**
+     * Whether JDA should use a synchronized MDC context for all of its controlled threads.
+     * <br>Default: {@code true}
+     *
+     * @param  enable
+     *         True, if JDA should provide an MDC context map
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @see    <a href="https://www.slf4j.org/api/org/slf4j/MDC.html" target="_blank">MDC Javadoc</a>
+     * @see    #setContextMap(java.util.concurrent.ConcurrentMap)
+     */
+    public JDABuilder setContextEnabled(boolean enable)
+    {
+        this.enableContext = enable;
         return this;
     }
 
@@ -573,7 +597,7 @@ public class JDABuilder
         OkHttpClient.Builder httpClientBuilder = this.httpClientBuilder == null ? new OkHttpClient.Builder() : this.httpClientBuilder;
         WebSocketFactory wsFactory = this.wsFactory == null ? new WebSocketFactory() : this.wsFactory;
         JDAImpl jda = new JDAImpl(accountType, token, httpClientBuilder, wsFactory, shardRateLimiter, autoReconnect, enableVoice, enableShutdownHook,
-                enableBulkDeleteSplitting, requestTimeoutRetry, corePoolSize, maxReconnectDelay, contextMap);
+                enableBulkDeleteSplitting, requestTimeoutRetry, enableContext, corePoolSize, maxReconnectDelay, contextMap);
 
         if (eventManager != null)
             jda.setEventManager(eventManager);

@@ -99,7 +99,8 @@ public class AudioConnection
     {
         Thread readyThread = new Thread(AudioManagerImpl.AUDIO_THREADS, () ->
         {
-            MDC.setContextMap(contextMap);
+            if (contextMap != null)
+                MDC.setContextMap(contextMap);
             final long timeout = getGuild().getAudioManager().getConnectTimeout();
 
             final long started = System.currentTimeMillis();
@@ -315,7 +316,8 @@ public class AudioConnection
         {
             receiveThread = new Thread(AudioManagerImpl.AUDIO_THREADS, () ->
             {
-                MDC.setContextMap(contextMap);
+                if (contextMap != null)
+                    MDC.setContextMap(contextMap);
                 try
                 {
                     udpSocket.setSoTimeout(1000);
@@ -448,7 +450,8 @@ public class AudioConnection
             {
                 Runnable r = () ->
                 {
-                    MDC.setContextMap(contextMap);
+                    if (contextMap != null)
+                        MDC.setContextMap(contextMap);
                     task.run();
                 };
                 final Thread t = new Thread(AudioManagerImpl.AUDIO_THREADS, r, threadIdentifier + " Combined Thread");
