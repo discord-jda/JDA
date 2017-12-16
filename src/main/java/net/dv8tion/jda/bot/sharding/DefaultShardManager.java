@@ -54,6 +54,13 @@ import java.util.function.IntFunction;
 public class DefaultShardManager implements ShardManager
 {
     public static final Logger LOG = JDALogger.getLog(ShardManager.class);
+    public static final ThreadFactory DEFAULT_THREAD_FACTORY = r ->
+    {
+        final Thread t = new Thread(r, "DefaultShardManager");
+        t.setDaemon(true);
+        t.setPriority(Thread.NORM_PRIORITY + 1);
+        return t;
+    };
 
     /**
      * The factory used to create {@link net.dv8tion.jda.core.audio.factory.IAudioSendSystem IAudioSendSystem}
@@ -196,6 +203,16 @@ public class DefaultShardManager implements ShardManager
     protected IntFunction<OnlineStatus> statusProvider;
 
     /**
+     * The MDC context provider new JDA instances should use on startup.
+     */
+    protected IntFunction<ConcurrentMap<String, String>> contextProvider;
+
+    /**
+     * Whether to use the MDC context provider.
+     */
+    protected boolean enableMDC;
+
+    /**
      * Creates a new DefaultShardManager instance.
      * @param  shardsTotal
      *         The total amount of shards or {@code -1} to retrieve the recommended amount from discord.
@@ -241,6 +258,8 @@ public class DefaultShardManager implements ShardManager
      *         hether the Requester should retry when a {@link java.net.SocketTimeoutException SocketTimeoutException} occurs.
      * @param  useShutdownNow
      *         Whether the ShardManager should use JDA#shutdown() or not
+     * @param  contextProvider
+     *         The MDC context provider new JDA instances should use on startup
      */
     protected DefaultShardManager(final int shardsTotal, final Collection<Integer> shardIds, final List<Object> listeners,
                                   final String token, final IEventManager eventManager, final IAudioSendFactory audioSendFactory,
@@ -250,7 +269,8 @@ public class DefaultShardManager implements ShardManager
                                   final int maxReconnectDelay, final int corePoolSize, final boolean enableVoice,
                                   final boolean enableShutdownHook, final boolean enableBulkDeleteSplitting,
                                   final boolean autoReconnect, final IntFunction<Boolean> idleProvider,
-                                  final boolean retryOnTimeout, boolean useShutdownNow)
+                                  final boolean retryOnTimeout, final boolean useShutdownNow,
+                                  final boolean enableMDC, final IntFunction<ConcurrentMap<String, String>> contextProvider)
     {
         this.shardsTotal = shardsTotal;
         this.listeners = listeners;
@@ -272,6 +292,8 @@ public class DefaultShardManager implements ShardManager
         this.idleProvider = idleProvider;
         this.retryOnTimeout = retryOnTimeout;
         this.useShutdownNow = useShutdownNow;
+        this.contextProvider = contextProvider;
+        this.enableMDC = enableMDC;
 
         if (shardsTotal != -1)
         {
@@ -488,8 +510,8 @@ public class DefaultShardManager implements ShardManager
     protected JDAImpl buildInstance(final int shardId) throws LoginException, RateLimitedException
     {
         final JDAImpl jda = new JDAImpl(AccountType.BOT, this.token, this.httpClientBuilder, this.wsFactory, this.shardedRateLimiter,
-            this.autoReconnect, this.enableVoice, false, this.enableBulkDeleteSplitting, retryOnTimeout,
-            this.corePoolSize, this.maxReconnectDelay);
+            this.autoReconnect, this.enableVoice, false, this.enableBulkDeleteSplitting, this.retryOnTimeout, this.enableMDC,
+            this.corePoolSize, this.maxReconnectDelay, this.contextProvider == null || !this.enableMDC ? null : contextProvider.apply(shardId));
 
         jda.asBot().setShardManager(this);
 
@@ -595,13 +617,7 @@ public class DefaultShardManager implements ShardManager
     protected ScheduledExecutorService createExecutor(ThreadFactory threadFactory)
     {
         ThreadFactory factory = threadFactory == null
-            ? r ->
-                {
-                    final Thread t = new Thread(r, "DefaultShardManager");
-                    t.setDaemon(true);
-                    t.setPriority(Thread.NORM_PRIORITY + 1);
-                    return t;
-                }
+            ? DEFAULT_THREAD_FACTORY
             : threadFactory;
 
         return Executors.newSingleThreadScheduledExecutor(factory);

@@ -36,6 +36,7 @@ import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.tuple.Pair;
 import org.json.JSONObject;
 import org.slf4j.Logger;
+import org.slf4j.MDC;
 import tomp2p.opuswrapper.Opus;
 
 import java.net.DatagramPacket;
@@ -47,10 +48,7 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class AudioConnection
@@ -67,6 +65,7 @@ public class AudioConnection
 
     private final String threadIdentifier;
     private final AudioWebSocket webSocket;
+    private final ConcurrentMap<String, String> contextMap;
     private DatagramSocket udpSocket;
     private VoiceChannel channel;
     private volatile AudioSendHandler sendHandler = null;
@@ -93,12 +92,15 @@ public class AudioConnection
 
         final JDAImpl api = (JDAImpl) channel.getJDA();
         this.threadIdentifier = api.getIdentifierString() + " AudioConnection Guild: " + channel.getGuild().getId();
+        this.contextMap = api.getContextMap();
     }
 
     public void ready()
     {
         Thread readyThread = new Thread(AudioManagerImpl.AUDIO_THREADS, () ->
         {
+            if (contextMap != null)
+                MDC.setContextMap(contextMap);
             final long timeout = getGuild().getAudioManager().getConnectTimeout();
 
             final long started = System.currentTimeMillis();
@@ -265,6 +267,7 @@ public class AudioConnection
 
             IAudioSendFactory factory = ((JDAImpl) channel.getJDA()).getAudioSendFactory();
             sendSystem = factory.createSendSystem(new PacketProvider());
+            sendSystem.setContextMap(contextMap);
             sendSystem.start();
         }
         else if (sendHandler == null && sendSystem != null)
@@ -313,6 +316,8 @@ public class AudioConnection
         {
             receiveThread = new Thread(AudioManagerImpl.AUDIO_THREADS, () ->
             {
+                if (contextMap != null)
+                    MDC.setContextMap(contextMap);
                 try
                 {
                     udpSocket.setSoTimeout(1000);
@@ -443,7 +448,13 @@ public class AudioConnection
         {
             combinedAudioExecutor = Executors.newSingleThreadScheduledExecutor((task) ->
             {
-                final Thread t = new Thread(AudioManagerImpl.AUDIO_THREADS, task, threadIdentifier + " Combined Thread");
+                Runnable r = () ->
+                {
+                    if (contextMap != null)
+                        MDC.setContextMap(contextMap);
+                    task.run();
+                };
+                final Thread t = new Thread(AudioManagerImpl.AUDIO_THREADS, r, threadIdentifier + " Combined Thread");
                 t.setDaemon(true);
                 t.setUncaughtExceptionHandler((thread, throwable) ->
                 {

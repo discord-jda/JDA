@@ -41,21 +41,19 @@ import net.dv8tion.jda.core.requests.restaction.GuildAction;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.MiscUtil;
-import net.dv8tion.jda.core.utils.tuple.Pair;
-import okhttp3.OkHttpClient;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.core.utils.cache.impl.AbstractCacheView;
 import net.dv8tion.jda.core.utils.cache.impl.SnowflakeCacheViewImpl;
+import net.dv8tion.jda.core.utils.tuple.Pair;
+import okhttp3.OkHttpClient;
 import org.json.JSONObject;
 import org.slf4j.Logger;
+import org.slf4j.MDC;
 
 import javax.security.auth.login.LoginException;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 public class JDAImpl implements JDA
@@ -76,6 +74,7 @@ public class JDAImpl implements JDA
 
     protected final AbstractCacheView<AudioManager> audioManagers = new CacheView.SimpleCacheView<>(m -> m.getGuild().getName());
 
+    protected final ConcurrentMap<String, String> contextMap;
     protected final OkHttpClient.Builder httpClientBuilder;
     protected final WebSocketFactory wsFactory;
     protected final AccountType accountType;
@@ -105,8 +104,9 @@ public class JDAImpl implements JDA
     protected String token;
     protected String gatewayUrl;
 
-    public JDAImpl(AccountType accountType, String token, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory, ShardedRateLimiter rateLimiter,boolean autoReconnect, boolean audioEnabled,
-            boolean useShutdownHook, boolean bulkDeleteSplittingEnabled,boolean retryOnTimeout, int corePoolSize, int maxReconnectDelay)
+    public JDAImpl(AccountType accountType, String token, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory, ShardedRateLimiter rateLimiter,
+                   boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled,
+                   boolean retryOnTimeout, boolean enableMDC, int corePoolSize, int maxReconnectDelay, ConcurrentMap<String, String> contextMap)
     {
         this.accountType = accountType;
         this.setToken(token);
@@ -118,6 +118,10 @@ public class JDAImpl implements JDA
         this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
         this.pool = new ScheduledThreadPoolExecutor(corePoolSize, new JDAThreadFactory());
         this.maxReconnectDelay = maxReconnectDelay;
+        if (enableMDC)
+            this.contextMap = contextMap == null ? new ConcurrentHashMap<>() : contextMap;
+        else
+            this.contextMap = null;
 
         this.presence = new PresenceImpl(this);
         this.requester = new Requester(this, rateLimiter);
@@ -136,10 +140,26 @@ public class JDAImpl implements JDA
         if (token == null || token.isEmpty())
             throw new LoginException("Provided token was null or empty!");
 
+        Map<String, String> previousContext = null;
+        if (contextMap != null)
+        {
+            if (shardInfo != null)
+            {
+                contextMap.put("jda.shard", shardInfo.getShardString());
+                contextMap.put("jda.shard.id", String.valueOf(shardInfo.getShardId()));
+                contextMap.put("jda.shard.total", String.valueOf(shardInfo.getShardTotal()));
+            }
+            // set MDC metadata for build thread
+            previousContext = MDC.getCopyOfContextMap();
+            contextMap.forEach(MDC::put);
+        }
         verifyToken();
         LOG.info("Login Successful!");
 
         client = new WebSocketClient(this, reconnectQueue);
+        // remove our MDC metadata when we exit our code
+        if (previousContext != null)
+            previousContext.forEach(MDC::put);
 
         if (shutdownHook != null)
             Runtime.getRuntime().addShutdownHook(shutdownHook);
@@ -210,6 +230,11 @@ public class JDAImpl implements JDA
                 }
             }
         };
+    }
+
+    public ConcurrentMap<String, String> getContextMap()
+    {
+        return contextMap;
     }
 
     public void setStatus(Status status)
@@ -766,7 +791,12 @@ public class JDAImpl implements JDA
         @Override
         public Thread newThread(Runnable r)
         {
-            final Thread thread = new Thread(r, "JDA-Thread " + getIdentifierString());
+            final Thread thread = new Thread(() ->
+            {
+                if (contextMap != null)
+                    MDC.setContextMap(contextMap);
+                r.run();
+            }, "JDA-Thread " + getIdentifierString());
             thread.setDaemon(true);
             return thread;
         }

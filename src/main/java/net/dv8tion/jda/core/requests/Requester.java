@@ -44,7 +44,7 @@ public class Requester
     public static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");
     public static final RequestBody EMPTY_BODY = RequestBody.create(null, new byte[]{});
 
-    private final JDAImpl api;
+    protected final JDAImpl api;
     private final RateLimiter rateLimiter;
 
     private final OkHttpClient httpClient;
