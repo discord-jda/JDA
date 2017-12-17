@@ -151,27 +151,30 @@ In addition you can look at the many Discord Bots that were implemented using JD
 [And many more!](https://github.com/search?q=JDA+discord+bot&type=Repositories&utf8=%E2%9C%93)
 
 ## Download
+Latest Stable Version: [GitHub Release](https://github.com/DV8FromTheWorld/JDA/releases/latest)
 Latest Version:
 [ ![version][] ][download]
 
-Be sure to replace the **VERSION** key below with the latest version shown above!
+Be sure to replace the **VERSION** key below with the one of the versions shown above!
 
-Maven
+**Maven**
 ```xml
 <dependency>
     <groupId>net.dv8tion</groupId>
     <artifactId>JDA</artifactId>
     <version>VERSION</version>
 </dependency>
-
+```
+```xml
 <repository>
     <id>jcenter</id>
     <name>jcenter-bintray</name>
     <url>http://jcenter.bintray.com</url>
 </repository>
+
 ```
 
-Gradle
+**Gradle**
 ```gradle
 dependencies {
     compile 'net.dv8tion:JDA:VERSION'
@@ -205,10 +208,10 @@ Docs can be found on the [Jenkins](http://home.dv8tion.net:8080/) or directly [h
 <br>A simple Wiki can also be found in this repository's [Wiki section](https://github.com/DV8FromTheWorld/JDA/wiki)
 
 ## Getting Help
-If you need help, or just want to talk with the JDA or other Discord Devs, you can join the [Unofficial Discord API](https://discord.gg/0SBTUU1wZTUydsWv) Guild.
+If you need help, or just want to talk with the JDA or other Devs, you can join the [Official JDA Discord Guild][discord-invite].
 
-Once you joined, you can find JDA-specific help in the #java_jda channel<br>
-We have our own Discord Server [here][discord-invite]
+Alternatively you can also join the [Unofficial Discord API Guild](https://discord.gg/discord-api).
+Once you joined, you can find JDA-specific help in the `#java_jda` channel.
 
 For guides and setup help you can also take a look at the [wiki](https://github.com/DV8FromTheWorld/JDA/wiki)
 <br>Especially interesting are the [Getting Started](https://github.com/DV8FromTheWorld/JDA/wiki/3\)-Getting-Started)
@@ -239,15 +242,6 @@ Features include:
 - Paginated Message using Reactions
 - EventWaiter allowing to wait for a response and other events
 
-### [Kotlin-JDA](https://github.com/JDA-Applications/Kotlin-JDA)
-
-Created and maintained by [MinnDevelopment](https://github.com/MinnDevelopment)
-<br>Kotlin-JDA provides several extensions allowing to easily use kotlin idioms with JDA.
-
-Features include:
-- Groovy-style Builders
-- Coroutine RestActions
-
 ### [JDAction](https://github.com/sedmelluq/jdaction)
 
 Created and maintained by [sedmelluq](https://github.com/sedmelluq)
@@ -263,13 +257,34 @@ More info about RestAction: [Wiki](https://github.com/DV8FromTheWorld/JDA/wiki/7
 More can be found in our github organization: [JDA-Applications](https://github.com/JDA-Applications)
 
 ## Contributing to JDA
-If you want to contribute to JDA, make sure to base your branch off of our master branch (or a feature-branch)
-and create your PR into that **same** branch. **We will be rejecting any PRs between branches!**
+If you want to contribute to JDA, make sure to base your branch off of our **development** branch (or a feature-branch)
+and create your PR into that **same** branch. **We will be rejecting any PRs between branches or into release branches!**
 
 It is also highly recommended to get in touch with the Devs before opening Pull Requests (either through an issue or the Discord servers mentioned above).<br>
 It is very possible that your change might already be in development or you missed something.
 
 More information can be found at the wiki page [Contributing](https://github.com/DV8FromTheWorld/JDA/wiki/5\)-Contributing)
+
+### Deprecation Policy
+
+When a feature is introduced to replace or enhance existing functionality we might deprecate old functionality.
+
+A deprecated method/class usually has a replacement mentioned in its documentation which should be switched to. Deprecated
+functionality might or might not exist in the next minor release. (Hint: The minor version is the `MM` of `XX.MM.RR_BB` in our version format)
+
+It is possible that some features are deprecated without replacement, in this case the functionality is no longer supported by either the JDA structure
+due to fundamental changes (for example automation of a feature) or due to discord API changes that cause it to be removed.
+
+We highly recommend to discontinue usage of deprecated functionality and update by going through each minor release instead of jumping.
+For instance, when updating from version 3.3.0 to version 3.5.1 you should do the following:
+
+- Update to `3.4.RR_BB` and check for deprecation, replace
+- Update to `3.5.1_BB` and check for deprecation, replace
+
+The `BB` indicates the build number specified in the release details.
+
+The `RR` in version `3.4.RR` should be replaced by the latest version that was published for `3.4`, you can find out which the latest
+version was by looking at the [release page](https://github.com/DV8FromTheWorld/JDA/releases)
 
 ## Dependencies:
 This project requires **Java 8**.<br>
