@@ -2253,7 +2253,7 @@ public class GuildController
      * @return {@link net.dv8tion.jda.core.requests.restaction.order.CategoryOrderAction CategoryOrderAction} - Type: {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      */
     @CheckReturnValue
-    public CategoryOrderAction<TextChannel> modifyCategoryTextChannelPositions(Category category)
+    public CategoryOrderAction<TextChannel> modifyTextChannelPositions(Category category)
     {
         return new CategoryOrderAction<>(category, ChannelType.TEXT);
     }
@@ -2287,7 +2287,7 @@ public class GuildController
      * @return {@link net.dv8tion.jda.core.requests.restaction.order.CategoryOrderAction CategoryOrderAction} - Type: {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels}
      */
     @CheckReturnValue
-    public CategoryOrderAction<VoiceChannel> modifyCategoryVoiceChannelPositions(Category category)
+    public CategoryOrderAction<VoiceChannel> modifyVoiceChannelPositions(Category category)
     {
         return new CategoryOrderAction<>(category, ChannelType.VOICE);
     }

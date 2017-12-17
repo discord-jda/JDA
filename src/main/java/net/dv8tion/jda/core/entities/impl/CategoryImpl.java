@@ -147,13 +147,13 @@ public class CategoryImpl extends AbstractChannelImpl<CategoryImpl> implements C
     @Override
     public CategoryOrderAction<TextChannel> modifyTextChannelPositions()
     {
-        return getGuild().getController().modifyCategoryTextChannelPositions(this);
+        return getGuild().getController().modifyTextChannelPositions(this);
     }
 
     @Override
     public CategoryOrderAction<VoiceChannel> modifyVoiceChannelPositions()
     {
-        return getGuild().getController().modifyCategoryVoiceChannelPositions(this);
+        return getGuild().getController().modifyVoiceChannelPositions(this);
     }
 
     @Override
