@@ -26,6 +26,14 @@ import org.json.JSONObject;
 import javax.annotation.CheckReturnValue;
 import java.util.function.Consumer;
 
+/**
+ * Extension of RestAction to allow setting a reason, only available to accounts of {@link net.dv8tion.jda.core.AccountType#BOT AccounType.BOT}
+ *
+ * @param  <T>
+ *         The return type
+ *
+ * @since  3.3.0
+ */
 public abstract class AuditableRestAction<T> extends RestAction<T>
 {
 

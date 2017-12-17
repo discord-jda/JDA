@@ -130,6 +130,8 @@ public class ChannelManager
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link ChannelManagerUpdatable#update() #update()}
      *
+     * @since  3.4.0
+     *
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getParentField()
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */

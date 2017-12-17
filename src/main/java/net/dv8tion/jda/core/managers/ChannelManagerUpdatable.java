@@ -134,6 +134,8 @@ public class ChannelManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.ChannelField ChannelField}
      *         - Type: {@link net.dv8tion.jda.core.entities.Category Category}
+     *
+     * @since  3.4.0
      */
     public ChannelField<Category> getParentField()
     {

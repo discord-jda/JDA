@@ -347,13 +347,6 @@ public class GuildImpl implements Guild
         return publicRole;
     }
 
-    @Override
-    @Deprecated
-    public TextChannel getPublicChannel()
-    {
-        return textChannelCache.getElementById(id);
-    }
-
     @Nullable
     @Override
     public TextChannel getDefaultChannel()
