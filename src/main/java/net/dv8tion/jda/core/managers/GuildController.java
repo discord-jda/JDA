@@ -37,6 +37,7 @@ import net.dv8tion.jda.core.requests.restaction.WebhookAction;
 import net.dv8tion.jda.core.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.core.requests.restaction.order.RoleOrderAction;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.Helpers;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.json.JSONArray;
@@ -1528,8 +1529,14 @@ public class GuildController
         });
 
         Set<Role> currentRoles = new HashSet<>(((MemberImpl) member).getRoleSet());
-        currentRoles.addAll(rolesToAdd);
-        currentRoles.removeAll(rolesToRemove);
+        Set<Role> newRolesToAdd = new HashSet<>(rolesToAdd);
+        newRolesToAdd.removeAll(rolesToRemove);
+
+        // If no changes have been made we return an EmptyRestAction instead
+        if (currentRoles.addAll(newRolesToAdd))
+            currentRoles.removeAll(rolesToRemove);
+        else if (!currentRoles.removeAll(rolesToRemove))
+            return new AuditableRestAction.EmptyRestAction<>(guild.getJDA());
 
         Checks.check(!currentRoles.contains(guild.getPublicRole()),
             "Cannot add the PublicRole of a Guild to a Member. All members have this role by default!");
@@ -1672,17 +1679,26 @@ public class GuildController
         Checks.check(!roles.contains(guild.getPublicRole()),
             "Cannot add the PublicRole of a Guild to a Member. All members have this role by default!");
 
-        //Make sure that the current managed roles are preserved and no new ones are added.
-        List<Role> currentManaged = roles.stream().filter(Role::isManaged).collect(Collectors.toList());
-        List<Role> newManaged = roles.stream().filter(Role::isManaged).collect(Collectors.toList());
-        if (currentManaged.size() != 0 || newManaged.size() != 0)
-        {
-            currentManaged.removeIf(newManaged::contains);
+        // Return an empty rest action if there were no changes
+        final List<Role> memberRoles = member.getRoles();
+        if (memberRoles.size() == roles.size() && memberRoles.containsAll(roles))
+            return new AuditableRestAction.EmptyRestAction<>(guild.getJDA());
 
-            if (currentManaged.size() > 0)
+        //Make sure that the current managed roles are preserved and no new ones are added.
+        List<Role> currentManaged = memberRoles.stream().filter(Role::isManaged).collect(Collectors.toList());
+        List<Role> newManaged = roles.stream().filter(Role::isManaged).collect(Collectors.toList());
+        if (!currentManaged.isEmpty() || !newManaged.isEmpty())
+        {
+            if (!newManaged.containsAll(currentManaged))
+            {
+                currentManaged.removeAll(newManaged);
                 throw new IllegalArgumentException("Cannot remove managed roles from a member! Roles: " + currentManaged.toString());
-            if (newManaged.size() > 0)
+            }
+            if (!currentManaged.containsAll(newManaged))
+            {
+                newManaged.removeAll(currentManaged);
                 throw new IllegalArgumentException("Cannot add managed roles to a member! Roles: " + newManaged.toString());
+            }
         }
 
         //This is identical to the rest action stuff in #modifyMemberRoles(Member, Collection<Role>, Collection<Role>)
@@ -2124,7 +2140,7 @@ public class GuildController
                 JSONObject obj = response.getObject();
                 final long id = obj.getLong("id");
                 final String name = obj.getString("name");
-                final boolean managed = !obj.isNull("managed") && obj.getBoolean("managed");
+                final boolean managed = Helpers.optBoolean(obj, "managed");
                 EmoteImpl emote = new EmoteImpl(id, guild).setName(name).setManaged(managed);
 
                 JSONArray rolesArr = obj.getJSONArray("roles");

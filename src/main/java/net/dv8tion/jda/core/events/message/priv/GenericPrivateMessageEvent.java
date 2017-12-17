@@ -16,8 +16,9 @@
 package net.dv8tion.jda.core.events.message.priv;
 
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.PrivateChannel;
-import net.dv8tion.jda.core.events.message.GenericMessageEvent;
+import net.dv8tion.jda.core.events.Event;
 
 /**
  * <b><u>GenericPrivateMessageEvent</u></b><br>
@@ -26,17 +27,42 @@ import net.dv8tion.jda.core.events.message.GenericMessageEvent;
  * <br>
  * Use: Detect any PrivateMessageEvent. <i>(No real use for the JDA user)</i>
  */
-public abstract class GenericPrivateMessageEvent extends GenericMessageEvent
+public abstract class GenericPrivateMessageEvent extends Event
 {
+    protected final long messageId;
+    protected final PrivateChannel channel;
 
     public GenericPrivateMessageEvent(JDA api, long responseNumber, long messageId, PrivateChannel channel)
     {
-        super(api, responseNumber, messageId, channel);
+        super(api, responseNumber);
+        this.messageId = messageId;
+        this.channel = channel;
     }
 
-    @Override
     public PrivateChannel getChannel()
     {
-        return (PrivateChannel) channel;
+        return channel;
+    }
+
+    public String getMessageId()
+    {
+        return Long.toUnsignedString(messageId);
+    }
+
+    public long getMessageIdLong()
+    {
+        return messageId;
+    }
+
+    @Deprecated
+    public boolean isFromType(ChannelType type)
+    {
+        return channel.getType() == type;
+    }
+
+    @Deprecated
+    public ChannelType getChannelType()
+    {
+        return channel.getType();
     }
 }

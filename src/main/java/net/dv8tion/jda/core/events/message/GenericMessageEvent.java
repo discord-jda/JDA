@@ -39,6 +39,11 @@ public abstract class GenericMessageEvent extends Event
         this.channel = channel;
     }
 
+    public MessageChannel getChannel()
+    {
+        return channel;
+    }
+
     public String getMessageId()
     {
         return Long.toUnsignedString(messageId);
@@ -47,11 +52,6 @@ public abstract class GenericMessageEvent extends Event
     public long getMessageIdLong()
     {
         return messageId;
-    }
-
-    public MessageChannel getChannel()
-    {
-        return channel;
     }
 
     public boolean isFromType(ChannelType type)

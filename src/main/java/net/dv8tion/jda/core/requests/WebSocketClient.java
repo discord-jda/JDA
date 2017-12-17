@@ -71,8 +71,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected final Set<String> cfRays = new HashSet<>();
     protected final Set<String> traces = new HashSet<>();
 
-    protected WebSocket socket;
-    protected String gatewayUrl = null;
+    public WebSocket socket;
     protected String sessionId = null;
     protected Inflater zlibContext = new Inflater();
     protected ByteArrayOutputStream readBuffer;
@@ -171,19 +170,19 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             if (firstInit)
             {
                 firstInit = false;
-                JDAImpl.LOG.info("Finished Loading!");
-                if (api.getGuilds().size() >= 2500) //Show large warning when connected to >2500 guilds
+                if (api.getGuilds().size() >= 2000) //Show large warning when connected to >=2000 guilds
                 {
                     JDAImpl.LOG.warn(" __      __ _    ___  _  _  ___  _  _   ___  _ ");
                     JDAImpl.LOG.warn(" \\ \\    / //_\\  | _ \\| \\| ||_ _|| \\| | / __|| |");
                     JDAImpl.LOG.warn("  \\ \\/\\/ // _ \\ |   /| .` | | | | .` || (_ ||_|");
                     JDAImpl.LOG.warn("   \\_/\\_//_/ \\_\\|_|_\\|_|\\_||___||_|\\_| \\___|(_)");
-                    JDAImpl.LOG.warn("You're running a session with over 2500 connected");
+                    JDAImpl.LOG.warn("You're running a session with over 2000 connected");
                     JDAImpl.LOG.warn("guilds. You should shard the connection in order");
                     JDAImpl.LOG.warn("to split the load or things like resuming");
                     JDAImpl.LOG.warn("connection might not work as expected.");
                     JDAImpl.LOG.warn("For more info see https://git.io/vrFWP");
                 }
+                JDAImpl.LOG.info("Finished Loading!");
                 api.getEventManager().handle(new ReadyEvent(api, api.getResponseTotal()));
             }
             else
@@ -419,7 +418,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         shutdown = true;
         shouldReconnect = false;
         if (reconnectQueue != null) // remove if in queue
-            reconnectQueue.reconnectQueue.remove(this);
+            reconnectQueue.removeSession(this);
         close(1000, "Shutting down");
     }
 
@@ -435,18 +434,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             throw new RejectedExecutionException("JDA is shutdown!");
         initiating = true;
 
+        String url = api.getGatewayUrl() + "?encoding=json&compress=zlib-stream&v=" + DISCORD_GATEWAY_VERSION;
+
         try
         {
-            if (gatewayUrl == null)
-            {
-                gatewayUrl = getGateway();
-                if (gatewayUrl == null)
-                {
-                    throw new RuntimeException("Could not fetch WS-Gateway!");
-                }
-            }
             socket = api.getWebSocketFactory()
-                    .createSocket(gatewayUrl)
+                    .createSocket(url)
                     .addHeader("Accept-Encoding", "gzip")
                     .addListener(this);
             socket.connect();
@@ -455,37 +448,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             //Completely fail here. We couldn't make the connection.
             throw new IllegalStateException(e);
-        }
-    }
-
-    protected String getGateway()
-    {
-        try
-        {
-            RestAction<String> gateway = new RestAction<String>(api, Route.Misc.GATEWAY.compile())
-            {
-                @Override
-                protected void handleResponse(Response response, Request<String> request)
-                {
-                    try
-                    {
-                        if (response.isOk())
-                            request.onSuccess(response.getObject().getString("url"));
-                        else
-                            request.onFailure(new Exception("Failed to get gateway url"));
-                    }
-                    catch (Exception e)
-                    {
-                        request.onFailure(e);
-                    }
-                }
-            };
-
-            return gateway.complete(false) + "?encoding=json&compress=zlib-stream&v=" + DISCORD_GATEWAY_VERSION;
-        }
-        catch (Exception ex)
-        {
-            return null;
         }
     }
 
@@ -608,9 +570,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         reconnect(false, true);
     }
 
-    //public for access from SessionReconnectQueue extensions
-    //callFromQueue - whether this was in SessionReconnectQueue and got polled
-    //shouldHandleIdentify - whether SessionReconnectQueue already handled an IDENTIFY rate limit for this session
+    /**
+     * This method is used to start the reconnect of the JDA instance.
+     * It is public for access from SessionReconnectQueue extensions.
+     *
+     * @param  callFromQueue
+     *         whether this was in SessionReconnectQueue and got polled
+     * @param  shouldHandleIdentify
+     *         whether SessionReconnectQueue already handled an IDENTIFY rate limit for this session
+     */
     public void reconnect(boolean callFromQueue, boolean shouldHandleIdentify)
     {
         if (shutdown)
@@ -646,7 +614,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 handleIdentifyRateLimit = false;
                 api.setStatus(JDA.Status.ATTEMPTING_TO_RECONNECT);
             }
-            catch(InterruptedException ignored) {}
+            catch (InterruptedException ignored) {}
             LOG.warn("Attempting to reconnect!");
             try
             {
@@ -846,7 +814,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         if (api.getAccountType() == AccountType.CLIENT)
         {
-            JDAClientImpl client = (JDAClientImpl) api.asClient();
+            JDAClientImpl client = api.asClient();
 
             client.getRelationshipMap().clear();
             client.getGroupMap().clear();

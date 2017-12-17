@@ -119,7 +119,7 @@ public class JDALogger
                 {
                     return lazyLambda.getString();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     StringWriter sw = new StringWriter();
                     ex.printStackTrace(new PrintWriter(sw));

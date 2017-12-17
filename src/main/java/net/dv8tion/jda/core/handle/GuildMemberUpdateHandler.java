@@ -111,7 +111,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
         if (content.has("nick"))
         {
             String prevNick = member.getNickname();
-            String newNick = content.isNull("nick") ? null : content.getString("nick");
+            String newNick = content.optString("nick", null);
             if (!Objects.equals(prevNick, newNick))
             {
                 member.setNickname(newNick);
