@@ -1,6 +1,7 @@
 package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.requests.restaction.ChannelAction;
+import net.dv8tion.jda.core.requests.restaction.order.CategoryOrderAction;
 
 import javax.annotation.CheckReturnValue;
 import java.util.List;
@@ -104,4 +105,58 @@ public interface Category extends Channel, Comparable<Category>
      */
     @CheckReturnValue
     ChannelAction createVoiceChannel(String name);
+
+    /**
+     * Modifies the positional order of this Categories nested {@link #getTextChannels() TextChannels}.
+     * <br>This uses a specialized {@link net.dv8tion.jda.core.requests.RestAction RestAction} extension very similar to a
+     * {@link net.dv8tion.jda.core.requests.restaction.order.ChannelOrderAction ChannelOrderAction} but only controlling
+     * the nested {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} of this
+     * {@link net.dv8tion.jda.core.entities.Category Category}.
+     * <br>Like {@code ChannelOrderAction}, the returned {@link net.dv8tion.jda.core.requests.restaction.order.CategoryOrderAction CategoryOrderAction}
+     * can be used to move TextChannels {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveUp(int) up},
+     * {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveDown(int) down}, or
+     * {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
+     * <br>This uses <b>ascending</b> order with a 0 based index.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNNKOWN_CHANNEL}
+     *     <br>One of the channels has been deleted before the completion of the task.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The currently logged in account was removed from the Guild.</li>
+     * </ul>
+     *
+     * @return A {@link net.dv8tion.jda.core.requests.restaction.order.CategoryOrderAction CategoryOrderAction} for
+     *         ordering the Categories {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}.
+     */
+    @CheckReturnValue
+    CategoryOrderAction<TextChannel> modifyTextChannelPositions();
+
+    /**
+     * Modifies the positional order of this Categories nested {@link #getVoiceChannels() VoiceChannels}.
+     * <br>This uses a specialized {@link net.dv8tion.jda.core.requests.RestAction RestAction} extension very similar to a
+     * {@link net.dv8tion.jda.core.requests.restaction.order.ChannelOrderAction ChannelOrderAction} but only controlling
+     * the nested {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels} of this
+     * {@link net.dv8tion.jda.core.entities.Category Category}.
+     * <br>Like {@code ChannelOrderAction}, the returned {@link net.dv8tion.jda.core.requests.restaction.order.CategoryOrderAction CategoryOrderAction}
+     * can be used to move VoiceChannels {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveUp(int) up},
+     * {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveDown(int) down}, or
+     * {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
+     * <br>This uses <b>ascending</b> order with a 0 based index.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNNKOWN_CHANNEL}
+     *     <br>One of the channels has been deleted before the completion of the task.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The currently logged in account was removed from the Guild.</li>
+     * </ul>
+     *
+     * @return A {@link net.dv8tion.jda.core.requests.restaction.order.CategoryOrderAction CategoryOrderAction} for
+     *         ordering the Categories {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels}.
+     */
+    @CheckReturnValue
+    CategoryOrderAction<VoiceChannel> modifyVoiceChannelPositions();
 }
