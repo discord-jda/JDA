@@ -208,10 +208,10 @@ Docs can be found on the [Jenkins](http://home.dv8tion.net:8080/) or directly [h
 <br>A simple Wiki can also be found in this repository's [Wiki section](https://github.com/DV8FromTheWorld/JDA/wiki)
 
 ## Getting Help
-If you need help, or just want to talk with the JDA or other Discord Devs, you can join the [Unofficial Discord API](https://discord.gg/0SBTUU1wZTUydsWv) Guild.
+If you need help, or just want to talk with the JDA or other Devs, you can join the [Official JDA Discord Guild][discord-invite].
 
-Once you joined, you can find JDA-specific help in the #java_jda channel<br>
-We have our own Discord Server [here][discord-invite]
+Alternatively you can also join the [Unofficial Discord API Guild](https://discord.gg/discord-api).
+Once you joined, you can find JDA-specific help in the `#java_jda` channel.
 
 For guides and setup help you can also take a look at the [wiki](https://github.com/DV8FromTheWorld/JDA/wiki)
 <br>Especially interesting are the [Getting Started](https://github.com/DV8FromTheWorld/JDA/wiki/3\)-Getting-Started)
