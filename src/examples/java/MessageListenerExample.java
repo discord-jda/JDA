@@ -215,7 +215,7 @@ public class MessageListenerExample extends ListenerAdapter
                         if (!selfMember.canInteract(member))
                         {
                             // use the MessageAction to construct the content in StringBuilder syntax using append calls
-                            channel.sendMessage("Cannot kicked member: ")
+                            channel.sendMessage("Cannot kick member: ")
                                    .append(member.getEffectiveName())
                                    .append(", they are higher in the hierarchy than I am!")
                                    .queue();

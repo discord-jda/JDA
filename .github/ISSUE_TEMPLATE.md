@@ -14,7 +14,7 @@ Hey there! Before you report a bug or suggest a new feature,
 > This is not the place to learn Java. Please refer to [StackOverflow][stack overflow]
   for your general programming questions.
 
-## Description
+## Issue
 
 ### Issue Type
 
