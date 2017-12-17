@@ -186,6 +186,8 @@ public interface Message extends ISnowflake, Formattable
      *         If the specified Guild is {@code null}
      *
      * @return Immutable list of mentioned Members
+     *
+     * @since  3.4.0
      */
     List<Member> getMentionedMembers(Guild guild);
 
@@ -202,6 +204,8 @@ public interface Message extends ISnowflake, Formattable
      *         If this message was not sent in a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      *
      * @return Immutable list of mentioned Members
+     *
+     * @since  3.4.0
      */
     List<Member> getMentionedMembers();
 
@@ -222,6 +226,8 @@ public interface Message extends ISnowflake, Formattable
      *         If provided with {@code null}
      *
      * @return Immutable list of filtered {@link net.dv8tion.jda.core.entities.IMentionable IMentionable} instances
+     *
+     * @since  3.4.0
      */
     List<IMentionable> getMentions(MentionType... types);
 
@@ -415,6 +421,8 @@ public interface Message extends ISnowflake, Formattable
      * <br>To set a nonce before sending you may use {@link net.dv8tion.jda.core.MessageBuilder#setNonce(String) MessageBuilder.setNonce(String)}!
      *
      * @return The validation nonce
+     *
+     * @since  3.4.0
      *
      * @see    net.dv8tion.jda.core.MessageBuilder#setNonce(String)
      * @see    <a href="https://en.wikipedia.org/wiki/Cryptographic_nonce" target="_blank">Cryptographic Nonce - Wikipedia</a>
@@ -1172,6 +1180,8 @@ public interface Message extends ISnowflake, Formattable
          *         If this is not an image attachment
          *
          * @return {@link net.dv8tion.jda.core.entities.Icon Icon} for this image attachment
+         *
+         * @since  3.4.0
          */
         public Icon getAsIcon() throws IOException
         {
@@ -1214,6 +1224,8 @@ public interface Message extends ISnowflake, Formattable
          *         If an IO error occurs trying to read from the opened HTTP channel
          *
          * @return InputStream copy of the response body for this Attachment
+         *
+         * @since  3.4.0
          */
         public InputStream getInputStream() throws IOException
         {
@@ -1240,6 +1252,8 @@ public interface Message extends ISnowflake, Formattable
          *         If the provided IOConsumer is {@code null}
          * @throws IOException
          *         If an IOException occurs within the IOConsumer or while opening an HTTP channel
+         *
+         * @since  3.4.0
          */
         public void withInputStream(IOConsumer<InputStream> then) throws IOException
         {

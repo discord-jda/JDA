@@ -63,6 +63,8 @@ import java.util.Map;
  *             .queue(); // this actually sends the information to discord
  *  }
  * </code></pre>
+ *
+ * @since  3.4.0
  */
 public class MessageAction extends RestAction<Message> implements Appendable
 {
