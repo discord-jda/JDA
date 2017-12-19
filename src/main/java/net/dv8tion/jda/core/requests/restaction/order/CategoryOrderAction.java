@@ -146,7 +146,8 @@ public class CategoryOrderAction<T extends Channel> extends OrderAction<T, Categ
     @Override
     protected void validateInput(T entity)
     {
-        Checks.check(entity.getGuild().equals(category.getGuild()), "Provided channel is not from this Guild!");
+        Checks.check(entity.getParent() != null, "Provided channel must be nested in a Category!");
+        Checks.check(entity.getParent().equals(getCategory()), "Provided channel's Category is not this Category!");
         Checks.check(orderList.contains(entity), "Provided channel is not in the list of orderable channels!");
     }
 }
