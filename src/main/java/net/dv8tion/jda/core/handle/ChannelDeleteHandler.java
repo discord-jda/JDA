@@ -144,7 +144,7 @@ public class ChannelDeleteHandler extends SocketHandler
             {
                 //TODO: close call on group leave (kill audio manager)
                 final long groupId = content.getLong("id");
-                GroupImpl group = (GroupImpl) ((JDAClientImpl) api.asClient()).getGroupMap().remove(groupId);
+                GroupImpl group = (GroupImpl) api.asClient().getGroupMap().remove(groupId);
                 if (group == null)
                 {
                     api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
@@ -159,7 +159,7 @@ public class ChannelDeleteHandler extends SocketHandler
                     //Note: we getGroups() which gets all groups, however we already removed the current group above.
                     if (user.isFake()
                             && !user.hasPrivateChannel()
-                            && ((JDAClientImpl) api.asClient()).getRelationshipMap().get(userId) == null
+                            && api.asClient().getRelationshipMap().get(userId) == null
                             && api.asClient().getGroups().stream().noneMatch(g -> g.getUsers().contains(user)))
                     {
                         api.getFakeUserMap().remove(userId);

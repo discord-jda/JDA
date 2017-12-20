@@ -263,7 +263,7 @@ public class ReadyHandler extends SocketHandler
             if (guildIds.length() == 50)
             {
                 api.getClient().chunkOrSyncRequest(new JSONObject()
-                    .put("op", 8)
+                    .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
                     .put("d", new JSONObject()
                         .put("guild_id", guildIds)
                         .put("query", "")
@@ -277,7 +277,7 @@ public class ReadyHandler extends SocketHandler
         if (guildIds.length() > 0)
         {
             api.getClient().chunkOrSyncRequest(new JSONObject()
-                .put("op", 8)
+                .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
                 .put("d", new JSONObject()
                         .put("guild_id", guildIds)
                         .put("query", "")

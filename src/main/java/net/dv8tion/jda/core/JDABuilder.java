@@ -30,6 +30,7 @@ import okhttp3.OkHttpClient;
 
 import javax.security.auth.login.LoginException;
 import java.util.*;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Used to create new {@link net.dv8tion.jda.core.JDA} instances. This is also useful for making sure all of
@@ -46,6 +47,8 @@ public class JDABuilder
 {
     protected final List<Object> listeners;
 
+    protected ConcurrentMap<String, String> contextMap = null;
+    protected boolean enableContext = true;
     protected SessionReconnectQueue reconnectQueue = null;
     protected ShardedRateLimiter shardRateLimiter = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
@@ -75,13 +78,58 @@ public class JDABuilder
      *
      * @param  accountType
      *         The {@link net.dv8tion.jda.core.AccountType AccountType}.
+     *
+     * @throws IllegalArgumentException
+     *         If the given AccountType is {@code null}
      */
     public JDABuilder(AccountType accountType)
     {
-        if (accountType == null)
-            throw new NullPointerException("Provided AccountType was null!");
+        Checks.notNull(accountType, "accountType");
+
         this.accountType = accountType;
-        listeners = new LinkedList<>();
+        this.listeners = new LinkedList<>();
+    }
+
+    /**
+     * Sets the {@link org.slf4j.MDC MDC} mappings to use in JDA.
+     * <br>If sharding is enabled JDA will automatically add a {@code jda.shard} context with the format {@code [SHARD_ID / TOTAL]}
+     * where {@code SHARD_ID} and {@code TOTAL} are the shard configuration.
+     * Additionally it will provide context for the id via {@code jda.shard.id} and the total via {@code jda.shard.total}.
+     *
+     * <p>If provided with non-null map this automatically enables MDC context using {@link #setContextEnabled(boolean) setContextEnable(true)}!
+     *
+     * @param  map
+     *         The <b>modifiable</b> context map to use in JDA, or {@code null} to reset
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @see    <a href="https://www.slf4j.org/api/org/slf4j/MDC.html" target="_blank">MDC Javadoc</a>
+     * @see    #setContextEnabled(boolean)
+     */
+    public JDABuilder setContextMap(ConcurrentMap<String, String> map)
+    {
+        this.contextMap = map;
+        if (map != null)
+            this.enableContext = true;
+        return this;
+    }
+
+    /**
+     * Whether JDA should use a synchronized MDC context for all of its controlled threads.
+     * <br>Default: {@code true}
+     *
+     * @param  enable
+     *         True, if JDA should provide an MDC context map
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @see    <a href="https://www.slf4j.org/api/org/slf4j/MDC.html" target="_blank">MDC Javadoc</a>
+     * @see    #setContextMap(java.util.concurrent.ConcurrentMap)
+     */
+    public JDABuilder setContextEnabled(boolean enable)
+    {
+        this.enableContext = enable;
+        return this;
     }
 
     /**
@@ -94,7 +142,7 @@ public class JDABuilder
      * @param  queue
      *         {@link net.dv8tion.jda.core.requests.SessionReconnectQueue SessionReconnectQueue} to use
      *
-     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The JDABuilder instance. Useful for chaining.
      */
     public JDABuilder setReconnectQueue(SessionReconnectQueue queue)
     {
@@ -121,7 +169,7 @@ public class JDABuilder
      * @param  rateLimiter
      *         ShardedRateLimiter used to keep track of cross-session rate limits
      *
-     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The JDABuilder instance. Useful for chaining.
      */
     public JDABuilder setShardedRateLimiter(ShardedRateLimiter rateLimiter)
     {
@@ -142,7 +190,7 @@ public class JDABuilder
      * @param  retryOnTimeout
      *         True, if the Request should retry once on a socket timeout
      *
-     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The JDABuilder instance. Useful for chaining.
      */
     public JDABuilder setRequestTimeoutRetry(boolean retryOnTimeout)
     {
@@ -179,7 +227,7 @@ public class JDABuilder
      * @param  token
      *         The token of the account that you would like to login with.
      *
-     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The JDABuilder instance. Useful for chaining.
      */
     public JDABuilder setToken(String token)
     {
@@ -199,7 +247,7 @@ public class JDABuilder
      * @param  builder
      *         The new {@link okhttp3.OkHttpClient.Builder Builder} to use.
      *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The JDABuilder instance. Useful for chaining.
      */
     public JDABuilder setHttpClientBuilder(OkHttpClient.Builder builder)
     {
@@ -214,7 +262,7 @@ public class JDABuilder
      * @param  factory
      *         The new {@link com.neovisionaries.ws.client.WebSocketFactory WebSocketFactory} to use.
      *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The JDABuilder instance. Useful for chaining.
      */
     public JDABuilder setWebsocketFactory(WebSocketFactory factory)
     {
@@ -233,7 +281,7 @@ public class JDABuilder
      * @throws java.lang.IllegalArgumentException
      *         If the specified core pool size is not positive
      *
-     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The JDABuilder instance. Useful for chaining.
      */
     public JDABuilder setCorePoolSize(int size)
     {
@@ -251,7 +299,7 @@ public class JDABuilder
      * @param  enabled
      *         True - enables voice support.
      *
-     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The JDABuilder instance. Useful for chaining.
      */
     public JDABuilder setAudioEnabled(boolean enabled)
     {
@@ -269,7 +317,7 @@ public class JDABuilder
      * @param  enabled
      *         True - The MESSAGE_DELETE_BULK will be split into multiple individual MessageDeleteEvents.
      *
-     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The JDABuilder instance. Useful for chaining.
      */
     public JDABuilder setBulkDeleteSplittingEnabled(boolean enabled)
     {
@@ -304,7 +352,7 @@ public class JDABuilder
      * @param  autoReconnect
      *         If true - enables autoReconnect
      *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The JDABuilder instance. Useful for chaining.
      */
     public JDABuilder setAutoReconnect(boolean autoReconnect)
     {
@@ -328,7 +376,7 @@ public class JDABuilder
      * @param  manager
      *         The new {@link net.dv8tion.jda.core.hooks.IEventManager} to use.
      *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The JDABuilder instance. Useful for chaining.
      */
     public JDABuilder setEventManager(IEventManager manager)
     {
@@ -345,7 +393,7 @@ public class JDABuilder
      *         The new {@link net.dv8tion.jda.core.audio.factory.IAudioSendFactory IAudioSendFactory} to be used
      *         when creating new {@link net.dv8tion.jda.core.audio.factory.IAudioSendSystem} objects.
      *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The JDABuilder instance. Useful for chaining.
      */
     public JDABuilder setAudioSendFactory(IAudioSendFactory factory)
     {
@@ -360,7 +408,7 @@ public class JDABuilder
      * @param  idle
      *         boolean value that will be provided with our IDENTIFY package to mark our session as afk or not. <b>(default false)</b>
      *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The JDABuilder instance. Useful for chaining.
      *
      * @see    net.dv8tion.jda.core.managers.Presence#setIdle(boolean) Presence#setIdle(boolean)
      */
@@ -380,7 +428,7 @@ public class JDABuilder
      * @param  game
      *         An instance of {@link net.dv8tion.jda.core.entities.Game Game} (null allowed)
      *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The JDABuilder instance. Useful for chaining.
      *
      * @see    net.dv8tion.jda.core.managers.Presence#setGame(Game)  Presence.setGame(Game)
      */
@@ -403,7 +451,7 @@ public class JDABuilder
      * @throws IllegalArgumentException
      *         if the provided OnlineStatus is null or {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}
      *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The JDABuilder instance. Useful for chaining.
      *
      * @see    net.dv8tion.jda.core.managers.Presence#setStatus(OnlineStatus) Presence.setStatus(OnlineStatus)
      */
@@ -416,7 +464,7 @@ public class JDABuilder
     }
 
     /**
-     * Adds all provided listeners to the list of listeners that will be used to populate the {@link net.dv8tion.jda.core.JDA} object.
+     * Adds all provided listeners to the list of listeners that will be used to populate the {@link net.dv8tion.jda.core.JDA JDA} object.
      * <br>This uses the {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventListener} by default.
      * <br>To switch to the {@link net.dv8tion.jda.core.hooks.AnnotatedEventManager AnnotatedEventManager},
      * use {@link #setEventManager(net.dv8tion.jda.core.hooks.IEventManager) setEventManager(new AnnotatedEventManager())}.
@@ -427,12 +475,17 @@ public class JDABuilder
      * @param   listeners
      *          The listener(s) to add to the list.
      *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @throws java.lang.IllegalArgumentException
+     *         If either listeners or one of it's objects is {@code null}.
+     *
+     * @return The JDABuilder instance. Useful for chaining.
      *
      * @see    net.dv8tion.jda.core.JDA#addEventListener(Object...) JDA.addEventListener(Object...)
      */
     public JDABuilder addEventListener(Object... listeners)
     {
+        Checks.noneNull(listeners, "listeners");
+
         Collections.addAll(this.listeners, listeners);
         return this;
     }
@@ -443,12 +496,17 @@ public class JDABuilder
      * @param  listeners
      *         The listener(s) to remove from the list.
      *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @throws java.lang.IllegalArgumentException
+     *         If either listeners or one of it's objects is {@code null}.
+     *
+     * @return The JDABuilder instance. Useful for chaining.
      *
      * @see    net.dv8tion.jda.core.JDA#removeEventListener(Object...) JDA.removeEventListener(Object...)
      */
     public JDABuilder removeEventListener(Object... listeners)
     {
+        Checks.noneNull(listeners, "listeners");
+
         this.listeners.removeAll(Arrays.asList(listeners));
         return this;
     }
@@ -463,7 +521,7 @@ public class JDABuilder
      * @throws java.lang.IllegalArgumentException
      *         Thrown if the provided {@code maxReconnectDelay} is less than 32.
      *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The JDABuilder instance. Useful for chaining.
      */
     public JDABuilder setMaxReconnectDelay(int maxReconnectDelay)
     {
@@ -497,14 +555,13 @@ public class JDABuilder
      *         If the provided shard configuration is invalid
      *         ({@code 0 <= shardId < shardTotal} with {@code shardTotal > 0})
      *
-     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The JDABuilder instance. Useful for chaining.
      *
      * @see    net.dv8tion.jda.core.JDA#getShardInfo() JDA.getShardInfo()
      */
     public JDABuilder useSharding(int shardId, int shardTotal)
     {
-        if (accountType != AccountType.BOT)
-            throw new AccountTypeException(AccountType.BOT);
+        AccountTypeException.check(accountType, AccountType.BOT);
         Checks.notNegative(shardId, "Shard ID");
         Checks.positive(shardTotal, "Shard Total");
         Checks.check(shardId < shardTotal,
@@ -539,8 +596,8 @@ public class JDABuilder
     {
         OkHttpClient.Builder httpClientBuilder = this.httpClientBuilder == null ? new OkHttpClient.Builder() : this.httpClientBuilder;
         WebSocketFactory wsFactory = this.wsFactory == null ? new WebSocketFactory() : this.wsFactory;
-        JDAImpl jda = new JDAImpl(accountType, httpClientBuilder, wsFactory, shardRateLimiter, autoReconnect, enableVoice, enableShutdownHook,
-                enableBulkDeleteSplitting, requestTimeoutRetry, corePoolSize, maxReconnectDelay);
+        JDAImpl jda = new JDAImpl(accountType, token, httpClientBuilder, wsFactory, shardRateLimiter, autoReconnect, enableVoice, enableShutdownHook,
+                enableBulkDeleteSplitting, requestTimeoutRetry, enableContext, corePoolSize, maxReconnectDelay, contextMap);
 
         if (eventManager != null)
             jda.setEventManager(eventManager);
@@ -551,12 +608,14 @@ public class JDABuilder
         listeners.forEach(jda::addEventListener);
         jda.setStatus(JDA.Status.INITIALIZED);  //This is already set by JDA internally, but this is to make sure the listeners catch it.
 
+        String gateway = jda.getGateway().complete();
+
         // Set the presence information before connecting to have the correct information ready when sending IDENTIFY
         ((PresenceImpl) jda.getPresence())
                 .setCacheGame(game)
                 .setCacheIdle(idle)
                 .setCacheStatus(status);
-        jda.login(token, shardInfo, reconnectQueue);
+        jda.login(gateway, shardInfo, reconnectQueue);
         return jda;
     }
 

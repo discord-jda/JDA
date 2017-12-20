@@ -17,7 +17,6 @@
 package net.dv8tion.jda.client.requests.restaction;
 
 import net.dv8tion.jda.client.entities.Application;
-import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.Request;

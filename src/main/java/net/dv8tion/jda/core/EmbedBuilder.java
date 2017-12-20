@@ -15,8 +15,9 @@
  */
 package net.dv8tion.jda.core;
 
+import net.dv8tion.jda.core.entities.EmbedType;
+import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.impl.MessageEmbedImpl;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.Helpers;
 
@@ -30,7 +31,7 @@ import java.util.regex.Pattern;
 /**
  * Builder system used to build {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbeds}.
  * <br>A visual breakdown of an Embed and how it relates to this class is available at
- * <a href="http://imgur.com/a/yOb5n" target="_blank">http://imgur.com/a/yOb5n</a>.
+ * <a href="http://imgur.com/a/yOb5n" target="_blank">https://imgur.com/a/yOb5n</a>.
  *
  * @since  3.0
  * @author John A. Grosh
@@ -40,10 +41,9 @@ public class EmbedBuilder
     public final static String ZERO_WIDTH_SPACE = "\u200E";
     public final static Pattern URL_PATTERN = Pattern.compile("\\s*(https?|attachment)://.+\\..{2,}\\s*", Pattern.CASE_INSENSITIVE);
 
-    private final List<MessageEmbed.Field> fields;
-    private String url;
-    private String title;
-    private StringBuilder description = new StringBuilder();
+    private final List<MessageEmbed.Field> fields = new LinkedList<>();
+    private final StringBuilder description = new StringBuilder();
+    private String url, title;
     private OffsetDateTime timestamp;
     private Color color;
     private MessageEmbed.Thumbnail thumbnail;
@@ -55,9 +55,23 @@ public class EmbedBuilder
      * Creates an EmbedBuilder to be used to creates an embed to send.
      * <br>Every part of an embed can be removed or cleared by providing {@code null} to the setter method.
      */
-    public EmbedBuilder()
+    public EmbedBuilder() { }
+
+    public EmbedBuilder(EmbedBuilder builder)
     {
-        this(null);
+        if (builder != null)
+        {
+            setDescription(builder.description.toString());
+            this.fields.addAll(builder.fields);
+            this.url = builder.url;
+            this.title = builder.title;
+            this.timestamp = builder.timestamp;
+            this.color = builder.color;
+            this.thumbnail = builder.thumbnail;
+            this.author = builder.author;
+            this.footer = builder.footer;
+            this.image = builder.image;
+        }
     }
     
     /**
@@ -68,7 +82,6 @@ public class EmbedBuilder
      */
     public EmbedBuilder(MessageEmbed embed)
     {
-        fields = new LinkedList<>();
         if(embed != null)
         {
             setDescription(embed.getDescription());
@@ -84,7 +97,7 @@ public class EmbedBuilder
                 fields.addAll(embed.getFields());
         }
     }
-    
+
     /**
      * Returns a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed}
      * that has been checked as being valid for sending.
@@ -100,23 +113,36 @@ public class EmbedBuilder
             throw new IllegalStateException("Cannot build an empty embed!");
         if (description.length() > MessageEmbed.TEXT_MAX_LENGTH)
             throw new IllegalStateException(String.format("Description is longer than %d! Please limit your input!", MessageEmbed.TEXT_MAX_LENGTH));
-        final String description = this.description.length() < 1 ? null : this.description.toString();
-        
-        return new MessageEmbedImpl().setTitle(title)
-                .setUrl(url)
-                .setDescription(description)
-                .setTimestamp(timestamp)
-                .setColor(color)
-                .setThumbnail(thumbnail)
-                .setAuthor(author)
-                .setFooter(footer)
-                .setImage(image)
-                .setFields(fields);
+        final String descrip = this.description.length() < 1 ? null : this.description.toString();
+
+        return EntityBuilder.createMessageEmbed(url, title, descrip, EmbedType.RICH, timestamp,
+                color, thumbnail, null, author, null, footer, image, new LinkedList<>(fields));
     }
-    
+
+    /**
+     * Resets this builder to default state.
+     * <br>All parts will be either empty or null after this method has returned.
+     *
+     * @return The current EmbedBuilder with default values
+     */
+    public EmbedBuilder clear()
+    {
+        description.setLength(0);
+        fields.clear();
+        url = null;
+        title = null;
+        timestamp = null;
+        color = null;
+        thumbnail = null;
+        author = null;
+        footer = null;
+        image = null;
+        return this;
+    }
+
     /**
      * Checks if the given embed is empty. Empty embeds will throw an exception if built
-     * 
+     *
      * @return true if the embed is empty and cannot be built
      */
     public boolean isEmpty()
@@ -124,12 +150,64 @@ public class EmbedBuilder
         return title == null
                 && description.length() == 0
                 && timestamp == null
-                && color == null
+                //&& color == null color alone is not enough to send
                 && thumbnail == null
                 && author == null
                 && footer == null
                 && image == null
                 && fields.isEmpty();
+    }
+
+    /**
+     * The overall length of the current EmbedBuilder in displayed characters.
+     * <br>Represents the {@link net.dv8tion.jda.core.entities.MessageEmbed#getLength() MessageEmbed.getLength()} value.
+     *
+     * @return length of the current builder state
+     */
+    public int length()
+    {
+        int length = description.length();
+        synchronized (fields)
+        {
+            length = fields.stream().map(f -> f.getName().length() + f.getValue().length()).reduce(length, Integer::sum);
+        }
+        if (title != null)
+            length += title.length();
+        if (author != null)
+            length += author.getName().length();
+        if (footer != null)
+            length += footer.getText().length();
+        return length;
+    }
+
+    /**
+     * Checks whether the constructed {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed}
+     * is within the limits for the specified {@link net.dv8tion.jda.core.AccountType AccountType}
+     * <ul>
+     *     <li>Bot: {@value MessageEmbed#EMBED_MAX_LENGTH_BOT}</li>
+     *     <li>Client: {@value MessageEmbed#EMBED_MAX_LENGTH_CLIENT}</li>
+     * </ul>
+     *
+     * @param  type
+     *         The {@link net.dv8tion.jda.core.AccountType AccountType} to validate
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If provided with {@code null}
+     *
+     * @return True, if the {@link #length() length} is less or equal to the specific limit
+     */
+    public boolean isValidLength(AccountType type)
+    {
+        Checks.notNull(type, "AccountType");
+        final int length = length();
+        switch (type)
+        {
+            case BOT:
+                return length <= MessageEmbed.EMBED_MAX_LENGTH_BOT;
+            case CLIENT:
+            default:
+                return length <= MessageEmbed.EMBED_MAX_LENGTH_CLIENT;
+        }
     }
 
     /**
@@ -149,7 +227,6 @@ public class EmbedBuilder
      *
      * @return the builder after the title has been set
      */
-
     public EmbedBuilder setTitle(String title)
     {
         return setTitle(title, null);
@@ -224,18 +301,11 @@ public class EmbedBuilder
      *
      * @return the builder after the description has been set
      */
-    public EmbedBuilder setDescription(CharSequence description)
+    public final EmbedBuilder setDescription(CharSequence description)
     {
-        if (description == null || description.length() < 1)
-        {
-            this.description = new StringBuilder();
-        }
-        else
-        {
-            Checks.check(description.length() <= MessageEmbed.TEXT_MAX_LENGTH,
-                "Description cannot be longer than %d characters.", MessageEmbed.TEXT_MAX_LENGTH);
-            this.description = new StringBuilder(description);
-        }
+        this.description.setLength(0);
+        if (description != null && description.length() >= 1)
+            appendDescription(description);
         return this;
     }
 

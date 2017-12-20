@@ -130,6 +130,8 @@ public class ChannelManager
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link ChannelManagerUpdatable#update() #update()}
      *
+     * @since  3.4.0
+     *
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getParentField()
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
@@ -230,7 +232,7 @@ public class ChannelManager
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
      * @throws UnsupportedOperationException
-     *         If the selected {@link net.dv8tion.jda.core.entities.Channel Channel}'s type is not {@link net.dv8tion.jda.core.entities.ChannelType#TEXT TEXT}
+     *         If the selected {@link net.dv8tion.jda.core.entities.Channel Channel}'s type is not {@link net.dv8tion.jda.core.entities.ChannelType#VOICE VOICE}
      * @throws IllegalArgumentException
      *         If the provided user-limit is negative or greater than {@code 99}
      *
@@ -250,7 +252,8 @@ public class ChannelManager
      * Sets the <b><u>bitrate</u></b> of the selected {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}.
      * <br>The default value is {@code 64000}
      *
-     * <p>A channel user-limit <b>must not</b> be less than {@code 8000} nor greater than {@code 96000} (for non-vip Guilds)!
+     * <p>A channel bitrate <b>must not</b> be less than {@code 8000} nor greater than {@code 96000} (for non-vip Guilds)!
+     * {@link net.dv8tion.jda.core.entities.Guild#getFeatures() VIP Guilds} allow a bitrate for up to {@code 128000}.
      * <br><b>This is only available to {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels}</b>
      *
      * @param  bitrate
@@ -261,11 +264,12 @@ public class ChannelManager
      * @throws UnsupportedOperationException
      *         If the selected {@link net.dv8tion.jda.core.entities.Channel Channel}'s type is not {@link net.dv8tion.jda.core.entities.ChannelType#VOICE VOICE}
      * @throws IllegalArgumentException
-     *         If the provided bitrate is not between 8000-96000
+     *         If the provided bitrate is not between 8000-96000 (or 128000 for VIP Guilds)
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link ChannelManagerUpdatable#update() #update()}
      *
+     * @see    net.dv8tion.jda.core.entities.Guild#getFeatures()
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getBitrateField()
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */

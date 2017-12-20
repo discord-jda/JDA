@@ -18,10 +18,7 @@ package net.dv8tion.jda.core.utils;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.core.OnlineStatus;
-import net.dv8tion.jda.core.entities.Game;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.IMentionable;
-import net.dv8tion.jda.core.entities.ISnowflake;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.UserImpl;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.requests.Requester;
@@ -305,7 +302,7 @@ public class WidgetUtil
          */
         private Widget(JSONObject json)
         {
-            String inviteCode = json.isNull("instant_invite") ? null : json.getString("instant_invite");
+            String inviteCode = json.optString("instant_invite", null);
             if (inviteCode != null)
                 inviteCode = inviteCode.substring(inviteCode.lastIndexOf("/") + 1);
             
@@ -542,16 +539,14 @@ public class WidgetUtil
             private Member(JSONObject json, Widget widget)
             {
                 this.widget = widget;
-                this.bot = !json.isNull("bot") && json.getBoolean("bot");
+                this.bot = Helpers.optBoolean(json, "bot");
                 this.id = json.getLong("id");
                 this.username = json.getString("username");
                 this.discriminator = json.getString("discriminator");
-                this.avatar = json.isNull("avatar") ? null : json.getString("avatar");
-                this.nickname = json.isNull("nick") ? null : json.getString("nick");
+                this.avatar = json.optString("avatar", null);
+                this.nickname = json.optString("nick", null);
                 this.status = OnlineStatus.fromKey(json.getString("status"));
-                this.game = json.isNull("game") ? null : 
-                            json.getJSONObject("game").isNull("name") || json.getJSONObject("game").getString("name").isEmpty() ? null :
-                            Game.playing(json.getJSONObject("game").getString("name"));
+                this.game = json.isNull("game") ? null : EntityBuilder.createGame(json.getJSONObject("game"));
             }
             
             private void setVoiceState(VoiceState voiceState)

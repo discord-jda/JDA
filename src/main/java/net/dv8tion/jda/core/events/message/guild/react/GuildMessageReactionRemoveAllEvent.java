@@ -17,26 +17,13 @@
 package net.dv8tion.jda.core.events.message.guild.react;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.events.message.GenericMessageEvent;
+import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
 
-public class GuildMessageReactionRemoveAllEvent extends GenericMessageEvent
+public class GuildMessageReactionRemoveAllEvent extends GenericGuildMessageEvent
 {
-
     public GuildMessageReactionRemoveAllEvent(JDA api, long responseNumber, long messageId, TextChannel channel)
     {
         super(api, responseNumber, messageId, channel);
-    }
-
-    @Override
-    public TextChannel getChannel()
-    {
-        return (TextChannel) channel;
-    }
-
-    public Guild getGuild()
-    {
-        return getChannel().getGuild();
     }
 }

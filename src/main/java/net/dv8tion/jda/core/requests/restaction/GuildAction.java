@@ -41,6 +41,8 @@ import java.util.*;
  * {@link net.dv8tion.jda.core.requests.RestAction RestAction} extension
  * specifically designed to allow for the creation of {@link net.dv8tion.jda.core.entities.Guild Guilds}.
  * <br>This is available to all account types but may undergo certain restrictions by Discord.
+ *
+ * @since  3.4.0
  */
 public class GuildAction extends RestAction<Void>
 {

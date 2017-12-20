@@ -60,4 +60,10 @@ public class AccountTypeException extends RuntimeException
     {
         return requiredType;
     }
+
+    public static void check(AccountType actualType, AccountType requiredType)
+    {
+        if (actualType != requiredType)
+            throw new AccountTypeException(requiredType);
+    }
 }
