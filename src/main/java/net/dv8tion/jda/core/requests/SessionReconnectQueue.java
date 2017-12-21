@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.JDA;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+@Deprecated
 public class SessionReconnectQueue
 {
     public static final int RECONNECT_DELAY = WebSocketClient.IDENTIFY_DELAY * 1000;

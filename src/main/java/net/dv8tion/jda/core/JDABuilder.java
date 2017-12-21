@@ -26,8 +26,8 @@ import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.SessionReconnectQueue;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.ProvidingSessionController;
 import net.dv8tion.jda.core.utils.SessionController;
-import net.dv8tion.jda.core.utils.SessionControllerAdapter;
 import okhttp3.OkHttpClient;
 
 import javax.security.auth.login.LoginException;
@@ -617,7 +617,7 @@ public class JDABuilder
         WebSocketFactory wsFactory = this.wsFactory == null ? new WebSocketFactory() : this.wsFactory;
 
         if (controller == null && (reconnectQueue != null || shardRateLimiter != null))
-            controller = new ProvidingSessionController();
+            controller = new ProvidingSessionController(reconnectQueue, shardRateLimiter);
         JDAImpl jda = new JDAImpl(accountType, token, controller, httpClientBuilder, wsFactory, autoReconnect, enableVoice, enableShutdownHook,
                 enableBulkDeleteSplitting, requestTimeoutRetry, enableContext, corePoolSize, maxReconnectDelay, contextMap);
 
@@ -630,7 +630,7 @@ public class JDABuilder
         listeners.forEach(jda::addEventListener);
         jda.setStatus(JDA.Status.INITIALIZED);  //This is already set by JDA internally, but this is to make sure the listeners catch it.
 
-        String gateway = jda.getGateway().complete();
+        String gateway = jda.getGateway();
 
         // Set the presence information before connecting to have the correct information ready when sending IDENTIFY
         ((PresenceImpl) jda.getPresence())
@@ -710,44 +710,5 @@ public class JDABuilder
     public JDA buildBlocking() throws LoginException, IllegalArgumentException, InterruptedException, RateLimitedException
     {
         return buildBlocking(Status.CONNECTED);
-    }
-
-    protected class ProvidingSessionController extends SessionControllerAdapter
-    {
-        @Override
-        public void appendSession(SessionConnectNode node)
-        {
-            if (reconnectQueue != null && node.isReconnect())
-                reconnectQueue.appendSession(((JDAImpl) node.getJDA()).getClient());
-            else
-                super.appendSession(node);
-        }
-
-        @Override
-        public void removeSession(SessionConnectNode node)
-        {
-            if (reconnectQueue != null && node.isReconnect())
-                reconnectQueue.removeSession(((JDAImpl) node.getJDA()).getClient());
-            else
-                super.removeSession(node);
-        }
-
-        @Override
-        public long getGlobalRatelimit()
-        {
-            if (shardRateLimiter != null)
-                return shardRateLimiter.getGlobalRatelimit();
-            else
-                return super.getGlobalRatelimit();
-        }
-
-        @Override
-        public void setGlobalRatelimit(long ratelimit)
-        {
-            if (shardRateLimiter != null)
-                shardRateLimiter.setGlobalRatelimit(ratelimit);
-            else
-                super.setGlobalRatelimit(ratelimit);
-        }
     }
 }

@@ -17,7 +17,7 @@
 package net.dv8tion.jda.core.utils;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.exceptions.RateLimitedException;
+import net.dv8tion.jda.core.utils.tuple.Pair;
 
 public interface SessionController
 {
@@ -29,7 +29,8 @@ public interface SessionController
     long getGlobalRatelimit();
     void setGlobalRatelimit(long ratelimit);
 
-    String getGateway(JDA api) throws RateLimitedException;
+    String getGateway(JDA api);
+    Pair<String, Integer> getGatewayBot(JDA api);
 
     interface SessionConnectNode
     {

@@ -16,22 +16,27 @@
 
 package net.dv8tion.jda.core.utils;
 
+import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.utils.tuple.Pair;
+import org.json.JSONObject;
 
+import javax.security.auth.login.LoginException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class SessionControllerAdapter implements SessionController
 {
+    protected final Object lock = new Object();
     protected Queue<SessionConnectNode> connectQueue;
     protected AtomicLong globalRatelimit;
-    protected final Object lock = new Object();
     protected Thread workerHandle;
     protected long lastConnect = 0;
 
@@ -67,7 +72,7 @@ public class SessionControllerAdapter implements SessionController
     }
 
     @Override
-    public String getGateway(JDA api) throws RateLimitedException
+    public String getGateway(JDA api)
     {
         Route.CompiledRoute route = Route.Misc.GATEWAY.compile();
         return new RestAction<String>(api, route)
@@ -80,7 +85,49 @@ public class SessionControllerAdapter implements SessionController
                 else
                     request.onFailure(response);
             }
-        }.complete(false);
+        }.complete();
+    }
+
+    @Override
+    public Pair<String, Integer> getGatewayBot(JDA api)
+    {
+        AccountTypeException.check(api.getAccountType(), AccountType.BOT);
+        return new RestAction<Pair<String, Integer>>(api, Route.Misc.GATEWAY_BOT.compile())
+        {
+            @Override
+            protected void handleResponse(Response response, Request<Pair<String, Integer>> request)
+            {
+                try
+                {
+                    if (response.isOk())
+                    {
+                        JSONObject object = response.getObject();
+
+                        String url = object.getString("url");
+                        int shards = object.getInt("shards");
+
+                        request.onSuccess(Pair.of(url, shards));
+                    }
+                    else if (response.isRateLimit())
+                    {
+                        request.onFailure(new RateLimitedException(request.getRoute(), response.retryAfter));
+                    }
+                    else if (response.code == 401)
+                    {
+                        api.verifyToken(true);
+                    }
+                    else
+                    {
+                        request.onFailure(new LoginException("When verifying the authenticity of the provided token, Discord returned an unknown response:\n" +
+                            response.toString()));
+                    }
+                }
+                catch (Exception e)
+                {
+                    request.onFailure(e);
+                }
+            }
+        }.complete();
     }
 
     protected void runWorker()

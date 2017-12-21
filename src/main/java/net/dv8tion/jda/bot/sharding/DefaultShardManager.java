@@ -31,8 +31,7 @@ import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.SessionReconnectQueue;
 import net.dv8tion.jda.core.requests.WebSocketClient;
-import net.dv8tion.jda.core.utils.Checks;
-import net.dv8tion.jda.core.utils.JDALogger;
+import net.dv8tion.jda.core.utils.*;
 import net.dv8tion.jda.core.utils.tuple.Pair;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
@@ -61,6 +60,8 @@ public class DefaultShardManager implements ShardManager
         t.setPriority(Thread.NORM_PRIORITY + 1);
         return t;
     };
+
+    protected final SessionController controller;
 
     /**
      * The factory used to create {@link net.dv8tion.jda.core.audio.factory.IAudioSendSystem IAudioSendSystem}
@@ -118,11 +119,6 @@ public class DefaultShardManager implements ShardManager
     protected final Queue<Integer> queue = new ConcurrentLinkedQueue<>();
 
     /**
-     * The queue that will be used by all shards to ensure reconnects don't hit the ratelimit.
-     */
-    protected final SessionReconnectQueue sessionReconnectQueue = createReconnectQueue();
-
-    /**
      * The {@link net.dv8tion.jda.bot.utils.cache.ShardCacheView ShardCacheView} that holds all shards.
      */
     protected ShardCacheViewImpl shards;
@@ -155,12 +151,6 @@ public class DefaultShardManager implements ShardManager
      * {@link net.dv8tion.jda.core.JDA#shutdown() JDA#shutdown()} to shutdown it's shards.
      */
     protected final boolean useShutdownNow;
-
-    /**
-     * The {@link net.dv8tion.jda.core.ShardedRateLimiter ShardedRateLimiter} that will be used to keep
-     * track of rate limits across all shards.
-     */
-    protected final ShardedRateLimiter shardedRateLimiter;
 
     /**
      * This can be used to check if the ShardManager is shutting down.
@@ -261,7 +251,8 @@ public class DefaultShardManager implements ShardManager
      * @param  contextProvider
      *         The MDC context provider new JDA instances should use on startup
      */
-    protected DefaultShardManager(final int shardsTotal, final Collection<Integer> shardIds, final List<Object> listeners,
+    protected DefaultShardManager(final int shardsTotal, final Collection<Integer> shardIds,
+                                  final SessionController controller, final List<Object> listeners,
                                   final String token, final IEventManager eventManager, final IAudioSendFactory audioSendFactory,
                                   final IntFunction<Game> gameProvider, final IntFunction<OnlineStatus> statusProvider,
                                   final OkHttpClient.Builder httpClientBuilder, final WebSocketFactory wsFactory,
@@ -282,7 +273,10 @@ public class DefaultShardManager implements ShardManager
         this.httpClientBuilder = httpClientBuilder == null ? new OkHttpClient.Builder() : httpClientBuilder;
         this.wsFactory = wsFactory == null ? new WebSocketFactory() : wsFactory;
         this.executor = createExecutor(threadFactory);
-        this.shardedRateLimiter = shardedRateLimiter == null ? new ShardedRateLimiter() : shardedRateLimiter;
+        if (shardedRateLimiter != null && controller == null)
+            this.controller = new ProvidingSessionController(null, shardedRateLimiter);
+        else
+            this.controller = controller == null ? new SessionControllerAdapter() : controller;
         this.maxReconnectDelay = maxReconnectDelay;
         this.corePoolSize = corePoolSize;
         this.enableVoice = enableVoice;
@@ -509,7 +503,7 @@ public class DefaultShardManager implements ShardManager
 
     protected JDAImpl buildInstance(final int shardId) throws LoginException, RateLimitedException
     {
-        final JDAImpl jda = new JDAImpl(AccountType.BOT, this.token, this.httpClientBuilder, this.wsFactory, this.shardedRateLimiter,
+        final JDAImpl jda = new JDAImpl(AccountType.BOT, this.token, this.controller, this.httpClientBuilder, this.wsFactory,
             this.autoReconnect, this.enableVoice, false, this.enableBulkDeleteSplitting, this.retryOnTimeout, this.enableMDC,
             this.corePoolSize, this.maxReconnectDelay, this.contextProvider == null || !this.enableMDC ? null : contextProvider.apply(shardId));
 
@@ -537,7 +531,7 @@ public class DefaultShardManager implements ShardManager
         {
             try
             {
-                Pair<String, Integer> gateway = jda.getGatewayBot().complete();
+                Pair<String, Integer> gateway = jda.getGatewayBot();
                 this.gatewayURL = gateway.getLeft();
 
                 if (this.shardsTotal == -1)
@@ -562,24 +556,9 @@ public class DefaultShardManager implements ShardManager
 
         final JDA.ShardInfo shardInfo = new JDA.ShardInfo(shardId, this.shardsTotal);
 
-        final int shardTotal = jda.login(this.gatewayURL, shardInfo, this.sessionReconnectQueue);
+        final int shardTotal = jda.login(this.gatewayURL, shardInfo);
         if (this.shardsTotal == -1)
             this.shardsTotal = shardTotal;
-
-        JDA.Status waitUntil = JDA.Status.AWAITING_LOGIN_CONFIRMATION;
-
-        while (!jda.getStatus().isInit()                      // JDA might disconnect while starting
-            || jda.getStatus().ordinal() < waitUntil.ordinal()) // Wait until status is bypassed
-        {
-            if (jda.getStatus() == JDA.Status.SHUTDOWN)
-                throw new IllegalStateException("JDA was unable to finish starting up!");
-
-            try
-            {
-                Thread.sleep(50);
-            }
-            catch (InterruptedException ignored) {}
-        }
 
         return jda;
     }
@@ -631,7 +610,11 @@ public class DefaultShardManager implements ShardManager
      * (they share the same rate limit). If you override this you need to take care of it yourself.</b>
      *
      * @return A new ScheduledExecutorService
+     *
+     * @deprecated
+     *         Use {@link net.dv8tion.jda.core.utils.SessionController SessionController} directly instead
      */
+    @Deprecated
     protected SessionReconnectQueue createReconnectQueue()
     {
         return new ForwardingSessionReconnectQueue(
@@ -639,6 +622,7 @@ public class DefaultShardManager implements ShardManager
             jda -> queue.remove(jda.getShardInfo().getShardId()));
     }
 
+    @Deprecated
     public class ForwardingSessionReconnectQueue extends SessionReconnectQueue
     {
         private final Consumer<JDA> appender;
@@ -653,13 +637,13 @@ public class DefaultShardManager implements ShardManager
         }
 
         @Override
-        protected void appendSession(final WebSocketClient client)
+        public void appendSession(final WebSocketClient client)
         {
             this.appender.accept(client.getJDA());
         }
 
         @Override
-        protected void removeSession(final WebSocketClient client)
+        public void removeSession(final WebSocketClient client)
         {
             this.remover.accept(client.getJDA());
         }

@@ -172,69 +172,16 @@ public class JDAImpl implements JDA
         return shardInfo == null ? -1 : shardInfo.getShardTotal();
     }
 
-    public RestAction<String> getGateway()
+    public String getGateway()
     {
-        return new RestAction<String>(this, Route.Misc.GATEWAY.compile())
-        {
-            @Override
-            protected void handleResponse(Response response, Request<String> request)
-            {
-                try
-                {
-                    if (response.isOk())
-                        request.onSuccess(response.getObject().getString("url"));
-                    else
-                        request.onFailure(new Exception("Failed to get gateway url"));
-                }
-                catch (Exception e)
-                {
-                    request.onFailure(e);
-                }
-            }
-        };
+        return getSessionController().getGateway(this);
     }
 
 
     // This method also checks for a valid bot token as it is required to get the recommended shard count.
-    public RestAction<Pair<String, Integer>> getGatewayBot() throws LoginException
+    public Pair<String, Integer> getGatewayBot()
     {
-        AccountTypeException.check(accountType, AccountType.BOT);
-        return new RestAction<Pair<String, Integer>>(this, Route.Misc.GATEWAY_BOT.compile())
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Pair<String, Integer>> request)
-            {
-                try
-                {
-                    if (response.isOk())
-                    {
-                        JSONObject object = response.getObject();
-
-                        String url = object.getString("url");
-                        int shards = object.getInt("shards");
-
-                        request.onSuccess(Pair.of(url, shards));
-                    }
-                    else if (response.isRateLimit())
-                    {
-                        request.onFailure(new RateLimitedException(request.getRoute(), response.retryAfter));
-                    }
-                    else if (response.code == 401)
-                    {
-                        verifyToken(true);
-                    }
-                    else
-                    {
-                        request.onFailure(new LoginException("When verifying the authenticity of the provided token, Discord returned an unknown response:\n" +
-                            response.toString()));
-                    }
-                }
-                catch (Exception e)
-                {
-                    request.onFailure(e);
-                }
-            }
-        };
+        return getSessionController().getGatewayBot(this);
     }
 
     public ConcurrentMap<String, String> getContextMap()
