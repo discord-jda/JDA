@@ -601,6 +601,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
      */
     public void reconnect(boolean callFromQueue, boolean shouldHandleIdentify)
     {
+        if (callFromQueue && api.getContextMap() != null)
+            api.getContextMap().forEach(MDC::put);
         if (shutdown)
         {
             api.setStatus(JDA.Status.SHUTDOWN);
