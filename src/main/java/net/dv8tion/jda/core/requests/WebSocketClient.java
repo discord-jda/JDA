@@ -106,43 +106,14 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected boolean firstInit = true;
     protected boolean processingReady = true;
 
-    protected volatile SessionController.SessionConnectNode connectNode = null;
+    protected volatile ConnectNode connectNode = null;
 
     public WebSocketClient(JDAImpl api)
     {
         this.api = api;
         this.shardInfo = api.getShardInfo();
         this.shouldReconnect = api.isAutoReconnect();
-        connectNode = new SessionController.SessionConnectNode()
-        {
-            @Override
-            public boolean isReconnect()
-            {
-                return false;
-            }
-
-            @Override
-            public JDA getJDA()
-            {
-                return api;
-            }
-
-            @Override
-            public JDA.ShardInfo getShardInfo()
-            {
-                return api.getShardInfo();
-            }
-
-            @Override
-            public void run(boolean isLast) throws InterruptedException
-            {
-                setupHandlers();
-                setupSendingThread();
-                connect();
-                while (!isLast && api.getStatus().ordinal() < JDA.Status.AWAITING_LOGIN_CONFIRMATION.ordinal())
-                    Thread.sleep(50);
-            }
-        };
+        this.connectNode = new StartingNode();
         api.getSessionController().appendSession(connectNode);
     }
 
@@ -601,43 +572,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             LOG.warn("Got disconnected from WebSocket (Internet?!)... Appending session to reconnect queue");
         try
         {
-            api.setStatus(JDA.Status.RECONNECT_QUEUED);
-            //TODO move into class
-            connectNode = new SessionController.SessionConnectNode()
-            {
-                @Override
-                public boolean isReconnect()
-                {
-                    return true;
-                }
-
-                @Override
-                public JDA getJDA()
-                {
-                    return api;
-                }
-
-                @Override
-                public JDA.ShardInfo getShardInfo()
-                {
-                    return api.getShardInfo();
-                }
-
-                @Override
-                public void run(boolean isLast) throws InterruptedException
-                {
-                    reconnect(true, !isLast);
-                    while (!isLast && api.getStatus().ordinal() < JDA.Status.AWAITING_LOGIN_CONFIRMATION.ordinal())
-                        Thread.sleep(50);
-                }
-            };
-            api.getSessionController().appendSession(connectNode);
+            this.api.setStatus(JDA.Status.RECONNECT_QUEUED);
+            this.connectNode = new ReconnectNode();
+            this.api.getSessionController().appendSession(connectNode);
         }
         catch (IllegalStateException ex)
         {
             LOG.error("Reconnect queue rejected session. Shutting down...");
-            api.setStatus(JDA.Status.SHUTDOWN);
-            api.getEventManager().handle(
+            this.api.setStatus(JDA.Status.SHUTDOWN);
+            this.api.getEventManager().handle(
                 new ShutdownEvent(api, OffsetDateTime.now(), 1006));
         }
     }
@@ -1463,4 +1406,54 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
+    protected abstract class ConnectNode implements SessionController.SessionConnectNode
+    {
+        @Override
+        public JDA getJDA()
+        {
+            return api;
+        }
+
+        @Override
+        public JDA.ShardInfo getShardInfo()
+        {
+            return api.getShardInfo();
+        }
+    }
+
+    protected class StartingNode extends ConnectNode
+    {
+        @Override
+        public boolean isReconnect()
+        {
+            return false;
+        }
+
+        @Override
+        public void run(boolean isLast) throws InterruptedException
+        {
+            setupHandlers();
+            setupSendingThread();
+            connect();
+            while (!isLast && api.getStatus().ordinal() < JDA.Status.AWAITING_LOGIN_CONFIRMATION.ordinal())
+                Thread.sleep(50);
+        }
+    }
+
+    protected class ReconnectNode extends ConnectNode
+    {
+        @Override
+        public boolean isReconnect()
+        {
+            return true;
+        }
+
+        @Override
+        public void run(boolean isLast) throws InterruptedException
+        {
+            reconnect(true, !isLast);
+            while (!isLast && api.getStatus().ordinal() < JDA.Status.AWAITING_LOGIN_CONFIRMATION.ordinal())
+                Thread.sleep(50);
+        }
+    }
 }
