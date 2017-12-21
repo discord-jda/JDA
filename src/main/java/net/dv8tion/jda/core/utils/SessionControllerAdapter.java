@@ -19,7 +19,6 @@ package net.dv8tion.jda.core.utils;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
-import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
@@ -107,10 +106,6 @@ public class SessionControllerAdapter implements SessionController
                         int shards = object.getInt("shards");
 
                         request.onSuccess(Pair.of(url, shards));
-                    }
-                    else if (response.isRateLimit())
-                    {
-                        request.onFailure(new RateLimitedException(request.getRoute(), response.retryAfter));
                     }
                     else if (response.code == 401)
                     {

@@ -464,10 +464,11 @@ public class DefaultShardManager implements ShardManager
         }
     }
 
-    protected Future<?> runQueueWorker()
+    protected void runQueueWorker()
     {
-        return worker != null
-            ? worker : (worker = executor.submit(() ->
+        if (worker == null)
+            return;
+        worker = executor.submit(() ->
         {
             while (!queue.isEmpty())
                 processQueue();
@@ -478,7 +479,7 @@ public class DefaultShardManager implements ShardManager
                 if (!queue.isEmpty())
                     runQueueWorker();
             }
-        }));
+        });
     }
 
     protected void processQueue()
@@ -509,6 +510,7 @@ public class DefaultShardManager implements ShardManager
         }
         catch (InterruptedException e)
         {
+            //caused by shutdown
             LOG.debug("Queue has been interrupted", e);
             return;
         }
