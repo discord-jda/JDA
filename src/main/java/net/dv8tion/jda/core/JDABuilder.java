@@ -28,6 +28,7 @@ import net.dv8tion.jda.core.requests.SessionReconnectQueue;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.ProvidingSessionController;
 import net.dv8tion.jda.core.utils.SessionController;
+import net.dv8tion.jda.core.utils.SessionControllerAdapter;
 import okhttp3.OkHttpClient;
 
 import javax.security.auth.login.LoginException;
@@ -616,8 +617,13 @@ public class JDABuilder
         OkHttpClient.Builder httpClientBuilder = this.httpClientBuilder == null ? new OkHttpClient.Builder() : this.httpClientBuilder;
         WebSocketFactory wsFactory = this.wsFactory == null ? new WebSocketFactory() : this.wsFactory;
 
-        if (controller == null && (reconnectQueue != null || shardRateLimiter != null))
-            controller = new ProvidingSessionController(reconnectQueue, shardRateLimiter);
+        if (controller == null)
+        {
+            if (reconnectQueue != null || shardRateLimiter != null)
+                controller = new ProvidingSessionController(reconnectQueue, shardRateLimiter);
+            else if (shardInfo != null)
+                controller = new SessionControllerAdapter();
+        }
         JDAImpl jda = new JDAImpl(accountType, token, controller, httpClientBuilder, wsFactory, autoReconnect, enableVoice, enableShutdownHook,
                 enableBulkDeleteSplitting, requestTimeoutRetry, enableContext, corePoolSize, maxReconnectDelay, contextMap);
 

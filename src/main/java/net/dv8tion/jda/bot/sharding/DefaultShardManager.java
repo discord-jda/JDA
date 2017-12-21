@@ -114,7 +114,7 @@ public class DefaultShardManager implements ShardManager
     protected final ScheduledExecutorService executor;
 
     /**
-     * The queue of shards waiting for creation or to be reconnected.
+     * The queue of shards waiting for creation.
      */
     protected final Queue<Integer> queue = new ConcurrentLinkedQueue<>();
 
@@ -170,7 +170,7 @@ public class DefaultShardManager implements ShardManager
     /**
      * The worker running on the {@link #executor ScheduledExecutorService} that spawns new shards.
      */
-    protected ScheduledFuture<?> worker;
+    protected Future<?> worker;
 
     /**
      * The gateway url for JDA to use. Will be {@code nul} until the first shard is created.
@@ -358,7 +358,8 @@ public class DefaultShardManager implements ShardManager
             throw e;
         }
 
-        this.worker = this.executor.scheduleWithFixedDelay(this::processQueue, 5000, 5000, TimeUnit.MILLISECONDS); // 5s for ratelimit
+        this.worker = runQueueWorker();
+//        this.worker = this.executor.scheduleWithFixedDelay(this::processQueue, 5000, 5000, TimeUnit.MILLISECONDS); // 5s for ratelimit
 
         if (this.shutdownHook != null)
             Runtime.getRuntime().addShutdownHook(this.shutdownHook);
@@ -451,6 +452,15 @@ public class DefaultShardManager implements ShardManager
         this.queue.add(shardId);
     }
 
+    protected Future<?> runQueueWorker()
+    {
+        return executor.submit(() ->
+        {
+            while (!queue.isEmpty())
+                processQueue();
+        });
+    }
+
     protected void processQueue()
     {
         int shardId;
@@ -476,10 +486,6 @@ public class DefaultShardManager implements ShardManager
 
             if (api == null)
                 api = this.buildInstance(shardId);
-            else if (api.getStatus() == JDA.Status.RECONNECT_QUEUED)
-                api.getClient().reconnect(true, true);
-
-            // as this happens before removing the shardId if from the queue just try again after 5 seconds
         }
         catch (RateLimitedException e)
         {
