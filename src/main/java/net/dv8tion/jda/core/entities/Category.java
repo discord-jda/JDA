@@ -24,6 +24,8 @@ import java.util.List;
 /**
  * Represents a channel category in the official Discord API.
  * <br>Categories are used to keep order in a Guild by dividing the channels into groups.
+ *
+ * @since 3.4.0
  */
 public interface Category extends Channel, Comparable<Category>
 {

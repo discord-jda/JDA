@@ -113,7 +113,7 @@ public class GroupImpl implements Group
     public List<User> getNonFriendUsers()
     {
         List<User> nonFriends = new ArrayList<>();
-        TLongObjectMap<Relationship> map = ((JDAClientImpl) api.asClient()).getRelationshipMap();
+        TLongObjectMap<Relationship> map = api.asClient().getRelationshipMap();
         userCache.forEach((user) ->
         {
             Relationship relationship = map.get(user.getIdLong());
@@ -128,7 +128,7 @@ public class GroupImpl implements Group
     public List<Friend> getFriends()
     {
         List<Friend> friends = new ArrayList<>();
-        TLongObjectMap<Relationship> map = ((JDAClientImpl) api.asClient()).getRelationshipMap();
+        TLongObjectMap<Relationship> map = api.asClient().getRelationshipMap();
         userCache.forEach(user ->
         {
             Relationship relationship = map.get(user.getIdLong());

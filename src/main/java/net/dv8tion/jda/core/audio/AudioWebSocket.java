@@ -29,6 +29,7 @@ import net.dv8tion.jda.core.utils.JDALogger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
+import org.slf4j.MDC;
 
 import java.io.IOException;
 import java.net.*;
@@ -108,6 +109,9 @@ public class AudioWebSocket extends WebSocketAdapter
     @Override
     public void onConnected(WebSocket websocket, Map<String, List<String>> headers)
     {
+        //writing thread
+        if (api.getContextMap() != null)
+            MDC.setContextMap(api.getContextMap());
         if (shutdown)
         {
             //Somehow this AudioWebSocket was shutdown before we finished connecting....
@@ -130,6 +134,9 @@ public class AudioWebSocket extends WebSocketAdapter
     @Override
     public void onTextMessage(WebSocket websocket, String message)
     {
+        //reading thread
+        if (api.getContextMap() != null)
+            MDC.setContextMap(api.getContextMap());
         JSONObject contentAll = new JSONObject(message);
         int opCode = contentAll.getInt("op");
 
@@ -628,17 +635,25 @@ public class AudioWebSocket extends WebSocketAdapter
     public static class KeepAliveThreadFactory implements ThreadFactory
     {
         final String identifier;
-        AtomicInteger threadCount = new AtomicInteger(1);
+        final AtomicInteger threadCount = new AtomicInteger(1);
+        final ConcurrentMap<String, String> contextMap;
 
         public KeepAliveThreadFactory(JDAImpl api)
         {
+            contextMap = api.getContextMap();
             identifier = api.getIdentifierString() + " Audio-KeepAlive Pool";
         }
 
         @Override
         public Thread newThread(Runnable r)
         {
-            final Thread t = new Thread(AudioManagerImpl.AUDIO_THREADS, r, identifier + " - Thread " + threadCount.getAndIncrement());
+            Runnable r2 = () ->
+            {
+                if (contextMap != null)
+                    MDC.setContextMap(contextMap);
+                r.run();
+            };
+            final Thread t = new Thread(AudioManagerImpl.AUDIO_THREADS, r2, identifier + " - Thread " + threadCount.getAndIncrement());
             t.setDaemon(true);
             return t;
         }

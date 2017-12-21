@@ -26,13 +26,12 @@ import net.dv8tion.jda.core.entities.impl.TextChannelImpl;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
+import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.requests.WebSocketClient;
 import org.json.JSONObject;
 
 public class MessageCreateHandler extends SocketHandler
 {
-    //private static final Pattern invitePattern = Pattern.compile("\\bhttps://(?:www\\.)?discord(?:\\.gg|app\\.com/invite)/([a-zA-Z0-9-]+)\\b");
-
     public MessageCreateHandler(JDAImpl api)
     {
         super(api);
@@ -43,18 +42,12 @@ public class MessageCreateHandler extends SocketHandler
     {
         MessageType type = MessageType.fromId(content.getInt("type"));
 
-        switch (type)
+        if (type == MessageType.UNKNOWN)
         {
-            case DEFAULT:
-                return handleDefaultMessage(content);
-            default:
-                WebSocketClient.LOG.debug("JDA received a message of unknown type. Type: {}  JSON: {}", type, content);
+            WebSocketClient.LOG.debug("JDA received a message of unknown type. Type: {}  JSON: {}", type, content);
+            return null;
         }
-        return null;
-    }
 
-    private Long handleDefaultMessage(JSONObject content)
-    {
         Message message;
         try
         {
@@ -83,6 +76,7 @@ public class MessageCreateHandler extends SocketHandler
             }
         }
 
+        final IEventManager manager = api.getEventManager();
         switch (message.getChannelType())
         {
             case TEXT:
@@ -93,30 +87,30 @@ public class MessageCreateHandler extends SocketHandler
                     return channel.getGuild().getIdLong();
                 }
                 channel.setLastMessageId(message.getIdLong());
-                api.getEventManager().handle(
-                        new GuildMessageReceivedEvent(
-                                api, responseNumber,
-                                message));
+                manager.handle(
+                    new GuildMessageReceivedEvent(
+                        api, responseNumber,
+                        message));
                 break;
             }
             case PRIVATE:
             {
                 PrivateChannelImpl channel = (PrivateChannelImpl) message.getPrivateChannel();
                 channel.setLastMessageId(message.getIdLong());
-                api.getEventManager().handle(
-                        new PrivateMessageReceivedEvent(
-                                api, responseNumber,
-                                message));
+                manager.handle(
+                    new PrivateMessageReceivedEvent(
+                        api, responseNumber,
+                        message));
                 break;
             }
             case GROUP:
             {
                 GroupImpl channel = (GroupImpl) message.getGroup();
                 channel.setLastMessageId(message.getIdLong());
-                api.getEventManager().handle(
-                        new GroupMessageReceivedEvent(
-                                api, responseNumber,
-                                message));
+                manager.handle(
+                    new GroupMessageReceivedEvent(
+                        api, responseNumber,
+                        message));
                 break;
             }
             default:
@@ -125,24 +119,10 @@ public class MessageCreateHandler extends SocketHandler
         }
 
         //Combo event
-        api.getEventManager().handle(
-                new MessageReceivedEvent(
-                        api, responseNumber,
-                        message));
-
-//        //searching for invites
-//        Matcher matcher = invitePattern.matcher(message.getContent());
-//        while (matcher.find())
-//        {
-//            InviteUtil.Invite invite = InviteUtil.resolve(matcher.group(1));
-//            if (invite != null)
-//            {
-//                api.getEventManager().handle(
-//                        new InviteReceivedEvent(
-//                                api, responseNumber,
-//                                message,invite));
-//            }
-//        }
+        manager.handle(
+            new MessageReceivedEvent(
+                api, responseNumber,
+                message));
         return null;
     }
 }

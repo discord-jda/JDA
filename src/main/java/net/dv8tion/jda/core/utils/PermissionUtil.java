@@ -348,6 +348,8 @@ public class PermissionUtil
         }
 
         long permission = getEffectivePermission(member) | getExplicitPermission(channel, member);
+        if (isApplied(permission, Permission.ADMINISTRATOR.getRawValue()))
+            return Permission.ALL_PERMISSIONS;
 
         AtomicLong allow = new AtomicLong(0);
         AtomicLong deny = new AtomicLong(0);
@@ -355,27 +357,22 @@ public class PermissionUtil
         getExplicitOverrides(channel, member, allow, deny);
         permission = apply(permission, allow.get(), deny.get());
 
-        if (isApplied(permission, Permission.ADMINISTRATOR.getRawValue()))
-        {
-            // If the public role is marked as administrator we can return full permissions here
-            return Permission.ALL_PERMISSIONS;
-        }
-        else if (!isApplied(permission, Permission.VIEW_CHANNEL.getRawValue()))
+        if (!isApplied(permission, Permission.VIEW_CHANNEL.getRawValue()))
         {
             //When the permission to view the channel is not applied it is not granted
             // This means that we have no access to this channel at all
             return 0;
         }
 
-        final boolean isPerms = isApplied(permission, Permission.MANAGE_PERMISSIONS.getRawValue());
-        final boolean isChan = isApplied(permission, Permission.MANAGE_CHANNEL.getRawValue());
-        if (isPerms || isChan)
+        final long managePerms = Permission.MANAGE_PERMISSIONS.getRawValue();
+        final long manageChannel = Permission.MANAGE_CHANNEL.getRawValue();
+        if ((permission & (managePerms | manageChannel)) != 0)
         {
             // In channels, MANAGE_CHANNEL and MANAGE_PERMISSIONS grant full text/voice permissions
             permission |= Permission.ALL_TEXT_PERMISSIONS | Permission.ALL_VOICE_PERMISSIONS;
         }
 
-        return permission & ~deny.get() | allow.get();
+        return apply(permission, allow.get(), deny.get());
     }
 
     /**

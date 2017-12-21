@@ -52,7 +52,7 @@ public class MessageUpdateHandler extends SocketHandler
                 switch (type)
                 {
                     case DEFAULT:
-                        return handleDefaultMessage(content);
+                        return handleMessage(content);
                     default:
                         WebSocketClient.LOG.debug("JDA received a message of unknown type. Type: {} JSON: {}", type, content);
                         return null;
@@ -60,9 +60,8 @@ public class MessageUpdateHandler extends SocketHandler
             }
             else
             {
-                //TODO: handle partial message update info. Example:
-                //From webhook/rich-embed.
-                //{"author":{"bot":true,"id":"233501884294365184","avatar":"27ae7496b3b30cddab2feaaed06d862a","username":"GitHub","discriminator":"0000"},"id":"234838126969880596","embeds":[{"color":15109472,"author":{"icon_url":"https://avatars.githubusercontent.com/u/2415829?v=3","name":"abalabahaha","proxy_icon_url":"https://images-ext-2.discordapp.net/eyJ1cmwiOiJodHRwczovL2F2YXRhcnMuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3UvMjQxNTgyOT92PTMifQ.mMTBuOMUKYowcUU1H8Gzc7g4fFQ","url":"https://github.com/abalabahaha"},"description":"It was removed from the unofficial docs and other places because devs didn't want automated registration.","type":"rich","title":"[hammerandchisel/discord-api-docs] New comment on issue #148: Register API call","url":"https://github.com/hammerandchisel/discord-api-docs/issues/148#issuecomment-252524279"}],"channel_id":"168311874624946176"}
+                //Received update with no "type" field which means its an update for a rich embed message
+                handleMessageEmbed(content);
                 return null;
             }
         }
@@ -75,7 +74,7 @@ public class MessageUpdateHandler extends SocketHandler
             return handleMessageEmbed(content);
     }
 
-    private Long handleDefaultMessage(JSONObject content)
+    private Long handleMessage(JSONObject content)
     {
         Message message;
         try
@@ -126,6 +125,7 @@ public class MessageUpdateHandler extends SocketHandler
                         new PrivateMessageUpdateEvent(
                                 api, responseNumber,
                                 message));
+                break;
             }
             case GROUP:
             {
@@ -164,10 +164,7 @@ public class MessageUpdateHandler extends SocketHandler
             channel = api.asClient().getGroupById(channelId);
         if (channel == null)
         {
-            api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () ->
-            {
-                handle(responseNumber, allContent);
-            });
+            api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Received message update for embeds for a channel/group that JDA does not have cached yet.");
             return null;
         }
@@ -182,9 +179,7 @@ public class MessageUpdateHandler extends SocketHandler
         {
             TextChannel tChannel = (TextChannel) channel;
             if (api.getGuildLock().isLocked(tChannel.getGuild().getIdLong()))
-            {
                 return tChannel.getGuild().getIdLong();
-            }
             api.getEventManager().handle(
                     new GuildMessageEmbedEvent(
                             api, responseNumber,
