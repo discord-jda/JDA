@@ -136,7 +136,7 @@ public class JDAImpl implements JDA
         return sessionController;
     }
 
-    public int login(String gatewayUrl, ShardInfo shardInfo) throws LoginException, RateLimitedException
+    public int login(String gatewayUrl, ShardInfo shardInfo) throws LoginException
     {
         this.gatewayUrl = gatewayUrl;
         this.shardInfo = shardInfo;
@@ -209,13 +209,13 @@ public class JDAImpl implements JDA
             this.token = token;
     }
 
-    public void verifyToken() throws LoginException, RateLimitedException
+    public void verifyToken() throws LoginException
     {
         this.verifyToken(false);
     }
 
     // @param alreadyFailed If has already been a failed attempt with the current configuration
-    public void verifyToken(boolean alreadyFailed) throws LoginException, RateLimitedException
+    public void verifyToken(boolean alreadyFailed) throws LoginException
     {
 
         RestAction<JSONObject> login = new RestAction<JSONObject>(this, Route.Self.GET_SELF.compile())
@@ -290,12 +290,12 @@ public class JDAImpl implements JDA
         }
     }
 
-    private JSONObject checkToken(RestAction<JSONObject> login) throws RateLimitedException, LoginException
+    private JSONObject checkToken(RestAction<JSONObject> login) throws LoginException
     {
         JSONObject userResponse;
         try
         {
-            userResponse = login.complete(false);
+            userResponse = login.complete();
         }
         catch (RuntimeException e)
         {

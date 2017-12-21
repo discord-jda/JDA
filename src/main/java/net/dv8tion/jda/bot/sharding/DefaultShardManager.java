@@ -26,7 +26,6 @@ import net.dv8tion.jda.core.ShardedRateLimiter;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.SessionReconnectQueue;
@@ -56,7 +55,6 @@ public class DefaultShardManager implements ShardManager
     public static final ThreadFactory DEFAULT_THREAD_FACTORY = r ->
     {
         final Thread t = new Thread(r, "DefaultShardManager");
-        t.setDaemon(true);
         t.setPriority(Thread.NORM_PRIORITY + 1);
         return t;
     };
@@ -289,18 +287,21 @@ public class DefaultShardManager implements ShardManager
         this.contextProvider = contextProvider;
         this.enableMDC = enableMDC;
 
-        if (shardsTotal != -1)
+        synchronized (queue)
         {
-            if (shardIds == null)
+            if (shardsTotal != -1)
             {
-                this.shards = new ShardCacheViewImpl(shardsTotal);
-                for (int i = 0; i < this.shardsTotal; i++)
-                    this.queue.add(i);
-            }
-            else
-            {
-                this.shards = new ShardCacheViewImpl(shardIds.size());
-                shardIds.stream().distinct().sorted().forEach(this.queue::add);
+                if (shardIds == null)
+                {
+                    this.shards = new ShardCacheViewImpl(shardsTotal);
+                    for (int i = 0; i < this.shardsTotal; i++)
+                        this.queue.add(i);
+                }
+                else
+                {
+                    this.shards = new ShardCacheViewImpl(shardIds.size());
+                    shardIds.stream().distinct().sorted().forEach(this.queue::add);
+                }
             }
         }
     }
@@ -331,7 +332,7 @@ public class DefaultShardManager implements ShardManager
         return this.shards;
     }
 
-    public void login() throws LoginException, IllegalArgumentException
+    public void login() throws LoginException
     {
         // building the first one in the current thread ensures that LoginException and IllegalArgumentException can be thrown on login
         JDAImpl jda = null;
@@ -341,25 +342,31 @@ public class DefaultShardManager implements ShardManager
 
             jda = this.buildInstance(shardId);
             this.shards.getMap().put(shardId, jda);
-            this.queue.remove(shardId);
+            synchronized (queue)
+            {
+                this.queue.remove(shardId);
+            }
         }
-        catch (final RateLimitedException e)
+        catch (final InterruptedException e)
         {
-            // add not remove 'shardId' from the queue and try the first one again after 5 seconds in the async thread
+            LOG.error("Interrupted Startup", e);
+            throw new IllegalStateException(e);
         }
         catch (final Exception e)
         {
             if (jda != null)
+            {
                 if (this.useShutdownNow)
                     jda.shutdownNow();
                 else
                     jda.shutdown();
+            }
 
             throw e;
         }
 
-        this.worker = runQueueWorker();
-//        this.worker = this.executor.scheduleWithFixedDelay(this::processQueue, 5000, 5000, TimeUnit.MILLISECONDS); // 5s for ratelimit
+        runQueueWorker();
+        //this.worker = this.executor.scheduleWithFixedDelay(this::processQueue, 5000, 5000, TimeUnit.MILLISECONDS); // 5s for ratelimit
 
         if (this.shutdownHook != null)
             Runtime.getRuntime().addShutdownHook(this.shutdownHook);
@@ -373,12 +380,14 @@ public class DefaultShardManager implements ShardManager
 
         final JDA jda = this.shards.getMap().remove(shardId);
         if (jda != null)
+        {
             if (this.useShutdownNow)
                 jda.shutdownNow();
             else
                 jda.shutdown();
+        }
 
-        this.queue.add(shardId);
+        enqueueShard(shardId);
     }
 
     @Override
@@ -388,18 +397,8 @@ public class DefaultShardManager implements ShardManager
         synchronized (map)
         {
             Arrays.stream(map.keys())
-                .sorted() // this ensures shards are started in natural order
-                .forEach(id ->
-                {
-                    final JDA jda = map.remove(id);
-                    if (jda != null)
-                        if (this.useShutdownNow)
-                            jda.shutdownNow();
-                        else
-                            jda.shutdown();
-
-                    this.queue.add(id);
-                });
+                  .sorted() // this ensures shards are started in natural order
+                  .forEach(this::restart);
         }
     }
 
@@ -426,10 +425,12 @@ public class DefaultShardManager implements ShardManager
         if (this.shards != null)
         {
             for (final JDA jda : this.shards)
+            {
                 if (this.useShutdownNow)
                     jda.shutdownNow();
                 else
                     jda.shutdown();
+            }
         }
     }
 
@@ -438,10 +439,12 @@ public class DefaultShardManager implements ShardManager
     {
         final JDA jda = this.shards.getMap().remove(shardId);
         if (jda != null)
+        {
             if (this.useShutdownNow)
                 jda.shutdownNow();
             else
                 jda.shutdown();
+        }
     }
 
     @Override
@@ -449,16 +452,33 @@ public class DefaultShardManager implements ShardManager
     {
         Checks.notNegative(shardId, "shardId");
         Checks.check(shardId < this.shardsTotal, "shardId must be lower than shardsTotal");
-        this.queue.add(shardId);
+        enqueueShard(shardId);
+    }
+
+    protected void enqueueShard(final int shardId)
+    {
+        synchronized (queue)
+        {
+            queue.add(shardId);
+            runQueueWorker();
+        }
     }
 
     protected Future<?> runQueueWorker()
     {
-        return executor.submit(() ->
+        return worker != null
+            ? worker : (worker = executor.submit(() ->
         {
             while (!queue.isEmpty())
                 processQueue();
-        });
+            this.gatewayURL = null;
+            synchronized (queue)
+            {
+                worker = null;
+                if (!queue.isEmpty())
+                    runQueueWorker();
+            }
+        }));
     }
 
     protected void processQueue()
@@ -487,9 +507,10 @@ public class DefaultShardManager implements ShardManager
             if (api == null)
                 api = this.buildInstance(shardId);
         }
-        catch (RateLimitedException e)
+        catch (InterruptedException e)
         {
-            LOG.warn("Hit the login ratelimit while creating new JDA instances");
+            LOG.debug("Queue has been interrupted", e);
+            return;
         }
         catch (LoginException e)
         {
@@ -504,10 +525,13 @@ public class DefaultShardManager implements ShardManager
         }
 
         this.shards.getMap().put(shardId, api);
-        this.queue.remove(shardId);
+        synchronized (queue)
+        {
+            this.queue.remove(shardId);
+        }
     }
 
-    protected JDAImpl buildInstance(final int shardId) throws LoginException, RateLimitedException
+    protected JDAImpl buildInstance(final int shardId) throws LoginException, InterruptedException
     {
         final JDAImpl jda = new JDAImpl(AccountType.BOT, this.token, this.controller, this.httpClientBuilder, this.wsFactory,
             this.autoReconnect, this.enableVoice, false, this.enableBulkDeleteSplitting, this.retryOnTimeout, this.enableMDC,
@@ -545,12 +569,17 @@ public class DefaultShardManager implements ShardManager
                     this.shardsTotal = gateway.getRight();
                     this.shards = new ShardCacheViewImpl(this.shardsTotal);
 
-                    for (int i = 0; i < shardsTotal; i++)
-                        queue.add(i);
+                    synchronized (queue)
+                    {
+                        for (int i = 0; i < shardsTotal; i++)
+                            queue.add(i);
+                    }
                 }
             }
             catch (RuntimeException e)
             {
+                if (e.getCause() instanceof InterruptedException)
+                    throw (InterruptedException) e.getCause();
                 //We check if the LoginException is masked inside of a ExecutionException which is masked inside of the RuntimeException
                 Throwable ex = e.getCause() instanceof ExecutionException ? e.getCause().getCause() : null;
                 if (ex instanceof LoginException)

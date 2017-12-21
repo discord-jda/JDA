@@ -612,7 +612,7 @@ public class JDABuilder
      * @return A {@link net.dv8tion.jda.core.JDA} instance that has started the login process. It is unknown as
      *         to whether or not loading has finished when this returns.
      */
-    public JDA buildAsync() throws LoginException, IllegalArgumentException, RateLimitedException
+    public JDA buildAsync() throws LoginException
     {
         OkHttpClient.Builder httpClientBuilder = this.httpClientBuilder == null ? new OkHttpClient.Builder() : this.httpClientBuilder;
         WebSocketFactory wsFactory = this.wsFactory == null ? new WebSocketFactory() : this.wsFactory;
@@ -680,7 +680,7 @@ public class JDABuilder
      *
      * @return A {@link net.dv8tion.jda.core.JDA} Object that is <b>guaranteed</b> to be logged in and finished loading.
      */
-    public JDA buildBlocking(JDA.Status status) throws LoginException, IllegalArgumentException, InterruptedException, RateLimitedException
+    public JDA buildBlocking(JDA.Status status) throws LoginException, InterruptedException
     {
         Checks.notNull(status, "Status");
         Checks.check(status.isInit(), "Cannot await the status %s as it is not part of the login cycle!", status);
@@ -713,7 +713,7 @@ public class JDABuilder
      *
      * @return A {@link net.dv8tion.jda.core.JDA} Object that is <b>guaranteed</b> to be logged in and finished loading.
      */
-    public JDA buildBlocking() throws LoginException, IllegalArgumentException, InterruptedException, RateLimitedException
+    public JDA buildBlocking() throws LoginException, InterruptedException
     {
         return buildBlocking(Status.CONNECTED);
     }
