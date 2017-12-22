@@ -377,7 +377,11 @@ public class MessageReaction
         String code = emote.isEmote()
                     ? emote.getName() + ":" + emote.getId()
                     : MiscUtil.encodeUTF8(emote.getName());
-        Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(channel.getId(), getMessageId(), code, user.getId());
+        Route.CompiledRoute route;
+        if (user.equals(getJDA().getSelfUser()))
+            route = Route.Messages.REMOVE_OWN_REACTION.compile(channel.getId(), getMessageId(), code);
+        else
+            route = Route.Messages.REMOVE_REACTION.compile(channel.getId(), getMessageId(), code, user.getId());
         return new RestAction<Void>(getJDA(), route)
         {
             @Override

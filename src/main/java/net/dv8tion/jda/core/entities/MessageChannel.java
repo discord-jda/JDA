@@ -2049,9 +2049,8 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.noWhitespace(messageId, "Message ID");
         Checks.noWhitespace(unicode, "Emoji");
 
-        final String selfId = getJDA().getSelfUser().getId();
         final String code = MiscUtil.encodeUTF8(unicode);
-        final Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, code, selfId);
+        final Route.CompiledRoute route = Route.Messages.REMOVE_OWN_REACTION.compile(getId(), messageId, code);
         return new RestAction<Void>(getJDA(), route)
         {
             @Override
