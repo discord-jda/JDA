@@ -136,6 +136,15 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
     EmoteManagerUpdatable getManagerUpdatable();
 
     /**
+     * Whether or not this Emote is animated or not.
+     *
+     * <p>Animated Emotes are available only to Discord Nitro users.
+     *
+     * @return Whether the Emote is animated or not.
+     */
+    boolean isAnimated();
+
+    /**
      * A String representation of the URL which leads to image displayed within the official Discord&trade; client
      * when this Emote is used
      *
@@ -157,7 +166,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
     @Override
     default String getAsMention()
     {
-        return "<:" + getName() + ":" + getIdLong() + ">";
+        return (isAnimated() ? "<a:" : "<:") + getName() + ":" + getIdLong() + ">";
     }
 
     /**

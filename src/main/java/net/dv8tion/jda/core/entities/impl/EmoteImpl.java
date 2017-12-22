@@ -53,6 +53,7 @@ public class EmoteImpl implements Emote
     private volatile EmoteManagerUpdatable managerUpdatable = null;
 
     private boolean managed = false;
+    private boolean animated = false;
     private String name;
 
     public EmoteImpl(long id, GuildImpl guild)
@@ -148,6 +149,12 @@ public class EmoteImpl implements Emote
     }
 
     @Override
+    public boolean isAnimated()
+    {
+        return animated;
+    }
+
+    @Override
     public AuditableRestAction<Void> delete()
     {
         if (isFake())
@@ -176,6 +183,12 @@ public class EmoteImpl implements Emote
     public EmoteImpl setName(String name)
     {
         this.name = name;
+        return this;
+    }
+
+    public EmoteImpl setAnimated(boolean animated)
+    {
+        this.animated = animated;
         return this;
     }
 
@@ -221,7 +234,7 @@ public class EmoteImpl implements Emote
     public EmoteImpl clone()
     {
         if (isFake()) return null;
-        EmoteImpl copy = new EmoteImpl(id, guild).setManaged(managed).setName(name);
+        EmoteImpl copy = new EmoteImpl(id, guild).setManaged(managed).setAnimated(animated).setName(name);
         copy.roles.addAll(roles);
         return copy;
 

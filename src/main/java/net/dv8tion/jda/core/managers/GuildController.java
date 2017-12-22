@@ -2141,7 +2141,8 @@ public class GuildController
                 final long id = obj.getLong("id");
                 final String name = obj.getString("name");
                 final boolean managed = Helpers.optBoolean(obj, "managed");
-                EmoteImpl emote = new EmoteImpl(id, guild).setName(name).setManaged(managed);
+                final boolean animated = obj.optBoolean("animated");
+                EmoteImpl emote = new EmoteImpl(id, guild).setName(name).setAnimated(animated).setManaged(managed);
 
                 JSONArray rolesArr = obj.getJSONArray("roles");
                 Set<Role> roleSet = emote.getRoleSet();

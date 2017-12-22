@@ -1064,7 +1064,7 @@ public interface Message extends ISnowflake, Formattable
         /**
          * Represents a mention for a {@link net.dv8tion.jda.core.entities.Emote Emote}
          */
-        EMOTE("<:([a-zA-Z0-9_]+):([0-9]+)>"),
+        EMOTE("<a?:([a-zA-Z0-9_]+):([0-9]+)>"),
         /**
          * Represents a mention for all active users, literal {@code @here}
          */
