@@ -136,9 +136,9 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
     EmoteManagerUpdatable getManagerUpdatable();
 
     /**
-     * Whether or not this Emote is animated or not.
+     * Whether or not this Emote is animated.
      *
-     * <p>Animated Emotes are available only to Discord Nitro users.
+     * <p>Animated Emotes are available to Discord Nitro users as well as Bot accounts.
      *
      * @return Whether the Emote is animated or not.
      */
@@ -152,7 +152,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      */
     default String getImageUrl()
     {
-        return "https://cdn.discordapp.com/emojis/" + getId() + ".png";
+        return "https://cdn.discordapp.com/emojis/" + getId() + (isAnimated() ? ".gif" : ".png");
     }
 
     /**

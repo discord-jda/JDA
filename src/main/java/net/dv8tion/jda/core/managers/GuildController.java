@@ -2117,6 +2117,10 @@ public class GuildController
         Checks.notNull(icon, "Emote icon");
         Checks.notNull(roles, "Roles");
 
+        // Check for emote upload limits
+        Checks.check(getGuild().getEmoteCache().stream().filter(emote -> !emote.isAnimated()).count() < 50, "Guild normal emote limit has already been reached!");
+        Checks.check(getGuild().getEmoteCache().stream().filter(Emote::isAnimated).count() < 50, "Guild animated emote limit has already been reached!");
+
 //        if (getJDA().getAccountType() != AccountType.CLIENT)
 //            throw new AccountTypeException(AccountType.CLIENT);
 
