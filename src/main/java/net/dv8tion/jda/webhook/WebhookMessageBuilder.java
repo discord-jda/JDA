@@ -124,7 +124,7 @@ public class WebhookMessageBuilder
         {
             Checks.notNull(embed, "Embed");
             Checks.check(embed.isSendable(AccountType.BOT),
-                "One of the provided embeds exceeds the maximum character count of %d!", MessageEmbed.EMBED_MAX_LENGTH_BOT);
+                "One of the provided embeds is empty or exceeds the maximum character count of %d!", MessageEmbed.EMBED_MAX_LENGTH_BOT);
             this.embeds.add(embed);
         }
         return this;
@@ -152,7 +152,7 @@ public class WebhookMessageBuilder
         {
             Checks.notNull(embed, "Embed");
             Checks.check(embed.isSendable(AccountType.BOT),
-                "One of the provided embeds exceeds the maximum character count of %d!", MessageEmbed.EMBED_MAX_LENGTH_BOT);
+                "One of the provided embeds is empty or exceeds the maximum character count of %d!", MessageEmbed.EMBED_MAX_LENGTH_BOT);
             this.embeds.add(embed);
         }
         return this;
