@@ -785,9 +785,39 @@ public interface Guild extends ISnowflake
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@literal List<}{@link net.dv8tion.jda.core.entities.User User}{@literal >}
      *         <br>An unmodifiable list of all users currently banned from this Guild
+     *
+     * @deprecated
+     *         Use {@link #getBanlist()} instead
      */
+    @Deprecated
     @CheckReturnValue
     RestAction<List<User>> getBans();
+
+    /**
+     * Gets an unmodifiable list of the currently banned {@link net.dv8tion.jda.core.entities.User Users}.
+     * <br>If you wish to ban or unban a user, please {@link GuildController#ban(User, int) GuildController.ban(User, int)} or
+     * {@link GuildController#unban(User) GuildController.ban(User)}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The ban list cannot be fetched due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>We were removed from the Guild before finishing the task</li>
+     * </ul>
+     *
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
+     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
+     *         If the guild is temporarily not {@link #isAvailable() available}
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@literal List<}{@link net.dv8tion.jda.core.entities.Guild.Ban Ban}{@literal >}
+     *         <br>An unmodifiable list of all users currently banned from this Guild
+     */
+    @CheckReturnValue
+    RestAction<List<Ban>> getBanlist();
 
     /**
      * The method calculates the amount of Members that would be pruned if {@link GuildController#prune(int)} was executed.
@@ -1371,6 +1401,50 @@ public interface Guild extends ISnowflake
                     return level;
             }
             return UNKNOWN;
+        }
+    }
+
+    /**
+     * Represents a Ban object.
+     *
+     * @see #getBanlist()
+     * @see <a href="https://discordapp.com/developers/docs/resources/guild#ban-object" target="_blank">Discord Docs: Ban Object</a>
+     */
+    class Ban
+    {
+        protected final User user;
+        protected final String reason;
+
+        public Ban(User user, String reason)
+        {
+            this.user = user;
+            this.reason = reason;
+        }
+
+        /**
+         * The {@link net.dv8tion.jda.core.entities.User User} that was banned
+         *
+         * @return The banned User
+         */
+        public User getUser()
+        {
+            return user;
+        }
+
+        /**
+         * The reason why this user was banned
+         *
+         * @return The reason for this ban, or {@code null}
+         */
+        public String getReason()
+        {
+            return reason;
+        }
+
+        @Override
+        public String toString()
+        {
+            return "GuildBan:" + user + (reason == null ? "" : '(' + reason + ')');
         }
     }
 }
