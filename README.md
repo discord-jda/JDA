@@ -321,7 +321,7 @@ All dependencies are managed automatically by Gradle.
 ## Related Projects
 
 - [Discord4J](https://github.com/austinv11/Discord4J)
-- [Discord.NET](https://github.com/RogueException/Discord.Net)
+- [Discord.Net](https://github.com/RogueException/Discord.Net)
 - [discord.py](https://github.com/Rapptz/discord.py)
 - [serenity](https://github.com/zeyla/serenity)
 
