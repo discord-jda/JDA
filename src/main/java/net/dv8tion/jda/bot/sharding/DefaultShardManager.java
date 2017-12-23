@@ -466,7 +466,7 @@ public class DefaultShardManager implements ShardManager
 
     protected void runQueueWorker()
     {
-        if (worker == null)
+        if (worker != null)
             return;
         worker = executor.submit(() ->
         {
