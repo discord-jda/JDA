@@ -58,7 +58,9 @@ public class DefaultShardManager implements ShardManager
         t.setPriority(Thread.NORM_PRIORITY + 1);
         return t;
     };
-
+    /**
+     * The {@link net.dv8tion.jda.core.utils.SessionController SessionController} for this manager.
+     */
     protected final SessionController controller;
 
     /**
@@ -207,6 +209,8 @@ public class DefaultShardManager implements ShardManager
      * @param  shardIds
      *         A {@link java.util.Collection Collection} of all shard ids that should be started in the beginning or {@code null}
      *         to start all possible shards. This will be ignored if shardsTotal is {@code -1}.
+     * @param  controller
+     *         The {@link net.dv8tion.jda.core.utils.SessionController SessionController}
      * @param  listeners
      *         The event listeners for new JDA instances.
      * @param  token
@@ -246,6 +250,8 @@ public class DefaultShardManager implements ShardManager
      *         hether the Requester should retry when a {@link java.net.SocketTimeoutException SocketTimeoutException} occurs.
      * @param  useShutdownNow
      *         Whether the ShardManager should use JDA#shutdown() or not
+     * @param  enableMDC
+     *         Whether MDC should be enabled
      * @param  contextProvider
      *         The MDC context provider new JDA instances should use on startup
      */
@@ -468,18 +474,25 @@ public class DefaultShardManager implements ShardManager
     {
         if (worker != null)
             return;
-        worker = executor.submit(() ->
+        try
         {
-            while (!queue.isEmpty())
-                processQueue();
-            this.gatewayURL = null;
-            synchronized (queue)
+            worker = executor.submit(() ->
             {
-                worker = null;
-                if (!queue.isEmpty())
-                    runQueueWorker();
-            }
-        });
+                while (!queue.isEmpty())
+                    processQueue();
+                this.gatewayURL = null;
+                synchronized (queue)
+                {
+                    worker = null;
+                    if (!shutdown.get() && !queue.isEmpty())
+                        runQueueWorker();
+                }
+            });
+        }
+        catch (RejectedExecutionException ex)
+        {
+            LOG.debug("ThreadPool rejected queue worker thread", ex);
+        }
     }
 
     protected void processQueue()
@@ -500,7 +513,7 @@ public class DefaultShardManager implements ShardManager
         if (shardId == -1)
             return;
 
-        JDAImpl api = null;
+        JDAImpl api;
         try
         {
             api = this.shards == null ? null : (JDAImpl) this.shards.getElementById(shardId);
@@ -520,10 +533,12 @@ public class DefaultShardManager implements ShardManager
             // in this case the ShardManager will just shutdown itself as there currently is no way of hot-swapping the token on a running JDA instance.
             LOG.warn("The token has been invalidated and the ShardManager will shutdown!", e);
             this.shutdown();
+            return;
         }
         catch (final Exception e)
         {
             LOG.error("Caught an exception in the queue processing thread", e);
+            return;
         }
 
         this.shards.getMap().put(shardId, api);

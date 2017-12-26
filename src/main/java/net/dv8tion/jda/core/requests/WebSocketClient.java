@@ -1434,6 +1434,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         @Override
         public void run(boolean isLast) throws InterruptedException
         {
+            if (shutdown)
+                return;
             setupHandlers();
             setupSendingThread();
             connect();
@@ -1453,6 +1455,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         @Override
         public void run(boolean isLast) throws InterruptedException
         {
+            if (shutdown)
+                return;
             reconnect(true, !isLast);
             while (!isLast && api.getStatus().ordinal() < JDA.Status.AWAITING_LOGIN_CONFIRMATION.ordinal())
                 Thread.sleep(50);

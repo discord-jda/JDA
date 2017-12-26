@@ -572,6 +572,7 @@ public class JDABuilder
      * @return The JDABuilder instance. Useful for chaining.
      *
      * @see    net.dv8tion.jda.core.JDA#getShardInfo() JDA.getShardInfo()
+     * @see    net.dv8tion.jda.bot.sharding.ShardManager ShardManager
      */
     public JDABuilder useSharding(int shardId, int shardTotal)
     {
@@ -584,6 +585,24 @@ public class JDABuilder
         return this;
     }
 
+    /**
+     * Sets the {@link net.dv8tion.jda.core.utils.SessionController SessionController}
+     * for this JDABuilder instance. This can be used to sync behaviour and state between shards
+     * of a bot and should be one and the same instance on all builders for the shards.
+     * <br>When {@link #useSharding(int, int)} is enabled, this is set by default.
+     *
+     * <p>When set, this allows the builder to build shards with respect to the login ratelimit automatically.
+     *
+     * <p><b>Setting this disables the {@link #setShardedRateLimiter(ShardedRateLimiter)} and {@link #setReconnectQueue(net.dv8tion.jda.core.requests.SessionReconnectQueue)}
+     * settings.</b>
+     *
+     * @param  controller
+     *         The {@link net.dv8tion.jda.core.utils.SessionController SessionController} to use
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @see    net.dv8tion.jda.core.utils.SessionControllerAdapter SessionControllerAdapter
+     */
     public JDABuilder setSessionController(SessionController controller)
     {
         this.controller = controller;
