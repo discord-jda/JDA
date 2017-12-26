@@ -27,8 +27,8 @@ import net.dv8tion.jda.core.utils.tuple.Pair;
  * <p>The {@link net.dv8tion.jda.core.utils.SessionControllerAdapter SessionControllerAdapter} provides
  * a default implementation that can be extended and overridden.
  *
- * <h2>States & Behaviour</h2>
- * <b>Identify Ratelimit Handling<</b>
+ * <h2>States {@literal &} Behaviour</h2>
+ * <b>Identify Ratelimit Handling</b>
  * <br>This will enable handling of (re-)connecting gateway sessions.
  *
  * <p><b>Global REST Ratelimit</b>
@@ -54,7 +54,7 @@ import net.dv8tion.jda.core.utils.tuple.Pair;
  *     }
  * });
  * builder.addEventListener(myListener);
- * for (int i = 0; i < 10; i++) {
+ * for (int i = 0; i {@literal <} 10; i++) {
  *     builder.useSharding(i, 10).buildAsync();
  * }
  * </code></pre>

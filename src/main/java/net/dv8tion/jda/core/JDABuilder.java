@@ -21,7 +21,6 @@ import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
-import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.SessionReconnectQueue;
@@ -625,8 +624,6 @@ public class JDABuilder
      *         If the provided token is invalid.
      * @throws IllegalArgumentException
      *         If the provided token is empty or null.
-     * @throws RateLimitedException
-     *         If we are being Rate limited.
      *
      * @return A {@link net.dv8tion.jda.core.JDA} instance that has started the login process. It is unknown as
      *         to whether or not loading has finished when this returns.
@@ -694,8 +691,6 @@ public class JDABuilder
      * @throws InterruptedException
      *         If an interrupt request is received while waiting for {@link net.dv8tion.jda.core.JDA} to finish logging in.
      *         This would most likely be caused by a JVM shutdown request.
-     * @throws RateLimitedException
-     *         If we are being Rate limited.
      *
      * @return A {@link net.dv8tion.jda.core.JDA} Object that is <b>guaranteed</b> to be logged in and finished loading.
      */
@@ -727,8 +722,6 @@ public class JDABuilder
      * @throws InterruptedException
      *         If an interrupt request is received while waiting for {@link net.dv8tion.jda.core.JDA} to finish logging in.
      *         This would most likely be caused by a JVM shutdown request.
-     * @throws RateLimitedException
-     *         If we are being Rate limited.
      *
      * @return A {@link net.dv8tion.jda.core.JDA} Object that is <b>guaranteed</b> to be logged in and finished loading.
      */
