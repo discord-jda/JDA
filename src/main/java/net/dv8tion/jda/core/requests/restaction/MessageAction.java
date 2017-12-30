@@ -603,7 +603,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
     protected void handleResponse(Response response, Request<Message> request)
     {
         if (response.isOk())
-            request.onSuccess(api.getEntityBuilder().createMessage(response.getObject()));
+            request.onSuccess(api.getEntityBuilder().createMessage(response.getObject(), channel, false));
         else
             request.onFailure(response);
     }
