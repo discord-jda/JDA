@@ -19,4 +19,7 @@
  * the {@link net.dv8tion.jda.core.audio.hooks.ConnectionStatus ConnectionStatus} or
  * ping of an existing {@link net.dv8tion.jda.core.audio.AudioConnection AudioConnection}.
  */
+@ParametersAreNonnullByDefault
 package net.dv8tion.jda.core.audio.hooks;
+
+import javax.annotation.ParametersAreNonnullByDefault;

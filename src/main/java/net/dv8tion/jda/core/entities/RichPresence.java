@@ -42,9 +42,9 @@ public class RichPresence extends Game
     protected final Image smallImage;
 
     protected RichPresence(
-        GameType type, String name, String url, long applicationId,
-        Party party, String details, String state, Timestamps timestamps,
-        String largeImageKey, String largeImageText, String smallImageKey, String smallImageText)
+        GameType type, String name, @Nullable String url, long applicationId,
+        @Nullable Party party, @Nullable String details, @Nullable String state, @Nullable Timestamps timestamps,
+        @Nullable String largeImageKey, @Nullable String largeImageText, @Nullable String smallImageKey, @Nullable String smallImageText)
     {
         super(name, url, type);
         this.applicationId = applicationId;
@@ -170,7 +170,7 @@ public class RichPresence extends Game
     }
 
     @Override
-    public boolean equals(Object o)
+    public boolean equals(@Nullable Object o)
     {
         if (this == o)
             return true;
@@ -197,7 +197,7 @@ public class RichPresence extends Game
         protected final String key;
         protected final String text;
 
-        public Image(String key, String text)
+        public Image(String key, @Nullable String text)
         {
             this.key = key;
             this.text = text;

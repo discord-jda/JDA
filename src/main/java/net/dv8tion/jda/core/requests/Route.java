@@ -19,6 +19,7 @@ package net.dv8tion.jda.core.requests;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.Helpers;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -355,7 +356,7 @@ public class Route
     }
 
     @Override
-    public boolean equals(Object o)
+    public boolean equals(@Nullable Object o)
     {
         if (!(o instanceof Route))
             return false;
@@ -430,7 +431,7 @@ public class Route
         }
 
         @Override
-        public boolean equals(Object o)
+        public boolean equals(@Nullable Object o)
         {
             if (!(o instanceof CompiledRoute))
                 return false;

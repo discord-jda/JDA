@@ -23,9 +23,12 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Collections;
 import java.util.List;
 
+@ParametersAreNonnullByDefault
 public class AuthorizedApplicationImpl implements AuthorizedApplication
 {
     private final JDA api;
@@ -37,7 +40,7 @@ public class AuthorizedApplicationImpl implements AuthorizedApplication
     private final String name;
     private final List<String> scopes;
 
-    public AuthorizedApplicationImpl(final JDA api, final long authId, final String description, final String iconId,
+    public AuthorizedApplicationImpl(final JDA api, final long authId, final String description, @Nullable final String iconId,
             final long id, final String name, final List<String> scopes)
     {
         this.api = api;
@@ -68,7 +71,7 @@ public class AuthorizedApplicationImpl implements AuthorizedApplication
     }
 
     @Override
-    public boolean equals(final Object obj)
+    public boolean equals(@Nullable final Object obj)
     {
         return obj instanceof AuthorizedApplicationImpl && this.id == ((AuthorizedApplicationImpl) obj).id;
     }

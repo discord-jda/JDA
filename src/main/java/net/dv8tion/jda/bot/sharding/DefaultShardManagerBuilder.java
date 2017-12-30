@@ -24,6 +24,7 @@ import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.OkHttpClient;
 
+import javax.annotation.ParametersAreNullableByDefault;
 import javax.security.auth.login.LoginException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,6 +44,7 @@ import java.util.stream.Collectors;
  * @since  3.4
  * @author Aljoscha Grebe
  */
+@ParametersAreNullableByDefault
 public class DefaultShardManagerBuilder
 {
     protected final List<Object> listeners = new ArrayList<>();
@@ -100,7 +102,6 @@ public class DefaultShardManagerBuilder
             this.enableContext = true;
         return this;
     }
-
 
     /**
      * Whether JDA should use a synchronized MDC context for all of its controlled threads.
@@ -736,7 +737,7 @@ public class DefaultShardManagerBuilder
      */
     public ShardManager build() throws LoginException, IllegalArgumentException
     {
-        final DefaultShardManager manager = new DefaultShardManager(this.shardsTotal, this.shards, this.listeners, this.token, this.eventManager,
+        final DefaultShardManager manager = new DefaultShardManager(this.shardsTotal, this.listeners, this.token, this.shards, this.eventManager,
             this.audioSendFactory, this.gameProvider, this.statusProvider, this.httpClientBuilder, this.wsFactory, this.threadFactory, this.shardedRateLimiter,
             this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting,
             this.autoReconnect, this.idleProvider, this.retryOnTimeout, this.useShutdownNow, this.enableContext, this.contextProvider);

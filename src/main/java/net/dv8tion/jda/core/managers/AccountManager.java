@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.entities.SelfUser;
 import net.dv8tion.jda.core.requests.RestAction;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
 
 /**
  * Facade for an {@link net.dv8tion.jda.core.managers.AccountManagerUpdatable AccountManagerUpdatable} instance.
@@ -118,7 +119,7 @@ public class AccountManager
      *         <br>See {@link net.dv8tion.jda.core.managers.AccountManagerUpdatable#update(String) #update()} for more information
      */
     @CheckReturnValue
-    public RestAction<Void> setName(String name, String currentPassword)
+    public RestAction<Void> setName(String name, @Nullable String currentPassword)
     {
         return updatable.getNameField().setValue(name).update(currentPassword);
     }
@@ -139,7 +140,7 @@ public class AccountManager
      *         <br>See {@link net.dv8tion.jda.core.managers.AccountManagerUpdatable#update(String) #update()} for more information
      */
     @CheckReturnValue
-    public RestAction<Void> setAvatar(Icon avatar)
+    public RestAction<Void> setAvatar(@Nullable Icon avatar)
     {
         return setAvatar(avatar, null);
     }
@@ -164,7 +165,7 @@ public class AccountManager
      *         <br>See {@link net.dv8tion.jda.core.managers.AccountManagerUpdatable#update(String) #update()} for more information
      */
     @CheckReturnValue
-    public RestAction<Void> setAvatar(Icon avatar, String currentPassword)
+    public RestAction<Void> setAvatar(@Nullable Icon avatar, @Nullable String currentPassword)
     {
         return updatable.getAvatarField().setValue(avatar).update(currentPassword);
     }

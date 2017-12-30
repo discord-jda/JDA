@@ -28,6 +28,7 @@ import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.CheckReturnValue;
 
 /**
@@ -253,7 +254,7 @@ public class WebhookManagerUpdatable
         name = new WebhookField<String>(this, webhook::getName)
         {
             @Override
-            public void checkValue(String value)
+            public void checkValue(@CheckForNull String value)
             {
                 Checks.notNull(value, "default name");
             }
@@ -262,7 +263,7 @@ public class WebhookManagerUpdatable
         avatar = new WebhookField<Icon>(this, null)
         {
             @Override
-            public void checkValue(Icon value) { }
+            public void checkValue(@CheckForNull Icon value) { }
 
             @Override
             public Icon getOriginalValue()
@@ -280,7 +281,7 @@ public class WebhookManagerUpdatable
         channel = new WebhookField<TextChannel>(this, webhook::getChannel)
         {
             @Override
-            public void checkValue(TextChannel value)
+            public void checkValue(@CheckForNull TextChannel value)
             {
                 Checks.notNull(value, "channel");
                 Checks.check(value.getGuild().equals(getGuild()), "Channel is not from the same Guild!");

@@ -29,6 +29,7 @@ import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.commons.collections4.CollectionUtils;
 
+import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -64,14 +65,14 @@ public class ReceivedMessage extends AbstractMessage
     public ReceivedMessage(
         long id, MessageChannel channel, MessageType type,
         boolean fromWebhook, boolean mentionsEveryone, boolean tts, boolean pinned,
-        String content, String nonce, User author, OffsetDateTime editTime,
+        String content, @Nullable String nonce, User author, @Nullable OffsetDateTime editTime,
         List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds)
     {
         super(content, nonce, tts);
         this.id = id;
         this.channel = channel;
         this.type = type;
-        this.api = (channel != null) ? (JDAImpl) channel.getJDA() : null;
+        this.api = (JDAImpl) channel.getJDA();
         this.fromWebhook = fromWebhook;
         this.mentionsEveryone = mentionsEveryone;
         this.pinned = pinned;
@@ -367,7 +368,7 @@ public class ReceivedMessage extends AbstractMessage
         return false;
     }
 
-    private boolean isUserMentioned(IMentionable mentionable)
+    private boolean isUserMentioned(@Nullable IMentionable mentionable)
     {
         if (mentionable instanceof User)
         {
@@ -381,7 +382,7 @@ public class ReceivedMessage extends AbstractMessage
         return false;
     }
 
-    private boolean isRoleMentioned(IMentionable mentionable)
+    private boolean isRoleMentioned(@Nullable IMentionable mentionable)
     {
         if (mentionable instanceof Role)
         {
@@ -725,7 +726,7 @@ public class ReceivedMessage extends AbstractMessage
     }
 
     @Override
-    public boolean equals(Object o)
+    public boolean equals(@Nullable Object o)
     {
         if (!(o instanceof ReceivedMessage))
             return false;

@@ -27,6 +27,7 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.json.JSONObject;
 
+import javax.annotation.Nullable;
 import java.util.FormattableFlags;
 import java.util.Formatter;
 import java.util.List;
@@ -174,7 +175,7 @@ public class UserImpl implements User
     }
 
     @Override
-    public boolean equals(Object o)
+    public boolean equals(@Nullable Object o)
     {
         if (!(o instanceof UserImpl))
             return false;
@@ -208,13 +209,13 @@ public class UserImpl implements User
         return this;
     }
 
-    public UserImpl setAvatarId(String avatarId)
+    public UserImpl setAvatarId(@Nullable String avatarId)
     {
         this.avatarId = avatarId;
         return this;
     }
 
-    public UserImpl setPrivateChannel(PrivateChannel privateChannel)
+    public UserImpl setPrivateChannel(@Nullable PrivateChannel privateChannel)
     {
         this.privateChannel = privateChannel;
         return this;

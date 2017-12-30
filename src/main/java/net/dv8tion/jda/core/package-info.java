@@ -42,4 +42,7 @@
  *         which can then be used in the message sending process (see above)</li>
  * </ul>
  */
+@ParametersAreNonnullByDefault
 package net.dv8tion.jda.core;
+
+import javax.annotation.ParametersAreNonnullByDefault;

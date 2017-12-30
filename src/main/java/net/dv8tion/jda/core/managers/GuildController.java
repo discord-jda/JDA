@@ -44,6 +44,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -224,7 +225,7 @@ public class GuildController
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setNickname(Member member, String nickname)
+    public AuditableRestAction<Void> setNickname(Member member, @Nullable String nickname)
     {
         checkAvailable();
         Checks.notNull(member, "Member");
@@ -359,7 +360,7 @@ public class GuildController
      *         Kicks the provided Member from the current Guild
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> kick(Member member, String reason)
+    public AuditableRestAction<Void> kick(Member member, @Nullable String reason)
     {
         checkAvailable();
         Checks.notNull(member, "member");
@@ -425,7 +426,7 @@ public class GuildController
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> kick(String userId, String reason)
+    public AuditableRestAction<Void> kick(String userId, @Nullable String reason)
     {
         Checks.notBlank(userId, "userId");
 
@@ -563,7 +564,7 @@ public class GuildController
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> ban(Member member, int delDays, String reason)
+    public AuditableRestAction<Void> ban(Member member, int delDays, @Nullable String reason)
     {
         checkAvailable();
         Checks.notNull(member, "Member");
@@ -618,7 +619,7 @@ public class GuildController
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> ban(User user, int delDays, String reason)
+    public AuditableRestAction<Void> ban(User user, int delDays, @Nullable String reason)
     {
         checkAvailable();
         Checks.notNull(user, "User");
@@ -693,7 +694,7 @@ public class GuildController
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> ban(String userId, int delDays, String reason)
+    public AuditableRestAction<Void> ban(String userId, int delDays, @Nullable String reason)
     {
         checkAvailable();
         Checks.notBlank(userId, "User ID");

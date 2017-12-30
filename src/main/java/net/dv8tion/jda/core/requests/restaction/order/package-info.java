@@ -27,4 +27,7 @@
  *
  * @since 3.0
  */
+@ParametersAreNonnullByDefault
 package net.dv8tion.jda.core.requests.restaction.order;
+
+import javax.annotation.ParametersAreNonnullByDefault;

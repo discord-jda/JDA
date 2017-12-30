@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
 import java.awt.Color;
 import java.util.Arrays;
 import java.util.Collection;
@@ -227,7 +228,7 @@ public class RoleManager
      * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#update()
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setColor(Color color)
+    public AuditableRestAction<Void> setColor(@Nullable Color color)
     {
         return updatable.getColorField().setValue(color).update();
     }

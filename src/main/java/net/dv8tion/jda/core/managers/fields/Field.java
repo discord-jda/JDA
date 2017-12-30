@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.managers.fields;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.function.Supplier;
 
@@ -58,7 +60,7 @@ public abstract class Field<T, M>
      *        The original value, represented with a {@link java.util.function.Supplier Supplier}
      *        access function.
      */
-    public Field(M manager, Supplier<T> originalValue)
+    public Field(M manager, @Nullable Supplier<T> originalValue)
     {
         this.manager = manager;
         this.originalValue = originalValue;
@@ -113,7 +115,7 @@ public abstract class Field<T, M>
      *
      * @see    #isSet()
      */
-    public M setValue(T value)
+    public M setValue(@CheckForNull T value)
     {
         checkValue(value);
 
@@ -184,10 +186,10 @@ public abstract class Field<T, M>
      *         If this value requires specific {@link net.dv8tion.jda.core.Permission Permissions}
      *         that are not fulfilled
      */
-    public abstract void checkValue(T value);
+    public abstract void checkValue(@CheckForNull T value);
 
     @Override
-    public boolean equals(Object o)
+    public boolean equals(@Nullable Object o)
     {
         return isSet() && Objects.equals(o, value);
     }

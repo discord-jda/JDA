@@ -26,6 +26,7 @@ import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -83,7 +84,7 @@ public class InviteAction extends AuditableRestAction<Invite>
      * @return The current InviteAction for chaining.
      */
     @CheckReturnValue
-    public final InviteAction setMaxAge(final Integer maxAge)
+    public final InviteAction setMaxAge(@Nullable final Integer maxAge)
     {
         if (maxAge != null)
             Checks.notNegative(maxAge, "maxAge");
@@ -107,7 +108,7 @@ public class InviteAction extends AuditableRestAction<Invite>
      * @return The current InviteAction for chaining.
      */
     @CheckReturnValue
-    public final InviteAction setMaxAge(final Long maxAge, final TimeUnit timeUnit)
+    public final InviteAction setMaxAge(@Nullable final Long maxAge, @Nullable final TimeUnit timeUnit)
     {
         if (maxAge == null)
             return this.setMaxAge(null);
@@ -131,7 +132,7 @@ public class InviteAction extends AuditableRestAction<Invite>
      * @return The current InviteAction for chaining.
      */
     @CheckReturnValue
-    public final InviteAction setMaxUses(final Integer maxUses)
+    public final InviteAction setMaxUses(@Nullable final Integer maxUses)
     {
         if (maxUses != null)
             Checks.notNegative(maxUses, "maxUses");
@@ -149,7 +150,7 @@ public class InviteAction extends AuditableRestAction<Invite>
      * @return The current InviteAction for chaining.
      */
     @CheckReturnValue
-    public final InviteAction setTemporary(final Boolean temporary)
+    public final InviteAction setTemporary(@Nullable final Boolean temporary)
     {
         this.temporary = temporary;
         return this;
@@ -164,7 +165,7 @@ public class InviteAction extends AuditableRestAction<Invite>
      * @return The current InviteAction for chaining.
      */
     @CheckReturnValue
-    public final InviteAction setUnique(final Boolean unique)
+    public final InviteAction setUnique(@Nullable final Boolean unique)
     {
         this.unique = unique;
         return this;

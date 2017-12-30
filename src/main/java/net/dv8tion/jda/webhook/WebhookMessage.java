@@ -27,6 +27,7 @@ import okhttp3.RequestBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
@@ -46,9 +47,9 @@ public class WebhookMessage
     protected final boolean isTTS;
     protected final InputStream file;
 
-    protected WebhookMessage(final String username, final String avatarUrl, final String content,
+    protected WebhookMessage(@Nullable final String username, @Nullable final String avatarUrl, final String content,
                              final List<MessageEmbed> embeds, final boolean isTTS,
-                             final InputStream file, final String fileName)
+                             @Nullable final InputStream file, @Nullable final String fileName)
     {
         this.username = username;
         this.avatarUrl = avatarUrl;

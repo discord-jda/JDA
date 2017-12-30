@@ -18,7 +18,10 @@ package net.dv8tion.jda.core.requests.restaction;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.Channel;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.PermissionOverride;
+import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.impl.AbstractChannelImpl;
 import net.dv8tion.jda.core.entities.impl.PermissionOverrideImpl;
 import net.dv8tion.jda.core.requests.Request;
@@ -29,6 +32,7 @@ import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -247,7 +251,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      * @return The current PermissionOverrideAction - for chaining convenience
      */
     @CheckReturnValue
-    public PermissionOverrideAction setAllow(Collection<Permission> permissions)
+    public PermissionOverrideAction setAllow(@Nullable Collection<Permission> permissions)
     {
         if (permissions == null || permissions.isEmpty())
             return setAllow(0);
@@ -271,7 +275,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      * @return The current PermissionOverrideAction - for chaining convenience
      */
     @CheckReturnValue
-    public PermissionOverrideAction setAllow(Permission... permissions)
+    public PermissionOverrideAction setAllow(@Nullable Permission... permissions)
     {
         if (permissions == null || permissions.length < 1)
             return setAllow(0);
@@ -321,7 +325,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      * @return The current PermissionOverrideAction - for chaining convenience
      */
     @CheckReturnValue
-    public PermissionOverrideAction setDeny(Collection<Permission> permissions)
+    public PermissionOverrideAction setDeny(@Nullable Collection<Permission> permissions)
     {
         if (permissions == null || permissions.isEmpty())
             return setDeny(0);
@@ -345,7 +349,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      * @return The current PermissionOverrideAction - for chaining convenience
      */
     @CheckReturnValue
-    public PermissionOverrideAction setDeny(Permission... permissions)
+    public PermissionOverrideAction setDeny(@Nullable Permission... permissions)
     {
         if (permissions == null || permissions.length < 1)
             return setDeny(0);
@@ -395,7 +399,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      * @return The current PermissionOverrideAction - for chaining convenience
      */
     @CheckReturnValue
-    public PermissionOverrideAction setPermissions(Collection<Permission> grantPermissions, Collection<Permission> denyPermissions)
+    public PermissionOverrideAction setPermissions(@Nullable Collection<Permission> grantPermissions, @Nullable Collection<Permission> denyPermissions)
     {
         setAllow(grantPermissions);
         setDeny(denyPermissions);

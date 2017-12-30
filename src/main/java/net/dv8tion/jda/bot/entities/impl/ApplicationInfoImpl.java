@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.User;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 
 public class ApplicationInfoImpl implements ApplicationInfo
@@ -36,8 +37,8 @@ public class ApplicationInfoImpl implements ApplicationInfo
     private final String name;
     private final User owner;
 
-    public ApplicationInfoImpl(JDA api, String description, boolean doesBotRequireCodeGrant, String iconId, long id,
-            boolean isBotPublic, String name, User owner)
+    public ApplicationInfoImpl(JDA api, String description, boolean doesBotRequireCodeGrant, @Nullable String iconId, long id,
+                               boolean isBotPublic, String name, User owner)
     {
         this.api = api;
         this.description = description;
@@ -56,7 +57,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
     }
 
     @Override
-    public boolean equals(final Object obj)
+    public boolean equals(@Nullable final Object obj)
     {
         return obj instanceof ApplicationInfoImpl && this.id == ((ApplicationInfoImpl) obj).id;
     }

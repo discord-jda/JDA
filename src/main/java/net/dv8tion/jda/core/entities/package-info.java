@@ -25,4 +25,7 @@
  * to create entities from this package by creating {@link net.dv8tion.jda.core.entities.impl entities.impl} instances
  * for the specific entity.
  */
+@ParametersAreNonnullByDefault
 package net.dv8tion.jda.core.entities;
+
+import javax.annotation.ParametersAreNonnullByDefault;

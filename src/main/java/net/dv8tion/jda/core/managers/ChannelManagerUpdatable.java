@@ -29,6 +29,7 @@ import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.CheckReturnValue;
 
 /**
@@ -382,7 +383,7 @@ public class ChannelManagerUpdatable
         this.name = new ChannelField<String>(this, channel::getName)
         {
             @Override
-            public void checkValue(String value)
+            public void checkValue(@CheckForNull String value)
             {
                 Checks.notEmpty(value, "name");
                 if (value.length() < 2 || value.length() > 100)
@@ -393,7 +394,7 @@ public class ChannelManagerUpdatable
         this.position = new ChannelField<Integer>(this, channel::getPositionRaw)
         {
             @Override
-            public void checkValue(Integer value)
+            public void checkValue(@CheckForNull Integer value)
             {
                 Checks.notNull(value, "Position");
             }
@@ -404,7 +405,7 @@ public class ChannelManagerUpdatable
             this.parent = new ChannelField<Category>(this, channel::getParent)
             {
                 @Override
-                public void checkValue(Category value)
+                public void checkValue(@CheckForNull Category value)
                 {
                     if (value != null)
                         Checks.check(value.getGuild().equals(getGuild()), "Category is not from same Guild!");
@@ -418,7 +419,7 @@ public class ChannelManagerUpdatable
             this.topic = new ChannelField<String>(this, tc::getTopic)
             {
                 @Override
-                public void checkValue(String value)
+                public void checkValue(@CheckForNull String value)
                 {
                     if (value != null && value.length() > 1024)
                         throw new IllegalArgumentException("Provided topic must less than or equal to 1024 characters in length");
@@ -428,7 +429,7 @@ public class ChannelManagerUpdatable
             this.nsfw = new ChannelField<Boolean>(this, tc::isNSFW)
             {
                 @Override
-                public void checkValue(Boolean value)
+                public void checkValue(@CheckForNull Boolean value)
                 {
                     if (value == null)
                         throw new IllegalArgumentException("NSFW flag must not be null");
@@ -441,7 +442,7 @@ public class ChannelManagerUpdatable
             this.userLimit = new ChannelField<Integer>(this, vc::getUserLimit)
             {
                 @Override
-                public void checkValue(Integer value)
+                public void checkValue(@CheckForNull Integer value)
                 {
                     Checks.notNull(value, "user limit");
                     if (value < 0 || value > 99)
@@ -452,7 +453,7 @@ public class ChannelManagerUpdatable
             this.bitrate = new ChannelField<Integer>(this, vc::getBitrate)
             {
                 @Override
-                public void checkValue(Integer value)
+                public void checkValue(@CheckForNull Integer value)
                 {
                     Checks.notNull(value, "bitrate");
                     if (value < 8000 || value > (getGuild().getFeatures().contains("VIP_REGIONS") ? 128000 : 96000))

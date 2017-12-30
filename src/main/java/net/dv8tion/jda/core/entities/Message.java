@@ -30,6 +30,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -752,7 +753,7 @@ public interface Message extends ISnowflake, Formattable
      * @throws java.lang.IllegalStateException
      *         <ul>
      *             <li>If the message attempting to be edited was not created by the currently logged in account</li>
-     *             <li>If the message contains a MessageEmebd that is not
+     *             <li>If the message contains a MessageEmbed that is not
      *                 {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
      *         </ul>
      *
@@ -1104,7 +1105,7 @@ public interface Message extends ISnowflake, Formattable
 
         private final JDAImpl jda;
 
-        public Attachment(long id, String url, String proxyUrl, String fileName, int size, int height, int width, JDAImpl jda)
+        public Attachment(long id, @Nullable String url, @Nullable String proxyUrl, String fileName, int size, int height, int width, JDAImpl jda)
         {
             this.id = id;
             this.url = url;
@@ -1276,7 +1277,7 @@ public interface Message extends ISnowflake, Formattable
 
         /**
          * The size of the attachment in bytes.
-         * <br>Example: if {@link #getSize() getSize()} returns 1024, then the attachment is 1024 bytes, or 1KB, in size.
+         * <br>Example: if getSize() returns 1024, then the attachment is 1024 bytes, or 1KB, in size.
          *
          * @return Positive int containing the size of the Attachment.
          */

@@ -15,11 +15,6 @@
  */
 package net.dv8tion.jda.bot.sharding;
 
-import java.util.*;
-import java.util.function.Function;
-import java.util.function.IntFunction;
-import java.util.stream.Collectors;
-
 import net.dv8tion.jda.bot.entities.ApplicationInfo;
 import net.dv8tion.jda.bot.utils.cache.ShardCacheView;
 import net.dv8tion.jda.core.JDA;
@@ -31,15 +26,25 @@ import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 
+import javax.annotation.Nullable;
+import java.util.*;
+import java.util.function.Function;
+import java.util.function.IntFunction;
+import java.util.stream.Collectors;
+
 /**
  * This class acts as a manager for multiple shards.
  * It contains several methods to make your life with sharding easier.
+ * <br>The default implementation {@link net.dv8tion.jda.bot.sharding.DefaultShardManager DefaultShardManager} can
+ * be used or extended.
  *
  * <br>Custom implementations my not support all methods and throw
  * {@link java.lang.UnsupportedOperationException UnsupportedOperationExceptions} instead.
  *
  * @since  3.4
  * @author Aljoscha Grebe
+ *
+ * @see    net.dv8tion.jda.bot.sharding.DefaultShardManager DefaultShardManager
  */
 public interface ShardManager
 {
@@ -772,7 +777,7 @@ public interface ShardManager
      * @see    net.dv8tion.jda.core.entities.Game#of(String)
      * @see    net.dv8tion.jda.core.entities.Game#of(String, String)
      */
-    default void setGame(final Game game)
+    default void setGame(@Nullable final Game game)
     {
         this.setGameProvider(id -> game);
     }
@@ -836,7 +841,7 @@ public interface ShardManager
      *         the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus}
      *         to be used (OFFLINE/null {@literal ->} INVISIBLE)
      */
-    default void setStatus(final OnlineStatus status)
+    default void setStatus(@Nullable final OnlineStatus status)
     {
         this.setStatusProvider(id -> status);
     }

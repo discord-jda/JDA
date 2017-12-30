@@ -549,7 +549,11 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * {@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
      *
      * @return True, if we are able to read and send messages in this channel
+     *
+     * @deprecated
+     *         Use {@link net.dv8tion.jda.core.entities.Member#hasPermission(Channel, net.dv8tion.jda.core.Permission...) Member.hasPermission(Permission.MESSAGE_WRITE)} instead.
      */
+    @Deprecated
     boolean canTalk();
 
     /**
@@ -562,7 +566,11 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *         The Member to check
      *
      * @return True, if the specified member is able to read and send messages in this channel
+     *
+     * @deprecated
+     *         Use {@link net.dv8tion.jda.core.entities.Member#hasPermission(Channel, net.dv8tion.jda.core.Permission...) Member.hasPermission(Permission.MESSAGE_WRITE)} instead.
      */
+    @Deprecated
     boolean canTalk(Member member);
 
     @Override

@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.requests.restaction.MessageAction;
 import net.dv8tion.jda.core.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -48,13 +49,13 @@ public class MessageBuilder implements Appendable
 
     public MessageBuilder() {}
 
-    public MessageBuilder(CharSequence content)
+    public MessageBuilder(@Nullable CharSequence content)
     {
         if (content != null)
             builder.append(content);
     }
 
-    public MessageBuilder(Message message)
+    public MessageBuilder(@Nullable Message message)
     {
         if (message != null)
         {
@@ -66,7 +67,7 @@ public class MessageBuilder implements Appendable
         }
     }
 
-    public MessageBuilder(MessageBuilder builder)
+    public MessageBuilder(@Nullable MessageBuilder builder)
     {
         if (builder != null)
         {
@@ -77,13 +78,13 @@ public class MessageBuilder implements Appendable
         }
     }
 
-    public MessageBuilder(EmbedBuilder builder)
+    public MessageBuilder(@Nullable EmbedBuilder builder)
     {
         if (builder != null)
             this.embed = builder.build();
     }
 
-    public MessageBuilder(MessageEmbed embed)
+    public MessageBuilder(@Nullable MessageEmbed embed)
     {
         this.embed = embed;
     }
@@ -113,7 +114,7 @@ public class MessageBuilder implements Appendable
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
-    public MessageBuilder setEmbed(MessageEmbed embed)
+    public MessageBuilder setEmbed(@Nullable MessageEmbed embed)
     {
         this.embed = embed;
         return this;
@@ -134,7 +135,7 @@ public class MessageBuilder implements Appendable
      * @see    net.dv8tion.jda.core.entities.Message#getNonce()
      * @see    <a href="https://en.wikipedia.org/wiki/Cryptographic_nonce" target="_blank">Cryptographic Nonce - Wikipedia</a>
      */
-    public MessageBuilder setNonce(String nonce)
+    public MessageBuilder setNonce(@Nullable String nonce)
     {
         this.nonce = nonce;
         return this;
@@ -154,7 +155,7 @@ public class MessageBuilder implements Appendable
      *
      * @see    net.dv8tion.jda.core.entities.Message#getContentRaw()
      */
-    public MessageBuilder setContent(String content)
+    public MessageBuilder setContent(@Nullable String content)
     {
         if (content == null)
         {
@@ -170,14 +171,14 @@ public class MessageBuilder implements Appendable
     }
 
     @Override
-    public MessageBuilder append(CharSequence text)
+    public MessageBuilder append(@Nullable CharSequence text)
     {
         builder.append(text);
         return this;
     }
 
     @Override
-    public MessageBuilder append(CharSequence text, int start, int end)
+    public MessageBuilder append(@Nullable CharSequence text, int start, int end)
     {
         builder.append(text, start, end);
         return this;
@@ -199,7 +200,7 @@ public class MessageBuilder implements Appendable
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
-    public MessageBuilder append(Object object)
+    public MessageBuilder append(@Nullable Object object)
     {
         return append(String.valueOf(object));
     }
@@ -230,7 +231,7 @@ public class MessageBuilder implements Appendable
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
-    public MessageBuilder append(CharSequence text, Formatting... format)
+    public MessageBuilder append(@Nullable CharSequence text, Formatting... format)
     {
         boolean blockPresent = false;
         for (Formatting formatting : format)
@@ -308,7 +309,7 @@ public class MessageBuilder implements Appendable
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
-    public MessageBuilder appendFormat(String format, Object... args)
+    public MessageBuilder appendFormat(String format, @Nullable Object... args)
     {
         Checks.notEmpty(format, "Format String");
         this.append(String.format(format, args));
@@ -327,7 +328,7 @@ public class MessageBuilder implements Appendable
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
-    public MessageBuilder appendCodeBlock(CharSequence text, CharSequence language)
+    public MessageBuilder appendCodeBlock(@Nullable CharSequence text, @Nullable CharSequence language)
     {
         builder.append("```").append(language).append('\n').append(text).append("\n```");
         return this;
@@ -561,7 +562,7 @@ public class MessageBuilder implements Appendable
      *         Use {@link #stripMentions(JDA, Message.MentionType...)} instead
      */
     @Deprecated
-    public MessageBuilder stripMentions(JDA jda, MentionType... types)
+    public MessageBuilder stripMentions(JDA jda, @Nullable MentionType... types)
     {
         if (types == null) return this;
         Message.MentionType[] mentionTypes = new Message.MentionType[types.length];
@@ -570,7 +571,7 @@ public class MessageBuilder implements Appendable
         return stripMentions(jda, mentionTypes);
     }
 
-    private MessageBuilder stripMentions(JDA jda, Guild guild, Message.MentionType... types)
+    private MessageBuilder stripMentions(@Nullable JDA jda, @Nullable Guild guild, @Nullable Message.MentionType... types)
     {
         if (types == null)
             return this;
@@ -908,7 +909,7 @@ public class MessageBuilder implements Appendable
      *
      * @return the created {@link net.dv8tion.jda.core.entities.Message Messages}
      */
-    public Queue<Message> buildAll(SplitPolicy... policy)
+    public Queue<Message> buildAll(@Nullable SplitPolicy... policy)
     {
         if (this.isEmpty())
             throw new UnsupportedOperationException("Cannot build a Message with no content. (You never added any content to the message)");
@@ -930,9 +931,9 @@ public class MessageBuilder implements Appendable
         messageLoop:
         while (currentBeginIndex < builder.length() - 2001)
         {
-            for (int i = 0; i < policy.length; i++)
+            for (SplitPolicy aPolicy : policy)
             {
-                int currentEndIndex = policy[i].nextMessage(currentBeginIndex, this);
+                int currentEndIndex = aPolicy.nextMessage(currentBeginIndex, this);
                 if (currentEndIndex != -1)
                 {
                     messages.add(build(currentBeginIndex, currentEndIndex));

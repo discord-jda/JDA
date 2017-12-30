@@ -47,6 +47,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
+import javax.annotation.Nullable;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.OffsetDateTime;
@@ -411,7 +412,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         socket.sendClose(code);
     }
 
-    public void close(int code, String reason)
+    public void close(int code, @Nullable String reason)
     {
         socket.sendClose(code, reason);
     }
@@ -1212,7 +1213,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         return null;
     }
 
-    public ConnectionRequest updateAudioConnection(long guildId, VoiceChannel connectedChannel)
+    public ConnectionRequest updateAudioConnection(long guildId, @Nullable VoiceChannel connectedChannel)
     {
         try
         {
@@ -1231,7 +1232,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     }
 
 
-    public ConnectionRequest updateAudioConnection0(long guildId, VoiceChannel connectedChannel)
+    public ConnectionRequest updateAudioConnection0(long guildId, @Nullable VoiceChannel connectedChannel)
     {
         //Called by VoiceStateUpdateHandler when we receive a response from discord
         // about our request to CONNECT or DISCONNECT.

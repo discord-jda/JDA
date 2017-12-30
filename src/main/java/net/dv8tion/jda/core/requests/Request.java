@@ -24,6 +24,7 @@ import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 
+import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 public class Request<T>
@@ -40,7 +41,9 @@ public class Request<T>
 
     private boolean isCanceled = false;
 
-    public Request(RestAction<T> restAction, Consumer<T> onSuccess, Consumer<Throwable> onFailure, boolean shouldQueue, RequestBody body, Object rawBody, Route.CompiledRoute route, CaseInsensitiveMap<String, String> headers)
+    public Request(RestAction<T> restAction, Consumer<T> onSuccess, Consumer<Throwable> onFailure,
+                   boolean shouldQueue, @Nullable RequestBody body, @Nullable Object rawBody,
+                   Route.CompiledRoute route, @Nullable CaseInsensitiveMap<String, String> headers)
     {
         this.restAction = restAction;
         this.onSuccess = onSuccess;
@@ -54,7 +57,7 @@ public class Request<T>
         this.api = (JDAImpl) restAction.getJDA();
     }
 
-    public void onSuccess(T successObj)
+    public void onSuccess(@Nullable T successObj)
     {
         api.pool.execute(() ->
         {

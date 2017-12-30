@@ -31,6 +31,7 @@ import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
 import java.io.*;
 import java.util.HashMap;
 import java.util.List;
@@ -134,7 +135,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
      * @return Updated MessageAction for chaining convenience
      */
     @CheckReturnValue
-    public MessageAction apply(final Message message)
+    public MessageAction apply(@Nullable final Message message)
     {
         if (message == null || message.getType() != MessageType.DEFAULT)
             return this;
@@ -193,7 +194,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
      * @see    <a href="https://en.wikipedia.org/wiki/Cryptographic_nonce" target="_blank">Cryptographic Nonce - Wikipedia</a>
      */
     @CheckReturnValue
-    public MessageAction nonce(final String nonce)
+    public MessageAction nonce(@Nullable final String nonce)
     {
         this.nonce = nonce;
         return this;
@@ -213,7 +214,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
      * @return Updated MessageAction for chaining convenience
      */
     @CheckReturnValue
-    public MessageAction content(final String content)
+    public MessageAction content(@Nullable final String content)
     {
         if (content == null || content.isEmpty())
             this.content.setLength(0);
@@ -241,7 +242,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
      * @return Updated MessageAction for chaining convenience
      */
     @CheckReturnValue
-    public MessageAction embed(final MessageEmbed embed)
+    public MessageAction embed(@Nullable final MessageEmbed embed)
     {
         if (embed != null)
         {

@@ -37,6 +37,8 @@ import net.dv8tion.jda.core.utils.tuple.Pair;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.concurrent.*;
@@ -51,6 +53,7 @@ import java.util.function.IntFunction;
  * @since  3.4
  * @author Aljoscha Grebe
  */
+@ParametersAreNonnullByDefault
 public class DefaultShardManager implements ShardManager
 {
     public static final Logger LOG = JDALogger.getLog(ShardManager.class);
@@ -255,22 +258,23 @@ public class DefaultShardManager implements ShardManager
      * @param  idleProvider
      *         The Function that is used to set a shards idle state
      * @param  retryOnTimeout
-     *         hether the Requester should retry when a {@link java.net.SocketTimeoutException SocketTimeoutException} occurs.
+     *         Whether the Requester should retry when a {@link java.net.SocketTimeoutException SocketTimeoutException} occurs.
      * @param  useShutdownNow
      *         Whether the ShardManager should use JDA#shutdown() or not
      * @param  contextProvider
      *         The MDC context provider new JDA instances should use on startup
      */
-    protected DefaultShardManager(final int shardsTotal, final Collection<Integer> shardIds, final List<Object> listeners,
-                                  final String token, final IEventManager eventManager, final IAudioSendFactory audioSendFactory,
-                                  final IntFunction<Game> gameProvider, final IntFunction<OnlineStatus> statusProvider,
-                                  final OkHttpClient.Builder httpClientBuilder, final WebSocketFactory wsFactory,
-                                  final ThreadFactory threadFactory, final ShardedRateLimiter shardedRateLimiter,
+    protected DefaultShardManager(final int shardsTotal, final List<Object> listeners, final String token,
+                                  @Nullable final Collection<Integer> shardIds, @Nullable final IEventManager eventManager,
+                                  @Nullable final IAudioSendFactory audioSendFactory,
+                                  @Nullable final IntFunction<Game> gameProvider, @Nullable final IntFunction<OnlineStatus> statusProvider,
+                                  @Nullable final OkHttpClient.Builder httpClientBuilder, @Nullable final WebSocketFactory wsFactory,
+                                  @Nullable final ThreadFactory threadFactory, @Nullable final ShardedRateLimiter shardedRateLimiter,
                                   final int maxReconnectDelay, final int corePoolSize, final boolean enableVoice,
                                   final boolean enableShutdownHook, final boolean enableBulkDeleteSplitting,
-                                  final boolean autoReconnect, final IntFunction<Boolean> idleProvider,
+                                  final boolean autoReconnect, @Nullable final IntFunction<Boolean> idleProvider,
                                   final boolean retryOnTimeout, final boolean useShutdownNow,
-                                  final boolean enableMDC, final IntFunction<ConcurrentMap<String, String>> contextProvider)
+                                  final boolean enableMDC, @Nullable final IntFunction<ConcurrentMap<String, String>> contextProvider)
     {
         this.shardsTotal = shardsTotal;
         this.listeners = listeners;
@@ -614,7 +618,7 @@ public class DefaultShardManager implements ShardManager
      *
      * @return A new ScheduledExecutorService
      */
-    protected ScheduledExecutorService createExecutor(ThreadFactory threadFactory)
+    protected ScheduledExecutorService createExecutor(@Nullable ThreadFactory threadFactory)
     {
         ThreadFactory factory = threadFactory == null
             ? DEFAULT_THREAD_FACTORY
@@ -644,7 +648,7 @@ public class DefaultShardManager implements ShardManager
         private final Consumer<JDA> appender;
         private final Consumer<JDA> remover;
 
-        public ForwardingSessionReconnectQueue(Consumer<JDA> appender, Consumer<JDA> remover)
+        public ForwardingSessionReconnectQueue(@Nullable Consumer<JDA> appender, @Nullable Consumer<JDA> remover)
         {
             super(null);
 

@@ -28,8 +28,11 @@ import net.dv8tion.jda.core.requests.Route;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 
+@ParametersAreNonnullByDefault
 public class ApplicationImpl implements Application
 {
 
@@ -99,7 +102,7 @@ public class ApplicationImpl implements Application
     }
 
     @Override
-    public boolean equals(final Object obj)
+    public boolean equals(@Nullable final Object obj)
     {
         return obj instanceof ApplicationImpl && this.id == ((ApplicationImpl) obj).id;
     }

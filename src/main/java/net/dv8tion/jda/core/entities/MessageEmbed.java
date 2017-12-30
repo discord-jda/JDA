@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.utils.Helpers;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.annotation.Nullable;
 import java.awt.Color;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -111,9 +112,9 @@ public class MessageEmbed
     protected volatile JSONObject json = null;
 
     protected MessageEmbed(
-        String url, String title, String description, EmbedType type, OffsetDateTime timestamp,
-        Color color, Thumbnail thumbnail, Provider siteProvider, AuthorInfo author,
-        VideoInfo videoInfo, Footer footer, ImageInfo image, List<Field> fields)
+        @Nullable String url, @Nullable String title, @Nullable String description, EmbedType type, @Nullable OffsetDateTime timestamp,
+        @Nullable Color color, @Nullable Thumbnail thumbnail, @Nullable Provider siteProvider, @Nullable AuthorInfo author,
+        @Nullable VideoInfo videoInfo, @Nullable Footer footer, @Nullable ImageInfo image, @Nullable List<Field> fields)
     {
         this.url = url;
         this.title = title;
@@ -370,7 +371,7 @@ public class MessageEmbed
     }
 
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(@Nullable Object obj)
     {
         if (!(obj instanceof MessageEmbed))
             return false;
@@ -480,7 +481,7 @@ public class MessageEmbed
         protected final int width;
         protected final int height;
 
-        public Thumbnail(String url, String proxyUrl, int width, int height)
+        public Thumbnail(@Nullable String url, @Nullable String proxyUrl, int width, int height)
         {
             this.url = url;
             this.proxyUrl = proxyUrl;
@@ -530,7 +531,7 @@ public class MessageEmbed
         }
 
         @Override
-        public boolean equals(Object obj)
+        public boolean equals(@Nullable Object obj)
         {
             if (!(obj instanceof Thumbnail))
                 return false;
@@ -551,7 +552,7 @@ public class MessageEmbed
         protected final String name;
         protected final String url;
 
-        public Provider(String name, String url)
+        public Provider(@Nullable String name, @Nullable String url)
         {
             this.name = name;
             this.url = url;
@@ -580,7 +581,7 @@ public class MessageEmbed
         }
 
         @Override
-        public boolean equals(Object obj)
+        public boolean equals(@Nullable Object obj)
         {
             if (!(obj instanceof Provider))
                 return false;
@@ -601,7 +602,7 @@ public class MessageEmbed
         protected final int width;
         protected final int height;
 
-        public VideoInfo(String url, int width, int height)
+        public VideoInfo(@Nullable String url, int width, int height)
         {
             this.url = url;
             this.width = width;
@@ -646,7 +647,7 @@ public class MessageEmbed
         }
 
         @Override
-        public boolean equals(Object obj)
+        public boolean equals(@Nullable Object obj)
         {
             if (!(obj instanceof VideoInfo))
                 return false;
@@ -667,7 +668,7 @@ public class MessageEmbed
         protected final int width;
         protected final int height;
 
-        public ImageInfo(String url, String proxyUrl, int width, int height)
+        public ImageInfo(@Nullable String url, @Nullable String proxyUrl, int width, int height)
         {
             this.url = url;
             this.proxyUrl = proxyUrl;
@@ -740,7 +741,7 @@ public class MessageEmbed
         protected final String iconUrl;
         protected final String proxyIconUrl;
 
-        public AuthorInfo(String name, String url, String iconUrl, String proxyIconUrl)
+        public AuthorInfo(@Nullable String name, @Nullable String url, @Nullable String iconUrl, @Nullable String proxyIconUrl)
         {
             this.name = name;
             this.url = url;
@@ -791,7 +792,7 @@ public class MessageEmbed
         }
 
         @Override
-        public boolean equals(Object obj)
+        public boolean equals(@Nullable Object obj)
         {
             if (!(obj instanceof AuthorInfo))
                 return false;
@@ -812,7 +813,7 @@ public class MessageEmbed
         protected final String iconUrl;
         protected final String proxyIconUrl;
 
-        public Footer(String text, String iconUrl, String proxyIconUrl)
+        public Footer(@Nullable String text, @Nullable String iconUrl, @Nullable String proxyIconUrl)
         {
             this.text = text;
             this.iconUrl = iconUrl;
@@ -851,7 +852,7 @@ public class MessageEmbed
         }
 
         @Override
-        public boolean equals(Object obj)
+        public boolean equals(@Nullable Object obj)
         {
             if (!(obj instanceof Footer))
                 return false;
@@ -877,7 +878,7 @@ public class MessageEmbed
         protected final String value;
         protected final boolean inline;
 
-        protected Field(String name, String value, boolean inline, boolean checked)
+        protected Field(@Nullable String name, @Nullable String value, boolean inline, boolean checked)
         {
             if (checked)
             {
@@ -905,7 +906,7 @@ public class MessageEmbed
             }
         }
         
-        public Field(String name, String value, boolean inline)
+        public Field(@Nullable String name, @Nullable String value, boolean inline)
         {
             this(name, value, inline, true);
         }
@@ -941,7 +942,7 @@ public class MessageEmbed
         }
 
         @Override
-        public boolean equals(Object obj)
+        public boolean equals(@Nullable Object obj)
         {
             if (!(obj instanceof Field))
                 return false;

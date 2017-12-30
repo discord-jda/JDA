@@ -30,6 +30,7 @@ import net.dv8tion.jda.core.utils.MiscUtil;
 import org.json.JSONArray;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
 import java.io.*;
 import java.util.*;
 
@@ -599,7 +600,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         <br>The {@link net.dv8tion.jda.core.entities.Message Message} created from this upload.
      */
     @CheckReturnValue
-    default MessageAction sendFile(File file, Message message)
+    default MessageAction sendFile(File file, @Nullable Message message)
     {
         Checks.notNull(file, "file");
 
@@ -694,7 +695,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         <br>The {@link net.dv8tion.jda.core.entities.Message Message} created from this upload.
      */
     @CheckReturnValue
-    default MessageAction sendFile(File file, String fileName, Message message)
+    default MessageAction sendFile(File file, String fileName, @Nullable Message message)
     {
         Checks.notNull(file, "file");
         Checks.check(file.exists() && file.canRead(),
@@ -763,7 +764,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         <br>The {@link net.dv8tion.jda.core.entities.Message Message} created from this upload.
      */
     @CheckReturnValue
-    default MessageAction sendFile(InputStream data, String fileName, Message message)
+    default MessageAction sendFile(InputStream data, String fileName, @Nullable Message message)
     {
         Checks.notNull(data, "data InputStream");
         Checks.notNull(fileName, "fileName");
@@ -827,7 +828,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         <br>The {@link net.dv8tion.jda.core.entities.Message Message} created from this upload.
      */
     @CheckReturnValue
-    default MessageAction sendFile(byte[] data, String fileName, Message message)
+    default MessageAction sendFile(byte[] data, String fileName, @Nullable Message message)
     {
         Checks.notNull(data, "data");
         Checks.notNull(fileName, "fileName");

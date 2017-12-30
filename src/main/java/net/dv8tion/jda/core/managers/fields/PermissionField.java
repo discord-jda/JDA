@@ -22,6 +22,8 @@ import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.RoleManagerUpdatable;
 import net.dv8tion.jda.core.utils.Checks;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Supplier;
 
@@ -44,7 +46,7 @@ public class PermissionField extends RoleField<Long>
     Set<Permission> permsGiven = new HashSet<>();
     Set<Permission> permsRevoked = new HashSet<>();
 
-    public PermissionField(RoleManagerUpdatable manager, Supplier<Long> originalValue)
+    public PermissionField(RoleManagerUpdatable manager, @Nullable Supplier<Long> originalValue)
     {
         super(manager, originalValue);
     }
@@ -65,7 +67,7 @@ public class PermissionField extends RoleField<Long>
      * @see    #isSet()
      */
     @Override
-    public RoleManagerUpdatable setValue(Long value)
+    public RoleManagerUpdatable setValue(@Nullable Long value)
     {
         checkValue(value);
 
@@ -128,7 +130,7 @@ public class PermissionField extends RoleField<Long>
     }
 
     @Override
-    public void checkValue(Long value)
+    public void checkValue(@CheckForNull Long value)
     {
         Checks.notNull(value, "permission value");
         Permission.getPermissions(value).forEach(p ->

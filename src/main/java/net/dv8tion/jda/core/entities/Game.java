@@ -17,6 +17,7 @@ package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.utils.Checks;
 
+import javax.annotation.Nullable;
 import java.util.Objects;
 
 /**
@@ -37,12 +38,12 @@ public class Game
         this(name, null, GameType.DEFAULT);
     }
 
-    protected Game(String name, String url)
+    protected Game(String name, @Nullable String url)
     {
         this(name, url, GameType.STREAMING);
     }
 
-    protected Game(String name, String url, GameType type)
+    protected Game(String name, @Nullable String url, GameType type)
     {
         this.name = name;
         this.url = url;
@@ -103,7 +104,7 @@ public class Game
     }
 
     @Override
-    public boolean equals(Object o)
+    public boolean equals(@Nullable Object o)
     {
         if (!(o instanceof Game))
             return false;
@@ -189,7 +190,7 @@ public class Game
      *
      * @see    #isValidStreamingUrl(String)
      */
-    public static Game streaming(String name, String url)
+    public static Game streaming(String name, @Nullable String url)
     {
         Checks.notEmpty(name, "Provided game name");
         GameType type;
@@ -221,7 +222,7 @@ public class Game
      *         Use {@link #streaming(String, String)} instead!
      */
     @Deprecated
-    public static Game of(String name, String url)
+    public static Game of(String name, @Nullable String url)
     {
         return streaming(name, url);
     }
@@ -299,7 +300,7 @@ public class Game
      *
      * @see    #isValidStreamingUrl(String)
      */
-    public static Game of(GameType type, String name, String url)
+    public static Game of(GameType type, String name, @Nullable String url)
     {
         Checks.notNull(type, "Type");
         switch (type)
@@ -325,7 +326,7 @@ public class Game
      *
      * @return True if the provided url is valid for triggering Discord's streaming status
      */
-    public static boolean isValidStreamingUrl(String url)
+    public static boolean isValidStreamingUrl(@Nullable String url)
     {
         return url != null && url.matches("https?://(www\\.)?twitch\\.tv/.+");
     }

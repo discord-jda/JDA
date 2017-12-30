@@ -18,6 +18,8 @@ package net.dv8tion.jda.core.audio.hooks;
 
 import net.dv8tion.jda.core.entities.User;
 
+import javax.annotation.Nullable;
+
 public class ListenerProxy implements ConnectionListener
 {
     private final Object listenerLock = new Object();
@@ -80,7 +82,7 @@ public class ListenerProxy implements ConnectionListener
         }
     }
 
-    public void setListener(ConnectionListener listener)
+    public void setListener(@Nullable ConnectionListener listener)
     {
         synchronized (listenerLock)
         {

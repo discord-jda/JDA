@@ -18,6 +18,8 @@ package net.dv8tion.jda.bot.utils.cache;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 
+import javax.annotation.Nonnull;
+
 /**
  * Read-only view on internal ShardManager cache of JDA instances.
  * <br>This can be useful to check information such as size without creating
@@ -48,7 +50,7 @@ public interface ShardCacheView extends CacheView<JDA>
      *
      * @return Possibly-null entity for the specified shard ID
      */
-    default JDA getElementById(String id)
+    default JDA getElementById(@Nonnull String id)
     {
         return getElementById(Integer.parseUnsignedInt(id));
     }

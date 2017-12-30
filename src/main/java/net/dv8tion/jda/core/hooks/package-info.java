@@ -30,4 +30,7 @@
  *
  * <p><b>Note: All of the standard EventManager implementations are synchronized</b>
  */
+@ParametersAreNonnullByDefault
 package net.dv8tion.jda.core.hooks;
+
+import javax.annotation.ParametersAreNonnullByDefault;

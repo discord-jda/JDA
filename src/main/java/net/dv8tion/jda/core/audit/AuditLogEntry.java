@@ -23,6 +23,8 @@ import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.UserImpl;
 import net.dv8tion.jda.core.utils.Checks;
+
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -47,8 +49,8 @@ public class AuditLogEntry implements ISnowflake
     protected final Map<String, Object> options;
     protected final ActionType type;
 
-    public AuditLogEntry(ActionType type, long id, long targetId, GuildImpl guild, UserImpl user, String reason,
-                         Map<String, AuditLogChange> changes, Map<String, Object> options)
+    public AuditLogEntry(ActionType type, long id, long targetId, GuildImpl guild, UserImpl user, @Nullable String reason,
+                         @Nullable Map<String, AuditLogChange> changes, @Nullable Map<String, Object> options)
     {
         this.type = type;
         this.id = id;
@@ -157,7 +159,7 @@ public class AuditLogEntry implements ISnowflake
      *
      * @return Possibly-null value corresponding to the specified key
      */
-    public AuditLogChange getChangeByKey(final AuditLogKey key)
+    public AuditLogChange getChangeByKey(@Nullable final AuditLogKey key)
     {
         return key == null ? null : getChangeByKey(key.getKey());
     }
@@ -315,7 +317,7 @@ public class AuditLogEntry implements ISnowflake
     }
 
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(@Nullable Object obj)
     {
         if (!(obj instanceof AuditLogEntry))
             return false;

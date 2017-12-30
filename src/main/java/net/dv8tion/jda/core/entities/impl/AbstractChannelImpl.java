@@ -34,6 +34,7 @@ import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.json.JSONArray;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -94,13 +95,15 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     @Override
     public PermissionOverride getPermissionOverride(Member member)
     {
-        return member != null ? overrides.get(member.getUser().getIdLong()) : null;
+        Checks.notNull(member, "Member");
+        return overrides.get(member.getUser().getIdLong());
     }
 
     @Override
     public PermissionOverride getPermissionOverride(Role role)
     {
-        return role != null ? overrides.get(role.getIdLong()) : null;
+        Checks.notNull(role, "Role");
+        return overrides.get(role.getIdLong());
     }
 
     @Override
@@ -259,7 +262,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     }
 
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(@Nullable Object obj)
     {
         if (!(obj instanceof Channel))
             return false;
@@ -296,7 +299,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     }
 
     protected void checkPermission(Permission permission) {checkPermission(permission, null);}
-    protected void checkPermission(Permission permission, String message)
+    protected void checkPermission(Permission permission, @Nullable String message)
     {
         if (!guild.getSelfMember().hasPermission(this, permission))
         {

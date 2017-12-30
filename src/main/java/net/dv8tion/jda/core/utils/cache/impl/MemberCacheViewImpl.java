@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.cache.MemberCacheView;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -62,7 +63,7 @@ public class MemberCacheViewImpl extends AbstractCacheView<Member> implements Me
     }
 
     @Override
-    public List<Member> getElementsByNickname(String name, boolean ignoreCase)
+    public List<Member> getElementsByNickname(@Nullable String name, boolean ignoreCase)
     {
         List<Member> members = new LinkedList<>();
         for (Member member : elements.valueCollection())

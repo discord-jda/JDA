@@ -42,6 +42,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
+import javax.annotation.Nullable;
 import java.awt.Color;
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -105,7 +106,7 @@ public class EntityBuilder
         return new Game(name, url, type);
     }
 
-    public void createGuildFirstPass(JSONObject guild, Consumer<Guild> secondPassCallback)
+    public void createGuildFirstPass(JSONObject guild, @Nullable Consumer<Guild> secondPassCallback)
     {
         final long id = guild.getLong("id");
         GuildImpl guildObj = ((GuildImpl) api.getGuildMap().get(id));
@@ -1076,9 +1077,9 @@ public class EntityBuilder
                 color, thumbnail, provider, author, video, footer, image, fields);
     }
 
-    public static MessageEmbed createMessageEmbed(String url, String title, String description, EmbedType type, OffsetDateTime timestamp,
-                                           Color color, Thumbnail thumbnail, Provider siteProvider, AuthorInfo author,
-                                           VideoInfo videoInfo, Footer footer, ImageInfo image, List<Field> fields)
+    public static MessageEmbed createMessageEmbed(@Nullable String url, @Nullable String title, @Nullable String description, EmbedType type, @Nullable OffsetDateTime timestamp,
+                                                  @Nullable Color color, @Nullable Thumbnail thumbnail, @Nullable Provider siteProvider, @Nullable AuthorInfo author,
+                                                  @Nullable VideoInfo videoInfo, @Nullable Footer footer, @Nullable ImageInfo image, @Nullable List<Field> fields)
     {
         return new MessageEmbed(url, title, description, type, timestamp,
             color, thumbnail, siteProvider, author, videoInfo, footer, image, fields);

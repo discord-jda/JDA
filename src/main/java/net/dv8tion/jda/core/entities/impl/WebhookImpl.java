@@ -27,15 +27,15 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.webhook.WebhookClientBuilder;
 
+import javax.annotation.Nullable;
+
 /**
  * The implementation for {@link net.dv8tion.jda.core.entities.Webhook Webhook}
  *
  * @since  3.0
- * @author Florian Spieß
  */
 public class WebhookImpl implements Webhook
 {
-
     protected volatile WebhookManagerUpdatable managerUpdatable = null;
     protected volatile WebhookManager manager = null;
 
@@ -46,7 +46,6 @@ public class WebhookImpl implements Webhook
     private Member owner;
     private User user;
     private String token;
-
 
     public WebhookImpl(TextChannel channel, long id)
     {
@@ -192,7 +191,7 @@ public class WebhookImpl implements Webhook
     }
 
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(@Nullable Object obj)
     {
         return obj instanceof WebhookImpl
                 && ((WebhookImpl) obj).id == this.id;

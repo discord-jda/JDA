@@ -21,7 +21,6 @@ import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import okhttp3.OkHttpClient;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -77,7 +76,7 @@ public class WebhookClientBuilder
      *         If the provided URL is {@code null}
      *         or is incorrectly formatted
      */
-    public WebhookClientBuilder(@Nonnull String url)
+    public WebhookClientBuilder(String url)
     {
         Matcher matcher = WEBHOOK_PATTERN.matcher(url);
         if (!matcher.matches())
@@ -98,7 +97,7 @@ public class WebhookClientBuilder
      * @throws java.lang.NullPointerException
      *         If the provided {@link net.dv8tion.jda.core.entities.Webhook Webhook} is {@code null}
      */
-    public WebhookClientBuilder(@Nonnull Webhook webhook)
+    public WebhookClientBuilder(Webhook webhook)
     {
         this(webhook.getIdLong(), webhook.getToken());
     }

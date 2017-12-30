@@ -33,6 +33,7 @@ import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.CheckReturnValue;
 
 /**
@@ -484,7 +485,7 @@ public class GuildManagerUpdatable
         this.name = new GuildField<String>(this, guild::getName)
         {
             @Override
-            public void checkValue(String value)
+            public void checkValue(@CheckForNull String value)
             {
                 Checks.notNull(value, "guild name");
                 if (value.length() < 2 || value.length() > 100)
@@ -495,7 +496,7 @@ public class GuildManagerUpdatable
         this.timeout = new GuildField<Guild.Timeout>(this, guild::getAfkTimeout)
         {
             @Override
-            public void checkValue(Guild.Timeout value)
+            public void checkValue(@CheckForNull Guild.Timeout value)
             {
                 Checks.notNull(value, "Timeout");
             }
@@ -504,7 +505,7 @@ public class GuildManagerUpdatable
         this.icon = new GuildField<Icon>(this, null)
         {
             @Override
-            public void checkValue(Icon value) { }
+            public void checkValue(@CheckForNull Icon value) { }
 
             @Override
             public Icon getOriginalValue()
@@ -522,7 +523,7 @@ public class GuildManagerUpdatable
         this.splash = new GuildField<Icon>(this, null)
         {
             @Override
-            public void checkValue(Icon value) { }
+            public void checkValue(@CheckForNull Icon value) { }
 
             @Override
             public Icon getOriginalValue()
@@ -540,7 +541,7 @@ public class GuildManagerUpdatable
         this.region = new GuildField<Region>(this, guild::getRegion)
         {
             @Override
-            public void checkValue(Region value)
+            public void checkValue(@CheckForNull Region value)
             {
                 Checks.notNull(value, "Region");
                 if (value == Region.UNKNOWN)
@@ -553,7 +554,7 @@ public class GuildManagerUpdatable
         this.afkChannel = new GuildField<VoiceChannel>(this, guild::getAfkChannel)
         {
             @Override
-            public void checkValue(VoiceChannel value)
+            public void checkValue(@CheckForNull VoiceChannel value)
             {
                 if (value != null && !guild.equals(value.getGuild()))
                     throw new IllegalArgumentException("Provided AFK Channel is not from this Guild!");
@@ -563,7 +564,7 @@ public class GuildManagerUpdatable
         this.systemChannel = new GuildField<TextChannel>(this, guild::getSystemChannel)
         {
             @Override
-            public void checkValue(TextChannel value)
+            public void checkValue(@CheckForNull TextChannel value)
             {
                 if (value != null && !guild.equals(value.getGuild()))
                     throw new IllegalArgumentException("Provided system channel is not from this Guild!");
@@ -573,7 +574,7 @@ public class GuildManagerUpdatable
         this.verificationLevel = new GuildField<Guild.VerificationLevel>(this, guild::getVerificationLevel)
         {
             @Override
-            public void checkValue(Guild.VerificationLevel value)
+            public void checkValue(@CheckForNull Guild.VerificationLevel value)
             {
                 Checks.notNull(value, "VerificationLevel");
                 if (value == Guild.VerificationLevel.UNKNOWN)
@@ -584,7 +585,7 @@ public class GuildManagerUpdatable
         this.defaultNotificationLevel = new GuildField<Guild.NotificationLevel>(this, guild::getDefaultNotificationLevel)
         {
             @Override
-            public void checkValue(Guild.NotificationLevel value)
+            public void checkValue(@CheckForNull Guild.NotificationLevel value)
             {
                 Checks.notNull(value, "NotificationLevel");
                 if (value == Guild.NotificationLevel.UNKNOWN)
@@ -595,7 +596,7 @@ public class GuildManagerUpdatable
         this.mfaLevel = new GuildField<Guild.MFALevel>(this, guild::getRequiredMFALevel)
         {
             @Override
-            public void checkValue(Guild.MFALevel value)
+            public void checkValue(@CheckForNull Guild.MFALevel value)
             {
                 Checks.notNull(value, "MFALevel");
                 if (value == Guild.MFALevel.UNKNOWN)
@@ -606,7 +607,7 @@ public class GuildManagerUpdatable
         this.explicitContentLevel = new GuildField<Guild.ExplicitContentLevel>(this, guild::getExplicitContentLevel)
         {
             @Override
-            public void checkValue(Guild.ExplicitContentLevel value)
+            public void checkValue(@CheckForNull Guild.ExplicitContentLevel value)
             {
                 Checks.notNull(value, "ExplicitContentLevel");
                 Checks.check(value != Guild.ExplicitContentLevel.UNKNOWN,

@@ -29,7 +29,9 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
 import java.util.regex.Pattern;
 
 /**
@@ -224,7 +226,7 @@ public class AccountManagerUpdatable
      *         have been modified. ({@link net.dv8tion.jda.core.requests.RestAction.EmptyRestAction EmptyRestAction})
      */
     @CheckReturnValue
-    public RestAction<Void> update(String currentPassword)
+    public RestAction<Void> update(@Nullable String currentPassword)
     {
         if (isType(AccountType.CLIENT) && (currentPassword == null || currentPassword.isEmpty()))
             throw new IllegalArgumentException("Provided client account password to be used in auth is null or empty!");
@@ -312,7 +314,7 @@ public class AccountManagerUpdatable
         name = new AccountField<String>(this, selfUser::getName)
         {
             @Override
-            public void checkValue(String value)
+            public void checkValue(@CheckForNull String value)
             {
                 Checks.notNull(value, "account name");
                 if (value.length() < 2 || value.length() > 32)
@@ -323,7 +325,7 @@ public class AccountManagerUpdatable
         avatar = new AccountField<Icon>(this, null)
         {
             @Override
-            public void checkValue(Icon value) { }
+            public void checkValue(@CheckForNull Icon value) { }
 
             @Override
             public Icon getOriginalValue()
@@ -343,7 +345,7 @@ public class AccountManagerUpdatable
             email = new AccountField<String>(this, selfUser::getEmail)
             {
                 @Override
-                public void checkValue(String value)
+                public void checkValue(@CheckForNull String value)
                 {
                     Checks.notNull(value, "account email");
                     if (!EMAIL_PATTERN.matcher(value).find())
@@ -354,7 +356,7 @@ public class AccountManagerUpdatable
             password = new AccountField<String>(this, null)
             {
                 @Override
-                public void checkValue(String value)
+                public void checkValue(@CheckForNull String value)
                 {
                     Checks.notNull(value, "account password");
                     if (value.length() < 6 || value.length() > 128)

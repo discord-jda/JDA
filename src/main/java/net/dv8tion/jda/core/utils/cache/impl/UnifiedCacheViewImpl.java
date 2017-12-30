@@ -21,10 +21,11 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.core.utils.cache.MemberCacheView;
-import net.dv8tion.jda.core.utils.cache.UnifiedMemberCacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.core.utils.cache.UnifiedMemberCacheView;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -142,7 +143,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
         }
 
         @Override
-        public List<Member> getElementsByNickname(String name, boolean ignoreCase)
+        public List<Member> getElementsByNickname(@Nullable String name, boolean ignoreCase)
         {
             return Collections.unmodifiableList(generator.get()
                 .distinct()

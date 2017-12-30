@@ -28,4 +28,7 @@
  *
  * <p>All managers require a RestAction executions.
  */
+@ParametersAreNonnullByDefault
 package net.dv8tion.jda.core.managers;
+
+import javax.annotation.ParametersAreNonnullByDefault;

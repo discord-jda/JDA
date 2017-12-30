@@ -33,6 +33,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -99,7 +100,7 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
      *
      * @return The current AuditLogPaginationAction for chaining convenience
      */
-    public AuditLogPaginationAction type(ActionType type)
+    public AuditLogPaginationAction type(@Nullable ActionType type)
     {
         this.type = type;
         return this;
@@ -115,7 +116,7 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
      *
      * @return The current AuditLogPaginationAction for chaining convenience
      */
-    public AuditLogPaginationAction user(User user)
+    public AuditLogPaginationAction user(@Nullable User user)
     {
         return user(user == null ? null : user.getId());
     }
@@ -130,7 +131,7 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
      *
      * @return The current AuditLogPaginationAction for chaining convenience
      */
-    public AuditLogPaginationAction user(String userId)
+    public AuditLogPaginationAction user(@Nullable String userId)
     {
         this.userId = userId;
         return this;

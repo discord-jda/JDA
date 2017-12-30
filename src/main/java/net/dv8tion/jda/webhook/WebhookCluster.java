@@ -25,7 +25,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.InputStream;
@@ -105,7 +104,7 @@ public class WebhookCluster implements AutoCloseable
      * @throws java.lang.IllegalArgumentException
      *         If any of the provided clients is {@code null} or closed
      */
-    public WebhookCluster(@Nonnull Collection<? extends WebhookClient> initialClients)
+    public WebhookCluster(Collection<? extends WebhookClient> initialClients)
     {
         webhooks = new ArrayList<>(initialClients.size());
         for (WebhookClient client : initialClients)

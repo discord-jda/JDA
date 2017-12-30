@@ -28,6 +28,7 @@ import net.dv8tion.jda.core.requests.SessionReconnectQueue;
 import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.OkHttpClient;
 
+import javax.annotation.Nullable;
 import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
@@ -106,7 +107,7 @@ public class JDABuilder
      * @see    <a href="https://www.slf4j.org/api/org/slf4j/MDC.html" target="_blank">MDC Javadoc</a>
      * @see    #setContextEnabled(boolean)
      */
-    public JDABuilder setContextMap(ConcurrentMap<String, String> map)
+    public JDABuilder setContextMap(@Nullable ConcurrentMap<String, String> map)
     {
         this.contextMap = map;
         if (map != null)
@@ -144,7 +145,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    public JDABuilder setReconnectQueue(SessionReconnectQueue queue)
+    public JDABuilder setReconnectQueue(@Nullable SessionReconnectQueue queue)
     {
         this.reconnectQueue = queue;
         return this;
@@ -171,7 +172,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    public JDABuilder setShardedRateLimiter(ShardedRateLimiter rateLimiter)
+    public JDABuilder setShardedRateLimiter(@Nullable ShardedRateLimiter rateLimiter)
     {
         if (accountType != AccountType.BOT)
             this.shardRateLimiter = null;
@@ -229,7 +230,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    public JDABuilder setToken(String token)
+    public JDABuilder setToken(@Nullable String token)
     {
         //Share ratelimit for the same token
         // when this builder is used to build different accounts this makes sure we don't use the
@@ -249,7 +250,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    public JDABuilder setHttpClientBuilder(OkHttpClient.Builder builder)
+    public JDABuilder setHttpClientBuilder(@Nullable OkHttpClient.Builder builder)
     {
         this.httpClientBuilder = builder;
         return this;
@@ -264,7 +265,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    public JDABuilder setWebsocketFactory(WebSocketFactory factory)
+    public JDABuilder setWebsocketFactory(@Nullable WebSocketFactory factory)
     {
         this.wsFactory = factory;
         return this;
@@ -378,7 +379,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    public JDABuilder setEventManager(IEventManager manager)
+    public JDABuilder setEventManager(@Nullable IEventManager manager)
     {
         this.eventManager = manager;
         return this;
@@ -395,7 +396,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    public JDABuilder setAudioSendFactory(IAudioSendFactory factory)
+    public JDABuilder setAudioSendFactory(@Nullable IAudioSendFactory factory)
     {
         this.audioSendFactory = factory;
         return this;
@@ -432,7 +433,7 @@ public class JDABuilder
      *
      * @see    net.dv8tion.jda.core.managers.Presence#setGame(Game)  Presence.setGame(Game)
      */
-    public JDABuilder setGame(Game game)
+    public JDABuilder setGame(@Nullable Game game)
     {
         this.game = game;
         return this;
@@ -455,7 +456,7 @@ public class JDABuilder
      *
      * @see    net.dv8tion.jda.core.managers.Presence#setStatus(OnlineStatus) Presence.setStatus(OnlineStatus)
      */
-    public JDABuilder setStatus(OnlineStatus status)
+    public JDABuilder setStatus(@Nullable OnlineStatus status)
     {
         if (status == null || status == OnlineStatus.UNKNOWN)
             throw new IllegalArgumentException("OnlineStatus cannot be null or unknown!");
@@ -482,7 +483,7 @@ public class JDABuilder
      *
      * @see    net.dv8tion.jda.core.JDA#addEventListener(Object...) JDA.addEventListener(Object...)
      */
-    public JDABuilder addEventListener(Object... listeners)
+    public JDABuilder addEventListener(@Nullable Object... listeners)
     {
         Checks.noneNull(listeners, "listeners");
 
@@ -503,7 +504,7 @@ public class JDABuilder
      *
      * @see    net.dv8tion.jda.core.JDA#removeEventListener(Object...) JDA.removeEventListener(Object...)
      */
-    public JDABuilder removeEventListener(Object... listeners)
+    public JDABuilder removeEventListener(@Nullable Object... listeners)
     {
         Checks.noneNull(listeners, "listeners");
 

@@ -30,9 +30,10 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.RoleAction;
-import net.dv8tion.jda.core.utils.PermissionUtil;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.PermissionUtil;
 
+import javax.annotation.Nullable;
 import java.awt.Color;
 import java.time.OffsetDateTime;
 import java.util.Collection;
@@ -275,7 +276,7 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public boolean equals(Object o)
+    public boolean equals(@Nullable Object o)
     {
         if (!(o instanceof Role))
             return false;
@@ -324,7 +325,7 @@ public class RoleImpl implements Role
         return this;
     }
 
-    public RoleImpl setColor(Color color)
+    public RoleImpl setColor(@Nullable Color color)
     {
         this.color = color;
         return this;

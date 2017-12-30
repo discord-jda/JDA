@@ -23,7 +23,6 @@ import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.client.entities.Relationship;
 import net.dv8tion.jda.client.entities.RelationshipType;
-import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.entities.Guild;

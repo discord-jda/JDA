@@ -27,6 +27,7 @@ import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
 
 /**
  * {@link net.dv8tion.jda.core.entities.Webhook Webhook} Builder system created as an extension of {@link net.dv8tion.jda.core.requests.RestAction}
@@ -74,7 +75,7 @@ public class WebhookAction extends AuditableRestAction<Webhook>
      * @return The current WebhookAction for chaining convenience.
      */
     @CheckReturnValue
-    public WebhookAction setAvatar(Icon icon)
+    public WebhookAction setAvatar(@Nullable Icon icon)
     {
         this.avatar = icon;
         return this;

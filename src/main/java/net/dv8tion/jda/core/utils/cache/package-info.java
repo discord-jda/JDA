@@ -18,4 +18,7 @@
  * Implementations of {@link net.dv8tion.jda.core.utils.cache.CacheView CacheView}
  * allowing read-only access to internal JDA cache.
  */
+@ParametersAreNonnullByDefault
 package net.dv8tion.jda.core.utils.cache;
+
+import javax.annotation.ParametersAreNonnullByDefault;

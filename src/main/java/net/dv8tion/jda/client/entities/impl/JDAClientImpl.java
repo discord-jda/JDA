@@ -38,11 +38,13 @@ import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.core.utils.cache.impl.SnowflakeCacheViewImpl;
 import org.json.JSONArray;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@ParametersAreNonnullByDefault
 public class JDAClientImpl implements JDAClient
 {
     protected final JDAImpl api;

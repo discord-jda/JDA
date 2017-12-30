@@ -24,6 +24,7 @@ import net.dv8tion.jda.core.entities.Webhook;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
 
 /**
  * Facade for a {@link net.dv8tion.jda.core.managers.WebhookManagerUpdatable WebhookManagerUpdatable} instance.
@@ -135,7 +136,7 @@ public class WebhookManager
      * @see    net.dv8tion.jda.core.managers.WebhookManagerUpdatable#update()
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setAvatar(Icon icon)
+    public AuditableRestAction<Void> setAvatar(@Nullable Icon icon)
     {
         return manager.getAvatarField().setValue(icon).update();
     }

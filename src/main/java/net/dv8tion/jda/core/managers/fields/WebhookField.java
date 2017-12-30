@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.managers.fields;
 
 import net.dv8tion.jda.core.managers.WebhookManagerUpdatable;
 
+import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 /**
@@ -35,7 +36,7 @@ import java.util.function.Supplier;
  */
 public abstract class WebhookField<T> extends Field<T, WebhookManagerUpdatable>
 {
-    public WebhookField(WebhookManagerUpdatable manager, Supplier<T> originalValue)
+    public WebhookField(WebhookManagerUpdatable manager, @Nullable Supplier<T> originalValue)
     {
         super(manager, originalValue);
     }

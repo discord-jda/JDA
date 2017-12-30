@@ -25,6 +25,7 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
 
 /**
  * Facade for a {@link net.dv8tion.jda.core.managers.GuildManagerUpdatable GuildManagerUpdatable} instance.
@@ -129,7 +130,7 @@ public class GuildManager
      * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#update()
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setIcon(Icon icon)
+    public AuditableRestAction<Void> setIcon(@Nullable Icon icon)
     {
         return updatable.getIconField().setValue(icon).update();
     }
@@ -151,7 +152,7 @@ public class GuildManager
      * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#update()
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setSplash(Icon splash)
+    public AuditableRestAction<Void> setSplash(@Nullable Icon splash)
     {
         return updatable.getSplashField().setValue(splash).update();
     }
@@ -173,7 +174,7 @@ public class GuildManager
      * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#update()
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setAfkChannel(VoiceChannel afkChannel)
+    public AuditableRestAction<Void> setAfkChannel(@Nullable VoiceChannel afkChannel)
     {
         return updatable.getAfkChannelField().setValue(afkChannel).update();
     }
@@ -195,7 +196,7 @@ public class GuildManager
      * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#update()
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setSystemChannel(TextChannel systemChannel)
+    public AuditableRestAction<Void> setSystemChannel(@Nullable TextChannel systemChannel)
     {
         return updatable.getSystemChannelField().setValue(systemChannel).update();
     }
@@ -217,7 +218,7 @@ public class GuildManager
      * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#update()
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setAfkTimeout(Guild.Timeout timeout)
+    public AuditableRestAction<Void> setAfkTimeout(@Nullable Guild.Timeout timeout)
     {
         return updatable.getAfkTimeoutField().setValue(timeout).update();
     }

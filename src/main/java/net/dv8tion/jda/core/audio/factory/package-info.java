@@ -19,4 +19,7 @@
  * custom audio send packages to be provided to Discord.
  * <br>A default factory is provided.
  */
+@ParametersAreNonnullByDefault
 package net.dv8tion.jda.core.audio.factory;
+
+import javax.annotation.ParametersAreNonnullByDefault;

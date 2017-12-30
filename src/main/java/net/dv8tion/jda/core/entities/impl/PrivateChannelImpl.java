@@ -26,6 +26,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.MessageAction;
 
+import javax.annotation.Nullable;
 import java.io.InputStream;
 
 public class PrivateChannelImpl implements PrivateChannel
@@ -145,7 +146,7 @@ public class PrivateChannelImpl implements PrivateChannel
     }
 
     @Override
-    public MessageAction sendFile(InputStream data, String fileName, Message message)
+    public MessageAction sendFile(InputStream data, String fileName, @Nullable Message message)
     {
         checkBot();
         return PrivateChannel.super.sendFile(data, fileName, message);
@@ -157,7 +158,7 @@ public class PrivateChannelImpl implements PrivateChannel
         return this;
     }
 
-    public PrivateChannelImpl setCurrentCall(Call currentCall)
+    public PrivateChannelImpl setCurrentCall(@Nullable Call currentCall)
     {
         this.currentCall = currentCall;
         return this;
@@ -179,7 +180,7 @@ public class PrivateChannelImpl implements PrivateChannel
     }
 
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(@Nullable Object obj)
     {
         return obj instanceof PrivateChannelImpl
                 && this.id == ((PrivateChannelImpl) obj).id;
@@ -189,12 +190,6 @@ public class PrivateChannelImpl implements PrivateChannel
     public String toString()
     {
         return "PC:" + getUser().getName() + '(' + id + ')';
-    }
-
-    private void checkNull(Object obj, String name)
-    {
-        if (obj == null)
-            throw new NullPointerException("Provided " + name + " was null!");
     }
 
     private void checkBot()

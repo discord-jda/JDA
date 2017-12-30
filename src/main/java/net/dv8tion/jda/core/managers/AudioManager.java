@@ -26,6 +26,8 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.utils.JDALogger;
 import org.slf4j.Logger;
 
+import javax.annotation.Nullable;
+
 
 /**
  * AudioManager deals with creating, managing and severing audio connections to
@@ -165,7 +167,7 @@ public interface AudioManager
      * @param handler
      *        The {@link net.dv8tion.jda.core.audio.AudioSendHandler AudioSendHandler} used to provide audio data.
      */
-    void setSendingHandler(AudioSendHandler handler);
+    void setSendingHandler(@Nullable AudioSendHandler handler);
 
     /**
      * The currently set {@link net.dv8tion.jda.core.audio.AudioSendHandler AudioSendHandler}. If there is
@@ -188,7 +190,7 @@ public interface AudioManager
      *        The {@link net.dv8tion.jda.core.audio.AudioReceiveHandler AudioReceiveHandler} used to process
      *        received audio data.
      */
-    void setReceivingHandler(AudioReceiveHandler handler);
+    void setReceivingHandler(@Nullable AudioReceiveHandler handler);
 
     /**
      * The currently set {@link net.dv8tion.jda.core.audio.AudioReceiveHandler AudioReceiveHandler}.
@@ -206,7 +208,7 @@ public interface AudioManager
      * @param listener
      *        A {@link net.dv8tion.jda.core.audio.hooks.ConnectionListener ConnectionListener} instance
      */
-    void setConnectionListener(ConnectionListener listener);
+    void setConnectionListener(@Nullable ConnectionListener listener);
 
     /**
      * The currently set {@link net.dv8tion.jda.core.audio.hooks.ConnectionListener ConnectionListener}

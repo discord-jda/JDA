@@ -31,6 +31,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.*;
 import java.nio.ByteBuffer;
@@ -71,7 +72,7 @@ public class AudioWebSocket extends WebSocketAdapter
 
     public WebSocket socket;
 
-    public AudioWebSocket(ConnectionListener listener, String endpoint, JDAImpl api, Guild guild, String sessionId, String token, boolean shouldReconnect)
+    public AudioWebSocket(ConnectionListener listener, String endpoint, JDAImpl api, Guild guild, @Nullable String sessionId, @Nullable String token, boolean shouldReconnect)
     {
         this.listener = listener;
         this.endpoint = endpoint;
@@ -98,7 +99,7 @@ public class AudioWebSocket extends WebSocketAdapter
         socket.sendText(message);
     }
 
-    protected void send(int op, Object data)
+    protected void send(int op, @Nullable Object data)
     {
         send(new JSONObject()
             .put("op", op)

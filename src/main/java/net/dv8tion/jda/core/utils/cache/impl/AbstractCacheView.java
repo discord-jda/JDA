@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.utils.cache.CacheView;
 import org.apache.commons.collections4.iterators.ArrayIterator;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -33,7 +34,7 @@ public abstract class AbstractCacheView<T> implements CacheView<T>
     protected final TLongObjectMap<T> elements = MiscUtil.newLongMap();
     protected final Function<T, String> nameMapper;
 
-    protected AbstractCacheView(Function<T, String> nameMapper)
+    protected AbstractCacheView(@Nullable Function<T, String> nameMapper)
     {
         this.nameMapper = nameMapper;
     }

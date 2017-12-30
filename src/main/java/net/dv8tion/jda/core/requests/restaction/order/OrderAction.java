@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -63,7 +64,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      *        The {@link net.dv8tion.jda.core.requests.Route.CompiledRoute CompiledRoute}
      *        which is provided to the {@link RestAction#RestAction(JDA, Route.CompiledRoute, okhttp3.RequestBody) RestAction Constructor}
      */
-    public OrderAction(JDA api, Route.CompiledRoute route)
+    public OrderAction(JDA api, @Nullable Route.CompiledRoute route)
     {
         this(api, true, route);
     }
@@ -80,7 +81,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      *        The {@link net.dv8tion.jda.core.requests.Route.CompiledRoute CompiledRoute}
      *        which is provided to the {@link RestAction#RestAction(JDA, Route.CompiledRoute, okhttp3.RequestBody) RestAction Constructor}
      */
-    public OrderAction(JDA api, boolean ascendingOrder, Route.CompiledRoute route)
+    public OrderAction(JDA api, boolean ascendingOrder, @Nullable Route.CompiledRoute route)
     {
         super(api, route);
         this.api = api;

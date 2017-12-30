@@ -20,12 +20,14 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
 
+import javax.annotation.ParametersAreNullableByDefault;
+
 /**
  * The Presence associated with the provided JDA instance
  *
  * @since  3.0
- * @author Florian Spieß
  */
+@ParametersAreNullableByDefault
 public interface Presence
 {
 

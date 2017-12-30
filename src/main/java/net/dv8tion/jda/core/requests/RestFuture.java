@@ -21,6 +21,8 @@ import net.dv8tion.jda.core.utils.Promise;
 import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 
+import javax.annotation.Nullable;
+
 public class RestFuture<T> extends Promise<T>
 {
     final Request<T> request;
@@ -31,7 +33,7 @@ public class RestFuture<T> extends Promise<T>
         ((JDAImpl) restAction.getJDA()).getRequester().request(this.request);
     }
 
-    public RestFuture(final T t)
+    public RestFuture(@Nullable final T t)
     {
         super(t);
         this.request = null;

@@ -51,6 +51,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
+import javax.annotation.Nullable;
 import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.concurrent.*;
@@ -104,9 +105,9 @@ public class JDAImpl implements JDA
     protected String token;
     protected String gatewayUrl;
 
-    public JDAImpl(AccountType accountType, String token, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory, ShardedRateLimiter rateLimiter,
+    public JDAImpl(AccountType accountType, String token, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory, @Nullable ShardedRateLimiter rateLimiter,
                    boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled,
-                   boolean retryOnTimeout, boolean enableMDC, int corePoolSize, int maxReconnectDelay, ConcurrentMap<String, String> contextMap)
+                   boolean retryOnTimeout, boolean enableMDC, int corePoolSize, int maxReconnectDelay, @Nullable ConcurrentMap<String, String> contextMap)
     {
         this.accountType = accountType;
         this.setToken(token);

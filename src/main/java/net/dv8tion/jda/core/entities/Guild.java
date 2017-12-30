@@ -982,7 +982,7 @@ public interface Guild extends ISnowflake
      * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: {@link java.lang.Void}
      */
     @CheckReturnValue
-    RestAction<Void> delete(String mfaCode);
+    RestAction<Void> delete(@Nullable String mfaCode);
 
     /**
      * The {@link net.dv8tion.jda.core.managers.AudioManager AudioManager} that represents the

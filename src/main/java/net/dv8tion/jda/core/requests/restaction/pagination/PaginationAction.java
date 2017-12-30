@@ -25,6 +25,7 @@ import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.Procedure;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -107,7 +108,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      * @param initialLimit
      *        The initial limit to use on the pagination endpoint
      */
-    public PaginationAction(JDA api, Route.CompiledRoute route, int minLimit, int maxLimit, int initialLimit)
+    public PaginationAction(JDA api, @Nullable Route.CompiledRoute route, int minLimit, int maxLimit, int initialLimit)
     {
         super(api, route);
         this.maxLimit = maxLimit;

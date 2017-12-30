@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
 
 /**
  * Facade for a {@link net.dv8tion.jda.core.managers.ChannelManagerUpdatable ChannelManagerUpdatable} instance.
@@ -136,7 +137,7 @@ public class ChannelManager
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setParent(Category category)
+    public AuditableRestAction<Void> setParent(@Nullable Category category)
     {
         return updatable.getParentField().setValue(category).update();
     }
@@ -192,7 +193,7 @@ public class ChannelManager
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setTopic(String topic)
+    public AuditableRestAction<Void> setTopic(@Nullable String topic)
     {
         return updatable.getTopicField().setValue(topic).update();
     }

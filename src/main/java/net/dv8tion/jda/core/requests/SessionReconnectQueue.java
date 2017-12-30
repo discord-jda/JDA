@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.requests;
 
 import net.dv8tion.jda.core.JDA;
 
+import javax.annotation.Nullable;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -34,7 +35,7 @@ public class SessionReconnectQueue
         this(new LinkedBlockingQueue<>());
     }
 
-    public SessionReconnectQueue(final BlockingQueue<WebSocketClient> reconnectQueue)
+    public SessionReconnectQueue(@Nullable final BlockingQueue<WebSocketClient> reconnectQueue)
     {
         this.reconnectQueue = reconnectQueue;
     }

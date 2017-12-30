@@ -29,6 +29,7 @@ import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 
 public class InviteImpl implements Invite
@@ -45,8 +46,8 @@ public class InviteImpl implements Invite
     private final OffsetDateTime timeCreated;
     private final int uses;
 
-    public InviteImpl(final JDAImpl api, final String code, final boolean expanded, final User inviter,
-            final int maxAge, final int maxUses, final boolean temporary, final OffsetDateTime timeCreated,
+    public InviteImpl(final JDAImpl api, final String code, final boolean expanded, @Nullable final User inviter,
+            final int maxAge, final int maxUses, final boolean temporary, @Nullable final OffsetDateTime timeCreated,
             final int uses, final Channel channel, final Guild guild)
     {
         this.api = api;
@@ -286,7 +287,7 @@ public class InviteImpl implements Invite
         private final String iconId, name, splashId;
         private final long id;
 
-        public GuildImpl(final long id, final String iconId, final String name, final String splashId)
+        public GuildImpl(final long id, @Nullable final String iconId, final String name, @Nullable final String splashId)
         {
             this.id = id;
             this.iconId = iconId;

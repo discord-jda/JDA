@@ -29,6 +29,7 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -38,11 +39,9 @@ import java.util.List;
  * Represents a Custom Emote. (Emoji in official Discord API terminology)
  *
  * @since  2.2
- * @author Florian Spieß
  */
 public class EmoteImpl implements Emote
 {
-
     private final long id;
     private final GuildImpl guild;
     private final JDAImpl api;
@@ -173,7 +172,7 @@ public class EmoteImpl implements Emote
 
     // -- Setters --
 
-    public EmoteImpl setName(String name)
+    public EmoteImpl setName(@Nullable String name)
     {
         this.name = name;
         return this;
@@ -195,7 +194,7 @@ public class EmoteImpl implements Emote
     // -- Object overrides --
 
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(@Nullable Object obj)
     {
         if (!(obj instanceof EmoteImpl))
             return false;

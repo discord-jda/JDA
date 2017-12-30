@@ -24,6 +24,7 @@ import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.MessageAction;
 import net.dv8tion.jda.core.utils.Helpers;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.FormattableFlags;
@@ -38,7 +39,7 @@ public abstract class AbstractMessage implements Message
     protected final String nonce;
     protected final boolean isTTS;
 
-    public AbstractMessage(String content, String nonce, boolean isTTS)
+    public AbstractMessage(String content, @Nullable String nonce, boolean isTTS)
     {
         this.content = content;
         this.nonce = nonce;

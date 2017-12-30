@@ -16,13 +16,13 @@
 
 package net.dv8tion.jda.core.entities;
 
-import net.dv8tion.jda.core.utils.IOUtil;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.IOUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.Base64;
 
 /**
@@ -34,6 +34,7 @@ import java.util.Base64;
  */
 public class Icon
 {
+    public static final Charset CHARSET = Charset.forName("UTF-8");
     protected final String encoding;
 
     protected Icon(String base64Encoding)
@@ -115,13 +116,6 @@ public class Icon
     {
         Checks.notNull(data, "Provided byte[]");
 
-        try
-        {
-            return new Icon(new String(Base64.getEncoder().encode(data), "UTF-8"));
-        }
-        catch (UnsupportedEncodingException e)
-        {
-            throw new AssertionError(e); // thanks JDK 1.4
-        }
+        return new Icon(new String(Base64.getEncoder().encode(data), CHARSET));
     }
 }

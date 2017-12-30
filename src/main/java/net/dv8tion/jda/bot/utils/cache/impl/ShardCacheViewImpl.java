@@ -18,18 +18,16 @@ package net.dv8tion.jda.bot.utils.cache.impl;
 import gnu.trove.impl.sync.TSynchronizedIntObjectMap;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
+import net.dv8tion.jda.bot.utils.cache.ShardCacheView;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.cache.CacheView;
+
+import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
-import net.dv8tion.jda.bot.utils.cache.ShardCacheView;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.ISnowflake;
-import net.dv8tion.jda.core.utils.Checks;
-import net.dv8tion.jda.core.utils.cache.CacheView;
-import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
-import net.dv8tion.jda.core.utils.cache.impl.UnifiedCacheViewImpl;
 
 public class ShardCacheViewImpl implements ShardCacheView
 {
@@ -80,7 +78,7 @@ public class ShardCacheViewImpl implements ShardCacheView
     }
 
     @Override
-    public List<JDA> getElementsByName(String name, boolean ignoreCase)
+    public List<JDA> getElementsByName(@Nonnull String name, boolean ignoreCase)
     {
         Checks.notEmpty(name, "Name");
         if (elements.isEmpty())
@@ -171,7 +169,7 @@ public class ShardCacheViewImpl implements ShardCacheView
         }
 
         @Override
-        public List<JDA> getElementsByName(String name, boolean ignoreCase)
+        public List<JDA> getElementsByName(@Nonnull String name, boolean ignoreCase)
         {
             return Collections.unmodifiableList(generator.get()
                 .distinct()

@@ -29,6 +29,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -502,7 +503,7 @@ public class WidgetUtil
         }
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@Nullable Object obj) {
             if (!(obj instanceof Widget))
                 return false;
             Widget oWidget = (Widget) obj;
@@ -728,7 +729,7 @@ public class WidgetUtil
             }
 
             @Override
-            public boolean equals(Object obj) {
+            public boolean equals(@Nullable Object obj) {
                 if (!(obj instanceof Member))
                     return false;
                 Member oMember = (Member) obj;
@@ -818,7 +819,7 @@ public class WidgetUtil
             }
 
             @Override
-            public boolean equals(Object obj) {
+            public boolean equals(@Nullable Object obj) {
                 if (!(obj instanceof VoiceChannel))
                     return false;
                 VoiceChannel oVChannel = (VoiceChannel) obj;
@@ -848,7 +849,7 @@ public class WidgetUtil
                 this(null, false, false, false, false, false, member, widget);
             }
             
-            private VoiceState(VoiceChannel channel, boolean muted, boolean deafened, boolean suppress, boolean selfMute, boolean selfDeaf, Member member, Widget widget)
+            private VoiceState(@Nullable VoiceChannel channel, boolean muted, boolean deafened, boolean suppress, boolean selfMute, boolean selfDeaf, Member member, Widget widget)
             {
                 this.channel = channel;
                 this.muted = muted;
@@ -967,7 +968,7 @@ public class WidgetUtil
             }
             
             @Override
-            public boolean equals(Object obj) {
+            public boolean equals(@Nullable Object obj) {
                 if (!(obj instanceof VoiceState))
                     return false;
                 VoiceState oState = (VoiceState) obj;

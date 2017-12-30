@@ -16,12 +16,10 @@
 
 package net.dv8tion.jda.core.handle;
 
-import net.dv8tion.jda.client.entities.Call;
 import net.dv8tion.jda.client.entities.CallUser;
 import net.dv8tion.jda.client.entities.CallableChannel;
 import net.dv8tion.jda.client.entities.impl.CallImpl;
 import net.dv8tion.jda.client.entities.impl.CallVoiceStateImpl;
-import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.client.events.call.voice.CallVoiceJoinEvent;
 import net.dv8tion.jda.client.events.call.voice.CallVoiceLeaveEvent;
 import net.dv8tion.jda.client.events.call.voice.CallVoiceSelfDeafenEvent;
@@ -262,8 +260,6 @@ public class VoiceStateUpdateHandler extends SocketHandler
                 return;
             }
 
-            Call call = cUser.getCall();
-            channel = call.getCallableChannel();
             vState = (CallVoiceStateImpl) cUser.getVoiceState();
             vState.setSessionId(sessionId);
             vState.setInCall(false);

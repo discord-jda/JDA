@@ -27,7 +27,6 @@ import net.dv8tion.jda.core.requests.Route.RateLimit;
 import okhttp3.Headers;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import org.slf4j.event.Level;
 
 import java.io.IOException;
 import java.io.InputStream;

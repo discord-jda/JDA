@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.audit;
 
+import javax.annotation.Nullable;
 import java.util.Objects;
 
 /**
@@ -30,7 +31,7 @@ public class AuditLogChange
     protected final Object newValue;
     protected final String key;
 
-    public AuditLogChange(Object oldValue, Object newValue, String key)
+    public AuditLogChange(@Nullable Object oldValue, @Nullable Object newValue, String key)
     {
         this.oldValue = oldValue;
         this.newValue = newValue;
@@ -91,7 +92,7 @@ public class AuditLogChange
     }
 
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(@Nullable Object obj)
     {
         if (!(obj instanceof AuditLogChange))
             return false;

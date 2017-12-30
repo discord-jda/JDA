@@ -25,6 +25,8 @@ import okhttp3.RequestBody;
 import okio.BufferedSink;
 import okio.Okio;
 import okio.Source;
+
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -64,6 +66,7 @@ public class MiscUtil
      *
      * @return The creation time of the JDA entity as OffsetDateTime
      */
+    @Nonnull
     public static OffsetDateTime getCreationTime(long entityId)
     {
         long timestamp = (entityId >>> TIMESTAMP_OFFSET) + DISCORD_EPOCH;
@@ -84,6 +87,7 @@ public class MiscUtil
      *
      * @return The creation time of the JDA entity as OffsetDateTime
      */
+    @Nonnull
     public static OffsetDateTime getCreationTime(ISnowflake entity)
     {
         Checks.notNull(entity, "Entity");
@@ -194,6 +198,18 @@ public class MiscUtil
         }
     }
 
+    /**
+     * Checks for validity of the given input.
+     * <br>Parses the {@code long} representation or throws and exception.
+     *
+     * @param  input
+     *         The input to check and parse
+     *
+     * @throws java.lang.NumberFormatException
+     *         If the provided input is not a valid snowflake
+     *
+     * @return The long representation of the given input
+     */
     public static long parseSnowflake(String input)
     {
         Checks.notEmpty(input, "ID");

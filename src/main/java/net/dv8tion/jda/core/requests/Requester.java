@@ -24,15 +24,21 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.ratelimit.BotRateLimiter;
 import net.dv8tion.jda.core.requests.ratelimit.ClientRateLimiter;
 import net.dv8tion.jda.core.utils.JDALogger;
-import okhttp3.*;
+import okhttp3.Call;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
 import okhttp3.internal.http.HttpMethod;
 import org.slf4j.Logger;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketTimeoutException;
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
@@ -51,12 +57,12 @@ public class Requester
 
     private volatile boolean retryOnTimeout = false;
 
-    public Requester(JDA api, ShardedRateLimiter shardedRateLimiter)
+    public Requester(JDA api, @Nullable ShardedRateLimiter shardedRateLimiter)
     {
         this(api, api.getAccountType(), shardedRateLimiter);
     }
 
-    public Requester(JDA api, AccountType accountType, ShardedRateLimiter shardedRateLimiter)
+    public Requester(JDA api, AccountType accountType, @Nullable ShardedRateLimiter shardedRateLimiter)
     {
         if (accountType == null)
             throw new NullPointerException("Provided accountType was null!");

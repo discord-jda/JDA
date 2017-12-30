@@ -24,6 +24,7 @@ import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 /**
@@ -44,12 +45,12 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
         super(api, route);
     }
 
-    public AuditableRestAction(JDA api, Route.CompiledRoute route, RequestBody data)
+    public AuditableRestAction(JDA api, Route.CompiledRoute route, @Nullable RequestBody data)
     {
         super(api, route, data);
     }
 
-    public AuditableRestAction(JDA api, Route.CompiledRoute route, JSONObject data)
+    public AuditableRestAction(JDA api, Route.CompiledRoute route, @Nullable JSONObject data)
     {
         super(api, route, data);
     }
@@ -74,7 +75,7 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
      * @return The current AuditableRestAction instance for chaining convenience
      */
     @CheckReturnValue
-    public AuditableRestAction<T> reason(String reason)
+    public AuditableRestAction<T> reason(@Nullable String reason)
     {
         this.reason = reason;
         return this;
@@ -119,14 +120,14 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
             this(api, null);
         }
 
-        public EmptyRestAction(JDA api, T content)
+        public EmptyRestAction(JDA api, @Nullable T content)
         {
             super(api, null);
             this.content = content;
         }
 
         @Override
-        public void queue(Consumer<T> success, Consumer<Throwable> failure)
+        public void queue(@Nullable Consumer<T> success, @Nullable Consumer<Throwable> failure)
         {
             if (success != null)
                 success.accept(content);

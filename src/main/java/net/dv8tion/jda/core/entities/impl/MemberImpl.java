@@ -20,8 +20,8 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.utils.PermissionUtil;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.PermissionUtil;
 
 import javax.annotation.Nullable;
 import java.awt.Color;
@@ -191,7 +191,7 @@ public class MemberImpl implements Member
         return this.equals(guild.getOwner());
     }
 
-    public MemberImpl setNickname(String nickname)
+    public MemberImpl setNickname(@Nullable String nickname)
     {
         this.nickname = nickname;
         return this;
@@ -203,13 +203,13 @@ public class MemberImpl implements Member
         return this;
     }
 
-    public MemberImpl setGame(Game game)
+    public MemberImpl setGame(@Nullable Game game)
     {
         this.game = game;
         return this;
     }
 
-    public MemberImpl setOnlineStatus(OnlineStatus onlineStatus)
+    public MemberImpl setOnlineStatus(@Nullable OnlineStatus onlineStatus)
     {
         this.onlineStatus = onlineStatus;
         return this;
@@ -221,7 +221,7 @@ public class MemberImpl implements Member
     }
 
     @Override
-    public boolean equals(Object o)
+    public boolean equals(@Nullable Object o)
     {
         if (!(o instanceof Member))
             return false;

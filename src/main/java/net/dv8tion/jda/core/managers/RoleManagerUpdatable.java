@@ -31,6 +31,7 @@ import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.CheckReturnValue;
 import java.awt.Color;
 
@@ -300,7 +301,7 @@ public class RoleManagerUpdatable
         this.name = new RoleField<String>(this, role::getName)
         {
             @Override
-            public void checkValue(String value)
+            public void checkValue(@CheckForNull String value)
             {
                 Checks.notNull(value, "name");
                 if (value.isEmpty() || value.length() > 32)
@@ -311,7 +312,7 @@ public class RoleManagerUpdatable
         this.color = new RoleField<Color>(this, role::getColor)
         {
             @Override
-            public RoleManagerUpdatable setValue(Color color)
+            public RoleManagerUpdatable setValue(@CheckForNull Color color)
             {
                 if (color != null && color.getRGB() == 0)
                     color = null;
@@ -321,13 +322,13 @@ public class RoleManagerUpdatable
             }
 
             @Override
-            public void checkValue(Color value) {}
+            public void checkValue(@CheckForNull Color value) {}
         };
 
         this.hoisted = new RoleField<Boolean>(this, role::isHoisted)
         {
             @Override
-            public void checkValue(Boolean value)
+            public void checkValue(@CheckForNull Boolean value)
             {
                 Checks.notNull(value, "hoisted Boolean");
             }
@@ -336,7 +337,7 @@ public class RoleManagerUpdatable
         this.mentionable = new RoleField<Boolean>(this, role::isMentionable)
         {
             @Override
-            public void checkValue(Boolean value)
+            public void checkValue(@CheckForNull Boolean value)
             {
                 Checks.notNull(value, "mentionable Boolean");
             }

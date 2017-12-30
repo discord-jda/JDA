@@ -17,7 +17,6 @@
 package net.dv8tion.jda.core.handle;
 
 import net.dv8tion.jda.client.entities.impl.GroupImpl;
-import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.client.events.group.GroupLeaveEvent;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.entities.*;

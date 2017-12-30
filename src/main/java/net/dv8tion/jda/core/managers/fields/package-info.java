@@ -19,4 +19,7 @@
  * <br>This is utilized in updatable Managers. Managers that allow
  * users to modify multiple {@code Field}s of an existing entity.
  */
+@ParametersAreNonnullByDefault
 package net.dv8tion.jda.core.managers.fields;
+
+import javax.annotation.ParametersAreNonnullByDefault;

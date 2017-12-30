@@ -34,6 +34,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -296,7 +297,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     }
 
     @Override
-    public MessageAction sendFile(InputStream data, String fileName, Message message)
+    public MessageAction sendFile(InputStream data, String fileName, @Nullable Message message)
     {
         checkVerification();
         checkPermission(Permission.MESSAGE_READ);
@@ -473,7 +474,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
 
     // -- Setters --
 
-    public TextChannelImpl setTopic(String topic)
+    public TextChannelImpl setTopic(@Nullable String topic)
     {
         this.topic = topic;
         return this;

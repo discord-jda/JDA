@@ -39,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.MDC;
 import tomp2p.opuswrapper.Opus;
 
+import javax.annotation.Nullable;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
@@ -146,13 +147,13 @@ public class AudioConnection
         readyThread.start();
     }
 
-    public void setSendingHandler(AudioSendHandler handler)
+    public void setSendingHandler(@Nullable AudioSendHandler handler)
     {
         this.sendHandler = handler;
         setupSendSystem();
     }
 
-    public void setReceivingHandler(AudioReceiveHandler handler)
+    public void setReceivingHandler(@Nullable AudioReceiveHandler handler)
     {
         this.receiveHandler = handler;
         setupReceiveSystem();

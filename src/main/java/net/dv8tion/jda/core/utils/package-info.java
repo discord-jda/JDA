@@ -38,4 +38,7 @@
  *         for a specified Guild. (by id)</li>
  * </ul>
  */
+@ParametersAreNonnullByDefault
 package net.dv8tion.jda.core.utils;
+
+import javax.annotation.ParametersAreNonnullByDefault;

@@ -38,4 +38,7 @@
  * <br>It can send {@link net.dv8tion.jda.core.managers.Presence Presence} updates that will determine how
  * the Discord Client will display the currently connected account (Online Status / Game)
  */
+@ParametersAreNonnullByDefault
 package net.dv8tion.jda.core.requests;
+
+import javax.annotation.ParametersAreNonnullByDefault;

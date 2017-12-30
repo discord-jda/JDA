@@ -449,7 +449,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public RestAction<Void> delete(String mfaCode)
+    public RestAction<Void> delete(@Nullable String mfaCode)
     {
         if (!owner.equals(getSelfMember()))
             throw new PermissionException("Cannot delete a guild that you do not own!");
@@ -601,7 +601,7 @@ public class GuildImpl implements Guild
         return this;
     }
 
-    public GuildImpl setIconId(String iconId)
+    public GuildImpl setIconId(@Nullable String iconId)
     {
         this.iconId = iconId;
         return this;
@@ -613,7 +613,7 @@ public class GuildImpl implements Guild
         return this;
     }
 
-    public GuildImpl setSplashId(String splashId)
+    public GuildImpl setSplashId(@Nullable String splashId)
     {
         this.splashId = splashId;
         return this;
@@ -625,13 +625,13 @@ public class GuildImpl implements Guild
         return this;
     }
 
-    public GuildImpl setAfkChannel(VoiceChannel afkChannel)
+    public GuildImpl setAfkChannel(@Nullable VoiceChannel afkChannel)
     {
         this.afkChannel = afkChannel;
         return this;
     }
 
-    public GuildImpl setSystemChannel(TextChannel systemChannel)
+    public GuildImpl setSystemChannel(@Nullable TextChannel systemChannel)
     {
         this.systemChannel = systemChannel;
         return this;
@@ -643,32 +643,32 @@ public class GuildImpl implements Guild
         return this;
     }
 
-    public GuildImpl setVerificationLevel(VerificationLevel level)
+    public GuildImpl setVerificationLevel(@Nullable VerificationLevel level)
     {
         this.verificationLevel = level;
         this.canSendVerification = false;   //recalc on next send
         return this;
     }
 
-    public GuildImpl setDefaultNotificationLevel(NotificationLevel level)
+    public GuildImpl setDefaultNotificationLevel(@Nullable NotificationLevel level)
     {
         this.defaultNotificationLevel = level;
         return this;
     }
 
-    public GuildImpl setRequiredMFALevel(MFALevel level)
+    public GuildImpl setRequiredMFALevel(@Nullable MFALevel level)
     {
         this.mfaLevel = level;
         return this;
     }
 
-    public GuildImpl setExplicitContentLevel(ExplicitContentLevel level)
+    public GuildImpl setExplicitContentLevel(@Nullable ExplicitContentLevel level)
     {
         this.explicitContentLevel = level;
         return this;
     }
 
-    public GuildImpl setAfkTimeout(Timeout afkTimeout)
+    public GuildImpl setAfkTimeout(@Nullable Timeout afkTimeout)
     {
         this.afkTimeout = afkTimeout;
         return this;
@@ -715,7 +715,7 @@ public class GuildImpl implements Guild
     // -- Object overrides --
 
     @Override
-    public boolean equals(Object o)
+    public boolean equals(@Nullable Object o)
     {
         if (!(o instanceof GuildImpl))
             return false;

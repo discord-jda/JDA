@@ -24,6 +24,8 @@ import net.dv8tion.jda.core.managers.AccountManager;
 import net.dv8tion.jda.core.managers.AccountManagerUpdatable;
 import net.dv8tion.jda.core.requests.RestAction;
 
+import javax.annotation.Nullable;
+
 public class SelfUserImpl extends UserImpl implements SelfUser
 {
     protected final Object mngLock = new Object();
@@ -159,13 +161,13 @@ public class SelfUserImpl extends UserImpl implements SelfUser
         return this;
     }
 
-    public SelfUserImpl setEmail(String email)
+    public SelfUserImpl setEmail(@Nullable String email)
     {
         this.email = email;
         return this;
     }
 
-    public SelfUserImpl setPhoneNumber(String phoneNumber)
+    public SelfUserImpl setPhoneNumber(@Nullable String phoneNumber)
     {
         this.phoneNumber = phoneNumber;
         return this;

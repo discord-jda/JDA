@@ -27,6 +27,7 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 
 public class JDABotImpl implements JDABot
@@ -53,7 +54,7 @@ public class JDABotImpl implements JDABot
         return new RestAction<ApplicationInfo>(getJDA(), route)
         {
             @Override
-            protected void handleResponse(Response response, Request<ApplicationInfo> request)
+            protected void handleResponse(@Nonnull Response response, @Nonnull Request<ApplicationInfo> request)
             {
                 if (!response.isOk())
                 {

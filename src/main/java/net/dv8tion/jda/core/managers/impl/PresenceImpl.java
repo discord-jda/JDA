@@ -25,13 +25,16 @@ import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNullableByDefault;
+
 /**
  * The Presence associated with the provided JDA instance
  * <br><b>Note that this does not automatically handle the 5/60 second rate limit!</b>
  *
  * @since  3.0
- * @author Florian Spieß
  */
+@ParametersAreNullableByDefault
 public class PresenceImpl implements Presence
 {
 
@@ -46,7 +49,7 @@ public class PresenceImpl implements Presence
      * @param jda
      *        The not-null JDAImpl instance to use
      */
-    public PresenceImpl(JDAImpl jda)
+    public PresenceImpl(@Nonnull JDAImpl jda)
     {
         this.api = jda;
     }
@@ -148,7 +151,7 @@ public class PresenceImpl implements Presence
     /* -- Impl Setters -- */
 
 
-    public PresenceImpl setCacheStatus(OnlineStatus status)
+    public PresenceImpl setCacheStatus(@Nonnull OnlineStatus status)
     {
         if (status == null)
             throw new NullPointerException("Null OnlineStatus is not allowed.");
@@ -201,7 +204,7 @@ public class PresenceImpl implements Presence
     /* -- Terminal -- */
 
 
-    protected void update(JSONObject data)
+    protected void update(@Nonnull JSONObject data)
     {
         api.getClient().send(new JSONObject()
             .put("d", data)

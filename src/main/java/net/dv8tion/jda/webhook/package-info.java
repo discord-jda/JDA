@@ -20,4 +20,7 @@
  *
  * @since  3.3.0
  */
+@ParametersAreNonnullByDefault
 package net.dv8tion.jda.webhook;
+
+import javax.annotation.ParametersAreNonnullByDefault;

@@ -19,6 +19,7 @@ package net.dv8tion.jda.core.audio;
 import com.sun.jna.ptr.PointerByReference;
 import tomp2p.opuswrapper.Opus;
 
+import javax.annotation.Nullable;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
@@ -54,7 +55,7 @@ public class Decoder
         return newSeq > lastSeq + 1;
     }
 
-    protected short[] decodeFromOpus(AudioPacket decryptedPacket)
+    protected short[] decodeFromOpus(@Nullable AudioPacket decryptedPacket)
     {
         int result;
         ShortBuffer decoded = ShortBuffer.allocate(4096);

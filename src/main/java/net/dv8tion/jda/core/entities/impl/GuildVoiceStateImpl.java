@@ -18,6 +18,8 @@ package net.dv8tion.jda.core.entities.impl;
 
 import net.dv8tion.jda.core.entities.*;
 
+import javax.annotation.Nullable;
+
 public class GuildVoiceStateImpl implements GuildVoiceState
 {
     private final GuildImpl guild;
@@ -128,12 +130,10 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     }
 
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(@Nullable Object obj)
     {
         if (!(obj instanceof GuildVoiceState))
-        {
             return false;
-        }
         GuildVoiceState oStatus = (GuildVoiceState) obj;
         return this == oStatus || (this.member.equals(oStatus.getMember()) && this.guild.equals(oStatus.getGuild()));
     }
@@ -146,13 +146,13 @@ public class GuildVoiceStateImpl implements GuildVoiceState
 
     // -- Setters --
 
-    public GuildVoiceStateImpl setConnectedChannel(VoiceChannel connectedChannel)
+    public GuildVoiceStateImpl setConnectedChannel(@Nullable VoiceChannel connectedChannel)
     {
         this.connectedChannel = connectedChannel;
         return this;
     }
 
-    public GuildVoiceStateImpl setSessionId(String sessionId)
+    public GuildVoiceStateImpl setSessionId(@Nullable String sessionId)
     {
         this.sessionId = sessionId;
         return this;
