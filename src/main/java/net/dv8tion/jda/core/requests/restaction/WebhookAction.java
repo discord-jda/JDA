@@ -27,6 +27,7 @@ import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -55,6 +56,7 @@ public class WebhookAction extends AuditableRestAction<Webhook>
      *
      * @return The current WebhookAction for chaining convenience.
      */
+    @Nonnull
     @CheckReturnValue
     public WebhookAction setName(String name)
     {
@@ -74,6 +76,7 @@ public class WebhookAction extends AuditableRestAction<Webhook>
      *
      * @return The current WebhookAction for chaining convenience.
      */
+    @Nonnull
     @CheckReturnValue
     public WebhookAction setAvatar(@Nullable Icon icon)
     {

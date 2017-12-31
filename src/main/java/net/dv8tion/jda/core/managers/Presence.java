@@ -20,6 +20,8 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNullableByDefault;
 
 /**
@@ -36,6 +38,7 @@ public interface Presence
      *
      * @return The current JDA instance
      */
+    @Nonnull
     JDA getJDA();
 
     /**
@@ -45,6 +48,7 @@ public interface Presence
      * @return The {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus}
      *         of the current session
      */
+    @Nullable
     OnlineStatus getStatus();
 
     /**
@@ -54,6 +58,7 @@ public interface Presence
      * @return The {@link net.dv8tion.jda.core.entities.Game Game}
      *         of the current session or null if no game is set
      */
+    @Nullable
     Game getGame();
 
     /**

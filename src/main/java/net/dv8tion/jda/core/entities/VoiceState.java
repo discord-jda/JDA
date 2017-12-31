@@ -17,6 +17,9 @@ package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.JDA;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 public interface VoiceState
 {
     /**
@@ -40,6 +43,7 @@ public interface VoiceState
      *
      * @return The corresponding JDA instance
      */
+    @Nonnull
     JDA getJDA();
 
     /**
@@ -47,6 +51,7 @@ public interface VoiceState
      *
      * @return A possibly-null AudioChannel
      */
+    @Nullable
     AudioChannel getAudioChannel();
 
     /**
@@ -54,5 +59,6 @@ public interface VoiceState
      *
      * @return The Session-Id
      */
+    @Nullable
     String getSessionId();
 }

@@ -17,6 +17,8 @@ package net.dv8tion.jda.core.events;
 
 import net.dv8tion.jda.core.JDA;
 
+import javax.annotation.Nonnull;
+
 /**
  * <b><u>Event</u></b><br>
  * Fired for every event.<br>
@@ -47,6 +49,7 @@ public abstract class Event
      *
      * @return The corresponding JDA instance
      */
+    @Nonnull
     public JDA getJDA()
     {
         return api;

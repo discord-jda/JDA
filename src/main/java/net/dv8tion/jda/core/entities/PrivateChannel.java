@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.requests.RestAction;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 
 /**
  * Represents the connection used for direct messaging.
@@ -31,6 +32,7 @@ public interface PrivateChannel extends MessageChannel, CallableChannel, IFakeab
      *
      * @return A non-null {@link net.dv8tion.jda.core.entities.User User}.
      */
+    @Nonnull
     User getUser();
 
     /**
@@ -38,6 +40,7 @@ public interface PrivateChannel extends MessageChannel, CallableChannel, IFakeab
      *
      * @return the corresponding JDA instance
      */
+    @Nonnull
     JDA getJDA();
 
     /**
@@ -47,6 +50,7 @@ public interface PrivateChannel extends MessageChannel, CallableChannel, IFakeab
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
      */
+    @Nonnull
     @CheckReturnValue
     RestAction<Void> close();
 }

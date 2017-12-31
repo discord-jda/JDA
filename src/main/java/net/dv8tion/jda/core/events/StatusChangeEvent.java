@@ -17,6 +17,8 @@ package net.dv8tion.jda.core.events;
 
 import net.dv8tion.jda.core.JDA;
 
+import javax.annotation.Nonnull;
+
 /**
  * <b><u>StatusChangedEvent</u></b><br>
  * Fired if our {@link net.dv8tion.jda.core.JDA.Status Status} changed. (Example: SHUTTING_DOWN -&gt; SHUTDOWN)<br>
@@ -35,11 +37,13 @@ public class StatusChangeEvent extends Event
         this.oldStatus = oldStatus;
     }
 
+    @Nonnull
     public JDA.Status getStatus()
     {
         return newStatus;
     }
 
+    @Nonnull
     public JDA.Status getOldStatus()
     {
         return oldStatus;

@@ -20,6 +20,8 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.Event;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,6 +30,9 @@ import java.util.List;
  * Fired if a bulk deletion is executed in a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.<br>
  * <br>
  * Use: This event indicates that a large chunk of Messages is deleted in a TextChannel. Providing a list of Message IDs and the specific TextChannel.
+ *
+ * @see net.dv8tion.jda.core.JDABuilder#setBulkDeleteSplittingEnabled(boolean)
+ * @see net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder#setBulkDeleteSplittingEnabled(boolean)
  */
 public class MessageBulkDeleteEvent extends Event
 {
@@ -41,16 +46,19 @@ public class MessageBulkDeleteEvent extends Event
         this.messageIds = Collections.unmodifiableList(messageIds);
     }
 
+    @Nullable
     public TextChannel getChannel()
     {
         return channel;
     }
 
+    @Nullable
     public Guild getGuild()
     {
         return channel.getGuild();
     }
 
+    @Nonnull
     public List<String> getMessageIds()
     {
         return messageIds;

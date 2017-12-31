@@ -29,6 +29,7 @@ import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.commons.collections4.CollectionUtils;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -83,6 +84,7 @@ public class ReceivedMessage extends AbstractMessage
         this.embeds = Collections.unmodifiableList(embeds);
     }
 
+    @Nonnull
     @Override
     public JDA getJDA()
     {
@@ -95,18 +97,21 @@ public class ReceivedMessage extends AbstractMessage
         return pinned;
     }
 
+    @Nonnull
     @Override
     public RestAction<Void> pin()
     {
         return channel.pinMessageById(getIdLong());
     }
 
+    @Nonnull
     @Override
     public RestAction<Void> unpin()
     {
         return channel.unpinMessageById(getIdLong());
     }
 
+    @Nonnull
     @Override
     public RestAction<Void> addReaction(Emote emote)
     {
@@ -130,6 +135,7 @@ public class ReceivedMessage extends AbstractMessage
         return channel.addReactionById(getIdLong(), emote);
     }
 
+    @Nonnull
     @Override
     public RestAction<Void> addReaction(String unicode)
     {
@@ -145,6 +151,7 @@ public class ReceivedMessage extends AbstractMessage
         return channel.addReactionById(getIdLong(), unicode);
     }
 
+    @Nonnull
     @Override
     public RestAction<Void> clearReactions()
     {
@@ -153,6 +160,7 @@ public class ReceivedMessage extends AbstractMessage
         return getTextChannel().clearReactionsById(getId());
     }
 
+    @Nonnull
     @Override
     public MessageType getType()
     {
@@ -165,6 +173,7 @@ public class ReceivedMessage extends AbstractMessage
         return id;
     }
 
+    @Nonnull
     @Override
     public synchronized List<User> getMentionedUsers()
     {
@@ -190,6 +199,7 @@ public class ReceivedMessage extends AbstractMessage
         return userMentions;
     }
 
+    @Nonnull
     @Override
     public synchronized List<TextChannel> getMentionedChannels()
     {
@@ -214,6 +224,7 @@ public class ReceivedMessage extends AbstractMessage
         return channelMentions;
     }
 
+    @Nonnull
     @Override
     public synchronized List<Role> getMentionedRoles()
     {
@@ -242,6 +253,7 @@ public class ReceivedMessage extends AbstractMessage
         return roleMentions;
     }
 
+    @Nonnull
     @Override
     public List<Member> getMentionedMembers(Guild guild)
     {
@@ -258,6 +270,7 @@ public class ReceivedMessage extends AbstractMessage
         return Collections.unmodifiableList(members);
     }
 
+    @Nonnull
     @Override
     public List<Member> getMentionedMembers()
     {
@@ -267,6 +280,7 @@ public class ReceivedMessage extends AbstractMessage
             throw new IllegalStateException("You must specify a Guild for Messages which are not sent from a TextChannel!");
     }
 
+    @Nonnull
     @Override
     public List<IMentionable> getMentions(MentionType... types)
     {
@@ -424,6 +438,7 @@ public class ReceivedMessage extends AbstractMessage
         return editedTime;
     }
 
+    @Nonnull
     @Override
     public User getAuthor()
     {
@@ -436,6 +451,7 @@ public class ReceivedMessage extends AbstractMessage
         return isFromType(ChannelType.TEXT) ? getGuild().getMember(getAuthor()) : null;
     }
 
+    @Nonnull
     @Override
     public String getContentStripped()
     {
@@ -515,6 +531,7 @@ public class ReceivedMessage extends AbstractMessage
         }
     }
 
+    @Nonnull
     @Override
     public String getContentDisplay()
     {
@@ -550,12 +567,14 @@ public class ReceivedMessage extends AbstractMessage
         }
     }
 
+    @Nonnull
     @Override
     public String getContentRaw()
     {
         return content;
     }
 
+    @Nonnull
     @Override
     public List<String> getInvites()
     {
@@ -585,12 +604,14 @@ public class ReceivedMessage extends AbstractMessage
         return getChannelType() == type;
     }
 
+    @Nonnull
     @Override
     public ChannelType getChannelType()
     {
         return channel.getType();
     }
 
+    @Nonnull
     @Override
     public MessageChannel getChannel()
     {
@@ -627,18 +648,21 @@ public class ReceivedMessage extends AbstractMessage
         return isFromType(ChannelType.TEXT) ? getTextChannel().getGuild() : null;
     }
 
+    @Nonnull
     @Override
     public List<Attachment> getAttachments()
     {
         return attachments;
     }
 
+    @Nonnull
     @Override
     public List<MessageEmbed> getEmbeds()
     {
         return embeds;
     }
 
+    @Nonnull
     @Override
     public synchronized List<Emote> getEmotes()
     {
@@ -665,6 +689,7 @@ public class ReceivedMessage extends AbstractMessage
         return emoteMentions;
     }
 
+    @Nonnull
     @Override
     public List<MessageReaction> getReactions()
     {
@@ -683,18 +708,21 @@ public class ReceivedMessage extends AbstractMessage
         return isTTS;
     }
 
+    @Nonnull
     @Override
     public MessageAction editMessage(CharSequence newContent)
     {
         return editMessage(new MessageBuilder().append(newContent).build());
     }
 
+    @Nonnull
     @Override
     public MessageAction editMessage(MessageEmbed newContent)
     {
         return editMessage(new MessageBuilder().setEmbed(newContent).build());
     }
 
+    @Nonnull
     @Override
     public MessageAction editMessageFormat(String format, Object... args)
     {
@@ -702,6 +730,7 @@ public class ReceivedMessage extends AbstractMessage
         return editMessage(new MessageBuilder().appendFormat(format, args).build());
     }
 
+    @Nonnull
     @Override
     public MessageAction editMessage(Message newContent)
     {
@@ -711,6 +740,7 @@ public class ReceivedMessage extends AbstractMessage
         return getChannel().editMessageById(getIdLong(), newContent);
     }
 
+    @Nonnull
     @Override
     public AuditableRestAction<Void> delete()
     {

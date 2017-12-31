@@ -18,7 +18,6 @@ package net.dv8tion.jda.core.managers.fields;
 
 import net.dv8tion.jda.core.managers.RoleManagerUpdatable;
 
-import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 /**
@@ -37,7 +36,7 @@ import java.util.function.Supplier;
  */
 public abstract class RoleField<T> extends Field<T, RoleManagerUpdatable>
 {
-    public RoleField(RoleManagerUpdatable manager, @Nullable Supplier<T> originalValue)
+    public RoleField(RoleManagerUpdatable manager, Supplier<T> originalValue)
     {
         super(manager, originalValue);
     }

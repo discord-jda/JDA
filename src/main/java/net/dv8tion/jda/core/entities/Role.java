@@ -22,6 +22,8 @@ import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.RoleAction;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.Color;
 
 /**
@@ -55,6 +57,7 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      *
      * @return Never-null String containing the name of this {@link net.dv8tion.jda.core.entities.Role Role}.
      */
+    @Nonnull
     String getName();
 
     /**
@@ -92,6 +95,7 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      *
      * @return Color value of Role-color
      */
+    @Nullable
     Color getColor();
 
     /**
@@ -126,6 +130,7 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      *
      * @return the Guild containing this Role
      */
+    @Nonnull
     Guild getGuild();
 
     /**
@@ -163,6 +168,7 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      * @return {@link net.dv8tion.jda.core.requests.restaction.RoleAction RoleAction}
      *         <br>RoleAction with already copied values from the specified {@link net.dv8tion.jda.core.entities.Role Role}
      */
+    @Nonnull
     @CheckReturnValue
     RoleAction createCopy(Guild guild);
 
@@ -196,6 +202,7 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      * @return {@link net.dv8tion.jda.core.requests.restaction.RoleAction RoleAction}
      *         <br>RoleAction with already copied values from the specified {@link net.dv8tion.jda.core.entities.Role Role}
      */
+    @Nonnull
     @CheckReturnValue
     default RoleAction createCopy()
     {
@@ -208,6 +215,7 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      *
      * @return The RoleManager of this Role
      */
+    @Nonnull
     RoleManager getManager();
 
     /**
@@ -219,6 +227,7 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      *
      * @return The {@link net.dv8tion.jda.core.managers.RoleManagerUpdatable RoleManagerUpdatable} for this Role
      */
+    @Nonnull
     RoleManagerUpdatable getManagerUpdatable();
 
     /**
@@ -244,6 +253,7 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction}
      */
+    @Nonnull
     @CheckReturnValue
     AuditableRestAction<Void> delete();
 
@@ -252,5 +262,6 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      *
      * @return the corresponding JDA instance
      */
+    @Nonnull
     JDA getJDA();
 }

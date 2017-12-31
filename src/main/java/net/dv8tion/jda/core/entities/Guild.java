@@ -28,6 +28,7 @@ import net.dv8tion.jda.core.utils.cache.MemberCacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
@@ -47,6 +48,7 @@ public interface Guild extends ISnowflake
      *
      * @return Never-null String containing the Guild's name.
      */
+    @Nonnull
     String getName();
 
     /**
@@ -58,6 +60,7 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null String containing the Guild's icon hash-id.
      */
+    @Nullable
     String getIconId();
 
     /**
@@ -69,6 +72,7 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null String containing the Guild's icon URL.
      */
+    @Nullable
     String getIconUrl();
 
     /**
@@ -85,6 +89,7 @@ public interface Guild extends ISnowflake
      *
      * @return Never-null, unmodifiable Set containing all of the Guild's features.
      */
+    @Nonnull
     Set<String> getFeatures();
 
     /**
@@ -98,6 +103,7 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null String containing the Guild's splash hash-id
      */
+    @Nullable
     String getSplashId();
 
     /**
@@ -111,6 +117,7 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null String containing the Guild's splash URL.
      */
+    @Nullable
     String getSplashUrl();
 
     /**
@@ -142,6 +149,7 @@ public interface Guild extends ISnowflake
      *
      * @see    #getFeatures()
      */
+    @Nonnull
     @CheckReturnValue
     RestAction<String> getVanityUrl();
 
@@ -156,6 +164,7 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} that is the AFK Channel.
      */
+    @Nullable
     VoiceChannel getAfkChannel();
 
     /**
@@ -168,6 +177,7 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} that is the system Channel.
      */
+    @Nullable
     TextChannel getSystemChannel();
 
     /**
@@ -177,6 +187,7 @@ public interface Guild extends ISnowflake
      *
      * @return Never-null Member object containing the Guild owner.
      */
+    @Nonnull
     Member getOwner();
 
     /**
@@ -191,6 +202,7 @@ public interface Guild extends ISnowflake
      *
      * @return The {@link net.dv8tion.jda.core.entities.Guild.Timeout Timeout} set for this Guild.
      */
+    @Nullable
     Timeout getAfkTimeout();
 
     /**
@@ -204,6 +216,7 @@ public interface Guild extends ISnowflake
      *
      * @return The the audio Region this Guild is using for audio connections. Can return Region.UNKNOWN.
      */
+    @Nonnull
     default Region getRegion()
     {
         return Region.fromKey(getRegionRaw());
@@ -219,6 +232,7 @@ public interface Guild extends ISnowflake
      *
      * @return Raw region name
      */
+    @Nonnull
     String getRegionRaw();
 
     /**
@@ -237,6 +251,7 @@ public interface Guild extends ISnowflake
      *
      * @return The Member object of the currently logged in account.
      */
+    @Nonnull
     Member getSelfMember();
 
     /**
@@ -249,6 +264,7 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Member Member} for the related {@link net.dv8tion.jda.core.entities.User User}.
      */
+    @Nullable
     Member getMember(User user);
 
     /**
@@ -265,6 +281,7 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Member Member} with the related {@code userId}.
      */
+    @Nullable
     default Member getMemberById(String userId)
     {
         return getMemberCache().getElementById(userId);
@@ -281,6 +298,7 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Member Member} with the related {@code userId}.
      */
+    @Nullable
     default Member getMemberById(long userId)
     {
         return getMemberCache().getElementById(userId);
@@ -292,6 +310,7 @@ public interface Guild extends ISnowflake
      *
      * @return Immutable list of all members in this Guild.
      */
+    @Nonnull
     default List<Member> getMembers()
     {
         return getMemberCache().asList();
@@ -309,6 +328,7 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-empty immutable list of all Members with the same name as the name provided.
      */
+    @Nonnull
     default List<Member> getMembersByName(String name, boolean ignoreCase)
     {
         return getMemberCache().getElementsByUsername(name, ignoreCase);
@@ -326,6 +346,7 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-empty immutable list of all Members with the same nickname as the nickname provided.
      */
+    @Nonnull
     default List<Member> getMembersByNickname(String nickname, boolean ignoreCase)
     {
         return getMemberCache().getElementsByNickname(nickname, ignoreCase);
@@ -344,6 +365,7 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-empty immutable list of all Members with the same effective name as the name provided.
      */
+    @Nonnull
     default List<Member> getMembersByEffectiveName(String name, boolean ignoreCase)
     {
         return getMemberCache().getElementsByName(name, ignoreCase);
@@ -363,6 +385,7 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-empty immutable list of Members with all provided Roles.
      */
+    @Nonnull
     default List<Member> getMembersWithRoles(Role... roles)
     {
         return getMemberCache().getElementsWithRoles(roles);
@@ -382,6 +405,7 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-empty immutable list of Members with all provided Roles.
      */
+    @Nonnull
     default List<Member> getMembersWithRoles(Collection<Role> roles)
     {
         return getMemberCache().getElementsWithRoles(roles);
@@ -393,6 +417,7 @@ public interface Guild extends ISnowflake
      *
      * @return {@link net.dv8tion.jda.core.utils.cache.MemberCacheView MemberCacheView}
      */
+    @Nonnull
     MemberCacheView getMemberCache();
 
     /**
@@ -407,6 +432,7 @@ public interface Guild extends ISnowflake
      * @throws java.lang.IllegalArgumentException
      *         If the provided ID is not a valid {@code long}
      */
+    @Nullable
     default Category getCategoryById(String id)
     {
         return getCategoryCache().getElementById(id);
@@ -422,6 +448,7 @@ public interface Guild extends ISnowflake
      *         The snowflake ID of the wanted Category
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Category Category} for the provided ID.
      */
+    @Nullable
     default Category getCategoryById(long id)
     {
         return getCategoryCache().getElementById(id);
@@ -433,6 +460,7 @@ public interface Guild extends ISnowflake
      *
      * @return An immutable list of all {@link net.dv8tion.jda.core.entities.Category Categories} in this Guild.
      */
+    @Nonnull
     default List<Category> getCategories()
     {
         return getCategoryCache().asList();
@@ -450,6 +478,7 @@ public interface Guild extends ISnowflake
      * @throws java.lang.IllegalArgumentException
      *         If the provided name is {@code null}
      */
+    @Nonnull
     default List<Category> getCategoriesByName(String name, boolean ignoreCase)
     {
         return getCategoryCache().getElementsByName(name, ignoreCase);
@@ -462,6 +491,7 @@ public interface Guild extends ISnowflake
      *
      * @return Sorted {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
+    @Nonnull
     SnowflakeCacheView<Category> getCategoryCache();
 
     /**
@@ -479,6 +509,7 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} with matching id.
      */
+    @Nullable
     default TextChannel getTextChannelById(String id)
     {
         return getTextChannelCache().getElementById(id);
@@ -496,6 +527,7 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} with matching id.
      */
+    @Nullable
     default TextChannel getTextChannelById(long id)
     {
         return getTextChannelCache().getElementById(id);
@@ -507,6 +539,7 @@ public interface Guild extends ISnowflake
      *
      * @return An immutable List of all {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} in this Guild.
      */
+    @Nonnull
     default List<TextChannel> getTextChannels()
     {
         return getTextChannelCache().asList();
@@ -524,6 +557,7 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-empty immutable list of all TextChannels names that match the provided name.
      */
+    @Nonnull
     default List<TextChannel> getTextChannelsByName(String name, boolean ignoreCase)
     {
         return getTextChannelCache().getElementsByName(name, ignoreCase);
@@ -536,6 +570,7 @@ public interface Guild extends ISnowflake
      *
      * @return Sorted {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
+    @Nonnull
     SnowflakeCacheView<TextChannel> getTextChannelCache();
 
     /**
@@ -553,6 +588,7 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} with matching id.
      */
+    @Nullable
     default VoiceChannel getVoiceChannelById(String id)
     {
         return getVoiceChannelCache().getElementById(id);
@@ -570,6 +606,7 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} with matching id.
      */
+    @Nullable
     default VoiceChannel getVoiceChannelById(long id)
     {
         return getVoiceChannelCache().getElementById(id);
@@ -581,6 +618,7 @@ public interface Guild extends ISnowflake
      *
      * @return An immutable List of {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels}.
      */
+    @Nonnull
     default List<VoiceChannel> getVoiceChannels()
     {
         return getVoiceChannelCache().asList();
@@ -598,6 +636,7 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-empty immutable list of all VoiceChannel names that match the provided name.
      */
+    @Nonnull
     default List<VoiceChannel> getVoiceChannelsByName(String name, boolean ignoreCase)
     {
         return getVoiceChannelCache().getElementsByName(name, ignoreCase);
@@ -610,6 +649,7 @@ public interface Guild extends ISnowflake
      *
      * @return Sorted {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
+    @Nonnull
     SnowflakeCacheView<VoiceChannel> getVoiceChannelCache();
 
     /**
@@ -626,6 +666,7 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Role Role} with matching id.
      */
+    @Nullable
     default Role getRoleById(String id)
     {
         return getRoleCache().getElementById(id);
@@ -642,6 +683,7 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Role Role} with matching id.
      */
+    @Nullable
     default Role getRoleById(long id)
     {
         return getRoleCache().getElementById(id);
@@ -653,6 +695,7 @@ public interface Guild extends ISnowflake
      *
      * @return An immutable List of {@link net.dv8tion.jda.core.entities.Role Roles}.
      */
+    @Nonnull
     default List<Role> getRoles()
     {
         return getRoleCache().asList();
@@ -670,6 +713,7 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-empty immutable list of all Role names that match the provided name.
      */
+    @Nonnull
     default List<Role> getRolesByName(String name, boolean ignoreCase)
     {
         return getRoleCache().getElementsByName(name, ignoreCase);
@@ -682,6 +726,7 @@ public interface Guild extends ISnowflake
      *
      * @return Sorted {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
+    @Nonnull
     SnowflakeCacheView<Role> getRoleCache();
 
     /**
@@ -700,6 +745,7 @@ public interface Guild extends ISnowflake
      *
      * @return An Emote matching the specified Id.
      */
+    @Nullable
     default Emote getEmoteById(String id)
     {
         return getEmoteCache().getElementById(id);
@@ -718,6 +764,7 @@ public interface Guild extends ISnowflake
      *
      * @return An Emote matching the specified Id.
      */
+    @Nullable
     default Emote getEmoteById(long id)
     {
         return getEmoteCache().getElementById(id);
@@ -731,6 +778,7 @@ public interface Guild extends ISnowflake
      *
      * @return An immutable List of {@link net.dv8tion.jda.core.entities.Emote Emotes}.
      */
+    @Nonnull
     default List<Emote> getEmotes()
     {
         return getEmoteCache().asList();
@@ -750,6 +798,7 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-empty immutable list of all Role names that match the provided name.
      */
+    @Nonnull
     default List<Emote> getEmotesByName(String name, boolean ignoreCase)
     {
         return getEmoteCache().getElementsByName(name, ignoreCase);
@@ -761,6 +810,7 @@ public interface Guild extends ISnowflake
      *
      * @return {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
+    @Nonnull
     SnowflakeCacheView<Emote> getEmoteCache();
 
     /**
@@ -786,6 +836,7 @@ public interface Guild extends ISnowflake
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@literal List<}{@link net.dv8tion.jda.core.entities.User User}{@literal >}
      *         <br>An unmodifiable list of all users currently banned from this Guild
      */
+    @Nonnull
     @CheckReturnValue
     RestAction<List<User>> getBans();
 
@@ -816,6 +867,7 @@ public interface Guild extends ISnowflake
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Integer
      *         <br>The amount of Members that would be affected.
      */
+    @Nonnull
     @CheckReturnValue
     RestAction<Integer> getPrunableMemberCount(int days);
 
@@ -829,6 +881,7 @@ public interface Guild extends ISnowflake
      *
      * @return The @everyone {@link net.dv8tion.jda.core.entities.Role Role}
      */
+    @Nonnull
     Role getPublicRole();
 
     /**
@@ -856,6 +909,7 @@ public interface Guild extends ISnowflake
      *
      * @return The Manager of this Guild
      */
+    @Nonnull
     GuildManager getManager();
 
     /**
@@ -870,6 +924,7 @@ public interface Guild extends ISnowflake
      *
      * @return The Updatable Manager of this Guild
      */
+    @Nonnull
     GuildManagerUpdatable getManagerUpdatable();
 
     /**
@@ -880,6 +935,7 @@ public interface Guild extends ISnowflake
      *
      * @return The controller for this Guild.
      */
+    @Nonnull
     GuildController getController();
 
     /**
@@ -899,6 +955,7 @@ public interface Guild extends ISnowflake
      * @see    net.dv8tion.jda.core.JDA#asClient()
      * @see    net.dv8tion.jda.client.JDAClient#getRecentMentions(Guild)
      */
+    @Nonnull
     @CheckReturnValue
     MentionPaginationAction getRecentMentions();
 
@@ -934,6 +991,7 @@ public interface Guild extends ISnowflake
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAction AuditLogPaginationAction}
      */
+    @Nonnull
     @CheckReturnValue
     AuditLogPaginationAction getAuditLogs();
 
@@ -947,6 +1005,7 @@ public interface Guild extends ISnowflake
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
+    @Nonnull
     @CheckReturnValue
     RestAction<Void> leave();
 
@@ -961,6 +1020,7 @@ public interface Guild extends ISnowflake
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: {@link java.lang.Void}
      */
+    @Nonnull
     @CheckReturnValue
     RestAction<Void> delete();
 
@@ -981,6 +1041,7 @@ public interface Guild extends ISnowflake
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: {@link java.lang.Void}
      */
+    @Nonnull
     @CheckReturnValue
     RestAction<Void> delete(@Nullable String mfaCode);
 
@@ -995,6 +1056,7 @@ public interface Guild extends ISnowflake
      *
      * @see    net.dv8tion.jda.core.JDA#getAudioManagerCache() JDA.getAudioManagerCache()
      */
+    @Nonnull
     AudioManager getAudioManager();
 
     /**
@@ -1002,6 +1064,7 @@ public interface Guild extends ISnowflake
      *
      * @return the corresponding JDA instance
      */
+    @Nonnull
     JDA getJDA();
 
     /**
@@ -1020,6 +1083,7 @@ public interface Guild extends ISnowflake
      *
      * @see     net.dv8tion.jda.core.entities.Channel#getInvites()
      */
+    @Nonnull
     @CheckReturnValue
     RestAction<List<Invite>> getInvites();
 
@@ -1038,6 +1102,7 @@ public interface Guild extends ISnowflake
      *
      * @see     TextChannel#getWebhooks()
      */
+    @Nonnull
     @CheckReturnValue
     RestAction<List<Webhook>> getWebhooks();
 
@@ -1050,6 +1115,7 @@ public interface Guild extends ISnowflake
      *
      * @return Never-empty list containing all the {@link GuildVoiceState GuildVoiceStates} on this {@link net.dv8tion.jda.core.entities.Guild Guild}.
      */
+    @Nonnull
     List<GuildVoiceState> getVoiceStates();
 
     /**
@@ -1062,6 +1128,7 @@ public interface Guild extends ISnowflake
      *
      * @return The Verification-Level of this Guild.
      */
+    @Nonnull
     VerificationLevel getVerificationLevel();
 
     /**
@@ -1074,6 +1141,7 @@ public interface Guild extends ISnowflake
      *
      * @return The default message Notification-Level of this Guild.
      */
+    @Nonnull
     NotificationLevel getDefaultNotificationLevel();
 
     /**
@@ -1085,6 +1153,7 @@ public interface Guild extends ISnowflake
      *
      * @return The MFA-Level required by this Guild.
      */
+    @Nonnull
     MFALevel getRequiredMFALevel();
 
     /**
@@ -1093,6 +1162,7 @@ public interface Guild extends ISnowflake
      *
      * @return {@link net.dv8tion.jda.core.entities.Guild.ExplicitContentLevel ExplicitContentLevel} for this Guild
      */
+    @Nonnull
     ExplicitContentLevel getExplicitContentLevel();
 
     /**

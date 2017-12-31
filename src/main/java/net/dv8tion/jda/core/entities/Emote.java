@@ -23,6 +23,8 @@ import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -35,7 +37,6 @@ import java.util.List;
  */
 public interface Emote extends ISnowflake, IMentionable, IFakeable
 {
-
     /**
      * The {@link net.dv8tion.jda.core.entities.Guild Guild} this emote is attached to.
      *
@@ -43,6 +44,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      *
      * @return Guild of this emote or null if it is a fake entity
      */
+    @Nullable
     Guild getGuild();
 
     /**
@@ -54,6 +56,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      *
      * @return An immutable list of the roles this emote is active for (all roles if empty)
      */
+    @Nonnull
     List<Role> getRoles();
 
     /**
@@ -61,6 +64,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      *
      * @return String representation of this emote's name
      */
+    @Nonnull
     String getName();
 
     /**
@@ -77,6 +81,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      *
      * @return The JDA instance of this Emote
      */
+    @Nonnull
     JDA getJDA();
 
     /**
@@ -104,6 +109,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         The RestAction to delete this Emote.
      */
+    @Nonnull
     @CheckReturnValue
     AuditableRestAction<Void> delete();
 
@@ -118,6 +124,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      *
      * @return The EmoteManager for this Emote
      */
+    @Nonnull
     EmoteManager getManager();
 
     /**
@@ -133,6 +140,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      *
      * @return The EmoteManagerUpdatable for this Emote
      */
+    @Nonnull
     EmoteManagerUpdatable getManagerUpdatable();
 
     /**
@@ -141,6 +149,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      *
      * @return Discord CDN link to the Emote's image
      */
+    @Nonnull
     default String getImageUrl()
     {
         return "https://cdn.discordapp.com/emojis/" + getId() + ".png";
@@ -154,6 +163,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      *
      * @see    <a href="https://discordapp.com/developers/docs/resources/channel#message-formatting">Message Formatting</a>
      */
+    @Nonnull
     @Override
     default String getAsMention()
     {

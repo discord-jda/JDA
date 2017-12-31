@@ -37,6 +37,7 @@ import net.dv8tion.jda.core.utils.tuple.Pair;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.security.auth.login.LoginException;
@@ -335,6 +336,7 @@ public class DefaultShardManager implements ShardManager
         return this.queue.size();
     }
 
+    @Nonnull
     @Override
     public ShardCacheView getShardCache()
     {

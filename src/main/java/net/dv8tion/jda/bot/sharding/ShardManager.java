@@ -26,6 +26,7 @@ import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Function;
@@ -117,6 +118,7 @@ public interface ShardManager
      *
      * @return The {@link net.dv8tion.jda.bot.JDABot} registry for this instance of JDA.
      */
+    @Nonnull
     default RestAction<ApplicationInfo> getApplicationInfo()
     {
         return this.getShardCache().stream()
@@ -150,6 +152,7 @@ public interface ShardManager
      *
      * @return An immutable list of all visible {@link net.dv8tion.jda.core.entities.Category Categories}.
      */
+    @Nonnull
     default List<Category> getCategories()
     {
         return this.getCategoryCache().asList();
@@ -167,6 +170,7 @@ public interface ShardManager
      * @throws java.lang.IllegalArgumentException
      *         If the provided name is {@code null}
      */
+    @Nonnull
     default List<Category> getCategoriesByName(final String name, final boolean ignoreCase)
     {
         return this.getCategoryCache().getElementsByName(name, ignoreCase);
@@ -180,6 +184,7 @@ public interface ShardManager
      *         The snowflake ID of the wanted Category
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Category Category} for the provided ID.
      */
+    @Nullable
     default Category getCategoryById(final long id)
     {
         return this.getCategoryCache().getElementById(id);
@@ -195,6 +200,7 @@ public interface ShardManager
      * @throws java.lang.IllegalArgumentException
      *         If the provided ID is not a valid {@code long}
      */
+    @Nullable
     default Category getCategoryById(final String id)
     {
         return this.getCategoryCache().getElementById(id);
@@ -206,6 +212,7 @@ public interface ShardManager
      *
      * @return {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
+    @Nonnull
     default SnowflakeCacheView<Category> getCategoryCache()
     {
         return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getCategoryCache));
@@ -221,6 +228,7 @@ public interface ShardManager
      * @return An {@link net.dv8tion.jda.core.entities.Emote Emote} represented by this id or null if none is found in
      * our cache.
      */
+    @Nullable
     default Emote getEmoteById(final long id)
     {
         return this.getEmoteCache().getElementById(id);
@@ -238,6 +246,7 @@ public interface ShardManager
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      */
+    @Nullable
     default Emote getEmoteById(final String id)
     {
         return this.getEmoteCache().getElementById(id);
@@ -249,6 +258,7 @@ public interface ShardManager
      *
      * @return Unified {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
+    @Nonnull
     default SnowflakeCacheView<Emote> getEmoteCache()
     {
         return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getEmoteCache));
@@ -265,6 +275,7 @@ public interface ShardManager
      *
      * @return An immutable list of Emotes (which may or may not be available to usage).
      */
+    @Nonnull
     default List<Emote> getEmotes()
     {
         return this.getEmoteCache().asList();
@@ -285,6 +296,7 @@ public interface ShardManager
      * @return Possibly-empty list of all the {@link net.dv8tion.jda.core.entities.Emote Emotes} that all have the same
      *         name as the provided name.
      */
+    @Nonnull
     default List<Emote> getEmotesByName(final String name, final boolean ignoreCase)
     {
         return this.getEmoteCache().getElementsByName(name, ignoreCase);
@@ -299,6 +311,7 @@ public interface ShardManager
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Guild Guild} with matching id.
      */
+    @Nullable
     default Guild getGuildById(final long id)
     {
         return this.getGuildCache().getElementById(id);
@@ -313,6 +326,7 @@ public interface ShardManager
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Guild Guild} with matching id.
      */
+    @Nullable
     default Guild getGuildById(final String id)
     {
         return this.getGuildCache().getElementById(id);
@@ -324,10 +338,12 @@ public interface ShardManager
      *
      * @return {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
+    @Nonnull
     default SnowflakeCacheView<Guild> getGuildCache()
     {
         return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getGuildCache));
     }
+
     /**
      * An unmodifiable List of all {@link net.dv8tion.jda.core.entities.Guild Guilds} that the logged account is connected to.
      * <br>If this account is not connected to any {@link net.dv8tion.jda.core.entities.Guild Guilds}, this will return
@@ -335,6 +351,7 @@ public interface ShardManager
      *
      * @return Possibly-empty list of all the {@link net.dv8tion.jda.core.entities.Guild Guilds} that this account is connected to.
      */
+    @Nonnull
     default List<Guild> getGuilds()
     {
         return this.getGuildCache().asList();
@@ -348,6 +365,7 @@ public interface ShardManager
      *
      * @return Unmodifiable list of all {@link net.dv8tion.jda.core.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.core.entities.User Users} in them.
      */
+    @Nonnull
     default List<Guild> getMutualGuilds(final Collection<User> users)
     {
         Checks.noneNull(users, "users");
@@ -366,6 +384,7 @@ public interface ShardManager
      *
      * @return Unmodifiable list of all {@link net.dv8tion.jda.core.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.core.entities.User Users} in them.
      */
+    @Nonnull
     default List<Guild> getMutualGuilds(final User... users)
     {
         Checks.notNull(users, "users");
@@ -382,6 +401,7 @@ public interface ShardManager
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} with matching id.
      */
+    @Nullable
     default PrivateChannel getPrivateChannelById(final long id)
     {
         return this.getPrivateChannelCache().getElementById(id);
@@ -399,6 +419,7 @@ public interface ShardManager
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} with matching id.
      */
+    @Nullable
     default PrivateChannel getPrivateChannelById(final String id)
     {
         return this.getPrivateChannelCache().getElementById(id);
@@ -410,6 +431,7 @@ public interface ShardManager
      *
      * @return {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
+    @Nonnull
     default SnowflakeCacheView<PrivateChannel> getPrivateChannelCache()
     {
         return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getPrivateChannelCache));
@@ -420,6 +442,7 @@ public interface ShardManager
      *
      * @return Possibly-empty list of all {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannels}.
      */
+    @Nonnull
     default List<PrivateChannel> getPrivateChannels()
     {
         return this.getPrivateChannelCache().asList();
@@ -434,6 +457,7 @@ public interface ShardManager
      *         The id of the searched Role
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Role Role} for the specified ID
      */
+    @Nullable
     default Role getRoleById(final long id)
     {
         return this.getRoleCache().getElementById(id);
@@ -450,6 +474,7 @@ public interface ShardManager
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      */
+    @Nullable
     default Role getRoleById(final String id)
     {
         return this.getRoleCache().getElementById(id);
@@ -461,6 +486,7 @@ public interface ShardManager
      *
      * @return Unified {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
+    @Nonnull
     default SnowflakeCacheView<Role> getRoleCache()
     {
         return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getRoleCache));
@@ -473,6 +499,7 @@ public interface ShardManager
      *
      * @return Immutable List of all visible Roles
      */
+    @Nonnull
     default List<Role> getRoles()
     {
         return this.getRoleCache().asList();
@@ -489,6 +516,7 @@ public interface ShardManager
      *         Whether to use {@link String#equalsIgnoreCase(String)}
      * @return Immutable List of all Roles matching the parameters provided.
      */
+    @Nonnull
     default List<Role> getRolesByName(final String name, final boolean ignoreCase)
     {
         return this.getRoleCache().getElementsByName(name, ignoreCase);
@@ -504,6 +532,7 @@ public interface ShardManager
      * @return The {@link net.dv8tion.jda.core.JDA JDA} instance with the given shardId or
      *         {@code null} if no shard has the given id
      */
+    @Nullable
     default JDA getShardById(final int id)
     {
         return this.getShardCache().getElementById(id);
@@ -519,6 +548,7 @@ public interface ShardManager
      * @return The {@link net.dv8tion.jda.core.JDA JDA} instance with the given shardId or
      *         {@code null} if no shard has the given id
      */
+    @Nullable
     default JDA getShardById(final String id)
     {
         return this.getShardCache().getElementById(id);
@@ -530,6 +560,7 @@ public interface ShardManager
      *
      * @return Unified {@link net.dv8tion.jda.bot.utils.cache.ShardCacheView ShardCacheView}
      */
+    @Nonnull
     ShardCacheView getShardCache();
 
     /**
@@ -537,6 +568,7 @@ public interface ShardManager
      *
      * @return An immutable list of all managed {@link net.dv8tion.jda.core.JDA JDA} instances.
      */
+    @Nonnull
     default List<JDA> getShards()
     {
         return this.getShardCache().asList();
@@ -552,6 +584,7 @@ public interface ShardManager
      * @return The  {@link net.dv8tion.jda.core.JDA.Status JDA.Status} of the shard with the given shardId or
      *         {@code null} if no shard has the given id
      */
+    @Nullable
     default JDA.Status getStatus(final int shardId)
     {
         final JDA jda = this.getShardCache().getElementById(shardId);
@@ -563,6 +596,7 @@ public interface ShardManager
      *
      * @return All current shard statuses.
      */
+    @Nonnull
     default Map<JDA, Status> getStatuses()
     {
         return Collections.unmodifiableMap(this.getShardCache().stream()
@@ -585,6 +619,7 @@ public interface ShardManager
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} with matching id.
      */
+    @Nullable
     default TextChannel getTextChannelById(final long id)
     {
         return this.getTextChannelCache().getElementById(id);
@@ -606,6 +641,7 @@ public interface ShardManager
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} with matching id.
      */
+    @Nullable
     default TextChannel getTextChannelById(final String id)
     {
         return this.getTextChannelCache().getElementById(id);
@@ -617,6 +653,7 @@ public interface ShardManager
      *
      * @return {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
+    @Nonnull
     default SnowflakeCacheView<TextChannel> getTextChannelCache()
     {
         return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getTextChannelCache));
@@ -634,6 +671,7 @@ public interface ShardManager
      *
      * @return Possibly-empty list of all known {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}.
      */
+    @Nonnull
     default List<TextChannel> getTextChannels()
     {
         return this.getTextChannelCache().asList();
@@ -648,6 +686,7 @@ public interface ShardManager
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.User User} with matching id.
      */
+    @Nullable
     default User getUserById(final long id)
     {
         return this.getUserCache().getElementById(id);
@@ -662,6 +701,7 @@ public interface ShardManager
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.User User} with matching id.
      */
+    @Nullable
     default User getUserById(final String id)
     {
         return this.getUserCache().getElementById(id);
@@ -673,6 +713,7 @@ public interface ShardManager
      *
      * @return {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
+    @Nonnull
     default SnowflakeCacheView<User> getUserCache()
     {
         return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getUserCache));
@@ -689,6 +730,7 @@ public interface ShardManager
      *
      * @return List of all {@link net.dv8tion.jda.core.entities.User Users} that are visible to JDA.
      */
+    @Nonnull
     default List<User> getUsers()
     {
         return this.getUserCache().asList();
@@ -703,6 +745,7 @@ public interface ShardManager
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} with matching id.
      */
+    @Nullable
     default VoiceChannel getVoiceChannelById(final long id)
     {
         return this.getVoiceChannelCache().getElementById(id);
@@ -717,6 +760,7 @@ public interface ShardManager
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} with matching id.
      */
+    @Nullable
     default VoiceChannel getVoiceChannelById(final String id)
     {
         return this.getVoiceChannelCache().getElementById(id);
@@ -728,6 +772,7 @@ public interface ShardManager
      *
      * @return {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
+    @Nonnull
     default SnowflakeCacheView<VoiceChannel> getVoiceChannelCache()
     {
         return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getVoiceChannelCache));
@@ -739,6 +784,7 @@ public interface ShardManager
      *
      * @return Possible-empty list of all known {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels}.
      */
+    @Nonnull
     default List<VoiceChannel> getVoiceChannels()
     {
         return this.getVoiceChannelCache().asList();

@@ -24,6 +24,7 @@ import net.dv8tion.jda.core.managers.AccountManager;
 import net.dv8tion.jda.core.managers.AccountManagerUpdatable;
 import net.dv8tion.jda.core.requests.RestAction;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class SelfUserImpl extends UserImpl implements SelfUser
@@ -58,6 +59,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
         throw new UnsupportedOperationException("You cannot get a PrivateChannel with yourself (SelfUser)");
     }
 
+    @Nonnull
     @Override
     public RestAction<PrivateChannel> openPrivateChannel()
     {
@@ -117,6 +119,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
             return Message.MAX_FILE_SIZE;
     }
 
+    @Nonnull
     @Override
     public AccountManager getManager()
     {
@@ -133,6 +136,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
         return mng;
     }
 
+    @Nonnull
     @Override
     public AccountManagerUpdatable getManagerUpdatable()
     {

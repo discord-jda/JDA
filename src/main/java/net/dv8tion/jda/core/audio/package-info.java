@@ -22,7 +22,4 @@
  * To interact with the connection an {@link net.dv8tion.jda.core.audio.AudioSendHandler AudioSendHandler}
  * or an {@link net.dv8tion.jda.core.audio.AudioReceiveHandler AudioReceiveHandler} have to be specified the audio manager.
  */
-@ParametersAreNonnullByDefault
 package net.dv8tion.jda.core.audio;
-
-import javax.annotation.ParametersAreNonnullByDefault;

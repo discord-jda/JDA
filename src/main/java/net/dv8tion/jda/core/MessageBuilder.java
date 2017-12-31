@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.requests.restaction.MessageAction;
 import net.dv8tion.jda.core.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.List;
@@ -99,6 +100,7 @@ public class MessageBuilder implements Appendable
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
+    @Nonnull
     public MessageBuilder setTTS(boolean tts)
     {
         this.isTTS = tts;
@@ -114,6 +116,7 @@ public class MessageBuilder implements Appendable
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
+    @Nonnull
     public MessageBuilder setEmbed(@Nullable MessageEmbed embed)
     {
         this.embed = embed;
@@ -135,6 +138,7 @@ public class MessageBuilder implements Appendable
      * @see    net.dv8tion.jda.core.entities.Message#getNonce()
      * @see    <a href="https://en.wikipedia.org/wiki/Cryptographic_nonce" target="_blank">Cryptographic Nonce - Wikipedia</a>
      */
+    @Nonnull
     public MessageBuilder setNonce(@Nullable String nonce)
     {
         this.nonce = nonce;
@@ -155,6 +159,7 @@ public class MessageBuilder implements Appendable
      *
      * @see    net.dv8tion.jda.core.entities.Message#getContentRaw()
      */
+    @Nonnull
     public MessageBuilder setContent(@Nullable String content)
     {
         if (content == null)
@@ -170,6 +175,7 @@ public class MessageBuilder implements Appendable
         return this;
     }
 
+    @Nonnull
     @Override
     public MessageBuilder append(@Nullable CharSequence text)
     {
@@ -177,6 +183,7 @@ public class MessageBuilder implements Appendable
         return this;
     }
 
+    @Nonnull
     @Override
     public MessageBuilder append(@Nullable CharSequence text, int start, int end)
     {
@@ -184,6 +191,7 @@ public class MessageBuilder implements Appendable
         return this;
     }
 
+    @Nonnull
     @Override
     public MessageBuilder append(char c)
     {
@@ -200,6 +208,7 @@ public class MessageBuilder implements Appendable
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
+    @Nonnull
     public MessageBuilder append(@Nullable Object object)
     {
         return append(String.valueOf(object));
@@ -215,6 +224,7 @@ public class MessageBuilder implements Appendable
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
+    @Nonnull
     public MessageBuilder append(IMentionable mention)
     {
         builder.append(mention.getAsMention());
@@ -231,6 +241,7 @@ public class MessageBuilder implements Appendable
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
+    @Nonnull
     public MessageBuilder append(@Nullable CharSequence text, Formatting... format)
     {
         boolean blockPresent = false;
@@ -309,6 +320,7 @@ public class MessageBuilder implements Appendable
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
+    @Nonnull
     public MessageBuilder appendFormat(String format, @Nullable Object... args)
     {
         Checks.notEmpty(format, "Format String");
@@ -328,6 +340,7 @@ public class MessageBuilder implements Appendable
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
+    @Nonnull
     public MessageBuilder appendCodeBlock(@Nullable CharSequence text, @Nullable CharSequence language)
     {
         builder.append("```").append(language).append('\n').append(text).append("\n```");
@@ -375,6 +388,7 @@ public class MessageBuilder implements Appendable
      * @deprecated
      *         Deprecated in favor to {@link #replace(String, String)} due to clearer naming (not using regex)
      */
+    @Nonnull
     @Deprecated
     public MessageBuilder replaceAll(String target, String replacement)
     {
@@ -393,6 +407,7 @@ public class MessageBuilder implements Appendable
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
+    @Nonnull
     public MessageBuilder replace(String target, String replacement)
     {
         int index = builder.indexOf(target);
@@ -414,6 +429,7 @@ public class MessageBuilder implements Appendable
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
+    @Nonnull
     public MessageBuilder replaceFirst(String target, String replacement)
     {
         int index = builder.indexOf(target);
@@ -434,6 +450,7 @@ public class MessageBuilder implements Appendable
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
+    @Nonnull
     public MessageBuilder replaceLast(String target, String replacement)
     {
         int index = builder.lastIndexOf(target);
@@ -455,6 +472,7 @@ public class MessageBuilder implements Appendable
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
+    @Nonnull
     public MessageBuilder stripMentions(JDA jda)
     {
         // Note: Users can rename to "everyone" or "here", so those
@@ -474,6 +492,7 @@ public class MessageBuilder implements Appendable
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
+    @Nonnull
     public MessageBuilder stripMentions(Guild guild)
     {
         // Note: Users can rename to "everyone" or "here", so those
@@ -495,6 +514,7 @@ public class MessageBuilder implements Appendable
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
+    @Nonnull
     public MessageBuilder stripMentions(Guild guild, Message.MentionType... types)
     {
         return this.stripMentions(guild.getJDA(), guild, types);
@@ -517,6 +537,7 @@ public class MessageBuilder implements Appendable
      * @deprecated
      *         Use {@link #stripMentions(Guild, Message.MentionType...)} instead.
      */
+    @Nonnull
     @Deprecated
     public MessageBuilder stripMentions(Guild guild, MentionType... types)
     {
@@ -540,6 +561,7 @@ public class MessageBuilder implements Appendable
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
+    @Nonnull
     public MessageBuilder stripMentions(JDA jda, Message.MentionType... types)
     {
         return this.stripMentions(jda, null, types);
@@ -561,6 +583,7 @@ public class MessageBuilder implements Appendable
      * @deprecated
      *         Use {@link #stripMentions(JDA, Message.MentionType...)} instead
      */
+    @Nonnull
     @Deprecated
     public MessageBuilder stripMentions(JDA jda, @Nullable MentionType... types)
     {
@@ -571,6 +594,7 @@ public class MessageBuilder implements Appendable
         return stripMentions(jda, mentionTypes);
     }
 
+    @Nonnull
     private MessageBuilder stripMentions(@Nullable JDA jda, @Nullable Guild guild, @Nullable Message.MentionType... types)
     {
         if (types == null)
@@ -669,6 +693,7 @@ public class MessageBuilder implements Appendable
      *
      * @return The {@link StringBuilder} used by this {@link MessageBuilder}
      */
+    @Nonnull
     public StringBuilder getStringBuilder()
     {
         return this.builder;
@@ -679,6 +704,7 @@ public class MessageBuilder implements Appendable
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
+    @Nonnull
     public MessageBuilder clear() {
         this.builder.setLength(0);
         this.embed = null;
@@ -842,6 +868,7 @@ public class MessageBuilder implements Appendable
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.MessageAction MessageAction}
      */
+    @Nonnull
     @CheckReturnValue
     public MessageAction sendTo(MessageChannel channel)
     {
@@ -882,6 +909,7 @@ public class MessageBuilder implements Appendable
      *
      * @return the created {@link net.dv8tion.jda.core.entities.Message Message}
      */
+    @Nonnull
     public Message build()
     {
         String message = builder.toString();
@@ -909,6 +937,7 @@ public class MessageBuilder implements Appendable
      *
      * @return the created {@link net.dv8tion.jda.core.entities.Message Messages}
      */
+    @Nonnull
     public Queue<Message> buildAll(@Nullable SplitPolicy... policy)
     {
         if (this.isEmpty())
@@ -957,6 +986,7 @@ public class MessageBuilder implements Appendable
         return messages;
     }
 
+    @Nonnull
     protected DataMessage build(int beginIndex, int endIndex)
     {
         return new DataMessage(isTTS, builder.substring(beginIndex, endIndex), null, null);
@@ -1073,6 +1103,7 @@ public class MessageBuilder implements Appendable
         ROLE
     }
 
+    @Nonnull
     @Deprecated
     private Message.MentionType convertNewType(MentionType oldType)
     {

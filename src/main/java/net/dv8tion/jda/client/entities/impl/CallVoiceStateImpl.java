@@ -22,6 +22,8 @@ import net.dv8tion.jda.core.entities.AudioChannel;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.User;
 
+import javax.annotation.Nonnull;
+
 public class CallVoiceStateImpl implements CallVoiceState
 {
     private final CallUser cUser;
@@ -48,6 +50,7 @@ public class CallVoiceStateImpl implements CallVoiceState
         return selfDeafened;
     }
 
+    @Nonnull
     @Override
     public JDA getJDA()
     {

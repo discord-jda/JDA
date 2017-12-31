@@ -34,6 +34,7 @@ import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.json.JSONArray;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,12 +63,14 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         this.guild = guild;
     }
 
+    @Nonnull
     @Override
     public String getName()
     {
         return name;
     }
 
+    @Nonnull
     @Override
     public Guild getGuild()
     {
@@ -86,6 +89,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         return rawPosition;
     }
 
+    @Nonnull
     @Override
     public JDA getJDA()
     {
@@ -106,6 +110,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         return overrides.get(role.getIdLong());
     }
 
+    @Nonnull
     @Override
     public List<PermissionOverride> getPermissionOverrides()
     {
@@ -113,6 +118,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         return Arrays.asList(overrides.values(new PermissionOverride[overrides.size()]));
     }
 
+    @Nonnull
     @Override
     public List<PermissionOverride> getMemberPermissionOverrides()
     {
@@ -121,6 +127,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
                 .collect(Collectors.toList()));
     }
 
+    @Nonnull
     @Override
     public List<PermissionOverride> getRolePermissionOverrides()
     {
@@ -129,6 +136,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
                 .collect(Collectors.toList()));
     }
 
+    @Nonnull
     @Override
     public ChannelManager getManager()
     {
@@ -145,6 +153,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         return mng;
     }
 
+    @Nonnull
     @Override
     public ChannelManagerUpdatable getManagerUpdatable()
     {
@@ -161,6 +170,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         return mng;
     }
 
+    @Nonnull
     @Override
     public AuditableRestAction<Void> delete()
     {
@@ -180,6 +190,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         };
     }
 
+    @Nonnull
     @Override
     public PermissionOverrideAction createPermissionOverride(Member member)
     {
@@ -195,6 +206,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         return new PermissionOverrideAction(getJDA(), route, this, member);
     }
 
+    @Nonnull
     @Override
     public PermissionOverrideAction createPermissionOverride(Role role)
     {
@@ -210,6 +222,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         return new PermissionOverrideAction(getJDA(), route, this, role);
     }
 
+    @Nonnull
     @Override
     public InviteAction createInvite()
     {
@@ -219,6 +232,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         return new InviteAction(this.getJDA(), this.getId());
     }
 
+    @Nonnull
     @Override
     public RestAction<List<Invite>> getInvites()
     {

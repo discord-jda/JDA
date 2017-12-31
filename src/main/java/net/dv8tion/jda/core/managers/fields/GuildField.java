@@ -18,7 +18,6 @@ package net.dv8tion.jda.core.managers.fields;
 
 import net.dv8tion.jda.core.managers.GuildManagerUpdatable;
 
-import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 /**
@@ -36,7 +35,7 @@ import java.util.function.Supplier;
  */
 public abstract class GuildField<T> extends Field<T, GuildManagerUpdatable>
 {
-    public GuildField(GuildManagerUpdatable manager, @Nullable Supplier<T> originalValue)
+    public GuildField(GuildManagerUpdatable manager, Supplier<T> originalValue)
     {
         super(manager, originalValue);
     }

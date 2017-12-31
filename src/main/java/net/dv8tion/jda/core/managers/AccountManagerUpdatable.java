@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.entities.SelfUser;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.managers.fields.AccountField;
+import net.dv8tion.jda.core.managers.fields.Field;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
@@ -31,6 +32,7 @@ import org.json.JSONObject;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.regex.Pattern;
 
@@ -77,6 +79,7 @@ public class AccountManagerUpdatable
      *
      * @return the corresponding JDA instance
      */
+    @Nonnull
     public JDA getJDA()
     {
         return selfUser.getJDA();
@@ -89,6 +92,7 @@ public class AccountManagerUpdatable
      *
      * @return The corresponding SelfUser
      */
+    @Nonnull
     public SelfUser getSelfUser()
     {
         return selfUser;
@@ -107,6 +111,7 @@ public class AccountManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.AccountField AccountField} - Type: {@code String}
      */
+    @Nonnull
     public AccountField<String> getNameField()
     {
         return name;
@@ -126,6 +131,7 @@ public class AccountManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.AccountField AccountField} - Type: {@link net.dv8tion.jda.core.entities.Icon Icon}
      */
+    @Nonnull
     public AccountField<Icon> getAvatarField()
     {
         return avatar;
@@ -149,6 +155,7 @@ public class AccountManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.AccountField AccountField} - Type: {@code String}
      */
+    @Nonnull
     public AccountField<String> getEmailField()
     {
         if (!isType(AccountType.CLIENT))
@@ -175,6 +182,7 @@ public class AccountManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.AccountField AccountField} - Type: {@code String}
      */
+    @Nonnull
     public AccountField<String> getPasswordField()
     {
         if (!isType(AccountType.CLIENT))
@@ -225,6 +233,7 @@ public class AccountManagerUpdatable
      *         <br>Updates all modified fields or does nothing if none of the {@link net.dv8tion.jda.core.managers.fields.Field Fields}
      *         have been modified. ({@link net.dv8tion.jda.core.requests.RestAction.EmptyRestAction EmptyRestAction})
      */
+    @Nonnull
     @CheckReturnValue
     public RestAction<Void> update(@Nullable String currentPassword)
     {
@@ -293,6 +302,7 @@ public class AccountManagerUpdatable
      *         Updates all modified fields or does nothing if none of the {@link net.dv8tion.jda.core.managers.fields.Field Fields}
      *         have been modified. ({@link net.dv8tion.jda.core.requests.RestAction.EmptyRestAction EmptyRestAction})
      */
+    @Nonnull
     @CheckReturnValue
     public RestAction<Void> update()
     {
@@ -322,16 +332,11 @@ public class AccountManagerUpdatable
             }
         };
 
-        avatar = new AccountField<Icon>(this, null)
+        avatar = new AccountField<Icon>(this, Field.unsupported("Cannot easily provide the original Avatar. Use User#getIconUrl() and download it yourself."))
         {
             @Override
             public void checkValue(@CheckForNull Icon value) { }
 
-            @Override
-            public Icon getOriginalValue()
-            {
-                throw new UnsupportedOperationException("Cannot easily provide the original Avatar. Use User#getIconUrl() and download it yourself.");
-            }
 
             @Override
             public boolean shouldUpdate()
@@ -353,7 +358,7 @@ public class AccountManagerUpdatable
                 }
             };
 
-            password = new AccountField<String>(this, null)
+            password = new AccountField<String>(this, Field.unsupported("Cannot get the original password. We are not given this information."))
             {
                 @Override
                 public void checkValue(@CheckForNull String value)
@@ -361,12 +366,6 @@ public class AccountManagerUpdatable
                     Checks.notNull(value, "account password");
                     if (value.length() < 6 || value.length() > 128)
                         throw new IllegalArgumentException("Provided password must ben 6 to 128 characters in length");
-                }
-
-                @Override
-                public String getOriginalValue()
-                {
-                    throw new UnsupportedOperationException("Cannot get the original password. We are not given this information.");
                 }
 
                 @Override

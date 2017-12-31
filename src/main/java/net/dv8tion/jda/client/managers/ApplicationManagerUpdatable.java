@@ -21,6 +21,7 @@ import net.dv8tion.jda.client.entities.impl.ApplicationImpl;
 import net.dv8tion.jda.client.managers.fields.ApplicationField;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Icon;
+import net.dv8tion.jda.core.managers.fields.Field;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
@@ -245,18 +246,10 @@ public class ApplicationManagerUpdatable
             }
         };
 
-        this.icon = new ApplicationField<Icon>(this, null)
+        this.icon = new ApplicationField<Icon>(this, Field.unsupported("Cannot easily provide the original Avatar. Use Application#getIconUrl() and download it yourself."))
         {
             @Override
-            public void checkValue(@CheckForNull final Icon value)
-            {}
-
-            @Override
-            public Icon getOriginalValue()
-            {
-                throw new UnsupportedOperationException(
-                        "Cannot easily provide the original Avatar. Use Application#getIconUrl() and download it yourself.");
-            }
+            public void checkValue(@CheckForNull final Icon value) {}
 
             @Override
             public boolean shouldUpdate()

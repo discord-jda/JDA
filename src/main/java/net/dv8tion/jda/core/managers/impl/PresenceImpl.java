@@ -26,6 +26,7 @@ import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNullableByDefault;
 
 /**
@@ -58,18 +59,21 @@ public class PresenceImpl implements Presence
     /* -- Public Getters -- */
 
 
+    @Nonnull
     @Override
     public JDA getJDA()
     {
         return api;
     }
 
+    @Nullable
     @Override
     public OnlineStatus getStatus()
     {
         return status;
     }
 
+    @Nullable
     @Override
     public Game getGame()
     {

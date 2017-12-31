@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.utils.MiscUtil;
 
+import javax.annotation.Nonnull;
 import java.util.Formattable;
 import java.util.FormattableFlags;
 import java.util.Formatter;
@@ -55,6 +56,7 @@ public interface IMentionable extends Formattable
      *
      * @return A resolvable mention.
      */
+    @Nonnull
     String getAsMention();
 
     @Override

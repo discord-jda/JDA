@@ -33,6 +33,7 @@ import net.dv8tion.jda.core.requests.restaction.RoleAction;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.Color;
 import java.time.OffsetDateTime;
@@ -86,6 +87,7 @@ public class RoleImpl implements Role
         return rawPosition;
     }
 
+    @Nonnull
     @Override
     public String getName()
     {
@@ -116,6 +118,7 @@ public class RoleImpl implements Role
         return rawPermissions;
     }
 
+    @Nonnull
     @Override
     public List<Permission> getPermissions()
     {
@@ -183,12 +186,14 @@ public class RoleImpl implements Role
         return PermissionUtil.canInteract(this, role);
     }
 
+    @Nonnull
     @Override
     public Guild getGuild()
     {
         return guild;
     }
 
+    @Nonnull
     @Override
     public RoleAction createCopy(Guild guild)
     {
@@ -201,6 +206,7 @@ public class RoleImpl implements Role
                     .setPermissions(rawPermissions);
     }
 
+    @Nonnull
     @Override
     public RoleManager getManager()
     {
@@ -217,6 +223,7 @@ public class RoleImpl implements Role
         return mng;
     }
 
+    @Nonnull
     @Override
     public RoleManagerUpdatable getManagerUpdatable()
     {
@@ -233,6 +240,7 @@ public class RoleImpl implements Role
         return mng;
     }
 
+    @Nonnull
     @Override
     public AuditableRestAction<Void> delete()
     {
@@ -257,12 +265,14 @@ public class RoleImpl implements Role
         };
     }
 
+    @Nonnull
     @Override
     public JDA getJDA()
     {
         return guild.getJDA();
     }
 
+    @Nonnull
     @Override
     public String getAsMention()
     {

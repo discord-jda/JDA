@@ -24,6 +24,7 @@ import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
@@ -40,17 +41,17 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
 
     protected String reason = null;
 
-    public AuditableRestAction(JDA api, Route.CompiledRoute route)
+    public AuditableRestAction(JDA api, @Nullable Route.CompiledRoute route)
     {
         super(api, route);
     }
 
-    public AuditableRestAction(JDA api, Route.CompiledRoute route, @Nullable RequestBody data)
+    public AuditableRestAction(JDA api, @Nullable Route.CompiledRoute route, @Nullable RequestBody data)
     {
         super(api, route, data);
     }
 
-    public AuditableRestAction(JDA api, Route.CompiledRoute route, @Nullable JSONObject data)
+    public AuditableRestAction(JDA api, @Nullable Route.CompiledRoute route, @Nullable JSONObject data)
     {
         super(api, route, data);
     }
@@ -74,6 +75,7 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
      *
      * @return The current AuditableRestAction instance for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
     public AuditableRestAction<T> reason(@Nullable String reason)
     {
@@ -97,6 +99,7 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
         return headers;
     }
 
+    @Nonnull
     private String uriEncode(String input)
     {
         String formEncode = MiscUtil.encodeUTF8(input);
@@ -133,6 +136,7 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
                 success.accept(content);
         }
 
+        @Nonnull
         @Override
         public RequestFuture<T> submit(boolean shouldQueue)
         {

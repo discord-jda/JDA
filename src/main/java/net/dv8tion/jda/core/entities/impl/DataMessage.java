@@ -19,6 +19,7 @@ package net.dv8tion.jda.core.entities.impl;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.MessageType;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
@@ -34,6 +35,7 @@ public class DataMessage extends AbstractMessage
         this.embed = embed;
     }
 
+    @Nonnull
     @Override
     public MessageType getType()
     {
@@ -66,12 +68,14 @@ public class DataMessage extends AbstractMessage
         return String.format("DataMessage(%.30s)", getContentRaw());
     }
 
+    @Nonnull
     public DataMessage setEmbed(@Nullable MessageEmbed embed)
     {
         this.embed = embed;
         return this;
     }
 
+    @Nonnull
     @Override
     public List<MessageEmbed> getEmbeds()
     {

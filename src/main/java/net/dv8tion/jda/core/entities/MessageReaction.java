@@ -26,9 +26,11 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.pagination.ReactionPaginationAction;
+import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.Objects;
@@ -76,6 +78,7 @@ public class MessageReaction
      *
      * @return The JDA instance of this Reaction
      */
+    @Nonnull
     public JDA getJDA()
     {
         return channel.getJDA();
@@ -117,6 +120,7 @@ public class MessageReaction
      *
      * @return The ChannelType
      */
+    @Nonnull
     public ChannelType getChannelType()
     {
         return channel.getType();
@@ -143,6 +147,7 @@ public class MessageReaction
      *
      * @return {@link net.dv8tion.jda.core.entities.Guild Guild} this Reaction was used in, or {@code null}
      */
+    @Nullable
     public Guild getGuild()
     {
         TextChannel channel = getTextChannel();
@@ -155,6 +160,7 @@ public class MessageReaction
      *
      * @return The {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} or {@code null}
      */
+    @Nullable
     public TextChannel getTextChannel()
     {
         return getChannel() instanceof TextChannel ? (TextChannel) getChannel() : null;
@@ -166,6 +172,7 @@ public class MessageReaction
      *
      * @return The {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} or {@code null}
      */
+    @Nullable
     public PrivateChannel getPrivateChannel()
     {
         return getChannel() instanceof PrivateChannel ? (PrivateChannel) getChannel() : null;
@@ -177,6 +184,7 @@ public class MessageReaction
      *
      * @return The {@link net.dv8tion.jda.client.entities.Group Group} or {@code null}
      */
+    @Nullable
     public Group getGroup()
     {
         return getChannel() instanceof Group ? (Group) getChannel() : null;
@@ -188,6 +196,7 @@ public class MessageReaction
      *
      * @return The channel this Reaction was used in
      */
+    @Nonnull
     public MessageChannel getChannel()
     {
         return channel;
@@ -199,6 +208,7 @@ public class MessageReaction
      *
      * @return The final instance of this Reaction's Emote/Emoji
      */
+    @Nonnull
     public ReactionEmote getReactionEmote()
     {
         return emote;
@@ -213,6 +223,7 @@ public class MessageReaction
      * @deprecated
      *         This will be replaced due to the new naming convention; Use {@link #getReactionEmote()} instead
      */
+    @Nonnull
     @Deprecated
     public ReactionEmote getEmote()
     {
@@ -224,6 +235,7 @@ public class MessageReaction
      *
      * @return The message id this reaction is attached to
      */
+    @Nonnull
     public String getMessageId()
     {
         return Long.toUnsignedString(messageId);
@@ -259,6 +271,7 @@ public class MessageReaction
      * @return {@link net.dv8tion.jda.core.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction}
      *         <br>Iterable {@link net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction PaginationAction} to get all users
      */
+    @Nonnull
     @CheckReturnValue
     public ReactionPaginationAction getUsers()
     {
@@ -291,6 +304,7 @@ public class MessageReaction
      * @return {@link net.dv8tion.jda.core.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction}
      *         <br>Iterable {@link net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction PaginationAction} to get all users
      */
+    @Nonnull
     @CheckReturnValue
     public ReactionPaginationAction getUsers(int amount)
     {
@@ -317,6 +331,7 @@ public class MessageReaction
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
      *         Nothing is returned on success
      */
+    @Nonnull
     @CheckReturnValue
     public RestAction<Void> removeReaction()
     {
@@ -355,11 +370,11 @@ public class MessageReaction
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
      *         Nothing is returned on success
      */
+    @Nonnull
     @CheckReturnValue
     public RestAction<Void> removeReaction(User user)
     {
-        if (user == null)
-            throw new IllegalArgumentException("Provided User was null!");
+        Checks.notNull(user, "User");
         if (!user.equals(getJDA().getSelfUser()))
         {
             if (channel.getType() == ChannelType.TEXT)
@@ -466,6 +481,7 @@ public class MessageReaction
          *
          * @return The id or {@code null}
          */
+        @Nullable
         public String getId()
         {
             return id != null ? String.valueOf(id) : null;
@@ -495,6 +511,7 @@ public class MessageReaction
          *
          * @return The time when this emote was created
          */
+        @Nonnull
         public OffsetDateTime getCreationTime()
         {
             return MiscUtil.getCreationTime(getIdLong());
@@ -506,6 +523,7 @@ public class MessageReaction
          *
          * @return The name for this emote/emoji
          */
+        @Nonnull
         public String getName()
         {
             return name;
@@ -518,6 +536,7 @@ public class MessageReaction
          *
          * @return The possibly-null Emote for the Reaction instance
          */
+        @Nonnull
         public Emote getEmote()
         {
             return emote;
@@ -528,6 +547,7 @@ public class MessageReaction
          *
          * @return The JDA instance of the Reaction
          */
+        @Nonnull
         public JDA getJDA()
         {
             return api;

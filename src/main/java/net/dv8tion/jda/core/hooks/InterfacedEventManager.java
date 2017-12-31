@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.hooks;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.Event;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -69,6 +70,7 @@ public class InterfacedEventManager implements IEventManager
         listeners.remove(listener);
     }
 
+    @Nonnull
     @Override
     public List<Object> getRegisteredListeners()
     {

@@ -18,7 +18,6 @@ package net.dv8tion.jda.core.managers.fields;
 
 import net.dv8tion.jda.core.managers.ChannelManagerUpdatable;
 
-import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 /**
@@ -36,7 +35,7 @@ import java.util.function.Supplier;
  */
 public abstract class ChannelField<T> extends Field<T, ChannelManagerUpdatable>
 {
-    public ChannelField(ChannelManagerUpdatable manager, @Nullable Supplier<T> originalValue)
+    public ChannelField(ChannelManagerUpdatable manager, Supplier<T> originalValue)
     {
         super(manager, originalValue);
     }

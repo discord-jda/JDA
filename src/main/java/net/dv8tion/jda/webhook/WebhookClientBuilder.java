@@ -21,6 +21,8 @@ import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import okhttp3.OkHttpClient;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -115,6 +117,7 @@ public class WebhookClientBuilder
      *
      * @return The current WebhookClientBuilder for chaining convenience
      */
+    @Nonnull
     public WebhookClientBuilder setExecutorService(@Nullable ScheduledExecutorService executorService)
     {
         this.pool = executorService;
@@ -133,6 +136,7 @@ public class WebhookClientBuilder
      *
      * @return The current WebhookClientBuilder for chaining convenience
      */
+    @Nonnull
     public WebhookClientBuilder setHttpClient(@Nullable OkHttpClient client)
     {
         this.client = client;
@@ -151,6 +155,7 @@ public class WebhookClientBuilder
      *
      * @return The current WebhookClientBuilder for chaining convenience
      */
+    @Nonnull
     public WebhookClientBuilder setHttpClientBuilder(@Nullable OkHttpClient.Builder builder)
     {
         Checks.notNull(builder, "Builder");
@@ -170,6 +175,7 @@ public class WebhookClientBuilder
      *
      * @return The current WebhookClientBuilder for chaining convenience
      */
+    @Nonnull
     public WebhookClientBuilder setThreadFactory(@Nullable ThreadFactory factory)
     {
         this.threadFactory = factory;
@@ -188,6 +194,7 @@ public class WebhookClientBuilder
      *
      * @return The current WebhookClientBuilder for chaining convenience
      */
+    @Nonnull
     public WebhookClientBuilder setDaemon(boolean isDaemon)
     {
         this.isDaemon = isDaemon;
@@ -203,6 +210,8 @@ public class WebhookClientBuilder
      *
      * @return The new WebhookClient instance
      */
+    @Nonnull
+    @CheckReturnValue
     public WebhookClient build()
     {
         OkHttpClient client = this.client;

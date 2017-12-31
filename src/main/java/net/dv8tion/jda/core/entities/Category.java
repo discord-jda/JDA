@@ -3,6 +3,7 @@ package net.dv8tion.jda.core.entities;
 import net.dv8tion.jda.core.requests.restaction.ChannelAction;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
@@ -21,6 +22,7 @@ public interface Category extends Channel, Comparable<Category>
      *
      * @return Immutable list of all child channels
      */
+    @Nonnull
     List<Channel> getChannels();
 
     /**
@@ -29,6 +31,7 @@ public interface Category extends Channel, Comparable<Category>
      *
      * @return Immutable list of all child TextChannels
      */
+    @Nonnull
     List<TextChannel> getTextChannels();
 
     /**
@@ -37,6 +40,7 @@ public interface Category extends Channel, Comparable<Category>
      *
      * @return Immutable list of all child VoiceChannels
      */
+    @Nonnull
     List<VoiceChannel> getVoiceChannels();
 
     /**
@@ -69,6 +73,7 @@ public interface Category extends Channel, Comparable<Category>
      * @return A specific {@link net.dv8tion.jda.core.requests.restaction.ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new TextChannel before creating it
      */
+    @Nonnull
     @CheckReturnValue
     ChannelAction createTextChannel(String name);
 
@@ -102,6 +107,7 @@ public interface Category extends Channel, Comparable<Category>
      * @return A specific {@link net.dv8tion.jda.core.requests.restaction.ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new VoiceChannel before creating it
      */
+    @Nonnull
     @CheckReturnValue
     ChannelAction createVoiceChannel(String name);
 }

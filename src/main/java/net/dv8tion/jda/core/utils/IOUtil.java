@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.utils;
 
+import javax.annotation.Nonnull;
 import java.io.*;
 
 public class IOUtil
@@ -38,6 +39,7 @@ public class IOUtil
      *
      * @return A byte[] containing all of the file's data
      */
+    @Nonnull
     public static byte[] readFully(File file) throws IOException
     {
         Checks.notNull(file, "File");
@@ -96,6 +98,7 @@ public class IOUtil
      *
      * @return A byte[] containing all of the data provided by the InputStream
      */
+    @Nonnull
     public static byte[] readFully(InputStream stream) throws IOException
     {
         Checks.notNull(stream, "InputStream");

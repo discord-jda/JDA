@@ -26,6 +26,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.MessageAction;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.InputStream;
 
@@ -44,6 +45,7 @@ public class PrivateChannelImpl implements PrivateChannel
         this.user = user;
     }
 
+    @Nonnull
     @Override
     public User getUser()
     {
@@ -65,24 +67,28 @@ public class PrivateChannelImpl implements PrivateChannel
         return lastMessageId > 0;
     }
 
+    @Nonnull
     @Override
     public String getName()
     {
         return user.getName();
     }
 
+    @Nonnull
     @Override
     public ChannelType getType()
     {
         return ChannelType.PRIVATE;
     }
 
+    @Nonnull
     @Override
     public JDA getJDA()
     {
         return user.getJDA();
     }
 
+    @Nonnull
     @Override
     public RestAction<Void> close()
     {
@@ -124,6 +130,7 @@ public class PrivateChannelImpl implements PrivateChannel
         return currentCall;
     }
 
+    @Nonnull
     @Override
     public MessageAction sendMessage(CharSequence text)
     {
@@ -131,6 +138,7 @@ public class PrivateChannelImpl implements PrivateChannel
         return PrivateChannel.super.sendMessage(text);
     }
 
+    @Nonnull
     @Override
     public MessageAction sendMessage(MessageEmbed embed)
     {
@@ -138,6 +146,7 @@ public class PrivateChannelImpl implements PrivateChannel
         return PrivateChannel.super.sendMessage(embed);
     }
 
+    @Nonnull
     @Override
     public MessageAction sendMessage(Message msg)
     {
@@ -145,6 +154,7 @@ public class PrivateChannelImpl implements PrivateChannel
         return PrivateChannel.super.sendMessage(msg);
     }
 
+    @Nonnull
     @Override
     public MessageAction sendFile(InputStream data, String fileName, @Nullable Message message)
     {

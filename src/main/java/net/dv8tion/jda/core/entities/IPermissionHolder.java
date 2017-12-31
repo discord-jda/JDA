@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.Permission;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
 
@@ -34,6 +35,7 @@ public interface IPermissionHolder
      * 
      * @return A never-null Guild to which this PermissionHolder is linked
      */
+    @Nonnull
     Guild getGuild();
 
     /**
@@ -41,6 +43,7 @@ public interface IPermissionHolder
      *
      * @return An immutable List of Permissions granted to this PermissionHolder.
      */
+    @Nonnull
     List<Permission> getPermissions();
 
     /**

@@ -31,6 +31,7 @@ import org.json.JSONObject;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 
 /**
  * An {@link #update() updatable} manager that allows
@@ -76,6 +77,7 @@ public class ChannelManagerUpdatable
      *
      * @return the corresponding JDA instance
      */
+    @Nonnull
     public JDA getJDA()
     {
         return channel.getJDA();
@@ -87,6 +89,7 @@ public class ChannelManagerUpdatable
      *
      * @return The {@link net.dv8tion.jda.core.entities.Channel Channel}
      */
+    @Nonnull
     public Channel getChannel()
     {
         return channel;
@@ -99,6 +102,7 @@ public class ChannelManagerUpdatable
      *
      * @return The parent {@link net.dv8tion.jda.core.entities.Guild Guild}
      */
+    @Nonnull
     public Guild getGuild()
     {
         return channel.getGuild();
@@ -117,6 +121,7 @@ public class ChannelManagerUpdatable
      *
      *  @return {@link net.dv8tion.jda.core.managers.fields.ChannelField ChannelField} - Type: {@code String}
      */
+    @Nonnull
     public ChannelField<String> getNameField()
     {
         return name;
@@ -138,6 +143,7 @@ public class ChannelManagerUpdatable
      *
      * @since  3.4.0
      */
+    @Nonnull
     public ChannelField<Category> getParentField()
     {
         if (channel instanceof Category)
@@ -163,6 +169,7 @@ public class ChannelManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.ChannelField ChannelField} - Type: {@code String}
      */
+    @Nonnull
     public ChannelField<String> getTopicField()
     {
         if (channel.getType() != ChannelType.TEXT)
@@ -189,6 +196,7 @@ public class ChannelManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.ChannelField ChannelField} - Type: {@code Integer}
      */
+    @Nonnull
     public ChannelField<Integer> getUserLimitField()
     {
         if (channel.getType() != ChannelType.VOICE)
@@ -211,6 +219,7 @@ public class ChannelManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.ChannelField ChannelField} - Type: {@code boolean}
      */
+    @Nonnull
     public ChannelField<Boolean> getNSFWField()
     {
         if (channel.getType() != ChannelType.TEXT)
@@ -240,6 +249,7 @@ public class ChannelManagerUpdatable
      *
      * @see    net.dv8tion.jda.core.entities.Guild#getFeatures()
      */
+    @Nonnull
     public ChannelField<Integer> getBitrateField()
     {
         if (channel.getType() != ChannelType.VOICE)
@@ -265,6 +275,7 @@ public class ChannelManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.ChannelField ChannelField} - Type: {@code Integer}
      */
+    @Nonnull
     public ChannelField<Integer> getPositionField()
     {
         if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_CHANNEL))
@@ -322,6 +333,7 @@ public class ChannelManagerUpdatable
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Applies all changes that have been made in a single api-call.
      */
+    @Nonnull
     @CheckReturnValue
     public AuditableRestAction<Void> update()
     {

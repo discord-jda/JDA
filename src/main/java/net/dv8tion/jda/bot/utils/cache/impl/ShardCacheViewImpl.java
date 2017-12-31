@@ -23,12 +23,15 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 
+import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.ThreadSafe;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@ThreadSafe
 public class ShardCacheViewImpl implements ShardCacheView
 {
     protected final TIntObjectMap<JDA> elements;
@@ -38,7 +41,7 @@ public class ShardCacheViewImpl implements ShardCacheView
         this.elements = new TSynchronizedIntObjectMap<>(new TIntObjectHashMap<JDA>(), new Object());
     }
 
-    public ShardCacheViewImpl(int initialCapacity)
+    public ShardCacheViewImpl(@Nonnegative int initialCapacity)
     {
         this.elements = new TSynchronizedIntObjectMap<>(new TIntObjectHashMap<JDA>(initialCapacity), new Object());
     }
@@ -53,12 +56,14 @@ public class ShardCacheViewImpl implements ShardCacheView
         return elements;
     }
 
+    @Nonnull
     @Override
     public List<JDA> asList()
     {
         return Collections.unmodifiableList(new ArrayList<>(elements.valueCollection()));
     }
 
+    @Nonnull
     @Override
     public Set<JDA> asSet()
     {
@@ -77,6 +82,7 @@ public class ShardCacheViewImpl implements ShardCacheView
         return elements.isEmpty();
     }
 
+    @Nonnull
     @Override
     public List<JDA> getElementsByName(@Nonnull String name, boolean ignoreCase)
     {
@@ -106,12 +112,14 @@ public class ShardCacheViewImpl implements ShardCacheView
         return list;
     }
 
+    @Nonnull
     @Override
     public Stream<JDA> stream()
     {
         return elements.valueCollection().stream();
     }
 
+    @Nonnull
     @Override
     public Stream<JDA> parallelStream()
     {
@@ -131,6 +139,7 @@ public class ShardCacheViewImpl implements ShardCacheView
         return this.elements.get(id);
     }
 
+    @ThreadSafe
     public static class UnifiedShardCacheViewImpl implements ShardCacheView
     {
         protected final Supplier<Stream<ShardCacheView>> generator;
@@ -152,6 +161,7 @@ public class ShardCacheViewImpl implements ShardCacheView
             return generator.get().allMatch(CacheView::isEmpty);
         }
 
+        @Nonnull
         @Override
         public List<JDA> asList()
         {
@@ -160,6 +170,7 @@ public class ShardCacheViewImpl implements ShardCacheView
             return Collections.unmodifiableList(list);
         }
 
+        @Nonnull
         @Override
         public Set<JDA> asSet()
         {
@@ -168,6 +179,7 @@ public class ShardCacheViewImpl implements ShardCacheView
             return Collections.unmodifiableSet(set);
         }
 
+        @Nonnull
         @Override
         public List<JDA> getElementsByName(@Nonnull String name, boolean ignoreCase)
         {
@@ -186,12 +198,14 @@ public class ShardCacheViewImpl implements ShardCacheView
                 .findFirst().orElse(null);
         }
 
+        @Nonnull
         @Override
         public Stream<JDA> stream()
         {
             return generator.get().flatMap(CacheView::stream).distinct();
         }
 
+        @Nonnull
         @Override
         public Stream<JDA> parallelStream()
         {

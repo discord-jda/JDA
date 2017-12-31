@@ -16,11 +16,14 @@
 
 package net.dv8tion.jda.core.audio;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.sound.sampled.AudioFormat;
 
 /**
  * Interface used to send audio to Discord through JDA.
  */
+@ParametersAreNonnullByDefault
 public interface AudioSendHandler
 {
     /**
@@ -52,6 +55,7 @@ public interface AudioSendHandler
      *
      * @return Should return a byte[] containing 20 Milliseconds of audio.
      */
+    @Nonnull
     byte[] provide20MsAudio();
 
     /**

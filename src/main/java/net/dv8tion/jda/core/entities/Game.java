@@ -17,6 +17,7 @@ package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.utils.Checks;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
@@ -67,6 +68,7 @@ public class Game
      *
      * @return RichPresence or {@code null} if {@link #isRich()} returns {@code false}
      */
+    @Nullable
     public RichPresence asRichPresence()
     {
         return null;
@@ -77,6 +79,7 @@ public class Game
      *
      * @return Possibly-null String containing the Game's name.
      */
+    @Nonnull
     public String getName()
     {
         return name;
@@ -88,6 +91,7 @@ public class Game
      *
      * @return Possibly-null String containing the Game's URL.
      */
+    @Nullable
     public String getUrl()
     {
         return url;
@@ -98,6 +102,7 @@ public class Game
      *
      * @return Never-null {@link net.dv8tion.jda.core.entities.Game.GameType GameType} representing the type of Game
      */
+    @Nonnull
     public GameType getType()
     {
         return type;
@@ -145,6 +150,7 @@ public class Game
      *
      * @return A valid Game instance with the provided name with {@link GameType#DEFAULT}
      */
+    @Nonnull
     public static Game playing(String name)
     {
         Checks.notBlank(name, "Name");
@@ -167,6 +173,7 @@ public class Game
      * @deprecated
      *        Use {@link #playing(String)} instead
      */
+    @Nonnull
     @Deprecated
     public static Game of(String name)
     {
@@ -190,6 +197,7 @@ public class Game
      *
      * @see    #isValidStreamingUrl(String)
      */
+    @Nonnull
     public static Game streaming(String name, @Nullable String url)
     {
         Checks.notEmpty(name, "Provided game name");
@@ -221,6 +229,7 @@ public class Game
      * @deprecated
      *         Use {@link #streaming(String, String)} instead!
      */
+    @Nonnull
     @Deprecated
     public static Game of(String name, @Nullable String url)
     {
@@ -239,6 +248,7 @@ public class Game
      *
      * @return A valid Game instance with the provided name with {@link GameType#LISTENING}
      */
+    @Nonnull
     public static Game listening(String name)
     {
         Checks.notBlank(name, "Name");
@@ -257,6 +267,7 @@ public class Game
      *
      * @return A valid Game instance with the provided name with {@link GameType#WATCHING}
      */
+    @Nonnull
     public static Game watching(String name)
     {
         Checks.notBlank(name, "Name");
@@ -276,6 +287,7 @@ public class Game
      *
      * @return A valid Game instance with the provided name and url
      */
+    @Nonnull
     public static Game of(GameType type, String name)
     {
         return of(type, name, null);
@@ -300,6 +312,7 @@ public class Game
      *
      * @see    #isValidStreamingUrl(String)
      */
+    @Nonnull
     public static Game of(GameType type, String name, @Nullable String url)
     {
         Checks.notNull(type, "Type");

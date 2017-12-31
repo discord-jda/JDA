@@ -20,6 +20,8 @@ import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.Event;
 
+import javax.annotation.Nonnull;
+
 /**
  * <b><u>GenericMessageEvent</u></b><br>
  * Fired whenever a {@link net.dv8tion.jda.core.entities.Message Message} event is fired.<br>
@@ -39,11 +41,13 @@ public abstract class GenericMessageEvent extends Event
         this.channel = channel;
     }
 
+    @Nonnull
     public MessageChannel getChannel()
     {
         return channel;
     }
 
+    @Nonnull
     public String getMessageId()
     {
         return Long.toUnsignedString(messageId);
@@ -59,9 +63,9 @@ public abstract class GenericMessageEvent extends Event
         return channel.getType() == type;
     }
 
+    @Nonnull
     public ChannelType getChannelType()
     {
         return channel.getType();
     }
-
 }

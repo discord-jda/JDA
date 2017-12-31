@@ -19,6 +19,7 @@ package net.dv8tion.jda.core.entities;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.IOUtil;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,6 +49,7 @@ public class Icon
      *
      * @return String representation of the encoded data for this icon
      */
+    @Nonnull
     public String getEncoding()
     {
         return encoding;
@@ -69,6 +71,7 @@ public class Icon
      *
      * @see    net.dv8tion.jda.core.utils.IOUtil#readFully(File)
      */
+    @Nonnull
     public static Icon from(File file) throws IOException
     {
         Checks.notNull(file, "Provided File");
@@ -94,6 +97,7 @@ public class Icon
      *
      * @see    net.dv8tion.jda.core.utils.IOUtil#readFully(InputStream)
      */
+    @Nonnull
     public static Icon from(InputStream stream) throws IOException
     {
         Checks.notNull(stream, "InputStream");
@@ -112,6 +116,7 @@ public class Icon
      *
      * @return An Icon instance representing the specified image data
      */
+    @Nonnull
     public static Icon from(byte[] data)
     {
         Checks.notNull(data, "Provided byte[]");

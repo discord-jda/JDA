@@ -25,6 +25,7 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -47,6 +48,7 @@ public class GuildManager
      *
      * @return the corresponding JDA instance
      */
+    @Nonnull
     public JDA getJDA()
     {
         return updatable.getJDA();
@@ -58,6 +60,7 @@ public class GuildManager
      *
      * @return The {@link net.dv8tion.jda.core.entities.Guild Guild} of this Manager
      */
+    @Nonnull
     public Guild getGuild()
     {
         return updatable.getGuild();
@@ -79,6 +82,7 @@ public class GuildManager
      * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#getNameField()
      * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#update()
      */
+    @Nonnull
     @CheckReturnValue
     public AuditableRestAction<Void> setName(String name)
     {
@@ -107,6 +111,7 @@ public class GuildManager
      * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#getRegionField()
      * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#update()
      */
+    @Nonnull
     @CheckReturnValue
     public AuditableRestAction<Void> setRegion(Region region)
     {
@@ -129,6 +134,7 @@ public class GuildManager
      * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#getIconField()
      * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#update()
      */
+    @Nonnull
     @CheckReturnValue
     public AuditableRestAction<Void> setIcon(@Nullable Icon icon)
     {
@@ -151,6 +157,7 @@ public class GuildManager
      * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#getSplashField()
      * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#update()
      */
+    @Nonnull
     @CheckReturnValue
     public AuditableRestAction<Void> setSplash(@Nullable Icon splash)
     {
@@ -173,6 +180,7 @@ public class GuildManager
      * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#getAfkChannelField()
      * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#update()
      */
+    @Nonnull
     @CheckReturnValue
     public AuditableRestAction<Void> setAfkChannel(@Nullable VoiceChannel afkChannel)
     {
@@ -195,6 +203,7 @@ public class GuildManager
      * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#getSystemChannelField()
      * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#update()
      */
+    @Nonnull
     @CheckReturnValue
     public AuditableRestAction<Void> setSystemChannel(@Nullable TextChannel systemChannel)
     {
@@ -217,6 +226,7 @@ public class GuildManager
      * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#getAfkTimeoutField()
      * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#update()
      */
+    @Nonnull
     @CheckReturnValue
     public AuditableRestAction<Void> setAfkTimeout(@Nullable Guild.Timeout timeout)
     {
@@ -239,6 +249,7 @@ public class GuildManager
      * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#getVerificationLevelField()
      * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#update()
      */
+    @Nonnull
     @CheckReturnValue
     public AuditableRestAction<Void> setVerificationLevel(Guild.VerificationLevel level)
     {
@@ -261,6 +272,7 @@ public class GuildManager
      * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#getDefaultNotificationLevelField()
      * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#update()
      */
+    @Nonnull
     @CheckReturnValue
     public AuditableRestAction<Void> setDefaultNotificationLevel(Guild.NotificationLevel level)
     {
@@ -283,6 +295,7 @@ public class GuildManager
      * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#getRequiredMFALevelField()
      * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#update()
      */
+    @Nonnull
     @CheckReturnValue
     public AuditableRestAction<Void> setRequiredMFALevel(Guild.MFALevel level)
     {
@@ -308,6 +321,7 @@ public class GuildManager
      * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#getRequiredMFALevelField()
      * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#update()
      */
+    @Nonnull
     @CheckReturnValue
     public AuditableRestAction<Void> setExplicitContentLevel(Guild.ExplicitContentLevel level)
     {

@@ -24,6 +24,7 @@ import net.dv8tion.jda.core.entities.Webhook;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -52,6 +53,7 @@ public class WebhookManager
      *
      * @return the corresponding JDA instance
      */
+    @Nonnull
     public JDA getJDA()
     {
         return manager.getJDA();
@@ -64,6 +66,7 @@ public class WebhookManager
      *
      * @return The parent {@link net.dv8tion.jda.core.entities.Guild Guild}
      */
+    @Nonnull
     public Guild getGuild()
     {
         return getWebhook().getGuild();
@@ -76,6 +79,7 @@ public class WebhookManager
      *
      * @return The parent {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      */
+    @Nonnull
     public TextChannel getChannel()
     {
         return getWebhook().getChannel();
@@ -87,6 +91,7 @@ public class WebhookManager
      *
      * @return The target {@link net.dv8tion.jda.core.entities.Webhook Webhook}
      */
+    @Nonnull
     public Webhook getWebhook()
     {
         return manager.getWebhook();
@@ -112,6 +117,7 @@ public class WebhookManager
      * @see    net.dv8tion.jda.core.managers.WebhookManagerUpdatable#getNameField()
      * @see    net.dv8tion.jda.core.managers.WebhookManagerUpdatable#update()
      */
+    @Nonnull
     @CheckReturnValue
     public AuditableRestAction<Void> setName(String name)
     {
@@ -135,6 +141,7 @@ public class WebhookManager
      * @see    net.dv8tion.jda.core.managers.WebhookManagerUpdatable#getAvatarField()
      * @see    net.dv8tion.jda.core.managers.WebhookManagerUpdatable#update()
      */
+    @Nonnull
     @CheckReturnValue
     public AuditableRestAction<Void> setAvatar(@Nullable Icon icon)
     {
@@ -163,6 +170,7 @@ public class WebhookManager
      * @see    net.dv8tion.jda.core.managers.WebhookManagerUpdatable#getChannelField()
      * @see    net.dv8tion.jda.core.managers.WebhookManagerUpdatable#update()
      */
+    @Nonnull
     @CheckReturnValue
     public AuditableRestAction<Void> setChannel(TextChannel channel)
     {

@@ -22,6 +22,8 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 
 /**
@@ -51,6 +53,8 @@ public interface Invite
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Invite Invite}
      *         <br>The Invite object
      */
+    @Nonnull
+    @CheckReturnValue
     static RestAction<Invite> resolve(final JDA api, final String code)
     {
         return InviteImpl.resolve(api, code);
@@ -66,6 +70,7 @@ public interface Invite
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @Nonnull
     @CheckReturnValue
     AuditableRestAction<Void> delete();
 
@@ -84,6 +89,7 @@ public interface Invite
      *
      * @see    #isExpanded()
      */
+    @Nonnull
     @CheckReturnValue
     RestAction<Invite> expand();
 
@@ -95,6 +101,7 @@ public interface Invite
      * 
      * @see    net.dv8tion.jda.core.entities.Invite.Channel
      */
+    @Nonnull
     Channel getChannel();
 
     /**
@@ -102,6 +109,7 @@ public interface Invite
      *
      * @return the invite code
      */
+    @Nonnull
     String getCode();
 
     /**
@@ -110,6 +118,7 @@ public interface Invite
      *
      * @return Invite URL for this Invite
      */
+    @Nonnull
     default String getURL()
     {
         return "https://discord.gg/" + getCode();
@@ -128,6 +137,7 @@ public interface Invite
      * @see    #expand()
      * @see    #isExpanded()
      */
+    @Nullable
     OffsetDateTime getCreationTime();
 
     /**
@@ -138,6 +148,7 @@ public interface Invite
      * 
      * @see    net.dv8tion.jda.core.entities.Invite.Guild
      */
+    @Nonnull
     Guild getGuild();
 
     /**
@@ -145,6 +156,7 @@ public interface Invite
      *
      * @return The user who created this invite
      */
+    @Nullable
     User getInviter();
 
     /**
@@ -152,6 +164,7 @@ public interface Invite
      *
      * @return the corresponding JDA instance
      */
+    @Nonnull
     JDA getJDA();
 
     /**

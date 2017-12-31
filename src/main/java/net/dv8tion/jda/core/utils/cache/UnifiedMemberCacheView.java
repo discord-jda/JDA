@@ -20,7 +20,10 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.utils.MiscUtil;
 
+import javax.annotation.MatchesPattern;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.ThreadSafe;
 import java.util.Collection;
 import java.util.List;
 
@@ -31,6 +34,7 @@ import java.util.List;
  * <p>This is done because Members do not implement {@link net.dv8tion.jda.core.entities.ISnowflake ISnowflake} as
  * they are not globally unique but only unique per {@link net.dv8tion.jda.core.entities.Guild Guild}!
  */
+@ThreadSafe
 public interface UnifiedMemberCacheView extends CacheView<Member>
 {
     /**
@@ -41,6 +45,7 @@ public interface UnifiedMemberCacheView extends CacheView<Member>
      *
      * @return Possibly-empty unmodifiable list of member for the specified ID
      */
+    @Nonnull
     List<Member> getElementsById(long id);
 
     /**
@@ -55,7 +60,8 @@ public interface UnifiedMemberCacheView extends CacheView<Member>
      *
      * @return Possibly-empty unmodifiable list of member for the specified ID
      */
-    default List<Member> getElementsById(String id)
+    @Nonnull
+    default List<Member> getElementsById(@MatchesPattern("\\d+") String id)
     {
         return getElementsById(MiscUtil.parseSnowflake(id));
     }
@@ -74,6 +80,7 @@ public interface UnifiedMemberCacheView extends CacheView<Member>
      *
      * @return Immutable list of members with the given username
      */
+    @Nonnull
     List<Member> getElementsByUsername(String name, boolean ignoreCase);
 
     /**
@@ -88,6 +95,7 @@ public interface UnifiedMemberCacheView extends CacheView<Member>
      *
      * @return Immutable list of members with the given username
      */
+    @Nonnull
     default List<Member> getElementsByUsername(String name)
     {
         return getElementsByUsername(name, false);
@@ -106,6 +114,7 @@ public interface UnifiedMemberCacheView extends CacheView<Member>
      *
      * @return Immutable list of members with the given nickname
      */
+    @Nonnull
     List<Member> getElementsByNickname(@Nullable String name, boolean ignoreCase);
 
     /**
@@ -119,6 +128,7 @@ public interface UnifiedMemberCacheView extends CacheView<Member>
      *
      * @return Immutable list of members with the given nickname
      */
+    @Nonnull
     default List<Member> getElementsByNickname(@Nullable String name)
     {
         return getElementsByNickname(name, false);
@@ -136,6 +146,7 @@ public interface UnifiedMemberCacheView extends CacheView<Member>
      *
      * @return Immutable list of members with the given roles
      */
+    @Nonnull
     List<Member> getElementsWithRoles(Role... roles);
 
     /**
@@ -150,5 +161,6 @@ public interface UnifiedMemberCacheView extends CacheView<Member>
      *
      * @return Immutable list of members with the given roles
      */
+    @Nonnull
     List<Member> getElementsWithRoles(Collection<Role> roles);
 }

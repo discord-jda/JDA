@@ -21,12 +21,15 @@ import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.cache.MemberCacheView;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.ThreadSafe;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+@ThreadSafe
 public class MemberCacheViewImpl extends AbstractCacheView<Member> implements MemberCacheView
 {
     public MemberCacheViewImpl()
@@ -40,6 +43,7 @@ public class MemberCacheViewImpl extends AbstractCacheView<Member> implements Me
         return elements.get(id);
     }
 
+    @Nonnull
     @Override
     public List<Member> getElementsByUsername(String name, boolean ignoreCase)
     {
@@ -62,6 +66,7 @@ public class MemberCacheViewImpl extends AbstractCacheView<Member> implements Me
         return Collections.unmodifiableList(members);
     }
 
+    @Nonnull
     @Override
     public List<Member> getElementsByNickname(@Nullable String name, boolean ignoreCase)
     {
@@ -90,6 +95,7 @@ public class MemberCacheViewImpl extends AbstractCacheView<Member> implements Me
         return Collections.unmodifiableList(members);
     }
 
+    @Nonnull
     @Override
     public List<Member> getElementsByName(String name, boolean ignoreCase)
     {
@@ -112,6 +118,7 @@ public class MemberCacheViewImpl extends AbstractCacheView<Member> implements Me
         return Collections.unmodifiableList(members);
     }
 
+    @Nonnull
     @Override
     public List<Member> getElementsWithRoles(Role... roles)
     {
@@ -131,6 +138,7 @@ public class MemberCacheViewImpl extends AbstractCacheView<Member> implements Me
         return members;
     }
 
+    @Nonnull
     @Override
     public List<Member> getElementsWithRoles(Collection<Role> roles)
     {

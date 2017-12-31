@@ -33,6 +33,7 @@ import org.json.JSONObject;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.awt.Color;
 
 /**
@@ -78,6 +79,7 @@ public class RoleManagerUpdatable
      *
      * @return the corresponding JDA instance
      */
+    @Nonnull
     public JDA getJDA()
     {
         return role.getJDA();
@@ -90,6 +92,7 @@ public class RoleManagerUpdatable
      *
      * @return The parent {@link net.dv8tion.jda.core.entities.Guild Guild}
      */
+    @Nonnull
     public Guild getGuild()
     {
         return role.getGuild();
@@ -101,6 +104,7 @@ public class RoleManagerUpdatable
      *
      * @return The target Role
      */
+    @Nonnull
     public Role getRole()
     {
         return role;
@@ -119,6 +123,7 @@ public class RoleManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.RoleField RoleField} - Type: {@code String}
      */
+    @Nonnull
     public RoleField<String> getNameField()
     {
         return name;
@@ -134,6 +139,7 @@ public class RoleManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.RoleField RoleField} - Type: {@link java.awt.Color Color}
      */
+    @Nonnull
     public RoleField<Color> getColorField()
     {
         return color;
@@ -152,6 +158,7 @@ public class RoleManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.RoleField RoleField} - Type: {@code Boolean}
      */
+    @Nonnull
     public RoleField<Boolean> getHoistedField()
     {
         return hoisted;
@@ -170,6 +177,7 @@ public class RoleManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.RoleField RoleField} - Type: {@code Boolean}
      */
+    @Nonnull
     public RoleField<Boolean> getMentionableField()
     {
         return mentionable;
@@ -188,6 +196,7 @@ public class RoleManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.PermissionField PermissionField}
      */
+    @Nonnull
     public PermissionField getPermissionField()
     {
         return permissions;
@@ -237,6 +246,7 @@ public class RoleManagerUpdatable
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Applies all changes that have been made in a single api-call.
      */
+    @Nonnull
     @CheckReturnValue
     public AuditableRestAction<Void> update()
     {

@@ -19,6 +19,8 @@ import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,26 +40,31 @@ public class MessageEmbedEvent extends GenericMessageEvent
         this.embeds = Collections.unmodifiableList(embeds);
     }
 
+    @Nonnull
     public List<MessageEmbed> getMessageEmbeds()
     {
         return embeds;
     }
 
+    @Nullable
     public PrivateChannel getPrivateChannel()
     {
         return isFromType(ChannelType.PRIVATE) ? (PrivateChannel) channel : null;
     }
 
+    @Nullable
     public Group getGroup()
     {
         return isFromType(ChannelType.GROUP) ? (Group) channel : null;
     }
 
+    @Nullable
     public TextChannel getTextChannel()
     {
         return isFromType(ChannelType.TEXT) ? (TextChannel) channel : null;
     }
 
+    @Nullable
     public Guild getGuild()
     {
         return isFromType(ChannelType.TEXT) ? getTextChannel().getGuild() : null;

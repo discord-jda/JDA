@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.core.managers.fields.Field;
 import net.dv8tion.jda.core.managers.fields.WebhookField;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
@@ -30,6 +31,7 @@ import org.json.JSONObject;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 
 /**
  * An {@link #update() updatable} manager that allows
@@ -70,6 +72,7 @@ public class WebhookManagerUpdatable
      *
      * @return the corresponding JDA instance
      */
+    @Nonnull
     public JDA getJDA()
     {
         return webhook.getJDA();
@@ -82,6 +85,7 @@ public class WebhookManagerUpdatable
      *
      * @return The parent {@link net.dv8tion.jda.core.entities.Guild Guild}
      */
+    @Nonnull
     public Guild getGuild()
     {
         return webhook.getGuild();
@@ -94,6 +98,7 @@ public class WebhookManagerUpdatable
      *
      * @return The parent {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      */
+    @Nonnull
     public TextChannel getChannel()
     {
         return webhook.getChannel();
@@ -105,6 +110,7 @@ public class WebhookManagerUpdatable
      *
      * @return The target {@link net.dv8tion.jda.core.entities.Webhook Webhook}
      */
+    @Nonnull
     public Webhook getWebhook()
     {
         return webhook;
@@ -124,6 +130,7 @@ public class WebhookManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.WebhookField WebhookField} - Type: {@code String}
      */
+    @Nonnull
     public WebhookField<String> getNameField()
     {
         return name;
@@ -139,6 +146,7 @@ public class WebhookManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.WebhookField WebhookField} - Type: {@link net.dv8tion.jda.core.entities.Icon}
      */
+    @Nonnull
     public WebhookField<Icon> getAvatarField()
     {
         return avatar;
@@ -159,6 +167,7 @@ public class WebhookManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.WebhookField WebhookField} - Type: {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      */
+    @Nonnull
     public WebhookField<TextChannel> getChannelField()
     {
         return channel;
@@ -204,6 +213,7 @@ public class WebhookManagerUpdatable
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Applies all changes that have been made in a single api-call.
      */
+    @Nonnull
     @CheckReturnValue
     public AuditableRestAction<Void> update()
     {
@@ -260,16 +270,10 @@ public class WebhookManagerUpdatable
             }
         };
 
-        avatar = new WebhookField<Icon>(this, null)
+        avatar = new WebhookField<Icon>(this, Field.unsupported("Cannot easily provide the original Avatar. Use User#getIconUrl() and download it yourself."))
         {
             @Override
             public void checkValue(@CheckForNull Icon value) { }
-
-            @Override
-            public Icon getOriginalValue()
-            {
-                throw new UnsupportedOperationException("Cannot easily provide the original Avatar. Use User#getIconUrl() and download it yourself.");
-            }
 
             @Override
             public boolean shouldUpdate()

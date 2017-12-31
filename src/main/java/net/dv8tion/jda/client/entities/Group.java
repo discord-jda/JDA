@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.util.List;
 
 public interface Group extends MessageChannel, CallableChannel
@@ -33,6 +34,7 @@ public interface Group extends MessageChannel, CallableChannel
      * @return
      *      Possibly-null name of the group.
      */
+    @Nonnull
     String getName();
     String getIconId();
     String getIconUrl();

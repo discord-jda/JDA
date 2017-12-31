@@ -19,6 +19,9 @@ import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * <b><u>MessageReceivedEvent</u></b><br>
  * Fired if a Message is received in a {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.
@@ -42,6 +45,7 @@ public class MessageReceivedEvent extends GenericMessageEvent
      *
      * @return The received {@link net.dv8tion.jda.core.entities.Message Message} object.
      */
+    @Nonnull
     public Message getMessage()
     {
         return message;
@@ -56,6 +60,7 @@ public class MessageReceivedEvent extends GenericMessageEvent
      * @see #isWebhookMessage()
      * @see net.dv8tion.jda.core.entities.User#isFake()
      */
+    @Nonnull
     public User getAuthor()
     {
         return message.getAuthor();
@@ -72,6 +77,7 @@ public class MessageReceivedEvent extends GenericMessageEvent
      *
      * @see #isWebhookMessage()
      */
+    @Nullable
     public Member getMember()
     {
         return isFromType(ChannelType.TEXT) && !isWebhookMessage() ? getGuild().getMember(getAuthor()) : null;
@@ -86,6 +92,7 @@ public class MessageReceivedEvent extends GenericMessageEvent
      *
      * @see net.dv8tion.jda.core.events.message.GenericMessageEvent#isFromType(ChannelType)
      */
+    @Nullable
     public PrivateChannel getPrivateChannel()
     {
         return message.getPrivateChannel();
@@ -100,6 +107,7 @@ public class MessageReceivedEvent extends GenericMessageEvent
      *
      * @see net.dv8tion.jda.core.events.message.GenericMessageEvent#isFromType(ChannelType)
      */
+    @Nullable
     public Group getGroup()
     {
         return message.getGroup();
@@ -114,6 +122,7 @@ public class MessageReceivedEvent extends GenericMessageEvent
      *
      * @see net.dv8tion.jda.core.events.message.GenericMessageEvent#isFromType(ChannelType)
      */
+    @Nullable
     public TextChannel getTextChannel()
     {
         return message.getTextChannel();
@@ -128,6 +137,7 @@ public class MessageReceivedEvent extends GenericMessageEvent
      *
      * @see net.dv8tion.jda.core.events.message.GenericMessageEvent#isFromType(ChannelType)
      */
+    @Nullable
     public Guild getGuild()
     {
         return message.getGuild();

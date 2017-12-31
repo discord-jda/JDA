@@ -17,6 +17,7 @@ package net.dv8tion.jda.core.hooks;
 
 import net.dv8tion.jda.core.events.Event;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
@@ -77,5 +78,6 @@ public interface IEventManager
      * @return An immutable list of listeners
      *         that have already been registered
      */
+    @Nonnull
     List<Object> getRegisteredListeners();
 }

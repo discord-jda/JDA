@@ -26,6 +26,7 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.utils.JDALogger;
 import org.slf4j.Logger;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 
@@ -83,6 +84,7 @@ public interface AudioManager
      *
      * @return The corresponding JDA instance
      */
+    @Nonnull
     JDA getJDA();
 
     /**
@@ -90,6 +92,7 @@ public interface AudioManager
      *
      * @return The Guild that this AudioManager manages.
      */
+    @Nonnull
     Guild getGuild();
 
     /**
@@ -111,6 +114,7 @@ public interface AudioManager
      * @return The {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} that JDA is attempting to create an
      *         audio connection with, or {@code null} if JDA isn't attempting to create a connection.
      */
+    @Nullable
     VoiceChannel getQueuedAudioConnection();
 
     /**
@@ -121,6 +125,7 @@ public interface AudioManager
      * @return The {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} the audio connection is connected to
      *         or {@code null} if not connected.
      */
+    @Nullable
     VoiceChannel getConnectedChannel();
 
     /**
@@ -175,6 +180,7 @@ public interface AudioManager
      *
      * @return The currently active {@link net.dv8tion.jda.core.audio.AudioSendHandler AudioSendHandler} or {@code null}.
      */
+    @Nullable
     AudioSendHandler getSendingHandler();
 
     /**
@@ -198,6 +204,7 @@ public interface AudioManager
      *
      * @return The currently active {@link net.dv8tion.jda.core.audio.AudioReceiveHandler AudioReceiveHandler} or {@code null}.
      */
+    @Nullable
     AudioReceiveHandler getReceiveHandler();
 
     /**
@@ -217,6 +224,7 @@ public interface AudioManager
      * @return The current {@link net.dv8tion.jda.core.audio.hooks.ConnectionListener ConnectionListener} instance
      *         for this AudioManager.
      */
+    @Nullable
     ConnectionListener getConnectionListener();
 
     /**
@@ -225,6 +233,7 @@ public interface AudioManager
      *
      * @return The current {@link net.dv8tion.jda.core.audio.hooks.ConnectionStatus ConnectionStatus}.
      */
+    @Nonnull
     ConnectionStatus getConnectionStatus();
 
     /**

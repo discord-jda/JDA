@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.managers.fields;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -60,7 +61,7 @@ public abstract class Field<T, M>
      *        The original value, represented with a {@link java.util.function.Supplier Supplier}
      *        access function.
      */
-    public Field(M manager, @Nullable Supplier<T> originalValue)
+    public Field(M manager, Supplier<T> originalValue)
     {
         this.manager = manager;
         this.originalValue = originalValue;
@@ -152,6 +153,7 @@ public abstract class Field<T, M>
      *
      * @return The Manager of this specific Field instance
      */
+    @Nonnull
     public M getManager()
     {
         return manager;
@@ -164,6 +166,7 @@ public abstract class Field<T, M>
      * @return The specific manager instance for chaining convenience
      *         <br>Similar to {@link #setValue(Object)}
      */
+    @Nonnull
     public M reset()
     {
         this.value = null;
@@ -198,5 +201,13 @@ public abstract class Field<T, M>
     public String toString()
     {
         throw new UnsupportedOperationException("toString is disabled for Fields due to possible, accidental usage in JSON bodies.");
+    }
+
+    public static <F> Supplier<F> unsupported(String message)
+    {
+        return () ->
+        {
+            throw new UnsupportedOperationException(message);
+        };
     }
 }

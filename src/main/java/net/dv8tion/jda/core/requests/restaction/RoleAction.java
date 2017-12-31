@@ -28,6 +28,7 @@ import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.Color;
 import java.util.Collection;
@@ -42,7 +43,6 @@ import java.util.Collection;
  */
 public class RoleAction extends AuditableRestAction<Role>
 {
-
     protected final Guild guild;
     protected Long permissions;
     protected String name = null;
@@ -73,6 +73,7 @@ public class RoleAction extends AuditableRestAction<Role>
      *
      * @return The current RoleAction, for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
     public RoleAction setName(@Nullable String name)
     {
@@ -88,6 +89,7 @@ public class RoleAction extends AuditableRestAction<Role>
      *
      * @return The current RoleAction, for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
     public RoleAction setHoisted(@Nullable Boolean hoisted)
     {
@@ -104,6 +106,7 @@ public class RoleAction extends AuditableRestAction<Role>
      *
      * @return The current RoleAction, for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
     public RoleAction setMentionable(@Nullable Boolean mentionable)
     {
@@ -119,6 +122,7 @@ public class RoleAction extends AuditableRestAction<Role>
      *
      * @return The current RoleAction, for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
     public RoleAction setColor(@Nullable Color color)
     {
@@ -135,6 +139,7 @@ public class RoleAction extends AuditableRestAction<Role>
      *
      * @return The current RoleAction, for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
     public RoleAction setColor(@Nullable Integer rgb)
     {
@@ -157,6 +162,7 @@ public class RoleAction extends AuditableRestAction<Role>
      *
      * @return The current RoleAction, for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
     public RoleAction setPermissions(@Nullable Permission... permissions)
     {
@@ -188,6 +194,7 @@ public class RoleAction extends AuditableRestAction<Role>
      *
      * @return The current RoleAction, for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
     public RoleAction setPermissions(@Nullable Collection<Permission> permissions)
     {
@@ -224,6 +231,7 @@ public class RoleAction extends AuditableRestAction<Role>
      * @see    net.dv8tion.jda.core.Permission#getRaw(java.util.Collection)
      * @see    net.dv8tion.jda.core.Permission#getRaw(net.dv8tion.jda.core.Permission...)
      */
+    @Nonnull
     @CheckReturnValue
     public RoleAction setPermissions(@Nullable Long permissions)
     {

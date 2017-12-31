@@ -19,8 +19,10 @@ package net.dv8tion.jda.core.entities;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.requests.RestAction;
 
-import java.util.List;
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * Represents a Discord User.
@@ -59,6 +61,7 @@ public interface User extends ISnowflake, IMentionable, IFakeable
      *
      * @return Never-null String containing the {@link net.dv8tion.jda.core.entities.User User}'s username.
      */
+    @Nonnull
     String getName();
 
     /**
@@ -68,6 +71,7 @@ public interface User extends ISnowflake, IMentionable, IFakeable
      *
      * @return Never-null String containing the {@link net.dv8tion.jda.core.entities.User User} discriminator.
      */
+    @Nonnull
     String getDiscriminator();
 
     /**
@@ -76,6 +80,7 @@ public interface User extends ISnowflake, IMentionable, IFakeable
      *
      * @return Possibly-null String containing the {@link net.dv8tion.jda.core.entities.User User} avatar id.
      */
+    @Nullable
     String getAvatarId();
 
     /**
@@ -84,6 +89,7 @@ public interface User extends ISnowflake, IMentionable, IFakeable
      *
      * @return Possibly-null String containing the {@link net.dv8tion.jda.core.entities.User User} avatar url.
      */
+    @Nullable
     String getAvatarUrl();
 
     /**
@@ -91,6 +97,7 @@ public interface User extends ISnowflake, IMentionable, IFakeable
      *
      * @return Never-null String containing the {@link net.dv8tion.jda.core.entities.User User} default avatar id.
      */
+    @Nonnull
     String getDefaultAvatarId();
 
     /**
@@ -98,6 +105,7 @@ public interface User extends ISnowflake, IMentionable, IFakeable
      *
      * @return Never-null String containing the {@link net.dv8tion.jda.core.entities.User User} default avatar url.
      */
+    @Nonnull
     String getDefaultAvatarUrl();
 
     /**
@@ -107,6 +115,7 @@ public interface User extends ISnowflake, IMentionable, IFakeable
      *
      * @return  Never-null String containing the {@link net.dv8tion.jda.core.entities.User User} effective avatar url.
      */
+    @Nonnull
     String getEffectiveAvatarUrl();
 
     /**
@@ -122,6 +131,15 @@ public interface User extends ISnowflake, IMentionable, IFakeable
      * <br>If a channel has already been opened with this user, it is immediately returned in the RestAction's
      * success consumer without contacting the Discord API.
      *
+     * <h2>Example Usage</h2>
+     * <pre><code>
+     * user.openPrivateChannel( (channel) {@literal ->}
+     * {
+     *     channel.sendMessage("Hello!").queue();
+     *     System.out.println("Sent message to " + channel.getUser().getName());
+     * });
+     * </code></pre>
+     *
      * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#CANNOT_SEND_TO_USER CANNOT_SEND_TO_USER}
@@ -136,6 +154,7 @@ public interface User extends ISnowflake, IMentionable, IFakeable
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}
      *         <br>The PrivateChannel to use to directly message this User.
      */
+    @Nonnull
     @CheckReturnValue
     RestAction<PrivateChannel> openPrivateChannel();
 
@@ -145,6 +164,7 @@ public interface User extends ISnowflake, IMentionable, IFakeable
      *
      * @return Unmodifiable list of all {@link net.dv8tion.jda.core.entities.Guild Guilds} that this user is a member of.
      */
+    @Nonnull
     List<Guild> getMutualGuilds();
 
     /**

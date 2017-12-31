@@ -19,6 +19,9 @@ import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * <b><u>MessageUpdateEvent</u></b><br>
  * Fired if a Message is edited in a {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.<br>
@@ -38,36 +41,43 @@ public class MessageUpdateEvent extends GenericMessageEvent
         this.message = message;
     }
 
+    @Nonnull
     public Message getMessage()
     {
         return message;
     }
 
+    @Nonnull
     public User getAuthor()
     {
         return message.getAuthor();
     }
 
+    @Nullable
     public Member getMember()
     {
         return  isFromType(ChannelType.TEXT) ? getGuild().getMember(getAuthor()) : null;
     }
 
+    @Nullable
     public PrivateChannel getPrivateChannel()
     {
         return message.getPrivateChannel();
     }
 
+    @Nullable
     public Group getGroup()
     {
         return message.getGroup();
     }
 
+    @Nullable
     public TextChannel getTextChannel()
     {
         return message.getTextChannel();
     }
 
+    @Nullable
     public Guild getGuild()
     {
         return message.getGuild();

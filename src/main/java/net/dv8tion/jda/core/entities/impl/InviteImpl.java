@@ -29,6 +29,7 @@ import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 
@@ -88,6 +89,7 @@ public class InviteImpl implements Invite
         };
     }
 
+    @Nonnull
     @Override
     public AuditableRestAction<Void> delete()
     {
@@ -106,6 +108,7 @@ public class InviteImpl implements Invite
         };
     }
 
+    @Nonnull
     @Override
     public RestAction<Invite> expand()
     {
@@ -125,7 +128,7 @@ public class InviteImpl implements Invite
                 ? guild.getTextChannelById(this.channel.getIdLong())
                 : guild.getVoiceChannelById(this.channel.getIdLong());
 
-        if (member.hasPermission(channel, Permission.MANAGE_CHANNEL))
+        if (channel != null && member.hasPermission(channel, Permission.MANAGE_CHANNEL))
         {
             route = Route.Invites.GET_CHANNEL_INVITES.compile(channel.getId());
         }
@@ -166,18 +169,21 @@ public class InviteImpl implements Invite
         };
     }
 
+    @Nonnull
     @Override
     public Channel getChannel()
     {
         return this.channel;
     }
 
+    @Nonnull
     @Override
     public String getCode()
     {
         return this.code;
     }
 
+    @Nullable
     @Override
     public OffsetDateTime getCreationTime()
     {
@@ -186,18 +192,21 @@ public class InviteImpl implements Invite
         return this.timeCreated;
     }
 
+    @Nonnull
     @Override
     public Guild getGuild()
     {
         return this.guild;
     }
 
+    @Nullable
     @Override
     public User getInviter()
     {
         return this.inviter;
     }
 
+    @Nonnull
     @Override
     public JDAImpl getJDA()
     {

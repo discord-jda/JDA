@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.audit;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
@@ -80,6 +81,7 @@ public class AuditLogChange
      *
      * @return The key
      */
+    @Nonnull
     public String getKey()
     {
         return key;

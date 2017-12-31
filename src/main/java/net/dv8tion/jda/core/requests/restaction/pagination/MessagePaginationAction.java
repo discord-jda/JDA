@@ -25,6 +25,7 @@ import net.dv8tion.jda.core.requests.Route;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,7 +61,6 @@ import java.util.List;
  * </code></pre>
  *
  * @since  3.1
- * @author Florian Spieß
  */
 public class MessagePaginationAction extends PaginationAction<Message, MessagePaginationAction>
 {
@@ -86,6 +86,7 @@ public class MessagePaginationAction extends PaginationAction<Message, MessagePa
      *
      * @return {@link net.dv8tion.jda.core.entities.ChannelType ChannelType}
      */
+    @Nonnull
     public ChannelType getType()
     {
         return getChannel().getType();
@@ -96,6 +97,7 @@ public class MessagePaginationAction extends PaginationAction<Message, MessagePa
      *
      * @return The MessageChannel instance
      */
+    @Nonnull
     public MessageChannel getChannel()
     {
         return channel;

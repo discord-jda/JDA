@@ -22,6 +22,8 @@ import net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -59,6 +61,7 @@ public interface PermissionOverride
      *
      * @return Possibly-empty unmodifiable list of allowed {@link net.dv8tion.jda.core.Permission Permissions}.
      */
+    @Nonnull
     List<Permission> getAllowed();
 
     /**
@@ -66,6 +69,7 @@ public interface PermissionOverride
      *
      * @return Possibly-empty unmodifiable list of unaffected {@link net.dv8tion.jda.core.Permission Permissions}.
      */
+    @Nonnull
     List<Permission> getInherit();
 
     /**
@@ -73,6 +77,7 @@ public interface PermissionOverride
      *
      * @return Possibly-empty unmodifiable list of denied {@link net.dv8tion.jda.core.Permission Permissions}.
      */
+    @Nonnull
     List<Permission> getDenied();
 
     /**
@@ -81,6 +86,7 @@ public interface PermissionOverride
      *
      * @return Never-null {@link net.dv8tion.jda.core.JDA JDA} instance.
      */
+    @Nonnull
     JDA getJDA();
 
     /**
@@ -92,6 +98,7 @@ public interface PermissionOverride
      *
      * @return Possibly-null related {@link net.dv8tion.jda.core.entities.Member Member}.
      */
+    @Nullable
     Member getMember();
 
     /**
@@ -103,6 +110,7 @@ public interface PermissionOverride
      *
      * @return Possibly-null related {@link net.dv8tion.jda.core.entities.Role}.
      */
+    @Nullable
     Role getRole();
 
     /**
@@ -110,6 +118,7 @@ public interface PermissionOverride
      *
      * @return Never-null related {@link net.dv8tion.jda.core.entities.Channel Channel} that this override is part of.
      */
+    @Nonnull
     Channel getChannel();
 
     /**
@@ -120,6 +129,7 @@ public interface PermissionOverride
      *
      * @return Never-null related {@link net.dv8tion.jda.core.entities.Guild Guild}.
      */
+    @Nonnull
     Guild getGuild();
 
     /**
@@ -146,6 +156,7 @@ public interface PermissionOverride
      *
      * @see    #getManagerUpdatable()
      */
+    @Nonnull
     PermOverrideManager getManager();
 
     /**
@@ -157,6 +168,7 @@ public interface PermissionOverride
      *
      * @see    #getManager()
      */
+    @Nonnull
     PermOverrideManagerUpdatable getManagerUpdatable();
 
     /**
@@ -179,6 +191,7 @@ public interface PermissionOverride
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @Nonnull
     @CheckReturnValue
     AuditableRestAction<Void> delete();
 }

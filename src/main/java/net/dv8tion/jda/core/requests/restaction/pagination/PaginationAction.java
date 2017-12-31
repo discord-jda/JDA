@@ -81,7 +81,6 @@ import java.util.stream.StreamSupport;
  *         The type of entity to paginate
  *
  * @since  3.1
- * @author Florian Spieß
  */
 public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
     extends RestAction<List<T>> implements Iterable<T>
@@ -163,6 +162,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return Immutable {@link java.util.List List} containing all currently cached entities for this PaginationAction
      */
+    @Nonnull
     public List<T> getCached()
     {
         return Collections.unmodifiableList(cached);
@@ -221,6 +221,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return The current PaginationAction implementation instance
      */
+    @Nonnull
     public M limit(final int limit)
     {
         Checks.check(maxLimit == 0 || limit <= maxLimit, "Limit must not exceed %d!", maxLimit);
@@ -247,6 +248,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return The current PaginationAction implementation instance
      */
+    @Nonnull
     public M cache(final boolean enableCache)
     {
         this.useCache = enableCache;
@@ -356,6 +358,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return {@link java.util.concurrent.Future Future} that can be cancelled to stop iteration from outside!
      */
+    @Nonnull
     public Future<?> forEachAsync(final Procedure<T> action)
     {
         return forEachAsync(action, (throwable) ->
@@ -402,6 +405,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return {@link java.util.concurrent.Future Future} that can be cancelled to stop iteration from outside!
      */
+    @Nonnull
     public Future<?> forEachAsync(final Procedure<T> action, final Consumer<Throwable> failure)
     {
         Checks.notNull(action, "Procedure");
@@ -460,6 +464,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return {@link java.util.concurrent.Future Future} that can be cancelled to stop iteration from outside!
      */
+    @Nonnull
     public Future<?> forEachRemainingAsync(final Procedure<T> action)
     {
         return forEachRemainingAsync(action, (throwable) ->
@@ -506,6 +511,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return {@link java.util.concurrent.Future Future} that can be cancelled to stop iteration from outside!
      */
+    @Nonnull
     public Future<?> forEachRemainingAsync(final Procedure<T> action, final Consumer<Throwable> failure)
     {
         Checks.notNull(action, "Procedure");
@@ -565,6 +571,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return a sequential {@code Stream} over the elements in this PaginationAction
      */
+    @Nonnull
     public Stream<T> stream()
     {
         return StreamSupport.stream(spliterator(), false);
@@ -576,6 +583,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return a sequential {@code Stream} over the elements in this PaginationAction
      */
+    @Nonnull
     public Stream<T> parallelStream()
     {
         return StreamSupport.stream(spliterator(), true);
@@ -624,6 +632,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
             return false;
         }
 
+        @Nonnull
         @Override
         public T next()
         {

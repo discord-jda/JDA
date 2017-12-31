@@ -27,6 +27,7 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.webhook.WebhookClientBuilder;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -53,54 +54,63 @@ public class WebhookImpl implements Webhook
         this.id = id;
     }
 
+    @Nonnull
     @Override
     public JDA getJDA()
     {
         return channel.getJDA();
     }
 
+    @Nonnull
     @Override
     public Guild getGuild()
     {
         return channel.getGuild();
     }
 
+    @Nonnull
     @Override
     public TextChannel getChannel()
     {
         return channel;
     }
 
+    @Nonnull
     @Override
     public Member getOwner()
     {
         return owner;
     }
 
+    @Nonnull
     @Override
     public User getDefaultUser()
     {
         return user;
     }
 
+    @Nonnull
     @Override
     public String getName()
     {
         return user.getName();
     }
 
+    @Nonnull
     @Override
     public String getToken()
     {
         return token;
     }
 
+    @Nonnull
     @Override
     public String getUrl()
     {
         return Requester.DISCORD_API_PREFIX + "webhooks/" + getId() + "/" + getToken();
     }
 
+    @Nonnull
     @Override
     public AuditableRestAction<Void> delete()
     {
@@ -118,6 +128,7 @@ public class WebhookImpl implements Webhook
         };
     }
 
+    @Nonnull
     @Override
     public WebhookManager getManager()
     {
@@ -134,6 +145,7 @@ public class WebhookImpl implements Webhook
         return mng;
     }
 
+    @Nonnull
     @Override
     public WebhookManagerUpdatable getManagerUpdatable()
     {
@@ -150,6 +162,7 @@ public class WebhookImpl implements Webhook
         return mng;
     }
 
+    @Nonnull
     @Override
     public WebhookClientBuilder newClient()
     {

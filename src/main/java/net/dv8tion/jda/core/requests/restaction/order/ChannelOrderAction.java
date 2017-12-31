@@ -28,6 +28,7 @@ import okhttp3.RequestBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 
 /**
@@ -90,6 +91,7 @@ public class ChannelOrderAction<T extends Channel> extends OrderAction<T, Channe
      *
      * @return The corresponding {@link net.dv8tion.jda.core.entities.Guild Guild}
      */
+    @Nonnull
     public Guild getGuild()
     {
         return guild;
@@ -101,6 +103,7 @@ public class ChannelOrderAction<T extends Channel> extends OrderAction<T, Channe
      *
      * @return The corresponding {@link net.dv8tion.jda.core.entities.ChannelType ChannelType}
      */
+    @Nonnull
     public ChannelType getChannelType()
     {
         return type;

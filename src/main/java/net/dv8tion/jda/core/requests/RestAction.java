@@ -29,7 +29,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.ThreadSafe;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
 
@@ -146,6 +149,7 @@ import java.util.function.Consumer;
  *
  * @since 3.0
  */
+@ThreadSafe
 public abstract class RestAction<T>
 {
     public static final Logger LOG = JDALogger.getLog(RestAction.class);
@@ -227,6 +231,7 @@ public abstract class RestAction<T>
      *
      * @return The corresponding JDA instance
      */
+    @Nonnull
     public JDA getJDA()
     {
         return api;
@@ -294,6 +299,8 @@ public abstract class RestAction<T>
      *
      * @return Never-null {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the completion promise
      */
+    @Nonnull
+    @CheckReturnValue
     public RequestFuture<T> submit()
     {
         return submit(true);
@@ -311,6 +318,8 @@ public abstract class RestAction<T>
      *
      * @return Never-null {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} task representing the completion promise
      */
+    @Nonnull
+    @CheckReturnValue
     public RequestFuture<T> submit(boolean shouldQueue)
     {
         Route.CompiledRoute route = finalizeRoute();
@@ -404,6 +413,7 @@ public abstract class RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture} representing the
      *         delayed operation
      */
+    @Nonnull
     public ScheduledFuture<T> submitAfter(long delay, TimeUnit unit)
     {
         return submitAfter(delay, unit, api.pool);
@@ -433,6 +443,7 @@ public abstract class RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
      */
+    @Nonnull
     public ScheduledFuture<T> submitAfter(long delay, TimeUnit unit, ScheduledExecutorService executor)
     {
         Checks.notNull(executor, "Scheduler");
@@ -496,6 +507,7 @@ public abstract class RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
      */
+    @Nonnull
     public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit)
     {
         return queueAfter(delay, unit, api.pool);
@@ -528,6 +540,7 @@ public abstract class RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
      */
+    @Nonnull
     public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, @Nullable Consumer<T> success)
     {
         return queueAfter(delay, unit, success, api.pool);
@@ -561,6 +574,7 @@ public abstract class RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
      */
+    @Nonnull
     public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, @Nullable Consumer<T> success, @Nullable Consumer<Throwable> failure)
     {
         return queueAfter(delay, unit, success, failure, api.pool);
@@ -591,6 +605,7 @@ public abstract class RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
      */
+    @Nonnull
     public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, ScheduledExecutorService executor)
     {
         return queueAfter(delay, unit, null, executor);
@@ -624,6 +639,7 @@ public abstract class RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
      */
+    @Nonnull
     public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, @Nullable Consumer<T> success, ScheduledExecutorService executor)
     {
         return queueAfter(delay, unit, success, null, executor);
@@ -657,6 +673,7 @@ public abstract class RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
      */
+    @Nonnull
     public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, @Nullable Consumer<T> success, @Nullable Consumer<Throwable> failure, ScheduledExecutorService executor)
     {
         Checks.notNull(executor, "Scheduler");
@@ -709,6 +726,7 @@ public abstract class RestAction<T>
                 success.accept(returnObj);
         }
 
+        @Nonnull
         @Override
         public RequestFuture<T> submit(boolean shouldQueue)
         {

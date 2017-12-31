@@ -36,6 +36,7 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.slf4j.Logger;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -93,6 +94,7 @@ public class WebhookClient implements AutoCloseable
      *
      * @return id of the target Webhook
      */
+    @Nonnull
     public String getId()
     {
         return Long.toUnsignedString(id);
@@ -103,6 +105,7 @@ public class WebhookClient implements AutoCloseable
      *
      * @return The URL of this client
      */
+    @Nonnull
     public String getUrl()
     {
         return url;
@@ -124,6 +127,7 @@ public class WebhookClient implements AutoCloseable
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      *         this will be completed once the message was sent.
      */
+    @Nonnull
     public RequestFuture<?> send(WebhookMessage message)
     {
         Checks.notNull(message, "WebhookMessage");
@@ -146,6 +150,7 @@ public class WebhookClient implements AutoCloseable
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      *         this will be completed once the message was sent.
      */
+    @Nonnull
     public RequestFuture<?> send(File file)
     {
         return send(new WebhookMessageBuilder().setFile(file).build());
@@ -169,6 +174,7 @@ public class WebhookClient implements AutoCloseable
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      *         this will be completed once the message was sent.
      */
+    @Nonnull
     public RequestFuture<?> send(File file, String fileName)
     {
         return send(new WebhookMessageBuilder().setFile(file, fileName).build());
@@ -192,6 +198,7 @@ public class WebhookClient implements AutoCloseable
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      *         this will be completed once the message was sent.
      */
+    @Nonnull
     public RequestFuture<?> send(byte[] data, String fileName)
     {
         return send(new WebhookMessageBuilder().setFile(data, fileName).build());
@@ -215,6 +222,7 @@ public class WebhookClient implements AutoCloseable
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      *         this will be completed once the message was sent.
      */
+    @Nonnull
     public RequestFuture<?> send(InputStream data, String fileName)
     {
         return send(new WebhookMessageBuilder().setFile(data, fileName).build());
@@ -236,6 +244,7 @@ public class WebhookClient implements AutoCloseable
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      *         this will be completed once the message was sent.
      */
+    @Nonnull
     public RequestFuture<?> send(Message message)
     {
         return send(WebhookMessage.from(message));
@@ -263,6 +272,7 @@ public class WebhookClient implements AutoCloseable
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      *         this will be completed once the message was sent.
      */
+    @Nonnull
     public RequestFuture<?> send(MessageEmbed... embeds)
     {
         return send(WebhookMessage.of(embeds));
@@ -290,6 +300,7 @@ public class WebhookClient implements AutoCloseable
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      *         this will be completed once the message was sent.
      */
+    @Nonnull
     public RequestFuture<?> send(Collection<MessageEmbed> embeds)
     {
         return send(WebhookMessage.of(embeds));
@@ -311,6 +322,7 @@ public class WebhookClient implements AutoCloseable
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      *         this will be completed once the message was sent.
      */
+    @Nonnull
     public RequestFuture<?> send(String content)
     {
         Checks.notBlank(content, "Content");
@@ -338,17 +350,20 @@ public class WebhookClient implements AutoCloseable
             throw new RejectedExecutionException("Cannot send to closed client!");
     }
 
+    @Nonnull
     protected static RequestBody newBody(String object)
     {
         return RequestBody.create(Requester.MEDIA_TYPE_JSON, object);
     }
 
+    @Nonnull
     protected RequestFuture<?> execute(RequestBody body)
     {
         checkShutdown();
         return queueRequest(body);
     }
 
+    @Nonnull
     protected static HttpException failure(Response response) throws IOException
     {
         final InputStream stream = Requester.getBody(response);
@@ -356,6 +371,7 @@ public class WebhookClient implements AutoCloseable
         return new HttpException("Request returned failure " + response.code() + ": " + responseBody);
     }
 
+    @Nonnull
     protected RequestFuture<?> queueRequest(RequestBody body)
     {
         final boolean wasQueued = isQueued;

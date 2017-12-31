@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.Permission;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.Color;
 import java.time.OffsetDateTime;
@@ -39,6 +40,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return {@link net.dv8tion.jda.core.entities.User User}
      */
+    @Nonnull
     User getUser();
 
     /**
@@ -46,6 +48,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return {@link net.dv8tion.jda.core.entities.Guild Guild}
      */
+    @Nonnull
     Guild getGuild();
 
     /**
@@ -53,6 +56,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return The current JDA instance.
      */
+    @Nonnull
     JDA getJDA();
 
     /**
@@ -60,6 +64,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return The Join Date.
      */
+    @Nonnull
     OffsetDateTime getJoinDate();
 
     /**
@@ -69,6 +74,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return {@link net.dv8tion.jda.core.entities.GuildVoiceState VoiceState}
      */
+    @Nonnull
     GuildVoiceState getVoiceState();
 
     /**
@@ -78,6 +84,7 @@ public interface Member extends IMentionable, IPermissionHolder
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Game Game} containing the game
      *         that the {@link net.dv8tion.jda.core.entities.User User} is currently playing.
      */
+    @Nullable
     Game getGame();
 
     /**
@@ -86,6 +93,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return The current {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} of the {@link net.dv8tion.jda.core.entities.User User}.
      */
+    @Nonnull
     OnlineStatus getOnlineStatus();
 
     /**
@@ -96,6 +104,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return The nickname or null, if no nickname is set.
      */
+    @Nullable
     String getNickname();
 
     /**
@@ -103,6 +112,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return The Nickname of this Member or the Username if no Nickname is present.
      */
+    @Nonnull
     String getEffectiveName();
 
     /**
@@ -117,6 +127,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return An immutable List of {@link net.dv8tion.jda.core.entities.Role Roles} for this Member.
      */
+    @Nonnull
     List<Role> getRoles();
 
     /**
@@ -125,8 +136,9 @@ public interface Member extends IMentionable, IPermissionHolder
      * <p>This is determined by the color of the highest role assigned to them that does not have the default color.
      * <br>If all roles have default color, this returns null.
      *
-     * @return The display Color for this Member.
+     * @return The display Color for this Member, or {@code null} if no color is set
      */
+    @Nullable
     Color getColor();
 
     /**
@@ -139,6 +151,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return An immutable List of Permissions granted to this Member.
      */
+    @Nonnull
     List<Permission> getPermissions(Channel channel);
 
     /**

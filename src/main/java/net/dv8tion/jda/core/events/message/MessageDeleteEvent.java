@@ -19,6 +19,8 @@ import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 
+import javax.annotation.Nullable;
+
 /**
  * <b><u>MessageDeleteEvent</u></b><br>
  * Fired if a Message was deleted in a {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.<br>
@@ -30,27 +32,30 @@ import net.dv8tion.jda.core.entities.*;
  */
 public class MessageDeleteEvent extends GenericMessageEvent
 {
-
     public MessageDeleteEvent(JDA api, long responseNumber, long messageId, MessageChannel channel)
     {
         super(api, responseNumber, messageId, channel);
     }
 
+    @Nullable
     public PrivateChannel getPrivateChannel()
     {
         return isFromType(ChannelType.PRIVATE) ? (PrivateChannel) channel : null;
     }
 
+    @Nullable
     public Group getGroup()
     {
         return isFromType(ChannelType.GROUP) ? (Group) channel : null;
     }
 
+    @Nullable
     public TextChannel getTextChannel()
     {
         return isFromType(ChannelType.TEXT) ? (TextChannel) channel : null;
     }
 
+    @Nullable
     public Guild getGuild()
     {
         return isFromType(ChannelType.TEXT) ? getTextChannel().getGuild() : null;

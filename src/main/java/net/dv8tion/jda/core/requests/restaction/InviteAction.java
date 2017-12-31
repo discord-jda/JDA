@@ -26,6 +26,7 @@ import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.concurrent.TimeUnit;
 
@@ -83,6 +84,7 @@ public class InviteAction extends AuditableRestAction<Invite>
      *
      * @return The current InviteAction for chaining.
      */
+    @Nonnull
     @CheckReturnValue
     public final InviteAction setMaxAge(@Nullable final Integer maxAge)
     {
@@ -107,6 +109,7 @@ public class InviteAction extends AuditableRestAction<Invite>
      *
      * @return The current InviteAction for chaining.
      */
+    @Nonnull
     @CheckReturnValue
     public final InviteAction setMaxAge(@Nullable final Long maxAge, @Nullable final TimeUnit timeUnit)
     {
@@ -131,6 +134,7 @@ public class InviteAction extends AuditableRestAction<Invite>
      *
      * @return The current InviteAction for chaining.
      */
+    @Nonnull
     @CheckReturnValue
     public final InviteAction setMaxUses(@Nullable final Integer maxUses)
     {
@@ -149,6 +153,7 @@ public class InviteAction extends AuditableRestAction<Invite>
      *
      * @return The current InviteAction for chaining.
      */
+    @Nonnull
     @CheckReturnValue
     public final InviteAction setTemporary(@Nullable final Boolean temporary)
     {
@@ -164,6 +169,7 @@ public class InviteAction extends AuditableRestAction<Invite>
      *
      * @return The current InviteAction for chaining.
      */
+    @Nonnull
     @CheckReturnValue
     public final InviteAction setUnique(@Nullable final Boolean unique)
     {

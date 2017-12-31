@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.Helpers;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.*;
 import java.util.Collection;
@@ -80,6 +81,7 @@ public class WebhookMessageBuilder
      *
      * @return The current WebhookMessageBuilder for chaining convenience
      */
+    @Nonnull
     public WebhookMessageBuilder reset()
     {
         content.setLength(0);
@@ -97,6 +99,7 @@ public class WebhookMessageBuilder
      *
      * @return The current WebhookMessageBuilder for chaining convenience
      */
+    @Nonnull
     public WebhookMessageBuilder resetEmbeds()
     {
         this.embeds.clear();
@@ -118,6 +121,7 @@ public class WebhookMessageBuilder
      *
      * @return The current WebhookMessageBuilder for chaining convenience
      */
+    @Nonnull
     public WebhookMessageBuilder addEmbeds(MessageEmbed... embeds)
     {
         Checks.notNull(embeds, "Embeds");
@@ -146,6 +150,7 @@ public class WebhookMessageBuilder
      *
      * @return The current WebhookMessageBuilder for chaining convenience
      */
+    @Nonnull
     public WebhookMessageBuilder addEmbeds(Collection<MessageEmbed> embeds)
     {
         Checks.notNull(embeds, "Embeds");
@@ -171,6 +176,7 @@ public class WebhookMessageBuilder
      *
      * @return The current WebhookMessageBuilder for chaining convenience
      */
+    @Nonnull
     public WebhookMessageBuilder setContent(@Nullable String content)
     {
         Checks.check(content == null || content.length() <= 2000,
@@ -194,6 +200,7 @@ public class WebhookMessageBuilder
      *
      * @return The current WebhookMessageBuilder for chaining convenience
      */
+    @Nonnull
     public WebhookMessageBuilder append(String content)
     {
         Checks.notNull(content, "Content");
@@ -212,6 +219,7 @@ public class WebhookMessageBuilder
      *
      * @return The current WebhookMessageBuilder for chaining convenience
      */
+    @Nonnull
     public WebhookMessageBuilder setUsername(@Nullable String username)
     {
         this.username = Helpers.isBlank(username) ? null : username;
@@ -227,6 +235,7 @@ public class WebhookMessageBuilder
      *
      * @return The current WebhookMessageBuilder for chaining convenience
      */
+    @Nonnull
     public WebhookMessageBuilder setAvatarUrl(@Nullable String avatarUrl)
     {
         this.avatarUrl = Helpers.isBlank(avatarUrl) ? null : avatarUrl;
@@ -245,6 +254,7 @@ public class WebhookMessageBuilder
      *
      * @return The current WebhookMessageBuilder for chaining convenience
      */
+    @Nonnull
     public WebhookMessageBuilder setFile(@Nullable File file)
     {
         return setFile(file, file == null ? null : file.getName());
@@ -264,6 +274,7 @@ public class WebhookMessageBuilder
      *
      * @return The current WebhookMessageBuilder for chaining convenience
      */
+    @Nonnull
     public WebhookMessageBuilder setFile(@Nullable File file, @Nullable String fileName)
     {
         if (file == null)
@@ -300,6 +311,7 @@ public class WebhookMessageBuilder
      *
      * @return The current WebhookMessageBuilder for chaining convenience
      */
+    @Nonnull
     public WebhookMessageBuilder setFile(@Nullable byte[] data, @Nullable String fileName)
     {
         if (data == null)
@@ -325,6 +337,7 @@ public class WebhookMessageBuilder
      *
      * @return The current WebhookMessageBuilder for chaining convenience
      */
+    @Nonnull
     public WebhookMessageBuilder setFile(@Nullable InputStream data, @Nullable String fileName)
     {
         Checks.check(data == null || !Helpers.isBlank(fileName),
@@ -342,6 +355,7 @@ public class WebhookMessageBuilder
      *
      * @return The current WebhookMessageBuilder for chaining convenience
      */
+    @Nonnull
     public WebhookMessageBuilder setTTS(boolean tts)
     {
         isTTS = tts;
@@ -357,6 +371,7 @@ public class WebhookMessageBuilder
      *
      * @return The resulting {@link net.dv8tion.jda.webhook.WebhookMessage WebhookMessage}
      */
+    @Nonnull
     public WebhookMessage build()
     {
         if (isEmpty())

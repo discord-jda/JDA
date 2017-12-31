@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.Color;
 import java.time.OffsetDateTime;
@@ -47,30 +48,35 @@ public class MemberImpl implements Member
         this.voiceState = new GuildVoiceStateImpl(guild, this);
     }
 
+    @Nonnull
     @Override
     public User getUser()
     {
         return user;
     }
 
+    @Nonnull
     @Override
     public Guild getGuild()
     {
         return guild;
     }
 
+    @Nonnull
     @Override
     public JDA getJDA()
     {
         return user.getJDA();
     }
 
+    @Nonnull
     @Override
     public OffsetDateTime getJoinDate()
     {
         return joinDate;
     }
 
+    @Nonnull
     @Override
     public GuildVoiceState getVoiceState()
     {
@@ -83,6 +89,7 @@ public class MemberImpl implements Member
         return game;
     }
 
+    @Nonnull
     @Override
     public OnlineStatus getOnlineStatus()
     {
@@ -95,12 +102,14 @@ public class MemberImpl implements Member
         return nickname;
     }
 
+    @Nonnull
     @Override
     public String getEffectiveName()
     {
         return nickname != null ? nickname : user.getName();
     }
 
+    @Nonnull
     @Override
     public List<Role> getRoles()
     {
@@ -121,6 +130,7 @@ public class MemberImpl implements Member
         return null;
     }
 
+    @Nonnull
     @Override
     public List<Permission> getPermissions()
     {
@@ -129,6 +139,7 @@ public class MemberImpl implements Member
                         PermissionUtil.getEffectivePermission(this)));
     }
 
+    @Nonnull
     @Override
     public List<Permission> getPermissions(Channel channel)
     {
@@ -209,7 +220,7 @@ public class MemberImpl implements Member
         return this;
     }
 
-    public MemberImpl setOnlineStatus(@Nullable OnlineStatus onlineStatus)
+    public MemberImpl setOnlineStatus(OnlineStatus onlineStatus)
     {
         this.onlineStatus = onlineStatus;
         return this;
@@ -242,6 +253,7 @@ public class MemberImpl implements Member
         return "MB:" + getEffectiveName() + '(' + user.toString() + " / " + guild.toString() +')';
     }
 
+    @Nonnull
     @Override
     public String getAsMention()
     {

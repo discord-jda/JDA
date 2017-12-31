@@ -102,6 +102,7 @@ public class MiscUtil
      *
      * @return The String of the formatted OffsetDateTime
      */
+    @Nonnull
     public static String getDateTimeString(OffsetDateTime time)
     {
         return time.format(dtFormatter);
@@ -172,6 +173,7 @@ public class MiscUtil
      *
      * @return a new thread-safe {@link gnu.trove.map.TLongObjectMap TLongObjectMap}
      */
+    @Nonnull
     public static <T> TLongObjectMap<T> newLongMap()
     {
         return new TSynchronizedLongObjectMap<>(new TLongObjectHashMap<T>(), new Object());
@@ -186,6 +188,7 @@ public class MiscUtil
      *
      * @return The encoded String
      */
+    @Nonnull
     public static String encodeUTF8(String chars)
     {
         try
@@ -273,6 +276,7 @@ public class MiscUtil
      *
      * @return RequestBody capable of transmitting the provided InputStream of data
      */
+    @Nonnull
     public static RequestBody createRequestBody(final MediaType contentType, final InputStream stream)
     {
         return new RequestBody()

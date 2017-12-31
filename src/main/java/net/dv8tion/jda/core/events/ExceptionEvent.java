@@ -18,6 +18,8 @@ package net.dv8tion.jda.core.events;
 
 import net.dv8tion.jda.core.JDA;
 
+import javax.annotation.Nonnull;
+
 /**
  * Fired when JDA does not have a specific handling for a Throwable.
  * <br>This includes {@link java.lang.Error Errors} and {@link com.neovisionaries.ws.client.WebSocketException WebSocketExceptions}
@@ -52,6 +54,7 @@ public class ExceptionEvent extends Event
      *
      * @return The cause
      */
+    @Nonnull
     public Throwable getCause()
     {
         return throwable;

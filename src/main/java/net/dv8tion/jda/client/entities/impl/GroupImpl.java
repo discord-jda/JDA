@@ -29,6 +29,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.core.utils.cache.impl.SnowflakeCacheViewImpl;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -68,12 +69,14 @@ public class GroupImpl implements Group
         return lastMessageId > 0;
     }
 
+    @Nonnull
     @Override
     public String getName()
     {
         return name;
     }
 
+    @Nonnull
     @Override
     public ChannelType getType()
     {
@@ -158,6 +161,7 @@ public class GroupImpl implements Group
         return null;
     }
 
+    @Nonnull
     @Override
     public JDA getJDA()
     {

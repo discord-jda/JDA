@@ -29,6 +29,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
@@ -581,6 +582,7 @@ public class WidgetUtil
                 return id;
             }
 
+            @Nonnull
             @Override
             public String getAsMention()
             {

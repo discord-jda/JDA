@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.entities.impl;
 
 import net.dv8tion.jda.core.entities.*;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class GuildVoiceStateImpl implements GuildVoiceState
@@ -51,6 +52,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
         return selfDeafened;
     }
 
+    @Nonnull
     @Override
     public JDAImpl getJDA()
     {
@@ -105,12 +107,14 @@ public class GuildVoiceStateImpl implements GuildVoiceState
         return connectedChannel;
     }
 
+    @Nonnull
     @Override
     public Guild getGuild()
     {
         return guild;
     }
 
+    @Nonnull
     @Override
     public Member getMember()
     {

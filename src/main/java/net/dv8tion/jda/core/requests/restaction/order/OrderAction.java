@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -95,6 +96,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      *
      * @return The corresponding JDA instance
      */
+    @Nonnull
     public JDA getJDA()
     {
         return api;
@@ -106,6 +108,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      *
      * @return Immutable List representing the current order
      */
+    @Nonnull
     public List<T> getCurrentOrder()
     {
         return Collections.unmodifiableList(orderList);
@@ -127,6 +130,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      * @see    #getSelectedPosition()
      * @see    #getSelectedEntity()
      */
+    @Nonnull
     public M selectPosition(int selectedPosition)
     {
         Checks.notNegative(selectedPosition, "Provided selectedPosition");
@@ -152,6 +156,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      * @see    #getSelectedPosition()
      * @see    #getSelectedEntity()
      */
+    @Nonnull
     public M selectPosition(T selectedEntity)
     {
         Checks.notNull(selectedEntity, "Channel");
@@ -179,6 +184,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      *
      * @return The currently selected entity
      */
+    @Nonnull
     public T getSelectedEntity()
     {
         if (selectedPosition == -1)
@@ -203,6 +209,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      *
      * @see    #moveTo(int)
      */
+    @Nonnull
     public M moveUp(int amount)
     {
         Checks.notNegative(amount, "Provided amount");
@@ -243,6 +250,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      *
      * @see    #moveTo(int)
      */
+    @Nonnull
     public M moveDown(int amount)
     {
         Checks.notNegative(amount, "Provided amount");
@@ -286,6 +294,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      * @see    #moveDown(int)
      * @see    #moveUp(int)
      */
+    @Nonnull
     public M moveTo(int position)
     {
         Checks.notNegative(position, "Provided position");
@@ -311,6 +320,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      *
      * @return The current OrderAction sub-implementation instance
      */
+    @Nonnull
     public M swapPosition(int swapPosition)
     {
         Checks.notNegative(swapPosition, "Provided swapPosition");
@@ -343,6 +353,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      *
      * @see    #swapPosition(int)
      */
+    @Nonnull
     public M swapPosition(T swapEntity)
     {
         Checks.notNull(swapEntity, "Provided swapEntity");
@@ -359,6 +370,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      *
      * @see    java.util.Collections#reverse(java.util.List)
      */
+    @Nonnull
     public M reverseOrder()
     {
         Collections.reverse(this.orderList);
@@ -373,6 +385,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      *
      * @see    java.util.Collections#shuffle(java.util.List)
      */
+    @Nonnull
     public M shuffleOrder()
     {
         Collections.shuffle(this.orderList);
@@ -394,6 +407,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      *
      * @see    java.util.ArrayList#sort(java.util.Comparator)
      */
+    @Nonnull
     public M sortOrder(final Comparator<T> comparator)
     {
         Checks.notNull(comparator, "Provided comparator");

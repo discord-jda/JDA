@@ -36,6 +36,7 @@ import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.NativeUtil;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
@@ -146,12 +147,14 @@ public class AudioManagerImpl implements AudioManager
         }
     }
 
+    @Nonnull
     @Override
     public JDA getJDA()
     {
         return api;
     }
 
+    @Nonnull
     @Override
     public Guild getGuild()
     {
@@ -164,12 +167,14 @@ public class AudioManagerImpl implements AudioManager
         return queuedAudioConnection != null;
     }
 
+    @Nullable
     @Override
     public VoiceChannel getQueuedAudioConnection()
     {
         return queuedAudioConnection;
     }
 
+    @Nullable
     @Override
     public VoiceChannel getConnectedChannel()
     {
@@ -202,6 +207,7 @@ public class AudioManagerImpl implements AudioManager
             audioConnection.setSendingHandler(handler);
     }
 
+    @Nullable
     @Override
     public AudioSendHandler getSendingHandler()
     {
@@ -216,6 +222,7 @@ public class AudioManagerImpl implements AudioManager
             audioConnection.setReceivingHandler(handler);
     }
 
+    @Nullable
     @Override
     public AudioReceiveHandler getReceiveHandler()
     {
@@ -228,12 +235,14 @@ public class AudioManagerImpl implements AudioManager
         this.connectionListener.setListener(listener);
     }
 
+    @Nullable
     @Override
     public ConnectionListener getConnectionListener()
     {
         return connectionListener.getListener();
     }
 
+    @Nonnull
     @Override
     public ConnectionStatus getConnectionStatus()
     {
@@ -290,6 +299,7 @@ public class AudioManagerImpl implements AudioManager
         return selfDeafened;
     }
 
+    @Nonnull
     public ConnectionListener getListenerProxy()
     {
         return connectionListener;

@@ -29,6 +29,7 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.HashSet;
@@ -76,6 +77,7 @@ public class EmoteImpl implements Emote
         return guild;
     }
 
+    @Nonnull
     @Override
     public List<Role> getRoles()
     {
@@ -84,6 +86,7 @@ public class EmoteImpl implements Emote
         return Collections.unmodifiableList(new LinkedList<>(roles));
     }
 
+    @Nonnull
     @Override
     public String getName()
     {
@@ -108,12 +111,14 @@ public class EmoteImpl implements Emote
         return id;
     }
 
+    @Nonnull
     @Override
     public JDA getJDA()
     {
         return api;
     }
 
+    @Nonnull
     @Override
     public EmoteManager getManager()
     {
@@ -130,6 +135,7 @@ public class EmoteImpl implements Emote
         return m;
     }
 
+    @Nonnull
     @Override
     public EmoteManagerUpdatable getManagerUpdatable()
     {
@@ -146,6 +152,7 @@ public class EmoteImpl implements Emote
         return m;
     }
 
+    @Nonnull
     @Override
     public AuditableRestAction<Void> delete()
     {

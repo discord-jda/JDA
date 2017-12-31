@@ -27,6 +27,7 @@ import okhttp3.RequestBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.util.Collection;
@@ -72,6 +73,7 @@ public class WebhookMessage
      *
      * @return The resulting WebhookMessage instance
      */
+    @Nonnull
     public static WebhookMessage of(MessageEmbed... embeds)
     {
         return new WebhookMessageBuilder().addEmbeds(embeds).build();
@@ -89,6 +91,7 @@ public class WebhookMessage
      *
      * @return The resulting WebhookMessage instance
      */
+    @Nonnull
     public static WebhookMessage of(Collection<MessageEmbed> embeds)
     {
         return new WebhookMessageBuilder().addEmbeds(embeds).build();
@@ -106,6 +109,7 @@ public class WebhookMessage
      *
      * @return The resulting WebhookMessage instance
      */
+    @Nonnull
     public static WebhookMessage from(Message message)
     {
         Checks.notNull(message, "Message");

@@ -27,6 +27,7 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.json.JSONObject;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.FormattableFlags;
 import java.util.Formatter;
@@ -50,12 +51,14 @@ public class UserImpl implements User
         this.api = api;
     }
 
+    @Nonnull
     @Override
     public String getName()
     {
         return name;
     }
 
+    @Nonnull
     @Override
     public String getDiscriminator()
     {
@@ -75,18 +78,21 @@ public class UserImpl implements User
                 + (getAvatarId().startsWith("a_") ? ".gif" : ".png");
     }
 
+    @Nonnull
     @Override
     public String getDefaultAvatarId()
     {
         return DefaultAvatar.values()[Integer.parseInt(getDiscriminator()) % DefaultAvatar.values().length].toString();
     }
 
+    @Nonnull
     @Override
     public String getDefaultAvatarUrl()
     {
         return "https://discordapp.com/assets/" + getDefaultAvatarId() + ".png";
     }
 
+    @Nonnull
     @Override
     public String getEffectiveAvatarUrl()
     {
@@ -100,6 +106,7 @@ public class UserImpl implements User
         return privateChannel != null;
     }
 
+    @Nonnull
     @Override
     public RestAction<PrivateChannel> openPrivateChannel()
     {
@@ -130,6 +137,7 @@ public class UserImpl implements User
         };
     }
 
+    @Nonnull
     @Override
     public List<Guild> getMutualGuilds()
     {
@@ -156,6 +164,7 @@ public class UserImpl implements User
         return api;
     }
 
+    @Nonnull
     @Override
     public String getAsMention()
     {

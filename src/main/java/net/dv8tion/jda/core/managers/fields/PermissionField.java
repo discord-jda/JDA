@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.managers.RoleManagerUpdatable;
 import net.dv8tion.jda.core.utils.Checks;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Supplier;
@@ -43,10 +44,10 @@ import java.util.function.Supplier;
  */
 public class PermissionField extends RoleField<Long>
 {
-    Set<Permission> permsGiven = new HashSet<>();
-    Set<Permission> permsRevoked = new HashSet<>();
+    private final Set<Permission> permsGiven = new HashSet<>();
+    private final Set<Permission> permsRevoked = new HashSet<>();
 
-    public PermissionField(RoleManagerUpdatable manager, @Nullable Supplier<Long> originalValue)
+    public PermissionField(RoleManagerUpdatable manager, Supplier<Long> originalValue)
     {
         super(manager, originalValue);
     }
@@ -66,6 +67,7 @@ public class PermissionField extends RoleField<Long>
      *
      * @see    #isSet()
      */
+    @Nonnull
     @Override
     public RoleManagerUpdatable setValue(@Nullable Long value)
     {
@@ -97,6 +99,7 @@ public class PermissionField extends RoleField<Long>
      * @return The {@link net.dv8tion.jda.core.managers.RoleManagerUpdatable RoleManagerUpdatable} instance
      *         for this PermissionField for chaining convenience
      */
+    @Nonnull
     public RoleManagerUpdatable setPermissions(Permission... permissions)
     {
         return setPermissions(Arrays.asList(permissions));
@@ -120,6 +123,7 @@ public class PermissionField extends RoleField<Long>
      * @return The {@link net.dv8tion.jda.core.managers.RoleManagerUpdatable RoleManagerUpdatable} instance
      *         for this PermissionField for chaining convenience
      */
+    @Nonnull
     public RoleManagerUpdatable setPermissions(Collection<Permission> permissions)
     {
         Checks.notNull(permissions, "permissions Collection");
@@ -153,6 +157,7 @@ public class PermissionField extends RoleField<Long>
      * @return The {@link net.dv8tion.jda.core.managers.RoleManagerUpdatable RoleManagerUpdatable} instance
      *         for this PermissionField for chaining convenience
      */
+    @Nonnull
     public RoleManagerUpdatable givePermissions(Permission... permissions)
     {
         return givePermissions(Arrays.asList(permissions));
@@ -172,6 +177,7 @@ public class PermissionField extends RoleField<Long>
      * @return The {@link net.dv8tion.jda.core.managers.RoleManagerUpdatable RoleManagerUpdatable} instance
      *         for this PermissionField for chaining convenience
      */
+    @Nonnull
     public RoleManagerUpdatable givePermissions(Collection<Permission> permissions)
     {
         Checks.notNull(permissions, "Permission Collection");
@@ -203,6 +209,7 @@ public class PermissionField extends RoleField<Long>
      * @return The {@link net.dv8tion.jda.core.managers.RoleManagerUpdatable RoleManagerUpdatable} instance
      *         for this PermissionField for chaining convenience
      */
+    @Nonnull
     public RoleManagerUpdatable revokePermissions(Permission... permissions)
     {
         return revokePermissions(Arrays.asList(permissions));
@@ -222,6 +229,7 @@ public class PermissionField extends RoleField<Long>
      * @return The {@link net.dv8tion.jda.core.managers.RoleManagerUpdatable RoleManagerUpdatable} instance
      *         for this PermissionField for chaining convenience
      */
+    @Nonnull
     public RoleManagerUpdatable revokePermissions(Collection<Permission> permissions)
     {
         Checks.notNull(permissions, "Permission Collection");
@@ -260,6 +268,7 @@ public class PermissionField extends RoleField<Long>
         return perms;
     }
 
+    @Nonnull
     @Override
     public RoleManagerUpdatable reset()
     {
@@ -278,6 +287,7 @@ public class PermissionField extends RoleField<Long>
      *
      * @see    #getOriginalPermissions()
      */
+    @Nullable
     public List<Permission> getPermissions()
     {
         Long perms = getValue();
@@ -292,6 +302,7 @@ public class PermissionField extends RoleField<Long>
      *
      * @see    #getPermissions()
      */
+    @Nonnull
     public List<Permission> getOriginalPermissions()
     {
         return Permission.getPermissions(getOriginalValue());

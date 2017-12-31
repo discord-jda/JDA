@@ -24,11 +24,13 @@ import org.apache.commons.collections4.iterators.ArrayIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.ThreadSafe;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+@ThreadSafe
 public abstract class AbstractCacheView<T> implements CacheView<T>
 {
     protected final TLongObjectMap<T> elements = MiscUtil.newLongMap();
@@ -44,11 +46,13 @@ public abstract class AbstractCacheView<T> implements CacheView<T>
         elements.clear();
     }
 
+    @Nonnull
     public TLongObjectMap<T> getMap()
     {
         return elements;
     }
 
+    @Nonnull
     @Override
     public List<T> asList()
     {
@@ -57,6 +61,7 @@ public abstract class AbstractCacheView<T> implements CacheView<T>
         return Collections.unmodifiableList(list);
     }
 
+    @Nonnull
     @Override
     public Set<T> asSet()
     {
@@ -77,6 +82,7 @@ public abstract class AbstractCacheView<T> implements CacheView<T>
         return elements.isEmpty();
     }
 
+    @Nonnull
     @Override
     public List<T> getElementsByName(String name, boolean ignoreCase)
     {
@@ -114,12 +120,14 @@ public abstract class AbstractCacheView<T> implements CacheView<T>
         return Spliterators.spliterator(elements.values(), Spliterator.IMMUTABLE);
     }
 
+    @Nonnull
     @Override
     public Stream<T> stream()
     {
         return StreamSupport.stream(spliterator(), false);
     }
 
+    @Nonnull
     @Override
     public Stream<T> parallelStream()
     {

@@ -26,6 +26,7 @@ import net.dv8tion.jda.core.utils.MiscUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import javax.annotation.Nonnull;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -51,7 +52,6 @@ import java.util.List;
  * </code></pre>
  *
  * @since  3.1
- * @author Florian Spieß
  */
 public class ReactionPaginationAction extends PaginationAction<User, ReactionPaginationAction>
 {
@@ -84,6 +84,7 @@ public class ReactionPaginationAction extends PaginationAction<User, ReactionPag
      *
      * @return The current MessageReaction
      */
+    @Nonnull
     public MessageReaction getReaction()
     {
         return reaction;

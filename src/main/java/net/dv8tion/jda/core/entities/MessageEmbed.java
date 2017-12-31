@@ -22,7 +22,10 @@ import net.dv8tion.jda.core.utils.Helpers;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNullableByDefault;
+import javax.annotation.concurrent.Immutable;
 import java.awt.Color;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -36,6 +39,8 @@ import java.util.Objects;
  * <a href="http://imgur.com/a/yOb5n" target="_blank">http://imgur.com/a/yOb5n</a>
  * <br>This class has many possibilities for null values, so be careful!
  */
+@Immutable
+@ParametersAreNullableByDefault
 public class MessageEmbed
 {
     /**
@@ -112,9 +117,9 @@ public class MessageEmbed
     protected volatile JSONObject json = null;
 
     protected MessageEmbed(
-        @Nullable String url, @Nullable String title, @Nullable String description, EmbedType type, @Nullable OffsetDateTime timestamp,
-        @Nullable Color color, @Nullable Thumbnail thumbnail, @Nullable Provider siteProvider, @Nullable AuthorInfo author,
-        @Nullable VideoInfo videoInfo, @Nullable Footer footer, @Nullable ImageInfo image, @Nullable List<Field> fields)
+        String url, String title, String description, @Nonnull EmbedType type, OffsetDateTime timestamp,
+        Color color, Thumbnail thumbnail, Provider siteProvider, AuthorInfo author,
+        VideoInfo videoInfo, Footer footer, ImageInfo image, List<Field> fields)
     {
         this.url = url;
         this.title = title;
@@ -171,6 +176,7 @@ public class MessageEmbed
      *
      * @return The {@link net.dv8tion.jda.core.entities.EmbedType EmbedType} of this embed.
      */
+    @Nonnull
     public EmbedType getType()
     {
         return type;
@@ -355,7 +361,7 @@ public class MessageEmbed
      *
      * @see    #getLength()
      */
-    public boolean isSendable(AccountType type)
+    public boolean isSendable(@Nonnull AccountType type)
     {
         Checks.notNull(type, "AccountType");
         final int length = getLength();
@@ -371,7 +377,7 @@ public class MessageEmbed
     }
 
     @Override
-    public boolean equals(@Nullable Object obj)
+    public boolean equals(Object obj)
     {
         if (!(obj instanceof MessageEmbed))
             return false;
@@ -399,6 +405,7 @@ public class MessageEmbed
      *
      * @return JSONObject for this embed
      */
+    @Nonnull
     public JSONObject toJSONObject()
     {
         if (json != null)

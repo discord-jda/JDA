@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNullableByDefault;
 import java.time.Instant;
 import java.time.temporal.TemporalUnit;
 import java.util.Objects;
@@ -30,6 +31,7 @@ import java.util.Objects;
  *
  * @since  3.4.0
  */
+@ParametersAreNullableByDefault
 public class RichPresence extends Game
 {
     protected final long applicationId;
@@ -42,9 +44,9 @@ public class RichPresence extends Game
     protected final Image smallImage;
 
     protected RichPresence(
-        GameType type, String name, @Nullable String url, long applicationId,
-        @Nullable Party party, @Nullable String details, @Nullable String state, @Nullable Timestamps timestamps,
-        @Nullable String largeImageKey, @Nullable String largeImageText, @Nullable String smallImageKey, @Nullable String smallImageText)
+        @Nonnull GameType type, @Nonnull String name, String url, long applicationId,
+        Party party, String details, String state, Timestamps timestamps,
+        String largeImageKey, String largeImageText, String smallImageKey, String smallImageText)
     {
         super(name, url, type);
         this.applicationId = applicationId;
@@ -62,6 +64,7 @@ public class RichPresence extends Game
         return true;
     }
 
+    @Nonnull
     @Override
     public RichPresence asRichPresence()
     {
@@ -197,7 +200,7 @@ public class RichPresence extends Game
         protected final String key;
         protected final String text;
 
-        public Image(String key, @Nullable String text)
+        public Image(@Nonnull String key, String text)
         {
             this.key = key;
             this.text = text;

@@ -46,6 +46,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
@@ -94,6 +95,7 @@ public class GuildImpl implements Guild
         this.api = api;
     }
 
+    @Nonnull
     @Override
     public String getName()
     {
@@ -112,6 +114,7 @@ public class GuildImpl implements Guild
         return iconId == null ? null : "https://cdn.discordapp.com/icons/" + id + "/" + iconId + ".jpg";
     }
 
+    @Nonnull
     @Override
     public Set<String> getFeatures()
     {
@@ -130,6 +133,7 @@ public class GuildImpl implements Guild
         return splashId == null ? null : "https://cdn.discordapp.com/splashes/" + id + "/" + splashId + ".jpg";
     }
 
+    @Nonnull
     @Override
     public RestAction<String> getVanityUrl()
     {
@@ -170,6 +174,7 @@ public class GuildImpl implements Guild
         return systemChannel;
     }
 
+    @Nonnull
     @Override
     public RestAction<List<Webhook>> getWebhooks()
     {
@@ -210,6 +215,7 @@ public class GuildImpl implements Guild
         };
     }
 
+    @Nonnull
     @Override
     public Member getOwner()
     {
@@ -222,6 +228,7 @@ public class GuildImpl implements Guild
         return afkTimeout;
     }
 
+    @Nonnull
     @Override
     public String getRegionRaw()
     {
@@ -234,7 +241,9 @@ public class GuildImpl implements Guild
         return memberCache.getMap().containsKey(user.getIdLong());
     }
 
+    @Nonnull
     @Override
+    @SuppressWarnings("ConstantConditions")
     public Member getSelfMember()
     {
         return getMember(getJDA().getSelfUser());
@@ -246,42 +255,49 @@ public class GuildImpl implements Guild
         return getMemberById(user.getIdLong());
     }
 
+    @Nonnull
     @Override
     public MemberCacheView getMemberCache()
     {
         return memberCache;
     }
 
+    @Nonnull
     @Override
     public SnowflakeCacheView<Category> getCategoryCache()
     {
         return categoryCache;
     }
 
+    @Nonnull
     @Override
     public SnowflakeCacheView<TextChannel> getTextChannelCache()
     {
         return textChannelCache;
     }
 
+    @Nonnull
     @Override
     public SnowflakeCacheView<VoiceChannel> getVoiceChannelCache()
     {
         return voiceChannelCache;
     }
 
+    @Nonnull
     @Override
     public SnowflakeCacheView<Role> getRoleCache()
     {
         return roleCache;
     }
 
+    @Nonnull
     @Override
     public SnowflakeCacheView<Emote> getEmoteCache()
     {
         return emoteCache;
     }
 
+    @Nonnull
     @Override
     public RestAction<List<User>> getBans()
     {
@@ -316,6 +332,7 @@ public class GuildImpl implements Guild
         };
     }
 
+    @Nonnull
     @Override
     public RestAction<Integer> getPrunableMemberCount(int days)
     {
@@ -341,6 +358,7 @@ public class GuildImpl implements Guild
         };
     }
 
+    @Nonnull
     @Override
     public Role getPublicRole()
     {
@@ -358,6 +376,7 @@ public class GuildImpl implements Guild
                 .findFirst().orElse(null);
     }
 
+    @Nonnull
     @Override
     public GuildManager getManager()
     {
@@ -374,6 +393,7 @@ public class GuildImpl implements Guild
         return mng;
     }
 
+    @Nonnull
     @Override
     public GuildManagerUpdatable getManagerUpdatable()
     {
@@ -390,6 +410,7 @@ public class GuildImpl implements Guild
         return mng;
     }
 
+    @Nonnull
     @Override
     public GuildController getController()
     {
@@ -406,6 +427,7 @@ public class GuildImpl implements Guild
         return ctrl;
     }
 
+    @Nonnull
     @Override
     public MentionPaginationAction getRecentMentions()
     {
@@ -413,12 +435,14 @@ public class GuildImpl implements Guild
         return getJDA().asClient().getRecentMentions(this);
     }
 
+    @Nonnull
     @Override
     public AuditLogPaginationAction getAuditLogs()
     {
         return new AuditLogPaginationAction(this);
     }
 
+    @Nonnull
     @Override
     public RestAction<Void> leave()
     {
@@ -439,6 +463,7 @@ public class GuildImpl implements Guild
         };
     }
 
+    @Nonnull
     @Override
     public RestAction<Void> delete()
     {
@@ -448,6 +473,7 @@ public class GuildImpl implements Guild
         return delete(null);
     }
 
+    @Nonnull
     @Override
     public RestAction<Void> delete(@Nullable String mfaCode)
     {
@@ -475,6 +501,7 @@ public class GuildImpl implements Guild
         };
     }
 
+    @Nonnull
     @Override
     public AudioManager getAudioManager()
     {
@@ -499,12 +526,14 @@ public class GuildImpl implements Guild
         return mng;
     }
 
+    @Nonnull
     @Override
     public JDAImpl getJDA()
     {
         return api;
     }
 
+    @Nonnull
     @Override
     public List<GuildVoiceState> getVoiceStates()
     {
@@ -512,24 +541,28 @@ public class GuildImpl implements Guild
                 getMembersMap().valueCollection().stream().map(Member::getVoiceState).collect(Collectors.toList()));
     }
 
+    @Nonnull
     @Override
     public VerificationLevel getVerificationLevel()
     {
         return verificationLevel;
     }
 
+    @Nonnull
     @Override
     public NotificationLevel getDefaultNotificationLevel()
     {
         return defaultNotificationLevel;
     }
 
+    @Nonnull
     @Override
     public MFALevel getRequiredMFALevel()
     {
         return mfaLevel;
     }
 
+    @Nonnull
     @Override
     public ExplicitContentLevel getExplicitContentLevel()
     {
@@ -579,6 +612,37 @@ public class GuildImpl implements Guild
     public long getIdLong()
     {
         return id;
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<List<Invite>> getInvites()
+    {
+        if (!this.getSelfMember().hasPermission(Permission.MANAGE_SERVER))
+            throw new InsufficientPermissionException(Permission.MANAGE_SERVER);
+
+        final Route.CompiledRoute route = Route.Invites.GET_GUILD_INVITES.compile(getId());
+
+        return new RestAction<List<Invite>>(api, route)
+        {
+            @Override
+            protected void handleResponse(final Response response, final Request<List<Invite>> request)
+            {
+                if (response.isOk())
+                {
+                    EntityBuilder entityBuilder = this.api.getEntityBuilder();
+                    JSONArray array = response.getArray();
+                    List<Invite> invites = new ArrayList<>(array.length());
+                    for (int i = 0; i < array.length(); i++)
+                        invites.add(entityBuilder.createInvite(array.getJSONObject(i)));
+                    request.onSuccess(Collections.unmodifiableList(invites));
+                }
+                else
+                {
+                    request.onFailure(response);
+                }
+            }
+        };
     }
 
     // ---- Setters -----
@@ -643,26 +707,26 @@ public class GuildImpl implements Guild
         return this;
     }
 
-    public GuildImpl setVerificationLevel(@Nullable VerificationLevel level)
+    public GuildImpl setVerificationLevel(VerificationLevel level)
     {
         this.verificationLevel = level;
         this.canSendVerification = false;   //recalc on next send
         return this;
     }
 
-    public GuildImpl setDefaultNotificationLevel(@Nullable NotificationLevel level)
+    public GuildImpl setDefaultNotificationLevel(NotificationLevel level)
     {
         this.defaultNotificationLevel = level;
         return this;
     }
 
-    public GuildImpl setRequiredMFALevel(@Nullable MFALevel level)
+    public GuildImpl setRequiredMFALevel(MFALevel level)
     {
         this.mfaLevel = level;
         return this;
     }
 
-    public GuildImpl setExplicitContentLevel(@Nullable ExplicitContentLevel level)
+    public GuildImpl setExplicitContentLevel(ExplicitContentLevel level)
     {
         this.explicitContentLevel = level;
         return this;
@@ -734,35 +798,4 @@ public class GuildImpl implements Guild
     {
         return "G:" + getName() + '(' + id + ')';
     }
-
-    @Override
-    public RestAction<List<Invite>> getInvites()
-    {
-        if (!this.getSelfMember().hasPermission(Permission.MANAGE_SERVER))
-            throw new InsufficientPermissionException(Permission.MANAGE_SERVER);
-
-        final Route.CompiledRoute route = Route.Invites.GET_GUILD_INVITES.compile(getId());
-
-        return new RestAction<List<Invite>>(api, route)
-        {
-            @Override
-            protected void handleResponse(final Response response, final Request<List<Invite>> request)
-            {
-                if (response.isOk())
-                {
-                    EntityBuilder entityBuilder = this.api.getEntityBuilder();
-                    JSONArray array = response.getArray();
-                    List<Invite> invites = new ArrayList<>(array.length());
-                    for (int i = 0; i < array.length(); i++)
-                        invites.add(entityBuilder.createInvite(array.getJSONObject(i)));
-                    request.onSuccess(Collections.unmodifiableList(invites));
-                }
-                else
-                {
-                    request.onFailure(response);
-                }
-            }
-        };
-    }
-
 }

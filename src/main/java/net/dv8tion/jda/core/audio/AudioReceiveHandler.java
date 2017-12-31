@@ -16,11 +16,13 @@
 
 package net.dv8tion.jda.core.audio;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.sound.sampled.AudioFormat;
 
 /**
  * Interface used to receive audio from Discord through JDA.
  */
+@ParametersAreNonnullByDefault
 public interface AudioReceiveHandler
 {
     /**

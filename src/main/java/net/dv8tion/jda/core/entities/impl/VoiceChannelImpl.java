@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.requests.restaction.ChannelAction;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,12 +51,14 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannelImpl> impl
         return bitrate;
     }
 
+    @Nonnull
     @Override
     public ChannelType getType()
     {
         return ChannelType.VOICE;
     }
 
+    @Nonnull
     @Override
     public List<Member> getMembers()
     {
@@ -74,6 +77,7 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannelImpl> impl
         throw new AssertionError("Somehow when determining position we never found the VoiceChannel in the Guild's channels? wtf?");
     }
 
+    @Nonnull
     @Override
     public ChannelAction createCopy(Guild guild)
     {

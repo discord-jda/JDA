@@ -18,7 +18,6 @@ package net.dv8tion.jda.core.managers.fields;
 
 import net.dv8tion.jda.core.managers.AccountManagerUpdatable;
 
-import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 /**
@@ -36,7 +35,7 @@ import java.util.function.Supplier;
  */
 public abstract class AccountField<T> extends Field<T, AccountManagerUpdatable>
 {
-    public AccountField(AccountManagerUpdatable manager, @Nullable Supplier<T> originalValue)
+    public AccountField(AccountManagerUpdatable manager, Supplier<T> originalValue)
     {
         super(manager, originalValue);
     }

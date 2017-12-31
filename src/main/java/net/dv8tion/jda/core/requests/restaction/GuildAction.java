@@ -33,6 +33,7 @@ import org.json.JSONObject;
 import org.json.JSONString;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.Color;
 import java.util.*;
@@ -79,6 +80,7 @@ public class GuildAction extends RestAction<Void>
      *
      * @return The current GuildAction for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
     public GuildAction setRegion(@Nullable Region region)
     {
@@ -96,6 +98,7 @@ public class GuildAction extends RestAction<Void>
      *
      * @return The current GuildAction for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
     public GuildAction setIcon(@Nullable Icon icon)
     {
@@ -114,6 +117,7 @@ public class GuildAction extends RestAction<Void>
      *
      * @return The current GuildAction for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
     public GuildAction setName(String name)
     {
@@ -133,6 +137,7 @@ public class GuildAction extends RestAction<Void>
      *
      * @return The current GuildAction for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
     public GuildAction setVerificationLevel(@Nullable Guild.VerificationLevel level)
     {
@@ -149,6 +154,7 @@ public class GuildAction extends RestAction<Void>
      *
      * @return The current GuildAction for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
     public GuildAction setNotificationLevel(@Nullable Guild.NotificationLevel level)
     {
@@ -165,6 +171,7 @@ public class GuildAction extends RestAction<Void>
      *
      * @return The current GuildAction for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
     public GuildAction setExplicitContentLevel(@Nullable Guild.ExplicitContentLevel level)
     {
@@ -187,6 +194,7 @@ public class GuildAction extends RestAction<Void>
      *
      * @return The current GuildAction for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
     public GuildAction addChannel(ChannelData channel)
     {
@@ -240,6 +248,7 @@ public class GuildAction extends RestAction<Void>
      *
      * @return The current GuildAction for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
     public GuildAction removeChannel(ChannelData data)
     {
@@ -267,6 +276,7 @@ public class GuildAction extends RestAction<Void>
      *
      * @return The new ChannelData instance
      */
+    @Nonnull
     @CheckReturnValue
     public ChannelData newChannel(ChannelType type, String name)
     {
@@ -286,6 +296,7 @@ public class GuildAction extends RestAction<Void>
      *
      * @return RoleData of the public role
      */
+    @Nonnull
     @CheckReturnValue
     public RoleData getPublicRole()
     {
@@ -320,6 +331,7 @@ public class GuildAction extends RestAction<Void>
      *
      * @return RoleData for the new Role
      */
+    @Nonnull
     @CheckReturnValue
     public RoleData newRole()
     {
@@ -392,6 +404,7 @@ public class GuildAction extends RestAction<Void>
          *
          * @return The current RoleData instance for chaining convenience
          */
+        @Nonnull
         public RoleData setPermissionsRaw(@Nullable Long rawPermissions)
         {
             if (rawPermissions != null)
@@ -414,6 +427,7 @@ public class GuildAction extends RestAction<Void>
          *
          * @return The current RoleData instance for chaining convenience
          */
+        @Nonnull
         public RoleData addPermissions(Permission... permissions)
         {
             Checks.notNull(permissions, "Permissions");
@@ -436,6 +450,7 @@ public class GuildAction extends RestAction<Void>
          *
          * @return The current RoleData instance for chaining convenience
          */
+        @Nonnull
         public RoleData addPermissions(Collection<Permission> permissions)
         {
             Checks.noneNull(permissions, "Permissions");
@@ -456,6 +471,7 @@ public class GuildAction extends RestAction<Void>
          *
          * @return The current RoleData instance for chaining convenience
          */
+        @Nonnull
         public RoleData setName(String name)
         {
             checkPublic("name");
@@ -474,6 +490,7 @@ public class GuildAction extends RestAction<Void>
          *
          * @return The current RoleData instance for chaining convenience
          */
+        @Nonnull
         public RoleData setColor(@Nullable Color color)
         {
             checkPublic("color");
@@ -492,6 +509,7 @@ public class GuildAction extends RestAction<Void>
          *
          * @return The current RoleData instance for chaining convenience
          */
+        @Nonnull
         public RoleData setPosition(@Nullable Integer position)
         {
             checkPublic("position");
@@ -510,6 +528,7 @@ public class GuildAction extends RestAction<Void>
          *
          * @return The current RoleData instance for chaining convenience
          */
+        @Nonnull
         public RoleData setMentionable(@Nullable Boolean mentionable)
         {
             checkPublic("mentionable");
@@ -528,6 +547,7 @@ public class GuildAction extends RestAction<Void>
          *
          * @return The current RoleData instance for chaining convenience
          */
+        @Nonnull
         public RoleData setHoisted(@Nullable Boolean hoisted)
         {
             checkPublic("hoisted");
@@ -535,6 +555,7 @@ public class GuildAction extends RestAction<Void>
             return this;
         }
 
+        @Nonnull
         @Override
         public String toJSONString()
         {
@@ -624,6 +645,7 @@ public class GuildAction extends RestAction<Void>
          *
          * @return This ChannelData instance for chaining convenience
          */
+        @Nonnull
         public ChannelData setTopic(@Nullable String topic)
         {
             if (topic != null && topic.length() > 1024)
@@ -641,6 +663,7 @@ public class GuildAction extends RestAction<Void>
          *
          * @return This ChannelData instance for chaining convenience
          */
+        @Nonnull
         public ChannelData setNSFW(@Nullable Boolean nsfw)
         {
             this.nsfw = nsfw;
@@ -659,6 +682,7 @@ public class GuildAction extends RestAction<Void>
          *
          * @return This ChannelData instance for chaining convenience
          */
+        @Nonnull
         public ChannelData setBitrate(@Nullable Integer bitrate)
         {
             if (bitrate != null)
@@ -682,6 +706,7 @@ public class GuildAction extends RestAction<Void>
          *
          * @return This ChannelData instance for chaining convenience
          */
+        @Nonnull
         public ChannelData setUserlimit(@Nullable Integer userlimit)
         {
             if (userlimit != null && (userlimit < 0 || userlimit > 99))
@@ -698,6 +723,7 @@ public class GuildAction extends RestAction<Void>
          *
          * @return This ChannelData instance for chaining convenience
          */
+        @Nonnull
         public ChannelData setPosition(@Nullable Integer position)
         {
             this.position = position;
@@ -725,6 +751,7 @@ public class GuildAction extends RestAction<Void>
          *
          * @return This ChannelData instance for chaining convenience
          */
+        @Nonnull
         public ChannelData addPermissionOverride(RoleData role, long allow, long deny)
         {
             Checks.notNull(role, "Role");
@@ -756,6 +783,7 @@ public class GuildAction extends RestAction<Void>
          *
          * @return This ChannelData instance for chaining convenience
          */
+        @Nonnull
         public ChannelData addPermissionOverride(RoleData role, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny)
         {
             long allowRaw = 0;
@@ -773,6 +801,7 @@ public class GuildAction extends RestAction<Void>
             return addPermissionOverride(role, allowRaw, denyRaw);
         }
 
+        @Nonnull
         @Override
         public String toJSONString()
         {

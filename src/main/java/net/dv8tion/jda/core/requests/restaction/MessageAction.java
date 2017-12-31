@@ -31,6 +31,7 @@ import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.*;
 import java.util.HashMap;
@@ -134,6 +135,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
      *
      * @return Updated MessageAction for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
     public MessageAction apply(@Nullable final Message message)
     {
@@ -156,6 +158,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
      *
      * @return Updated MessageAction for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
     public MessageAction tts(final boolean isTTS)
     {
@@ -172,6 +175,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
      *
      * @return Updated MessageAction for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
     public MessageAction reset()
     {
@@ -193,6 +197,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
      * @see    net.dv8tion.jda.core.MessageBuilder#setNonce(String)
      * @see    <a href="https://en.wikipedia.org/wiki/Cryptographic_nonce" target="_blank">Cryptographic Nonce - Wikipedia</a>
      */
+    @Nonnull
     @CheckReturnValue
     public MessageAction nonce(@Nullable final String nonce)
     {
@@ -213,6 +218,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
      *
      * @return Updated MessageAction for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
     public MessageAction content(@Nullable final String content)
     {
@@ -241,6 +247,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
      *
      * @return Updated MessageAction for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
     public MessageAction embed(@Nullable final MessageEmbed embed)
     {
@@ -263,6 +270,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
      *
      * @return Updated MessageAction for chaining convenience
      */
+    @Nonnull
     @Override
     @CheckReturnValue
     public MessageAction append(final CharSequence csq)
@@ -278,6 +286,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
      *
      * @return Updated MessageAction for chaining convenience
      */
+    @Nonnull
     @Override
     @CheckReturnValue
     public MessageAction append(final CharSequence csq, final int start, final int end)
@@ -296,6 +305,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
      *
      * @return Updated MessageAction for chaining convenience
      */
+    @Nonnull
     @Override
     @CheckReturnValue
     public MessageAction append(final char c)
@@ -330,6 +340,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
      *
      * @return Updated MessageAction for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
     public MessageAction appendFormat(final String format, final Object... args)
     {
@@ -359,6 +370,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
      *
      * @return Updated MessageAction for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
     public MessageAction addFile(final InputStream data, final String name)
     {
@@ -397,6 +409,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
      *
      * @see    net.dv8tion.jda.core.entities.SelfUser#getAllowedFileSize() SelfUser.getAllowedFileSize()
      */
+    @Nonnull
     @CheckReturnValue
     public MessageAction addFile(final byte[] data, final String name)
     {
@@ -428,6 +441,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
      *
      * @see    net.dv8tion.jda.core.entities.SelfUser#getAllowedFileSize() SelfUser.getAllowedFileSize()
      */
+    @Nonnull
     @CheckReturnValue
     public MessageAction addFile(final File file)
     {
@@ -462,6 +476,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
      *
      * @see    net.dv8tion.jda.core.entities.SelfUser#getAllowedFileSize() SelfUser.getAllowedFileSize()
      */
+    @Nonnull
     @CheckReturnValue
     public MessageAction addFile(final File file, final String name)
     {
@@ -484,6 +499,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
      *
      * @return Updated MessageAction for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
     public MessageAction clearFiles()
     {
@@ -499,6 +515,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
      *
      * @return Updated MessageAction for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
     public MessageAction override(final boolean bool)
     {
