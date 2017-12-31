@@ -647,7 +647,8 @@ public class DefaultShardManagerBuilder
     public DefaultShardManagerBuilder setShards(Collection<Integer> shardIds)
     {
         Checks.notNull(shardIds, "shardIds");
-        for (Integer id : shards) {
+        for (Integer id : shardIds)
+        {
             Checks.notNegative(id, "minShardId");
             Checks.check(id < this.shardsTotal, "maxShardId must be lower than shardsTotal");
         }

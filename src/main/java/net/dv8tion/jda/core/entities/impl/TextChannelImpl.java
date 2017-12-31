@@ -26,16 +26,19 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.ChannelAction;
-import net.dv8tion.jda.core.requests.restaction.WebhookAction;
 import net.dv8tion.jda.core.requests.restaction.MessageAction;
-import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.core.requests.restaction.WebhookAction;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.MiscUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implements TextChannel
@@ -400,7 +403,11 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         if (!getJDA().getSelfUser().equals(user))
             checkPermission(Permission.MESSAGE_MANAGE);
         final String code = MiscUtil.encodeUTF8(unicode);
-        final Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, code, user.getId());
+        Route.CompiledRoute route;
+        if (user.equals(getJDA().getSelfUser()))
+            route = Route.Messages.REMOVE_OWN_REACTION.compile(getId(), messageId, code);
+        else
+            route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, code, user.getId());
         return new RestAction<Void>(getJDA(), route)
         {
             @Override

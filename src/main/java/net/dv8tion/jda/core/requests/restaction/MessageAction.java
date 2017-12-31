@@ -103,8 +103,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
     public boolean isEmpty()
     {
         return Helpers.isBlank(content)
-            && (!hasPermission(Permission.MESSAGE_EMBED_LINKS)
-                || embed == null || embed.getLength() == 0);
+            && (embed == null || embed.isEmpty() || !hasPermission(Permission.MESSAGE_EMBED_LINKS));
     }
 
     /**
@@ -248,7 +247,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
         {
             final AccountType type = getJDA().getAccountType();
             Checks.check(embed.isSendable(type),
-                "Provided Message contains an embed with a length greater than %d characters, which is the max for %s accounts!",
+                "Provided Message contains an empty embed or an embed with a length greater than %d characters, which is the max for %s accounts!",
                 type == AccountType.BOT ? MessageEmbed.EMBED_MAX_LENGTH_BOT : MessageEmbed.EMBED_MAX_LENGTH_CLIENT, type);
         }
         this.embed = embed;
@@ -604,7 +603,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
     protected void handleResponse(Response response, Request<Message> request)
     {
         if (response.isOk())
-            request.onSuccess(api.getEntityBuilder().createMessage(response.getObject()));
+            request.onSuccess(api.getEntityBuilder().createMessage(response.getObject(), channel, false));
         else
             request.onFailure(response);
     }
