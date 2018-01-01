@@ -27,7 +27,6 @@ import net.dv8tion.jda.core.entities.Member;
  */
 public class GuildMemberJoinEvent extends GenericGuildMemberEvent
 {
-
     public GuildMemberJoinEvent(JDA api, long responseNumber, Guild guild, Member member)
     {
         super(api, responseNumber, guild, member);

@@ -21,4 +21,7 @@
  *
  * @since 3.1
  */
+@ParametersAreNonnullByDefault
 package net.dv8tion.jda.core.events.emote;
+
+import javax.annotation.ParametersAreNonnullByDefault;

@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,11 +41,13 @@ public class VoiceChannelUpdatePermissionsEvent extends GenericVoiceChannelUpdat
         this.changedPermHolders = changed;
     }
 
+    @Nonnull
     public List<IPermissionHolder> getChangedPermissionHolders()
     {
         return changedPermHolders;
     }
 
+    @Nonnull
     public List<Role> getChangedRoles()
     {
         return changedPermHolders
@@ -54,6 +57,7 @@ public class VoiceChannelUpdatePermissionsEvent extends GenericVoiceChannelUpdat
                 .collect(Collectors.toList());
     }
 
+    @Nonnull
     public List<Member> getMemberWithPermissionChanges()
     {
         return changedPermHolders

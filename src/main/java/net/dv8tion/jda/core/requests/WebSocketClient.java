@@ -107,7 +107,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected boolean firstInit = true;
     protected boolean processingReady = true;
 
-    public WebSocketClient(JDAImpl api, SessionReconnectQueue reconnectQueue)
+    public WebSocketClient(JDAImpl api, @Nullable SessionReconnectQueue reconnectQueue)
     {
         this.api = api;
         this.shardInfo = api.getShardInfo();
@@ -545,7 +545,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             zlibContext = new Inflater();
             readBuffer = null;
             if (isInvalidate)
-                invalidate(); // 1000 means our session is dropped so we cannot resume
+                invalidate();
             api.getEventManager().handle(new DisconnectEvent(api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now()));
             if (sessionId == null && reconnectQueue != null)
                 queueReconnect();

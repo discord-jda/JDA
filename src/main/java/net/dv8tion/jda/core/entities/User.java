@@ -179,5 +179,6 @@ public interface User extends ISnowflake, IMentionable, IFakeable
      *
      * @return the corresponding JDA instance
      */
+    @Nonnull
     JDA getJDA();
 }

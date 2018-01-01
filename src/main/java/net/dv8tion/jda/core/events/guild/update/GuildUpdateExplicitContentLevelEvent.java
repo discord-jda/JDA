@@ -19,6 +19,8 @@ package net.dv8tion.jda.core.events.guild.update;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 
+import javax.annotation.Nonnull;
+
 /**
  * <b><u>GuildUpdateExplicitContentLevelEvent</u></b><br>
  * Fired whenever a {@link net.dv8tion.jda.core.entities.Guild Guild}
@@ -42,6 +44,7 @@ public class GuildUpdateExplicitContentLevelEvent extends GenericGuildUpdateEven
      *
      * @return The old explicit content level
      */
+    @Nonnull
     public Guild.ExplicitContentLevel getOldLevel()
     {
         return oldLevel;

@@ -21,6 +21,8 @@ import net.dv8tion.jda.core.entities.Category;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.events.Event;
 
+import javax.annotation.Nonnull;
+
 /**
  * <b><u>GenericCategoryEvent</u></b>
  * <p>Fired for all {@link net.dv8tion.jda.core.entities.Category Category} events.
@@ -41,6 +43,7 @@ public abstract class GenericCategoryEvent extends Event
      *
      * @return The Category
      */
+    @Nonnull
     public Category getCategory()
     {
         return category;
@@ -51,6 +54,7 @@ public abstract class GenericCategoryEvent extends Event
      *
      * @return The ID for the category
      */
+    @Nonnull
     public String getId()
     {
         return Long.toUnsignedString(getIdLong());
@@ -72,6 +76,7 @@ public abstract class GenericCategoryEvent extends Event
      *
      * @return The {@link net.dv8tion.jda.core.entities.Guild Guild}
      */
+    @Nonnull
     public Guild getGuild()
     {
         return category.getGuild();

@@ -18,6 +18,8 @@ package net.dv8tion.jda.core.events.self;
 
 import net.dv8tion.jda.core.JDA;
 
+import javax.annotation.Nonnull;
+
 public class SelfUpdateNameEvent extends GenericSelfUpdateEvent
 {
     private final String oldName;
@@ -30,11 +32,13 @@ public class SelfUpdateNameEvent extends GenericSelfUpdateEvent
         this.oldDiscriminator = oldDiscriminator;
     }
 
+    @Nonnull
     public String getOldName()
     {
         return oldName;
     }
 
+    @Nonnull
     public String getOldDiscriminator()
     {
         return oldDiscriminator;

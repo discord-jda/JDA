@@ -22,11 +22,13 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 
+import javax.annotation.Nullable;
+
 public abstract class GenericUserPresenceEvent extends GenericUserEvent
 {
     protected final Guild guild;
 
-    public GenericUserPresenceEvent(JDA api, long responseNumber, User user, Guild guild)
+    public GenericUserPresenceEvent(JDA api, long responseNumber, User user, @Nullable Guild guild)
     {
         super(api, responseNumber, user);
         this.guild = guild;

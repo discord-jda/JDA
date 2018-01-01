@@ -55,7 +55,7 @@ public class UserImpl implements User
     @Override
     public String getName()
     {
-        return name;
+        return name == null ? "" : name;
     }
 
     @Nonnull
@@ -144,6 +144,7 @@ public class UserImpl implements User
         return getJDA().getMutualGuilds(this);
     }
 
+    @Nonnull
     public PrivateChannel getPrivateChannel()
     {
         if (!hasPrivateChannel())
@@ -158,6 +159,7 @@ public class UserImpl implements User
         return bot;
     }
 
+    @Nonnull
     @Override
     public JDA getJDA()
     {

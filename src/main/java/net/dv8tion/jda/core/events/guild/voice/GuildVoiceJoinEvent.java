@@ -20,6 +20,8 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 
+import javax.annotation.Nonnull;
+
 /**
  * <b><u>GuildVoiceJoinEvent</u></b>
  * <p>Fired when a {@link net.dv8tion.jda.core.entities.Member Member} connects to a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
@@ -40,6 +42,7 @@ public class GuildVoiceJoinEvent extends GenericGuildVoiceEvent
      *
      * @return the {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
      */
+    @Nonnull
     public VoiceChannel getChannelJoined()
     {
         return channelJoined;

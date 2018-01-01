@@ -20,4 +20,7 @@
  * <br>Every update is an extensions of the {@link net.dv8tion.jda.core.events.guild.voice.GenericGuildVoiceEvent GenericGuildVoiceEvent}
  * and has specifications for explicit voice state features such as mute/deafen
  */
+@ParametersAreNonnullByDefault
 package net.dv8tion.jda.core.events.guild.voice;
+
+import javax.annotation.ParametersAreNonnullByDefault;

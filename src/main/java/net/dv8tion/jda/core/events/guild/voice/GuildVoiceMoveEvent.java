@@ -20,6 +20,8 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 
+import javax.annotation.Nonnull;
+
 /**
  * <b><u>GuildVoiceMoveEvent</u></b>
  * <p>Fired when a {@link net.dv8tion.jda.core.entities.Member Member} for any reason is moved from one {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} to another
@@ -39,6 +41,7 @@ public class GuildVoiceMoveEvent extends GuildVoiceUpdateEvent
      *
      * @return the {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
      */
+    @Nonnull
     public VoiceChannel getChannelJoined()
     {
         return channelJoined;

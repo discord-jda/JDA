@@ -19,6 +19,8 @@ package net.dv8tion.jda.core.events.channel.category.update;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Category;
 
+import javax.annotation.Nonnull;
+
 /**
  * <b><u>CategoryUpdateNameEvent</u></b>
  * <p>Fired when the name of a {@link net.dv8tion.jda.core.entities.Category Category} is updated.
@@ -40,6 +42,7 @@ public class CategoryUpdateNameEvent extends GenericCategoryUpdateEvent
      *
      * @return The previous name
      */
+    @Nonnull
     public String getOldName()
     {
         return oldName;

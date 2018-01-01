@@ -20,6 +20,8 @@ import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.events.Event;
 
+import javax.annotation.Nonnull;
+
 /**
  * <b><u>GenericPrivateMessageEvent</u></b><br>
  * Fired whenever a {@link net.dv8tion.jda.core.entities.Message Message} event is fired from a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}.<br>
@@ -39,11 +41,13 @@ public abstract class GenericPrivateMessageEvent extends Event
         this.channel = channel;
     }
 
+    @Nonnull
     public PrivateChannel getChannel()
     {
         return channel;
     }
 
+    @Nonnull
     public String getMessageId()
     {
         return Long.toUnsignedString(messageId);

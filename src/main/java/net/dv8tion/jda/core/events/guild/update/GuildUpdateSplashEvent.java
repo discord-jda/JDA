@@ -19,21 +19,25 @@ package net.dv8tion.jda.core.events.guild.update;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 
+import javax.annotation.Nullable;
+
 public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent
 {
     private final String oldSplashId;
 
-    public GuildUpdateSplashEvent(JDA api, long responseNumber, Guild guild, String oldSplashId)
+    public GuildUpdateSplashEvent(JDA api, long responseNumber, Guild guild, @Nullable String oldSplashId)
     {
         super(api, responseNumber, guild);
         this.oldSplashId = oldSplashId;
     }
 
+    @Nullable
     public String getOldSplashId()
     {
         return oldSplashId;
     }
 
+    @Nullable
     public String getOldSplashUrl()
     {
         return oldSplashId == null ? null : "https://cdn.discordapp.com/splashes/" + guild.getId() + "/" + oldSplashId + ".jpg";

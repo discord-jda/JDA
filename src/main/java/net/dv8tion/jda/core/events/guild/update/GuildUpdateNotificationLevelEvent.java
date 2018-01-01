@@ -19,6 +19,8 @@ package net.dv8tion.jda.core.events.guild.update;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 
+import javax.annotation.Nonnull;
+
 public class GuildUpdateNotificationLevelEvent extends GenericGuildUpdateEvent
 {
     private final Guild.NotificationLevel oldNotificationLevel;
@@ -29,6 +31,7 @@ public class GuildUpdateNotificationLevelEvent extends GenericGuildUpdateEvent
         this.oldNotificationLevel = oldNotificationLevel;
     }
 
+    @Nonnull
     public Guild.NotificationLevel getOldNotificationLevel()
     {
         return oldNotificationLevel;

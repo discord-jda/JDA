@@ -516,7 +516,6 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The PrivateChannel this message was sent in, or {@code null} if it was not sent from a PrivateChannel.
      */
-    @Nullable
     PrivateChannel getPrivateChannel();
 
     /**
@@ -533,7 +532,6 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The Group this message was sent in, or {@code null} if it was not sent from a Group.
      */
-    @Nullable
     Group getGroup();
 
     /**
@@ -550,7 +548,6 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The TextChannel this message was sent in, or {@code null} if it was not sent from a TextChannel.
      */
-    @Nullable
     TextChannel getTextChannel();
 
     /**
@@ -578,7 +575,6 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The Guild this message was sent in, or {@code null} if it was not sent from a TextChannel.
      */
-    @Nullable
     Guild getGuild();
 
     /**

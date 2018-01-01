@@ -20,6 +20,8 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 
+import javax.annotation.Nullable;
+
 /**
  * <b><u>GuildMemberNickChangeEvent</u></b><br>
  * Fired if a {@link net.dv8tion.jda.core.entities.Member Member} updates their {@link net.dv8tion.jda.core.entities.Guild Guild} nickname.<br>
@@ -30,18 +32,20 @@ public class GuildMemberNickChangeEvent extends GenericGuildMemberEvent
 {
     private final String prevNick, newNick;
 
-    public GuildMemberNickChangeEvent(JDA api, long responseNumber, Guild guild, Member member, String prevNick, String newNick)
+    public GuildMemberNickChangeEvent(JDA api, long responseNumber, Guild guild, Member member, @Nullable String prevNick, @Nullable String newNick)
     {
         super(api, responseNumber, guild, member);
         this.prevNick = prevNick;
         this.newNick = newNick;
     }
 
+    @Nullable
     public String getPrevNick()
     {
         return prevNick;
     }
 
+    @Nullable
     public String getNewNick()
     {
         return newNick;

@@ -21,6 +21,8 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.GenericMessageEvent;
 
+import javax.annotation.Nonnull;
+
 public class GenericMessageReactionEvent extends GenericMessageEvent
 {
     protected User issuer;
@@ -54,6 +56,7 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
         return isFromType(ChannelType.GROUP) ? (Group) getChannel() : null;
     }
 
+    @Nonnull
     public User getUser()
     {
         return issuer;
@@ -65,11 +68,13 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
         return guild != null ? guild.getMember(getUser()) : null;
     }
 
+    @Nonnull
     public MessageReaction getReaction()
     {
         return reaction;
     }
 
+    @Nonnull
     public MessageReaction.ReactionEmote getReactionEmote()
     {
         return reaction.getReactionEmote();

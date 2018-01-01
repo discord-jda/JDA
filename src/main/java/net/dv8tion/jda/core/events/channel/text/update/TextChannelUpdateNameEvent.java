@@ -18,6 +18,8 @@ package net.dv8tion.jda.core.events.channel.text.update;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.TextChannel;
 
+import javax.annotation.Nonnull;
+
 /**
  * <b><u>TextChannelUpdateNameEvent</u></b><br>
  * Fired if a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}'s name changes.<br>
@@ -27,12 +29,14 @@ import net.dv8tion.jda.core.entities.TextChannel;
 public class TextChannelUpdateNameEvent extends GenericTextChannelUpdateEvent
 {
     private final String oldName;
+
     public TextChannelUpdateNameEvent(JDA api, long responseNumber, TextChannel channel, String oldName)
     {
         super(api, responseNumber, channel);
         this.oldName = oldName;
     }
 
+    @Nonnull
     public String getOldName()
     {
         return oldName;

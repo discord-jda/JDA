@@ -18,4 +18,7 @@
  * Events for {@link net.dv8tion.jda.core.entities.Message Messages}
  * in {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannels}
  */
+@ParametersAreNonnullByDefault
 package net.dv8tion.jda.core.events.message.priv;
+
+import javax.annotation.ParametersAreNonnullByDefault;

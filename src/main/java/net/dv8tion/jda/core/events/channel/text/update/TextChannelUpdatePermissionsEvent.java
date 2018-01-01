@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,11 +41,13 @@ public class TextChannelUpdatePermissionsEvent extends GenericTextChannelUpdateE
         this.changed = permHolders;
     }
 
+    @Nonnull
     public List<IPermissionHolder> getChangedPermissionHolders()
     {
         return changed;
     }
 
+    @Nonnull
     public List<Role> getChangedRoles()
     {
         return changed.stream()
@@ -53,6 +56,7 @@ public class TextChannelUpdatePermissionsEvent extends GenericTextChannelUpdateE
                       .collect(Collectors.toList());
     }
 
+    @Nonnull
     public List<Member> getMembersWithPermissionChanges()
     {
         return changed.stream()

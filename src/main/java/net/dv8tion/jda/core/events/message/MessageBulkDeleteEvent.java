@@ -21,7 +21,6 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.Event;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
@@ -46,13 +45,13 @@ public class MessageBulkDeleteEvent extends Event
         this.messageIds = Collections.unmodifiableList(messageIds);
     }
 
-    @Nullable
+    @Nonnull
     public TextChannel getChannel()
     {
         return channel;
     }
 
-    @Nullable
+    @Nonnull
     public Guild getGuild()
     {
         return channel.getGuild();

@@ -19,6 +19,8 @@ package net.dv8tion.jda.core.events.role.update;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Role;
 
+import javax.annotation.Nonnull;
+
 public class RoleUpdateNameEvent extends GenericRoleUpdateEvent
 {
     private final String oldName;
@@ -29,6 +31,7 @@ public class RoleUpdateNameEvent extends GenericRoleUpdateEvent
         this.oldName = oldName;
     }
 
+    @Nonnull
     public String getOldName()
     {
         return oldName;

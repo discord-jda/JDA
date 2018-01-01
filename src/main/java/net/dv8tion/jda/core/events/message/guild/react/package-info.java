@@ -22,4 +22,7 @@
  *
  * @since 3.1
  */
+@ParametersAreNonnullByDefault
 package net.dv8tion.jda.core.events.message.guild.react;
+
+import javax.annotation.ParametersAreNonnullByDefault;

@@ -21,6 +21,8 @@ import net.dv8tion.jda.core.entities.GuildVoiceState;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.guild.GenericGuildEvent;
 
+import javax.annotation.Nonnull;
+
 public abstract class GenericGuildVoiceEvent extends GenericGuildEvent
 {
     protected final Member member;
@@ -31,11 +33,13 @@ public abstract class GenericGuildVoiceEvent extends GenericGuildEvent
         this.member = member;
     }
 
+    @Nonnull
     public Member getMember()
     {
         return member;
     }
 
+    @Nonnull
     public GuildVoiceState getVoiceState()
     {
         return member.getVoiceState();

@@ -19,6 +19,8 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.events.Event;
 
+import javax.annotation.Nonnull;
+
 /**
  * <b><u>GenericGuildEvent</u></b><br>
  * Fired whenever a {@link net.dv8tion.jda.core.entities.Guild Guild} event is fired.<br>
@@ -36,6 +38,7 @@ public abstract class GenericGuildEvent extends Event
         this.guild = guild;
     }
 
+    @Nonnull
     public Guild getGuild()
     {
         return guild;

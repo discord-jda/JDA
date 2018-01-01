@@ -91,7 +91,7 @@ public class RoleImpl implements Role
     @Override
     public String getName()
     {
-        return name;
+        return name == null ? "" : name;
     }
 
     @Override

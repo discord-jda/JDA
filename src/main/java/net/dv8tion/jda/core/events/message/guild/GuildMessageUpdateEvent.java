@@ -20,6 +20,8 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
 
+import javax.annotation.Nonnull;
+
 /**
  * <b><u>GuildMessageReceivedEvent</u></b><br>
  * Fired if a Message is edited in a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.<br>
@@ -36,11 +38,13 @@ public class GuildMessageUpdateEvent extends GenericGuildMessageEvent
         this.message = message;
     }
 
+    @Nonnull
     public Message getMessage()
     {
         return message;
     }
 
+    @Nonnull
     public User getAuthor()
     {
         return message.getAuthor();

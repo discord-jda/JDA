@@ -19,18 +19,20 @@ package net.dv8tion.jda.core.events.role.update;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Role;
 
+import javax.annotation.Nullable;
 import java.awt.Color;
 
 public class RoleUpdateColorEvent extends GenericRoleUpdateEvent
 {
     private final Color oldColor;
 
-    public RoleUpdateColorEvent(JDA api, long responseNumber, Role role, Color oldColor)
+    public RoleUpdateColorEvent(JDA api, long responseNumber, Role role, @Nullable Color oldColor)
     {
         super(api, responseNumber, role);
         this.oldColor = oldColor;
     }
 
+    @Nullable
     public Color getOldColor()
     {
         return oldColor;

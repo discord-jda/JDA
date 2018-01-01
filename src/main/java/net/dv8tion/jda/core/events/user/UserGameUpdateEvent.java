@@ -20,6 +20,8 @@ import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 
+import javax.annotation.Nullable;
+
 /**
  * <b><u>UserGameUpdateEvent</u></b><br>
  * Fired if the {@link net.dv8tion.jda.core.entities.Game Game} of a {@link net.dv8tion.jda.core.entities.User User} changes.<br>
@@ -30,17 +32,19 @@ public class UserGameUpdateEvent extends GenericUserPresenceEvent
 {
     protected final Game previousGame;
 
-    public UserGameUpdateEvent(JDA api, long responseNumber, User user, Guild guild, Game previousGame)
+    public UserGameUpdateEvent(JDA api, long responseNumber, User user, @Nullable Guild guild, @Nullable Game previousGame)
     {
         super(api, responseNumber, user, guild);
         this.previousGame = previousGame;
     }
 
+    @Nullable
     public Game getPreviousGame()
     {
         return previousGame;
     }
 
+    @Nullable
     public Game getCurrentGame()
     {
         return isRelationshipUpdate() ? getFriend().getGame() : getMember().getGame();

@@ -19,6 +19,8 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.Event;
 
+import javax.annotation.Nonnull;
+
 /**
  * <b><u>GenericUserEvent</u></b><br>
  * Fired whenever a {@link net.dv8tion.jda.core.entities.User User} changes their presence. (like avatar/game)<br>
@@ -36,6 +38,7 @@ public abstract class GenericUserEvent extends Event
         this.user = user;
     }
 
+    @Nonnull
     public User getUser()
     {
         return user;

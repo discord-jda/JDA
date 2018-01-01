@@ -22,6 +22,8 @@ import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.priv.GenericPrivateMessageEvent;
 
+import javax.annotation.Nonnull;
+
 public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEvent
 {
     protected final User issuer;
@@ -34,16 +36,19 @@ public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEve
         this.reaction = reaction;
     }
 
+    @Nonnull
     public User getUser()
     {
         return issuer;
     }
 
+    @Nonnull
     public MessageReaction getReaction()
     {
         return reaction;
     }
 
+    @Nonnull
     public MessageReaction.ReactionEmote getReactionEmote()
     {
         return reaction.getReactionEmote();

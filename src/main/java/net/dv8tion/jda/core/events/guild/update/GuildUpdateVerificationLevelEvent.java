@@ -19,6 +19,8 @@ package net.dv8tion.jda.core.events.guild.update;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 
+import javax.annotation.Nonnull;
+
 public class GuildUpdateVerificationLevelEvent extends GenericGuildUpdateEvent
 {
     private final Guild.VerificationLevel oldVerificationLevel;
@@ -29,6 +31,7 @@ public class GuildUpdateVerificationLevelEvent extends GenericGuildUpdateEvent
         this.oldVerificationLevel = oldVerificationLevel;
     }
 
+    @Nonnull
     public Guild.VerificationLevel getOldVerificationLevel()
     {
         return oldVerificationLevel;

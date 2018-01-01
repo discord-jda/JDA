@@ -20,16 +20,19 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Category;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 
+import javax.annotation.Nullable;
+
 public class VoiceChannelUpdateParentEvent extends GenericVoiceChannelUpdateEvent
 {
     protected final Category oldParent;
 
-    public VoiceChannelUpdateParentEvent(JDA api, long responseNumber, VoiceChannel channel, Category oldParent)
+    public VoiceChannelUpdateParentEvent(JDA api, long responseNumber, VoiceChannel channel, @Nullable Category oldParent)
     {
         super(api, responseNumber, channel);
         this.oldParent = oldParent;
     }
 
+    @Nullable
     public Category getOldParent()
     {
         return oldParent;

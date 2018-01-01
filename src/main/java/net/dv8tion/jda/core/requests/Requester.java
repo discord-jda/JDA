@@ -142,7 +142,7 @@ public class Requester
 
         //adding token to all requests to the discord api or cdn pages
         //we can check for startsWith(DISCORD_API_PREFIX) because the cdn endpoints don't need any kind of authorization
-        if (url.startsWith(DISCORD_API_PREFIX) && api.getToken() != null)
+        if (url.startsWith(DISCORD_API_PREFIX))
             builder.header("authorization", api.getToken());
 
         // Apply custom headers like X-Audit-Log-Reason

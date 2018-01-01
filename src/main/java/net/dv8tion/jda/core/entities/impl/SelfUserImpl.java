@@ -53,6 +53,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
         return false;
     }
 
+    @Nonnull
     @Override
     public PrivateChannel getPrivateChannel()
     {

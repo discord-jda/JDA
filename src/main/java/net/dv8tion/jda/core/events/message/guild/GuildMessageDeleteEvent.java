@@ -26,10 +26,8 @@ import net.dv8tion.jda.core.entities.TextChannel;
  */
 public class GuildMessageDeleteEvent extends GenericGuildMessageEvent
 {
-
     public GuildMessageDeleteEvent(JDA api, long responseNumber, long messageId, TextChannel channel)
     {
         super(api, responseNumber, messageId, channel);
     }
-
 }

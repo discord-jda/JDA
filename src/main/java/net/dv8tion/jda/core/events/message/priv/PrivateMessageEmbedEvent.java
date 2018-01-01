@@ -19,6 +19,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
@@ -37,6 +38,7 @@ public class PrivateMessageEmbedEvent extends GenericPrivateMessageEvent
         this.embeds = embeds;
     }
 
+    @Nonnull
     public List<MessageEmbed> getMessageEmbeds()
     {
         return embeds;

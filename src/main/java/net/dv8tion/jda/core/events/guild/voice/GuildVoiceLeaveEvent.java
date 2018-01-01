@@ -27,10 +27,8 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
  */
 public class GuildVoiceLeaveEvent extends GuildVoiceUpdateEvent
 {
-
     public GuildVoiceLeaveEvent(JDA api, long responseNumber, Member member, VoiceChannel channelLeft)
     {
         super(api, responseNumber, member, channelLeft);
     }
-
 }

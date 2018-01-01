@@ -22,4 +22,7 @@
  * <p>These events combine all {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}
  * messages but specifications can be found in subpackages.
  */
+@ParametersAreNonnullByDefault
 package net.dv8tion.jda.core.events.message;
+
+import javax.annotation.ParametersAreNonnullByDefault;

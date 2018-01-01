@@ -19,4 +19,7 @@
  * was either {@link net.dv8tion.jda.core.events.channel.priv.PrivateChannelCreateEvent created}
  * or {@link net.dv8tion.jda.core.events.channel.priv.PrivateChannelDeleteEvent closed}
  */
+@ParametersAreNonnullByDefault
 package net.dv8tion.jda.core.events.channel.priv;
+
+import javax.annotation.ParametersAreNonnullByDefault;

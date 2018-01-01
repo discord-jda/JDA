@@ -20,6 +20,8 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 
+import javax.annotation.Nonnull;
+
 /**
  * <b><u>GuildVoiceUpdateEvent</u></b>
  * <br>Generic event that combines {@link net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent GuildVoiceLeaveEvent}
@@ -33,7 +35,8 @@ public class GuildVoiceUpdateEvent extends GenericGuildVoiceEvent
 {
     protected final VoiceChannel oldChannel;
 
-    public GuildVoiceUpdateEvent(JDA api, long responseNumber, Member member, VoiceChannel oldChannel) {
+    public GuildVoiceUpdateEvent(JDA api, long responseNumber, Member member, VoiceChannel oldChannel)
+    {
         super(api, responseNumber, member);
         this.oldChannel = oldChannel;
     }
@@ -43,6 +46,7 @@ public class GuildVoiceUpdateEvent extends GenericGuildVoiceEvent
      *
      * @return the {@link net.dv8tion.jda.core.entities.VoiceChannel}
      */
+    @Nonnull
     public VoiceChannel getChannelLeft()
     {
         return oldChannel;

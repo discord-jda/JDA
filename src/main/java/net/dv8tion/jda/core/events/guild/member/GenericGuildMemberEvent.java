@@ -21,6 +21,8 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.guild.GenericGuildEvent;
 
+import javax.annotation.Nonnull;
+
 /**
  * <b><u>GenericGuildMemberEvent</u></b><br>
  * Fired whenever a {@link net.dv8tion.jda.core.entities.Guild Guild} member causes an event.<br>
@@ -38,11 +40,13 @@ public abstract class GenericGuildMemberEvent extends GenericGuildEvent
         this.member = member;
     }
 
+    @Nonnull
     public User getUser()
     {
         return getMember().getUser();
     }
 
+    @Nonnull
     public Member getMember()
     {
         return member;

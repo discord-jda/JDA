@@ -324,7 +324,7 @@ public class EntityBuilder
         //This should only occur on small user count guilds.
 
         JSONArray channels = guild.getJSONArray("channels");
-        createGuildChannelPass(guildObj, channels); //Actually creates PermissionOverrides
+        createGuildChannelPass(channels); //Actually creates PermissionOverrides
 
         JSONArray voiceStates = guild.getJSONArray("voice_states");
         createGuildVoiceStatePass(guildObj, voiceStates);
@@ -360,7 +360,7 @@ public class EntityBuilder
             LOG.error("Never set the Owner of the Guild: {} because we don't have the owner User object! How?!", guildObj.getId());
 
         JSONArray channels = guildJson.getJSONArray("channels");
-        createGuildChannelPass(guildObj, channels);
+        createGuildChannelPass(channels);
 
         JSONArray voiceStates = guildJson.getJSONArray("voice_states");
         createGuildVoiceStatePass(guildObj, voiceStates);
@@ -399,7 +399,7 @@ public class EntityBuilder
         }
     }
 
-    private void createGuildChannelPass(GuildImpl guildObj, JSONArray channels)
+    private void createGuildChannelPass(JSONArray channels)
     {
         for (int i = 0; i < channels.length(); i++)
         {

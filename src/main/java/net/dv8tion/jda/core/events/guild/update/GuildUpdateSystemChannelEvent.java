@@ -20,6 +20,8 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 
+import javax.annotation.Nullable;
+
 /**
  * <b><u>GuildUpdateSystemChannelEvent</u></b><br>
  * Fired if the {@link net.dv8tion.jda.core.entities.Guild#getSystemChannel() system channel} of a {@link net.dv8tion.jda.core.entities.Guild Guild} has been changed.<br>
@@ -30,7 +32,7 @@ public class GuildUpdateSystemChannelEvent extends GenericGuildUpdateEvent
 {
     private final TextChannel oldSystemChannel;
 
-    public GuildUpdateSystemChannelEvent(JDA api, long responseNumber, Guild guild, TextChannel oldSystemChannel)
+    public GuildUpdateSystemChannelEvent(JDA api, long responseNumber, Guild guild, @Nullable TextChannel oldSystemChannel)
     {
         super(api, responseNumber, guild);
         this.oldSystemChannel = oldSystemChannel;
@@ -41,6 +43,7 @@ public class GuildUpdateSystemChannelEvent extends GenericGuildUpdateEvent
      * 
      * @return The previous system channel
      */
+    @Nullable
     public TextChannel getOldSystemChannel()
     {
         return oldSystemChannel;

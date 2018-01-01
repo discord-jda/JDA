@@ -24,6 +24,7 @@ import net.dv8tion.jda.core.managers.GuildManager;
 import net.dv8tion.jda.core.managers.GuildManagerUpdatable;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAction;
+import net.dv8tion.jda.core.utils.LateInit;
 import net.dv8tion.jda.core.utils.cache.MemberCacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 
@@ -37,6 +38,10 @@ import java.util.Set;
 /**
  * Represents a Discord {@link net.dv8tion.jda.core.entities.Guild Guild}.
  * This should contain all information provided from Discord about a Guild.
+ *
+ * <p>Some values might not be set when a Guild is initializing.
+ * These values are not annotated with {@link javax.annotation.Nonnull Nonnull} or {@link javax.annotation.Nullable Nullable}
+ * due to the initializing process. Instead the annotation {@link net.dv8tion.jda.core.utils.LateInit LateInit} is used.
  */
 public interface Guild extends ISnowflake
 {
@@ -48,7 +53,7 @@ public interface Guild extends ISnowflake
      *
      * @return Never-null String containing the Guild's name.
      */
-    @Nonnull
+    @LateInit
     String getName();
 
     /**
@@ -121,7 +126,7 @@ public interface Guild extends ISnowflake
     String getSplashUrl();
 
     /**
-     * Gets the vanity url for this Guild. The vanity url is the custom invite code of partnered / official Guilds.
+     * Gets the vanity url code for this Guild. The vanity url is the custom invite code of partnered / official Guilds.
      * The returned String will be the code that can be provided to {@code discord.gg/{code}} to get the invite link.
      * <br>You can check {@link #getFeatures()} to see if this Guild has a vanity url
      * <p>
@@ -145,7 +150,7 @@ public interface Guild extends ISnowflake
      *         If the guild is temporarily not {@link #isAvailable() available}
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: String
-     *         <br>The vanity url of this server
+     *         <br>The vanity url code of this server
      *
      * @see    #getFeatures()
      */
@@ -187,7 +192,7 @@ public interface Guild extends ISnowflake
      *
      * @return Never-null Member object containing the Guild owner.
      */
-    @Nonnull
+    @LateInit
     Member getOwner();
 
     /**
@@ -202,7 +207,7 @@ public interface Guild extends ISnowflake
      *
      * @return The {@link net.dv8tion.jda.core.entities.Guild.Timeout Timeout} set for this Guild.
      */
-    @Nullable
+    @Nonnull
     Timeout getAfkTimeout();
 
     /**
@@ -251,7 +256,7 @@ public interface Guild extends ISnowflake
      *
      * @return The Member object of the currently logged in account.
      */
-    @Nonnull
+    @LateInit
     Member getSelfMember();
 
     /**
@@ -881,7 +886,7 @@ public interface Guild extends ISnowflake
      *
      * @return The @everyone {@link net.dv8tion.jda.core.entities.Role Role}
      */
-    @Nonnull
+    @LateInit
     Role getPublicRole();
 
     /**
@@ -1190,6 +1195,7 @@ public interface Guild extends ISnowflake
      */
     enum Timeout
     {
+        UNKNOWN(-1),
         SECONDS_60(60),
         SECONDS_300(300),
         SECONDS_900(900),
@@ -1220,9 +1226,6 @@ public interface Guild extends ISnowflake
          * @param  seconds
          *         The amount of seconds before idle timeout.
          *
-         * @throws java.lang.IllegalArgumentException
-         *         If the provided {@code seconds} is an invalid timeout amount.
-         *
          * @return The {@link net.dv8tion.jda.core.entities.Guild.Timeout Timeout} related to the amount of seconds provided.
          */
         public static Timeout fromKey(int seconds)
@@ -1231,8 +1234,10 @@ public interface Guild extends ISnowflake
             {
                 if (t.getSeconds() == seconds)
                     return t;
+                else if (seconds > t.getSeconds())
+                    break;
             }
-            throw new IllegalArgumentException("Provided key was not recognized. Seconds: " + seconds);
+            return UNKNOWN;
         }
     }
 

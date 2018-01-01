@@ -27,7 +27,6 @@ import net.dv8tion.jda.core.entities.Member;
  */
 public class GuildMemberLeaveEvent extends GenericGuildMemberEvent
 {
-
     public GuildMemberLeaveEvent(JDA api, long responseNumber, Guild guild, Member member)
     {
         super(api, responseNumber, guild, member);

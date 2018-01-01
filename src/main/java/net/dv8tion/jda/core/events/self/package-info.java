@@ -20,4 +20,7 @@
  * Such as credentials or its avatar!
  * <br>Every event in this package extends the {@link net.dv8tion.jda.core.events.self.GenericSelfUpdateEvent GenericSelfUpdateEvent}
  */
+@ParametersAreNonnullByDefault
 package net.dv8tion.jda.core.events.self;
+
+import javax.annotation.ParametersAreNonnullByDefault;

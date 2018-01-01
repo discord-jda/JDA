@@ -19,4 +19,7 @@
  * presence has been updated, such as its avatar or game.
  * <br>Every event in this package extends the {@link net.dv8tion.jda.core.events.user.GenericUserEvent GenericUserEvent}!
  */
+@ParametersAreNonnullByDefault
 package net.dv8tion.jda.core.events.user;
+
+import javax.annotation.ParametersAreNonnullByDefault;

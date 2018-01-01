@@ -21,4 +21,7 @@
  * <p>This provides both a {@link net.dv8tion.jda.core.events.channel.voice.GenericVoiceChannelEvent GenericVoiceChannelUpdateEvent}
  * and event for specific TextChannel settings such as the {@link net.dv8tion.jda.core.events.channel.voice.update.VoiceChannelUpdateNameEvent name}.
  */
+@ParametersAreNonnullByDefault
 package net.dv8tion.jda.core.events.channel.voice.update;
+
+import javax.annotation.ParametersAreNonnullByDefault;

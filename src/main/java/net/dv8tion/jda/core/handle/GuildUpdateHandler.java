@@ -62,7 +62,7 @@ public class GuildUpdateHandler extends SocketHandler
         TextChannel systemChannel = content.isNull("system_channel_id")
                 ? null : guild.getTextChannelsMap().get(content.getLong("system_channel_id"));
         Set<String> features;
-        if(!content.isNull("features"))
+        if (!content.isNull("features"))
         {
             JSONArray featureArr = content.getJSONArray("features");
             features = StreamSupport.stream(featureArr.spliterator(), false).map(String::valueOf).collect(Collectors.toSet());

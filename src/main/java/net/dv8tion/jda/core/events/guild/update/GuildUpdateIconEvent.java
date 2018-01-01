@@ -19,21 +19,25 @@ package net.dv8tion.jda.core.events.guild.update;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 
+import javax.annotation.Nullable;
+
 public class GuildUpdateIconEvent extends GenericGuildUpdateEvent
 {
     private final String oldIconId;
 
-    public GuildUpdateIconEvent(JDA api, long responseNumber, Guild guild, String oldIconId)
+    public GuildUpdateIconEvent(JDA api, long responseNumber, Guild guild, @Nullable String oldIconId)
     {
         super(api, responseNumber, guild);
         this.oldIconId = oldIconId;
     }
 
+    @Nullable
     public String getOldIconId()
     {
         return oldIconId;
     }
 
+    @Nullable
     public String getOldIconUrl()
     {
         return oldIconId == null ? null : "https://cdn.discordapp.com/icons/" + guild.getId() + "/" + oldIconId + ".jpg";

@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Role;
 
+import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 
@@ -33,6 +34,7 @@ public class RoleUpdatePermissionsEvent extends GenericRoleUpdateEvent
         this.oldPermissionsRaw = oldPermissionsRaw;
     }
 
+    @Nonnull
     public List<Permission> getOldPermissions()
     {
         return Collections.unmodifiableList(

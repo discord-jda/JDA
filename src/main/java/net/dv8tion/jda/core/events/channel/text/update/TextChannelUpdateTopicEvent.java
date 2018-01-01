@@ -18,6 +18,8 @@ package net.dv8tion.jda.core.events.channel.text.update;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.TextChannel;
 
+import javax.annotation.Nullable;
+
 /**
  * <b><u>TextChannelUpdateTopicEvent</u></b><br>
  * Fired if a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}'s topic changes.<br>
@@ -28,12 +30,13 @@ public class TextChannelUpdateTopicEvent extends GenericTextChannelUpdateEvent
 {
     private final String oldTopic;
 
-    public TextChannelUpdateTopicEvent(JDA api, long responseNumber, TextChannel channel, String oldTopic)
+    public TextChannelUpdateTopicEvent(JDA api, long responseNumber, TextChannel channel, @Nullable String oldTopic)
     {
         super(api, responseNumber, channel);
         this.oldTopic = oldTopic;
     }
 
+    @Nullable
     public String getOldTopic()
     {
         return oldTopic;

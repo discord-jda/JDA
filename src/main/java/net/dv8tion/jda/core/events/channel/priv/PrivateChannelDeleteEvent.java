@@ -20,6 +20,8 @@ import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.Event;
 
+import javax.annotation.Nonnull;
+
 /**
  * <b><u>PrivateChannelDeleteEvent</u></b><br>
  * Fired if a {@link net.dv8tion.jda.core.entities.PrivateChannel Private Channel} was deleted.<br>
@@ -36,11 +38,13 @@ public class PrivateChannelDeleteEvent extends Event
         this.channel = channel;
     }
 
+    @Nonnull
     public User getUser()
     {
         return channel.getUser();
     }
 
+    @Nonnull
     public PrivateChannel getPrivateChannel()
     {
         return channel;

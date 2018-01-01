@@ -19,4 +19,7 @@
  * in {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}
  * of a {@link net.dv8tion.jda.core.entities.Guild Guild}!
  */
+@ParametersAreNonnullByDefault
 package net.dv8tion.jda.core.events.message.guild;
+
+import javax.annotation.ParametersAreNonnullByDefault;

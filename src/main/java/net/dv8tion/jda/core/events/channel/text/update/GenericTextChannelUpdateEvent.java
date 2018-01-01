@@ -28,10 +28,8 @@ import net.dv8tion.jda.core.events.channel.text.GenericTextChannelEvent;
  */
 public abstract class GenericTextChannelUpdateEvent extends GenericTextChannelEvent
 {
-
     public GenericTextChannelUpdateEvent(JDA api, long responseNumber, TextChannel channel)
     {
         super(api, responseNumber, channel);
     }
-
 }

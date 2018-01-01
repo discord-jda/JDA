@@ -20,6 +20,8 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.Guild;
 
+import javax.annotation.Nonnull;
+
 /**
  * <b><u>GuildUpdateRegionEvent</u></b>
  * <br>Fired when the voice region of a {@link net.dv8tion.jda.core.entities.Guild Guild} has been
@@ -46,6 +48,7 @@ public class GuildUpdateRegionEvent extends GenericGuildUpdateEvent
      *
      * @return Resolved {@link net.dv8tion.jda.core.Region Region} constant from the raw name
      */
+    @Nonnull
     public Region getOldRegion()
     {
         return Region.fromKey(oldRegion);
@@ -58,6 +61,7 @@ public class GuildUpdateRegionEvent extends GenericGuildUpdateEvent
      *
      * @return Raw name of the old voice region
      */
+    @Nonnull
     public String getOldRegionRaw()
     {
         return oldRegion;
@@ -71,6 +75,7 @@ public class GuildUpdateRegionEvent extends GenericGuildUpdateEvent
      *
      * @return Resolved {@link net.dv8tion.jda.core.Region Region} constant from the raw name
      */
+    @Nonnull
     public Region getNewRegion()
     {
         return Region.fromKey(newRegion);
@@ -83,6 +88,7 @@ public class GuildUpdateRegionEvent extends GenericGuildUpdateEvent
      *
      * @return Raw name of the updated voice region
      */
+    @Nonnull
     public String getNewRegionRaw()
     {
         return newRegion;

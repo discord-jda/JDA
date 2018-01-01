@@ -19,6 +19,8 @@ package net.dv8tion.jda.core.events.guild;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.events.Event;
 
+import javax.annotation.Nonnull;
+
 /**
  * <b><u>UnavailableGuildJoinedEvent</u></b><br>
  * Fired if you joined a {@link net.dv8tion.jda.core.entities.Guild Guild} that is not yet available.<br>
@@ -35,6 +37,7 @@ public class UnavailableGuildJoinedEvent extends Event
         this.guildId = guildId;
     }
 
+    @Nonnull
     public String getGuildId()
     {
         return Long.toUnsignedString(guildId);

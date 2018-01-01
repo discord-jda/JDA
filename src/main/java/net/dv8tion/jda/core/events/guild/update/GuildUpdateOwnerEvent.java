@@ -20,6 +20,8 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 
+import javax.annotation.Nonnull;
+
 public class GuildUpdateOwnerEvent extends GenericGuildUpdateEvent
 {
     private final Member oldOwner;
@@ -30,6 +32,7 @@ public class GuildUpdateOwnerEvent extends GenericGuildUpdateEvent
         this.oldOwner = oldOwner;
     }
 
+    @Nonnull
     public Member getOldOwner()
     {
         return oldOwner;

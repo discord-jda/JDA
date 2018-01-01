@@ -20,6 +20,8 @@ import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.guild.GenericGuildEvent;
 
+import javax.annotation.Nonnull;
+
 /**
  * <b><u>GenericGuildMessageEvent</u></b><br>
  * Fired whenever a {@link net.dv8tion.jda.core.entities.Message Message} event is fired from a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.<br>
@@ -39,6 +41,7 @@ public abstract class GenericGuildMessageEvent extends GenericGuildEvent
         this.channel = channel;
     }
 
+    @Nonnull
     public String getMessageId()
     {
         return Long.toUnsignedString(messageId);
@@ -54,11 +57,13 @@ public abstract class GenericGuildMessageEvent extends GenericGuildEvent
         return getChannel().getType() == type;
     }
 
+    @Nonnull
     public ChannelType getChannelType()
     {
         return getChannel().getType();
     }
 
+    @Nonnull
     public TextChannel getChannel()
     {
         return channel;

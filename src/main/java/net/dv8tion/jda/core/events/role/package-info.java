@@ -18,4 +18,7 @@
  * Events that indicate that a {@link net.dv8tion.jda.core.entities.Role Role}
  * is either created or deleted.
  */
+@ParametersAreNonnullByDefault
 package net.dv8tion.jda.core.events.role;
+
+import javax.annotation.ParametersAreNonnullByDefault;

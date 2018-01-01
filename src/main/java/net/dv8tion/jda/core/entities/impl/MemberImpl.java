@@ -73,7 +73,7 @@ public class MemberImpl implements Member
     @Override
     public OffsetDateTime getJoinDate()
     {
-        return joinDate;
+        return joinDate == null ? OffsetDateTime.now() : joinDate;
     }
 
     @Nonnull

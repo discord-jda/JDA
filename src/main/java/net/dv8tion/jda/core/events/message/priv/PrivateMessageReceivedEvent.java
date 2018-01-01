@@ -19,6 +19,8 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
 
+import javax.annotation.Nonnull;
+
 /**
  * <b><u>PrivateMessageReceivedEvent</u></b><br>
  * Fired if a Message is sent in a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}.<br>
@@ -35,14 +37,15 @@ public class PrivateMessageReceivedEvent extends GenericPrivateMessageEvent
         this.message = message;
     }
 
+    @Nonnull
     public Message getMessage()
     {
         return message;
     }
 
+    @Nonnull
     public User getAuthor()
     {
         return message.getAuthor();
     }
-
 }

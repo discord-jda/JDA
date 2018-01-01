@@ -19,6 +19,8 @@ package net.dv8tion.jda.core.events.guild.update;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 
+import javax.annotation.Nonnull;
+
 public class GuildUpdateMFALevelEvent extends GenericGuildUpdateEvent
 {
     private final Guild.MFALevel oldMFALevel;
@@ -29,6 +31,7 @@ public class GuildUpdateMFALevelEvent extends GenericGuildUpdateEvent
         this.oldMFALevel = oldMFALevel;
     }
 
+    @Nonnull
     public Guild.MFALevel getOldMFALevel()
     {
         return oldMFALevel;

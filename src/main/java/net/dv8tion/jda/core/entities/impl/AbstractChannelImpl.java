@@ -54,8 +54,8 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     protected volatile ChannelManagerUpdatable managerUpdatable;
 
     protected long parentId;
-    protected String name;
     protected int rawPosition;
+    protected String name = "";
 
     public AbstractChannelImpl(long id, GuildImpl guild)
     {

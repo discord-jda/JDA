@@ -20,6 +20,8 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.Event;
 
+import javax.annotation.Nonnull;
+
 /**
  * <b><u>GenericVoiceChannelEvent</u></b><br>
  * Fired whenever a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} event is fired.<br>
@@ -37,11 +39,13 @@ public abstract class GenericVoiceChannelEvent extends Event
         this.channel = channel;
     }
 
+    @Nonnull
     public VoiceChannel getChannel()
     {
         return channel;
     }
 
+    @Nonnull
     public Guild getGuild()
     {
         return channel.getGuild();

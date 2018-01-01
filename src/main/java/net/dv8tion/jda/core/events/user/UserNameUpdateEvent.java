@@ -18,6 +18,8 @@ package net.dv8tion.jda.core.events.user;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.User;
 
+import javax.annotation.Nonnull;
+
 /**
  * <b><u>UserNameUpdateEvent</u></b><br>
  * Fired if the username of a {@link net.dv8tion.jda.core.entities.User User} changes. (Not Nickname)<br>
@@ -36,11 +38,13 @@ public class UserNameUpdateEvent extends GenericUserEvent
         this.oldDiscriminator = oldDiscriminator;
     }
 
+    @Nonnull
     public String getOldName()
     {
         return oldName;
     }
 
+    @Nonnull
     public String getOldDiscriminator()
     {
         return oldDiscriminator;

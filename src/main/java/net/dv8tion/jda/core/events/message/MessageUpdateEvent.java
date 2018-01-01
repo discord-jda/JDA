@@ -20,7 +20,6 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * <b><u>MessageUpdateEvent</u></b><br>
@@ -53,31 +52,26 @@ public class MessageUpdateEvent extends GenericMessageEvent
         return message.getAuthor();
     }
 
-    @Nullable
     public Member getMember()
     {
         return  isFromType(ChannelType.TEXT) ? getGuild().getMember(getAuthor()) : null;
     }
 
-    @Nullable
     public PrivateChannel getPrivateChannel()
     {
         return message.getPrivateChannel();
     }
 
-    @Nullable
     public Group getGroup()
     {
         return message.getGroup();
     }
 
-    @Nullable
     public TextChannel getTextChannel()
     {
         return message.getTextChannel();
     }
 
-    @Nullable
     public Guild getGuild()
     {
         return message.getGuild();

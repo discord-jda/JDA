@@ -133,7 +133,7 @@ public class JDAImpl implements JDA
         this.jdaBot = accountType == AccountType.BOT ? new JDABotImpl(this) : null;
     }
 
-    public int login(String gatewayUrl, ShardInfo shardInfo, SessionReconnectQueue reconnectQueue) throws LoginException, RateLimitedException
+    public int login(String gatewayUrl, @Nullable ShardInfo shardInfo, @Nullable SessionReconnectQueue reconnectQueue) throws LoginException, RateLimitedException
     {
         this.gatewayUrl = gatewayUrl;
         this.shardInfo = shardInfo;
@@ -253,6 +253,7 @@ public class JDAImpl implements JDA
 
     public void setToken(String token)
     {
+        Checks.notNull(token, "Token");
         if (getAccountType() == AccountType.BOT)
             this.token = "Bot " + token;
         else
@@ -543,7 +544,6 @@ public class JDAImpl implements JDA
         return userCache;
     }
 
-    @Nonnull
     @Override
     public SelfUser getSelfUser()
     {

@@ -19,4 +19,7 @@
  * has been updated with a new setting.
  * <br>Every explicit setting event extends the {@link net.dv8tion.jda.core.events.role.update.GenericRoleUpdateEvent GenericRoleUpdateEvent}!
  */
+@ParametersAreNonnullByDefault
 package net.dv8tion.jda.core.events.role.update;
+
+import javax.annotation.ParametersAreNonnullByDefault;

@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.entities.IPermissionHolder;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,6 +47,7 @@ public class CategoryUpdatePermissionsEvent extends GenericCategoryUpdateEvent
      *
      * @return Immutable list of permission holders affected by this event
      */
+    @Nonnull
     public List<IPermissionHolder> getChangedPermissionHolders()
     {
         return changed;
@@ -56,6 +58,7 @@ public class CategoryUpdatePermissionsEvent extends GenericCategoryUpdateEvent
      *
      * @return Immutable list of affected roles
      */
+    @Nonnull
     public List<Role> getChangedRoles()
     {
         return changed.stream()
@@ -69,6 +72,7 @@ public class CategoryUpdatePermissionsEvent extends GenericCategoryUpdateEvent
      *
      * @return Immutable list of affected members
      */
+    @Nonnull
     public List<Member> getMembersWithPermissionChanges()
     {
         return changed.stream()

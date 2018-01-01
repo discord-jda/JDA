@@ -21,6 +21,8 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.events.Event;
 
+import javax.annotation.Nonnull;
+
 public abstract class GenericRoleEvent extends Event
 {
     protected final Role role;
@@ -31,11 +33,13 @@ public abstract class GenericRoleEvent extends Event
         this.role = role;
     }
 
+    @Nonnull
     public Role getRole()
     {
         return role;
     }
 
+    @Nonnull
     public Guild getGuild()
     {
         return role.getGuild();

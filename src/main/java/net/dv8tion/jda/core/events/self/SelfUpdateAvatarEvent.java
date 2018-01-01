@@ -18,21 +18,25 @@ package net.dv8tion.jda.core.events.self;
 
 import net.dv8tion.jda.core.JDA;
 
+import javax.annotation.Nullable;
+
 public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent
 {
     private final String oldAvatarId;
 
-    public SelfUpdateAvatarEvent(JDA api, long responseNumber, String oldAvatarId)
+    public SelfUpdateAvatarEvent(JDA api, long responseNumber, @Nullable String oldAvatarId)
     {
         super(api, responseNumber);
         this.oldAvatarId = oldAvatarId;
     }
 
+    @Nullable
     public String getOldAvatarId()
     {
         return oldAvatarId;
     }
 
+    @Nullable
     public String getOldAvatarUrl()
     {
         return oldAvatarId == null ? null : "https://cdn.discordapp.com/avatars/" + getSelfUser().getId() + "/" + oldAvatarId + ".jpg";

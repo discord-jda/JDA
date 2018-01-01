@@ -19,6 +19,8 @@ import com.neovisionaries.ws.client.WebSocketFrame;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.requests.CloseCode;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -38,8 +40,8 @@ public class DisconnectEvent extends Event
     protected final boolean closedByServer;
     protected final OffsetDateTime disconnectTime;
 
-    public DisconnectEvent(JDA api, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer,
-                           OffsetDateTime disconnectTime)
+    public DisconnectEvent(JDA api, @Nullable WebSocketFrame serverCloseFrame, @Nullable WebSocketFrame clientCloseFrame,
+                           boolean closedByServer, OffsetDateTime disconnectTime)
     {
         super(api, -1);
         this.serverCloseFrame = serverCloseFrame;
@@ -57,6 +59,7 @@ public class DisconnectEvent extends Event
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.requests.CloseCode CloseCode}
      */
+    @Nullable
     public CloseCode getCloseCode()
     {
         return serverCloseFrame != null ? CloseCode.from(serverCloseFrame.getCloseCode()) : null;
@@ -71,16 +74,19 @@ public class DisconnectEvent extends Event
      *
      * @return Immutable list of all cf-ray values for this session
      */
+    @Nonnull
     public List<String> getCloudflareRays()
     {
         return api.getCloudflareRays();
     }
 
+    @Nullable
     public WebSocketFrame getServiceCloseFrame()
     {
         return serverCloseFrame;
     }
 
+    @Nullable
     public WebSocketFrame getClientCloseFrame()
     {
         return clientCloseFrame;
@@ -91,6 +97,7 @@ public class DisconnectEvent extends Event
         return closedByServer;
     }
 
+    @Nonnull
     public OffsetDateTime getDisconnectTime()
     {
         return disconnectTime;

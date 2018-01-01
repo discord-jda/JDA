@@ -20,7 +20,6 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * <b><u>MessageReceivedEvent</u></b><br>
@@ -77,7 +76,6 @@ public class MessageReceivedEvent extends GenericMessageEvent
      *
      * @see #isWebhookMessage()
      */
-    @Nullable
     public Member getMember()
     {
         return isFromType(ChannelType.TEXT) && !isWebhookMessage() ? getGuild().getMember(getAuthor()) : null;
@@ -92,7 +90,6 @@ public class MessageReceivedEvent extends GenericMessageEvent
      *
      * @see net.dv8tion.jda.core.events.message.GenericMessageEvent#isFromType(ChannelType)
      */
-    @Nullable
     public PrivateChannel getPrivateChannel()
     {
         return message.getPrivateChannel();
@@ -107,7 +104,6 @@ public class MessageReceivedEvent extends GenericMessageEvent
      *
      * @see net.dv8tion.jda.core.events.message.GenericMessageEvent#isFromType(ChannelType)
      */
-    @Nullable
     public Group getGroup()
     {
         return message.getGroup();
@@ -122,7 +118,6 @@ public class MessageReceivedEvent extends GenericMessageEvent
      *
      * @see net.dv8tion.jda.core.events.message.GenericMessageEvent#isFromType(ChannelType)
      */
-    @Nullable
     public TextChannel getTextChannel()
     {
         return message.getTextChannel();
@@ -137,7 +132,6 @@ public class MessageReceivedEvent extends GenericMessageEvent
      *
      * @see net.dv8tion.jda.core.events.message.GenericMessageEvent#isFromType(ChannelType)
      */
-    @Nullable
     public Guild getGuild()
     {
         return message.getGuild();

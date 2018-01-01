@@ -22,4 +22,7 @@
  * <p>All events of this package and its subpackages
  * are extensions of the {@link net.dv8tion.jda.core.events.channel.voice.GenericVoiceChannelEvent GenericVoiceChannelEvent}
  */
+@ParametersAreNonnullByDefault
 package net.dv8tion.jda.core.events.channel.voice;
+
+import javax.annotation.ParametersAreNonnullByDefault;

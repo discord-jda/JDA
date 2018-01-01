@@ -16,6 +16,8 @@
 
 /**
  * Events that track updates for existing {@link net.dv8tion.jda.core.entities.Emote Emotes}
- *
  */
+@ParametersAreNonnullByDefault
 package net.dv8tion.jda.core.events.emote.update;
+
+import javax.annotation.ParametersAreNonnullByDefault;

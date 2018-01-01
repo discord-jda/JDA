@@ -18,6 +18,8 @@ package net.dv8tion.jda.core.events.user;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.User;
 
+import javax.annotation.Nullable;
+
 /**
  * <b><u>UserAvatarUpdateEvent</u></b><br>
  * Fired if the Avatar of a {@link net.dv8tion.jda.core.entities.User User} changes.<br>
@@ -28,17 +30,19 @@ public class UserAvatarUpdateEvent extends GenericUserEvent
 {
     private final String previousAvatarId;
 
-    public UserAvatarUpdateEvent(JDA api, long responseNumber, User user, String previousAvatarId)
+    public UserAvatarUpdateEvent(JDA api, long responseNumber, User user, @Nullable String previousAvatarId)
     {
         super(api, responseNumber, user);
         this.previousAvatarId = previousAvatarId;
     }
 
+    @Nullable
     public String getPreviousAvatarId()
     {
         return previousAvatarId;
     }
 
+    @Nullable
     public String getPreviousAvatarUrl()
     {
         return previousAvatarId == null ? null : "https://cdn.discordapp.com/avatars/" + getUser().getId() + "/" + previousAvatarId + ".jpg";

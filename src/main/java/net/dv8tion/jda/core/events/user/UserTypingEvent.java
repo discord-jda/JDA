@@ -15,9 +15,12 @@
  */
 package net.dv8tion.jda.core.events.user;
 
+import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 
 /**
@@ -38,38 +41,63 @@ public class UserTypingEvent extends GenericUserEvent
         this.timestamp = timestamp;
     }
 
+    @Nonnull
     public OffsetDateTime getTimestamp()
     {
         return timestamp;
     }
 
+    @Nonnull
     public MessageChannel getChannel()
     {
         return channel;
     }
 
+    @Deprecated
     public boolean isPrivate()
     {
         return channel instanceof PrivateChannel;
     }
 
+    public boolean isFromType(ChannelType type)
+    {
+        return channel.getType() == type;
+    }
+
+    @Nonnull
+    public ChannelType getType()
+    {
+        return channel.getType();
+    }
+
     public PrivateChannel getPrivateChannel()
     {
-        return isPrivate() ? (PrivateChannel) channel : null;
+        return isFromType(ChannelType.PRIVATE) ? (PrivateChannel) channel : null;
     }
 
     public TextChannel getTextChannel()
     {
-        return !isPrivate() ? (TextChannel) channel : null;
+        return isFromType(ChannelType.TEXT) ? (TextChannel) channel : null;
     }
 
     public Guild getGuild()
     {
-        return !isPrivate() ? getTextChannel().getGuild() : null;
+        return isFromType(ChannelType.TEXT) ? getTextChannel().getGuild() : null;
     }
 
     public Member getMember()
     {
-        return !isPrivate() ? getGuild().getMember(getUser()) : null;
+        return isFromType(ChannelType.TEXT) ? getGuild().getMember(getUser()) : null;
+    }
+
+    public Group getGroup()
+    {
+        return isFromType(ChannelType.GROUP) ? (Group) channel : null;
+    }
+
+    @Nullable
+    public Category getCategory()
+    {
+        return isFromType(ChannelType.TEXT) ? getTextChannel().getParent() : null;
     }
 }

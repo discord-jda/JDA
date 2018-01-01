@@ -76,16 +76,16 @@ public class GuildImpl implements Guild
     private String name;
     private String iconId;
     private String splashId;
-    private String region;
-    private Set<String> features;
+    private String region = "";
+    private Set<String> features = Collections.emptySet();
     private VoiceChannel afkChannel;
     private TextChannel systemChannel;
     private Role publicRole;
-    private VerificationLevel verificationLevel;
-    private NotificationLevel defaultNotificationLevel;
-    private MFALevel mfaLevel;
-    private ExplicitContentLevel explicitContentLevel;
-    private Timeout afkTimeout;
+    private VerificationLevel verificationLevel = VerificationLevel.UNKNOWN;
+    private NotificationLevel defaultNotificationLevel = NotificationLevel.UNKNOWN;
+    private ExplicitContentLevel explicitContentLevel = ExplicitContentLevel.UNKNOWN;
+    private MFALevel mfaLevel = MFALevel.UNKNOWN;
+    private Timeout afkTimeout = Timeout.UNKNOWN;
     private boolean available;
     private boolean canSendVerification = false;
 
@@ -95,7 +95,6 @@ public class GuildImpl implements Guild
         this.api = api;
     }
 
-    @Nonnull
     @Override
     public String getName()
     {
@@ -215,13 +214,13 @@ public class GuildImpl implements Guild
         };
     }
 
-    @Nonnull
     @Override
     public Member getOwner()
     {
         return owner;
     }
 
+    @Nonnull
     @Override
     public Timeout getAfkTimeout()
     {
@@ -241,9 +240,7 @@ public class GuildImpl implements Guild
         return memberCache.getMap().containsKey(user.getIdLong());
     }
 
-    @Nonnull
     @Override
-    @SuppressWarnings("ConstantConditions")
     public Member getSelfMember()
     {
         return getMember(getJDA().getSelfUser());
@@ -358,7 +355,6 @@ public class GuildImpl implements Guild
         };
     }
 
-    @Nonnull
     @Override
     public Role getPublicRole()
     {

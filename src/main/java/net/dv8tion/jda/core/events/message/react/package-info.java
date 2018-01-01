@@ -20,4 +20,7 @@
  * cannot provide a Message instance due to missing cache but instead provide the Message ID as
  * long representation.
  */
+@ParametersAreNonnullByDefault
 package net.dv8tion.jda.core.events.message.react;
+
+import javax.annotation.ParametersAreNonnullByDefault;

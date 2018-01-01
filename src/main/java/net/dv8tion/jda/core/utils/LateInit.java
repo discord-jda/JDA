@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-/**
- * Events indicating the {@link net.dv8tion.jda.core.entities.MessageReaction MessageReactions} of a {@link net.dv8tion.jda.core.entities.Message Message} changed.
- * <br>These events
- * cannot provide a Message instance due to missing cache but instead provide the Message ID as
- * long representation.
- *
- * @since 3.1
- */
-@ParametersAreNonnullByDefault
-package net.dv8tion.jda.core.events.message.priv.react;
+package net.dv8tion.jda.core.utils;
 
-import javax.annotation.ParametersAreNonnullByDefault;
+import java.lang.annotation.*;
+
+/**
+ * Marker for values and properties that are intended as non-null but require
+ * to be initialized after object creation.
+ *
+ * @see net.dv8tion.jda.core.entities.Guild Guild
+ * @see javax.annotation.Nonnull Nonnull
+ */
+@Documented
+@Target({ ElementType.METHOD, ElementType.FIELD })
+@Retention(RetentionPolicy.RUNTIME)
+public @interface LateInit {}

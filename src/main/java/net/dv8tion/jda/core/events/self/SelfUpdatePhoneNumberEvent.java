@@ -18,6 +18,8 @@ package net.dv8tion.jda.core.events.self;
 
 import net.dv8tion.jda.core.JDA;
 
+import javax.annotation.Nullable;
+
 /**
  * <b><u>SelfUpdatePhoneNumberEvent</u></b><br>
  * Fired if you change the phone number associated with your account.<br>
@@ -26,7 +28,7 @@ public class SelfUpdatePhoneNumberEvent extends GenericSelfUpdateEvent
 {
     private final String oldPhoneNumber;
 
-    public SelfUpdatePhoneNumberEvent(JDA api, long responseNumber, String oldPhoneNumber)
+    public SelfUpdatePhoneNumberEvent(JDA api, long responseNumber, @Nullable String oldPhoneNumber)
     {
         super(api, responseNumber);
         this.oldPhoneNumber = oldPhoneNumber;
@@ -37,6 +39,7 @@ public class SelfUpdatePhoneNumberEvent extends GenericSelfUpdateEvent
      *
      * @return The old phone number or {@code null}.
      */
+    @Nullable
     public String getOldPhoneNumber()
     {
         return oldPhoneNumber;

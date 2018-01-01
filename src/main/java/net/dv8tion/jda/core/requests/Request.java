@@ -24,6 +24,7 @@ import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
@@ -106,41 +107,49 @@ public class Request<T>
         });
     }
 
+    @Nonnull
     public JDAImpl getJDA()
     {
         return api;
     }
 
+    @Nonnull
     public RestAction<T> getRestAction()
     {
         return restAction;
     }
 
+    @Nonnull
     public Consumer<T> getOnSuccess()
     {
         return onSuccess;
     }
 
+    @Nonnull
     public Consumer<Throwable> getOnFailure()
     {
         return onFailure;
     }
 
-    public CaseInsensitiveMap<String, String> getHeaders()
-    {
-        return headers;
-    }
-
+    @Nonnull
     public Route.CompiledRoute getRoute()
     {
         return route;
     }
 
+    @Nullable
+    public CaseInsensitiveMap<String, String> getHeaders()
+    {
+        return headers;
+    }
+
+    @Nullable
     public RequestBody getBody()
     {
         return body;
     }
 
+    @Nullable
     public Object getRawBody()
     {
         return rawBody;

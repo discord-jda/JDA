@@ -19,6 +19,8 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 
+import javax.annotation.Nonnull;
+
 /**
  * <b><u>GuildBanEvent</u></b><br>
  * Fired if a {@link net.dv8tion.jda.core.entities.User User} is unbanned from a {@link net.dv8tion.jda.core.entities.Guild Guild}.<br>
@@ -35,6 +37,7 @@ public class GuildUnbanEvent extends GenericGuildEvent
         this.user = user;
     }
 
+    @Nonnull
     public User getUser()
     {
         return user;
