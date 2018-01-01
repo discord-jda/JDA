@@ -29,6 +29,7 @@ import org.json.JSONObject;
 import javax.security.auth.login.LoginException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class SessionControllerAdapter implements SessionController
@@ -139,9 +140,35 @@ public class SessionControllerAdapter implements SessionController
 
     protected class QueueWorker extends Thread
     {
+        /** Delay (in milliseconds) to sleep between connecting sessions */
+        protected final long delay;
+
         public QueueWorker()
         {
+            this(IDENTIFY_DELAY);
+        }
+
+        /**
+         * Creates a QueueWorker
+         *
+         * @param delay
+         *        delay (in seconds) to wait between starting sessions
+         */
+        public QueueWorker(int delay)
+        {
+            this(TimeUnit.SECONDS.toMillis(delay));
+        }
+
+        /**
+         * Creates a QueueWorker
+         *
+         * @param delay
+         *        delay (in milliseconds) to wait between starting sessions
+         */
+        public QueueWorker(long delay)
+        {
             super("SessionControllerAdapter-Worker");
+            this.delay = delay;
         }
 
         @Override
@@ -149,9 +176,12 @@ public class SessionControllerAdapter implements SessionController
         {
             try
             {
-                final long delay = System.currentTimeMillis() - lastConnect;
-                if (delay < IDENTIFY_DELAY * 1000)
-                    Thread.sleep(IDENTIFY_DELAY * 1000 - delay);
+                if (this.delay > 0)
+                {
+                    final long interval = System.currentTimeMillis() - lastConnect;
+                    if (interval < this.delay)
+                        Thread.sleep(this.delay - interval);
+                }
             }
             catch (InterruptedException ex)
             {
@@ -166,7 +196,8 @@ public class SessionControllerAdapter implements SessionController
                     lastConnect = System.currentTimeMillis();
                     if (connectQueue.isEmpty())
                         break;
-                    Thread.sleep(1000 * IDENTIFY_DELAY);
+                    if (this.delay > 0)
+                        Thread.sleep(this.delay);
                 }
                 catch (InterruptedException e)
                 {
