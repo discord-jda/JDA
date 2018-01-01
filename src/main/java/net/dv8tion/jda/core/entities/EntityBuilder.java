@@ -71,7 +71,7 @@ public class EntityBuilder
 
     public SelfUser createSelfUser(JSONObject self)
     {
-        SelfUserImpl selfUser = ((SelfUserImpl) api.getSelfUser());
+        SelfUserImpl selfUser = api.selfUser;
         if (selfUser == null)
         {
             final long id = self.getLong("id");
@@ -356,7 +356,7 @@ public class EntityBuilder
         if (owner != null)
             guildObj.setOwner(owner);
 
-        if (guildObj.getOwner() == null)
+        if (guildObj.owner == null)
             LOG.error("Never set the Owner of the Guild: {} because we don't have the owner User object! How?!", guildObj.getId());
 
         JSONArray channels = guildJson.getJSONArray("channels");

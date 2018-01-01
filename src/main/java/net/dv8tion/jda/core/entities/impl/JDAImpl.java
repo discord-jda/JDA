@@ -90,13 +90,13 @@ public class JDAImpl implements JDA
     protected final GuildLock guildLock = new GuildLock(this);
     protected final Object akapLock = new Object();
 
+    public SelfUserImpl selfUser;
     protected WebSocketClient client;
     protected Requester requester;
     protected IEventManager eventManager = new InterfacedEventManager();
     protected IAudioSendFactory audioSendFactory = new DefaultSendFactory();
     protected ScheduledThreadPoolExecutor audioKeepAlivePool;
     protected Status status = Status.INITIALIZING;
-    protected SelfUser selfUser;
     protected ShardInfo shardInfo;
     protected boolean audioEnabled;
     protected boolean bulkDeleteSplittingEnabled;
@@ -544,9 +544,12 @@ public class JDAImpl implements JDA
         return userCache;
     }
 
+    @Nonnull
     @Override
     public SelfUser getSelfUser()
     {
+        if (selfUser == null)
+            throw new IllegalStateException("JDA has not finished loading! Wait for the ReadyEvent or use buildBlocking!");
         return selfUser;
     }
 
@@ -786,7 +789,7 @@ public class JDAImpl implements JDA
         return audioManagers.getMap();
     }
 
-    public void setSelfUser(SelfUser selfUser)
+    public void setSelfUser(SelfUserImpl selfUser)
     {
         this.selfUser = selfUser;
     }

@@ -15,7 +15,7 @@
  */
 package net.dv8tion.jda.core.handle;
 
-import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.guild.GuildAvailableEvent;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
@@ -33,8 +33,8 @@ public class GuildCreateHandler extends SocketHandler
     @Override
     protected Long handleInternally(JSONObject content)
     {
-        Guild g = api.getGuildById(content.getLong("id"));
-        Boolean wasAvail = (g == null || g.getName() == null) ? null : g.isAvailable();
+        GuildImpl g = (GuildImpl) api.getGuildById(content.getLong("id"));
+        Boolean wasAvail = (g == null || g.name == null) ? null : g.isAvailable();
         api.getEntityBuilder().createGuildFirstPass(content, guild ->
         {
             if (guild.isAvailable())

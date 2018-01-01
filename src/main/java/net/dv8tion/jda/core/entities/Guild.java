@@ -24,7 +24,6 @@ import net.dv8tion.jda.core.managers.GuildManager;
 import net.dv8tion.jda.core.managers.GuildManagerUpdatable;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAction;
-import net.dv8tion.jda.core.utils.LateInit;
 import net.dv8tion.jda.core.utils.cache.MemberCacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 
@@ -38,10 +37,6 @@ import java.util.Set;
 /**
  * Represents a Discord {@link net.dv8tion.jda.core.entities.Guild Guild}.
  * This should contain all information provided from Discord about a Guild.
- *
- * <p>Some values might not be set when a Guild is initializing.
- * These values are not annotated with {@link javax.annotation.Nonnull Nonnull} or {@link javax.annotation.Nullable Nullable}
- * due to the initializing process. Instead the annotation {@link net.dv8tion.jda.core.utils.LateInit LateInit} is used.
  */
 public interface Guild extends ISnowflake
 {
@@ -53,7 +48,7 @@ public interface Guild extends ISnowflake
      *
      * @return Never-null String containing the Guild's name.
      */
-    @LateInit
+    @Nonnull
     String getName();
 
     /**
@@ -192,7 +187,7 @@ public interface Guild extends ISnowflake
      *
      * @return Never-null Member object containing the Guild owner.
      */
-    @LateInit
+    @Nonnull
     Member getOwner();
 
     /**
@@ -256,7 +251,7 @@ public interface Guild extends ISnowflake
      *
      * @return The Member object of the currently logged in account.
      */
-    @LateInit
+    @Nonnull
     Member getSelfMember();
 
     /**
@@ -886,7 +881,7 @@ public interface Guild extends ISnowflake
      *
      * @return The @everyone {@link net.dv8tion.jda.core.entities.Role Role}
      */
-    @LateInit
+    @Nonnull
     Role getPublicRole();
 
     /**

@@ -72,8 +72,11 @@ public class GuildImpl implements Guild
     private volatile GuildManagerUpdatable managerUpdatable;
     private volatile GuildController controller;
 
-    private Member owner;
-    private String name;
+    //public for internal accessors
+    // getters do additional checks which might throw
+    public Member owner;
+    public String name;
+
     private String iconId;
     private String splashId;
     private String region = "";
@@ -95,10 +98,11 @@ public class GuildImpl implements Guild
         this.api = api;
     }
 
+    @Nonnull
     @Override
     public String getName()
     {
-        return name;
+        return name == null ? "null" : name;
     }
 
     @Override
@@ -214,10 +218,15 @@ public class GuildImpl implements Guild
         };
     }
 
+    @Nonnull
     @Override
     public Member getOwner()
     {
-        return owner;
+        if (owner != null)
+            return owner;
+        else if (!isAvailable())
+            throw new GuildUnavailableException();
+        throw new IllegalStateException("Owner is null");
     }
 
     @Nonnull
@@ -240,10 +249,16 @@ public class GuildImpl implements Guild
         return memberCache.getMap().containsKey(user.getIdLong());
     }
 
+    @Nonnull
     @Override
     public Member getSelfMember()
     {
-        return getMember(getJDA().getSelfUser());
+        final Member self = getMember(getJDA().getSelfUser());
+        if (self != null)
+            return self;
+        else if (!isAvailable())
+            throw new GuildUnavailableException();
+        throw new IllegalStateException("SelfMember is null!");
     }
 
     @Override
@@ -355,10 +370,15 @@ public class GuildImpl implements Guild
         };
     }
 
+    @Nonnull
     @Override
     public Role getPublicRole()
     {
-        return publicRole;
+        if (publicRole != null)
+            return publicRole;
+        else if (!isAvailable())
+            throw new GuildUnavailableException();
+        throw new IllegalStateException("PublicRole is null!");
     }
 
     @Nullable
@@ -728,7 +748,7 @@ public class GuildImpl implements Guild
         return this;
     }
 
-    public GuildImpl setAfkTimeout(@Nullable Timeout afkTimeout)
+    public GuildImpl setAfkTimeout(Timeout afkTimeout)
     {
         this.afkTimeout = afkTimeout;
         return this;

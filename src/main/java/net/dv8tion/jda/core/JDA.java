@@ -24,7 +24,6 @@ import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.GuildAction;
-import net.dv8tion.jda.core.utils.LateInit;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 
@@ -997,13 +996,12 @@ public interface JDA
      * use the AccountManager which is accessible by {@link net.dv8tion.jda.core.entities.SelfUser#getManager()} or
      * {@link net.dv8tion.jda.core.entities.SelfUser#getManagerUpdatable()}.
      *
-     * <p>While JDA is initializing this might be {@code null}!
+     * @throws java.lang.IllegalStateException
+     *         If JDA has not finished loading yet!
      *
      * @return The currently logged in account.
-     *
-     * @see    net.dv8tion.jda.core.utils.LateInit LateInit
      */
-    @LateInit
+    @Nonnull
     SelfUser getSelfUser();
 
     /**
