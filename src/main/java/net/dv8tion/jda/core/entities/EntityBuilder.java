@@ -157,10 +157,7 @@ public class EntityBuilder
                 .setRequiredMFALevel(Guild.MFALevel.fromKey(guild.getInt("mfa_level")))
                 .setExplicitContentLevel(Guild.ExplicitContentLevel.fromKey(guild.getInt("explicit_content_filter")));
 
-
-        if(guild.isNull("features"))
-            guildObj.setFeatures(Collections.emptySet());
-        else
+        if (!guild.isNull("features"))
         {
             guildObj.setFeatures(
                 StreamSupport.stream(guild.getJSONArray("features").spliterator(), false)
