@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -621,7 +621,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
     protected void handleResponse(Response response, Request<Message> request)
     {
         if (response.isOk())
-            request.onSuccess(api.getEntityBuilder().createMessage(response.getObject()));
+            request.onSuccess(api.getEntityBuilder().createMessage(response.getObject(), channel, false));
         else
             request.onFailure(response);
     }
