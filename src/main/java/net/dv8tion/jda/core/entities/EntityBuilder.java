@@ -197,6 +197,7 @@ public class EntityBuilder
                     roleSet.add(guildObj.getRoleById(emoteRoles.getString(j)));
                 emoteMap.put(emoteId, emoteObj
                             .setName(object.optString("name"))
+                            .setAnimated(object.optBoolean("animated"))
                             .setManaged(Helpers.optBoolean(object, "managed")));
             }
         }
@@ -940,6 +941,7 @@ public class EntityBuilder
         JSONObject emoji = obj.getJSONObject("emoji");
         final Long emojiID = emoji.isNull("id") ? null : emoji.getLong("id");
         final String name = emoji.optString("name", null);
+        final boolean animated = emoji.optBoolean("animated");
         final int count = Helpers.optInt(obj, "count", -1);
         final boolean me = Helpers.optBoolean(obj, "me");
 
@@ -949,7 +951,7 @@ public class EntityBuilder
             Emote emote = api.getEmoteById(emojiID);
             // creates fake emoji because no guild has this emoji id
             if (emote == null)
-                emote = new EmoteImpl(emojiID, api).setName(name);
+                emote = new EmoteImpl(emojiID, api).setAnimated(animated).setName(name);
             reactionEmote = new MessageReaction.ReactionEmote(emote);
         }
         else
