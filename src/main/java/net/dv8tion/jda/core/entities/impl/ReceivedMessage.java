@@ -651,10 +651,12 @@ public class ReceivedMessage extends AbstractMessage
                 {
                     final long emoteId = MiscUtil.parseSnowflake(matcher.group(2));
                     final String emoteName = matcher.group(1);
+                    // Check animated by verifying whether or not it starts with <a: or <:
+                    final boolean animated = matcher.group(0).startsWith("<a:");
 
                     Emote emote = getJDA().getEmoteById(emoteId);
                     if (emote == null)
-                        emote = new EmoteImpl(emoteId, api).setName(emoteName);
+                        emote = new EmoteImpl(emoteId, api).setAnimated(animated).setName(emoteName);
                     emoteMentions.add(emote);
                 }
                 catch (NumberFormatException ignored) {}
