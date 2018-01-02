@@ -146,16 +146,16 @@ public class PermissionUtil
 
         // We don't need to check based on the fact it is animated if it's a BOT account
         // because BOT accounts cannot have nitro, and have access to animated Emotes naturally.
-        if(emote.isAnimated() && !issuer.getUser().isBot())
+        if (emote.isAnimated() && !issuer.getUser().isBot())
         {
             // This is a currently logged in client, meaning we can check if they have nitro or not.
             // If this isn't the currently logged in account, we just check it like a normal emote,
             // since there is no way to verify if they have nitro or not.
-            if(issuer.getUser() instanceof SelfUser)
+            if (issuer.getUser() instanceof SelfUser)
             {
                 // If they don't have nitro, we immediately return
                 // false, otherwise we proceed with the remaining checks.
-                if(!((SelfUser)issuer.getUser()).isNitro())
+                if (!((SelfUser)issuer.getUser()).isNitro())
                     return false;
             }
         }
@@ -195,7 +195,8 @@ public class PermissionUtil
         if (!canInteract(member, emote))
             return false;
         // external means it is available outside of its own guild - works for bots or if its managed
-        final boolean external = emote.isManaged() || (issuer.isBot() && botOverride);
+        // currently we cannot check whether other users have nitro, we assume no here
+        final boolean external = emote.isManaged() || (issuer.isBot() && botOverride) || isNitro(issuer);
         switch (channel.getType())
         {
             case TEXT:
@@ -206,6 +207,11 @@ public class PermissionUtil
             default:
                 return external; // In Group or Private it only needs to be external
         }
+    }
+
+    private static boolean isNitro(User issuer)
+    {
+        return issuer instanceof SelfUser && ((SelfUser) issuer).isNitro();
     }
 
     /**
