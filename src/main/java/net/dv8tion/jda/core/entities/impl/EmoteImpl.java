@@ -29,10 +29,7 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Represents a Custom Emote. (Emoji in official Discord API terminology)
@@ -46,13 +43,14 @@ public class EmoteImpl implements Emote
     private final long id;
     private final GuildImpl guild;
     private final JDAImpl api;
-    private final HashSet<Role> roles;
+    private final Set<Role> roles;
 
     private final Object mngLock = new Object();
     private volatile EmoteManager manager = null;
     private volatile EmoteManagerUpdatable managerUpdatable = null;
 
     private boolean managed = false;
+    private boolean animated = false;
     private String name;
 
     public EmoteImpl(long id, GuildImpl guild)
@@ -60,7 +58,7 @@ public class EmoteImpl implements Emote
         this.id = id;
         this.guild = guild;
         this.api = guild.getJDA();
-        this.roles = new HashSet<>();
+        this.roles = Collections.synchronizedSet(new HashSet<>());
     }
 
     public EmoteImpl(long id, JDAImpl api)
@@ -148,6 +146,12 @@ public class EmoteImpl implements Emote
     }
 
     @Override
+    public boolean isAnimated()
+    {
+        return animated;
+    }
+
+    @Override
     public AuditableRestAction<Void> delete()
     {
         if (isFake())
@@ -179,6 +183,12 @@ public class EmoteImpl implements Emote
         return this;
     }
 
+    public EmoteImpl setAnimated(boolean animated)
+    {
+        this.animated = animated;
+        return this;
+    }
+
     public EmoteImpl setManaged(boolean val)
     {
         this.managed = val;
@@ -187,7 +197,7 @@ public class EmoteImpl implements Emote
 
     // -- Set Getter --
 
-    public HashSet<Role> getRoleSet()
+    public Set<Role> getRoleSet()
     {
         return this.roles;
     }
@@ -221,7 +231,7 @@ public class EmoteImpl implements Emote
     public EmoteImpl clone()
     {
         if (isFake()) return null;
-        EmoteImpl copy = new EmoteImpl(id, guild).setManaged(managed).setName(name);
+        EmoteImpl copy = new EmoteImpl(id, guild).setManaged(managed).setAnimated(animated).setName(name);
         copy.roles.addAll(roles);
         return copy;
 

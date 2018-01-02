@@ -58,6 +58,7 @@ public class MessageReactionHandler extends SocketHandler
 
         final Long emojiId = emoji.isNull("id") ? null : emoji.getLong("id");
         String emojiName = emoji.optString("name", null);
+        final boolean emojiAnimated = emoji.optBoolean("animated");
 
         if (emojiId == null && emojiName == null)
         {
@@ -104,7 +105,7 @@ public class MessageReactionHandler extends SocketHandler
             {
                 if (emojiName != null)
                 {
-                    emote = new EmoteImpl(emojiId, api).setName(emojiName);
+                    emote = new EmoteImpl(emojiId, api).setAnimated(emojiAnimated).setName(emojiName);
                 }
                 else
                 {

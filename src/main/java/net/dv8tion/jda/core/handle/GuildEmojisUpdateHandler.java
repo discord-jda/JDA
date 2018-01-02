@@ -78,6 +78,7 @@ public class GuildEmojisUpdateHandler extends SocketHandler
             }
 
             emote.setName(current.getString("name"))
+                 .setAnimated(current.optBoolean("animated"))
                  .setManaged(current.getBoolean("managed"));
             //update roles
             JSONArray roles = current.getJSONArray("roles");
