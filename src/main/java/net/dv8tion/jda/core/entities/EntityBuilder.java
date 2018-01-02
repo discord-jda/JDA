@@ -962,13 +962,13 @@ public class EntityBuilder
 
     public Message.Attachment createMessageAttachment(JSONObject jsonObject)
     {
+        final long id = jsonObject.getLong("id");
+        final String url = jsonObject.getString("url");
+        final String proxyUrl = jsonObject.getString("proxy_url");
         final int width = Helpers.optInt(jsonObject, "width", -1);
         final int height = Helpers.optInt(jsonObject, "height", -1);
         final int size = jsonObject.getInt("size");
-        final String url = jsonObject.optString("url", null);
-        final String proxyUrl = jsonObject.optString("proxy_url", null);
-        final String filename = jsonObject.getString("filename");
-        final long id = jsonObject.getLong("id");
+        final String filename = jsonObject.optString("filename");
         return new Message.Attachment(id, url, proxyUrl, filename, size, height, width, api);
     }
 
@@ -1155,7 +1155,17 @@ public class EntityBuilder
             owner = createFakeUser(ownerJson, false);
         }
 
-        return new WebhookImpl(channel, id).setToken(token).setOwner(channel.getGuild().getMember(owner)).setUser(defaultUser);
+        final Guild guild = channel.getGuild();
+        Member ownerMember = guild.getMember(owner);
+        if (ownerMember == null)
+        {
+            LOG.warn("Creating a Webhook entity with owner that is not in the guild, defaulting to guild owner! GuildId: {} Owner: {}", guild.getId(), owner);
+            ownerMember = guild.getOwner();
+        }
+        return new WebhookImpl(channel, id)
+                    .setToken(token)
+                    .setOwner(ownerMember)
+                    .setUser(defaultUser);
     }
 
     public Relationship createRelationship(JSONObject relationshipJson)

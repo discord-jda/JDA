@@ -1123,6 +1123,7 @@ public interface Message extends ISnowflake, Formattable
             this.pattern = Pattern.compile(regex);
         }
 
+        @Nonnull
         public Pattern getPattern()
         {
             return pattern;
@@ -1144,7 +1145,7 @@ public interface Message extends ISnowflake, Formattable
 
         private final JDAImpl jda;
 
-        public Attachment(long id, @Nullable String url, @Nullable String proxyUrl, String fileName, int size, int height, int width, JDAImpl jda)
+        public Attachment(long id, String url, String proxyUrl, String fileName, int size, int height, int width, JDAImpl jda)
         {
             this.id = id;
             this.url = url;
@@ -1161,6 +1162,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return The corresponding JDA instance for this Attachment
          */
+        @Nonnull
         public JDA getJDA()
         {
             return jda;
@@ -1177,6 +1179,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return Non-null String containing the Attachment URL.
          */
+        @Nonnull
         public String getUrl()
         {
             return url;
@@ -1189,6 +1192,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return Non-null String containing the proxied Attachment url.
          */
+        @Nonnull
         public String getProxyUrl()
         {
             return proxyUrl;
@@ -1269,6 +1273,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @since  3.4.0
          */
+        @Nonnull
         public InputStream getInputStream() throws IOException
         {
             try (Response response = openConnection())
@@ -1306,6 +1311,7 @@ public interface Message extends ISnowflake, Formattable
             }
         }
 
+        @Nonnull
         protected Response openConnection() throws IOException
         {
             final OkHttpClient client = jda.getRequester().getHttpClient();
