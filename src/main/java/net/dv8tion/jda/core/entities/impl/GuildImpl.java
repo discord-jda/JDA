@@ -46,6 +46,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
@@ -316,8 +317,9 @@ public class GuildImpl implements Guild
         };
     }
 
+    @Nonnull
     @Override
-    public RestAction<List<Ban>> getBanlist()
+    public RestAction<List<Ban>> getBanList()
     {
         if (!isAvailable())
             throw new GuildUnavailableException();

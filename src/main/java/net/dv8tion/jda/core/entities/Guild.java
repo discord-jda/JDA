@@ -28,6 +28,7 @@ import net.dv8tion.jda.core.utils.cache.MemberCacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
@@ -787,7 +788,7 @@ public interface Guild extends ISnowflake
      *         <br>An unmodifiable list of all users currently banned from this Guild
      *
      * @deprecated
-     *         Use {@link #getBanlist()} instead
+     *         Use {@link #getBanList()} instead
      */
     @Deprecated
     @CheckReturnValue
@@ -816,8 +817,9 @@ public interface Guild extends ISnowflake
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@literal List<}{@link net.dv8tion.jda.core.entities.Guild.Ban Ban}{@literal >}
      *         <br>An unmodifiable list of all users currently banned from this Guild
      */
+    @Nonnull
     @CheckReturnValue
-    RestAction<List<Ban>> getBanlist();
+    RestAction<List<Ban>> getBanList();
 
     /**
      * The method calculates the amount of Members that would be pruned if {@link GuildController#prune(int)} was executed.
@@ -1407,7 +1409,7 @@ public interface Guild extends ISnowflake
     /**
      * Represents a Ban object.
      *
-     * @see #getBanlist()
+     * @see #getBanList()
      * @see <a href="https://discordapp.com/developers/docs/resources/guild#ban-object" target="_blank">Discord Docs: Ban Object</a>
      */
     class Ban
@@ -1426,6 +1428,7 @@ public interface Guild extends ISnowflake
          *
          * @return The banned User
          */
+        @Nonnull
         public User getUser()
         {
             return user;
@@ -1436,6 +1439,7 @@ public interface Guild extends ISnowflake
          *
          * @return The reason for this ban, or {@code null}
          */
+        @Nullable
         public String getReason()
         {
             return reason;
