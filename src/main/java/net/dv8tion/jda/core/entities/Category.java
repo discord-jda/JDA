@@ -133,7 +133,7 @@ public interface Category extends Channel, Comparable<Category>
     CategoryOrderAction<TextChannel> modifyTextChannelPositions();
 
     /**
-     * Modifies the positional order of this Categories nested {@link #getVoiceChannels() VoiceChannels}.
+     * Modifies the positional order of this Category's nested {@link #getVoiceChannels() VoiceChannels}.
      * <br>This uses an extension of {@link net.dv8tion.jda.core.requests.restaction.order.ChannelOrderAction ChannelOrderAction}
      * specialized for ordering the nested {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels} of this
      * {@link net.dv8tion.jda.core.entities.Category Category}.

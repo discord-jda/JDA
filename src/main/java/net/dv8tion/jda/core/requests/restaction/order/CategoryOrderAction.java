@@ -76,8 +76,8 @@ public class CategoryOrderAction<T extends Channel> extends ChannelOrderAction<T
     @Override
     protected void validateInput(T entity)
     {
-        Checks.check(entity.getParent() != null, "Provided channel must be nested in a Category!");
-        Checks.check(entity.getParent().equals(getCategory()), "Provided channel's Category is not this Category!");
+        Checks.notNull(entity, "Provided channel");
+        Checks.check(getCategory().equals(entity.getParent()), "Provided channel's Category is not this Category!");
         Checks.check(orderList.contains(entity), "Provided channel is not in the list of orderable channels!");
     }
 
