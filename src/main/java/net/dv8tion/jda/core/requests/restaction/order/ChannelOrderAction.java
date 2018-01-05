@@ -106,6 +106,16 @@ public class ChannelOrderAction<T extends Channel> extends OrderAction<T, Channe
         this.orderList.addAll(channels);
     }
 
+    // Internal usage only.
+    // This is used as a superclass constructor call for CategoryOrderAction.
+    ChannelOrderAction(Guild guild, ChannelType type, Collection<T> channels)
+    {
+        super(guild.getJDA(), Route.Guilds.MODIFY_CHANNELS.compile(guild.getId()));
+        this.guild = guild;
+        this.type = type;
+        this.orderList.addAll(channels);
+    }
+
     /**
      * The {@link net.dv8tion.jda.core.entities.Guild Guild} which holds
      * the channels from {@link #getCurrentOrder()}
