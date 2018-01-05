@@ -107,10 +107,9 @@ public interface Category extends Channel, Comparable<Category>
     ChannelAction createVoiceChannel(String name);
 
     /**
-     * Modifies the positional order of this Categories nested {@link #getTextChannels() TextChannels}.
-     * <br>This uses a specialized {@link net.dv8tion.jda.core.requests.RestAction RestAction} extension very similar to a
-     * {@link net.dv8tion.jda.core.requests.restaction.order.ChannelOrderAction ChannelOrderAction} but only controlling
-     * the nested {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} of this
+     * Modifies the positional order of this Category's nested {@link #getTextChannels() TextChannels}.
+     * <br>This uses an extension of {@link net.dv8tion.jda.core.requests.restaction.order.ChannelOrderAction ChannelOrderAction}
+     * specialized for ordering the nested {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} of this
      * {@link net.dv8tion.jda.core.entities.Category Category}.
      * <br>Like {@code ChannelOrderAction}, the returned {@link net.dv8tion.jda.core.requests.restaction.order.CategoryOrderAction CategoryOrderAction}
      * can be used to move TextChannels {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveUp(int) up},
@@ -128,16 +127,15 @@ public interface Category extends Channel, Comparable<Category>
      * </ul>
      *
      * @return A {@link net.dv8tion.jda.core.requests.restaction.order.CategoryOrderAction CategoryOrderAction} for
-     *         ordering the Categories {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}.
+     *         ordering the Category's {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}.
      */
     @CheckReturnValue
     CategoryOrderAction<TextChannel> modifyTextChannelPositions();
 
     /**
      * Modifies the positional order of this Categories nested {@link #getVoiceChannels() VoiceChannels}.
-     * <br>This uses a specialized {@link net.dv8tion.jda.core.requests.RestAction RestAction} extension very similar to a
-     * {@link net.dv8tion.jda.core.requests.restaction.order.ChannelOrderAction ChannelOrderAction} but only controlling
-     * the nested {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels} of this
+     * <br>This uses an extension of {@link net.dv8tion.jda.core.requests.restaction.order.ChannelOrderAction ChannelOrderAction}
+     * specialized for ordering the nested {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels} of this
      * {@link net.dv8tion.jda.core.entities.Category Category}.
      * <br>Like {@code ChannelOrderAction}, the returned {@link net.dv8tion.jda.core.requests.restaction.order.CategoryOrderAction CategoryOrderAction}
      * can be used to move VoiceChannels {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveUp(int) up},
@@ -155,7 +153,7 @@ public interface Category extends Channel, Comparable<Category>
      * </ul>
      *
      * @return A {@link net.dv8tion.jda.core.requests.restaction.order.CategoryOrderAction CategoryOrderAction} for
-     *         ordering the Categories {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels}.
+     *         ordering the Category's {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels}.
      */
     @CheckReturnValue
     CategoryOrderAction<VoiceChannel> modifyVoiceChannelPositions();

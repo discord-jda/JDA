@@ -52,43 +52,55 @@ public class ChannelOrderAction<T extends Channel> extends OrderAction<T, Channe
     /**
      * Creates a new ChannelOrderAction instance
      *
-     * @param guild
-     *        The target {@link net.dv8tion.jda.core.entities.Guild Guild}
-     *        of which to order the channels defined by the specified type
-     * @param type
-     *        The {@link net.dv8tion.jda.core.entities.ChannelType ChannelType} corresponding
-     *        to the generic type of {@link net.dv8tion.jda.core.entities.Channel Channel} which
-     *        defines the type of channel that will be ordered
+     * @param  guild
+     *         The target {@link net.dv8tion.jda.core.entities.Guild Guild}
+     *         of which to order the channels defined by the specified type
+     * @param  type
+     *         The {@link net.dv8tion.jda.core.entities.ChannelType ChannelType} corresponding
+     *         to the generic type of {@link net.dv8tion.jda.core.entities.Channel Channel} which
+     *         defines the type of channel that will be ordered.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If one of the specified Guild has no channels of the ChannelType.
      */
     public ChannelOrderAction(Guild guild, ChannelType type)
     {
-        super(guild.getJDA(), Route.Guilds.MODIFY_CHANNELS.compile(guild.getId()));
-        this.guild = guild;
-        this.type = type;
-
-        Collection chans;
-        switch (type)
-        {
-            case TEXT:
-                chans = guild.getTextChannels();
-                break;
-            case VOICE:
-                chans = guild.getVoiceChannels();
-                break;
-            case CATEGORY:
-                chans = guild.getCategories();
-                break;
-            default:
-                throw new IllegalArgumentException("Cannot order specified channel type " + type);
-        }
-        this.orderList.addAll(chans);
+        this(guild, type, getChannelsOfType(guild, type));
     }
 
-    // Internal usage only.
-    // This is used as a superclass constructor call for CategoryOrderAction.
-    ChannelOrderAction(Guild guild, ChannelType type, Collection<T> channels)
+    /**
+     * Creates a new ChannelOrderAction instance using the provided
+     * {@link net.dv8tion.jda.core.entities.Guild Guild}, as well as the provided
+     * list of {@link net.dv8tion.jda.core.entities.Channel Channels}.
+     *
+     * @param  guild
+     *         The target {@link net.dv8tion.jda.core.entities.Guild Guild}
+     *         of which to order the channels defined by the specified type
+     * @param  type
+     *         The {@link net.dv8tion.jda.core.entities.ChannelType ChannelType} corresponding
+     *         to the generic type of {@link net.dv8tion.jda.core.entities.Channel Channel} which
+     *         defines the type of channel that will be ordered.
+     * @param  channels
+     *         The {@link net.dv8tion.jda.core.entities.Channel Channels} to order, all of which
+     *         are on the same Guild specified, and all of which are of the same generic type of Channel
+     *         corresponding to the the ChannelType specified.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the channels are {@code null}, an empty collection,
+     *         or any of them do not have the same ChannelType as the one
+     *         provided.
+     */
+    public ChannelOrderAction(Guild guild, ChannelType type, Collection<T> channels)
     {
         super(guild.getJDA(), Route.Guilds.MODIFY_CHANNELS.compile(guild.getId()));
+
+        // We don't check whether or not the Guild contains all the channels
+        // here because this is performed in OrderAction#validateInput(T)
+        Checks.notNull(channels, "Channels to order");
+        Checks.notEmpty(channels, "Channels to order");
+        Checks.check(channels.stream().allMatch(c -> c.getType().equals(type)),
+            "One or more channels did not match the expected type of "+type.name());
+
         this.guild = guild;
         this.type = type;
         this.orderList.addAll(channels);
@@ -139,5 +151,20 @@ public class ChannelOrderAction<T extends Channel> extends OrderAction<T, Channe
     {
         Checks.check(entity.getGuild().equals(guild), "Provided channel is not from this Guild!");
         Checks.check(orderList.contains(entity), "Provided channel is not in the list of orderable channels!");
+    }
+
+    private static Collection getChannelsOfType(Guild guild, ChannelType type)
+    {
+        switch(type)
+        {
+            case TEXT:
+                return guild.getTextChannels();
+            case VOICE:
+                return guild.getVoiceChannels();
+            case CATEGORY:
+                return guild.getCategories();
+            default:
+                throw new IllegalArgumentException("Cannot order specified channel type " + type);
+        }
     }
 }

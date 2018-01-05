@@ -19,7 +19,7 @@ package net.dv8tion.jda.core.requests.restaction.order;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.utils.Checks;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * An extension of {@link net.dv8tion.jda.core.requests.restaction.order.ChannelOrderAction ChannelOrderAction} with
@@ -57,8 +57,7 @@ public class CategoryOrderAction<T extends Channel> extends ChannelOrderAction<T
      */
     public CategoryOrderAction(Category category, ChannelType type)
     {
-        super(category.getGuild(), type,
-            (List<T>)(type == ChannelType.TEXT ? category.getTextChannels() : category.getVoiceChannels()));
+        super(category.getGuild(), type, getChannelsOfType(category, type));
         this.category = category;
     }
 
@@ -80,5 +79,20 @@ public class CategoryOrderAction<T extends Channel> extends ChannelOrderAction<T
         Checks.check(entity.getParent() != null, "Provided channel must be nested in a Category!");
         Checks.check(entity.getParent().equals(getCategory()), "Provided channel's Category is not this Category!");
         Checks.check(orderList.contains(entity), "Provided channel is not in the list of orderable channels!");
+    }
+
+    private static Collection getChannelsOfType(Category category, ChannelType type)
+    {
+        // In the event Discord allows a new channel type to be nested in categories,
+        // supporting them via CategoryOrderAction is just a matter of adding a new case here.
+        switch(type)
+        {
+            case TEXT:
+                return category.getTextChannels();
+            case VOICE:
+                return category.getVoiceChannels();
+            default:
+                throw new IllegalArgumentException("Cannot order category with specified channel type " + type);
+        }
     }
 }
