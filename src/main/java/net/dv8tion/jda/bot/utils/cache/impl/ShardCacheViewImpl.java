@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,18 +18,16 @@ package net.dv8tion.jda.bot.utils.cache.impl;
 import gnu.trove.impl.sync.TSynchronizedIntObjectMap;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
+import net.dv8tion.jda.bot.utils.cache.ShardCacheView;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.cache.CacheView;
+
+import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
-import net.dv8tion.jda.bot.utils.cache.ShardCacheView;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.ISnowflake;
-import net.dv8tion.jda.core.utils.Checks;
-import net.dv8tion.jda.core.utils.cache.CacheView;
-import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
-import net.dv8tion.jda.core.utils.cache.impl.UnifiedCacheViewImpl;
 
 public class ShardCacheViewImpl implements ShardCacheView
 {
@@ -124,7 +122,7 @@ public class ShardCacheViewImpl implements ShardCacheView
     @Override
     public Iterator<JDA> iterator()
     {
-        return elements.valueCollection().iterator();
+        return asList().iterator();
     }
 
     @Override

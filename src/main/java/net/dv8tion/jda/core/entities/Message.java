@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1064,7 +1064,7 @@ public interface Message extends ISnowflake, Formattable
         /**
          * Represents a mention for a {@link net.dv8tion.jda.core.entities.Emote Emote}
          */
-        EMOTE("<:([a-zA-Z0-9_]+):([0-9]+)>"),
+        EMOTE("<a?:([a-zA-Z0-9_]+):([0-9]+)>"),
         /**
          * Represents a mention for all active users, literal {@code @here}
          */

@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,13 @@ import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
-import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.SessionReconnectQueue;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.ProvidingSessionController;
+import net.dv8tion.jda.core.utils.SessionController;
+import net.dv8tion.jda.core.utils.SessionControllerAdapter;
 import okhttp3.OkHttpClient;
 
 import javax.security.auth.login.LoginException;
@@ -49,6 +51,7 @@ public class JDABuilder
 
     protected ConcurrentMap<String, String> contextMap = null;
     protected boolean enableContext = true;
+    protected SessionController controller = null;
     protected SessionReconnectQueue reconnectQueue = null;
     protected ShardedRateLimiter shardRateLimiter = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
@@ -143,7 +146,12 @@ public class JDABuilder
      *         {@link net.dv8tion.jda.core.requests.SessionReconnectQueue SessionReconnectQueue} to use
      *
      * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @deprecated
+     *         This system has been completely moved into a new central object {@link net.dv8tion.jda.core.utils.SessionController SessionController}.
+     *         <br>Use {@link #setSessionController(SessionController)} instead!
      */
+    @Deprecated
     public JDABuilder setReconnectQueue(SessionReconnectQueue queue)
     {
         this.reconnectQueue = queue;
@@ -170,7 +178,12 @@ public class JDABuilder
      *         ShardedRateLimiter used to keep track of cross-session rate limits
      *
      * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @deprecated
+     *         This system has been completely moved into a new central object {@link net.dv8tion.jda.core.utils.SessionController SessionController}.
+     *         <br>Use {@link #setSessionController(SessionController)} instead!
      */
+    @Deprecated
     public JDABuilder setShardedRateLimiter(ShardedRateLimiter rateLimiter)
     {
         if (accountType != AccountType.BOT)
@@ -558,6 +571,7 @@ public class JDABuilder
      * @return The JDABuilder instance. Useful for chaining.
      *
      * @see    net.dv8tion.jda.core.JDA#getShardInfo() JDA.getShardInfo()
+     * @see    net.dv8tion.jda.bot.sharding.ShardManager ShardManager
      */
     public JDABuilder useSharding(int shardId, int shardTotal)
     {
@@ -567,6 +581,30 @@ public class JDABuilder
         Checks.check(shardId < shardTotal,
             "The shard ID must be lower than the shardTotal! Shard IDs are 0-based.");
         shardInfo = new JDA.ShardInfo(shardId, shardTotal);
+        return this;
+    }
+
+    /**
+     * Sets the {@link net.dv8tion.jda.core.utils.SessionController SessionController}
+     * for this JDABuilder instance. This can be used to sync behaviour and state between shards
+     * of a bot and should be one and the same instance on all builders for the shards.
+     * <br>When {@link #useSharding(int, int)} is enabled, this is set by default.
+     *
+     * <p>When set, this allows the builder to build shards with respect to the login ratelimit automatically.
+     *
+     * <p><b>Setting this disables the {@link #setShardedRateLimiter(ShardedRateLimiter)} and {@link #setReconnectQueue(net.dv8tion.jda.core.requests.SessionReconnectQueue)}
+     * settings.</b>
+     *
+     * @param  controller
+     *         The {@link net.dv8tion.jda.core.utils.SessionController SessionController} to use
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @see    net.dv8tion.jda.core.utils.SessionControllerAdapter SessionControllerAdapter
+     */
+    public JDABuilder setSessionController(SessionController controller)
+    {
+        this.controller = controller;
         return this;
     }
 
@@ -586,17 +624,23 @@ public class JDABuilder
      *         If the provided token is invalid.
      * @throws IllegalArgumentException
      *         If the provided token is empty or null.
-     * @throws RateLimitedException
-     *         If we are being Rate limited.
      *
      * @return A {@link net.dv8tion.jda.core.JDA} instance that has started the login process. It is unknown as
      *         to whether or not loading has finished when this returns.
      */
-    public JDA buildAsync() throws LoginException, IllegalArgumentException, RateLimitedException
+    public JDA buildAsync() throws LoginException
     {
         OkHttpClient.Builder httpClientBuilder = this.httpClientBuilder == null ? new OkHttpClient.Builder() : this.httpClientBuilder;
         WebSocketFactory wsFactory = this.wsFactory == null ? new WebSocketFactory() : this.wsFactory;
-        JDAImpl jda = new JDAImpl(accountType, token, httpClientBuilder, wsFactory, shardRateLimiter, autoReconnect, enableVoice, enableShutdownHook,
+
+        if (controller == null)
+        {
+            if (reconnectQueue != null || shardRateLimiter != null)
+                controller = new ProvidingSessionController(reconnectQueue, shardRateLimiter);
+            else if (shardInfo != null)
+                controller = new SessionControllerAdapter();
+        }
+        JDAImpl jda = new JDAImpl(accountType, token, controller, httpClientBuilder, wsFactory, autoReconnect, enableVoice, enableShutdownHook,
                 enableBulkDeleteSplitting, requestTimeoutRetry, enableContext, corePoolSize, maxReconnectDelay, contextMap);
 
         if (eventManager != null)
@@ -608,14 +652,14 @@ public class JDABuilder
         listeners.forEach(jda::addEventListener);
         jda.setStatus(JDA.Status.INITIALIZED);  //This is already set by JDA internally, but this is to make sure the listeners catch it.
 
-        String gateway = jda.getGateway().complete();
+        String gateway = jda.getGateway();
 
         // Set the presence information before connecting to have the correct information ready when sending IDENTIFY
         ((PresenceImpl) jda.getPresence())
                 .setCacheGame(game)
                 .setCacheIdle(idle)
                 .setCacheStatus(status);
-        jda.login(gateway, shardInfo, reconnectQueue);
+        jda.login(gateway, shardInfo);
         return jda;
     }
 
@@ -647,12 +691,10 @@ public class JDABuilder
      * @throws InterruptedException
      *         If an interrupt request is received while waiting for {@link net.dv8tion.jda.core.JDA} to finish logging in.
      *         This would most likely be caused by a JVM shutdown request.
-     * @throws RateLimitedException
-     *         If we are being Rate limited.
      *
      * @return A {@link net.dv8tion.jda.core.JDA} Object that is <b>guaranteed</b> to be logged in and finished loading.
      */
-    public JDA buildBlocking(JDA.Status status) throws LoginException, IllegalArgumentException, InterruptedException, RateLimitedException
+    public JDA buildBlocking(JDA.Status status) throws LoginException, InterruptedException
     {
         Checks.notNull(status, "Status");
         Checks.check(status.isInit(), "Cannot await the status %s as it is not part of the login cycle!", status);
@@ -680,12 +722,10 @@ public class JDABuilder
      * @throws InterruptedException
      *         If an interrupt request is received while waiting for {@link net.dv8tion.jda.core.JDA} to finish logging in.
      *         This would most likely be caused by a JVM shutdown request.
-     * @throws RateLimitedException
-     *         If we are being Rate limited.
      *
      * @return A {@link net.dv8tion.jda.core.JDA} Object that is <b>guaranteed</b> to be logged in and finished loading.
      */
-    public JDA buildBlocking() throws LoginException, IllegalArgumentException, InterruptedException, RateLimitedException
+    public JDA buildBlocking() throws LoginException, InterruptedException
     {
         return buildBlocking(Status.CONNECTED);
     }

@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.SessionController;
 import okhttp3.OkHttpClient;
 
 import javax.security.auth.login.LoginException;
@@ -46,6 +47,7 @@ import java.util.stream.Collectors;
 public class DefaultShardManagerBuilder
 {
     protected final List<Object> listeners = new ArrayList<>();
+    protected SessionController sessionController = null;
     protected IntFunction<ConcurrentMap<String, String>> contextProvider = null;
     protected boolean enableContext = true;
     protected boolean enableBulkDeleteSplitting = true;
@@ -76,6 +78,26 @@ public class DefaultShardManagerBuilder
      * before calling {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder#build() build()}.
      */
     public DefaultShardManagerBuilder() {}
+
+    /**
+     * Sets the {@link net.dv8tion.jda.core.utils.SessionController SessionController}
+     * for the resulting ShardManager instance. This can be used to sync behaviour and state between shards
+     * of a bot and should be one and the same instance on all builders for the shards.
+     *
+     * <p><b>Setting this disables the {@link #setShardedRateLimiter(ShardedRateLimiter)} settings.</b>
+     *
+     * @param  controller
+     *         The {@link net.dv8tion.jda.core.utils.SessionController SessionController} to use
+     *
+     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     *
+     * @see    net.dv8tion.jda.core.utils.SessionControllerAdapter SessionControllerAdapter
+     */
+    public DefaultShardManagerBuilder setSessionController(SessionController controller)
+    {
+        this.sessionController = controller;
+        return this;
+    }
 
     /**
      * Sets the {@link org.slf4j.MDC MDC} mappings provider to use in JDA.
@@ -542,6 +564,7 @@ public class DefaultShardManagerBuilder
      *
      * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
      */
+    @Deprecated
     public DefaultShardManagerBuilder setShardedRateLimiter(ShardedRateLimiter shardedRateLimiter)
     {
         Checks.notNull(shardedRateLimiter, "shardedRateLimiter");
@@ -624,7 +647,8 @@ public class DefaultShardManagerBuilder
     public DefaultShardManagerBuilder setShards(Collection<Integer> shardIds)
     {
         Checks.notNull(shardIds, "shardIds");
-        for (Integer id : shards) {
+        for (Integer id : shardIds)
+        {
             Checks.notNegative(id, "minShardId");
             Checks.check(id < this.shardsTotal, "maxShardId must be lower than shardsTotal");
         }
@@ -735,8 +759,11 @@ public class DefaultShardManagerBuilder
      */
     public ShardManager build() throws LoginException, IllegalArgumentException
     {
-        final DefaultShardManager manager = new DefaultShardManager(this.shardsTotal, this.shards, this.listeners, this.token, this.eventManager,
-            this.audioSendFactory, this.gameProvider, this.statusProvider, this.httpClientBuilder, this.wsFactory, this.threadFactory, this.shardedRateLimiter,
+        final DefaultShardManager manager = new DefaultShardManager(
+            this.shardsTotal, this.shards, this.sessionController,
+            this.listeners, this.token, this.eventManager,
+            this.audioSendFactory, this.gameProvider, this.statusProvider,
+            this.httpClientBuilder, this.wsFactory, this.threadFactory, this.shardedRateLimiter,
             this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting,
             this.autoReconnect, this.idleProvider, this.retryOnTimeout, this.useShutdownNow, this.enableContext, this.contextProvider);
 

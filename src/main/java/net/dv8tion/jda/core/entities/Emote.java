@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -136,6 +136,15 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
     EmoteManagerUpdatable getManagerUpdatable();
 
     /**
+     * Whether or not this Emote is animated.
+     *
+     * <p>Animated Emotes are available to Discord Nitro users as well as Bot accounts.
+     *
+     * @return Whether the Emote is animated or not.
+     */
+    boolean isAnimated();
+
+    /**
      * A String representation of the URL which leads to image displayed within the official Discord&trade; client
      * when this Emote is used
      *
@@ -143,7 +152,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      */
     default String getImageUrl()
     {
-        return "https://cdn.discordapp.com/emojis/" + getId() + ".png";
+        return "https://cdn.discordapp.com/emojis/" + getId() + (isAnimated() ? ".gif" : ".png");
     }
 
     /**
@@ -157,7 +166,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
     @Override
     default String getAsMention()
     {
-        return "<:" + getName() + ":" + getIdLong() + ">";
+        return (isAnimated() ? "<a:" : "<:") + getName() + ":" + getIdLong() + ">";
     }
 
     /**

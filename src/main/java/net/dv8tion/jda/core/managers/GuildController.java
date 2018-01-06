@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -2083,6 +2083,11 @@ public class GuildController
      * <br>Passing the roles field will be ignored unless the application is whitelisted as an emoji provider.
      * For more information and to request whitelisting please contact {@code support@discordapp.com}
      *
+     * <p>Note that a guild is limited to 50 normal and 50 animated emotes by default.
+     * Some guilds are able to add additional emotes beyond this limitation due to the
+     * {@code MORE_EMOJI} feature (see {@link net.dv8tion.jda.core.entities.Guild#getFeatures() Guild.getFeatures()}).
+     * <br>Due to simplicity we do not check for these limits.
+     *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
      * <ul>
@@ -2107,7 +2112,6 @@ public class GuildController
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction} - Type: {@link net.dv8tion.jda.core.entities.Emote Emote}
-     *         <br>The newly created Emote
      */
     @CheckReturnValue
     public AuditableRestAction<Emote> createEmote(String name, Icon icon, Role... roles)
@@ -2117,9 +2121,6 @@ public class GuildController
         Checks.notBlank(name, "Emote name");
         Checks.notNull(icon, "Emote icon");
         Checks.notNull(roles, "Roles");
-
-//        if (getJDA().getAccountType() != AccountType.CLIENT)
-//            throw new AccountTypeException(AccountType.CLIENT);
 
         JSONObject body = new JSONObject();
         body.put("name", name);
@@ -2140,14 +2141,18 @@ public class GuildController
                 }
                 JSONObject obj = response.getObject();
                 final long id = obj.getLong("id");
-                final String name = obj.getString("name");
+                final String name = obj.optString("name", null);
                 final boolean managed = Helpers.optBoolean(obj, "managed");
-                EmoteImpl emote = new EmoteImpl(id, guild).setName(name).setManaged(managed);
+                final boolean animated = obj.optBoolean("animated");
+                EmoteImpl emote = new EmoteImpl(id, guild).setName(name).setAnimated(animated).setManaged(managed);
 
-                JSONArray rolesArr = obj.getJSONArray("roles");
-                Set<Role> roleSet = emote.getRoleSet();
-                for (int i = 0; i < rolesArr.length(); i++)
-                    roleSet.add(guild.getRoleById(rolesArr.getString(i)));
+                JSONArray rolesArr = obj.optJSONArray("roles");
+                if (rolesArr != null)
+                {
+                    Set<Role> roleSet = emote.getRoleSet();
+                    for (int i = 0; i < rolesArr.length(); i++)
+                        roleSet.add(guild.getRoleById(rolesArr.getString(i)));
+                }
                 request.onSuccess(emote);
             }
         };

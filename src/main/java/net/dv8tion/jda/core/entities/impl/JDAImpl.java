@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import net.dv8tion.jda.bot.entities.impl.JDABotImpl;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.ShardedRateLimiter;
 import net.dv8tion.jda.core.audio.AudioWebSocket;
 import net.dv8tion.jda.core.audio.factory.DefaultSendFactory;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
@@ -38,9 +37,7 @@ import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.requests.restaction.GuildAction;
-import net.dv8tion.jda.core.utils.Checks;
-import net.dv8tion.jda.core.utils.JDALogger;
-import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.core.utils.*;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.core.utils.cache.impl.AbstractCacheView;
@@ -88,6 +85,8 @@ public class JDAImpl implements JDA
     protected final GuildLock guildLock = new GuildLock(this);
     protected final Object akapLock = new Object();
 
+    protected final SessionController sessionController;
+
     protected WebSocketClient client;
     protected Requester requester;
     protected IEventManager eventManager = new InterfacedEventManager();
@@ -104,9 +103,9 @@ public class JDAImpl implements JDA
     protected String token;
     protected String gatewayUrl;
 
-    public JDAImpl(AccountType accountType, String token, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory, ShardedRateLimiter rateLimiter,
-                   boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled,
-                   boolean retryOnTimeout, boolean enableMDC, int corePoolSize, int maxReconnectDelay, ConcurrentMap<String, String> contextMap)
+    public JDAImpl(AccountType accountType, String token, SessionController controller, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory,
+                   boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled, boolean retryOnTimeout, boolean enableMDC,
+                   int corePoolSize, int maxReconnectDelay, ConcurrentMap<String, String> contextMap)
     {
         this.accountType = accountType;
         this.setToken(token);
@@ -118,20 +117,26 @@ public class JDAImpl implements JDA
         this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
         this.pool = new ScheduledThreadPoolExecutor(corePoolSize, new JDAThreadFactory());
         this.maxReconnectDelay = maxReconnectDelay;
+        this.sessionController = controller == null ? new SessionControllerAdapter() : controller;
         if (enableMDC)
             this.contextMap = contextMap == null ? new ConcurrentHashMap<>() : contextMap;
         else
             this.contextMap = null;
 
         this.presence = new PresenceImpl(this);
-        this.requester = new Requester(this, rateLimiter);
+        this.requester = new Requester(this);
         this.requester.setRetryOnTimeout(retryOnTimeout);
 
         this.jdaClient = accountType == AccountType.CLIENT ? new JDAClientImpl(this) : null;
         this.jdaBot = accountType == AccountType.BOT ? new JDABotImpl(this) : null;
     }
 
-    public int login(String gatewayUrl, ShardInfo shardInfo, SessionReconnectQueue reconnectQueue) throws LoginException, RateLimitedException
+    public SessionController getSessionController()
+    {
+        return sessionController;
+    }
+
+    public int login(String gatewayUrl, ShardInfo shardInfo) throws LoginException
     {
         this.gatewayUrl = gatewayUrl;
         this.shardInfo = shardInfo;
@@ -156,7 +161,7 @@ public class JDAImpl implements JDA
         verifyToken();
         LOG.info("Login Successful!");
 
-        client = new WebSocketClient(this, reconnectQueue);
+        client = new WebSocketClient(this);
         // remove our MDC metadata when we exit our code
         if (previousContext != null)
             previousContext.forEach(MDC::put);
@@ -167,69 +172,16 @@ public class JDAImpl implements JDA
         return shardInfo == null ? -1 : shardInfo.getShardTotal();
     }
 
-    public RestAction<String> getGateway()
+    public String getGateway()
     {
-        return new RestAction<String>(this, Route.Misc.GATEWAY.compile())
-        {
-            @Override
-            protected void handleResponse(Response response, Request<String> request)
-            {
-                try
-                {
-                    if (response.isOk())
-                        request.onSuccess(response.getObject().getString("url"));
-                    else
-                        request.onFailure(new Exception("Failed to get gateway url"));
-                }
-                catch (Exception e)
-                {
-                    request.onFailure(e);
-                }
-            }
-        };
+        return getSessionController().getGateway(this);
     }
 
 
     // This method also checks for a valid bot token as it is required to get the recommended shard count.
-    public RestAction<Pair<String, Integer>> getGatewayBot() throws LoginException
+    public Pair<String, Integer> getGatewayBot()
     {
-        AccountTypeException.check(accountType, AccountType.BOT);
-        return new RestAction<Pair<String, Integer>>(this, Route.Misc.GATEWAY_BOT.compile())
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Pair<String, Integer>> request)
-            {
-                try
-                {
-                    if (response.isOk())
-                    {
-                        JSONObject object = response.getObject();
-
-                        String url = object.getString("url");
-                        int shards = object.getInt("shards");
-
-                        request.onSuccess(Pair.of(url, shards));
-                    }
-                    else if (response.isRateLimit())
-                    {
-                        request.onFailure(new RateLimitedException(request.getRoute(), response.retryAfter));
-                    }
-                    else if (response.code == 401)
-                    {
-                        verifyToken(true);
-                    }
-                    else
-                    {
-                        request.onFailure(new LoginException("When verifying the authenticity of the provided token, Discord returned an unknown response:\n" +
-                            response.toString()));
-                    }
-                }
-                catch (Exception e)
-                {
-                    request.onFailure(e);
-                }
-            }
-        };
+        return getSessionController().getGatewayBot(this);
     }
 
     public ConcurrentMap<String, String> getContextMap()
@@ -257,13 +209,13 @@ public class JDAImpl implements JDA
             this.token = token;
     }
 
-    public void verifyToken() throws LoginException, RateLimitedException
+    public void verifyToken() throws LoginException
     {
         this.verifyToken(false);
     }
 
     // @param alreadyFailed If has already been a failed attempt with the current configuration
-    public void verifyToken(boolean alreadyFailed) throws LoginException, RateLimitedException
+    public void verifyToken(boolean alreadyFailed) throws LoginException
     {
 
         RestAction<JSONObject> login = new RestAction<JSONObject>(this, Route.Self.GET_SELF.compile())
@@ -306,12 +258,12 @@ public class JDAImpl implements JDA
         if (getAccountType() == AccountType.BOT)
         {
             token = token.substring("Bot ".length());
-            requester = new Requester(this, AccountType.CLIENT, null);
+            requester = new Requester(this, AccountType.CLIENT);
         }
         else    //If we attempted to login as a Client, prepend the "Bot " prefix and set the Requester to be a Bot
         {
             token = "Bot " + token;
-            requester = new Requester(this, AccountType.BOT, null);
+            requester = new Requester(this, AccountType.BOT);
         }
 
         userResponse = checkToken(login);
@@ -338,12 +290,12 @@ public class JDAImpl implements JDA
         }
     }
 
-    private JSONObject checkToken(RestAction<JSONObject> login) throws RateLimitedException, LoginException
+    private JSONObject checkToken(RestAction<JSONObject> login) throws LoginException
     {
         JSONObject userResponse;
         try
         {
-            userResponse = login.complete(false);
+            userResponse = login.complete();
         }
         catch (RuntimeException e)
         {

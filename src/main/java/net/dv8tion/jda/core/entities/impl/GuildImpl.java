@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
@@ -310,6 +311,42 @@ public class GuildImpl implements Guild
                 {
                     JSONObject user = bannedArr.getJSONObject(i).getJSONObject("user");
                     bans.add(builder.createFakeUser(user, false));
+                }
+                request.onSuccess(Collections.unmodifiableList(bans));
+            }
+        };
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<List<Ban>> getBanList()
+    {
+        if (!isAvailable())
+            throw new GuildUnavailableException();
+        if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS))
+            throw new InsufficientPermissionException(Permission.BAN_MEMBERS);
+
+        Route.CompiledRoute route = Route.Guilds.GET_BANS.compile(getId());
+        return new RestAction<List<Ban>>(getJDA(), route)
+        {
+            @Override
+            protected void handleResponse(Response response, Request<List<Ban>> request)
+            {
+                if (!response.isOk())
+                {
+                    request.onFailure(response);
+                    return;
+                }
+
+                EntityBuilder builder = api.getEntityBuilder();
+                List<Ban> bans = new LinkedList<>();
+                JSONArray bannedArr = response.getArray();
+
+                for (int i = 0; i < bannedArr.length(); i++)
+                {
+                    final JSONObject object = bannedArr.getJSONObject(i);
+                    JSONObject user = object.getJSONObject("user");
+                    bans.add(new Ban(builder.createFakeUser(user, false), object.optString("reason", null)));
                 }
                 request.onSuccess(Collections.unmodifiableList(bans));
             }

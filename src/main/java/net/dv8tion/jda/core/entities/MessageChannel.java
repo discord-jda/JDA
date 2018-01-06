@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -2049,9 +2049,8 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.noWhitespace(messageId, "Message ID");
         Checks.noWhitespace(unicode, "Emoji");
 
-        final String selfId = getJDA().getSelfUser().getId();
         final String code = MiscUtil.encodeUTF8(unicode);
-        final Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, code, selfId);
+        final Route.CompiledRoute route = Route.Messages.REMOVE_OWN_REACTION.compile(getId(), messageId, code);
         return new RestAction<Void>(getJDA(), route)
         {
             @Override
