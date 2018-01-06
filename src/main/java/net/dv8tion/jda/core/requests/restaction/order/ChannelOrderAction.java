@@ -63,9 +63,10 @@ public class ChannelOrderAction<T extends Channel> extends OrderAction<T, Channe
      * @throws java.lang.IllegalArgumentException
      *         If one of the specified Guild has no channels of the ChannelType.
      */
+    @SuppressWarnings("unchecked")
     public ChannelOrderAction(Guild guild, ChannelType type)
     {
-        this(guild, type, getChannelsOfType(guild, type));
+        this(guild, type, (Collection<T>) getChannelsOfType(guild, type));
     }
 
     /**
@@ -94,12 +95,12 @@ public class ChannelOrderAction<T extends Channel> extends OrderAction<T, Channe
     {
         super(guild.getJDA(), Route.Guilds.MODIFY_CHANNELS.compile(guild.getId()));
 
-        // We don't check whether or not the Guild contains all the channels
-        // here because this is performed in OrderAction#validateInput(T)
         Checks.notNull(channels, "Channels to order");
         Checks.notEmpty(channels, "Channels to order");
+        Checks.check(channels.stream().allMatch(c -> guild.equals(c.getGuild())),
+            "One or more channels are not from the correct guild");
         Checks.check(channels.stream().allMatch(c -> c.getType().equals(type)),
-            "One or more channels did not match the expected type of "+type.name());
+            "One or more channels did not match the expected type of " + type.name());
 
         this.guild = guild;
         this.type = type;
@@ -153,7 +154,7 @@ public class ChannelOrderAction<T extends Channel> extends OrderAction<T, Channe
         Checks.check(orderList.contains(entity), "Provided channel is not in the list of orderable channels!");
     }
 
-    private static Collection getChannelsOfType(Guild guild, ChannelType type)
+    private static Collection<? extends Channel> getChannelsOfType(Guild guild, ChannelType type)
     {
         switch(type)
         {
