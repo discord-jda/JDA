@@ -19,6 +19,8 @@ package net.dv8tion.jda.core.utils;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.utils.tuple.Pair;
 
+import javax.annotation.Nonnull;
+
 /**
  * Controls states and behaviour of one or multiple {@link net.dv8tion.jda.core.JDA JDA} instances.
  * <br>One instance of this should be used when sharding a bot account in order to keep track of session information
@@ -128,6 +130,7 @@ public interface SessionController
      *
      * @return The gateway endpoint
      */
+    @Nonnull
     String getGateway(JDA api);
 
     /**
@@ -142,6 +145,7 @@ public interface SessionController
      *
      * @see    #getGateway(net.dv8tion.jda.core.JDA)
      */
+    @Nonnull
     Pair<String, Integer> getGatewayBot(JDA api);
 
     /**
@@ -164,6 +168,7 @@ public interface SessionController
          *
          * @return The JDA instance
          */
+        @Nonnull
         JDA getJDA();
 
         /**

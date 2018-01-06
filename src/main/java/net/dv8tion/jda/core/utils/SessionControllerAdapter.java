@@ -26,6 +26,7 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.tuple.Pair;
 import org.json.JSONObject;
 
+import javax.annotation.Nonnull;
 import javax.security.auth.login.LoginException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -71,6 +72,7 @@ public class SessionControllerAdapter implements SessionController
         globalRatelimit.set(ratelimit);
     }
 
+    @Nonnull
     @Override
     public String getGateway(JDA api)
     {
@@ -88,6 +90,7 @@ public class SessionControllerAdapter implements SessionController
         }.complete();
     }
 
+    @Nonnull
     @Override
     public Pair<String, Integer> getGatewayBot(JDA api)
     {

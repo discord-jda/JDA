@@ -103,7 +103,6 @@ public class JDAImpl implements JDA
     protected long responseTotal;
     protected long ping = -1;
     protected String token;
-    protected String gatewayUrl;
 
     public JDAImpl(AccountType accountType, String token, @Nullable SessionController controller, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory,
                    boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled, boolean retryOnTimeout, boolean enableMDC,
@@ -138,9 +137,8 @@ public class JDAImpl implements JDA
         return sessionController;
     }
 
-    public int login(String gatewayUrl, @Nullable ShardInfo shardInfo) throws LoginException
+    public int login(@Nullable String gatewayUrl, @Nullable ShardInfo shardInfo) throws LoginException
     {
-        this.gatewayUrl = gatewayUrl;
         this.shardInfo = shardInfo;
 
         setStatus(Status.LOGGING_IN);
@@ -163,7 +161,7 @@ public class JDAImpl implements JDA
         verifyToken();
         LOG.info("Login Successful!");
 
-        client = new WebSocketClient(this);
+        client = new WebSocketClient(this, gatewayUrl);
         // remove our MDC metadata when we exit our code
         if (previousContext != null)
             previousContext.forEach(MDC::put);
@@ -798,10 +796,5 @@ public class JDAImpl implements JDA
             }
         }
         return akap;
-    }
-
-    public String getGatewayUrl()
-    {
-        return gatewayUrl;
     }
 }
