@@ -18,6 +18,7 @@ package net.dv8tion.jda.core;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+@Deprecated
 public class ShardedRateLimiter
 {
     protected final AtomicLong globalRatelimit = new AtomicLong(Long.MIN_VALUE);

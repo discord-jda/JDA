@@ -41,6 +41,7 @@ import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.core.utils.SessionController;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -90,7 +91,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected final LinkedList<String> chunkSyncQueue = new LinkedList<>();
     protected final LinkedList<String> ratelimitQueue = new LinkedList<>();
-    protected final SessionReconnectQueue reconnectQueue;
     protected volatile Thread ratelimitThread = null;
     protected volatile long ratelimitResetTime;
     protected volatile int messagesSent;
@@ -106,15 +106,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected boolean firstInit = true;
     protected boolean processingReady = true;
 
-    public WebSocketClient(JDAImpl api, SessionReconnectQueue reconnectQueue)
+    protected volatile ConnectNode connectNode = null;
+
+    public WebSocketClient(JDAImpl api)
     {
         this.api = api;
         this.shardInfo = api.getShardInfo();
         this.shouldReconnect = api.isAutoReconnect();
-        this.reconnectQueue = reconnectQueue;
-        setupHandlers();
-        setupSendingThread();
-        connect();
+        this.connectNode = new StartingNode();
+        api.getSessionController().appendSession(connectNode);
     }
 
     public JDA getJDA()
@@ -416,12 +416,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         socket.sendClose(code, reason);
     }
 
-    public void shutdown()
+    public synchronized void shutdown()
     {
         shutdown = true;
         shouldReconnect = false;
-        if (reconnectQueue != null) // remove if in queue
-            reconnectQueue.removeSession(this);
+        if (connectNode != null)
+            api.getSessionController().removeSession(connectNode);
         close(1000, "Shutting down");
     }
 
@@ -429,7 +429,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         ### Start Internal methods ###
      */
 
-    protected void connect()
+    protected synchronized void connect()
     {
         if (api.getStatus() != JDA.Status.ATTEMPTING_TO_RECONNECT)
             api.setStatus(JDA.Status.CONNECTING_TO_WEBSOCKET);
@@ -451,6 +451,19 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             //Completely fail here. We couldn't make the connection.
             throw new IllegalStateException(e);
+        }
+    }
+
+    protected String getGateway()
+    {
+        try
+        {
+            return api.getSessionController().getGateway(api)
+                + "?encoding=json&compress=zlib-stream&v=" + DISCORD_GATEWAY_VERSION;
+        }
+        catch (Exception ex)
+        {
+            return null;
         }
     }
 
@@ -546,9 +559,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             if (isInvalidate)
                 invalidate(); // 1000 means our session is dropped so we cannot resume
             api.getEventManager().handle(new DisconnectEvent(api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now()));
-            if (sessionId == null && reconnectQueue != null)
+            if (sessionId == null)
                 queueReconnect();
-            else
+            else // if resume is possible
                 reconnect();
         }
     }
@@ -559,14 +572,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             LOG.warn("Got disconnected from WebSocket (Internet?!)... Appending session to reconnect queue");
         try
         {
-            api.setStatus(JDA.Status.RECONNECT_QUEUED);
-            reconnectQueue.appendSession(this);
+            this.api.setStatus(JDA.Status.RECONNECT_QUEUED);
+            this.connectNode = new ReconnectNode();
+            this.api.getSessionController().appendSession(connectNode);
         }
         catch (IllegalStateException ex)
         {
             LOG.error("Reconnect queue rejected session. Shutting down...");
-            api.setStatus(JDA.Status.SHUTDOWN);
-            api.getEventManager().handle(
+            this.api.setStatus(JDA.Status.SHUTDOWN);
+            this.api.getEventManager().handle(
                 new ShutdownEvent(api, OffsetDateTime.now(), 1006));
         }
     }
@@ -587,6 +601,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
      */
     public void reconnect(boolean callFromQueue, boolean shouldHandleIdentify)
     {
+        if (callFromQueue && api.getContextMap() != null)
+            api.getContextMap().forEach(MDC::put);
         if (shutdown)
         {
             api.setStatus(JDA.Status.SHUTDOWN);
@@ -1392,4 +1408,58 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
+    protected abstract class ConnectNode implements SessionController.SessionConnectNode
+    {
+        @Override
+        public JDA getJDA()
+        {
+            return api;
+        }
+
+        @Override
+        public JDA.ShardInfo getShardInfo()
+        {
+            return api.getShardInfo();
+        }
+    }
+
+    protected class StartingNode extends ConnectNode
+    {
+        @Override
+        public boolean isReconnect()
+        {
+            return false;
+        }
+
+        @Override
+        public void run(boolean isLast) throws InterruptedException
+        {
+            if (shutdown)
+                return;
+            setupHandlers();
+            setupSendingThread();
+            connect();
+            while (!isLast && api.getStatus().ordinal() < JDA.Status.AWAITING_LOGIN_CONFIRMATION.ordinal())
+                Thread.sleep(50);
+        }
+    }
+
+    protected class ReconnectNode extends ConnectNode
+    {
+        @Override
+        public boolean isReconnect()
+        {
+            return true;
+        }
+
+        @Override
+        public void run(boolean isLast) throws InterruptedException
+        {
+            if (shutdown)
+                return;
+            reconnect(true, !isLast);
+            while (!isLast && api.getStatus().ordinal() < JDA.Status.AWAITING_LOGIN_CONFIRMATION.ordinal())
+                Thread.sleep(50);
+        }
+    }
 }

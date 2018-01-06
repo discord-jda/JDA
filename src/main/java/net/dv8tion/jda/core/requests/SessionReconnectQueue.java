@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.JDA;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+@Deprecated
 public class SessionReconnectQueue
 {
     public static final int RECONNECT_DELAY = WebSocketClient.IDENTIFY_DELAY * 1000;
@@ -39,14 +40,14 @@ public class SessionReconnectQueue
         this.reconnectQueue = reconnectQueue;
     }
 
-    protected void appendSession(final WebSocketClient client)
+    public void appendSession(final WebSocketClient client)
     {
         if (!reconnectQueue.offer(client))
             throw new IllegalStateException("Queue rejected session");
         runWorker();
     }
 
-    protected void removeSession(final WebSocketClient client)
+    public void removeSession(final WebSocketClient client)
     {
         reconnectQueue.remove(client);
     }
