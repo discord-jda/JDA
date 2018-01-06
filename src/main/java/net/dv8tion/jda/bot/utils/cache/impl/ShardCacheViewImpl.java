@@ -130,7 +130,7 @@ public class ShardCacheViewImpl implements ShardCacheView
     @Override
     public Iterator<JDA> iterator()
     {
-        return elements.valueCollection().iterator();
+        return asList().iterator();
     }
 
     @Override

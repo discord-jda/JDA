@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.core.requests.ratelimit;
 
-import net.dv8tion.jda.core.ShardedRateLimiter;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.requests.RateLimiter;
@@ -40,13 +39,11 @@ import java.util.concurrent.TimeUnit;
 
 public class BotRateLimiter extends RateLimiter
 {
-    protected final ShardedRateLimiter shardRateLimit;
     protected volatile Long timeOffset = null;
 
-    public BotRateLimiter(Requester requester, int poolSize, ShardedRateLimiter globalRatelimit)
+    public BotRateLimiter(Requester requester, int poolSize)
     {
         super(requester, poolSize);
-        this.shardRateLimit = globalRatelimit == null ? new ShardedRateLimiter() : globalRatelimit;
     }
 
     @Override
@@ -104,7 +101,7 @@ public class BotRateLimiter extends RateLimiter
                 else
                 {
                     //If it is global, lock down the threads.
-                    shardRateLimit.setGlobalRatelimit(getNow() + retryAfter);
+                    requester.getJDA().getSessionController().setGlobalRatelimit(getNow() + retryAfter);
                 }
 
                 return retryAfter;
@@ -249,14 +246,14 @@ public class BotRateLimiter extends RateLimiter
 
         Long getRateLimit()
         {
-            long gCooldown = shardRateLimit.getGlobalRatelimit();
+            long gCooldown = requester.getJDA().getSessionController().getGlobalRatelimit();
             if (gCooldown > 0) //Are we on global cooldown?
             {
                 long now = getNow();
                 if (now > gCooldown)   //Verify that we should still be on cooldown.
                 {
                     //If we are done cooling down, reset the globalCooldown and continue.
-                    shardRateLimit.setGlobalRatelimit(Long.MIN_VALUE);
+                    requester.getJDA().getSessionController().setGlobalRatelimit(Long.MIN_VALUE);
                 }
                 else
                 {

@@ -307,6 +307,7 @@ public class AudioWebSocket extends WebSocketAdapter
     @Override
     public void handleCallbackError(WebSocket websocket, Throwable cause)
     {
+        MDC.setContextMap(api.getContextMap());
         LOG.error("There was some audio websocket error", cause);
         api.getEventManager().handle(new ExceptionEvent(api, cause, true));
     }
@@ -338,6 +339,7 @@ public class AudioWebSocket extends WebSocketAdapter
     @Override
     public void onConnectError(WebSocket webSocket, WebSocketException e)
     {
+        MDC.setContextMap(api.getContextMap());
         LOG.warn("Failed to establish websocket connection: {} - {}\nClosing connection and attempting to reconnect.",
             e.getError(), e.getMessage());
         this.close(ConnectionStatus.ERROR_WEBSOCKET_UNABLE_TO_CONNECT);
