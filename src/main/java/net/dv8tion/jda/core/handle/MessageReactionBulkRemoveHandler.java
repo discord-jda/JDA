@@ -60,12 +60,6 @@ public class MessageReactionBulkRemoveHandler extends SocketHandler
                     new GroupMessageReactionRemoveAllEvent(
                             api, responseNumber,
                             messageId, (Group) channel));
-//                break;
-//            case PRIVATE:
-//                manager.handle(
-//                    new PrivateMessageReactionRemoveAllEvent(
-//                            api, responseNumber,
-//                            messageId, (PrivateChannel) channel));
         }
 
         manager.handle(

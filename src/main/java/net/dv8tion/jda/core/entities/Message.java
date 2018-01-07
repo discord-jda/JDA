@@ -319,35 +319,6 @@ public interface Message extends ISnowflake, Formattable
     String getContentDisplay();
 
     /**
-     * The textual content of this message in the format that would be shown to the Discord client. All
-     * {@link net.dv8tion.jda.core.entities.IMentionable IMentionable} entities will be resolved to the format
-     * shown by the Discord client instead of the {@literal <id>} format.
-     *
-     * <p>This includes resolving:
-     * <br>{@link net.dv8tion.jda.core.entities.User Users} / {@link net.dv8tion.jda.core.entities.Member Members}
-     * to their @Username/@Nickname format,
-     * <br>{@link net.dv8tion.jda.core.entities.TextChannel TextChannels} to their #ChannelName format,
-     * <br>{@link net.dv8tion.jda.core.entities.Role Roles} to their @RoleName format
-     * <br>{@link net.dv8tion.jda.core.entities.Emote Emotes} (not emojis!) to their {@code :name:} format.
-     *
-     * <p>If you want the actual Content (mentions as {@literal <@id>}), use {@link #getContentRaw()} instead
-     *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.core.entities.MessageType#DEFAULT MessageType.DEFAULT}
-     *
-     * @return Output of {@link #getContentDisplay()}
-     *
-     * @deprecated
-     *         You may use {@link #getContentDisplay()} instead.
-     *         <br>This method will be removed due to ambiguous meanings and major confusion for newer users.
-     */
-    @Deprecated
-    default String getContent()
-    {
-        return getContentDisplay();
-    }
-
-    /**
      * The raw textual content of this message. Does not resolve {@link net.dv8tion.jda.core.entities.IMentionable IMentionable}
      * entities like {@link #getContentDisplay()} does. This means that this is the completely raw textual content of the message
      * received from Discord and can contain mentions specified by
@@ -358,24 +329,6 @@ public interface Message extends ISnowflake, Formattable
     String getContentRaw();
 
     /**
-     * The raw textual content of this message. Does not resolve {@link net.dv8tion.jda.core.entities.IMentionable IMentionable}
-     * entities like {@link #getContentDisplay()} does. This means that this is the completely raw textual content of the message
-     * received from Discord and can contain mentions specified by
-     * <a href="https://discordapp.com/developers/docs/resources/channel#message-formatting" target="_blank">Discord's Message Formatting</a>.
-     *
-     * @return The raw textual content of the message, containing unresolved Discord message formatting.
-     *
-     * @deprecated
-     *         You may use {@link #getContentRaw()} instead.
-     *         <br>This method will be removed due to ambiguous meanings and major confusion for newer users.
-     */
-    @Deprecated
-    default String getRawContent()
-    {
-        return getContentRaw();
-    }
-
-    /**
      * Gets the textual content of this message using {@link #getContentDisplay()} and then strips it of all markdown characters
      * like {@literal *, **, __, ~~} that provide text formatting. Any characters that match these but are not being used
      * for formatting are escaped to prevent possible formatting.
@@ -383,23 +336,6 @@ public interface Message extends ISnowflake, Formattable
      * @return The textual content from {@link #getContentDisplay()} with all text formatting characters removed or escaped.
      */
     String getContentStripped();
-
-    /**
-     * Gets the textual content of this message using {@link #getContentDisplay()} and then strips it of all markdown characters
-     * like {@literal *, **, __, ~~} that provide text formatting. Any characters that match these but are not being used
-     * for formatting are escaped to prevent possible formatting.
-     *
-     * @return The textual content from {@link #getContentDisplay()} with all text formatting characters removed or escaped.
-     *
-     * @deprecated
-     *         You may use {@link #getContentStripped()} instead.
-     *         <br>This method will be removed due to ambiguous meanings and major confusion for newer users.
-     */
-    @Deprecated
-    default String getStrippedContent()
-    {
-        return getContentStripped();
-    }
 
     /**
      * Creates an immutable List of {@link net.dv8tion.jda.core.entities.Invite Invite} codes
