@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 public class AudioWebSocket extends WebSocketAdapter
 {
@@ -386,12 +387,12 @@ public class AudioWebSocket extends WebSocketAdapter
         }
     }
 
-    private void locked(Runnable runnable)
+    private void locked(Consumer<AudioManagerImpl> runnable)
     {
         AudioManagerImpl manager = (AudioManagerImpl) guild.getAudioManager();
         synchronized (manager.CONNECTION_LOCK)
         {
-            runnable.run();
+            runnable.accept(manager);
         }
     }
 
@@ -399,8 +400,10 @@ public class AudioWebSocket extends WebSocketAdapter
     {
         if (shutdown)
             return;
-        locked(() ->
+        locked((unused) ->
         {
+            if (shutdown)
+                return;
             connected = false;
             ready = false;
             reconnecting = true;
@@ -414,9 +417,10 @@ public class AudioWebSocket extends WebSocketAdapter
         //Makes sure we don't run this method again after the socket.close(1000) call fires onDisconnect
         if (shutdown)
             return;
-        AudioManagerImpl manager = (AudioManagerImpl) guild.getAudioManager();
-        locked(() ->
+        locked((manager) ->
         {
+            if (shutdown)
+                return;
             ConnectionStatus status = closeStatus;
             connected = false;
             ready = false;
