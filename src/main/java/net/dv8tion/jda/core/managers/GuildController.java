@@ -1954,49 +1954,6 @@ public class GuildController
     }
 
     /**
-     * Creates a new {@link net.dv8tion.jda.core.entities.Webhook Webhook} for the specified
-     * {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
-     *
-     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The webhook could not be created due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>We were removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @param  channel
-     *         The target TextChannel to attach a new Webhook to.
-     * @param  name
-     *         The default name for the new Webhook.
-     *
-     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         If you do not hold the permission {@link net.dv8tion.jda.core.Permission#MANAGE_WEBHOOKS Manage Webhooks}
-     *         on the selected channel
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If any of the provided arguments is {@code null}</li>
-     *             <li>If the provided {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} is not from this Guild</li>
-     *         </ul>
-     *
-     * @return A specific {@link net.dv8tion.jda.core.requests.restaction.WebhookAction WebhookAction}
-     *         <br>This action allows to set fields for the new webhook before creating it
-     *
-     * @deprecated
-     *         Use {@link net.dv8tion.jda.core.entities.TextChannel#createWebhook(String) TextChannel.createWebhook(String)} instead
-     */
-    @Deprecated
-    @CheckReturnValue
-    public WebhookAction createWebhook(TextChannel channel, String name)
-    {
-        Checks.notNull(channel, "Channel");
-        checkGuild(channel.getGuild(), "channel");
-        return channel.createWebhook(name);
-    }
-
-    /**
      * Creates a new {@link net.dv8tion.jda.core.entities.Role Role} in this Guild.
      * <br>It will be placed at the bottom (just over the Public Role) to avoid permission hierarchy conflicts.
      * <br>For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES} Permission

@@ -72,7 +72,6 @@ import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionRemov
 import net.dv8tion.jda.core.events.message.priv.*;
 import net.dv8tion.jda.core.events.message.priv.react.GenericPrivateMessageReactionEvent;
 import net.dv8tion.jda.core.events.message.priv.react.PrivateMessageReactionAddEvent;
-import net.dv8tion.jda.core.events.message.priv.react.PrivateMessageReactionRemoveAllEvent;
 import net.dv8tion.jda.core.events.message.priv.react.PrivateMessageReactionRemoveEvent;
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
@@ -154,8 +153,6 @@ public abstract class ListenerAdapter implements EventListener
     public void onPrivateMessageEmbed(PrivateMessageEmbedEvent event) {}
     public void onPrivateMessageReactionAdd(PrivateMessageReactionAddEvent event) {}
     public void onPrivateMessageReactionRemove(PrivateMessageReactionRemoveEvent event) {}
-    @Deprecated
-    public void onPrivateMessageReactionRemoveAll(PrivateMessageReactionRemoveAllEvent event) {}
 
     //Combined Message Events (Combines Guild and Private message into 1 event)
     public void onMessageReceived(MessageReceivedEvent event) {}
