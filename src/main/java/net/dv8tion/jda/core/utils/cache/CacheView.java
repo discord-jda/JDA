@@ -23,9 +23,7 @@ import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.cache.impl.AbstractCacheView;
 import net.dv8tion.jda.core.utils.cache.impl.UnifiedCacheViewImpl;
 
-import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
-import javax.annotation.concurrent.ThreadSafe;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -42,7 +40,6 @@ import java.util.stream.Stream;
  * @param  <T>
  *         The cache type
  */
-@ThreadSafe
 public interface CacheView<T> extends Iterable<T>
 {
     /**
@@ -74,7 +71,6 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @return The current size of this cache
      */
-    @Nonnegative
     long size();
 
     /**
@@ -321,7 +317,6 @@ public interface CacheView<T> extends Iterable<T>
      * @param <T>
      *        The type this should cache
      */
-    @ThreadSafe
     class SimpleCacheView<T> extends AbstractCacheView<T>
     {
         public SimpleCacheView(Function<T, String> nameMapper)

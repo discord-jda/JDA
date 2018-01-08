@@ -23,15 +23,12 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 
-import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
-import javax.annotation.concurrent.ThreadSafe;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@ThreadSafe
 public class ShardCacheViewImpl implements ShardCacheView
 {
     protected final TIntObjectMap<JDA> elements;
@@ -41,7 +38,7 @@ public class ShardCacheViewImpl implements ShardCacheView
         this.elements = new TSynchronizedIntObjectMap<>(new TIntObjectHashMap<JDA>(), new Object());
     }
 
-    public ShardCacheViewImpl(@Nonnegative int initialCapacity)
+    public ShardCacheViewImpl(int initialCapacity)
     {
         this.elements = new TSynchronizedIntObjectMap<>(new TIntObjectHashMap<JDA>(initialCapacity), new Object());
     }
@@ -139,7 +136,6 @@ public class ShardCacheViewImpl implements ShardCacheView
         return this.elements.get(id);
     }
 
-    @ThreadSafe
     public static class UnifiedShardCacheViewImpl implements ShardCacheView
     {
         protected final Supplier<Stream<ShardCacheView>> generator;

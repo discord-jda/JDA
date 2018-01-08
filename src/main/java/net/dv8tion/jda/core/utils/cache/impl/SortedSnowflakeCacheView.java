@@ -20,12 +20,10 @@ import net.dv8tion.jda.core.entities.ISnowflake;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.concurrent.ThreadSafe;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-@ThreadSafe
 public class SortedSnowflakeCacheView<T extends ISnowflake & Comparable<T>> extends SnowflakeCacheViewImpl<T>
 {
     protected static final int SPLIT_CHARACTERISTICS = Spliterator.IMMUTABLE | Spliterator.ORDERED | Spliterator.NONNULL;

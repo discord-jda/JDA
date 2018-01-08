@@ -23,13 +23,11 @@ import net.dv8tion.jda.core.utils.cache.MemberCacheView;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.concurrent.ThreadSafe;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-@ThreadSafe
 public class MemberCacheViewImpl extends AbstractCacheView<Member> implements MemberCacheView
 {
     public MemberCacheViewImpl()

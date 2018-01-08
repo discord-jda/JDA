@@ -20,10 +20,8 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.utils.MiscUtil;
 
-import javax.annotation.MatchesPattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.concurrent.ThreadSafe;
 import java.util.Collection;
 import java.util.List;
 
@@ -34,7 +32,6 @@ import java.util.List;
  * <p>This is done because Members do not implement {@link net.dv8tion.jda.core.entities.ISnowflake ISnowflake} as
  * they are not globally unique but only unique per {@link net.dv8tion.jda.core.entities.Guild Guild}!
  */
-@ThreadSafe
 public interface MemberCacheView extends CacheView<Member>
 {
     /**
@@ -59,7 +56,7 @@ public interface MemberCacheView extends CacheView<Member>
      *
      * @return Possibly-null member for the specified ID
      */
-    default Member getElementById(@MatchesPattern("\\d+") String id)
+    default Member getElementById(String id)
     {
         return getElementById(MiscUtil.parseSnowflake(id));
     }

@@ -20,14 +20,12 @@ import net.dv8tion.jda.core.utils.cache.CacheView;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.concurrent.ThreadSafe;
 
 /**
  * Read-only view on internal ShardManager cache of JDA instances.
  * <br>This can be useful to check information such as size without creating
  * an immutable snapshot first.
  */
-@ThreadSafe
 public interface ShardCacheView extends CacheView<JDA>
 {
     /**

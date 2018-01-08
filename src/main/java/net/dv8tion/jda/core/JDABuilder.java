@@ -30,7 +30,6 @@ import net.dv8tion.jda.core.utils.SessionController;
 import net.dv8tion.jda.core.utils.SessionControllerAdapter;
 import okhttp3.OkHttpClient;
 
-import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.security.auth.login.LoginException;
@@ -308,7 +307,7 @@ public class JDABuilder
      * @return The JDABuilder instance. Useful for chaining.
      */
     @Nonnull
-    public JDABuilder setCorePoolSize(@Nonnegative int size)
+    public JDABuilder setCorePoolSize(int size)
     {
         Checks.positive(size, "Core pool size");
         this.corePoolSize = size;
@@ -560,7 +559,7 @@ public class JDABuilder
      * @return The JDABuilder instance. Useful for chaining.
      */
     @Nonnull
-    public JDABuilder setMaxReconnectDelay(@Nonnegative int maxReconnectDelay)
+    public JDABuilder setMaxReconnectDelay(int maxReconnectDelay)
     {
         Checks.check(maxReconnectDelay >= 32, "Max reconnect delay must be 32 seconds or greater. You provided %d.", maxReconnectDelay);
 
@@ -598,7 +597,7 @@ public class JDABuilder
      * @see    net.dv8tion.jda.bot.sharding.ShardManager ShardManager
      */
     @Nonnull
-    public JDABuilder useSharding(@Nonnegative int shardId, @Nonnegative int shardTotal)
+    public JDABuilder useSharding(int shardId, int shardTotal)
     {
         AccountTypeException.check(accountType, AccountType.BOT);
         Checks.notNegative(shardId, "Shard ID");

@@ -32,7 +32,6 @@ import okhttp3.Response;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -97,7 +96,6 @@ import java.util.regex.Pattern;
  *
  * <p>More information on formatting syntax can be found in the {@link java.util.Formatter format syntax documentation}!
  */
-@Immutable
 public interface Message extends ISnowflake, Formattable
 {
     /**

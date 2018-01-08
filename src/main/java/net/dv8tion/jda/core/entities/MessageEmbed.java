@@ -25,7 +25,6 @@ import org.json.JSONObject;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNullableByDefault;
-import javax.annotation.concurrent.Immutable;
 import java.awt.Color;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -39,7 +38,6 @@ import java.util.Objects;
  * <a href="http://imgur.com/a/yOb5n" target="_blank">http://imgur.com/a/yOb5n</a>
  * <br>This class has many possibilities for null values, so be careful!
  */
-@Immutable
 @ParametersAreNullableByDefault
 public class MessageEmbed
 {

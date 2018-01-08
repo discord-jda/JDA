@@ -19,8 +19,6 @@ package net.dv8tion.jda.core.utils.cache;
 import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.utils.MiscUtil;
 
-import javax.annotation.MatchesPattern;
-
 /**
  * {@link net.dv8tion.jda.core.utils.cache.CacheView CacheView} implementation
  * specifically to view {@link net.dv8tion.jda.core.entities.ISnowflake ISnowflake} implementations.
@@ -49,7 +47,7 @@ public interface SnowflakeCacheView<T extends ISnowflake> extends CacheView<T>
      *
      * @return Possibly-null entity for the specified ID
      */
-    default T getElementById(@MatchesPattern("\\d+") String id)
+    default T getElementById(String id)
     {
         return getElementById(MiscUtil.parseSnowflake(id));
     }

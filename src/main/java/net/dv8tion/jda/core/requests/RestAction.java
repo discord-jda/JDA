@@ -32,7 +32,6 @@ import org.slf4j.Logger;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.concurrent.ThreadSafe;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
 
@@ -149,7 +148,6 @@ import java.util.function.Consumer;
  *
  * @since 3.0
  */
-@ThreadSafe
 public abstract class RestAction<T>
 {
     public static final Logger LOG = JDALogger.getLog(RestAction.class);

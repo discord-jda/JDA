@@ -26,13 +26,11 @@ import net.dv8tion.jda.core.utils.cache.UnifiedMemberCacheView;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.concurrent.ThreadSafe;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@ThreadSafe
 public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheView<T>
 {
     protected final Supplier<Stream<E>> generator;
@@ -103,7 +101,6 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
         return asList().iterator();
     }
 
-    @ThreadSafe
     public static class UnifiedSnowflakeCacheView<T extends ISnowflake>
         extends UnifiedCacheViewImpl<T, SnowflakeCacheView<T>> implements SnowflakeCacheView<T>
     {
@@ -122,7 +119,6 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
         }
     }
 
-    @ThreadSafe
     public static class UnifiedMemberCacheViewImpl
         extends UnifiedCacheViewImpl<Member, MemberCacheView> implements UnifiedMemberCacheView
     {

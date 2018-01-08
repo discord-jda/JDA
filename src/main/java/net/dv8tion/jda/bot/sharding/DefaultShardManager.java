@@ -38,7 +38,6 @@ import org.slf4j.Logger;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import javax.annotation.concurrent.ThreadSafe;
 import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.concurrent.*;
@@ -682,7 +681,6 @@ public class DefaultShardManager implements ShardManager
             jda -> queue.remove(jda.getShardInfo().getShardId()));
     }
 
-    @ThreadSafe
     @Deprecated
     public class ForwardingSessionReconnectQueue extends SessionReconnectQueue
     {
