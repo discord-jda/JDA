@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -761,7 +761,7 @@ public interface ShardManager
 
     /**
      * Sets the {@link net.dv8tion.jda.core.entities.Game Game} for all shards.
-     * <br>A Game can be retrieved via {@link net.dv8tion.jda.core.entities.Game#of(String)}.
+     * <br>A Game can be retrieved via {@link net.dv8tion.jda.core.entities.Game#playing(String)}.
      * For streams you provide a valid streaming url as second parameter.
      *
      * <p>This will also change the game for shards that are created in the future.
@@ -769,8 +769,8 @@ public interface ShardManager
      * @param  game
      *         A {@link net.dv8tion.jda.core.entities.Game Game} instance or null to reset
      *
-     * @see    net.dv8tion.jda.core.entities.Game#of(String)
-     * @see    net.dv8tion.jda.core.entities.Game#of(String, String)
+     * @see    net.dv8tion.jda.core.entities.Game#playing(String)
+     * @see    net.dv8tion.jda.core.entities.Game#streaming(String, String)
      */
     default void setGame(final Game game)
     {
@@ -779,7 +779,7 @@ public interface ShardManager
 
     /**
      * Sets provider that provider the {@link net.dv8tion.jda.core.entities.Game Game} for all shards.
-     * <br>A Game can be retrieved via {@link net.dv8tion.jda.core.entities.Game#of(String)}.
+     * <br>A Game can be retrieved via {@link net.dv8tion.jda.core.entities.Game#playing(String)}.
      * For streams you provide a valid streaming url as second parameter.
      *
      * <p>This will also change the provider for shards that are created in the future.
@@ -787,8 +787,8 @@ public interface ShardManager
      * @param  gameProvider
      *         A {@link net.dv8tion.jda.core.entities.Game Game} instance or null to reset
      *
-     * @see    net.dv8tion.jda.core.entities.Game#of(String)
-     * @see    net.dv8tion.jda.core.entities.Game#of(String, String)
+     * @see    net.dv8tion.jda.core.entities.Game#playing(String)
+     * @see    net.dv8tion.jda.core.entities.Game#streaming(String, String)
      */
     default void setGameProvider(final IntFunction<Game> gameProvider)
     {

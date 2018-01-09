@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -116,6 +116,13 @@ public class PermissionUtil
      *
      * <p>If the specified Member is not in the emote's guild or the emote provided is fake this will return false.
      * Otherwise it will check if the emote is restricted to any roles and if that is the case if the Member has one of these.
+     *
+     * <p>In the case of an {@link net.dv8tion.jda.core.entities.Emote#isAnimated() animated} Emote, this will
+     * check if the issuer is the currently logged in account, and then check if the account has
+     * {@link net.dv8tion.jda.core.entities.SelfUser#isNitro() nitro}, and return false if it doesn't.
+     * <br>For other accounts, this method will not take into account whether the emote is animated, as there is
+     * no real way to check if the Member can interact with them.
+     *
      * <br><b>Note</b>: This is not checking if the issuer owns the Guild or not.
      *
      * @param  issuer
@@ -136,6 +143,23 @@ public class PermissionUtil
 
         if (!issuer.getGuild().equals(emote.getGuild()))
             throw new IllegalArgumentException("The issuer and target are not in the same Guild");
+
+        // We don't need to check based on the fact it is animated if it's a BOT account
+        // because BOT accounts cannot have nitro, and have access to animated Emotes naturally.
+        if (emote.isAnimated() && !issuer.getUser().isBot())
+        {
+            // This is a currently logged in client, meaning we can check if they have nitro or not.
+            // If this isn't the currently logged in account, we just check it like a normal emote,
+            // since there is no way to verify if they have nitro or not.
+            if (issuer.getUser() instanceof SelfUser)
+            {
+                // If they don't have nitro, we immediately return
+                // false, otherwise we proceed with the remaining checks.
+                if (!((SelfUser)issuer.getUser()).isNitro())
+                    return false;
+            }
+        }
+
         return (emote.getRoles().isEmpty() // Emote restricted to roles -> check if the issuer has them
                     || CollectionUtils.containsAny(issuer.getRoles(), emote.getRoles()));
     }
@@ -171,7 +195,8 @@ public class PermissionUtil
         if (!canInteract(member, emote))
             return false;
         // external means it is available outside of its own guild - works for bots or if its managed
-        final boolean external = emote.isManaged() || (issuer.isBot() && botOverride);
+        // currently we cannot check whether other users have nitro, we assume no here
+        final boolean external = emote.isManaged() || (issuer.isBot() && botOverride) || isNitro(issuer);
         switch (channel.getType())
         {
             case TEXT:
@@ -182,6 +207,11 @@ public class PermissionUtil
             default:
                 return external; // In Group or Private it only needs to be external
         }
+    }
+
+    private static boolean isNitro(User issuer)
+    {
+        return issuer instanceof SelfUser && ((SelfUser) issuer).isNitro();
     }
 
     /**

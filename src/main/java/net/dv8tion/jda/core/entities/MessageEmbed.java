@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,9 @@ import org.json.JSONObject;
 import java.awt.Color;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Represents an embed displayed by Discord.
@@ -282,6 +284,18 @@ public class MessageEmbed
     }
 
     /**
+     * Whether this embed is empty.
+     *
+     * @return True, if this embed has no content
+     */
+    public boolean isEmpty()
+    {
+        return getLength() == 0
+            && getImage() == null
+            && getThumbnail() == null;
+    }
+
+    /**
      * The total amount of characters that is displayed when this embed is displayed by the Discord client.
      *
      * <p>An Embed can only have, at max, {@value #EMBED_MAX_LENGTH_BOT} displayable text characters for {@link net.dv8tion.jda.core.AccountType#BOT AccountType.BOT}
@@ -344,6 +358,8 @@ public class MessageEmbed
     {
         Checks.notNull(type, "AccountType");
         final int length = getLength();
+        if (isEmpty())
+            return false;
 
         switch (type)
         {

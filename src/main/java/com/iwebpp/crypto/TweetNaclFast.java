@@ -1,4 +1,4 @@
-/**
+/*
  * This is taken from:
  * <a href="https://github.com/InstantWebP2P/tweetnacl-java">https://github.com/InstantWebP2P/tweetnacl-java</a><br>
  * All credit goes to the original author.

@@ -103,42 +103,40 @@ To use sharding in JDA you will need to use `JDABuilder.useSharding(int shardId,
 has the ID 0. The **shardTotal** is the total amount of shards (not 0-based) which can be seen similar to the length of an array, the last shard has the ID of
 `shardTotal - 1`.
 
-When using sharding it is also recommended to use a `SessionReconnectQueue` instance for all shards. This allows JDA to properly
-handle reconnecting multiple shards without violating Discord limitations (not using this might cause an IP ban on bad days).
+The [`SessionController`](https://home.dv8tion.net:8080/job/JDA/javadoc/net/dv8tion/jda/core/utils/SessionController.html) is a tool of the JDABuilder
+that allows to control state and behaviour between shards (sessions). When using multiple builders to build shards you have to create one instance
+of this controller and add the same instance to each builder: `builder.setSessionController(controller)`
 
-Additionally to keep track of the global REST rate-limit JDA has a `ShardedRateLimiter` which is set by default when using the same JDABuilder
-for all shards. If you want to use multiple builders to build your shards you should use the same ShardedRateLimiter instance!
+Since version **3.4.0** JDA provides a `ShardManager` which automates this building process.
 
-**Logins between shards _must_ happen with a minimum of _5 SECONDS_ of backoff time. JDA will inform you if the backoff is too short
-with a log message:**
-
-```
-Encountered IDENTIFY (OP 2) Rate Limit! Waiting 5 seconds before trying again!
-```
-> Note: Failing to backoff properly will cause JDA to wait 5 seconds after failing to connect. Respect the 5 second login rate limit!
-
-#### Example Sharding
+#### Example Sharding - Using JDABuilder
 
 ```java
 public static void main(String[] args) throws Exception
 {
-    JDABuilder shardBuilder = new JDABuilder(AccountType.BOT).setToken(args[0]).setReconnectQueue(new SessionReconnectQueue());
+    JDABuilder shardBuilder = new JDABuilder(AccountType.BOT).setToken(args[0]);
     //register your listeners here using shardBuilder.addEventListener(...)
     shardBuilder.addEventListener(new MessageListener());
     for (int i = 0; i < 10; i++)
     {
-        //using buildBlocking(JDA.Status.AWAITING_LOGIN_CONFIRMATION)
-        // makes sure we start to delay the next shard once the current one actually
-        // sent the login information, otherwise we might hit nasty race conditions
         shardBuilder.useSharding(i, 10)
-                    .buildBlocking(JDA.Status.AWAITING_LOGIN_CONFIRMATION);
-        Thread.sleep(5000); //sleep 5 seconds between each login
+                    .buildAsync();
     }
 }
 ```
 
-> Note: We are not setting a `ShardedRateLimiter` here as it isn't necessary when we use the same builder!<br>
-> When you use multiple builders you should use JDABuilder.setShardedRateLimiter(ShardedRateLimiter) with a shared instance of the same ShardedRateLimiter!
+> When the `useSharding` method is invoked for the first time, the builder automatically sets a SessionController internally (if none is present)
+
+#### Example Sharding - Using DefaultShardManager
+```java
+public static void main(String[] args) throws Exception
+{
+    DefaultShardManagerBuilder builder = new DefaultShardManagerBuilder();
+    builder.setToken(args[0]);
+    builder.addEventListener(new MessageListener());
+    builder.build();
+}
+```
 
 ## More Examples
 We provide a small set of Examples in the [Example Directory](https://github.com/DV8FromTheWorld/JDA/tree/master/src/examples/java).

@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -205,21 +205,6 @@ public class MessageReaction
     }
 
     /**
-     * The {@link net.dv8tion.jda.core.entities.MessageReaction.ReactionEmote ReactionEmote}
-     * of this Reaction
-     *
-     * @return The final instance of this Reaction's Emote/Emoji
-     *
-     * @deprecated
-     *         This will be replaced due to the new naming convention; Use {@link #getReactionEmote()} instead
-     */
-    @Deprecated
-    public ReactionEmote getEmote()
-    {
-        return getReactionEmote();
-    }
-
-    /**
      * The message id this reaction is attached to
      *
      * @return The message id this reaction is attached to
@@ -377,7 +362,11 @@ public class MessageReaction
         String code = emote.isEmote()
                     ? emote.getName() + ":" + emote.getId()
                     : MiscUtil.encodeUTF8(emote.getName());
-        Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(channel.getId(), getMessageId(), code, user.getId());
+        Route.CompiledRoute route;
+        if (user.equals(getJDA().getSelfUser()))
+            route = Route.Messages.REMOVE_OWN_REACTION.compile(channel.getId(), getMessageId(), code);
+        else
+            route = Route.Messages.REMOVE_REACTION.compile(channel.getId(), getMessageId(), code, user.getId());
         return new RestAction<Void>(getJDA(), route)
         {
             @Override

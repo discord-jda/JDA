@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
  * specifically designed to change the order of discord entities.
  * <br>Such as:
  * <ul>
+ *     <li>{@link net.dv8tion.jda.core.requests.restaction.order.CategoryOrderAction Categories}</li>
  *     <li>{@link net.dv8tion.jda.core.requests.restaction.order.ChannelOrderAction Channels}</li>
  *     <li>{@link net.dv8tion.jda.core.requests.restaction.order.RoleOrderAction Roles}</li>
  * </ul>
