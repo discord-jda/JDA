@@ -2259,9 +2259,10 @@ public class GuildController
     @CheckReturnValue
     public CategoryOrderAction<TextChannel> modifyTextChannelPositions(Category category)
     {
+        Checks.notNull(category, "Category");
+        checkGuild(category.getGuild(), "Category");
         return new CategoryOrderAction<>(category, ChannelType.TEXT);
     }
-
 
     /**
      * Modifies the positional order of {@link net.dv8tion.jda.core.entities.Category#getVoiceChannels() Category#getVoiceChannels()}
@@ -2292,6 +2293,8 @@ public class GuildController
     @CheckReturnValue
     public CategoryOrderAction<VoiceChannel> modifyVoiceChannelPositions(Category category)
     {
+        Checks.notNull(category, "Category");
+        checkGuild(category.getGuild(), "Category");
         return new CategoryOrderAction<>(category, ChannelType.VOICE);
     }
 
