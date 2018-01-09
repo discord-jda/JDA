@@ -58,13 +58,6 @@ public class MessageListenerExample extends ListenerAdapter
             // you use buildBlocking in a thread that has the possibility of being interrupted (async thread usage and interrupts)
             e.printStackTrace();
         }
-        catch (RateLimitedException e)
-        {
-            //The login process is one which can be ratelimited. If you attempt to login in multiple times, in rapid succession
-            // (multiple times a second), you would hit the ratelimit, and would see this exception.
-            //As a note: It is highly unlikely that you will ever see the exception here due to how infrequent login is.
-            e.printStackTrace();
-        }
     }
 
     /**
