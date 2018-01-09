@@ -25,13 +25,16 @@ import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.SessionController;
 import okhttp3.OkHttpClient;
 
+import javax.annotation.Nonnull;
 import javax.security.auth.login.LoginException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
+import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 
@@ -47,6 +50,7 @@ import java.util.stream.Collectors;
 public class DefaultShardManagerBuilder
 {
     protected final List<Object> listeners = new ArrayList<>();
+    protected final List<Function<Integer, Object>> shardedListenerProviders = new ArrayList<>();
     protected SessionController sessionController = null;
     protected IntFunction<ConcurrentMap<String, String>> contextProvider = null;
     protected boolean enableContext = true;
@@ -217,6 +221,82 @@ public class DefaultShardManagerBuilder
         Checks.noneNull(listeners, "listeners");
 
         this.listeners.removeAll(listeners);
+        return this;
+    }
+
+    /**
+     * Adds the provided listener provider to the list of listener providers that will be used to create sharded listeners.
+     * On shard creation (including shard restarts) the provider will have the shard id applied and must return a listener,
+     * which will be used, along all other listeners, to populate the listeners of the JDA object of that shard.
+     *
+     * <br>This uses the {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventListener} by default.
+     * <br>To switch to the {@link net.dv8tion.jda.core.hooks.AnnotatedEventManager AnnotatedEventManager},
+     * use {@link #setEventManager(net.dv8tion.jda.core.hooks.IEventManager) setEventManager(new AnnotatedEventManager())}.
+     *
+     * <p><b>Note:</b> When using the {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventListener} (default),
+     * given listener(s) <b>must</b> be instance of {@link net.dv8tion.jda.core.hooks.EventListener EventListener}!
+     *
+     * @param  shardedListenerProvider
+     *         The listener provider to add to the list of sharded listener providers.
+     *
+     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     */
+    public DefaultShardManagerBuilder addShardedEventListenerProvider(final Function<Integer, Object> shardedListenerProvider)
+    {
+        return this.addShardedEventListenerProviders(Collections.singleton(shardedListenerProvider));
+    }
+
+    /**
+     * Adds the provided listener providers to the list of listener providers that will be used to create sharded listeners.
+     * On shard creation (including shard restarts) each provider will have the shard id applied and must return a listener,
+     * which will be used, along all other listeners, to populate the listeners of the JDA object of that shard.
+     *
+     * <br>This uses the {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventListener} by default.
+     * <br>To switch to the {@link net.dv8tion.jda.core.hooks.AnnotatedEventManager AnnotatedEventManager},
+     * use {@link #setEventManager(net.dv8tion.jda.core.hooks.IEventManager) setEventManager(new AnnotatedEventManager())}.
+     *
+     * <p><b>Note:</b> When using the {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventListener} (default),
+     * given listener(s) <b>must</b> be instance of {@link net.dv8tion.jda.core.hooks.EventListener EventListener}!
+     *
+     * @param  shardedListenerProviders
+     *         The listener provider to add to the list of sharded listener providers.
+     *
+     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     */
+    public DefaultShardManagerBuilder addShardedEventListenerProviders(final Collection<Function<Integer, Object>> shardedListenerProviders)
+    {
+        Checks.noneNull(shardedListenerProviders, "sharded listener providers");
+
+        this.shardedListenerProviders.addAll(shardedListenerProviders);
+        return this;
+    }
+
+    /**
+     * Removes the provided listener provider from the list of sharded listener providers.
+     *
+     * @param  shardedListenerProvider
+     *         The listener provider to remove from the list of sharded listener providers.
+     *
+     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     */
+    public DefaultShardManagerBuilder removeShardedEventListenerProvider(final Function<Integer, Object> shardedListenerProvider)
+    {
+        return this.removeEventListeners(Collections.singleton(shardedListenerProvider));
+    }
+
+    /**
+     * Removes all provided listener providers from the list of sharded listener providers.
+     *
+     * @param  shardedListenerProviders
+     *         The listener provider(s) to remove from the list of sharded listener providers.
+     *
+     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     */
+    public DefaultShardManagerBuilder removeShardedEventListenerProviders(final Collection<Function<Integer, Object>> shardedListenerProviders)
+    {
+        Checks.noneNull(shardedListenerProviders, "sharded listener providers");
+
+        this.shardedListenerProviders.removeAll(shardedListenerProviders);
         return this;
     }
 
@@ -761,7 +841,7 @@ public class DefaultShardManagerBuilder
     {
         final DefaultShardManager manager = new DefaultShardManager(
             this.shardsTotal, this.shards, this.sessionController,
-            this.listeners, this.token, this.eventManager,
+            this.listeners, this.shardedListenerProviders, this.token, this.eventManager,
             this.audioSendFactory, this.gameProvider, this.statusProvider,
             this.httpClientBuilder, this.wsFactory, this.threadFactory, this.shardedRateLimiter,
             this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting,

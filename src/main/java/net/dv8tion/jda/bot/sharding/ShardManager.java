@@ -77,6 +77,30 @@ public interface ShardManager
     }
 
     /**
+     * Adds listeners provided by the listener provider to each shard to the event-listeners that will be used to handle events.
+     * The listener provider gets a shard id applied and is expected to return a listener.
+     *
+     * <p>Note: when using the {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventListener} (default),
+     * given listener <b>must</b> be instance of {@link net.dv8tion.jda.core.hooks.EventListener EventListener}!
+     *
+     * @param  shardedEventListenerProvider
+     *         The provider of listener(s) which will react to events.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided listener provider {@code null}.
+     */
+    default void addShardedEventListeners(final Function<Integer, Object> shardedEventListenerProvider)
+    {
+        Checks.notNull(shardedEventListenerProvider, "sharded event listener provider");
+        this.getShardCache().forEach(jda ->
+        {
+            Object shardedListener = shardedEventListenerProvider.apply(jda.getShardInfo().getShardId());
+            Checks.notNull(shardedListener, "sharded listener");
+            jda.addEventListener(shardedListener);
+        });
+    }
+
+    /**
      * Returns the amount of shards queued for (re)connecting.
      *
      * @return The amount of shards queued for (re)connecting.
