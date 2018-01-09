@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 public class AudioWebSocket extends WebSocketAdapter
 {
@@ -58,7 +59,6 @@ public class AudioWebSocket extends WebSocketAdapter
     private final String token;
     private boolean connected = false;
     private boolean ready = false;
-    private boolean shutdown = false;
     private boolean reconnecting = false;
     private Future<?> keepAliveHandle;
     private String wssEndpoint;
@@ -68,6 +68,8 @@ public class AudioWebSocket extends WebSocketAdapter
     private byte[] secretKey;
     private DatagramSocket udpSocket;
     private InetSocketAddress address;
+
+    private volatile boolean shutdown = false;
 
     public WebSocket socket;
 
@@ -385,37 +387,52 @@ public class AudioWebSocket extends WebSocketAdapter
         }
     }
 
-    public synchronized void reconnect(ConnectionStatus closeStatus)
+    private void locked(Consumer<AudioManagerImpl> runnable)
+    {
+        AudioManagerImpl manager = (AudioManagerImpl) guild.getAudioManager();
+        synchronized (manager.CONNECTION_LOCK)
+        {
+            runnable.accept(manager);
+        }
+    }
+
+    public void reconnect(ConnectionStatus closeStatus)
     {
         if (shutdown)
             return;
-        connected = false;
-        ready = false;
-        reconnecting = true;
-        changeStatus(closeStatus);
-        startConnection();
+        locked((unused) ->
+        {
+            if (shutdown)
+                return;
+            connected = false;
+            ready = false;
+            reconnecting = true;
+            changeStatus(closeStatus);
+            startConnection();
+        });
     }
 
-    public synchronized void close(ConnectionStatus closeStatus)
+    public void close(final ConnectionStatus closeStatus)
     {
         //Makes sure we don't run this method again after the socket.close(1000) call fires onDisconnect
         if (shutdown)
             return;
-        connected = false;
-        ready = false;
-        shutdown = true;
-        stopKeepAlive();
-
-        if (udpSocket != null)
-            udpSocket.close();
-        if (socket != null && socket.isOpen())
-            socket.sendClose(1000);
-
-        VoiceChannel disconnectedChannel;
-        AudioManagerImpl manager = (AudioManagerImpl) guild.getAudioManager();
-
-        synchronized (manager.CONNECTION_LOCK)
+        locked((manager) ->
         {
+            if (shutdown)
+                return;
+            ConnectionStatus status = closeStatus;
+            connected = false;
+            ready = false;
+            shutdown = true;
+            stopKeepAlive();
+
+            if (udpSocket != null)
+                udpSocket.close();
+            if (socket != null && socket.isOpen())
+                socket.sendClose(1000);
+
+            VoiceChannel disconnectedChannel;
             if (audioConnection != null)
                 audioConnection.shutdown();
 
@@ -425,37 +442,37 @@ public class AudioWebSocket extends WebSocketAdapter
                 disconnectedChannel = manager.getQueuedAudioConnection();
 
             manager.setAudioConnection(null);
-        }
 
-        //Verify that it is actually a lost of connection and not due the connected channel being deleted.
-        if (closeStatus == ConnectionStatus.ERROR_LOST_CONNECTION)
-        {
-            //Get guild from JDA, don't use [guild] field to make sure that we don't have
-            // a problem of an out of date guild stored in [guild] during a possible mWS invalidate.
-            Guild connGuild = api.getGuildById(guild.getIdLong());
-            if (connGuild != null)
+            //Verify that it is actually a lost of connection and not due the connected channel being deleted.
+            if (status == ConnectionStatus.ERROR_LOST_CONNECTION)
             {
-                if (connGuild.getVoiceChannelById(audioConnection.getChannel().getIdLong()) == null)
-                    closeStatus = ConnectionStatus.DISCONNECTED_CHANNEL_DELETED;
+                //Get guild from JDA, don't use [guild] field to make sure that we don't have
+                // a problem of an out of date guild stored in [guild] during a possible mWS invalidate.
+                Guild connGuild = api.getGuildById(guild.getIdLong());
+                if (connGuild != null)
+                {
+                    if (connGuild.getVoiceChannelById(audioConnection.getChannel().getIdLong()) == null)
+                        status = ConnectionStatus.DISCONNECTED_CHANNEL_DELETED;
+                }
             }
-        }
 
-        changeStatus(closeStatus);
+            changeStatus(status);
 
-        //decide if we reconnect.
-        if (shouldReconnect
-                && closeStatus != ConnectionStatus.NOT_CONNECTED    //indicated that the connection was purposely closed. don't reconnect.
-                && closeStatus != ConnectionStatus.DISCONNECTED_CHANNEL_DELETED
-                && closeStatus != ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD
-                && closeStatus != ConnectionStatus.AUDIO_REGION_CHANGE) //Already handled.
-        {
-            manager.setQueuedAudioConnection(disconnectedChannel);
-            api.getClient().queueAudioReconnect(disconnectedChannel);
-        }
-        else if (closeStatus != ConnectionStatus.AUDIO_REGION_CHANGE)
-        {
-            api.getClient().queueAudioDisconnect(guild);
-        }
+            //decide if we reconnect.
+            if (shouldReconnect
+                && status != ConnectionStatus.NOT_CONNECTED    //indicated that the connection was purposely closed. don't reconnect.
+                && status != ConnectionStatus.DISCONNECTED_CHANNEL_DELETED
+                && status != ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD
+                && status != ConnectionStatus.AUDIO_REGION_CHANGE) //Already handled.
+            {
+                manager.setQueuedAudioConnection(disconnectedChannel);
+                api.getClient().queueAudioReconnect(disconnectedChannel);
+            }
+            else if (status != ConnectionStatus.AUDIO_REGION_CHANGE)
+            {
+                api.getClient().queueAudioDisconnect(guild);
+            }
+        });
     }
 
     public DatagramSocket getUdpSocket()
