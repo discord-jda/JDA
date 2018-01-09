@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.ChannelAction;
 import net.dv8tion.jda.core.requests.restaction.InviteAction;
+import net.dv8tion.jda.core.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 
@@ -157,6 +158,18 @@ public class CategoryImpl extends AbstractChannelImpl<CategoryImpl> implements C
         ChannelAction action = guild.getController().createVoiceChannel(name).setParent(this);
         applyPermission(action);
         return action;
+    }
+
+    @Override
+    public CategoryOrderAction<TextChannel> modifyTextChannelPositions()
+    {
+        return getGuild().getController().modifyTextChannelPositions(this);
+    }
+
+    @Override
+    public CategoryOrderAction<VoiceChannel> modifyVoiceChannelPositions()
+    {
+        return getGuild().getController().modifyVoiceChannelPositions(this);
     }
 
     @Override
