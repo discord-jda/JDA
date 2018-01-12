@@ -51,6 +51,7 @@ import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+import net.dv8tion.jda.core.entities.Guild.VerificationLevel;
 
 public class EntityBuilder
 {
@@ -1260,8 +1261,11 @@ public class EntityBuilder
         final long guildId = guildObject.getLong("id");
         final String guildName = guildObject.getString("name");
         final String guildSplashId = guildObject.optString("splash", null);
+        final VerificationLevel guildVerificationLevel = VerificationLevel.fromKey(guildObject.optInt("verification_level", -1));
+        final int presenceCount = object.optInt("approximate_presence_count", -1);
+        final int memberCount = object.optInt("approximate_member_count", -1);
 
-        final Invite.Guild guild = new InviteImpl.GuildImpl(guildId, guildIconId, guildName, guildSplashId);
+        final Invite.Guild guild = new InviteImpl.GuildImpl(guildId, guildIconId, guildName, guildSplashId, guildVerificationLevel, presenceCount, memberCount);
 
         final int maxAge;
         final int maxUses;

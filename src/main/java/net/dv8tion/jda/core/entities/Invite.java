@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
 import javax.annotation.CheckReturnValue;
 import java.time.OffsetDateTime;
+import net.dv8tion.jda.core.entities.Guild.VerificationLevel;
 
 /**
  * Representation of a Discord Invite.
@@ -53,7 +54,32 @@ public interface Invite
      */
     static RestAction<Invite> resolve(final JDA api, final String code)
     {
-        return InviteImpl.resolve(api, code);
+        return resolve(api, code, false);
+    }
+    
+    /**
+     * Retrieves a new {@link net.dv8tion.jda.core.entities.Invite Invite} instance for the given invite code.
+     * <br><b>You cannot resolve invites if you were banned from the origin Guild!</b>
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_INVITE Unknown Invite}
+     *     <br>The Invite did not exist (possibly deleted) or the account is banned in the guild.</li>
+     * </ul>
+     *
+     * @param  api
+     *         The JDA instance
+     * @param  code
+     *         A valid invite code
+     * @param  withCounts
+     *         Whether or not to include online and member counts
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Invite Invite}
+     *         <br>The Invite object
+     */
+    static RestAction<Invite> resolve(final JDA api, final String code, final boolean withCounts)
+    {
+        return InviteImpl.resolve(api, code, withCounts);
     }
 
     /**
@@ -296,5 +322,26 @@ public interface Invite
          * @see    #getSplashId()
          */
         String getSplashUrl();
+        
+        /**
+         * Returns the {@link net.dv8tion.jda.core.entities.Guild.VerificationLevel VerificationLevel} of this guild.
+         * 
+         * @return the verification level of the guild
+         */
+        VerificationLevel getVerificationLevel();
+        
+        /**
+         * Returns the approximate count of online members in the guild.
+         * 
+         * @return TODO
+         */
+        int getOnlineCount();
+        
+        /**
+         * Returns the approximate count of total members in the guild.
+         * 
+         * @return TODO
+         */
+        int getMemberCount();
     }
 }
