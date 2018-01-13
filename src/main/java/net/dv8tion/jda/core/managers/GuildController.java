@@ -954,7 +954,7 @@ public class GuildController
                 if (response.isOk())
                     request.onSuccess(null);
                 else if (response.code == 404)
-                    request.onFailure(new IllegalArgumentException("User with provided id \"" + userId + "\" does not exist! Cannot unban a non-existent user!"));
+                    request.onFailure(new IllegalArgumentException("User with provided id \"" + userId + "\" is not banned! Cannot unban a user who is not currently banned!"));
                 else
                     request.onFailure(response);
             }
