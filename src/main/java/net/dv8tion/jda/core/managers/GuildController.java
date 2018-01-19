@@ -33,7 +33,6 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.ChannelAction;
 import net.dv8tion.jda.core.requests.restaction.RoleAction;
-import net.dv8tion.jda.core.requests.restaction.WebhookAction;
 import net.dv8tion.jda.core.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.core.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.core.requests.restaction.order.RoleOrderAction;
@@ -2037,8 +2036,6 @@ public class GuildController
      * <br>For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES MANAGE_EMOTES} Permission.
      *
      * <p><b><u>Unicode emojis are not included as {@link net.dv8tion.jda.core.entities.Emote Emote}!</u></b>
-     * <br>Passing the roles field will be ignored unless the application is whitelisted as an emoji provider.
-     * For more information and to request whitelisting please contact {@code support@discordapp.com}
      *
      * <p>Note that a guild is limited to 50 normal and 50 animated emotes by default.
      * Some guilds are able to add additional emotes beyond this limitation due to the
