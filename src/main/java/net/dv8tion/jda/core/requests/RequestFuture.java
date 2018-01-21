@@ -58,7 +58,7 @@ public interface RequestFuture<T> extends Future<T>, CompletionStage<T>
      *
      * @see    java.util.concurrent.CompletableFuture#allOf(java.util.concurrent.CompletableFuture[]) CompletableFuture.allOf(...)
      */
-    static CompletableFuture<?> allOf(RequestFuture<?>... cfs)
+    static CompletableFuture<Void> allOf(RequestFuture<?>... cfs)
     {
         Checks.noneNull(cfs, "RequestFutures");
         CompletableFuture[] all = Stream.of(cfs).map(CompletableFuture.class::cast).toArray(CompletableFuture[]::new);
@@ -94,7 +94,7 @@ public interface RequestFuture<T> extends Future<T>, CompletionStage<T>
      *
      * @see    java.util.concurrent.CompletableFuture#allOf(java.util.concurrent.CompletableFuture[]) CompletableFuture.allOf(...)
      */
-    static <F extends Future<?> & CompletionStage<?>> CompletableFuture<?> allOf(Collection<F> cfs)
+    static <F extends Future<?> & CompletionStage<?>> CompletableFuture<Void> allOf(Collection<F> cfs)
     {
         Checks.notNull(cfs, "Collection");
         CompletableFuture[] all = cfs.stream().map(CompletableFuture.class::cast).toArray(CompletableFuture[]::new);
@@ -120,7 +120,7 @@ public interface RequestFuture<T> extends Future<T>, CompletionStage<T>
      *
      * @see    java.util.concurrent.CompletableFuture#anyOf(java.util.concurrent.CompletableFuture[]) CompletableFuture.anyOf(...)
      */
-    static CompletableFuture<?> anyOf(RequestFuture<?>... cfs)
+    static CompletableFuture<Object> anyOf(RequestFuture<?>... cfs)
     {
         Checks.noneNull(cfs, "RequestFutures");
         CompletableFuture[] all = Stream.of(cfs).map(CompletableFuture.class::cast).toArray(CompletableFuture[]::new);
@@ -148,7 +148,7 @@ public interface RequestFuture<T> extends Future<T>, CompletionStage<T>
      *
      * @see    java.util.concurrent.CompletableFuture#anyOf(java.util.concurrent.CompletableFuture[]) CompletableFuture.anyOf(...)
      */
-    static <F extends Future<?> & CompletionStage<?>> CompletableFuture<?> anyOf(Collection<F> cfs)
+    static <F extends Future<?> & CompletionStage<?>> CompletableFuture<Object> anyOf(Collection<F> cfs)
     {
         Checks.notNull(cfs, "Collection");
         CompletableFuture[] all = cfs.stream().map(CompletableFuture.class::cast).toArray(CompletableFuture[]::new);
