@@ -23,7 +23,6 @@ import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.client.entities.Relationship;
 import net.dv8tion.jda.client.entities.RelationshipType;
-import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.entities.Guild;
@@ -35,6 +34,8 @@ import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.guild.GuildUnavailableEvent;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
+import net.dv8tion.jda.core.requests.WebSocketClient;
+import net.dv8tion.jda.core.utils.Helpers;
 import org.json.JSONObject;
 
 public class GuildDeleteHandler extends SocketHandler
@@ -50,29 +51,29 @@ public class GuildDeleteHandler extends SocketHandler
         final long id = content.getLong("id");
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
 
+        boolean unavailable = Helpers.optBoolean(content, "unavailable");
         if (guild == null)
         {
-            api.getEventCache().cache(EventCache.Type.GUILD, id, () -> handle(responseNumber, allContent));
-            EventCache.LOG.debug("Received GUILD_DELETE for a Guild that is not currently cached. ID: {}", id);
+//            api.getEventCache().cache(EventCache.Type.GUILD, id, () -> handle(responseNumber, allContent));
+            WebSocketClient.LOG.debug("Received GUILD_DELETE for a Guild that is not currently cached. ID: {} unavailable: {}", id, unavailable);
             return null;
         }
 
         //If the event is attempting to mark the guild as unavailable, but it is already unavailable,
         // ignore the event
-        if (!guild.isAvailable() && content.has("unavailable") && content.getBoolean("unavailable"))
+        if (!guild.isAvailable() && unavailable)
             return null;
 
         if (api.getGuildLock().isLocked(id))
             return id;
 
-        if (content.has("unavailable") && content.getBoolean("unavailable"))
+        if (unavailable)
         {
             guild.setAvailable(false);
             api.getEventManager().handle(
-                    new GuildUnavailableEvent(
-                            api, responseNumber,
-                            guild)
-            );
+                new GuildUnavailableEvent(
+                    api, responseNumber,
+                    guild));
             return null;
         }
 
@@ -155,9 +156,9 @@ public class GuildDeleteHandler extends SocketHandler
         guild.getVoiceChannelCache().forEach(chan -> api.getVoiceChannelMap().remove(chan.getIdLong()));
         guild.getCategoryCache().forEach(chan -> api.getCategoryMap().remove(chan.getIdLong()));
         api.getEventManager().handle(
-                new GuildLeaveEvent(
-                        api, responseNumber,
-                        guild));
+            new GuildLeaveEvent(
+                api, responseNumber,
+                guild));
         api.getEventCache().clear(EventCache.Type.GUILD, id);
         return null;
     }
