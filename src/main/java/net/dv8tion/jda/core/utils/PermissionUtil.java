@@ -394,6 +394,14 @@ public class PermissionUtil
             return 0;
         }
 
+        /*
+        // currently discord doesn't implicitly grant permissions that the user can grant others
+        // so instead the user has to explicitly make an override to grant them the permission in order to be granted that permission
+        // yes this makes no sense but what can i do, the devs don't like changing things apparently...
+        // I've been told half a year ago this would be changed but nothing happens
+        // so instead I'll just bend over for them so people get "correct" permission checks...
+        //
+        // only time will tell if something happens and I can finally re-implement this section wew
         final long managePerms = Permission.MANAGE_PERMISSIONS.getRawValue();
         final long manageChannel = Permission.MANAGE_CHANNEL.getRawValue();
         if ((permission & (managePerms | manageChannel)) != 0)
@@ -401,7 +409,7 @@ public class PermissionUtil
             // In channels, MANAGE_CHANNEL and MANAGE_PERMISSIONS grant full text/voice permissions
             permission |= Permission.ALL_TEXT_PERMISSIONS | Permission.ALL_VOICE_PERMISSIONS;
         }
-
+        */
         return apply(permission, allow.get(), deny.get());
     }
 
