@@ -134,15 +134,7 @@ public class Request<T>
 
     public boolean runChecks()
     {
-        try
-        {
-            return checks == null || checks.getAsBoolean();
-        }
-        catch (Throwable e)
-        {
-            onFailure(e);
-            return false;
-        }
+        return checks == null || checks.getAsBoolean();
     }
 
     public CaseInsensitiveMap<String, String> getHeaders()
