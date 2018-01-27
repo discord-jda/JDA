@@ -54,6 +54,6 @@ public class RestFuture<T> extends Promise<T>
         if (this.request != null)
             this.request.cancel();
 
-        return super.cancel(mayInterrupt);
+        return (!isDone() && !isCancelled()) && super.cancel(mayInterrupt);
     }
 }
