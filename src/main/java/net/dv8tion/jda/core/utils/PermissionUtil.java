@@ -521,7 +521,7 @@ public class PermissionUtil
         final Guild guild = member.getGuild();
         checkGuild(channel.getGuild(), guild, "Member");
 
-        long permission = guild.getPublicRole().getPermissionsRaw();
+        long permission = getExplicitPermission(member);
 
         AtomicLong allow = new AtomicLong(0);
         AtomicLong deny = new AtomicLong(0);
