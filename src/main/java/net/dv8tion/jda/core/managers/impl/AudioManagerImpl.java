@@ -16,6 +16,9 @@
 package net.dv8tion.jda.core.managers.impl;
 
 import com.sun.jna.Platform;
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.audio.AudioConnection;
@@ -36,12 +39,11 @@ import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.NativeUtil;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
 
 @ParametersAreNonnullByDefault
+@DefaultAnnotationForParameters(NonNull.class)
 public class AudioManagerImpl implements AudioManager
 {
     public static final ThreadGroup AUDIO_THREADS = new ThreadGroup("jda-audio");
@@ -147,14 +149,14 @@ public class AudioManagerImpl implements AudioManager
         }
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public JDA getJDA()
     {
         return api;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Guild getGuild()
     {
@@ -242,7 +244,7 @@ public class AudioManagerImpl implements AudioManager
         return connectionListener.getListener();
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public ConnectionStatus getConnectionStatus()
     {
@@ -299,7 +301,7 @@ public class AudioManagerImpl implements AudioManager
         return selfDeafened;
     }
 
-    @Nonnull
+    @NonNull
     public ConnectionListener getListenerProxy()
     {
         return connectionListener;

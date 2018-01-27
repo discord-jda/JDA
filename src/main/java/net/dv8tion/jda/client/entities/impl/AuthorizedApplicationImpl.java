@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.client.entities.impl;
 
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.client.entities.AuthorizedApplication;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.requests.Request;
@@ -23,12 +26,12 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Collections;
 import java.util.List;
 
 @ParametersAreNonnullByDefault
+@DefaultAnnotationForParameters(NonNull.class)
 public class AuthorizedApplicationImpl implements AuthorizedApplication
 {
     private final JDA api;

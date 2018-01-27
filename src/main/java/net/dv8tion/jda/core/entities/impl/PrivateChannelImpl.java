@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.client.entities.Call;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -26,8 +28,6 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.MessageAction;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.InputStream;
 
 public class PrivateChannelImpl implements PrivateChannel
@@ -45,7 +45,7 @@ public class PrivateChannelImpl implements PrivateChannel
         this.user = user;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public User getUser()
     {
@@ -67,28 +67,28 @@ public class PrivateChannelImpl implements PrivateChannel
         return lastMessageId > 0;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public String getName()
     {
         return user.getName();
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public ChannelType getType()
     {
         return ChannelType.PRIVATE;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public JDA getJDA()
     {
         return user.getJDA();
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public RestAction<Void> close()
     {
@@ -130,7 +130,7 @@ public class PrivateChannelImpl implements PrivateChannel
         return currentCall;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public MessageAction sendMessage(CharSequence text)
     {
@@ -138,7 +138,7 @@ public class PrivateChannelImpl implements PrivateChannel
         return PrivateChannel.super.sendMessage(text);
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public MessageAction sendMessage(MessageEmbed embed)
     {
@@ -146,7 +146,7 @@ public class PrivateChannelImpl implements PrivateChannel
         return PrivateChannel.super.sendMessage(embed);
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public MessageAction sendMessage(Message msg)
     {
@@ -154,7 +154,7 @@ public class PrivateChannelImpl implements PrivateChannel
         return PrivateChannel.super.sendMessage(msg);
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public MessageAction sendFile(InputStream data, String fileName, @Nullable Message message)
     {

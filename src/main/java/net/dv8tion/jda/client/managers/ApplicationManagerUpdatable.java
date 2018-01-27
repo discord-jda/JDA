@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.client.managers;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.client.entities.Application;
 import net.dv8tion.jda.client.entities.impl.ApplicationImpl;
 import net.dv8tion.jda.client.managers.fields.ApplicationField;
@@ -29,8 +32,6 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.CheckReturnValue;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,6 +53,7 @@ import java.util.regex.Pattern;
  * @author Aljoscha Grebe
  */
 @ParametersAreNonnullByDefault
+@DefaultAnnotationForParameters(NonNull.class)
 public class ApplicationManagerUpdatable
 {
     public final static Pattern URL_PATTERN = Pattern.compile("\\s*https?://.+\\..{2,}\\s*",
@@ -230,7 +232,7 @@ public class ApplicationManagerUpdatable
         this.description = new ApplicationField<String>(this, this.application::getDescription)
         {
             @Override
-            public void checkValue(@CheckForNull final String value)
+            public void checkValue(final String value)
             {
                 if (value != null && value.length() > 400)
                     throw new IllegalArgumentException("application description must not be more than 400 characters long");
@@ -240,7 +242,7 @@ public class ApplicationManagerUpdatable
         this.doesBotRequireCodeGrant = new ApplicationField<Boolean>(this, this.application::doesBotRequireCodeGrant)
         {
             @Override
-            public void checkValue(@CheckForNull final Boolean value)
+            public void checkValue(final Boolean value)
             {
                 Checks.notNull(value, "doesBotRequireCodeGrant");
             }
@@ -249,7 +251,7 @@ public class ApplicationManagerUpdatable
         this.icon = new ApplicationField<Icon>(this, Field.unsupported("Cannot easily provide the original Avatar. Use Application#getIconUrl() and download it yourself."))
         {
             @Override
-            public void checkValue(@CheckForNull final Icon value) {}
+            public void checkValue(final Icon value) {}
 
             @Override
             public boolean shouldUpdate()
@@ -261,7 +263,7 @@ public class ApplicationManagerUpdatable
         this.isBotPublic = new ApplicationField<Boolean>(this, this.application::isBotPublic)
         {
             @Override
-            public void checkValue(@CheckForNull final Boolean value)
+            public void checkValue(final Boolean value)
             {
                 Checks.notNull(value, "isBotPublic");
             }
@@ -270,7 +272,7 @@ public class ApplicationManagerUpdatable
         this.name = new ApplicationField<String>(this, this.application::getName)
         {
             @Override
-            public void checkValue(@CheckForNull final String value)
+            public void checkValue(final String value)
             {
                 Checks.notNull(value, "application name");
                 if (value.length() < 2 || value.length() > 32)
@@ -281,7 +283,7 @@ public class ApplicationManagerUpdatable
         this.redirectUris = new ApplicationField<List<String>>(this, this.application::getRedirectUris)
         {
             @Override
-            public void checkValue(@CheckForNull final List<String> value)
+            public void checkValue(final List<String> value)
             {
                 Checks.notNull(value, "redirect uris");
                 for (final String url : value)
@@ -293,7 +295,7 @@ public class ApplicationManagerUpdatable
                 }
             }
             @Override
-            public ApplicationManagerUpdatable setValue(@CheckForNull List<String> value)
+            public ApplicationManagerUpdatable setValue(List<String> value)
             {
                 checkValue(value);
 

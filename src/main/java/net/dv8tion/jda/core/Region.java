@@ -15,7 +15,7 @@
  */
 package net.dv8tion.jda.core;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
  * Represents the Regions used for Audio connections.
@@ -70,7 +70,7 @@ public enum Region
      *
      * @return The name of this region
      */
-    @Nonnull
+    @NonNull
     public String getName()
     {
         return name;
@@ -81,7 +81,7 @@ public enum Region
      *
      * @return The key (internal name) of this region
      */
-    @Nonnull
+    @NonNull
     public String getKey()
     {
         return key;
@@ -108,7 +108,7 @@ public enum Region
      * @return The {@link net.dv8tion.jda.core.Region Region} matching the key. If there is no match,
      *         returns {@link net.dv8tion.jda.core.Region#UNKNOWN UNKNOWN}.
      */
-    @Nonnull
+    @NonNull
     public static Region fromKey(String key)
     {
         for (Region region : values())

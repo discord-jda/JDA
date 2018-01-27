@@ -22,6 +22,10 @@
  * and event for specific TextChannel settings such as the {@link net.dv8tion.jda.core.events.channel.text.update.TextChannelUpdateNameEvent name}.
  */
 @ParametersAreNonnullByDefault
+@DefaultAnnotationForParameters(NonNull.class)
 package net.dv8tion.jda.core.events.channel.text.update;
+
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;

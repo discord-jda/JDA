@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.client.entities.impl;
 
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.client.entities.Application;
 import net.dv8tion.jda.client.managers.ApplicationManager;
 import net.dv8tion.jda.client.managers.ApplicationManagerUpdatable;
@@ -28,11 +31,11 @@ import net.dv8tion.jda.core.requests.Route;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 
 @ParametersAreNonnullByDefault
+@DefaultAnnotationForParameters(NonNull.class)
 public class ApplicationImpl implements Application
 {
 

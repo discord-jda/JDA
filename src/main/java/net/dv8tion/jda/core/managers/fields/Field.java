@@ -16,9 +16,9 @@
 
 package net.dv8tion.jda.core.managers.fields;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
+
 import java.util.Objects;
 import java.util.function.Supplier;
 
@@ -116,7 +116,7 @@ public abstract class Field<T, M>
      *
      * @see    #isSet()
      */
-    public M setValue(@CheckForNull T value)
+    public M setValue(T value)
     {
         checkValue(value);
 
@@ -153,7 +153,7 @@ public abstract class Field<T, M>
      *
      * @return The Manager of this specific Field instance
      */
-    @Nonnull
+    @NonNull
     public M getManager()
     {
         return manager;
@@ -166,7 +166,7 @@ public abstract class Field<T, M>
      * @return The specific manager instance for chaining convenience
      *         <br>Similar to {@link #setValue(Object)}
      */
-    @Nonnull
+    @NonNull
     public M reset()
     {
         this.value = null;
@@ -189,7 +189,7 @@ public abstract class Field<T, M>
      *         If this value requires specific {@link net.dv8tion.jda.core.Permission Permissions}
      *         that are not fulfilled
      */
-    public abstract void checkValue(@CheckForNull T value);
+    public abstract void checkValue(T value);
 
     @Override
     public boolean equals(@Nullable Object o)

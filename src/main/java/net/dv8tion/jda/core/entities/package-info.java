@@ -26,6 +26,10 @@
  * for the specific entity.
  */
 @ParametersAreNonnullByDefault
+@DefaultAnnotationForParameters(NonNull.class)
 package net.dv8tion.jda.core.entities;
+
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;

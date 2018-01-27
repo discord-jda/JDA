@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.Permission;
@@ -23,8 +25,6 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.awt.Color;
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -48,35 +48,35 @@ public class MemberImpl implements Member
         this.voiceState = new GuildVoiceStateImpl(guild, this);
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public User getUser()
     {
         return user;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Guild getGuild()
     {
         return guild;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public JDA getJDA()
     {
         return user.getJDA();
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public OffsetDateTime getJoinDate()
     {
         return joinDate == null ? OffsetDateTime.now() : joinDate;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public GuildVoiceState getVoiceState()
     {
@@ -89,7 +89,7 @@ public class MemberImpl implements Member
         return game;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public OnlineStatus getOnlineStatus()
     {
@@ -102,14 +102,14 @@ public class MemberImpl implements Member
         return nickname;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public String getEffectiveName()
     {
         return nickname != null ? nickname : user.getName();
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public List<Role> getRoles()
     {
@@ -130,7 +130,7 @@ public class MemberImpl implements Member
         return null;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public List<Permission> getPermissions()
     {
@@ -139,7 +139,7 @@ public class MemberImpl implements Member
                         PermissionUtil.getEffectivePermission(this)));
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public List<Permission> getPermissions(Channel channel)
     {
@@ -253,7 +253,7 @@ public class MemberImpl implements Member
         return "MB:" + getEffectiveName() + '(' + user.toString() + " / " + guild.toString() +')';
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public String getAsMention()
     {

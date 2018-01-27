@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.managers;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.audio.AudioReceiveHandler;
 import net.dv8tion.jda.core.audio.AudioSendHandler;
@@ -25,9 +27,6 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.utils.JDALogger;
 import org.slf4j.Logger;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 
 /**
@@ -84,7 +83,7 @@ public interface AudioManager
      *
      * @return The corresponding JDA instance
      */
-    @Nonnull
+    @NonNull
     JDA getJDA();
 
     /**
@@ -92,7 +91,7 @@ public interface AudioManager
      *
      * @return The Guild that this AudioManager manages.
      */
-    @Nonnull
+    @NonNull
     Guild getGuild();
 
     /**
@@ -233,7 +232,7 @@ public interface AudioManager
      *
      * @return The current {@link net.dv8tion.jda.core.audio.hooks.ConnectionStatus ConnectionStatus}.
      */
-    @Nonnull
+    @NonNull
     ConnectionStatus getConnectionStatus();
 
     /**

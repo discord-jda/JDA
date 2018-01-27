@@ -16,12 +16,12 @@
 
 package net.dv8tion.jda.core.entities;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.Permission;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.awt.Color;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -40,7 +40,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return {@link net.dv8tion.jda.core.entities.User User}
      */
-    @Nonnull
+    @NonNull
     User getUser();
 
     /**
@@ -48,7 +48,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return {@link net.dv8tion.jda.core.entities.Guild Guild}
      */
-    @Nonnull
+    @NonNull
     Guild getGuild();
 
     /**
@@ -56,7 +56,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return The current JDA instance.
      */
-    @Nonnull
+    @NonNull
     JDA getJDA();
 
     /**
@@ -64,7 +64,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return The Join Date.
      */
-    @Nonnull
+    @NonNull
     OffsetDateTime getJoinDate();
 
     /**
@@ -74,7 +74,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return {@link net.dv8tion.jda.core.entities.GuildVoiceState VoiceState}
      */
-    @Nonnull
+    @NonNull
     GuildVoiceState getVoiceState();
 
     /**
@@ -93,7 +93,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return The current {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} of the {@link net.dv8tion.jda.core.entities.User User}.
      */
-    @Nonnull
+    @NonNull
     OnlineStatus getOnlineStatus();
 
     /**
@@ -112,7 +112,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return The Nickname of this Member or the Username if no Nickname is present.
      */
-    @Nonnull
+    @NonNull
     String getEffectiveName();
 
     /**
@@ -127,7 +127,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return An immutable List of {@link net.dv8tion.jda.core.entities.Role Roles} for this Member.
      */
-    @Nonnull
+    @NonNull
     List<Role> getRoles();
 
     /**
@@ -151,7 +151,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return An immutable List of Permissions granted to this Member.
      */
-    @Nonnull
+    @NonNull
     List<Permission> getPermissions(Channel channel);
 
     /**

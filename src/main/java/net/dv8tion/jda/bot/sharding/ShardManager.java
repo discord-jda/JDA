@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.bot.sharding;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.bot.entities.ApplicationInfo;
 import net.dv8tion.jda.bot.utils.cache.ShardCacheView;
 import net.dv8tion.jda.core.JDA;
@@ -26,8 +28,6 @@ import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.IntFunction;
@@ -118,7 +118,7 @@ public interface ShardManager
      *
      * @return The {@link net.dv8tion.jda.bot.JDABot} registry for this instance of JDA.
      */
-    @Nonnull
+    @NonNull
     default RestAction<ApplicationInfo> getApplicationInfo()
     {
         return this.getShardCache().stream()
@@ -152,7 +152,7 @@ public interface ShardManager
      *
      * @return An immutable list of all visible {@link net.dv8tion.jda.core.entities.Category Categories}.
      */
-    @Nonnull
+    @NonNull
     default List<Category> getCategories()
     {
         return this.getCategoryCache().asList();
@@ -170,7 +170,7 @@ public interface ShardManager
      * @throws java.lang.IllegalArgumentException
      *         If the provided name is {@code null}
      */
-    @Nonnull
+    @NonNull
     default List<Category> getCategoriesByName(final String name, final boolean ignoreCase)
     {
         return this.getCategoryCache().getElementsByName(name, ignoreCase);
@@ -212,7 +212,7 @@ public interface ShardManager
      *
      * @return {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
-    @Nonnull
+    @NonNull
     default SnowflakeCacheView<Category> getCategoryCache()
     {
         return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getCategoryCache));
@@ -258,7 +258,7 @@ public interface ShardManager
      *
      * @return Unified {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
-    @Nonnull
+    @NonNull
     default SnowflakeCacheView<Emote> getEmoteCache()
     {
         return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getEmoteCache));
@@ -275,7 +275,7 @@ public interface ShardManager
      *
      * @return An immutable list of Emotes (which may or may not be available to usage).
      */
-    @Nonnull
+    @NonNull
     default List<Emote> getEmotes()
     {
         return this.getEmoteCache().asList();
@@ -296,7 +296,7 @@ public interface ShardManager
      * @return Possibly-empty list of all the {@link net.dv8tion.jda.core.entities.Emote Emotes} that all have the same
      *         name as the provided name.
      */
-    @Nonnull
+    @NonNull
     default List<Emote> getEmotesByName(final String name, final boolean ignoreCase)
     {
         return this.getEmoteCache().getElementsByName(name, ignoreCase);
@@ -338,7 +338,7 @@ public interface ShardManager
      *
      * @return {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
-    @Nonnull
+    @NonNull
     default SnowflakeCacheView<Guild> getGuildCache()
     {
         return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getGuildCache));
@@ -351,7 +351,7 @@ public interface ShardManager
      *
      * @return Possibly-empty list of all the {@link net.dv8tion.jda.core.entities.Guild Guilds} that this account is connected to.
      */
-    @Nonnull
+    @NonNull
     default List<Guild> getGuilds()
     {
         return this.getGuildCache().asList();
@@ -365,7 +365,7 @@ public interface ShardManager
      *
      * @return Unmodifiable list of all {@link net.dv8tion.jda.core.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.core.entities.User Users} in them.
      */
-    @Nonnull
+    @NonNull
     default List<Guild> getMutualGuilds(final Collection<User> users)
     {
         Checks.noneNull(users, "users");
@@ -384,7 +384,7 @@ public interface ShardManager
      *
      * @return Unmodifiable list of all {@link net.dv8tion.jda.core.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.core.entities.User Users} in them.
      */
-    @Nonnull
+    @NonNull
     default List<Guild> getMutualGuilds(final User... users)
     {
         Checks.notNull(users, "users");
@@ -431,7 +431,7 @@ public interface ShardManager
      *
      * @return {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
-    @Nonnull
+    @NonNull
     default SnowflakeCacheView<PrivateChannel> getPrivateChannelCache()
     {
         return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getPrivateChannelCache));
@@ -442,7 +442,7 @@ public interface ShardManager
      *
      * @return Possibly-empty list of all {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannels}.
      */
-    @Nonnull
+    @NonNull
     default List<PrivateChannel> getPrivateChannels()
     {
         return this.getPrivateChannelCache().asList();
@@ -486,7 +486,7 @@ public interface ShardManager
      *
      * @return Unified {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
-    @Nonnull
+    @NonNull
     default SnowflakeCacheView<Role> getRoleCache()
     {
         return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getRoleCache));
@@ -499,7 +499,7 @@ public interface ShardManager
      *
      * @return Immutable List of all visible Roles
      */
-    @Nonnull
+    @NonNull
     default List<Role> getRoles()
     {
         return this.getRoleCache().asList();
@@ -516,7 +516,7 @@ public interface ShardManager
      *         Whether to use {@link String#equalsIgnoreCase(String)}
      * @return Immutable List of all Roles matching the parameters provided.
      */
-    @Nonnull
+    @NonNull
     default List<Role> getRolesByName(final String name, final boolean ignoreCase)
     {
         return this.getRoleCache().getElementsByName(name, ignoreCase);
@@ -560,7 +560,7 @@ public interface ShardManager
      *
      * @return Unified {@link net.dv8tion.jda.bot.utils.cache.ShardCacheView ShardCacheView}
      */
-    @Nonnull
+    @NonNull
     ShardCacheView getShardCache();
 
     /**
@@ -568,7 +568,7 @@ public interface ShardManager
      *
      * @return An immutable list of all managed {@link net.dv8tion.jda.core.JDA JDA} instances.
      */
-    @Nonnull
+    @NonNull
     default List<JDA> getShards()
     {
         return this.getShardCache().asList();
@@ -596,7 +596,7 @@ public interface ShardManager
      *
      * @return All current shard statuses.
      */
-    @Nonnull
+    @NonNull
     default Map<JDA, Status> getStatuses()
     {
         return Collections.unmodifiableMap(this.getShardCache().stream()
@@ -653,7 +653,7 @@ public interface ShardManager
      *
      * @return {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
-    @Nonnull
+    @NonNull
     default SnowflakeCacheView<TextChannel> getTextChannelCache()
     {
         return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getTextChannelCache));
@@ -671,7 +671,7 @@ public interface ShardManager
      *
      * @return Possibly-empty list of all known {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}.
      */
-    @Nonnull
+    @NonNull
     default List<TextChannel> getTextChannels()
     {
         return this.getTextChannelCache().asList();
@@ -713,7 +713,7 @@ public interface ShardManager
      *
      * @return {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
-    @Nonnull
+    @NonNull
     default SnowflakeCacheView<User> getUserCache()
     {
         return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getUserCache));
@@ -730,7 +730,7 @@ public interface ShardManager
      *
      * @return List of all {@link net.dv8tion.jda.core.entities.User Users} that are visible to JDA.
      */
-    @Nonnull
+    @NonNull
     default List<User> getUsers()
     {
         return this.getUserCache().asList();
@@ -772,7 +772,7 @@ public interface ShardManager
      *
      * @return {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
-    @Nonnull
+    @NonNull
     default SnowflakeCacheView<VoiceChannel> getVoiceChannelCache()
     {
         return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getVoiceChannelCache));
@@ -784,7 +784,7 @@ public interface ShardManager
      *
      * @return Possible-empty list of all known {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels}.
      */
-    @Nonnull
+    @NonNull
     default List<VoiceChannel> getVoiceChannels()
     {
         return this.getVoiceChannelCache().asList();

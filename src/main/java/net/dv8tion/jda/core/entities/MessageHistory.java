@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.core.entities;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
@@ -30,9 +33,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -70,7 +70,7 @@ public class MessageHistory
      *
      * @return The corresponding JDA instance
      */
-    @Nonnull
+    @NonNull
     public JDA getJDA()
     {
         return channel.getJDA();
@@ -105,7 +105,7 @@ public class MessageHistory
      *
      * @return The MessageChannel of this history.
      */
-    @Nonnull
+    @NonNull
     public MessageChannel getChannel()
     {
         return channel;
@@ -163,7 +163,7 @@ public class MessageHistory
      *         <br>Retrieved Messages are placed in a List and provided in order of most recent to oldest with most recent
      *         starting at index 0. If the list is empty, there were no more messages left to retrieve.
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public RestAction<List<Message>> retrievePast(int amount)
     {
@@ -243,7 +243,7 @@ public class MessageHistory
      *         <br>Retrieved Messages are placed in a List and provided in order of most recent to oldest with most recent
      *         starting at index 0. If the list is empty, there were no more messages left to retrieve.
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public RestAction<List<Message>> retrieveFuture(int amount)
     {
@@ -290,7 +290,7 @@ public class MessageHistory
      *
      * @return A List of Messages, sorted newest to oldest.
      */
-    @Nonnull
+    @NonNull
     public List<Message> getRetrievedHistory()
     {
         int size = size();
@@ -380,7 +380,7 @@ public class MessageHistory
      * @see    net.dv8tion.jda.core.entities.MessageChannel#getHistoryAfter(long, int)    MessageChannel.getHistoryAfter(long, int)
      * @see    net.dv8tion.jda.core.entities.MessageChannel#getHistoryAfter(Message, int) MessageChannel.getHistoryAfter(Message, int)
      */
-    @Nonnull
+    @NonNull
     public static MessageRetrieveAction getHistoryAfter(MessageChannel channel, String messageId)
     {
         checkArguments(channel, messageId);
@@ -424,7 +424,7 @@ public class MessageHistory
      * @see    net.dv8tion.jda.core.entities.MessageChannel#getHistoryBefore(long, int)    MessageChannel.getHistoryBefore(long, int)
      * @see    net.dv8tion.jda.core.entities.MessageChannel#getHistoryBefore(Message, int) MessageChannel.getHistoryBefore(Message, int)
      */
-    @Nonnull
+    @NonNull
     public static MessageRetrieveAction getHistoryBefore(MessageChannel channel, String messageId)
     {
         checkArguments(channel, messageId);
@@ -468,7 +468,7 @@ public class MessageHistory
      * @see    net.dv8tion.jda.core.entities.MessageChannel#getHistoryAround(long, int)    MessageChannel.getHistoryAround(long, int)
      * @see    net.dv8tion.jda.core.entities.MessageChannel#getHistoryAround(Message, int) MessageChannel.getHistoryAround(Message, int)
      */
-    @Nonnull
+    @NonNull
     public static MessageRetrieveAction getHistoryAround(MessageChannel channel, String messageId)
     {
         checkArguments(channel, messageId);
@@ -514,7 +514,7 @@ public class MessageHistory
          *
          * @return The current MessageRetrieveAction for chaining convenience
          */
-        @Nonnull
+        @NonNull
         public MessageRetrieveAction limit(Integer limit)
         {
             if (limit != null)

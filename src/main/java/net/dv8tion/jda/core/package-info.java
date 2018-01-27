@@ -43,6 +43,10 @@
  * </ul>
  */
 @ParametersAreNonnullByDefault
+@DefaultAnnotationForParameters(NonNull.class)
 package net.dv8tion.jda.core;
+
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;

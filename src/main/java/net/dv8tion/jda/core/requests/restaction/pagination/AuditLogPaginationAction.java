@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.core.requests.restaction.pagination;
 
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.core.Permission;
@@ -33,7 +36,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNullableByDefault;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,6 +79,7 @@ import java.util.List;
  * @since  3.2
  */
 @ParametersAreNullableByDefault
+@DefaultAnnotationForParameters(Nullable.class)
 public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, AuditLogPaginationAction>
 {
     protected final Guild guild;
@@ -84,7 +87,7 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
     protected ActionType type = null;
     protected String userId = null;
 
-    public AuditLogPaginationAction(@Nonnull Guild guild)
+    public AuditLogPaginationAction(@NonNull Guild guild)
     {
         super(guild.getJDA(), Route.Guilds.GET_AUDIT_LOGS.compile(guild.getId()), 1, 100, 100);
         if (!guild.getSelfMember().hasPermission(Permission.VIEW_AUDIT_LOGS))
@@ -101,7 +104,7 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
      *
      * @return The current AuditLogPaginationAction for chaining convenience
      */
-    @Nonnull
+    @NonNull
     public AuditLogPaginationAction type(ActionType type)
     {
         this.type = type;
@@ -118,7 +121,7 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
      *
      * @return The current AuditLogPaginationAction for chaining convenience
      */
-    @Nonnull
+    @NonNull
     public AuditLogPaginationAction user(User user)
     {
         return user(user == null ? null : user.getId());
@@ -134,7 +137,7 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
      *
      * @return The current AuditLogPaginationAction for chaining convenience
      */
-    @Nonnull
+    @NonNull
     public AuditLogPaginationAction user(String userId)
     {
         this.userId = userId;
@@ -150,7 +153,7 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
      *
      * @return The current AuditLogPaginationAction for chaining convenience
      */
-    @Nonnull
+    @NonNull
     public AuditLogPaginationAction user(long userId)
     {
         return user(Long.toUnsignedString(userId));
@@ -162,7 +165,7 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
      *
      * @return The never-null target Guild
      */
-    @Nonnull
+    @NonNull
     public Guild getGuild()
     {
         return guild;
@@ -191,7 +194,7 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
     }
 
     @Override
-    protected void handleResponse(@Nonnull Response response, @Nonnull Request<List<AuditLogEntry>> request)
+    protected void handleResponse(@NonNull Response response, @NonNull Request<List<AuditLogEntry>> request)
     {
         if (!response.isOk())
         {

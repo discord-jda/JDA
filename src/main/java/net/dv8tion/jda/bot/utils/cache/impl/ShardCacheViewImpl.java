@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.bot.utils.cache.impl;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import gnu.trove.impl.sync.TSynchronizedIntObjectMap;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
@@ -23,7 +24,6 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -53,14 +53,14 @@ public class ShardCacheViewImpl implements ShardCacheView
         return elements;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public List<JDA> asList()
     {
         return Collections.unmodifiableList(new ArrayList<>(elements.valueCollection()));
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Set<JDA> asSet()
     {
@@ -79,9 +79,9 @@ public class ShardCacheViewImpl implements ShardCacheView
         return elements.isEmpty();
     }
 
-    @Nonnull
+    @NonNull
     @Override
-    public List<JDA> getElementsByName(@Nonnull String name, boolean ignoreCase)
+    public List<JDA> getElementsByName(@NonNull String name, boolean ignoreCase)
     {
         Checks.notEmpty(name, "Name");
         if (elements.isEmpty())
@@ -109,21 +109,21 @@ public class ShardCacheViewImpl implements ShardCacheView
         return list;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Stream<JDA> stream()
     {
         return elements.valueCollection().stream();
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Stream<JDA> parallelStream()
     {
         return elements.valueCollection().parallelStream();
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Iterator<JDA> iterator()
     {
@@ -157,7 +157,7 @@ public class ShardCacheViewImpl implements ShardCacheView
             return generator.get().allMatch(CacheView::isEmpty);
         }
 
-        @Nonnull
+        @NonNull
         @Override
         public List<JDA> asList()
         {
@@ -166,7 +166,7 @@ public class ShardCacheViewImpl implements ShardCacheView
             return Collections.unmodifiableList(list);
         }
 
-        @Nonnull
+        @NonNull
         @Override
         public Set<JDA> asSet()
         {
@@ -175,9 +175,9 @@ public class ShardCacheViewImpl implements ShardCacheView
             return Collections.unmodifiableSet(set);
         }
 
-        @Nonnull
+        @NonNull
         @Override
-        public List<JDA> getElementsByName(@Nonnull String name, boolean ignoreCase)
+        public List<JDA> getElementsByName(@NonNull String name, boolean ignoreCase)
         {
             return Collections.unmodifiableList(generator.get()
                 .distinct()
@@ -194,21 +194,21 @@ public class ShardCacheViewImpl implements ShardCacheView
                 .findFirst().orElse(null);
         }
 
-        @Nonnull
+        @NonNull
         @Override
         public Stream<JDA> stream()
         {
             return generator.get().flatMap(CacheView::stream).distinct();
         }
 
-        @Nonnull
+        @NonNull
         @Override
         public Stream<JDA> parallelStream()
         {
             return generator.get().flatMap(CacheView::parallelStream).distinct();
         }
 
-        @Nonnull
+        @NonNull
         @Override
         public Iterator<JDA> iterator()
         {

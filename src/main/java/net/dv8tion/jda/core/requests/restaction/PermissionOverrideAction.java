@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.core.requests.restaction;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Channel;
@@ -31,9 +34,6 @@ import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -119,7 +119,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *
      * @return immutable list of granted {@link net.dv8tion.jda.core.Permission Permissions}
      */
-    @Nonnull
+    @NonNull
     public List<Permission> getAllowedPermissions()
     {
         return Collections.unmodifiableList(Permission.getPermissions(allow));
@@ -147,7 +147,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *
      * @return immutable list of denied {@link net.dv8tion.jda.core.Permission Permissions}
      */
-    @Nonnull
+    @NonNull
     public List<Permission> getDeniedPermissions()
     {
         return Collections.unmodifiableList(Permission.getPermissions(deny));
@@ -180,7 +180,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *
      * @see    #getInherited()
      */
-    @Nonnull
+    @NonNull
     public List<Permission> getInheritedPermissions()
     {
         return Permission.getPermissions(getInherited());
@@ -230,7 +230,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *
      * @return The current PermissionOverrideAction - for chaining convenience
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public PermissionOverrideAction setAllow(long allowBits)
     {
@@ -255,7 +255,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *
      * @return The current PermissionOverrideAction - for chaining convenience
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public PermissionOverrideAction setAllow(@Nullable Collection<Permission> permissions)
     {
@@ -280,7 +280,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *
      * @return The current PermissionOverrideAction - for chaining convenience
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public PermissionOverrideAction setAllow(@Nullable Permission... permissions)
     {
@@ -307,7 +307,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *
      * @return The current PermissionOverrideAction - for chaining convenience
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public PermissionOverrideAction setDeny(long denyBits)
     {
@@ -332,7 +332,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *
      * @return The current PermissionOverrideAction - for chaining convenience
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public PermissionOverrideAction setDeny(@Nullable Collection<Permission> permissions)
     {
@@ -357,7 +357,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *
      * @return The current PermissionOverrideAction - for chaining convenience
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public PermissionOverrideAction setDeny(@Nullable Permission... permissions)
     {
@@ -384,7 +384,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *
      * @return The current PermissionOverrideAction - for chaining convenience
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public PermissionOverrideAction setPermissions(long allowBits, long denyBits)
     {
@@ -409,7 +409,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *
      * @return The current PermissionOverrideAction - for chaining convenience
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public PermissionOverrideAction setPermissions(@Nullable Collection<Permission> grantPermissions, @Nullable Collection<Permission> denyPermissions)
     {

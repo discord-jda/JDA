@@ -16,14 +16,14 @@
 
 package net.dv8tion.jda.webhook;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.entities.Webhook;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import okhttp3.OkHttpClient;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
@@ -117,7 +117,7 @@ public class WebhookClientBuilder
      *
      * @return The current WebhookClientBuilder for chaining convenience
      */
-    @Nonnull
+    @NonNull
     public WebhookClientBuilder setExecutorService(@Nullable ScheduledExecutorService executorService)
     {
         this.pool = executorService;
@@ -136,7 +136,7 @@ public class WebhookClientBuilder
      *
      * @return The current WebhookClientBuilder for chaining convenience
      */
-    @Nonnull
+    @NonNull
     public WebhookClientBuilder setHttpClient(@Nullable OkHttpClient client)
     {
         this.client = client;
@@ -155,7 +155,7 @@ public class WebhookClientBuilder
      *
      * @return The current WebhookClientBuilder for chaining convenience
      */
-    @Nonnull
+    @NonNull
     public WebhookClientBuilder setHttpClientBuilder(@Nullable OkHttpClient.Builder builder)
     {
         Checks.notNull(builder, "Builder");
@@ -175,7 +175,7 @@ public class WebhookClientBuilder
      *
      * @return The current WebhookClientBuilder for chaining convenience
      */
-    @Nonnull
+    @NonNull
     public WebhookClientBuilder setThreadFactory(@Nullable ThreadFactory factory)
     {
         this.threadFactory = factory;
@@ -194,7 +194,7 @@ public class WebhookClientBuilder
      *
      * @return The current WebhookClientBuilder for chaining convenience
      */
-    @Nonnull
+    @NonNull
     public WebhookClientBuilder setDaemon(boolean isDaemon)
     {
         this.isDaemon = isDaemon;
@@ -210,7 +210,7 @@ public class WebhookClientBuilder
      *
      * @return The new WebhookClient instance
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public WebhookClient build()
     {

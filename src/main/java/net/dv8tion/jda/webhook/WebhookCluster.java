@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.webhook;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.Webhook;
@@ -25,8 +27,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.InputStream;
 import java.util.*;
@@ -148,7 +148,7 @@ public class WebhookCluster implements AutoCloseable
      *
      * @return The current WebhookCluster for chaining convenience
      */
-    @Nonnull
+    @NonNull
     public WebhookCluster setDefaultHttpClientBuilder(@Nullable OkHttpClient.Builder builder)
     {
         this.defaultHttpClientBuilder = builder;
@@ -165,7 +165,7 @@ public class WebhookCluster implements AutoCloseable
      *
      * @return The current WebhookCluster for chaining convenience
      */
-    @Nonnull
+    @NonNull
     public WebhookCluster setDefaultHttpClient(@Nullable OkHttpClient defaultHttpClient)
     {
         this.defaultHttpClient = defaultHttpClient;
@@ -182,7 +182,7 @@ public class WebhookCluster implements AutoCloseable
      *
      * @return The current WebhookCluster for chaining convenience
      */
-    @Nonnull
+    @NonNull
     public WebhookCluster setDefaultExecutorService(@Nullable ScheduledExecutorService executorService)
     {
         this.defaultPool = executorService;
@@ -201,7 +201,7 @@ public class WebhookCluster implements AutoCloseable
      *
      * @return The current WebhookCluster for chaining convenience
      */
-    @Nonnull
+    @NonNull
     public WebhookCluster setDefaultThreadFactory(@Nullable ThreadFactory factory)
     {
         this.threadFactory = factory;
@@ -220,7 +220,7 @@ public class WebhookCluster implements AutoCloseable
      *
      * @return The current WebhookCluster for chaining convenience
      */
-    @Nonnull
+    @NonNull
     public WebhookCluster setDefaultDaemon(boolean isDaemon)
     {
         this.isDaemon = isDaemon;
@@ -247,7 +247,7 @@ public class WebhookCluster implements AutoCloseable
      * @see    #buildWebhooks(Webhook...)
      * @see    #newBuilder(Webhook)
      */
-    @Nonnull
+    @NonNull
     public WebhookCluster buildWebhooks(Webhook... webhooks)
     {
         Checks.notNull(webhooks, "Webhooks");
@@ -277,7 +277,7 @@ public class WebhookCluster implements AutoCloseable
      * @see    #buildWebhooks(Webhook...)
      * @see    #newBuilder(Webhook)
      */
-    @Nonnull
+    @NonNull
     public WebhookCluster buildWebhooks(Collection<Webhook> webhooks)
     {
         Checks.notNull(webhooks, "Webhooks");
@@ -307,7 +307,7 @@ public class WebhookCluster implements AutoCloseable
      *
      * @see    #newBuilder(long, String)
      */
-    @Nonnull
+    @NonNull
     public WebhookCluster buildWebhook(long id, String token)
     {
         this.webhooks.add(newBuilder(id, token).build());
@@ -330,7 +330,7 @@ public class WebhookCluster implements AutoCloseable
      *
      * @see    net.dv8tion.jda.webhook.WebhookClientBuilder#WebhookClientBuilder(long, String) new WebhookClientBuilder(long, String)
      */
-    @Nonnull
+    @NonNull
     public WebhookClientBuilder newBuilder(long id, String token)
     {
         WebhookClientBuilder builder = new WebhookClientBuilder(id, token);
@@ -357,7 +357,7 @@ public class WebhookCluster implements AutoCloseable
      *
      * @see    net.dv8tion.jda.webhook.WebhookClientBuilder#WebhookClientBuilder(Webhook) new WebhookClientBuilder(Webhook)
      */
-    @Nonnull
+    @NonNull
     public WebhookClientBuilder newBuilder(Webhook webhook)
     {
         Checks.notNull(webhook, "Webhook");
@@ -378,7 +378,7 @@ public class WebhookCluster implements AutoCloseable
      *
      * @return The current WebhookCluster for chaining convenience
      */
-    @Nonnull
+    @NonNull
     public WebhookCluster addWebhooks(WebhookClient... clients)
     {
         Checks.notNull(clients, "Clients");
@@ -406,7 +406,7 @@ public class WebhookCluster implements AutoCloseable
      *
      * @return The current WebhookCluster for chaining convenience
      */
-    @Nonnull
+    @NonNull
     public WebhookCluster addWebhooks(Collection<WebhookClient> clients)
     {
         Checks.notNull(clients, "Clients");
@@ -435,7 +435,7 @@ public class WebhookCluster implements AutoCloseable
      *
      * @return The current WebhookCluster for chaining convenience
      */
-    @Nonnull
+    @NonNull
     public WebhookCluster removeWebhooks(WebhookClient... clients)
     {
         Checks.notNull(clients, "Clients");
@@ -458,7 +458,7 @@ public class WebhookCluster implements AutoCloseable
      *
      * @return The current WebhookCluster for chaining convenience
      */
-    @Nonnull
+    @NonNull
     public WebhookCluster removeWebhooks(Collection<WebhookClient> clients)
     {
         Checks.notNull(clients, "Clients");
@@ -481,7 +481,7 @@ public class WebhookCluster implements AutoCloseable
      *
      * @return List of removed clients
      */
-    @Nonnull
+    @NonNull
     public List<WebhookClient> removeIf(Predicate<WebhookClient> predicate)
     {
         Checks.notNull(predicate, "Predicate");
@@ -508,7 +508,7 @@ public class WebhookCluster implements AutoCloseable
      *
      * @return List of removed and closed clients
      */
-    @Nonnull
+    @NonNull
     public List<WebhookClient> closeIf(Predicate<WebhookClient> predicate)
     {
         Checks.notNull(predicate, "Filter");
@@ -529,7 +529,7 @@ public class WebhookCluster implements AutoCloseable
      *
      * @return Immutable list of registered receivers
      */
-    @Nonnull
+    @NonNull
     public List<WebhookClient> getWebhooks()
     {
         return Collections.unmodifiableList(new ArrayList<>(webhooks));
@@ -561,7 +561,7 @@ public class WebhookCluster implements AutoCloseable
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
      */
-    @Nonnull
+    @NonNull
     public List<RequestFuture<?>> multicast(Predicate<WebhookClient> filter, WebhookMessage message)
     {
         Checks.notNull(filter, "Filter");
@@ -596,7 +596,7 @@ public class WebhookCluster implements AutoCloseable
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
      */
-    @Nonnull
+    @NonNull
     public List<RequestFuture<?>> broadcast(WebhookMessage message)
     {
         Checks.notNull(message, "Message");
@@ -627,7 +627,7 @@ public class WebhookCluster implements AutoCloseable
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
      */
-    @Nonnull
+    @NonNull
     public List<RequestFuture<?>> broadcast(Message message)
     {
         return broadcast(WebhookMessage.from(message));
@@ -655,7 +655,7 @@ public class WebhookCluster implements AutoCloseable
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
      */
-    @Nonnull
+    @NonNull
     public List<RequestFuture<?>> broadcast(MessageEmbed... embeds)
     {
         return broadcast(WebhookMessage.of(embeds));
@@ -683,7 +683,7 @@ public class WebhookCluster implements AutoCloseable
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
      */
-    @Nonnull
+    @NonNull
     public List<RequestFuture<?>> broadcast(Collection<MessageEmbed> embeds)
     {
         return broadcast(WebhookMessage.of(embeds));
@@ -706,7 +706,7 @@ public class WebhookCluster implements AutoCloseable
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
      */
-    @Nonnull
+    @NonNull
     public List<RequestFuture<?>> broadcast(String content)
     {
         Checks.notBlank(content, "Content");
@@ -737,7 +737,7 @@ public class WebhookCluster implements AutoCloseable
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
      */
-    @Nonnull
+    @NonNull
     public List<RequestFuture<?>> broadcast(File file)
     {
         Checks.notNull(file, "File");
@@ -765,7 +765,7 @@ public class WebhookCluster implements AutoCloseable
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
      */
-    @Nonnull
+    @NonNull
     public List<RequestFuture<?>> broadcast(File file, String fileName)
     {
         Checks.notNull(file, "File");
@@ -794,7 +794,7 @@ public class WebhookCluster implements AutoCloseable
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
      */
-    @Nonnull
+    @NonNull
     public List<RequestFuture<?>> broadcast(InputStream data, String fileName)
     {
         return broadcast(new WebhookMessageBuilder().setFile(data, fileName).build());
@@ -821,7 +821,7 @@ public class WebhookCluster implements AutoCloseable
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
      */
-    @Nonnull
+    @NonNull
     public List<RequestFuture<?>> broadcast(byte[] data, String fileName)
     {
         Checks.notNull(data, "Data");

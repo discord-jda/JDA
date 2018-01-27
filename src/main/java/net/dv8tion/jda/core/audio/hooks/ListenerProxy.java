@@ -16,9 +16,8 @@
 
 package net.dv8tion.jda.core.audio.hooks;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.entities.User;
-
-import javax.annotation.Nullable;
 
 public class ListenerProxy implements ConnectionListener
 {

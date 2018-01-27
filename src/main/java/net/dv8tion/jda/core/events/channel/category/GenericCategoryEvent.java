@@ -16,12 +16,11 @@
 
 package net.dv8tion.jda.core.events.channel.category;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Category;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.events.Event;
-
-import javax.annotation.Nonnull;
 
 /**
  * <b><u>GenericCategoryEvent</u></b>
@@ -43,7 +42,7 @@ public abstract class GenericCategoryEvent extends Event
      *
      * @return The Category
      */
-    @Nonnull
+    @NonNull
     public Category getCategory()
     {
         return category;
@@ -54,7 +53,7 @@ public abstract class GenericCategoryEvent extends Event
      *
      * @return The ID for the category
      */
-    @Nonnull
+    @NonNull
     public String getId()
     {
         return Long.toUnsignedString(getIdLong());
@@ -76,7 +75,7 @@ public abstract class GenericCategoryEvent extends Event
      *
      * @return The {@link net.dv8tion.jda.core.entities.Guild Guild}
      */
-    @Nonnull
+    @NonNull
     public Guild getGuild()
     {
         return category.getGuild();

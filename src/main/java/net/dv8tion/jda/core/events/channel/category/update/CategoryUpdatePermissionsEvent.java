@@ -16,13 +16,13 @@
 
 package net.dv8tion.jda.core.events.channel.category.update;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Category;
 import net.dv8tion.jda.core.entities.IPermissionHolder;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,7 +47,7 @@ public class CategoryUpdatePermissionsEvent extends GenericCategoryUpdateEvent
      *
      * @return Immutable list of permission holders affected by this event
      */
-    @Nonnull
+    @NonNull
     public List<IPermissionHolder> getChangedPermissionHolders()
     {
         return changed;
@@ -58,7 +58,7 @@ public class CategoryUpdatePermissionsEvent extends GenericCategoryUpdateEvent
      *
      * @return Immutable list of affected roles
      */
-    @Nonnull
+    @NonNull
     public List<Role> getChangedRoles()
     {
         return changed.stream()
@@ -72,7 +72,7 @@ public class CategoryUpdatePermissionsEvent extends GenericCategoryUpdateEvent
      *
      * @return Immutable list of affected members
      */
-    @Nonnull
+    @NonNull
     public List<Member> getMembersWithPermissionChanges()
     {
         return changed.stream()

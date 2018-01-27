@@ -16,12 +16,12 @@
 package net.dv8tion.jda.core.entities;
 
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.requests.RestAction;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -61,7 +61,7 @@ public interface User extends ISnowflake, IMentionable, IFakeable
      *
      * @return Never-null String containing the {@link net.dv8tion.jda.core.entities.User User}'s username.
      */
-    @Nonnull
+    @NonNull
     String getName();
 
     /**
@@ -71,7 +71,7 @@ public interface User extends ISnowflake, IMentionable, IFakeable
      *
      * @return Never-null String containing the {@link net.dv8tion.jda.core.entities.User User} discriminator.
      */
-    @Nonnull
+    @NonNull
     String getDiscriminator();
 
     /**
@@ -97,7 +97,7 @@ public interface User extends ISnowflake, IMentionable, IFakeable
      *
      * @return Never-null String containing the {@link net.dv8tion.jda.core.entities.User User} default avatar id.
      */
-    @Nonnull
+    @NonNull
     String getDefaultAvatarId();
 
     /**
@@ -105,7 +105,7 @@ public interface User extends ISnowflake, IMentionable, IFakeable
      *
      * @return Never-null String containing the {@link net.dv8tion.jda.core.entities.User User} default avatar url.
      */
-    @Nonnull
+    @NonNull
     String getDefaultAvatarUrl();
 
     /**
@@ -115,7 +115,7 @@ public interface User extends ISnowflake, IMentionable, IFakeable
      *
      * @return  Never-null String containing the {@link net.dv8tion.jda.core.entities.User User} effective avatar url.
      */
-    @Nonnull
+    @NonNull
     String getEffectiveAvatarUrl();
 
     /**
@@ -154,7 +154,7 @@ public interface User extends ISnowflake, IMentionable, IFakeable
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}
      *         <br>The PrivateChannel to use to directly message this User.
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     RestAction<PrivateChannel> openPrivateChannel();
 
@@ -164,7 +164,7 @@ public interface User extends ISnowflake, IMentionable, IFakeable
      *
      * @return Unmodifiable list of all {@link net.dv8tion.jda.core.entities.Guild Guilds} that this user is a member of.
      */
-    @Nonnull
+    @NonNull
     List<Guild> getMutualGuilds();
 
     /**
@@ -179,6 +179,6 @@ public interface User extends ISnowflake, IMentionable, IFakeable
      *
      * @return the corresponding JDA instance
      */
-    @Nonnull
+    @NonNull
     JDA getJDA();
 }

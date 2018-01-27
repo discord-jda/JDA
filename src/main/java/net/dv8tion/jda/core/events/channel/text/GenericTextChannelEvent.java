@@ -15,12 +15,11 @@
  */
 package net.dv8tion.jda.core.events.channel.text;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.Event;
-
-import javax.annotation.Nonnull;
 
 /**
  * <b><u>GenericTextChannelEvent</u></b><br>
@@ -39,13 +38,13 @@ public abstract class GenericTextChannelEvent extends Event
         this.channel = channel;
     }
 
-    @Nonnull
+    @NonNull
     public TextChannel getChannel()
     {
         return channel;
     }
 
-    @Nonnull
+    @NonNull
     public Guild getGuild()
     {
         return channel.getGuild();

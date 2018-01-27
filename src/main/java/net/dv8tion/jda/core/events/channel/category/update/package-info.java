@@ -17,6 +17,10 @@
  * Update events for {@link net.dv8tion.jda.core.entities.Category Categories}
  */
 @ParametersAreNonnullByDefault
+@DefaultAnnotationForParameters(NonNull.class)
 package net.dv8tion.jda.core.events.channel.category.update;
+
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;

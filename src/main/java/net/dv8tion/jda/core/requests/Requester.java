@@ -30,7 +30,6 @@ import okhttp3.RequestBody;
 import okhttp3.internal.http.HttpMethod;
 import org.slf4j.Logger;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketTimeoutException;

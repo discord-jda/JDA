@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.audio;
 
 import com.sun.jna.ptr.PointerByReference;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import gnu.trove.map.TIntLongMap;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntLongHashMap;
@@ -39,7 +40,6 @@ import org.slf4j.Logger;
 import org.slf4j.MDC;
 import tomp2p.opuswrapper.Opus;
 
-import javax.annotation.Nullable;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;

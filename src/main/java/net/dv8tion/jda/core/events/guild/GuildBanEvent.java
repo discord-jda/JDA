@@ -15,11 +15,10 @@
  */
 package net.dv8tion.jda.core.events.guild;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
-
-import javax.annotation.Nonnull;
 
 /**
  * <b><u>GuildBanEvent</u></b><br>
@@ -38,7 +37,7 @@ public class GuildBanEvent extends GenericGuildEvent
         this.user = user;
     }
 
-    @Nonnull
+    @NonNull
     public User getUser()
     {
         return user;

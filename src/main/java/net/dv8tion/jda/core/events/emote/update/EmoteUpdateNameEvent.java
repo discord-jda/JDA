@@ -16,10 +16,9 @@
 
 package net.dv8tion.jda.core.events.emote.update;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Emote;
-
-import javax.annotation.Nonnull;
 
 public class EmoteUpdateNameEvent extends GenericEmoteUpdateEvent
 {
@@ -31,13 +30,13 @@ public class EmoteUpdateNameEvent extends GenericEmoteUpdateEvent
         this.oldName = oldName;
     }
 
-    @Nonnull
+    @NonNull
     public String getOldName()
     {
         return oldName;
     }
 
-    @Nonnull
+    @NonNull
     public String getNewName()
     {
         return emote.getName();

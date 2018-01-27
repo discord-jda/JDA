@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.core.utils;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.core.OnlineStatus;
@@ -29,8 +31,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -582,7 +582,7 @@ public class WidgetUtil
                 return id;
             }
 
-            @Nonnull
+            @NonNull
             @Override
             public String getAsMention()
             {

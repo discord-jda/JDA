@@ -16,16 +16,15 @@
 
 package net.dv8tion.jda.core.managers;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.Webhook;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
-
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Facade for a {@link net.dv8tion.jda.core.managers.WebhookManagerUpdatable WebhookManagerUpdatable} instance.
@@ -53,7 +52,7 @@ public class WebhookManager
      *
      * @return the corresponding JDA instance
      */
-    @Nonnull
+    @NonNull
     public JDA getJDA()
     {
         return manager.getJDA();
@@ -66,7 +65,7 @@ public class WebhookManager
      *
      * @return The parent {@link net.dv8tion.jda.core.entities.Guild Guild}
      */
-    @Nonnull
+    @NonNull
     public Guild getGuild()
     {
         return getWebhook().getGuild();
@@ -79,7 +78,7 @@ public class WebhookManager
      *
      * @return The parent {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      */
-    @Nonnull
+    @NonNull
     public TextChannel getChannel()
     {
         return getWebhook().getChannel();
@@ -91,7 +90,7 @@ public class WebhookManager
      *
      * @return The target {@link net.dv8tion.jda.core.entities.Webhook Webhook}
      */
-    @Nonnull
+    @NonNull
     public Webhook getWebhook()
     {
         return manager.getWebhook();
@@ -117,7 +116,7 @@ public class WebhookManager
      * @see    net.dv8tion.jda.core.managers.WebhookManagerUpdatable#getNameField()
      * @see    net.dv8tion.jda.core.managers.WebhookManagerUpdatable#update()
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public AuditableRestAction<Void> setName(String name)
     {
@@ -141,7 +140,7 @@ public class WebhookManager
      * @see    net.dv8tion.jda.core.managers.WebhookManagerUpdatable#getAvatarField()
      * @see    net.dv8tion.jda.core.managers.WebhookManagerUpdatable#update()
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public AuditableRestAction<Void> setAvatar(@Nullable Icon icon)
     {
@@ -170,7 +169,7 @@ public class WebhookManager
      * @see    net.dv8tion.jda.core.managers.WebhookManagerUpdatable#getChannelField()
      * @see    net.dv8tion.jda.core.managers.WebhookManagerUpdatable#update()
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public AuditableRestAction<Void> setChannel(TextChannel channel)
     {

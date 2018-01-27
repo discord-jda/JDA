@@ -15,12 +15,12 @@
  */
 package net.dv8tion.jda.core.events.guild.member;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 
-import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,7 +41,7 @@ public class GuildMemberRoleAddEvent extends GenericGuildMemberEvent
         this.addedRoles = new LinkedList<>(addedRoles);
     }
 
-    @Nonnull
+    @NonNull
     public List<Role> getRoles()
     {
         return Collections.unmodifiableList(addedRoles);

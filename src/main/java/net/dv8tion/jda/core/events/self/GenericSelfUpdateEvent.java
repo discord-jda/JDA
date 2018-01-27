@@ -16,11 +16,10 @@
 
 package net.dv8tion.jda.core.events.self;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.SelfUser;
 import net.dv8tion.jda.core.events.Event;
-
-import javax.annotation.Nonnull;
 
 public abstract class GenericSelfUpdateEvent extends Event
 {
@@ -29,7 +28,7 @@ public abstract class GenericSelfUpdateEvent extends Event
         super(api, responseNumber);
     }
 
-    @Nonnull
+    @NonNull
     public SelfUser getSelfUser()
     {
         return api.getSelfUser();

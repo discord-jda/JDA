@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
@@ -29,8 +31,6 @@ import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 
 public class InviteImpl implements Invite
@@ -89,7 +89,7 @@ public class InviteImpl implements Invite
         };
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public AuditableRestAction<Void> delete()
     {
@@ -108,7 +108,7 @@ public class InviteImpl implements Invite
         };
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public RestAction<Invite> expand()
     {
@@ -169,14 +169,14 @@ public class InviteImpl implements Invite
         };
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Channel getChannel()
     {
         return this.channel;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public String getCode()
     {
@@ -192,7 +192,7 @@ public class InviteImpl implements Invite
         return this.timeCreated;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Guild getGuild()
     {
@@ -206,7 +206,7 @@ public class InviteImpl implements Invite
         return this.inviter;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public JDAImpl getJDA()
     {

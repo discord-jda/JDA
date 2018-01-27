@@ -16,14 +16,14 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.requests.restaction.ChannelAction;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -51,14 +51,14 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannelImpl> impl
         return bitrate;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public ChannelType getType()
     {
         return ChannelType.VOICE;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public List<Member> getMembers()
     {
@@ -77,7 +77,7 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannelImpl> impl
         throw new AssertionError("Somehow when determining position we never found the VoiceChannel in the Guild's channels? wtf?");
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public ChannelAction createCopy(Guild guild)
     {

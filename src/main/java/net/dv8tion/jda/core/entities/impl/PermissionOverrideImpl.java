@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
@@ -27,8 +29,6 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
@@ -70,28 +70,28 @@ public class PermissionOverrideImpl implements PermissionOverride
         return deny;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public List<Permission> getAllowed()
     {
         return Collections.unmodifiableList(Permission.getPermissions(allow));
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public List<Permission> getInherit()
     {
         return Collections.unmodifiableList(Permission.getPermissions(getInheritRaw()));
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public List<Permission> getDenied()
     {
         return Collections.unmodifiableList(Permission.getPermissions(deny));
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public JDA getJDA()
     {
@@ -110,14 +110,14 @@ public class PermissionOverrideImpl implements PermissionOverride
         return isRoleOverride() ? (Role) permissionHolder : null;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Channel getChannel()
     {
         return channel;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Guild getGuild()
     {
@@ -136,7 +136,7 @@ public class PermissionOverrideImpl implements PermissionOverride
         return permissionHolder instanceof Role;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public PermOverrideManager getManager()
     {
@@ -153,7 +153,7 @@ public class PermissionOverrideImpl implements PermissionOverride
         return mng;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public PermOverrideManagerUpdatable getManagerUpdatable()
     {
@@ -170,7 +170,7 @@ public class PermissionOverrideImpl implements PermissionOverride
         return mng;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public AuditableRestAction<Void> delete()
     {

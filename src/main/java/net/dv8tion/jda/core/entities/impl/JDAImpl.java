@@ -17,6 +17,8 @@
 package net.dv8tion.jda.core.entities.impl;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.bot.entities.impl.JDABotImpl;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
@@ -48,8 +50,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.concurrent.*;
@@ -310,7 +310,7 @@ public class JDAImpl implements JDA
         return userResponse;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public String getToken()
     {
@@ -349,7 +349,7 @@ public class JDAImpl implements JDA
         return autoReconnect;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Status getStatus()
     {
@@ -362,21 +362,21 @@ public class JDAImpl implements JDA
         return ping;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public List<String> getCloudflareRays()
     {
         return Collections.unmodifiableList(new LinkedList<>(client.getCfRays()));
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public List<String> getWebSocketTrace()
     {
         return Collections.unmodifiableList(new LinkedList<>(client.getTraces()));
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public List<Guild> getMutualGuilds(User... users)
     {
@@ -384,7 +384,7 @@ public class JDAImpl implements JDA
         return getMutualGuilds(Arrays.asList(users));
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public List<Guild> getMutualGuilds(Collection<User> users)
     {
@@ -396,14 +396,14 @@ public class JDAImpl implements JDA
                 .collect(Collectors.toList()));
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public RestAction<User> retrieveUserById(String id)
     {
         return retrieveUserById(MiscUtil.parseSnowflake(id));
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public RestAction<User> retrieveUserById(long id)
     {
@@ -431,70 +431,70 @@ public class JDAImpl implements JDA
         };
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public CacheView<AudioManager> getAudioManagerCache()
     {
         return audioManagers;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public SnowflakeCacheView<Guild> getGuildCache()
     {
         return guildCache;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public SnowflakeCacheView<Role> getRoleCache()
     {
         return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getRoleCache));
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public SnowflakeCacheView<Emote> getEmoteCache()
     {
         return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getEmoteCache));
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public SnowflakeCacheView<Category> getCategoryCache()
     {
         return categories;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public SnowflakeCacheView<TextChannel> getTextChannelCache()
     {
         return textChannelCache;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public SnowflakeCacheView<VoiceChannel> getVoiceChannelCache()
     {
         return voiceChannelCache;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public SnowflakeCacheView<PrivateChannel> getPrivateChannelCache()
     {
         return privateChannelCache;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public SnowflakeCacheView<User> getUserCache()
     {
         return userCache;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public SelfUser getSelfUser()
     {
@@ -545,7 +545,7 @@ public class JDAImpl implements JDA
         setStatus(Status.SHUTDOWN);
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public JDAClientImpl asClient()
     {
@@ -553,7 +553,7 @@ public class JDAImpl implements JDA
         return jdaClient;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public JDABotImpl asBot()
     {
@@ -580,7 +580,7 @@ public class JDAImpl implements JDA
         return shardInfo;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Presence getPresence()
     {
@@ -593,7 +593,7 @@ public class JDAImpl implements JDA
     //    return new AuditableRestAction.FailedRestAction<>(new UnsupportedOperationException("nice try but next time think first :)"));
     //}
 
-    @Nonnull
+    @NonNull
     @Override
     public AccountType getAccountType()
     {
@@ -624,14 +624,14 @@ public class JDAImpl implements JDA
             eventManager.unregister(listener);
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public List<Object> getRegisteredListeners()
     {
         return Collections.unmodifiableList(eventManager.getRegisteredListeners());
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public GuildAction createGuild(String name)
     {

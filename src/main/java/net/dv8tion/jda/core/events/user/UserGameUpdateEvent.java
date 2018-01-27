@@ -15,12 +15,11 @@
  */
 package net.dv8tion.jda.core.events.user;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
-
-import javax.annotation.Nullable;
 
 /**
  * <b><u>UserGameUpdateEvent</u></b><br>

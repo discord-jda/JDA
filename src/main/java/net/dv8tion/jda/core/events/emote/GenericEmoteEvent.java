@@ -16,12 +16,11 @@
 
 package net.dv8tion.jda.core.events.emote;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.events.Event;
-
-import javax.annotation.Nonnull;
 
 public class GenericEmoteEvent extends Event
 {
@@ -33,14 +32,14 @@ public class GenericEmoteEvent extends Event
         this.emote = emote;
     }
 
-    @Nonnull
+    @NonNull
     @SuppressWarnings("ConstantConditions")
     public Guild getGuild()
     {
         return emote.getGuild();
     }
 
-    @Nonnull
+    @NonNull
     public Emote getEmote()
     {
         return emote;

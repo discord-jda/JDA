@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.core.entities;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
@@ -29,9 +32,6 @@ import net.dv8tion.jda.core.requests.restaction.pagination.ReactionPaginationAct
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
@@ -78,7 +78,7 @@ public class MessageReaction
      *
      * @return The JDA instance of this Reaction
      */
-    @Nonnull
+    @NonNull
     public JDA getJDA()
     {
         return channel.getJDA();
@@ -120,7 +120,7 @@ public class MessageReaction
      *
      * @return The ChannelType
      */
-    @Nonnull
+    @NonNull
     public ChannelType getChannelType()
     {
         return channel.getType();
@@ -196,7 +196,7 @@ public class MessageReaction
      *
      * @return The channel this Reaction was used in
      */
-    @Nonnull
+    @NonNull
     public MessageChannel getChannel()
     {
         return channel;
@@ -208,7 +208,7 @@ public class MessageReaction
      *
      * @return The final instance of this Reaction's Emote/Emoji
      */
-    @Nonnull
+    @NonNull
     public ReactionEmote getReactionEmote()
     {
         return emote;
@@ -219,7 +219,7 @@ public class MessageReaction
      *
      * @return The message id this reaction is attached to
      */
-    @Nonnull
+    @NonNull
     public String getMessageId()
     {
         return Long.toUnsignedString(messageId);
@@ -255,7 +255,7 @@ public class MessageReaction
      * @return {@link net.dv8tion.jda.core.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction}
      *         <br>Iterable {@link net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction PaginationAction} to get all users
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public ReactionPaginationAction getUsers()
     {
@@ -288,7 +288,7 @@ public class MessageReaction
      * @return {@link net.dv8tion.jda.core.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction}
      *         <br>Iterable {@link net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction PaginationAction} to get all users
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public ReactionPaginationAction getUsers(int amount)
     {
@@ -315,7 +315,7 @@ public class MessageReaction
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
      *         Nothing is returned on success
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public RestAction<Void> removeReaction()
     {
@@ -354,7 +354,7 @@ public class MessageReaction
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
      *         Nothing is returned on success
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public RestAction<Void> removeReaction(User user)
     {
@@ -495,7 +495,7 @@ public class MessageReaction
          *
          * @return The time when this emote was created
          */
-        @Nonnull
+        @NonNull
         public OffsetDateTime getCreationTime()
         {
             return MiscUtil.getCreationTime(getIdLong());
@@ -507,7 +507,7 @@ public class MessageReaction
          *
          * @return The name for this emote/emoji
          */
-        @Nonnull
+        @NonNull
         public String getName()
         {
             return name;
@@ -520,7 +520,7 @@ public class MessageReaction
          *
          * @return The possibly-null Emote for the Reaction instance
          */
-        @Nonnull
+        @NonNull
         public Emote getEmote()
         {
             return emote;
@@ -531,7 +531,7 @@ public class MessageReaction
          *
          * @return The JDA instance of the Reaction
          */
-        @Nonnull
+        @NonNull
         public JDA getJDA()
         {
             return api;

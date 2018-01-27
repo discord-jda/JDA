@@ -15,13 +15,13 @@
  */
 package net.dv8tion.jda.core.events.channel.voice.update;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.IPermissionHolder;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,13 +41,13 @@ public class VoiceChannelUpdatePermissionsEvent extends GenericVoiceChannelUpdat
         this.changedPermHolders = changed;
     }
 
-    @Nonnull
+    @NonNull
     public List<IPermissionHolder> getChangedPermissionHolders()
     {
         return changedPermHolders;
     }
 
-    @Nonnull
+    @NonNull
     public List<Role> getChangedRoles()
     {
         return changedPermHolders
@@ -57,7 +57,7 @@ public class VoiceChannelUpdatePermissionsEvent extends GenericVoiceChannelUpdat
                 .collect(Collectors.toList());
     }
 
-    @Nonnull
+    @NonNull
     public List<Member> getMemberWithPermissionChanges()
     {
         return changedPermHolders

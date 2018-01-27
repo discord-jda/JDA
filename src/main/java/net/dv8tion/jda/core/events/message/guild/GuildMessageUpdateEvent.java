@@ -15,12 +15,11 @@
  */
 package net.dv8tion.jda.core.events.message.guild;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
-
-import javax.annotation.Nonnull;
 
 /**
  * <b><u>GuildMessageReceivedEvent</u></b><br>
@@ -38,13 +37,13 @@ public class GuildMessageUpdateEvent extends GenericGuildMessageEvent
         this.message = message;
     }
 
-    @Nonnull
+    @NonNull
     public Message getMessage()
     {
         return message;
     }
 
-    @Nonnull
+    @NonNull
     public User getAuthor()
     {
         return message.getAuthor();

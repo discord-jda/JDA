@@ -16,10 +16,9 @@
 
 package net.dv8tion.jda.core.events.guild;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.events.Event;
-
-import javax.annotation.Nonnull;
 
 /**
  * <b><u>UnavailableGuildJoinedEvent</u></b><br>
@@ -37,7 +36,7 @@ public class UnavailableGuildJoinedEvent extends Event
         this.guildId = guildId;
     }
 
-    @Nonnull
+    @NonNull
     public String getGuildId()
     {
         return Long.toUnsignedString(guildId);

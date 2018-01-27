@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.client.requests.restaction;
 
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.client.entities.Application;
 import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
@@ -26,7 +29,6 @@ import net.dv8tion.jda.core.requests.Route;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
 
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
@@ -38,6 +40,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
  * @author Aljoscha Grebe
  */
 @ParametersAreNonnullByDefault
+@DefaultAnnotationForParameters(NonNull.class)
 public class ApplicationAction extends RestAction<Application>
 {
     protected String description = null;

@@ -16,11 +16,10 @@
 
 package net.dv8tion.jda.core.events.message.guild.react;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
-
-import javax.annotation.Nonnull;
 
 public class GenericGuildMessageReactionEvent extends GenericGuildMessageEvent
 {
@@ -34,13 +33,13 @@ public class GenericGuildMessageReactionEvent extends GenericGuildMessageEvent
         this.reaction = reaction;
     }
 
-    @Nonnull
+    @NonNull
     public Guild getGuild()
     {
         return getChannel().getGuild();
     }
 
-    @Nonnull
+    @NonNull
     public User getUser()
     {
         return issuer;
@@ -51,13 +50,13 @@ public class GenericGuildMessageReactionEvent extends GenericGuildMessageEvent
         return getGuild().getMember(getUser());
     }
 
-    @Nonnull
+    @NonNull
     public MessageReaction getReaction()
     {
         return reaction;
     }
 
-    @Nonnull
+    @NonNull
     public MessageReaction.ReactionEmote getReactionEmote()
     {
         return reaction.getReactionEmote();

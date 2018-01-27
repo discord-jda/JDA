@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.webhook;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.requests.Requester;
@@ -27,8 +29,6 @@ import okhttp3.RequestBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
@@ -73,7 +73,7 @@ public class WebhookMessage
      *
      * @return The resulting WebhookMessage instance
      */
-    @Nonnull
+    @NonNull
     public static WebhookMessage of(MessageEmbed... embeds)
     {
         return new WebhookMessageBuilder().addEmbeds(embeds).build();
@@ -91,7 +91,7 @@ public class WebhookMessage
      *
      * @return The resulting WebhookMessage instance
      */
-    @Nonnull
+    @NonNull
     public static WebhookMessage of(Collection<MessageEmbed> embeds)
     {
         return new WebhookMessageBuilder().addEmbeds(embeds).build();
@@ -109,7 +109,7 @@ public class WebhookMessage
      *
      * @return The resulting WebhookMessage instance
      */
-    @Nonnull
+    @NonNull
     public static WebhookMessage from(Message message)
     {
         Checks.notNull(message, "Message");

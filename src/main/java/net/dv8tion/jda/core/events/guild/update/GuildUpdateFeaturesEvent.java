@@ -16,10 +16,10 @@
 
 package net.dv8tion.jda.core.events.guild.update;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 
-import javax.annotation.Nonnull;
 import java.util.Set;
 
 /**
@@ -40,7 +40,7 @@ public class GuildUpdateFeaturesEvent extends GenericGuildUpdateEvent
      *
      * @return Never-null, unmodifiable Set of the old features
      */
-    @Nonnull
+    @NonNull
     public Set<String> getOldFeatures()
     {
         return oldFeatures;

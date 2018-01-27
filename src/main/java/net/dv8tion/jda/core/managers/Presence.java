@@ -16,12 +16,13 @@
 
 package net.dv8tion.jda.core.managers;
 
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNullableByDefault;
 
 /**
@@ -30,6 +31,7 @@ import javax.annotation.ParametersAreNullableByDefault;
  * @since  3.0
  */
 @ParametersAreNullableByDefault
+@DefaultAnnotationForParameters(Nullable.class)
 public interface Presence
 {
 
@@ -38,7 +40,7 @@ public interface Presence
      *
      * @return The current JDA instance
      */
-    @Nonnull
+    @NonNull
     JDA getJDA();
 
     /**

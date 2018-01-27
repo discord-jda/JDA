@@ -15,11 +15,10 @@
  */
 package net.dv8tion.jda.core.events.guild;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.events.Event;
-
-import javax.annotation.Nonnull;
 
 /**
  * <b><u>GenericGuildEvent</u></b><br>
@@ -38,7 +37,7 @@ public abstract class GenericGuildEvent extends Event
         this.guild = guild;
     }
 
-    @Nonnull
+    @NonNull
     public Guild getGuild()
     {
         return guild;

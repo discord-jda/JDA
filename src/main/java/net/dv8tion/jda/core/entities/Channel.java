@@ -15,6 +15,9 @@
  */
 package net.dv8tion.jda.core.entities;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.managers.ChannelManager;
 import net.dv8tion.jda.core.managers.ChannelManagerUpdatable;
@@ -24,9 +27,6 @@ import net.dv8tion.jda.core.requests.restaction.ChannelAction;
 import net.dv8tion.jda.core.requests.restaction.InviteAction;
 import net.dv8tion.jda.core.requests.restaction.PermissionOverrideAction;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -40,7 +40,7 @@ public interface Channel extends ISnowflake
      *
      * @return The channel type
      */
-    @Nonnull
+    @NonNull
     ChannelType getType();
 
     /**
@@ -49,7 +49,7 @@ public interface Channel extends ISnowflake
      *
      * @return The name of this Channel
      */
-    @Nonnull
+    @NonNull
     String getName();
 
     /**
@@ -57,7 +57,7 @@ public interface Channel extends ISnowflake
      *
      * @return Never-null {@link net.dv8tion.jda.core.entities.Guild Guild} that this Channel is part of.
      */
-    @Nonnull
+    @NonNull
     Guild getGuild();
 
     /**
@@ -80,7 +80,7 @@ public interface Channel extends ISnowflake
      *
      * @return A List of {@link net.dv8tion.jda.core.entities.Member Members} that are in this Channel.
      */
-    @Nonnull
+    @NonNull
     List<Member> getMembers();
 
     /**
@@ -109,7 +109,7 @@ public interface Channel extends ISnowflake
      *
      * @return the corresponding JDA instance
      */
-    @Nonnull
+    @NonNull
     JDA getJDA();
 
     /**
@@ -151,7 +151,7 @@ public interface Channel extends ISnowflake
      * @return Possibly-empty list of all {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides}
      *         for this {@link net.dv8tion.jda.core.entities.Channel Channel}.
      */
-    @Nonnull
+    @NonNull
     List<PermissionOverride> getPermissionOverrides();
 
     /**
@@ -162,7 +162,7 @@ public interface Channel extends ISnowflake
      *         for {@link net.dv8tion.jda.core.entities.Member Member}
      *         for this {@link net.dv8tion.jda.core.entities.Channel Channel}.
      */
-    @Nonnull
+    @NonNull
     List<PermissionOverride> getMemberPermissionOverrides();
 
     /**
@@ -173,7 +173,7 @@ public interface Channel extends ISnowflake
      *         for {@link net.dv8tion.jda.core.entities.Role Roles}
      *         for this {@link net.dv8tion.jda.core.entities.Channel Channel}.
      */
-    @Nonnull
+    @NonNull
     List<PermissionOverride> getRolePermissionOverrides();
 
     /**
@@ -212,7 +212,7 @@ public interface Channel extends ISnowflake
      * @return A specific {@link net.dv8tion.jda.core.requests.restaction.ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new Channel before creating it!
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     ChannelAction createCopy(Guild guild);
 
@@ -244,7 +244,7 @@ public interface Channel extends ISnowflake
      * @return A specific {@link net.dv8tion.jda.core.requests.restaction.ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new Channel before creating it!
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     default ChannelAction createCopy()
     {
@@ -259,7 +259,7 @@ public interface Channel extends ISnowflake
      *
      * @see    #getManagerUpdatable()
      */
-    @Nonnull
+    @NonNull
     ChannelManager getManager();
 
     /**
@@ -271,7 +271,7 @@ public interface Channel extends ISnowflake
      *
      * @see    #getManager()
      */
-    @Nonnull
+    @NonNull
     ChannelManagerUpdatable getManagerUpdatable();
 
     /**
@@ -296,7 +296,7 @@ public interface Channel extends ISnowflake
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     AuditableRestAction<Void> delete();
 
@@ -328,7 +328,7 @@ public interface Channel extends ISnowflake
      *
      * @see    #createPermissionOverride(Role)
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     PermissionOverrideAction createPermissionOverride(Member member);
 
@@ -360,7 +360,7 @@ public interface Channel extends ISnowflake
      *
      * @see    #createPermissionOverride(Member)
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     PermissionOverrideAction createPermissionOverride(Role role);
 
@@ -378,7 +378,7 @@ public interface Channel extends ISnowflake
      * 
      * @see    net.dv8tion.jda.core.requests.restaction.InviteAction
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     InviteAction createInvite();
 
@@ -395,7 +395,7 @@ public interface Channel extends ISnowflake
      *
      * @see    net.dv8tion.jda.core.entities.Guild#getInvites()
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     RestAction<List<Invite>> getInvites();
 }

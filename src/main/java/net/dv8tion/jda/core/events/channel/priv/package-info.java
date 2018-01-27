@@ -20,6 +20,10 @@
  * or {@link net.dv8tion.jda.core.events.channel.priv.PrivateChannelDeleteEvent closed}
  */
 @ParametersAreNonnullByDefault
+@DefaultAnnotationForParameters(NonNull.class)
 package net.dv8tion.jda.core.events.channel.priv;
+
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;

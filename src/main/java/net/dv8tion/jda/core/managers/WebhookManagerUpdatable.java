@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.managers;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
@@ -28,10 +30,6 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 
 /**
  * An {@link #update() updatable} manager that allows
@@ -72,7 +70,7 @@ public class WebhookManagerUpdatable
      *
      * @return the corresponding JDA instance
      */
-    @Nonnull
+    @NonNull
     public JDA getJDA()
     {
         return webhook.getJDA();
@@ -85,7 +83,7 @@ public class WebhookManagerUpdatable
      *
      * @return The parent {@link net.dv8tion.jda.core.entities.Guild Guild}
      */
-    @Nonnull
+    @NonNull
     public Guild getGuild()
     {
         return webhook.getGuild();
@@ -98,7 +96,7 @@ public class WebhookManagerUpdatable
      *
      * @return The parent {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      */
-    @Nonnull
+    @NonNull
     public TextChannel getChannel()
     {
         return webhook.getChannel();
@@ -110,7 +108,7 @@ public class WebhookManagerUpdatable
      *
      * @return The target {@link net.dv8tion.jda.core.entities.Webhook Webhook}
      */
-    @Nonnull
+    @NonNull
     public Webhook getWebhook()
     {
         return webhook;
@@ -130,7 +128,7 @@ public class WebhookManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.WebhookField WebhookField} - Type: {@code String}
      */
-    @Nonnull
+    @NonNull
     public WebhookField<String> getNameField()
     {
         return name;
@@ -146,7 +144,7 @@ public class WebhookManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.WebhookField WebhookField} - Type: {@link net.dv8tion.jda.core.entities.Icon}
      */
-    @Nonnull
+    @NonNull
     public WebhookField<Icon> getAvatarField()
     {
         return avatar;
@@ -167,7 +165,7 @@ public class WebhookManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.WebhookField WebhookField} - Type: {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      */
-    @Nonnull
+    @NonNull
     public WebhookField<TextChannel> getChannelField()
     {
         return channel;
@@ -213,7 +211,7 @@ public class WebhookManagerUpdatable
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Applies all changes that have been made in a single api-call.
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public AuditableRestAction<Void> update()
     {
@@ -264,7 +262,7 @@ public class WebhookManagerUpdatable
         name = new WebhookField<String>(this, webhook::getName)
         {
             @Override
-            public void checkValue(@CheckForNull String value)
+            public void checkValue(String value)
             {
                 Checks.notNull(value, "default name");
             }
@@ -273,7 +271,7 @@ public class WebhookManagerUpdatable
         avatar = new WebhookField<Icon>(this, Field.unsupported("Cannot easily provide the original Avatar. Use User#getIconUrl() and download it yourself."))
         {
             @Override
-            public void checkValue(@CheckForNull Icon value) { }
+            public void checkValue(Icon value) { }
 
             @Override
             public boolean shouldUpdate()
@@ -285,7 +283,7 @@ public class WebhookManagerUpdatable
         channel = new WebhookField<TextChannel>(this, webhook::getChannel)
         {
             @Override
-            public void checkValue(@CheckForNull TextChannel value)
+            public void checkValue(TextChannel value)
             {
                 Checks.notNull(value, "channel");
                 Checks.check(value.getGuild().equals(getGuild()), "Channel is not from the same Guild!");

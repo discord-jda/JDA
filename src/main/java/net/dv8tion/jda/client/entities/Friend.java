@@ -16,12 +16,12 @@
 
 package net.dv8tion.jda.client.entities;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.requests.RestAction;
 
 import java.time.OffsetDateTime;
-import javax.annotation.CheckReturnValue;
 
 public interface Friend extends Relationship
 {

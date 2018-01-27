@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.core.entities;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 
 /**
  * Represents the voice state of a {@link net.dv8tion.jda.core.entities.Member Member} in a
@@ -83,7 +83,7 @@ public interface GuildVoiceState extends VoiceState
      *
      * @return the Member's Guild
      */
-    @Nonnull
+    @NonNull
     Guild getGuild();
 
     /**
@@ -92,7 +92,7 @@ public interface GuildVoiceState extends VoiceState
      *
      * @return the Member that holds this GuildVoiceState
      */
-    @Nonnull
+    @NonNull
     Member getMember();
 
     /**

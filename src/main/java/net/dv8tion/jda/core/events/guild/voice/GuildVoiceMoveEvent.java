@@ -16,11 +16,10 @@
 
 package net.dv8tion.jda.core.events.guild.voice;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.VoiceChannel;
-
-import javax.annotation.Nonnull;
 
 /**
  * <b><u>GuildVoiceMoveEvent</u></b>
@@ -41,7 +40,7 @@ public class GuildVoiceMoveEvent extends GuildVoiceUpdateEvent
      *
      * @return the {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
      */
-    @Nonnull
+    @NonNull
     public VoiceChannel getChannelJoined()
     {
         return channelJoined;

@@ -15,11 +15,10 @@
  */
 package net.dv8tion.jda.core.events.message;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
-
-import javax.annotation.Nonnull;
 
 /**
  * <b><u>MessageReceivedEvent</u></b><br>
@@ -44,7 +43,7 @@ public class MessageReceivedEvent extends GenericMessageEvent
      *
      * @return The received {@link net.dv8tion.jda.core.entities.Message Message} object.
      */
-    @Nonnull
+    @NonNull
     public Message getMessage()
     {
         return message;
@@ -59,7 +58,7 @@ public class MessageReceivedEvent extends GenericMessageEvent
      * @see #isWebhookMessage()
      * @see net.dv8tion.jda.core.entities.User#isFake()
      */
-    @Nonnull
+    @NonNull
     public User getAuthor()
     {
         return message.getAuthor();

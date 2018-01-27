@@ -15,12 +15,11 @@
  */
 package net.dv8tion.jda.core.events.channel.voice;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.Event;
-
-import javax.annotation.Nonnull;
 
 /**
  * <b><u>GenericVoiceChannelEvent</u></b><br>
@@ -39,13 +38,13 @@ public abstract class GenericVoiceChannelEvent extends Event
         this.channel = channel;
     }
 
-    @Nonnull
+    @NonNull
     public VoiceChannel getChannel()
     {
         return channel;
     }
 
-    @Nonnull
+    @NonNull
     public Guild getGuild()
     {
         return channel.getGuild();

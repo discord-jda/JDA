@@ -16,13 +16,12 @@
 
 package net.dv8tion.jda.core.events.user;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.client.entities.Friend;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
-
-import javax.annotation.Nullable;
 
 public abstract class GenericUserPresenceEvent extends GenericUserEvent
 {

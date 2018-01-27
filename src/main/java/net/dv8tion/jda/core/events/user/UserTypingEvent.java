@@ -15,12 +15,12 @@
  */
 package net.dv8tion.jda.core.events.user;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 
 /**
@@ -41,13 +41,13 @@ public class UserTypingEvent extends GenericUserEvent
         this.timestamp = timestamp;
     }
 
-    @Nonnull
+    @NonNull
     public OffsetDateTime getTimestamp()
     {
         return timestamp;
     }
 
-    @Nonnull
+    @NonNull
     public MessageChannel getChannel()
     {
         return channel;
@@ -64,7 +64,7 @@ public class UserTypingEvent extends GenericUserEvent
         return channel.getType() == type;
     }
 
-    @Nonnull
+    @NonNull
     public ChannelType getType()
     {
         return channel.getType();

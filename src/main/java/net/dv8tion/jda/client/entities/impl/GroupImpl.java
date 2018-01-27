@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.client.entities.impl;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.client.entities.Call;
 import net.dv8tion.jda.client.entities.Friend;
@@ -29,8 +31,6 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.core.utils.cache.impl.SnowflakeCacheViewImpl;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -69,14 +69,14 @@ public class GroupImpl implements Group
         return lastMessageId > 0;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public String getName()
     {
-        return name;
+        return name == null ? "" : name;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public ChannelType getType()
     {
@@ -161,7 +161,7 @@ public class GroupImpl implements Group
         return null;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public JDA getJDA()
     {

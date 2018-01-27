@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.client.managers;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.client.managers.fields.EmoteField;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
@@ -32,8 +35,6 @@ import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.CheckReturnValue;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Collection;
 import java.util.regex.Matcher;
@@ -56,6 +57,7 @@ import java.util.stream.Collectors;
  * must be from {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}
  */
 @ParametersAreNonnullByDefault
+@DefaultAnnotationForParameters(NonNull.class)
 public class EmoteManagerUpdatable
 {
     public static final Pattern NAME_PATTERN = Pattern.compile("^\\w+$");
@@ -243,7 +245,7 @@ public class EmoteManagerUpdatable
         name = new EmoteField<String>(this, emote::getName)
         {
             @Override
-            public void checkValue(@CheckForNull String value)
+            public void checkValue(String value)
             {
                 Checks.notNull(value, "emote name");
                 if (value.length() < 2 || value.length() > 32)
@@ -258,7 +260,7 @@ public class EmoteManagerUpdatable
         roles = new EmoteField<Collection<Role>>(this, emote::getRoles)
         {
             @Override
-            public void checkValue(@CheckForNull Collection<Role> value)
+            public void checkValue(Collection<Role> value)
             {
                 Checks.notNull(value, "Role Collection");
                 value.forEach(r -> Checks.notNull(r, "Role in Collection"));

@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.requests;
 
 import com.neovisionaries.ws.client.*;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import gnu.trove.iterator.TLongObjectIterator;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
@@ -48,7 +49,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
-import javax.annotation.Nullable;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.OffsetDateTime;

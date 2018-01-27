@@ -15,10 +15,10 @@
  */
 package net.dv8tion.jda.core.entities;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.utils.Checks;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Objects;
 
 /**
@@ -79,7 +79,7 @@ public class Game
      *
      * @return Possibly-null String containing the Game's name.
      */
-    @Nonnull
+    @NonNull
     public String getName()
     {
         return name;
@@ -102,7 +102,7 @@ public class Game
      *
      * @return Never-null {@link net.dv8tion.jda.core.entities.Game.GameType GameType} representing the type of Game
      */
-    @Nonnull
+    @NonNull
     public GameType getType()
     {
         return type;
@@ -150,7 +150,7 @@ public class Game
      *
      * @return A valid Game instance with the provided name with {@link GameType#DEFAULT}
      */
-    @Nonnull
+    @NonNull
     public static Game playing(String name)
     {
         Checks.notBlank(name, "Name");
@@ -174,7 +174,7 @@ public class Game
      *
      * @see    #isValidStreamingUrl(String)
      */
-    @Nonnull
+    @NonNull
     public static Game streaming(String name, @Nullable String url)
     {
         Checks.notEmpty(name, "Provided game name");
@@ -198,7 +198,7 @@ public class Game
      *
      * @return A valid Game instance with the provided name with {@link GameType#LISTENING}
      */
-    @Nonnull
+    @NonNull
     public static Game listening(String name)
     {
         Checks.notBlank(name, "Name");
@@ -217,7 +217,7 @@ public class Game
      *
      * @return A valid Game instance with the provided name with {@link GameType#WATCHING}
      */
-    @Nonnull
+    @NonNull
     public static Game watching(String name)
     {
         Checks.notBlank(name, "Name");
@@ -237,7 +237,7 @@ public class Game
      *
      * @return A valid Game instance with the provided name and url
      */
-    @Nonnull
+    @NonNull
     public static Game of(GameType type, String name)
     {
         return of(type, name, null);
@@ -262,7 +262,7 @@ public class Game
      *
      * @see    #isValidStreamingUrl(String)
      */
-    @Nonnull
+    @NonNull
     public static Game of(GameType type, String name, @Nullable String url)
     {
         Checks.notNull(type, "Type");

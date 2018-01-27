@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.core.managers;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Icon;
@@ -30,10 +33,6 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.regex.Pattern;
 
 /**
@@ -79,7 +78,7 @@ public class AccountManagerUpdatable
      *
      * @return the corresponding JDA instance
      */
-    @Nonnull
+    @NonNull
     public JDA getJDA()
     {
         return selfUser.getJDA();
@@ -92,7 +91,7 @@ public class AccountManagerUpdatable
      *
      * @return The corresponding SelfUser
      */
-    @Nonnull
+    @NonNull
     public SelfUser getSelfUser()
     {
         return selfUser;
@@ -111,7 +110,7 @@ public class AccountManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.AccountField AccountField} - Type: {@code String}
      */
-    @Nonnull
+    @NonNull
     public AccountField<String> getNameField()
     {
         return name;
@@ -131,7 +130,7 @@ public class AccountManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.AccountField AccountField} - Type: {@link net.dv8tion.jda.core.entities.Icon Icon}
      */
-    @Nonnull
+    @NonNull
     public AccountField<Icon> getAvatarField()
     {
         return avatar;
@@ -155,7 +154,7 @@ public class AccountManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.AccountField AccountField} - Type: {@code String}
      */
-    @Nonnull
+    @NonNull
     public AccountField<String> getEmailField()
     {
         if (!isType(AccountType.CLIENT))
@@ -182,7 +181,7 @@ public class AccountManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.AccountField AccountField} - Type: {@code String}
      */
-    @Nonnull
+    @NonNull
     public AccountField<String> getPasswordField()
     {
         if (!isType(AccountType.CLIENT))
@@ -233,7 +232,7 @@ public class AccountManagerUpdatable
      *         <br>Updates all modified fields or does nothing if none of the {@link net.dv8tion.jda.core.managers.fields.Field Fields}
      *         have been modified. ({@link net.dv8tion.jda.core.requests.RestAction.EmptyRestAction EmptyRestAction})
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public RestAction<Void> update(@Nullable String currentPassword)
     {
@@ -302,7 +301,7 @@ public class AccountManagerUpdatable
      *         Updates all modified fields or does nothing if none of the {@link net.dv8tion.jda.core.managers.fields.Field Fields}
      *         have been modified. ({@link net.dv8tion.jda.core.requests.RestAction.EmptyRestAction EmptyRestAction})
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public RestAction<Void> update()
     {
@@ -324,7 +323,7 @@ public class AccountManagerUpdatable
         name = new AccountField<String>(this, selfUser::getName)
         {
             @Override
-            public void checkValue(@CheckForNull String value)
+            public void checkValue(String value)
             {
                 Checks.notNull(value, "account name");
                 if (value.length() < 2 || value.length() > 32)
@@ -335,7 +334,7 @@ public class AccountManagerUpdatable
         avatar = new AccountField<Icon>(this, Field.unsupported("Cannot easily provide the original Avatar. Use User#getIconUrl() and download it yourself."))
         {
             @Override
-            public void checkValue(@CheckForNull Icon value) { }
+            public void checkValue(Icon value) { }
 
 
             @Override
@@ -350,7 +349,7 @@ public class AccountManagerUpdatable
             email = new AccountField<String>(this, selfUser::getEmail)
             {
                 @Override
-                public void checkValue(@CheckForNull String value)
+                public void checkValue(String value)
                 {
                     Checks.notNull(value, "account email");
                     if (!EMAIL_PATTERN.matcher(value).find())
@@ -361,7 +360,7 @@ public class AccountManagerUpdatable
             password = new AccountField<String>(this, Field.unsupported("Cannot get the original password. We are not given this information."))
             {
                 @Override
-                public void checkValue(@CheckForNull String value)
+                public void checkValue(String value)
                 {
                     Checks.notNull(value, "account password");
                     if (value.length() < 6 || value.length() > 128)

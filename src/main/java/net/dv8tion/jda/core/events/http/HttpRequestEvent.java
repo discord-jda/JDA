@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.core.events.http;
 
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
@@ -27,8 +30,6 @@ import okhttp3.ResponseBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Set;
 
@@ -38,6 +39,7 @@ import java.util.Set;
  * <p>Depending on the request and its result not all values have to be populated.
  */
 @ParametersAreNonnullByDefault
+@DefaultAnnotationForParameters(NonNull.class)
 public class HttpRequestEvent extends Event
 {
     private final Request<?> request;
@@ -51,7 +53,7 @@ public class HttpRequestEvent extends Event
         this.response = response;
     }
 
-    @Nonnull
+    @NonNull
     public Request<?> getRequest()
     {
         return this.request;
@@ -81,7 +83,7 @@ public class HttpRequestEvent extends Event
         return this.response.getRawResponse() == null ? null : this.response.getRawResponse().request();
     }
 
-    @Nonnull
+    @NonNull
     public Response getResponse()
     {
         return this.response;
@@ -105,7 +107,7 @@ public class HttpRequestEvent extends Event
         return this.response.getObject();
     }
 
-    @Nonnull
+    @NonNull
     public String getResponseBodyAsString()
     {
         return this.response.getString();
@@ -123,19 +125,19 @@ public class HttpRequestEvent extends Event
         return this.response.getRawResponse();
     }
 
-    @Nonnull
+    @NonNull
     public Set<String> getCFRays()
     {
         return this.response.getCFRays();
     }
 
-    @Nonnull
+    @NonNull
     public RestAction<?> getRestAction()
     {
         return this.request.getRestAction();
     }
 
-    @Nonnull
+    @NonNull
     public CompiledRoute getRoute()
     {
         return this.request.getRoute();

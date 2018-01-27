@@ -16,10 +16,10 @@
 
 package net.dv8tion.jda.core.events.role.update;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Role;
 
-import javax.annotation.Nullable;
 import java.awt.Color;
 
 public class RoleUpdateColorEvent extends GenericRoleUpdateEvent

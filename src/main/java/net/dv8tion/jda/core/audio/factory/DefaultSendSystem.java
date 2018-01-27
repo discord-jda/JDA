@@ -16,13 +16,12 @@
 
 package net.dv8tion.jda.core.audio.factory;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.audio.AudioConnection;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.utils.JDALogger;
 import org.slf4j.MDC;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.NoRouteToHostException;
@@ -47,7 +46,7 @@ public class DefaultSendSystem implements IAudioSendSystem
     }
 
     @Override
-    public void setContextMap(@CheckForNull @Nullable ConcurrentMap<String, String> contextMap)
+    public void setContextMap(@Nullable ConcurrentMap<String, String> contextMap)
     {
         this.contextMap = contextMap;
     }

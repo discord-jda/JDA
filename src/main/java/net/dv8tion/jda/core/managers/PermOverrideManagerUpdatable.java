@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.core.managers;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Channel;
@@ -29,9 +32,6 @@ import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -74,7 +74,7 @@ public class PermOverrideManagerUpdatable
      *
      * @return the corresponding JDA instance
      */
-    @Nonnull
+    @NonNull
     public JDA getJDA()
     {
         return override.getJDA();
@@ -87,7 +87,7 @@ public class PermOverrideManagerUpdatable
      *
      * @return The parent {@link net.dv8tion.jda.core.entities.Guild Guild}
      */
-    @Nonnull
+    @NonNull
     public Guild getGuild()
     {
         return override.getGuild();
@@ -100,7 +100,7 @@ public class PermOverrideManagerUpdatable
      *
      * @return The parent {@link net.dv8tion.jda.core.entities.Channel Channel}
      */
-    @Nonnull
+    @NonNull
     public Channel getChannel()
     {
         return override.getChannel();
@@ -112,7 +112,7 @@ public class PermOverrideManagerUpdatable
      *
      * @return The target {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
      */
-    @Nonnull
+    @NonNull
     public PermissionOverride getPermissionOverride()
     {
         return override;
@@ -130,7 +130,7 @@ public class PermOverrideManagerUpdatable
      *
      * @return The current Manager instance for chaining convenience
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public PermOverrideManagerUpdatable grant(long permissions)
     {
@@ -151,7 +151,7 @@ public class PermOverrideManagerUpdatable
      *
      * @return The current Manager instance for chaining convenience
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public PermOverrideManagerUpdatable grant(Permission... permissions)
     {
@@ -172,7 +172,7 @@ public class PermOverrideManagerUpdatable
      *
      * @return The current Manager instance for chaining convenience
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public PermOverrideManagerUpdatable grant(Collection<Permission> permissions)
     {
@@ -203,7 +203,7 @@ public class PermOverrideManagerUpdatable
      *
      * @return The current Manager instance for chaining convenience
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public PermOverrideManagerUpdatable deny(long permissions)
     {
@@ -224,7 +224,7 @@ public class PermOverrideManagerUpdatable
      *
      * @return The current Manager instance for chaining convenience
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public PermOverrideManagerUpdatable deny(Permission... permissions)
     {
@@ -245,7 +245,7 @@ public class PermOverrideManagerUpdatable
      *
      * @return The current Manager instance for chaining convenience
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public PermOverrideManagerUpdatable deny(Collection<Permission> permissions)
     {
@@ -277,7 +277,7 @@ public class PermOverrideManagerUpdatable
      *
      * @return The current Manager instance for chaining convenience
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public PermOverrideManagerUpdatable clear(long permission)
     {
@@ -299,7 +299,7 @@ public class PermOverrideManagerUpdatable
      *
      * @return The current Manager instance for chaining convenience
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public PermOverrideManagerUpdatable clear(Permission... permissions)
     {
@@ -321,7 +321,7 @@ public class PermOverrideManagerUpdatable
      *
      * @return The current Manager instance for chaining convenience
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public PermOverrideManagerUpdatable clear(Collection<Permission> permissions)
     {
@@ -452,7 +452,7 @@ public class PermOverrideManagerUpdatable
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Applies all changes that have been made in a single api-call.
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public AuditableRestAction<Void> update()
     {

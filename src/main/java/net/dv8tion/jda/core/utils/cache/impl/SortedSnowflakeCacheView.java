@@ -16,10 +16,10 @@
 
 package net.dv8tion.jda.core.utils.cache.impl;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.entities.ISnowflake;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -41,7 +41,7 @@ public class SortedSnowflakeCacheView<T extends ISnowflake & Comparable<T>> exte
         this.comparator = comparator;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public List<T> asList()
     {
@@ -51,7 +51,7 @@ public class SortedSnowflakeCacheView<T extends ISnowflake & Comparable<T>> exte
         return Collections.unmodifiableList(list);
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public SortedSet<T> asSet()
     {
@@ -66,21 +66,21 @@ public class SortedSnowflakeCacheView<T extends ISnowflake & Comparable<T>> exte
         return Spliterators.spliterator(asList(), SPLIT_CHARACTERISTICS);
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Stream<T> stream()
     {
         return super.stream().sorted(comparator);
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Stream<T> parallelStream()
     {
         return super.parallelStream().sorted(comparator);
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Iterator<T> iterator()
     {

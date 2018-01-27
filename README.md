@@ -53,7 +53,7 @@ public class ReadyListener implements EventListener
     }
 
     @Override
-    public void onEvent(Event event)
+    public void onEvent(@NonNull Event event)
     {
         if (event instanceof ReadyEvent)
             System.out.println("API is ready!");
@@ -72,7 +72,7 @@ public class MessageListener extends ListenerAdapter
     }
 
     @Override
-    public void onMessageReceived(MessageReceivedEvent event)
+    public void onMessageReceived(@NonNull MessageReceivedEvent event)
     {
         if (event.isFromType(ChannelType.PRIVATE))
         {
@@ -201,6 +201,16 @@ We strongly recommend to use one though, as that can improve speed and allows yo
 
 The most popular implementations are [Log4j 2](https://logging.apache.org/log4j/2.x/) and [Logback](https://logback.qos.ch/)
 
+### Code Analysis
+
+We use the [Spotbugs Annotations](https://spotbugs.github.io/) to analyze for nullability and important return values (see [RestAction](https://github.com/DV8FromTheWorld/JDA/wiki/7\)-Using-RestAction))
+
+Most IDEs will automatically show warnings for nullability issues or ignored return values.
+<br>You can additionally add the spotbugs plugins, documentation can be found on the [spotbugs wiki](https://spotbugs.readthedocs.io/en/latest/)!
+
+We also recommend using the [JDAction Gradle Plugin](https://github.com/sedmelluq/jdaction) from sedmelluq
+which automatically causes gradle builds to fail if a RestAction is not executed.
+ 
 ## Documentation
 Docs can be found on the [Jenkins](http://home.dv8tion.net:8080/) or directly [here](http://home.dv8tion.net:8080/job/JDA/javadoc/)
 <br>A simple Wiki can also be found in this repository's [Wiki section](https://github.com/DV8FromTheWorld/JDA/wiki)

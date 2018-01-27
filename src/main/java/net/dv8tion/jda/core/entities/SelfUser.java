@@ -15,12 +15,11 @@
  */
 package net.dv8tion.jda.core.entities;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.managers.AccountManager;
 import net.dv8tion.jda.core.managers.AccountManagerUpdatable;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Represents the currently logged in account.
@@ -115,7 +114,7 @@ public interface SelfUser extends User
      *
      * @return An AccountManager instance for the current account
      */
-    @Nonnull
+    @NonNull
     AccountManager getManager();
 
     /**
@@ -126,6 +125,6 @@ public interface SelfUser extends User
      *
      * @return An AccountManagerUpdatable instance for the current account
      */
-    @Nonnull
+    @NonNull
     AccountManagerUpdatable getManagerUpdatable();
 }

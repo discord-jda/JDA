@@ -16,9 +16,9 @@
 
 package net.dv8tion.jda.core.entities;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.utils.MiscUtil;
 
-import javax.annotation.Nonnull;
 import java.time.OffsetDateTime;
 
 /**
@@ -33,7 +33,7 @@ public interface ISnowflake
      *
      * @return Never-null String containing the Id.
      */
-    @Nonnull
+    @NonNull
     default String getId()
     {
         return Long.toUnsignedString(getIdLong());
@@ -53,7 +53,7 @@ public interface ISnowflake
      *
      * @see    net.dv8tion.jda.core.utils.MiscUtil#getCreationTime(long)
      */
-    @Nonnull
+    @NonNull
     default OffsetDateTime getCreationTime()
     {
         return MiscUtil.getCreationTime(getIdLong());

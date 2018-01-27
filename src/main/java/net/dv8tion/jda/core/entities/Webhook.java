@@ -16,14 +16,13 @@
 
 package net.dv8tion.jda.core.entities;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.managers.WebhookManager;
 import net.dv8tion.jda.core.managers.WebhookManagerUpdatable;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.webhook.WebhookClientBuilder;
-
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 
 /**
  * An object representing Webhooks in Discord
@@ -38,7 +37,7 @@ public interface Webhook extends ISnowflake
      *
      * @return The current JDA instance of this Webhook
      */
-    @Nonnull
+    @NonNull
     JDA getJDA();
 
     /**
@@ -48,7 +47,7 @@ public interface Webhook extends ISnowflake
      *
      * @return The current Guild of this Webhook
      */
-    @Nonnull
+    @NonNull
     Guild getGuild();
 
     /**
@@ -57,7 +56,7 @@ public interface Webhook extends ISnowflake
      *
      * @return The current TextChannel of this Webhook
      */
-    @Nonnull
+    @NonNull
     TextChannel getChannel();
 
     /**
@@ -66,7 +65,7 @@ public interface Webhook extends ISnowflake
      * @return A {@link net.dv8tion.jda.core.entities.Member Member} instance
      *         representing the owner of this Webhook
      */
-    @Nonnull
+    @NonNull
     Member getOwner();
 
     /**
@@ -84,7 +83,7 @@ public interface Webhook extends ISnowflake
      *
      * @see    <a href="https://discordapp.com/developers/docs/resources/webhook#execute-webhook">Execute Webhook Docs</a>
      */
-    @Nonnull
+    @NonNull
     User getDefaultUser();
 
     /**
@@ -96,7 +95,7 @@ public interface Webhook extends ISnowflake
      *
      * @return The name of this Webhook
      */
-    @Nonnull
+    @NonNull
     String getName();
 
     /**
@@ -106,7 +105,7 @@ public interface Webhook extends ISnowflake
      *
      * @return The execute token for this Webhook
      */
-    @Nonnull
+    @NonNull
     String getToken();
 
     /**
@@ -125,7 +124,7 @@ public interface Webhook extends ISnowflake
      *
      * @return The execution route for this Webhook.
      */
-    @Nonnull
+    @NonNull
     String getUrl();
 
     /**
@@ -134,7 +133,7 @@ public interface Webhook extends ISnowflake
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>The rest action to delete this Webhook.
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     AuditableRestAction<Void> delete();
 
@@ -147,7 +146,7 @@ public interface Webhook extends ISnowflake
      * @return An instance of {@link net.dv8tion.jda.core.managers.WebhookManager WebhookManager}
      *         for this Webhook
      */
-    @Nonnull
+    @NonNull
     WebhookManager getManager();
 
     /**
@@ -159,7 +158,7 @@ public interface Webhook extends ISnowflake
      * @return An instance of {@link net.dv8tion.jda.core.managers.WebhookManagerUpdatable WebhookManagerUpdatable}
      *         for this Webhook
      */
-    @Nonnull
+    @NonNull
     WebhookManagerUpdatable getManagerUpdatable();
 
     /**
@@ -170,6 +169,6 @@ public interface Webhook extends ISnowflake
      *
      * @return The new WebhookClientBuilder
      */
-    @Nonnull
+    @NonNull
     WebhookClientBuilder newClient();
 }

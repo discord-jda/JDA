@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.utils;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
@@ -26,7 +27,6 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.tuple.Pair;
 import org.json.JSONObject;
 
-import javax.annotation.Nonnull;
 import javax.security.auth.login.LoginException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -72,7 +72,7 @@ public class SessionControllerAdapter implements SessionController
         globalRatelimit.set(ratelimit);
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public String getGateway(JDA api)
     {
@@ -90,7 +90,7 @@ public class SessionControllerAdapter implements SessionController
         }.complete();
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Pair<String, Integer> getGatewayBot(JDA api)
     {

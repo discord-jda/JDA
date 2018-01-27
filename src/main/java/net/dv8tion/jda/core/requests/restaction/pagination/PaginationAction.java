@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.requests.restaction.pagination;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
@@ -24,8 +26,6 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.Procedure;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -162,7 +162,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return Immutable {@link java.util.List List} containing all currently cached entities for this PaginationAction
      */
-    @Nonnull
+    @NonNull
     public List<T> getCached()
     {
         return Collections.unmodifiableList(cached);
@@ -221,7 +221,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return The current PaginationAction implementation instance
      */
-    @Nonnull
+    @NonNull
     public M limit(final int limit)
     {
         Checks.check(maxLimit == 0 || limit <= maxLimit, "Limit must not exceed %d!", maxLimit);
@@ -248,7 +248,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return The current PaginationAction implementation instance
      */
-    @Nonnull
+    @NonNull
     public M cache(final boolean enableCache)
     {
         this.useCache = enableCache;
@@ -317,7 +317,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return new PaginationIterator
      */
-    @Nonnull
+    @NonNull
     @Override
     public PaginationIterator iterator()
     {
@@ -358,7 +358,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return {@link java.util.concurrent.Future Future} that can be cancelled to stop iteration from outside!
      */
-    @Nonnull
+    @NonNull
     public Future<?> forEachAsync(final Procedure<T> action)
     {
         return forEachAsync(action, (throwable) ->
@@ -405,7 +405,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return {@link java.util.concurrent.Future Future} that can be cancelled to stop iteration from outside!
      */
-    @Nonnull
+    @NonNull
     public Future<?> forEachAsync(final Procedure<T> action, final Consumer<Throwable> failure)
     {
         Checks.notNull(action, "Procedure");
@@ -464,7 +464,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return {@link java.util.concurrent.Future Future} that can be cancelled to stop iteration from outside!
      */
-    @Nonnull
+    @NonNull
     public Future<?> forEachRemainingAsync(final Procedure<T> action)
     {
         return forEachRemainingAsync(action, (throwable) ->
@@ -511,7 +511,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return {@link java.util.concurrent.Future Future} that can be cancelled to stop iteration from outside!
      */
-    @Nonnull
+    @NonNull
     public Future<?> forEachRemainingAsync(final Procedure<T> action, final Consumer<Throwable> failure)
     {
         Checks.notNull(action, "Procedure");
@@ -571,7 +571,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return a sequential {@code Stream} over the elements in this PaginationAction
      */
-    @Nonnull
+    @NonNull
     public Stream<T> stream()
     {
         return StreamSupport.stream(spliterator(), false);
@@ -583,7 +583,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return a sequential {@code Stream} over the elements in this PaginationAction
      */
-    @Nonnull
+    @NonNull
     public Stream<T> parallelStream()
     {
         return StreamSupport.stream(spliterator(), true);
@@ -632,7 +632,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
             return false;
         }
 
-        @Nonnull
+        @NonNull
         @Override
         public T next()
         {

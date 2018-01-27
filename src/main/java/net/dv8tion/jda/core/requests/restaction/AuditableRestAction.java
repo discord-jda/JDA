@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.core.requests.restaction;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.utils.MiscUtil;
@@ -23,9 +26,6 @@ import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.json.JSONObject;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 /**
@@ -75,7 +75,7 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
      *
      * @return The current AuditableRestAction instance for chaining convenience
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public AuditableRestAction<T> reason(@Nullable String reason)
     {
@@ -99,7 +99,7 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
         return headers;
     }
 
-    @Nonnull
+    @NonNull
     private String uriEncode(String input)
     {
         String formEncode = MiscUtil.encodeUTF8(input);
@@ -136,7 +136,7 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
                 success.accept(content);
         }
 
-        @Nonnull
+        @NonNull
         @Override
         public RequestFuture<T> submit(boolean shouldQueue)
         {

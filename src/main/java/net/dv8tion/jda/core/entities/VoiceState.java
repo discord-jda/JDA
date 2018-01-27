@@ -15,10 +15,9 @@
  */
 package net.dv8tion.jda.core.entities;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public interface VoiceState
 {
@@ -43,7 +42,7 @@ public interface VoiceState
      *
      * @return The corresponding JDA instance
      */
-    @Nonnull
+    @NonNull
     JDA getJDA();
 
     /**

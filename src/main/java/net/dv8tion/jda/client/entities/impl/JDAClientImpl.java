@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.client.entities.impl;
 
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.client.JDAClient;
 import net.dv8tion.jda.client.entities.*;
@@ -45,6 +47,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @ParametersAreNonnullByDefault
+@DefaultAnnotationForParameters(NonNull.class)
 public class JDAClientImpl implements JDAClient
 {
     protected final JDAImpl api;

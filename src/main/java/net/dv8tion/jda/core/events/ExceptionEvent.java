@@ -16,9 +16,8 @@
 
 package net.dv8tion.jda.core.events;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
-
-import javax.annotation.Nonnull;
 
 /**
  * Fired when JDA does not have a specific handling for a Throwable.
@@ -54,7 +53,7 @@ public class ExceptionEvent extends Event
      *
      * @return The cause
      */
-    @Nonnull
+    @NonNull
     public Throwable getCause()
     {
         return throwable;

@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.client;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
 import net.dv8tion.jda.client.entities.*;
 import net.dv8tion.jda.client.requests.restaction.ApplicationAction;
 import net.dv8tion.jda.client.requests.restaction.pagination.MentionPaginationAction;
@@ -26,7 +27,6 @@ import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 
-import javax.annotation.CheckReturnValue;
 import java.util.List;
 
 public interface JDAClient

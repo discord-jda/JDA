@@ -15,9 +15,9 @@
  */
 package net.dv8tion.jda.core;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.utils.Checks;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -118,7 +118,7 @@ public enum Permission
      *
      * @return The readable name of this {@link net.dv8tion.jda.core.Permission Permission}.
      */
-    @Nonnull
+    @NonNull
     public String getName()
     {
         return this.name;
@@ -199,7 +199,7 @@ public enum Permission
      *
      * @return {@link net.dv8tion.jda.core.Permission Permission} relating to the provided offset.
      */
-    @Nonnull
+    @NonNull
     public static Permission getFromOffset(int offset)
     {
         for (Permission perm : values())
@@ -225,7 +225,7 @@ public enum Permission
      *
      * @return Possibly-empty list of {@link net.dv8tion.jda.core.Permission Permissions}.
      */
-    @Nonnull
+    @NonNull
     public static List<Permission> getPermissions(long permissions)
     {
         List<Permission> perms = new LinkedList<>();

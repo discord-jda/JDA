@@ -15,10 +15,9 @@
  */
 package net.dv8tion.jda.core.events.channel.text.update;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.TextChannel;
-
-import javax.annotation.Nonnull;
 
 /**
  * <b><u>TextChannelUpdateNameEvent</u></b><br>
@@ -36,7 +35,7 @@ public class TextChannelUpdateNameEvent extends GenericTextChannelUpdateEvent
         this.oldName = oldName;
     }
 
-    @Nonnull
+    @NonNull
     public String getOldName()
     {
         return oldName;

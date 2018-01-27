@@ -15,12 +15,11 @@
  */
 package net.dv8tion.jda.core.events.message;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.Event;
-
-import javax.annotation.Nonnull;
 
 /**
  * <b><u>GenericMessageEvent</u></b><br>
@@ -41,13 +40,13 @@ public abstract class GenericMessageEvent extends Event
         this.channel = channel;
     }
 
-    @Nonnull
+    @NonNull
     public MessageChannel getChannel()
     {
         return channel;
     }
 
-    @Nonnull
+    @NonNull
     public String getMessageId()
     {
         return Long.toUnsignedString(messageId);
@@ -63,7 +62,7 @@ public abstract class GenericMessageEvent extends Event
         return channel.getType() == type;
     }
 
-    @Nonnull
+    @NonNull
     public ChannelType getChannelType()
     {
         return channel.getType();

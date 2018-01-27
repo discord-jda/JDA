@@ -16,9 +16,9 @@
 
 package net.dv8tion.jda.core.utils;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.requests.RequestFuture;
 
-import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
 
 public class Promise<T> extends CompletableFuture<T> implements RequestFuture<T>

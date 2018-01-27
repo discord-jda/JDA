@@ -16,12 +16,12 @@
 
 package net.dv8tion.jda.client.entities;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.requests.RestAction;
 
 import java.util.List;
-import javax.annotation.CheckReturnValue;
 
 /**
  * Represents a Discord Application from the point of view of a client having authorized it.

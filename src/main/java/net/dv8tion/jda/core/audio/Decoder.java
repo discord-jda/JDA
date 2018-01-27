@@ -17,9 +17,9 @@
 package net.dv8tion.jda.core.audio;
 
 import com.sun.jna.ptr.PointerByReference;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import tomp2p.opuswrapper.Opus;
 
-import javax.annotation.Nullable;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 

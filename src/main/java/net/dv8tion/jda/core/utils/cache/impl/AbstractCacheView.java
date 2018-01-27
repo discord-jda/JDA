@@ -16,14 +16,14 @@
 
 package net.dv8tion.jda.core.utils.cache.impl;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 import org.apache.commons.collections4.iterators.ArrayIterator;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -44,13 +44,13 @@ public abstract class AbstractCacheView<T> implements CacheView<T>
         elements.clear();
     }
 
-    @Nonnull
+    @NonNull
     public TLongObjectMap<T> getMap()
     {
         return elements;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public List<T> asList()
     {
@@ -59,7 +59,7 @@ public abstract class AbstractCacheView<T> implements CacheView<T>
         return Collections.unmodifiableList(list);
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Set<T> asSet()
     {
@@ -80,7 +80,7 @@ public abstract class AbstractCacheView<T> implements CacheView<T>
         return elements.isEmpty();
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public List<T> getElementsByName(String name, boolean ignoreCase)
     {
@@ -118,21 +118,21 @@ public abstract class AbstractCacheView<T> implements CacheView<T>
         return Spliterators.spliterator(elements.values(), Spliterator.IMMUTABLE);
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Stream<T> stream()
     {
         return StreamSupport.stream(spliterator(), false);
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Stream<T> parallelStream()
     {
         return StreamSupport.stream(spliterator(), true);
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Iterator<T> iterator()
     {

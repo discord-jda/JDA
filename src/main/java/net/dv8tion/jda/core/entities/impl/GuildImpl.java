@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.client.requests.restaction.pagination.MentionPaginationAction;
 import net.dv8tion.jda.core.AccountType;
@@ -46,8 +48,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -98,7 +98,7 @@ public class GuildImpl implements Guild
         this.api = api;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public String getName()
     {
@@ -117,7 +117,7 @@ public class GuildImpl implements Guild
         return iconId == null ? null : "https://cdn.discordapp.com/icons/" + id + "/" + iconId + ".jpg";
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Set<String> getFeatures()
     {
@@ -136,7 +136,7 @@ public class GuildImpl implements Guild
         return splashId == null ? null : "https://cdn.discordapp.com/splashes/" + id + "/" + splashId + ".jpg";
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public RestAction<String> getVanityUrl()
     {
@@ -177,7 +177,7 @@ public class GuildImpl implements Guild
         return systemChannel;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public RestAction<List<Webhook>> getWebhooks()
     {
@@ -218,7 +218,7 @@ public class GuildImpl implements Guild
         };
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Member getOwner()
     {
@@ -229,14 +229,14 @@ public class GuildImpl implements Guild
         throw new IllegalStateException("Owner is null");
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Timeout getAfkTimeout()
     {
         return afkTimeout;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public String getRegionRaw()
     {
@@ -249,7 +249,7 @@ public class GuildImpl implements Guild
         return memberCache.getMap().containsKey(user.getIdLong());
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Member getSelfMember()
     {
@@ -267,49 +267,49 @@ public class GuildImpl implements Guild
         return getMemberById(user.getIdLong());
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public MemberCacheView getMemberCache()
     {
         return memberCache;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public SnowflakeCacheView<Category> getCategoryCache()
     {
         return categoryCache;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public SnowflakeCacheView<TextChannel> getTextChannelCache()
     {
         return textChannelCache;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public SnowflakeCacheView<VoiceChannel> getVoiceChannelCache()
     {
         return voiceChannelCache;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public SnowflakeCacheView<Role> getRoleCache()
     {
         return roleCache;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public SnowflakeCacheView<Emote> getEmoteCache()
     {
         return emoteCache;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public RestAction<List<User>> getBans()
     {
@@ -344,7 +344,7 @@ public class GuildImpl implements Guild
         };
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public RestAction<List<Ban>> getBanList()
     {
@@ -380,7 +380,7 @@ public class GuildImpl implements Guild
         };
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public RestAction<Integer> getPrunableMemberCount(int days)
     {
@@ -406,7 +406,7 @@ public class GuildImpl implements Guild
         };
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Role getPublicRole()
     {
@@ -428,7 +428,7 @@ public class GuildImpl implements Guild
                 .findFirst().orElse(null);
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public GuildManager getManager()
     {
@@ -445,7 +445,7 @@ public class GuildImpl implements Guild
         return mng;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public GuildManagerUpdatable getManagerUpdatable()
     {
@@ -462,7 +462,7 @@ public class GuildImpl implements Guild
         return mng;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public GuildController getController()
     {
@@ -479,7 +479,7 @@ public class GuildImpl implements Guild
         return ctrl;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public MentionPaginationAction getRecentMentions()
     {
@@ -487,14 +487,14 @@ public class GuildImpl implements Guild
         return getJDA().asClient().getRecentMentions(this);
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public AuditLogPaginationAction getAuditLogs()
     {
         return new AuditLogPaginationAction(this);
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public RestAction<Void> leave()
     {
@@ -515,7 +515,7 @@ public class GuildImpl implements Guild
         };
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public RestAction<Void> delete()
     {
@@ -525,7 +525,7 @@ public class GuildImpl implements Guild
         return delete(null);
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public RestAction<Void> delete(@Nullable String mfaCode)
     {
@@ -553,7 +553,7 @@ public class GuildImpl implements Guild
         };
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public AudioManager getAudioManager()
     {
@@ -578,14 +578,14 @@ public class GuildImpl implements Guild
         return mng;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public JDAImpl getJDA()
     {
         return api;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public List<GuildVoiceState> getVoiceStates()
     {
@@ -593,28 +593,28 @@ public class GuildImpl implements Guild
                 getMembersMap().valueCollection().stream().map(Member::getVoiceState).collect(Collectors.toList()));
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public VerificationLevel getVerificationLevel()
     {
         return verificationLevel;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public NotificationLevel getDefaultNotificationLevel()
     {
         return defaultNotificationLevel;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public MFALevel getRequiredMFALevel()
     {
         return mfaLevel;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public ExplicitContentLevel getExplicitContentLevel()
     {
@@ -666,7 +666,7 @@ public class GuildImpl implements Guild
         return id;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public RestAction<List<Invite>> getInvites()
     {

@@ -16,6 +16,9 @@
 package net.dv8tion.jda.bot.sharding;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import gnu.trove.map.TIntObjectMap;
 import net.dv8tion.jda.bot.utils.cache.ShardCacheView;
 import net.dv8tion.jda.bot.utils.cache.impl.ShardCacheViewImpl;
@@ -35,8 +38,6 @@ import net.dv8tion.jda.core.utils.tuple.Pair;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.security.auth.login.LoginException;
 import java.util.*;
@@ -53,6 +54,7 @@ import java.util.function.IntFunction;
  * @author Aljoscha Grebe
  */
 @ParametersAreNonnullByDefault
+@DefaultAnnotationForParameters(NonNull.class)
 public class DefaultShardManager implements ShardManager
 {
     public static final Logger LOG = JDALogger.getLog(ShardManager.class);
@@ -337,7 +339,7 @@ public class DefaultShardManager implements ShardManager
         return this.queue.size();
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public ShardCacheView getShardCache()
     {
@@ -672,7 +674,7 @@ public class DefaultShardManager implements ShardManager
      * @deprecated
      *         Use {@link net.dv8tion.jda.core.utils.SessionController SessionController} directly instead
      */
-    @Nonnull
+    @NonNull
     @Deprecated
     protected SessionReconnectQueue createReconnectQueue()
     {

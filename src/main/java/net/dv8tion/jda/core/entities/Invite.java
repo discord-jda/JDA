@@ -16,14 +16,14 @@
 
 package net.dv8tion.jda.core.entities;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.impl.InviteImpl;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 
 /**
@@ -53,7 +53,7 @@ public interface Invite
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Invite Invite}
      *         <br>The Invite object
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     static RestAction<Invite> resolve(final JDA api, final String code)
     {
@@ -70,7 +70,7 @@ public interface Invite
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     AuditableRestAction<Void> delete();
 
@@ -89,7 +89,7 @@ public interface Invite
      *
      * @see    #isExpanded()
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     RestAction<Invite> expand();
 
@@ -101,7 +101,7 @@ public interface Invite
      * 
      * @see    net.dv8tion.jda.core.entities.Invite.Channel
      */
-    @Nonnull
+    @NonNull
     Channel getChannel();
 
     /**
@@ -109,7 +109,7 @@ public interface Invite
      *
      * @return the invite code
      */
-    @Nonnull
+    @NonNull
     String getCode();
 
     /**
@@ -118,7 +118,7 @@ public interface Invite
      *
      * @return Invite URL for this Invite
      */
-    @Nonnull
+    @NonNull
     default String getURL()
     {
         return "https://discord.gg/" + getCode();
@@ -148,7 +148,7 @@ public interface Invite
      * 
      * @see    net.dv8tion.jda.core.entities.Invite.Guild
      */
-    @Nonnull
+    @NonNull
     Guild getGuild();
 
     /**
@@ -164,7 +164,7 @@ public interface Invite
      *
      * @return the corresponding JDA instance
      */
-    @Nonnull
+    @NonNull
     JDA getJDA();
 
     /**

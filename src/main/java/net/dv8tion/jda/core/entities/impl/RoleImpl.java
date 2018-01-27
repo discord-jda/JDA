@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Channel;
@@ -33,8 +35,6 @@ import net.dv8tion.jda.core.requests.restaction.RoleAction;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.awt.Color;
 import java.time.OffsetDateTime;
 import java.util.Collection;
@@ -87,7 +87,7 @@ public class RoleImpl implements Role
         return rawPosition;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public String getName()
     {
@@ -118,7 +118,7 @@ public class RoleImpl implements Role
         return rawPermissions;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public List<Permission> getPermissions()
     {
@@ -186,14 +186,14 @@ public class RoleImpl implements Role
         return PermissionUtil.canInteract(this, role);
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Guild getGuild()
     {
         return guild;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public RoleAction createCopy(Guild guild)
     {
@@ -206,7 +206,7 @@ public class RoleImpl implements Role
                     .setPermissions(rawPermissions);
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public RoleManager getManager()
     {
@@ -223,7 +223,7 @@ public class RoleImpl implements Role
         return mng;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public RoleManagerUpdatable getManagerUpdatable()
     {
@@ -240,7 +240,7 @@ public class RoleImpl implements Role
         return mng;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public AuditableRestAction<Void> delete()
     {
@@ -265,14 +265,14 @@ public class RoleImpl implements Role
         };
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public JDA getJDA()
     {
         return guild.getJDA();
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public String getAsMention()
     {

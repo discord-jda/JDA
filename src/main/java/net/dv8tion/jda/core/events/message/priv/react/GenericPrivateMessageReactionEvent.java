@@ -16,13 +16,12 @@
 
 package net.dv8tion.jda.core.events.message.priv.react;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.MessageReaction;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.priv.GenericPrivateMessageEvent;
-
-import javax.annotation.Nonnull;
 
 public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEvent
 {
@@ -36,19 +35,19 @@ public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEve
         this.reaction = reaction;
     }
 
-    @Nonnull
+    @NonNull
     public User getUser()
     {
         return issuer;
     }
 
-    @Nonnull
+    @NonNull
     public MessageReaction getReaction()
     {
         return reaction;
     }
 
-    @Nonnull
+    @NonNull
     public MessageReaction.ReactionEmote getReactionEmote()
     {
         return reaction.getReactionEmote();

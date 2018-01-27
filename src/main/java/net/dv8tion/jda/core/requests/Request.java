@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.requests;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.events.http.HttpRequestEvent;
@@ -24,8 +26,6 @@ import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 public class Request<T>
@@ -107,31 +107,31 @@ public class Request<T>
         });
     }
 
-    @Nonnull
+    @NonNull
     public JDAImpl getJDA()
     {
         return api;
     }
 
-    @Nonnull
+    @NonNull
     public RestAction<T> getRestAction()
     {
         return restAction;
     }
 
-    @Nonnull
+    @NonNull
     public Consumer<T> getOnSuccess()
     {
         return onSuccess;
     }
 
-    @Nonnull
+    @NonNull
     public Consumer<Throwable> getOnFailure()
     {
         return onFailure;
     }
 
-    @Nonnull
+    @NonNull
     public Route.CompiledRoute getRoute()
     {
         return route;

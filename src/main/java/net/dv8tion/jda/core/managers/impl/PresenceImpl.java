@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.core.managers.impl;
 
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.WebSocketCode;
@@ -25,8 +28,6 @@ import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNullableByDefault;
 
 /**
@@ -36,6 +37,7 @@ import javax.annotation.ParametersAreNullableByDefault;
  * @since  3.0
  */
 @ParametersAreNullableByDefault
+@DefaultAnnotationForParameters(Nullable.class)
 public class PresenceImpl implements Presence
 {
 
@@ -50,7 +52,7 @@ public class PresenceImpl implements Presence
      * @param jda
      *        The not-null JDAImpl instance to use
      */
-    public PresenceImpl(@Nonnull JDAImpl jda)
+    public PresenceImpl(@NonNull JDAImpl jda)
     {
         this.api = jda;
     }
@@ -59,7 +61,7 @@ public class PresenceImpl implements Presence
     /* -- Public Getters -- */
 
 
-    @Nonnull
+    @NonNull
     @Override
     public JDA getJDA()
     {
@@ -155,7 +157,7 @@ public class PresenceImpl implements Presence
     /* -- Impl Setters -- */
 
 
-    public PresenceImpl setCacheStatus(@Nonnull OnlineStatus status)
+    public PresenceImpl setCacheStatus(@NonNull OnlineStatus status)
     {
         if (status == null)
             throw new NullPointerException("Null OnlineStatus is not allowed.");
@@ -208,7 +210,7 @@ public class PresenceImpl implements Presence
     /* -- Terminal -- */
 
 
-    protected void update(@Nonnull JSONObject data)
+    protected void update(@NonNull JSONObject data)
     {
         api.getClient().send(new JSONObject()
             .put("d", data)

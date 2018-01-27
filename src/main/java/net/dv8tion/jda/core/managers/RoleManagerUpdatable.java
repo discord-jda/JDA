@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.managers;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
@@ -31,9 +33,6 @@ import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 import java.awt.Color;
 
 /**
@@ -79,7 +78,7 @@ public class RoleManagerUpdatable
      *
      * @return the corresponding JDA instance
      */
-    @Nonnull
+    @NonNull
     public JDA getJDA()
     {
         return role.getJDA();
@@ -92,7 +91,7 @@ public class RoleManagerUpdatable
      *
      * @return The parent {@link net.dv8tion.jda.core.entities.Guild Guild}
      */
-    @Nonnull
+    @NonNull
     public Guild getGuild()
     {
         return role.getGuild();
@@ -104,7 +103,7 @@ public class RoleManagerUpdatable
      *
      * @return The target Role
      */
-    @Nonnull
+    @NonNull
     public Role getRole()
     {
         return role;
@@ -123,7 +122,7 @@ public class RoleManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.RoleField RoleField} - Type: {@code String}
      */
-    @Nonnull
+    @NonNull
     public RoleField<String> getNameField()
     {
         return name;
@@ -139,7 +138,7 @@ public class RoleManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.RoleField RoleField} - Type: {@link java.awt.Color Color}
      */
-    @Nonnull
+    @NonNull
     public RoleField<Color> getColorField()
     {
         return color;
@@ -158,7 +157,7 @@ public class RoleManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.RoleField RoleField} - Type: {@code Boolean}
      */
-    @Nonnull
+    @NonNull
     public RoleField<Boolean> getHoistedField()
     {
         return hoisted;
@@ -177,7 +176,7 @@ public class RoleManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.RoleField RoleField} - Type: {@code Boolean}
      */
-    @Nonnull
+    @NonNull
     public RoleField<Boolean> getMentionableField()
     {
         return mentionable;
@@ -196,7 +195,7 @@ public class RoleManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.PermissionField PermissionField}
      */
-    @Nonnull
+    @NonNull
     public PermissionField getPermissionField()
     {
         return permissions;
@@ -246,7 +245,7 @@ public class RoleManagerUpdatable
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Applies all changes that have been made in a single api-call.
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public AuditableRestAction<Void> update()
     {
@@ -311,7 +310,7 @@ public class RoleManagerUpdatable
         this.name = new RoleField<String>(this, role::getName)
         {
             @Override
-            public void checkValue(@CheckForNull String value)
+            public void checkValue(String value)
             {
                 Checks.notNull(value, "name");
                 if (value.isEmpty() || value.length() > 32)
@@ -322,7 +321,7 @@ public class RoleManagerUpdatable
         this.color = new RoleField<Color>(this, role::getColor)
         {
             @Override
-            public RoleManagerUpdatable setValue(@CheckForNull Color color)
+            public RoleManagerUpdatable setValue(Color color)
             {
                 if (color != null && color.getRGB() == 0)
                     color = null;
@@ -332,13 +331,13 @@ public class RoleManagerUpdatable
             }
 
             @Override
-            public void checkValue(@CheckForNull Color value) {}
+            public void checkValue(Color value) {}
         };
 
         this.hoisted = new RoleField<Boolean>(this, role::isHoisted)
         {
             @Override
-            public void checkValue(@CheckForNull Boolean value)
+            public void checkValue(Boolean value)
             {
                 Checks.notNull(value, "hoisted Boolean");
             }
@@ -347,7 +346,7 @@ public class RoleManagerUpdatable
         this.mentionable = new RoleField<Boolean>(this, role::isMentionable)
         {
             @Override
-            public void checkValue(@CheckForNull Boolean value)
+            public void checkValue(Boolean value)
             {
                 Checks.notNull(value, "mentionable Boolean");
             }

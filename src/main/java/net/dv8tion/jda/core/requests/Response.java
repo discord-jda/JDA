@@ -16,11 +16,11 @@
 
 package net.dv8tion.jda.core.requests;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import javax.annotation.Nullable;
 import java.io.*;
 import java.util.Objects;
 import java.util.Set;

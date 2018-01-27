@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.managers;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.Region;
@@ -33,10 +35,6 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 
 /**
  * An {@link #update() updatable} manager that allows
@@ -87,7 +85,7 @@ public class GuildManagerUpdatable
      *
      * @return the corresponding JDA instance
      */
-    @Nonnull
+    @NonNull
     public JDA getJDA()
     {
         return guild.getJDA();
@@ -99,7 +97,7 @@ public class GuildManagerUpdatable
      *
      * @return The {@link net.dv8tion.jda.core.entities.Guild Guild} of this Manager
      */
-    @Nonnull
+    @NonNull
     public Guild getGuild()
     {
         return guild;
@@ -121,7 +119,7 @@ public class GuildManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.GuildField GuildField} - Type: {@code String}
      */
-    @Nonnull
+    @NonNull
     public GuildField<String> getNameField()
     {
         checkAvailable();
@@ -151,7 +149,7 @@ public class GuildManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.GuildField GuildField} - Type: {@link net.dv8tion.jda.core.Region Region}
      */
-    @Nonnull
+    @NonNull
     public GuildField<Region> getRegionField()
     {
         checkAvailable();
@@ -172,7 +170,7 @@ public class GuildManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.GuildField GuildField} - Type: {@link net.dv8tion.jda.core.entities.Icon Icon}
      */
-    @Nonnull
+    @NonNull
     public GuildField<Icon> getIconField()
     {
         checkAvailable();
@@ -193,7 +191,7 @@ public class GuildManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.GuildField GuildField} - Type: {@link net.dv8tion.jda.core.entities.Icon Icon}
      */
-    @Nonnull
+    @NonNull
     public GuildField<Icon> getSplashField()
     {
         checkAvailable();
@@ -218,7 +216,7 @@ public class GuildManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.GuildField GuildField} - Type: {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
      */
-    @Nonnull
+    @NonNull
     public GuildField<VoiceChannel> getAfkChannelField()
     {
         checkAvailable();
@@ -243,7 +241,7 @@ public class GuildManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.GuildField GuildField} - Type: {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      */
-    @Nonnull
+    @NonNull
     public GuildField<TextChannel> getSystemChannelField()
     {
         checkAvailable();
@@ -268,7 +266,7 @@ public class GuildManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.GuildField GuildField} - Type: {@link net.dv8tion.jda.core.entities.Guild.Timeout Guild.Timeout}
      */
-    @Nonnull
+    @NonNull
     public GuildField<Guild.Timeout> getAfkTimeoutField()
     {
         checkAvailable();
@@ -293,7 +291,7 @@ public class GuildManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.GuildField GuildField} - Type: {@link net.dv8tion.jda.core.entities.Guild.VerificationLevel Guild.VerificationLevel}
      */
-    @Nonnull
+    @NonNull
     public GuildField<Guild.VerificationLevel> getVerificationLevelField()
     {
         checkAvailable();
@@ -318,7 +316,7 @@ public class GuildManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.GuildField GuildField} - Type: {@link net.dv8tion.jda.core.entities.Guild.NotificationLevel Guild.NotificationLevel}
      */
-    @Nonnull
+    @NonNull
     public GuildField<Guild.NotificationLevel> getDefaultNotificationLevelField()
     {
         checkAvailable();
@@ -343,7 +341,7 @@ public class GuildManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.GuildField GuildField} - Type: {@link net.dv8tion.jda.core.entities.Guild.MFALevel Guild.MFALevel}
      */
-    @Nonnull
+    @NonNull
     public GuildField<Guild.MFALevel> getRequiredMFALevelField()
     {
         checkAvailable();
@@ -367,7 +365,7 @@ public class GuildManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.GuildField GuildField} - Type: {@link net.dv8tion.jda.core.entities.Guild.ExplicitContentLevel Guild.ExplicitContentLevel}
      */
-    @Nonnull
+    @NonNull
     public GuildField<Guild.ExplicitContentLevel> getExplicitContentLevelField()
     {
         checkAvailable();
@@ -420,7 +418,7 @@ public class GuildManagerUpdatable
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Applies all changes that have been made in a single api-call.
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public AuditableRestAction<Void> update()
     {
@@ -501,7 +499,7 @@ public class GuildManagerUpdatable
         this.name = new GuildField<String>(this, guild::getName)
         {
             @Override
-            public void checkValue(@CheckForNull String value)
+            public void checkValue(String value)
             {
                 Checks.notNull(value, "guild name");
                 if (value.length() < 2 || value.length() > 100)
@@ -512,7 +510,7 @@ public class GuildManagerUpdatable
         this.timeout = new GuildField<Guild.Timeout>(this, guild::getAfkTimeout)
         {
             @Override
-            public void checkValue(@CheckForNull Guild.Timeout value)
+            public void checkValue(Guild.Timeout value)
             {
                 Checks.notNull(value, "Timeout");
             }
@@ -521,7 +519,7 @@ public class GuildManagerUpdatable
         this.icon = new GuildField<Icon>(this, Field.unsupported("Cannot easily provide the original Icon. Use Guild#getIconUrl() and download it yourself."))
         {
             @Override
-            public void checkValue(@CheckForNull Icon value) { }
+            public void checkValue(Icon value) { }
 
             @Override
             public boolean shouldUpdate()
@@ -533,7 +531,7 @@ public class GuildManagerUpdatable
         this.splash = new GuildField<Icon>(this, Field.unsupported("Cannot easily provide the original Splash. Use Guild#getSplashUrl() and download it yourself."))
         {
             @Override
-            public void checkValue(@CheckForNull Icon value) { }
+            public void checkValue(Icon value) { }
 
             @Override
             public boolean shouldUpdate()
@@ -545,7 +543,7 @@ public class GuildManagerUpdatable
         this.region = new GuildField<Region>(this, guild::getRegion)
         {
             @Override
-            public void checkValue(@CheckForNull Region value)
+            public void checkValue(Region value)
             {
                 Checks.notNull(value, "Region");
                 if (value == Region.UNKNOWN)
@@ -558,7 +556,7 @@ public class GuildManagerUpdatable
         this.afkChannel = new GuildField<VoiceChannel>(this, guild::getAfkChannel)
         {
             @Override
-            public void checkValue(@CheckForNull VoiceChannel value)
+            public void checkValue(VoiceChannel value)
             {
                 if (value != null && !guild.equals(value.getGuild()))
                     throw new IllegalArgumentException("Provided AFK Channel is not from this Guild!");
@@ -568,7 +566,7 @@ public class GuildManagerUpdatable
         this.systemChannel = new GuildField<TextChannel>(this, guild::getSystemChannel)
         {
             @Override
-            public void checkValue(@CheckForNull TextChannel value)
+            public void checkValue(TextChannel value)
             {
                 if (value != null && !guild.equals(value.getGuild()))
                     throw new IllegalArgumentException("Provided system channel is not from this Guild!");
@@ -578,7 +576,7 @@ public class GuildManagerUpdatable
         this.verificationLevel = new GuildField<Guild.VerificationLevel>(this, guild::getVerificationLevel)
         {
             @Override
-            public void checkValue(@CheckForNull Guild.VerificationLevel value)
+            public void checkValue(Guild.VerificationLevel value)
             {
                 Checks.notNull(value, "VerificationLevel");
                 if (value == Guild.VerificationLevel.UNKNOWN)
@@ -589,7 +587,7 @@ public class GuildManagerUpdatable
         this.defaultNotificationLevel = new GuildField<Guild.NotificationLevel>(this, guild::getDefaultNotificationLevel)
         {
             @Override
-            public void checkValue(@CheckForNull Guild.NotificationLevel value)
+            public void checkValue(Guild.NotificationLevel value)
             {
                 Checks.notNull(value, "NotificationLevel");
                 if (value == Guild.NotificationLevel.UNKNOWN)
@@ -600,7 +598,7 @@ public class GuildManagerUpdatable
         this.mfaLevel = new GuildField<Guild.MFALevel>(this, guild::getRequiredMFALevel)
         {
             @Override
-            public void checkValue(@CheckForNull Guild.MFALevel value)
+            public void checkValue(Guild.MFALevel value)
             {
                 Checks.notNull(value, "MFALevel");
                 if (value == Guild.MFALevel.UNKNOWN)
@@ -611,7 +609,7 @@ public class GuildManagerUpdatable
         this.explicitContentLevel = new GuildField<Guild.ExplicitContentLevel>(this, guild::getExplicitContentLevel)
         {
             @Override
-            public void checkValue(@CheckForNull Guild.ExplicitContentLevel value)
+            public void checkValue(Guild.ExplicitContentLevel value)
             {
                 Checks.notNull(value, "ExplicitContentLevel");
                 Checks.check(value != Guild.ExplicitContentLevel.UNKNOWN,

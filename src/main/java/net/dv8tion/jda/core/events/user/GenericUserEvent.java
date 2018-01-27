@@ -15,11 +15,10 @@
  */
 package net.dv8tion.jda.core.events.user;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.Event;
-
-import javax.annotation.Nonnull;
 
 /**
  * <b><u>GenericUserEvent</u></b><br>
@@ -38,7 +37,7 @@ public abstract class GenericUserEvent extends Event
         this.user = user;
     }
 
-    @Nonnull
+    @NonNull
     public User getUser()
     {
         return user;

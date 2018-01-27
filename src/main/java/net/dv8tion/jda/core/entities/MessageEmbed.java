@@ -15,6 +15,9 @@
  */
 package net.dv8tion.jda.core.entities;
 
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.utils.Checks;
@@ -22,8 +25,6 @@ import net.dv8tion.jda.core.utils.Helpers;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNullableByDefault;
 import java.awt.Color;
 import java.time.OffsetDateTime;
@@ -39,6 +40,7 @@ import java.util.Objects;
  * <br>This class has many possibilities for null values, so be careful!
  */
 @ParametersAreNullableByDefault
+@DefaultAnnotationForParameters(Nullable.class)
 public class MessageEmbed
 {
     /**
@@ -115,7 +117,7 @@ public class MessageEmbed
     protected volatile JSONObject json = null;
 
     protected MessageEmbed(
-        String url, String title, String description, @Nonnull EmbedType type, OffsetDateTime timestamp,
+        String url, String title, String description, @NonNull EmbedType type, OffsetDateTime timestamp,
         Color color, Thumbnail thumbnail, Provider siteProvider, AuthorInfo author,
         VideoInfo videoInfo, Footer footer, ImageInfo image, List<Field> fields)
     {
@@ -174,7 +176,7 @@ public class MessageEmbed
      *
      * @return The {@link net.dv8tion.jda.core.entities.EmbedType EmbedType} of this embed.
      */
-    @Nonnull
+    @NonNull
     public EmbedType getType()
     {
         return type;
@@ -359,7 +361,7 @@ public class MessageEmbed
      *
      * @see    #getLength()
      */
-    public boolean isSendable(@Nonnull AccountType type)
+    public boolean isSendable(@NonNull AccountType type)
     {
         Checks.notNull(type, "AccountType");
         final int length = getLength();
@@ -403,7 +405,7 @@ public class MessageEmbed
      *
      * @return JSONObject for this embed
      */
-    @Nonnull
+    @NonNull
     public JSONObject toJSONObject()
     {
         if (json != null)

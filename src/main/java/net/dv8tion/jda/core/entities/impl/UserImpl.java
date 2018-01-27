@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.PrivateChannel;
@@ -27,8 +29,6 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.json.JSONObject;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.FormattableFlags;
 import java.util.Formatter;
 import java.util.List;
@@ -51,14 +51,14 @@ public class UserImpl implements User
         this.api = api;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public String getName()
     {
         return name == null ? "" : name;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public String getDiscriminator()
     {
@@ -78,21 +78,21 @@ public class UserImpl implements User
                 + (getAvatarId().startsWith("a_") ? ".gif" : ".png");
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public String getDefaultAvatarId()
     {
         return DefaultAvatar.values()[Integer.parseInt(getDiscriminator()) % DefaultAvatar.values().length].toString();
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public String getDefaultAvatarUrl()
     {
         return "https://discordapp.com/assets/" + getDefaultAvatarId() + ".png";
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public String getEffectiveAvatarUrl()
     {
@@ -106,7 +106,7 @@ public class UserImpl implements User
         return privateChannel != null;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public RestAction<PrivateChannel> openPrivateChannel()
     {
@@ -137,14 +137,14 @@ public class UserImpl implements User
         };
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public List<Guild> getMutualGuilds()
     {
         return getJDA().getMutualGuilds(this);
     }
 
-    @Nonnull
+    @NonNull
     public PrivateChannel getPrivateChannel()
     {
         if (!hasPrivateChannel())
@@ -159,14 +159,14 @@ public class UserImpl implements User
         return bot;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public JDA getJDA()
     {
         return api;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public String getAsMention()
     {

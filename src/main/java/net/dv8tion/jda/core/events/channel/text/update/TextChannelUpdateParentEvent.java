@@ -16,11 +16,10 @@
 
 package net.dv8tion.jda.core.events.channel.text.update;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Category;
 import net.dv8tion.jda.core.entities.TextChannel;
-
-import javax.annotation.Nullable;
 
 public class TextChannelUpdateParentEvent extends GenericTextChannelUpdateEvent
 {

@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.core.requests.restaction;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.requests.Request;
@@ -26,9 +29,6 @@ import okhttp3.RequestBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -89,7 +89,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
      *
      * @return The current ChannelAction, for chaining convenience
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public ChannelAction setName(String name)
     {
@@ -115,7 +115,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
      *
      * @return The current ChannelAction, for chaining convenience
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public ChannelAction setParent(@Nullable Category category)
     {
@@ -137,7 +137,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
      *
      * @return The current ChannelAction, for chaining convenience
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public ChannelAction setTopic(@Nullable String topic)
     {
@@ -160,7 +160,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
      *
      * @return The current ChannelAction, for chaining convenience
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public ChannelAction setNSFW(boolean nsfw)
     {
@@ -187,7 +187,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
      *
      * @return The current ChannelAction, for chaining convenience
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public ChannelAction addPermissionOverride(IPermissionHolder target, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny)
     {
@@ -225,7 +225,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
      * @see    net.dv8tion.jda.core.Permission#getRaw(java.util.Collection)
      * @see    net.dv8tion.jda.core.Permission#getRaw(net.dv8tion.jda.core.Permission...)
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public ChannelAction addPermissionOverride(IPermissionHolder target, long allow, long deny)
     {
@@ -266,7 +266,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
      *
      * @return The current ChannelAction, for chaining convenience
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public ChannelAction setBitrate(@Nullable Integer bitrate)
     {
@@ -298,7 +298,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
      *
      * @return The current ChannelAction, for chaining convenience
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     public ChannelAction setUserlimit(@Nullable Integer userlimit)
     {

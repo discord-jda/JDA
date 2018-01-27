@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.entities;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.bot.entities.ApplicationInfo;
 import net.dv8tion.jda.bot.entities.impl.ApplicationInfoImpl;
@@ -42,7 +43,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
-import javax.annotation.Nullable;
 import java.awt.Color;
 import java.time.Instant;
 import java.time.OffsetDateTime;

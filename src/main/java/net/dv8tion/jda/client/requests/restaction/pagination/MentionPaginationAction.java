@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.client.requests.restaction.pagination;
 
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Guild;
@@ -27,7 +30,6 @@ import net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.LinkedList;
 import java.util.List;
@@ -56,6 +58,7 @@ import java.util.List;
  * @since  3.0
  */
 @ParametersAreNonnullByDefault
+@DefaultAnnotationForParameters(NonNull.class)
 public class MentionPaginationAction extends PaginationAction<Message, MentionPaginationAction>
 {
 

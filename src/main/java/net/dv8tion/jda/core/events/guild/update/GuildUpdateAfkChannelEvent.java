@@ -16,11 +16,10 @@
 
 package net.dv8tion.jda.core.events.guild.update;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
-
-import javax.annotation.Nullable;
 
 public class GuildUpdateAfkChannelEvent extends GenericGuildUpdateEvent
 {

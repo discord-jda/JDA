@@ -16,9 +16,8 @@
 
 package net.dv8tion.jda.core.events.self;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
-
-import javax.annotation.Nullable;
 
 public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent
 {

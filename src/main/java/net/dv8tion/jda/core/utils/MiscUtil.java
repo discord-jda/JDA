@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.core.utils;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import gnu.trove.impl.sync.TSynchronizedLongObjectMap;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
@@ -26,7 +27,6 @@ import okio.BufferedSink;
 import okio.Okio;
 import okio.Source;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -66,7 +66,7 @@ public class MiscUtil
      *
      * @return The creation time of the JDA entity as OffsetDateTime
      */
-    @Nonnull
+    @NonNull
     public static OffsetDateTime getCreationTime(long entityId)
     {
         long timestamp = (entityId >>> TIMESTAMP_OFFSET) + DISCORD_EPOCH;
@@ -87,7 +87,7 @@ public class MiscUtil
      *
      * @return The creation time of the JDA entity as OffsetDateTime
      */
-    @Nonnull
+    @NonNull
     public static OffsetDateTime getCreationTime(ISnowflake entity)
     {
         Checks.notNull(entity, "Entity");
@@ -102,7 +102,7 @@ public class MiscUtil
      *
      * @return The String of the formatted OffsetDateTime
      */
-    @Nonnull
+    @NonNull
     public static String getDateTimeString(OffsetDateTime time)
     {
         return time.format(dtFormatter);
@@ -173,7 +173,7 @@ public class MiscUtil
      *
      * @return a new thread-safe {@link gnu.trove.map.TLongObjectMap TLongObjectMap}
      */
-    @Nonnull
+    @NonNull
     public static <T> TLongObjectMap<T> newLongMap()
     {
         return new TSynchronizedLongObjectMap<>(new TLongObjectHashMap<T>(), new Object());
@@ -188,7 +188,7 @@ public class MiscUtil
      *
      * @return The encoded String
      */
-    @Nonnull
+    @NonNull
     public static String encodeUTF8(String chars)
     {
         try
@@ -276,7 +276,7 @@ public class MiscUtil
      *
      * @return RequestBody capable of transmitting the provided InputStream of data
      */
-    @Nonnull
+    @NonNull
     public static RequestBody createRequestBody(final MediaType contentType, final InputStream stream)
     {
         return new RequestBody()

@@ -15,13 +15,12 @@
  */
 package net.dv8tion.jda.core.events.guild.member;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.guild.GenericGuildEvent;
-
-import javax.annotation.Nonnull;
 
 /**
  * <b><u>GenericGuildMemberEvent</u></b><br>
@@ -40,13 +39,13 @@ public abstract class GenericGuildMemberEvent extends GenericGuildEvent
         this.member = member;
     }
 
-    @Nonnull
+    @NonNull
     public User getUser()
     {
         return getMember().getUser();
     }
 
-    @Nonnull
+    @NonNull
     public Member getMember()
     {
         return member;

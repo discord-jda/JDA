@@ -15,12 +15,12 @@
  */
 package net.dv8tion.jda.core.events.message;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.Event;
 
-import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 
@@ -45,19 +45,19 @@ public class MessageBulkDeleteEvent extends Event
         this.messageIds = Collections.unmodifiableList(messageIds);
     }
 
-    @Nonnull
+    @NonNull
     public TextChannel getChannel()
     {
         return channel;
     }
 
-    @Nonnull
+    @NonNull
     public Guild getGuild()
     {
         return channel.getGuild();
     }
 
-    @Nonnull
+    @NonNull
     public List<String> getMessageIds()
     {
         return messageIds;

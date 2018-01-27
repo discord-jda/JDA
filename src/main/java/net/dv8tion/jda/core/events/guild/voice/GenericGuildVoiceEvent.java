@@ -16,12 +16,11 @@
 
 package net.dv8tion.jda.core.events.guild.voice;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.GuildVoiceState;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.guild.GenericGuildEvent;
-
-import javax.annotation.Nonnull;
 
 public abstract class GenericGuildVoiceEvent extends GenericGuildEvent
 {
@@ -33,13 +32,13 @@ public abstract class GenericGuildVoiceEvent extends GenericGuildEvent
         this.member = member;
     }
 
-    @Nonnull
+    @NonNull
     public Member getMember()
     {
         return member;
     }
 
-    @Nonnull
+    @NonNull
     public GuildVoiceState getVoiceState()
     {
         return member.getVoiceState();

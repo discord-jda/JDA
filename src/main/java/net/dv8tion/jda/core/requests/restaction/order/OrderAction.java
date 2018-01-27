@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.requests.restaction.order;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
@@ -23,8 +25,6 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -96,7 +96,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      *
      * @return The corresponding JDA instance
      */
-    @Nonnull
+    @NonNull
     public JDA getJDA()
     {
         return api;
@@ -108,7 +108,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      *
      * @return Immutable List representing the current order
      */
-    @Nonnull
+    @NonNull
     public List<T> getCurrentOrder()
     {
         return Collections.unmodifiableList(orderList);
@@ -130,7 +130,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      * @see    #getSelectedPosition()
      * @see    #getSelectedEntity()
      */
-    @Nonnull
+    @NonNull
     public M selectPosition(int selectedPosition)
     {
         Checks.notNegative(selectedPosition, "Provided selectedPosition");
@@ -156,7 +156,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      * @see    #getSelectedPosition()
      * @see    #getSelectedEntity()
      */
-    @Nonnull
+    @NonNull
     public M selectPosition(T selectedEntity)
     {
         Checks.notNull(selectedEntity, "Channel");
@@ -184,7 +184,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      *
      * @return The currently selected entity
      */
-    @Nonnull
+    @NonNull
     public T getSelectedEntity()
     {
         if (selectedPosition == -1)
@@ -209,7 +209,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      *
      * @see    #moveTo(int)
      */
-    @Nonnull
+    @NonNull
     public M moveUp(int amount)
     {
         Checks.notNegative(amount, "Provided amount");
@@ -250,7 +250,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      *
      * @see    #moveTo(int)
      */
-    @Nonnull
+    @NonNull
     public M moveDown(int amount)
     {
         Checks.notNegative(amount, "Provided amount");
@@ -294,7 +294,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      * @see    #moveDown(int)
      * @see    #moveUp(int)
      */
-    @Nonnull
+    @NonNull
     public M moveTo(int position)
     {
         Checks.notNegative(position, "Provided position");
@@ -320,7 +320,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      *
      * @return The current OrderAction sub-implementation instance
      */
-    @Nonnull
+    @NonNull
     public M swapPosition(int swapPosition)
     {
         Checks.notNegative(swapPosition, "Provided swapPosition");
@@ -353,7 +353,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      *
      * @see    #swapPosition(int)
      */
-    @Nonnull
+    @NonNull
     public M swapPosition(T swapEntity)
     {
         Checks.notNull(swapEntity, "Provided swapEntity");
@@ -370,7 +370,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      *
      * @see    java.util.Collections#reverse(java.util.List)
      */
-    @Nonnull
+    @NonNull
     public M reverseOrder()
     {
         Collections.reverse(this.orderList);
@@ -385,7 +385,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      *
      * @see    java.util.Collections#shuffle(java.util.List)
      */
-    @Nonnull
+    @NonNull
     public M shuffleOrder()
     {
         Collections.shuffle(this.orderList);
@@ -407,7 +407,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      *
      * @see    java.util.ArrayList#sort(java.util.Comparator)
      */
-    @Nonnull
+    @NonNull
     public M sortOrder(final Comparator<T> comparator)
     {
         Checks.notNull(comparator, "Provided comparator");

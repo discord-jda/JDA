@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.client.managers.EmoteManager;
 import net.dv8tion.jda.client.managers.EmoteManagerUpdatable;
 import net.dv8tion.jda.core.JDA;
@@ -29,8 +31,6 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -75,7 +75,7 @@ public class EmoteImpl implements Emote
         return guild;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public List<Role> getRoles()
     {
@@ -84,7 +84,7 @@ public class EmoteImpl implements Emote
         return Collections.unmodifiableList(new LinkedList<>(roles));
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public String getName()
     {
@@ -115,14 +115,14 @@ public class EmoteImpl implements Emote
         return id;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public JDA getJDA()
     {
         return api;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public EmoteManager getManager()
     {
@@ -139,7 +139,7 @@ public class EmoteImpl implements Emote
         return m;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public EmoteManagerUpdatable getManagerUpdatable()
     {
@@ -156,7 +156,7 @@ public class EmoteImpl implements Emote
         return m;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public AuditableRestAction<Void> delete()
     {

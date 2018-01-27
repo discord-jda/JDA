@@ -16,6 +16,8 @@
 package net.dv8tion.jda.core;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA.Status;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Game;
@@ -30,8 +32,6 @@ import net.dv8tion.jda.core.utils.SessionController;
 import net.dv8tion.jda.core.utils.SessionControllerAdapter;
 import okhttp3.OkHttpClient;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
@@ -111,7 +111,7 @@ public class JDABuilder
      * @see    <a href="https://www.slf4j.org/api/org/slf4j/MDC.html" target="_blank">MDC Javadoc</a>
      * @see    #setContextEnabled(boolean)
      */
-    @Nonnull
+    @NonNull
     public JDABuilder setContextMap(@Nullable ConcurrentMap<String, String> map)
     {
         this.contextMap = map;
@@ -132,7 +132,7 @@ public class JDABuilder
      * @see    <a href="https://www.slf4j.org/api/org/slf4j/MDC.html" target="_blank">MDC Javadoc</a>
      * @see    #setContextMap(java.util.concurrent.ConcurrentMap)
      */
-    @Nonnull
+    @NonNull
     public JDABuilder setContextEnabled(boolean enable)
     {
         this.enableContext = enable;
@@ -155,7 +155,7 @@ public class JDABuilder
      *         This system has been completely moved into a new central object {@link net.dv8tion.jda.core.utils.SessionController SessionController}.
      *         <br>Use {@link #setSessionController(SessionController)} instead!
      */
-    @Nonnull
+    @NonNull
     @Deprecated
     public JDABuilder setReconnectQueue(@Nullable SessionReconnectQueue queue)
     {
@@ -188,7 +188,7 @@ public class JDABuilder
      *         This system has been completely moved into a new central object {@link net.dv8tion.jda.core.utils.SessionController SessionController}.
      *         <br>Use {@link #setSessionController(SessionController)} instead!
      */
-    @Nonnull
+    @NonNull
     @Deprecated
     public JDABuilder setShardedRateLimiter(@Nullable ShardedRateLimiter rateLimiter)
     {
@@ -211,7 +211,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    @Nonnull
+    @NonNull
     public JDABuilder setRequestTimeoutRetry(boolean retryOnTimeout)
     {
         this.requestTimeoutRetry = retryOnTimeout;
@@ -249,7 +249,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    @Nonnull
+    @NonNull
     public JDABuilder setToken(@Nullable String token)
     {
         //Share ratelimit for the same token
@@ -270,7 +270,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    @Nonnull
+    @NonNull
     public JDABuilder setHttpClientBuilder(@Nullable OkHttpClient.Builder builder)
     {
         this.httpClientBuilder = builder;
@@ -286,7 +286,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    @Nonnull
+    @NonNull
     public JDABuilder setWebsocketFactory(@Nullable WebSocketFactory factory)
     {
         this.wsFactory = factory;
@@ -306,7 +306,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    @Nonnull
+    @NonNull
     public JDABuilder setCorePoolSize(int size)
     {
         Checks.positive(size, "Core pool size");
@@ -325,7 +325,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    @Nonnull
+    @NonNull
     public JDABuilder setAudioEnabled(boolean enabled)
     {
         this.enableVoice = enabled;
@@ -344,7 +344,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    @Nonnull
+    @NonNull
     public JDABuilder setBulkDeleteSplittingEnabled(boolean enabled)
     {
         this.enableBulkDeleteSplitting = enabled;
@@ -363,7 +363,7 @@ public class JDABuilder
      *
      * @return Return the {@link net.dv8tion.jda.core.JDABuilder JDABuilder } instance. Useful for chaining.
      */
-    @Nonnull
+    @NonNull
     public JDABuilder setEnableShutdownHook(boolean enable)
     {
         this.enableShutdownHook = enable;
@@ -381,7 +381,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    @Nonnull
+    @NonNull
     public JDABuilder setAutoReconnect(boolean autoReconnect)
     {
         this.autoReconnect = autoReconnect;
@@ -406,7 +406,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    @Nonnull
+    @NonNull
     public JDABuilder setEventManager(@Nullable IEventManager manager)
     {
         this.eventManager = manager;
@@ -424,7 +424,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    @Nonnull
+    @NonNull
     public JDABuilder setAudioSendFactory(@Nullable IAudioSendFactory factory)
     {
         this.audioSendFactory = factory;
@@ -442,7 +442,7 @@ public class JDABuilder
      *
      * @see    net.dv8tion.jda.core.managers.Presence#setIdle(boolean) Presence#setIdle(boolean)
      */
-    @Nonnull
+    @NonNull
     public JDABuilder setIdle(boolean idle)
     {
         this.idle = idle;
@@ -463,7 +463,7 @@ public class JDABuilder
      *
      * @see    net.dv8tion.jda.core.managers.Presence#setGame(Game)  Presence.setGame(Game)
      */
-    @Nonnull
+    @NonNull
     public JDABuilder setGame(@Nullable Game game)
     {
         this.game = game;
@@ -487,7 +487,7 @@ public class JDABuilder
      *
      * @see    net.dv8tion.jda.core.managers.Presence#setStatus(OnlineStatus) Presence.setStatus(OnlineStatus)
      */
-    @Nonnull
+    @NonNull
     public JDABuilder setStatus(@Nullable OnlineStatus status)
     {
         if (status == null || status == OnlineStatus.UNKNOWN)
@@ -515,7 +515,7 @@ public class JDABuilder
      *
      * @see    net.dv8tion.jda.core.JDA#addEventListener(Object...) JDA.addEventListener(Object...)
      */
-    @Nonnull
+    @NonNull
     public JDABuilder addEventListener(@Nullable Object... listeners)
     {
         Checks.noneNull(listeners, "listeners");
@@ -537,7 +537,7 @@ public class JDABuilder
      *
      * @see    net.dv8tion.jda.core.JDA#removeEventListener(Object...) JDA.removeEventListener(Object...)
      */
-    @Nonnull
+    @NonNull
     public JDABuilder removeEventListener(@Nullable Object... listeners)
     {
         Checks.noneNull(listeners, "listeners");
@@ -558,7 +558,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    @Nonnull
+    @NonNull
     public JDABuilder setMaxReconnectDelay(int maxReconnectDelay)
     {
         Checks.check(maxReconnectDelay >= 32, "Max reconnect delay must be 32 seconds or greater. You provided %d.", maxReconnectDelay);
@@ -596,7 +596,7 @@ public class JDABuilder
      * @see    net.dv8tion.jda.core.JDA#getShardInfo() JDA.getShardInfo()
      * @see    net.dv8tion.jda.bot.sharding.ShardManager ShardManager
      */
-    @Nonnull
+    @NonNull
     public JDABuilder useSharding(int shardId, int shardTotal)
     {
         AccountTypeException.check(accountType, AccountType.BOT);
@@ -626,7 +626,7 @@ public class JDABuilder
      *
      * @see    net.dv8tion.jda.core.utils.SessionControllerAdapter SessionControllerAdapter
      */
-    @Nonnull
+    @NonNull
     public JDABuilder setSessionController(@Nullable SessionController controller)
     {
         this.controller = controller;
@@ -653,7 +653,7 @@ public class JDABuilder
      * @return A {@link net.dv8tion.jda.core.JDA} instance that has started the login process. It is unknown as
      *         to whether or not loading has finished when this returns.
      */
-    @Nonnull
+    @NonNull
     public JDA buildAsync() throws LoginException
     {
         OkHttpClient.Builder httpClientBuilder = this.httpClientBuilder == null ? new OkHttpClient.Builder() : this.httpClientBuilder;
@@ -718,7 +718,7 @@ public class JDABuilder
      *
      * @return A {@link net.dv8tion.jda.core.JDA} Object that is <b>guaranteed</b> to be logged in and finished loading.
      */
-    @Nonnull
+    @NonNull
     public JDA buildBlocking(JDA.Status status) throws LoginException, InterruptedException
     {
         Checks.notNull(status, "Status");
@@ -750,7 +750,7 @@ public class JDABuilder
      *
      * @return A {@link net.dv8tion.jda.core.JDA} Object that is <b>guaranteed</b> to be logged in and finished loading.
      */
-    @Nonnull
+    @NonNull
     public JDA buildBlocking() throws LoginException, InterruptedException
     {
         return buildBlocking(Status.CONNECTED);

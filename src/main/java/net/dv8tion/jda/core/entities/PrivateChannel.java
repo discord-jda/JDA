@@ -15,12 +15,11 @@
  */
 package net.dv8tion.jda.core.entities;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.client.entities.CallableChannel;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.requests.RestAction;
-
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 
 /**
  * Represents the connection used for direct messaging.
@@ -32,7 +31,7 @@ public interface PrivateChannel extends MessageChannel, CallableChannel, IFakeab
      *
      * @return A non-null {@link net.dv8tion.jda.core.entities.User User}.
      */
-    @Nonnull
+    @NonNull
     User getUser();
 
     /**
@@ -40,7 +39,7 @@ public interface PrivateChannel extends MessageChannel, CallableChannel, IFakeab
      *
      * @return the corresponding JDA instance
      */
-    @Nonnull
+    @NonNull
     JDA getJDA();
 
     /**
@@ -50,7 +49,7 @@ public interface PrivateChannel extends MessageChannel, CallableChannel, IFakeab
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
      */
-    @Nonnull
+    @NonNull
     @CheckReturnValue
     RestAction<Void> close();
 }

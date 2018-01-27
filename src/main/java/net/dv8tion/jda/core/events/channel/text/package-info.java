@@ -23,6 +23,10 @@
  * are extensions of the {@link net.dv8tion.jda.core.events.channel.text.GenericTextChannelEvent GenericTextChannelEvent}
  */
 @ParametersAreNonnullByDefault
+@DefaultAnnotationForParameters(NonNull.class)
 package net.dv8tion.jda.core.events.channel.text;
+
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;

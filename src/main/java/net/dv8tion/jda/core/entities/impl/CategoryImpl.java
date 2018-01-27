@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.requests.RestAction;
@@ -25,7 +26,6 @@ import net.dv8tion.jda.core.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -58,14 +58,14 @@ public class CategoryImpl extends AbstractChannelImpl<CategoryImpl> implements C
         return Integer.compare(rawPosition, other.getPositionRaw());
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public ChannelType getType()
     {
         return ChannelType.CATEGORY;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public List<Member> getMembers()
     {
@@ -90,7 +90,7 @@ public class CategoryImpl extends AbstractChannelImpl<CategoryImpl> implements C
         throw new AssertionError("Somehow when determining position we never found the Category in the Guild's channels? wtf?");
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public ChannelAction createCopy(Guild guild)
     {
@@ -109,21 +109,21 @@ public class CategoryImpl extends AbstractChannelImpl<CategoryImpl> implements C
         return action;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public InviteAction createInvite()
     {
         throw new UnsupportedOperationException("Cannot create invites for category!");
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public RestAction<List<Invite>> getInvites()
     {
         return new RestAction.EmptyRestAction<>(getJDA(), Collections.emptyList());
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public List<Channel> getChannels()
     {
@@ -133,7 +133,7 @@ public class CategoryImpl extends AbstractChannelImpl<CategoryImpl> implements C
         return Collections.unmodifiableList(channels);
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public List<TextChannel> getTextChannels()
     {
@@ -143,7 +143,7 @@ public class CategoryImpl extends AbstractChannelImpl<CategoryImpl> implements C
                     .collect(Collectors.toList()));
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public List<VoiceChannel> getVoiceChannels()
     {
@@ -153,7 +153,7 @@ public class CategoryImpl extends AbstractChannelImpl<CategoryImpl> implements C
                     .collect(Collectors.toList()));
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public ChannelAction createTextChannel(String name)
     {
@@ -162,7 +162,7 @@ public class CategoryImpl extends AbstractChannelImpl<CategoryImpl> implements C
         return action;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public ChannelAction createVoiceChannel(String name)
     {

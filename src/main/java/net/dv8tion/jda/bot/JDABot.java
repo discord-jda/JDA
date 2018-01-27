@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.bot;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
 import net.dv8tion.jda.bot.entities.ApplicationInfo;
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.JDA;
@@ -23,7 +24,6 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.requests.RestAction;
 
 import java.util.Collection;
-import javax.annotation.CheckReturnValue;
 
 public interface JDABot
 {

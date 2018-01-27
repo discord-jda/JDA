@@ -16,11 +16,11 @@
 package net.dv8tion.jda.core.events;
 
 import com.neovisionaries.ws.client.WebSocketFrame;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.requests.CloseCode;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -74,7 +74,7 @@ public class DisconnectEvent extends Event
      *
      * @return Immutable list of all cf-ray values for this session
      */
-    @Nonnull
+    @NonNull
     public List<String> getCloudflareRays()
     {
         return api.getCloudflareRays();
@@ -97,7 +97,7 @@ public class DisconnectEvent extends Event
         return closedByServer;
     }
 
-    @Nonnull
+    @NonNull
     public OffsetDateTime getDisconnectTime()
     {
         return disconnectTime;
