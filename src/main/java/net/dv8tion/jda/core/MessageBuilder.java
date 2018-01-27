@@ -384,28 +384,6 @@ public class MessageBuilder implements Appendable
      *         the replacement sequence of char values
      *
      * @return The MessageBuilder instance. Useful for chaining.
-     *
-     * @deprecated
-     *         Deprecated in favor to {@link #replace(String, String)} due to clearer naming (not using regex)
-     */
-    @Nonnull
-    @Deprecated
-    public MessageBuilder replaceAll(String target, String replacement)
-    {
-        return replace(target, replacement);
-    }
-
-    /**
-     * Replaces each substring that matches the target string with the specified replacement string.
-     * The replacement proceeds from the beginning of the string to the end, for example, replacing
-     * "aa" with "b" in the message "aaa" will result in "ba" rather than "ab".
-     *
-     * @param  target
-     *         the sequence of char values to be replaced
-     * @param  replacement
-     *         the replacement sequence of char values
-     *
-     * @return The MessageBuilder instance. Useful for chaining.
      */
     @Nonnull
     public MessageBuilder replace(String target, String replacement)
@@ -523,34 +501,6 @@ public class MessageBuilder implements Appendable
     /**
      * Removes all mentions of the specified types and replaces them with the closest looking textual representation.
      *
-     * <p>Use this over {@link #stripMentions(JDA, Message.MentionType...)} if {@link net.dv8tion.jda.core.entities.User User} mentions should
-     * be replaced with their nicknames in a specific guild based.
-     * <br>Uses {@link net.dv8tion.jda.core.entities.Member#getEffectiveName()}
-     *
-     * @param  guild
-     *         the guild for {@link net.dv8tion.jda.core.entities.User User} mentions
-     * @param  types
-     *         the {@link MentionType MentionTypes} that should be stripped
-     *
-     * @return The MessageBuilder instance. Useful for chaining.
-     *
-     * @deprecated
-     *         Use {@link #stripMentions(Guild, Message.MentionType...)} instead.
-     */
-    @Nonnull
-    @Deprecated
-    public MessageBuilder stripMentions(Guild guild, MentionType... types)
-    {
-        if (types == null) return this;
-        Message.MentionType[] mentionTypes = new Message.MentionType[types.length];
-        for (int i = 0; i < mentionTypes.length; i++)
-            mentionTypes[i] = convertNewType(types[i]);
-        return stripMentions(guild, mentionTypes);
-    }
-
-    /**
-     * Removes all mentions of the specified types and replaces them with the closest looking textual representation.
-     *
      * <p>Use this over {@link #stripMentions(Guild, Message.MentionType...)} if {@link net.dv8tion.jda.core.entities.User User}
      * mentions should be replaced with their {@link net.dv8tion.jda.core.entities.User#getName()}.
      *
@@ -567,35 +517,7 @@ public class MessageBuilder implements Appendable
         return this.stripMentions(jda, null, types);
     }
 
-    /**
-     * Removes all mentions of the specified types and replaces them with the closest looking textual representation.
-     *
-     * <p>Use this over {@link #stripMentions(Guild, Message.MentionType...)} if {@link net.dv8tion.jda.core.entities.User User}
-     * mentions should be replaced with their {@link net.dv8tion.jda.core.entities.User#getName()}.
-     *
-     * @param  jda
-     *         The JDA instance used to resolve the mentions.
-     * @param  types
-     *         the {@link MentionType MentionTypes} that should be stripped
-     *
-     * @return The MessageBuilder instance. Useful for chaining.
-     *
-     * @deprecated
-     *         Use {@link #stripMentions(JDA, Message.MentionType...)} instead
-     */
-    @Nonnull
-    @Deprecated
-    public MessageBuilder stripMentions(JDA jda, @Nullable MentionType... types)
-    {
-        if (types == null) return this;
-        Message.MentionType[] mentionTypes = new Message.MentionType[types.length];
-        for (int i = 0; i < mentionTypes.length; i++)
-            mentionTypes[i] = convertNewType(types[i]);
-        return stripMentions(jda, mentionTypes);
-    }
-
-    @Nonnull
-    private MessageBuilder stripMentions(@Nullable JDA jda, @Nullable Guild guild, @Nullable Message.MentionType... types)
+    private MessageBuilder stripMentions(JDA jda, Guild guild, Message.MentionType... types)
     {
         if (types == null)
             return this;
@@ -1071,51 +993,6 @@ public class MessageBuilder implements Appendable
          * 
          */
         int nextMessage(int currentBeginIndex, MessageBuilder builder);
-    }
-
-    /**
-     * Holds the strippable mention types used in {@link MessageBuilder#stripMentions(JDA, MentionType...)}
-     * and {@link MessageBuilder#stripMentions(Guild, MentionType...)}
-     *
-     * @deprecated Getting replaced by {@link net.dv8tion.jda.core.entities.Message.MentionType Message.MentionType}
-     */
-    @Deprecated
-    public enum MentionType {
-        /**
-         * <b>@everyone</b> mentions 
-         */
-        EVERYONE,
-        /**
-         * <b>@here</b> mentions
-         */
-        HERE,
-        /**
-         * <b>@User</b> mentions
-         */
-        USER,
-        /**
-         * <b>#channel</b> mentions
-         */
-        CHANNEL,
-        /**
-         * <b>@Role</b> mentions
-         */
-        ROLE
-    }
-
-    @Nonnull
-    @Deprecated
-    private Message.MentionType convertNewType(MentionType oldType)
-    {
-        switch (oldType)
-        {
-            case HERE: return Message.MentionType.HERE;
-            case EVERYONE: return Message.MentionType.EVERYONE;
-            case ROLE: return Message.MentionType.ROLE;
-            case USER: return Message.MentionType.USER;
-            case CHANNEL: return Message.MentionType.CHANNEL;
-            default: return null;
-        }
     }
 
     /**

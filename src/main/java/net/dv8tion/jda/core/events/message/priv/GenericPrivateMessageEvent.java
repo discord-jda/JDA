@@ -57,16 +57,4 @@ public abstract class GenericPrivateMessageEvent extends Event
     {
         return messageId;
     }
-
-    @Deprecated
-    public boolean isFromType(ChannelType type)
-    {
-        return channel.getType() == type;
-    }
-
-    @Deprecated
-    public ChannelType getChannelType()
-    {
-        return channel.getType();
-    }
 }

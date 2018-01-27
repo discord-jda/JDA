@@ -141,8 +141,6 @@ public class EmoteManagerUpdatable
      * An {@link net.dv8tion.jda.client.managers.fields.EmoteField EmoteField}
      * for the restriction roles of the selected {@link net.dv8tion.jda.core.entities.Emote Emote}.
      * <br>If the roles are empty this Emote will be available to everyone.
-     * <br>Passing the roles field will be ignored unless the application is whitelisted as an emoji provider.
-     * For more information and to request whitelisting please contact {@code support@discordapp.com}
      *
      * <p>To set the value use {@link net.dv8tion.jda.core.managers.fields.Field#setValue(Object) setValue(Collection)}
      * on the returned {@link net.dv8tion.jda.client.managers.fields.EmoteField EmoteField} instance.

@@ -40,30 +40,4 @@ public abstract class GenericGroupMessageEvent extends GenericGroupEvent
     {
         return messageId;
     }
-
-    @Deprecated
-    public boolean isFromType(ChannelType type)
-    {
-        return group.getType() == type;
-    }
-
-    @Deprecated
-    public ChannelType getChannelType()
-    {
-        return group.getType();
-    }
-
-    /**
-     * The {@link net.dv8tion.jda.client.entities.Group Group}
-     *
-     * @return The {@link net.dv8tion.jda.client.entities.Group Group}
-     *
-     * @deprecated
-     *         Use {@link #getGroup()} instead
-     */
-    @Deprecated
-    public Group getChannel()
-    {
-        return getGroup();
-    }
 }

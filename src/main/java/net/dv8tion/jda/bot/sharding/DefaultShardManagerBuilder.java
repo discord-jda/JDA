@@ -373,8 +373,8 @@ public class DefaultShardManagerBuilder
      * <br>This value can be changed at any time in the {@link net.dv8tion.jda.core.managers.Presence Presence} from a JDA instance.
      *
      * <p><b>Hint:</b> You can create a {@link net.dv8tion.jda.core.entities.Game Game} object using
-     * {@link net.dv8tion.jda.core.entities.Game#of(String) Game.of(String)} or
-     * {@link net.dv8tion.jda.core.entities.Game#of(String, String) Game.of(String, String)}.
+     * {@link net.dv8tion.jda.core.entities.Game#playing(String) Game.playing(String)} or
+     * {@link net.dv8tion.jda.core.entities.Game#streaming(String, String)} Game.streaming(String, String)}.
      *
      * @param  game
      *         An instance of {@link net.dv8tion.jda.core.entities.Game Game} (null allowed)
@@ -394,8 +394,8 @@ public class DefaultShardManagerBuilder
      * <br>This value can be changed at any time in the {@link net.dv8tion.jda.core.managers.Presence Presence} from a JDA instance.
      *
      * <p><b>Hint:</b> You can create a {@link net.dv8tion.jda.core.entities.Game Game} object using
-     * {@link net.dv8tion.jda.core.entities.Game#of(String) Game.of(String)} or
-     * {@link net.dv8tion.jda.core.entities.Game#of(String, String) Game.of(String, String)}.
+     * {@link net.dv8tion.jda.core.entities.Game#playing(String) Game.playing(String)} or
+     * {@link net.dv8tion.jda.core.entities.Game#streaming(String, String) Game.streaming(String, String)}.
      *
      * @param  gameProvider
      *         An instance of {@link net.dv8tion.jda.core.entities.Game Game} (null allowed)

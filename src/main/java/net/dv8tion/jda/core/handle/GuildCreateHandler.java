@@ -33,7 +33,8 @@ public class GuildCreateHandler extends SocketHandler
     @Override
     protected Long handleInternally(JSONObject content)
     {
-        GuildImpl g = (GuildImpl) api.getGuildById(content.getLong("id"));
+        final long id = content.getLong("id");
+        GuildImpl g = (GuildImpl) api.getGuildById(id);
         Boolean wasAvail = (g == null || g.name == null) ? null : g.isAvailable();
         api.getEntityBuilder().createGuildFirstPass(content, guild ->
         {
@@ -41,28 +42,28 @@ public class GuildCreateHandler extends SocketHandler
             {
                 if (!api.getClient().isReady())
                 {
-                    api.getClient().<ReadyHandler>getHandler("READY").guildSetupComplete(guild);
+                    getReadyHandler().guildSetupComplete(guild);
                 }
                 else
                 {
-                    if(wasAvail == null)                    //didn't exist
+                    if (wasAvail == null) //didn't exist
                     {
                         api.getEventManager().handle(
-                                new GuildJoinEvent(
-                                        api, responseNumber,
-                                        guild));
+                            new GuildJoinEvent(
+                                api, responseNumber,
+                                guild));
                         api.getEventCache().playbackCache(EventCache.Type.GUILD, guild.getIdLong());
                     }
-                    else if (!wasAvail)                     //was previously unavailable
+                    else if (!wasAvail) //was previously unavailable
                     {
                         api.getEventManager().handle(
-                                new GuildAvailableEvent(
-                                        api, responseNumber,
-                                        guild));
+                            new GuildAvailableEvent(
+                                api, responseNumber,
+                                guild));
                     }
                     else
                     {
-                        throw new IllegalStateException("Got a GuildCreateEvent for a guild that already existed! Json: " + content.toString());
+                        throw new IllegalStateException("Got a GuildCreateEvent for a guild that already existed! ID: " + id);
                     }
                 }
             }
@@ -70,18 +71,23 @@ public class GuildCreateHandler extends SocketHandler
             {
                 if (!api.getClient().isReady())
                 {
-                    api.getClient().<ReadyHandler>getHandler("READY").acknowledgeGuild(guild, false, false, false);
+                    getReadyHandler().acknowledgeGuild(guild, false, false, false);
                 }
                 else
                 {
                     //Proper GuildJoinedEvent is fired when guild was populated
                     api.getEventManager().handle(
-                            new UnavailableGuildJoinedEvent(
-                                    api, responseNumber,
-                                    guild.getIdLong()));
+                        new UnavailableGuildJoinedEvent(
+                            api, responseNumber,
+                            guild.getIdLong()));
                 }
             }
         });
         return null;
+    }
+
+    private ReadyHandler getReadyHandler()
+    {
+        return api.getClient().getHandler("READY");
     }
 }

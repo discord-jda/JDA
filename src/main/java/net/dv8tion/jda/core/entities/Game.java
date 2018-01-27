@@ -158,29 +158,6 @@ public class Game
     }
 
     /**
-     * Creates a new Game instance with the specified name.
-     * <br>In order to appear as "streaming" in the official client you must
-     * provide a valid (see documentation of method) streaming URL in {@link #streaming(String, String) Game.of(String, String)}.
-     *
-     * @param  name
-     *         The not-null name of the newly created game
-     *
-     * @throws IllegalArgumentException
-     *         if the specified name is null, empty or blank
-     *
-     * @return A valid Game instance with the provided name with {@link GameType#DEFAULT}
-     *
-     * @deprecated
-     *        Use {@link #playing(String)} instead
-     */
-    @Nonnull
-    @Deprecated
-    public static Game of(String name)
-    {
-        return playing(name);
-    }
-
-    /**
      * Creates a new Game instance with the specified name and url.
      * <br>The specified URL must be valid according to discord standards in order to display as "streaming" in the official client.
      * A valid streaming URL must be derived from {@code https://twitch.tv/} and can be verified using {@link #isValidStreamingUrl(String)}. (see documentation)
@@ -207,33 +184,6 @@ public class Game
         else
             type = GameType.DEFAULT;
         return new Game(name, url, type);
-    }
-
-    /**
-     * Creates a new Game instance with the specified name and url.
-     * <br>The specified URL must be valid according to discord standards in order to display as "streaming" in the official client.
-     * A valid streaming URL must be derived from {@code https://twitch.tv/} and can be verified using {@link #isValidStreamingUrl(String)}. (see documentation)
-     *
-     * @param  name
-     *         The not-null name of the newly created game
-     * @param  url
-     *         The streaming url to use, required to display as "streaming"
-     *
-     * @throws IllegalArgumentException
-     *         If the specified name is null or empty
-     *
-     * @return A valid Game instance with the provided name and url
-     *
-     * @see    #isValidStreamingUrl(String)
-     *
-     * @deprecated
-     *         Use {@link #streaming(String, String)} instead!
-     */
-    @Nonnull
-    @Deprecated
-    public static Game of(String name, @Nullable String url)
-    {
-        return streaming(name, url);
     }
 
     /**

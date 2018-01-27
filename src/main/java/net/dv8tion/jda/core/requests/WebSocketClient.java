@@ -912,6 +912,24 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         return api.getToken();
     }
 
+    private List<JSONObject> convertPresencesReplace(long responseTotal, JSONArray array)
+    {
+        // Needs special handling due to content of "d" being an array
+        List<JSONObject> output = new LinkedList<>();
+        for (int i = 0; i < array.length(); i++)
+        {
+            JSONObject presence = array.getJSONObject(i);
+            final JSONObject obj = new JSONObject();
+            obj.put("jda-field", "This was constructed from a PRESENCES_REPLACE payload")
+               .put("op", WebSocketCode.DISPATCH)
+               .put("s", responseTotal)
+               .put("d", presence)
+               .put("t", "PRESENCE_UPDATE");
+            output.add(obj);
+        }
+        return output;
+    }
+
     protected void handleEvent(JSONObject raw)
     {
         String type = raw.getString("t");
@@ -922,6 +940,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         if (type.equals("GUILD_MEMBER_REMOVE"))
             ((GuildMembersChunkHandler) getHandler("GUILD_MEMBERS_CHUNK")).modifyExpectedGuildMember(raw.getJSONObject("d").getLong("guild_id"), -1);
 
+        boolean isJSON = raw.opt("d") instanceof JSONObject;
         //If initiating, only allows READY, RESUMED, GUILD_MEMBERS_CHUNK, GUILD_SYNC, and GUILD_CREATE through.
         // If we are currently chunking, we don't allow GUILD_CREATE through anymore.
         if (initiating &&  !(type.equals("READY")
@@ -930,6 +949,20 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 || type.equals("GUILD_SYNC")
                 || (!chunkingAndSyncing && type.equals("GUILD_CREATE"))))
         {
+            if (!isJSON)
+            {
+                if (type.equals("PRESENCES_REPLACE"))
+                {
+                    List<JSONObject> converted = convertPresencesReplace(responseTotal, raw.getJSONArray("d"));
+                    LOG.debug("Caching PRESENCES_REPLACE event during init as PRESENCE_UPDATE dispatches!");
+                    cachedEvents.addAll(converted);
+                }
+                else
+                {
+                    LOG.debug("Received event with unhandled body type during init JSON: {}", raw);
+                }
+                return;
+            }
             //If we are currently GuildStreaming, and we get a GUILD_DELETE informing us that a Guild is unavailable
             // convert it to a GUILD_CREATE for handling.
             JSONObject content = raw.getJSONObject("d");
@@ -947,20 +980,21 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             }
         }
 
-        // Needs special handling due to content of "d" being an array
-        if (type.equals("PRESENCES_REPLACE"))
+        if (!isJSON)
         {
-            JSONArray presences = raw.getJSONArray("d");
-            LOG.trace(String.format("%s -> %s", type, presences.toString()));
-            PresenceUpdateHandler handler = getHandler("PRESENCE_UPDATE");
-            for (int i = 0; i < presences.length(); i++)
+            // Needs special handling due to content of "d" being an array
+            if (type.equals("PRESENCES_REPLACE"))
             {
-                JSONObject presence = presences.getJSONObject(i);
-                final JSONObject obj = new JSONObject();
-                obj.put("jda-field", "This was constructed from a PRESENCES_REPLACE payload")
-                   .put("d", presence)
-                   .put("t", "PRESENCE_UPDATE");
-                handler.handle(responseTotal, obj);
+                final JSONArray payload = raw.getJSONArray("d");
+                final List<JSONObject> converted = convertPresencesReplace(responseTotal, payload);
+                final PresenceUpdateHandler handler = getHandler("PRESENCE_UPDATE");
+                LOG.trace(String.format("%s -> %s", type, payload.toString()));
+                for (JSONObject o : converted)
+                    handler.handle(responseTotal, o);
+            }
+            else
+            {
+                LOG.debug("Received event with unhandled body type JSON: {}", raw);
             }
             return;
         }
