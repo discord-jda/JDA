@@ -382,7 +382,10 @@ public class PermissionUtil
         if (isApplied(permission, admin))
             return Permission.ALL_PERMISSIONS;
 
-        permission |= getExplicitPermission(channel, member);
+        AtomicLong allow = new AtomicLong(0);
+        AtomicLong deny = new AtomicLong(0);
+        getExplicitOverrides(channel, member, allow, deny);
+        permission = apply(permission, allow.get(), deny.get());
         final long viewChannel = Permission.VIEW_CHANNEL.getRawValue();
 
         //When the permission to view the channel is not applied it is not granted
