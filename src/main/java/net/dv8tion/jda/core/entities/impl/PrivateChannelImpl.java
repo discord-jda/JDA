@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,12 @@ package net.dv8tion.jda.core.entities.impl;
 import net.dv8tion.jda.client.entities.Call;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.PrivateChannel;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.restaction.MessageAction;
 
 import java.io.InputStream;
 
@@ -126,21 +124,28 @@ public class PrivateChannelImpl implements PrivateChannel
     }
 
     @Override
-    public RestAction<Message> sendMessage(Message msg)
+    public MessageAction sendMessage(CharSequence text)
+    {
+        checkBot();
+        return PrivateChannel.super.sendMessage(text);
+    }
+
+    @Override
+    public MessageAction sendMessage(MessageEmbed embed)
+    {
+        checkBot();
+        return PrivateChannel.super.sendMessage(embed);
+    }
+
+    @Override
+    public MessageAction sendMessage(Message msg)
     {
         checkBot();
         return PrivateChannel.super.sendMessage(msg);
     }
 
     @Override
-    public RestAction<Message> sendFile(InputStream data, String fileName, Message message)
-    {
-        checkBot();
-        return PrivateChannel.super.sendFile(data, fileName, message);
-    }
-
-    @Override
-    public RestAction<Message> sendFile(byte[] data, String fileName, Message message)
+    public MessageAction sendFile(InputStream data, String fileName, Message message)
     {
         checkBot();
         return PrivateChannel.super.sendFile(data, fileName, message);
@@ -184,12 +189,6 @@ public class PrivateChannelImpl implements PrivateChannel
     public String toString()
     {
         return "PC:" + getUser().getName() + '(' + id + ')';
-    }
-
-    private void checkNull(Object obj, String name)
-    {
-        if (obj == null)
-            throw new NullPointerException("Provided " + name + " was null!");
     }
 
     private void checkBot()

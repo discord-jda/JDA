@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,14 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.guild.update.*;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.Collections;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class GuildUpdateHandler extends SocketHandler
 {
@@ -44,20 +49,28 @@ public class GuildUpdateHandler extends SocketHandler
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
         Member owner = guild.getMembersMap().get(content.getLong("owner_id"));
         String name = content.getString("name");
-        String iconId = !content.isNull("icon") ? content.getString("icon") : null;
-        String splashId = !content.isNull("splash") ? content.getString("splash") : null;
+        String iconId = content.optString("icon", null);
+        String splashId = content.optString("splash", null);
         String region = content.getString("region");
         Guild.VerificationLevel verificationLevel = Guild.VerificationLevel.fromKey(content.getInt("verification_level"));
         Guild.NotificationLevel notificationLevel = Guild.NotificationLevel.fromKey(content.getInt("default_message_notifications"));
         Guild.MFALevel mfaLevel = Guild.MFALevel.fromKey(content.getInt("mfa_level"));
         Guild.ExplicitContentLevel explicitContentLevel = Guild.ExplicitContentLevel.fromKey(content.getInt("explicit_content_filter"));
         Guild.Timeout afkTimeout = Guild.Timeout.fromKey(content.getInt("afk_timeout"));
-        VoiceChannel afkChannel = !content.isNull("afk_channel_id")
-                ? guild.getVoiceChannelsMap().get(content.getLong("afk_channel_id"))
-                : null;
-        TextChannel systemChannel = !content.isNull("system_channel_id")
-                ? guild.getTextChannelsMap().get(content.getLong("system_channel_id"))
-                : null;
+        VoiceChannel afkChannel = content.isNull("afk_channel_id")
+                ? null : guild.getVoiceChannelsMap().get(content.getLong("afk_channel_id"));
+        TextChannel systemChannel = content.isNull("system_channel_id")
+                ? null : guild.getTextChannelsMap().get(content.getLong("system_channel_id"));
+        Set<String> features;
+        if(!content.isNull("features"))
+        {
+            JSONArray featureArr = content.getJSONArray("features");
+            features = StreamSupport.stream(featureArr.spliterator(), false).map(String::valueOf).collect(Collectors.toSet());
+        }
+        else
+        {
+            features = Collections.emptySet();
+        }
 
         if (!Objects.equals(owner, guild.getOwner()))
         {
@@ -85,6 +98,15 @@ public class GuildUpdateHandler extends SocketHandler
                     new GuildUpdateIconEvent(
                             api, responseNumber,
                             guild, oldIconId));
+        }
+        if (!features.equals(guild.getFeatures()))
+        {
+            Set<String> oldFeatures = guild.getFeatures();
+            guild.setFeatures(features);
+            api.getEventManager().handle(
+                    new GuildUpdateFeaturesEvent(
+                            api, responseNumber,
+                            guild, oldFeatures));
         }
         if (!Objects.equals(splashId, guild.getSplashId()))
         {

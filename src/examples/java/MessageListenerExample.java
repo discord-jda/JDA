@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,13 +58,6 @@ public class MessageListenerExample extends ListenerAdapter
             // you use buildBlocking in a thread that has the possibility of being interrupted (async thread usage and interrupts)
             e.printStackTrace();
         }
-        catch (RateLimitedException e)
-        {
-            //The login process is one which can be ratelimited. If you attempt to login in multiple times, in rapid succession
-            // (multiple times a second), you would hit the ratelimit, and would see this exception.
-            //As a note: It is highly unlikely that you will ever see the exception here due to how infrequent login is.
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -96,7 +89,7 @@ public class MessageListenerExample extends ListenerAdapter
         MessageChannel channel = event.getChannel();    //This is the MessageChannel that the message was sent to.
                                                         //  This could be a TextChannel, PrivateChannel, or Group!
 
-        String msg = message.getContent();              //This returns a human readable version of the Message. Similar to
+        String msg = message.getContentDisplay();              //This returns a human readable version of the Message. Similar to
                                                         // what you would see in the client.
 
         boolean bot = author.isBot();                    //This boolean is useful to determine if the User that
@@ -147,7 +140,7 @@ public class MessageListenerExample extends ListenerAdapter
         //This will be an extremely simplified example of command processing.
 
         //Remember, in all of these .equals checks it is actually comparing
-        // message.getContent().equals, which is comparing a string to a string.
+        // message.getContentDisplay().equals, which is comparing a string to a string.
         // If you did message.equals() it will fail because you would be comparing a Message to a String!
         if (msg.equals("!ping"))
         {
@@ -214,15 +207,18 @@ public class MessageListenerExample extends ListenerAdapter
                         // in the Role hierarchy than they are. Remember, NO ONE is above the Guild's Owner. (Guild#getOwner())
                         if (!selfMember.canInteract(member))
                         {
-                            channel.sendMessage("Cannot kicked member: " + member.getEffectiveName() +", they are higher " +
-                                    "in the hierachy than I am!").queue();
+                            // use the MessageAction to construct the content in StringBuilder syntax using append calls
+                            channel.sendMessage("Cannot kick member: ")
+                                   .append(member.getEffectiveName())
+                                   .append(", they are higher in the hierarchy than I am!")
+                                   .queue();
                             continue;   //Continue to the next mentioned user to be kicked.
                         }
 
                         //Remember, due to the fact that we're using queue we will never have to deal with RateLimits.
                         // JDA will do it all for you so long as you are using queue!
                         guild.getController().kick(member).queue(
-                            success -> channel.sendMessage("Kicked " + member.getEffectiveName() + "! Cya!").queue(),
+                            success -> channel.sendMessage("Kicked ").append(member.getEffectiveName()).append("! Cya!").queue(),
                             error ->
                             {
                                 //The failure consumer provides a throwable. In this case we want to check for a PermissionException.
@@ -232,13 +228,16 @@ public class MessageListenerExample extends ListenerAdapter
                                     Permission missingPermission = pe.getPermission();  //If you want to know exactly what permission is missing, this is how.
                                                                                         //Note: some PermissionExceptions have no permission provided, only an error message!
 
-                                    channel.sendMessage("PermissionError kicking [" + member.getEffectiveName()
-                                            + "]: " + error.getMessage()).queue();
+                                    channel.sendMessage("PermissionError kicking [")
+                                           .append(member.getEffectiveName()).append("]: ")
+                                           .append(error.getMessage()).queue();
                                 }
                                 else
                                 {
-                                    channel.sendMessage("Unknown error while kicking [" + member.getEffectiveName()
-                                            + "]: " + "<" + error.getClass().getSimpleName() + ">: " + error.getMessage()).queue();
+                                    channel.sendMessage("Unknown error while kicking [")
+                                           .append(member.getEffectiveName())
+                                           .append("]: <").append(error.getClass().getSimpleName()).append(">: ")
+                                           .append(error.getMessage()).queue();
                                 }
                             });
                     }

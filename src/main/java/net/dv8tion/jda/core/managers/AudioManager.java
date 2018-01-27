@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,9 +56,6 @@ public interface AudioManager
      *             <li>If the provided channel was {@code null}.</li>
      *             <li>If the provided channel is not part of the Guild that the current audio connection is connected to.</li>
      *         </ul>
-     * @throws IllegalStateException
-     *         This will  be thrown if JDA is currently attempting to setup an audio connection.
-     *         <br>For this situation, first checking {@link #isAttemptingToConnect()} is advised.
      * @throws UnsupportedOperationException
      *         If audio is disabled due to an internal JDA error
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException

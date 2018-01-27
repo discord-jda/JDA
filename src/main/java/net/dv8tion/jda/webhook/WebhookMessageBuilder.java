@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ public class WebhookMessageBuilder
         if (message != null)
         {
             embeds.addAll(message.getEmbeds());
-            setContent(message.getRawContent());
+            setContent(message.getContentRaw());
             isTTS = message.isTTS();
         }
     }
@@ -124,7 +124,7 @@ public class WebhookMessageBuilder
         {
             Checks.notNull(embed, "Embed");
             Checks.check(embed.isSendable(AccountType.BOT),
-                "One of the provided embeds exceeds the maximum character count of %d!", MessageEmbed.EMBED_MAX_LENGTH_BOT);
+                "One of the provided embeds is empty or exceeds the maximum character count of %d!", MessageEmbed.EMBED_MAX_LENGTH_BOT);
             this.embeds.add(embed);
         }
         return this;
@@ -152,7 +152,7 @@ public class WebhookMessageBuilder
         {
             Checks.notNull(embed, "Embed");
             Checks.check(embed.isSendable(AccountType.BOT),
-                "One of the provided embeds exceeds the maximum character count of %d!", MessageEmbed.EMBED_MAX_LENGTH_BOT);
+                "One of the provided embeds is empty or exceeds the maximum character count of %d!", MessageEmbed.EMBED_MAX_LENGTH_BOT);
             this.embeds.add(embed);
         }
         return this;

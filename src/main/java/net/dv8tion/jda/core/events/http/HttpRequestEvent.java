@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,12 +65,12 @@ public class HttpRequestEvent extends Event
 
     public Headers getRequestHeaders()
     {
-        return this.response.getRawResponse().request().headers();
+        return this.response.getRawResponse() == null ? null : this.response.getRawResponse().request().headers();
     }
 
     public okhttp3.Request getRequestRaw()
     {
-        return this.response == null ? null : this.response.getRawResponse().request();
+        return this.response.getRawResponse() == null ? null : this.response.getRawResponse().request();
     }
 
     public Response getResponse()
@@ -80,37 +80,37 @@ public class HttpRequestEvent extends Event
 
     public ResponseBody getResponseBody()
     {
-        return this.response == null ? null : this.response.getRawResponse().body();
+        return this.response.getRawResponse() == null ? null : this.response.getRawResponse().body();
     }
 
     public JSONArray getResponseBodyAsArray()
     {
-        return this.response == null ? null : this.response.getArray();
+        return this.response.getArray();
     }
 
     public JSONObject getResponseBodyAsObject()
     {
-        return this.response == null ? null : this.response.getObject();
+        return this.response.getObject();
     }
 
     public String getResponseBodyAsString()
     {
-        return this.response == null ? null : this.response.getString();
+        return this.response.getString();
     }
 
     public Headers getResponseHeaders()
     {
-        return this.response == null ? null : this.response.getRawResponse() == null ? null : this.response.getRawResponse().headers();
+        return this.response.getRawResponse() == null ? null : this.response.getRawResponse().headers();
     }
 
     public okhttp3.Response getResponseRaw()
     {
-        return this.response == null ? null : this.response.getRawResponse();
+        return this.response.getRawResponse();
     }
 
     public Set<String> getCFRays()
     {
-        return this.response == null ? Collections.emptySet() : this.response.getCFRays();
+        return this.response.getCFRays();
     }
 
     public RestAction<?> getRestAction()

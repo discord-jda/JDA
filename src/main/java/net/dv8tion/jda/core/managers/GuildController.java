@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,10 +33,11 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.ChannelAction;
 import net.dv8tion.jda.core.requests.restaction.RoleAction;
-import net.dv8tion.jda.core.requests.restaction.WebhookAction;
+import net.dv8tion.jda.core.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.core.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.core.requests.restaction.order.RoleOrderAction;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.Helpers;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 import org.json.JSONArray;
@@ -952,7 +953,7 @@ public class GuildController
                 if (response.isOk())
                     request.onSuccess(null);
                 else if (response.code == 404)
-                    request.onFailure(new IllegalArgumentException("User with provided id \"" + userId + "\" does not exist! Cannot unban a non-existent user!"));
+                    request.onFailure(new IllegalArgumentException("User with provided id \"" + userId + "\" is not banned! Cannot unban a user who is not currently banned!"));
                 else
                     request.onFailure(response);
             }
@@ -1528,8 +1529,14 @@ public class GuildController
         });
 
         Set<Role> currentRoles = new HashSet<>(((MemberImpl) member).getRoleSet());
-        currentRoles.addAll(rolesToAdd);
-        currentRoles.removeAll(rolesToRemove);
+        Set<Role> newRolesToAdd = new HashSet<>(rolesToAdd);
+        newRolesToAdd.removeAll(rolesToRemove);
+
+        // If no changes have been made we return an EmptyRestAction instead
+        if (currentRoles.addAll(newRolesToAdd))
+            currentRoles.removeAll(rolesToRemove);
+        else if (!currentRoles.removeAll(rolesToRemove))
+            return new AuditableRestAction.EmptyRestAction<>(guild.getJDA());
 
         Checks.check(!currentRoles.contains(guild.getPublicRole()),
             "Cannot add the PublicRole of a Guild to a Member. All members have this role by default!");
@@ -1672,17 +1679,26 @@ public class GuildController
         Checks.check(!roles.contains(guild.getPublicRole()),
             "Cannot add the PublicRole of a Guild to a Member. All members have this role by default!");
 
-        //Make sure that the current managed roles are preserved and no new ones are added.
-        List<Role> currentManaged = roles.stream().filter(Role::isManaged).collect(Collectors.toList());
-        List<Role> newManaged = roles.stream().filter(Role::isManaged).collect(Collectors.toList());
-        if (currentManaged.size() != 0 || newManaged.size() != 0)
-        {
-            currentManaged.removeIf(newManaged::contains);
+        // Return an empty rest action if there were no changes
+        final List<Role> memberRoles = member.getRoles();
+        if (memberRoles.size() == roles.size() && memberRoles.containsAll(roles))
+            return new AuditableRestAction.EmptyRestAction<>(guild.getJDA());
 
-            if (currentManaged.size() > 0)
+        //Make sure that the current managed roles are preserved and no new ones are added.
+        List<Role> currentManaged = memberRoles.stream().filter(Role::isManaged).collect(Collectors.toList());
+        List<Role> newManaged = roles.stream().filter(Role::isManaged).collect(Collectors.toList());
+        if (!currentManaged.isEmpty() || !newManaged.isEmpty())
+        {
+            if (!newManaged.containsAll(currentManaged))
+            {
+                currentManaged.removeAll(newManaged);
                 throw new IllegalArgumentException("Cannot remove managed roles from a member! Roles: " + currentManaged.toString());
-            if (newManaged.size() > 0)
+            }
+            if (!currentManaged.containsAll(newManaged))
+            {
+                newManaged.removeAll(currentManaged);
                 throw new IllegalArgumentException("Cannot add managed roles to a member! Roles: " + newManaged.toString());
+            }
         }
 
         //This is identical to the rest action stuff in #modifyMemberRoles(Member, Collection<Role>, Collection<Role>)
@@ -1937,49 +1953,6 @@ public class GuildController
     }
 
     /**
-     * Creates a new {@link net.dv8tion.jda.core.entities.Webhook Webhook} for the specified
-     * {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
-     *
-     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The webhook could not be created due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>We were removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @param  channel
-     *         The target TextChannel to attach a new Webhook to.
-     * @param  name
-     *         The default name for the new Webhook.
-     *
-     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         If you do not hold the permission {@link net.dv8tion.jda.core.Permission#MANAGE_WEBHOOKS Manage Webhooks}
-     *         on the selected channel
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If any of the provided arguments is {@code null}</li>
-     *             <li>If the provided {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} is not from this Guild</li>
-     *         </ul>
-     *
-     * @return A specific {@link net.dv8tion.jda.core.requests.restaction.WebhookAction WebhookAction}
-     *         <br>This action allows to set fields for the new webhook before creating it
-     *
-     * @deprecated
-     *         Use {@link net.dv8tion.jda.core.entities.TextChannel#createWebhook(String) TextChannel.createWebhook(String)} instead
-     */
-    @Deprecated
-    @CheckReturnValue
-    public WebhookAction createWebhook(TextChannel channel, String name)
-    {
-        Checks.notNull(channel, "Channel");
-        checkGuild(channel.getGuild(), "channel");
-        return channel.createWebhook(name);
-    }
-
-    /**
      * Creates a new {@link net.dv8tion.jda.core.entities.Role Role} in this Guild.
      * <br>It will be placed at the bottom (just over the Public Role) to avoid permission hierarchy conflicts.
      * <br>For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES} Permission
@@ -2063,8 +2036,11 @@ public class GuildController
      * <br>For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES MANAGE_EMOTES} Permission.
      *
      * <p><b><u>Unicode emojis are not included as {@link net.dv8tion.jda.core.entities.Emote Emote}!</u></b>
-     * <br>Passing the roles field will be ignored unless the application is whitelisted as an emoji provider.
-     * For more information and to request whitelisting please contact {@code support@discordapp.com}
+     *
+     * <p>Note that a guild is limited to 50 normal and 50 animated emotes by default.
+     * Some guilds are able to add additional emotes beyond this limitation due to the
+     * {@code MORE_EMOJI} feature (see {@link net.dv8tion.jda.core.entities.Guild#getFeatures() Guild.getFeatures()}).
+     * <br>Due to simplicity we do not check for these limits.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
@@ -2090,7 +2066,6 @@ public class GuildController
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction} - Type: {@link net.dv8tion.jda.core.entities.Emote Emote}
-     *         <br>The newly created Emote
      */
     @CheckReturnValue
     public AuditableRestAction<Emote> createEmote(String name, Icon icon, Role... roles)
@@ -2100,9 +2075,6 @@ public class GuildController
         Checks.notBlank(name, "Emote name");
         Checks.notNull(icon, "Emote icon");
         Checks.notNull(roles, "Roles");
-
-//        if (getJDA().getAccountType() != AccountType.CLIENT)
-//            throw new AccountTypeException(AccountType.CLIENT);
 
         JSONObject body = new JSONObject();
         body.put("name", name);
@@ -2123,14 +2095,18 @@ public class GuildController
                 }
                 JSONObject obj = response.getObject();
                 final long id = obj.getLong("id");
-                final String name = obj.getString("name");
-                final boolean managed = !obj.isNull("managed") && obj.getBoolean("managed");
-                EmoteImpl emote = new EmoteImpl(id, guild).setName(name).setManaged(managed);
+                final String name = obj.optString("name", null);
+                final boolean managed = Helpers.optBoolean(obj, "managed");
+                final boolean animated = obj.optBoolean("animated");
+                EmoteImpl emote = new EmoteImpl(id, guild).setName(name).setAnimated(animated).setManaged(managed);
 
-                JSONArray rolesArr = obj.getJSONArray("roles");
-                Set<Role> roleSet = emote.getRoleSet();
-                for (int i = 0; i < rolesArr.length(); i++)
-                    roleSet.add(guild.getRoleById(rolesArr.getString(i)));
+                JSONArray rolesArr = obj.optJSONArray("roles");
+                if (rolesArr != null)
+                {
+                    Set<Role> roleSet = emote.getRoleSet();
+                    for (int i = 0; i < rolesArr.length(); i++)
+                        roleSet.add(guild.getRoleById(rolesArr.getString(i)));
+                }
                 request.onSuccess(emote);
             }
         };
@@ -2206,6 +2182,74 @@ public class GuildController
     public ChannelOrderAction<VoiceChannel> modifyVoiceChannelPositions()
     {
         return new ChannelOrderAction<>(guild, ChannelType.VOICE);
+    }
+
+    /**
+     * Modifies the positional order of {@link net.dv8tion.jda.core.entities.Category#getTextChannels() Category#getTextChannels()}
+     * using an extension of {@link net.dv8tion.jda.core.requests.restaction.order.ChannelOrderAction ChannelOrderAction}
+     * specialized for ordering the nested {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} of this
+     * {@link net.dv8tion.jda.core.entities.Category Category}.
+     * <br>Like {@code ChannelOrderAction}, the returned {@link net.dv8tion.jda.core.requests.restaction.order.CategoryOrderAction CategoryOrderAction}
+     * can be used to move TextChannels {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveUp(int) up},
+     * {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveDown(int) down}, or
+     * {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
+     * <br>This uses <b>ascending</b> order with a 0 based index.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNNKOWN_CHANNEL}
+     *     <br>One of the channels has been deleted before the completion of the task.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The currently logged in account was removed from the Guild.</li>
+     * </ul>
+     *
+     * @param  category
+     *         The {@link net.dv8tion.jda.core.entities.Category Category} to order
+     *         {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} from.
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.order.CategoryOrderAction CategoryOrderAction} - Type: {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
+     */
+    @CheckReturnValue
+    public CategoryOrderAction<TextChannel> modifyTextChannelPositions(Category category)
+    {
+        Checks.notNull(category, "Category");
+        checkGuild(category.getGuild(), "Category");
+        return new CategoryOrderAction<>(category, ChannelType.TEXT);
+    }
+
+    /**
+     * Modifies the positional order of {@link net.dv8tion.jda.core.entities.Category#getVoiceChannels() Category#getVoiceChannels()}
+     * using an extension of {@link net.dv8tion.jda.core.requests.restaction.order.ChannelOrderAction ChannelOrderAction}
+     * specialized for ordering the nested {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels} of this
+     * {@link net.dv8tion.jda.core.entities.Category Category}.
+     * <br>Like {@code ChannelOrderAction}, the returned {@link net.dv8tion.jda.core.requests.restaction.order.CategoryOrderAction CategoryOrderAction}
+     * can be used to move VoiceChannels {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveUp(int) up},
+     * {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveDown(int) down}, or
+     * {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
+     * <br>This uses <b>ascending</b> order with a 0 based index.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNNKOWN_CHANNEL}
+     *     <br>One of the channels has been deleted before the completion of the task.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The currently logged in account was removed from the Guild.</li>
+     * </ul>
+     *
+     * @param  category
+     *         The {@link net.dv8tion.jda.core.entities.Category Category} to order
+     *         {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels} from.
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.order.CategoryOrderAction CategoryOrderAction} - Type: {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels}
+     */
+    @CheckReturnValue
+    public CategoryOrderAction<VoiceChannel> modifyVoiceChannelPositions(Category category)
+    {
+        Checks.notNull(category, "Category");
+        checkGuild(category.getGuild(), "Category");
+        return new CategoryOrderAction<>(category, ChannelType.VOICE);
     }
 
     /**

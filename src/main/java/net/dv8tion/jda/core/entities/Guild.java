@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,9 +28,11 @@ import net.dv8tion.jda.core.utils.cache.MemberCacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Represents a Discord {@link net.dv8tion.jda.core.entities.Guild Guild}.
@@ -71,6 +73,22 @@ public interface Guild extends ISnowflake
     String getIconUrl();
 
     /**
+     * The Features of the {@link net.dv8tion.jda.core.entities.Guild Guild}.
+     * <p>
+     * <b>Possible known features:</b>
+     * <ul>
+     *     <li>VIP_REGIONS - Guild has VIP voice regions</li>
+     *     <li>VANITY_URL - Guild a vanity URL (custom invite link). See {@link #getVanityUrl()}</li>
+     *     <li>INVITE_SPLASH - Guild has custom invite splash. See {@link #getSplashId()} and {@link #getSplashUrl()}</li>
+     *     <li>VERIFIED - Guild is "verified"</li>
+     *     <li>MORE_EMOJI - Guild is able to use more than 50 emoji</li>
+     * </ul>
+     *
+     * @return Never-null, unmodifiable Set containing all of the Guild's features.
+     */
+    Set<String> getFeatures();
+
+    /**
      * The Discord hash-id of the splash image for this Guild. A Splash image is an image displayed when viewing a
      * Discord Guild Invite on the web or in client just before accepting or declining the invite.
      * If no splash has been set, this returns {@code null}.
@@ -95,6 +113,38 @@ public interface Guild extends ISnowflake
      * @return Possibly-null String containing the Guild's splash URL.
      */
     String getSplashUrl();
+
+    /**
+     * Gets the vanity url for this Guild. The vanity url is the custom invite code of partnered / official Guilds.
+     * The returned String will be the code that can be provided to {@code discord.gg/{code}} to get the invite link.
+     * <br>You can check {@link #getFeatures()} to see if this Guild has a vanity url
+     * <p>
+     * This action requires the {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER MANAGE_SERVER} permission.
+     * <p>
+     * Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The ban list cannot be fetched due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>We were removed from the Guild before finishing the task</li>
+     * </ul>
+     *
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER MANAGE_SERVER} permission.
+     * @throws java.lang.IllegalStateException
+     *         If the guild doesn't have the VANITY_URL feature
+     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
+     *         If the guild is temporarily not {@link #isAvailable() available}
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: String
+     *         <br>The vanity url of this server
+     *
+     * @see    #getFeatures()
+     */
+    @CheckReturnValue
+    RestAction<String> getVanityUrl();
 
     /**
      * Provides the {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} that has been set as the channel
@@ -736,9 +786,40 @@ public interface Guild extends ISnowflake
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@literal List<}{@link net.dv8tion.jda.core.entities.User User}{@literal >}
      *         <br>An unmodifiable list of all users currently banned from this Guild
+     *
+     * @deprecated
+     *         Use {@link #getBanList()} instead
      */
+    @Deprecated
     @CheckReturnValue
     RestAction<List<User>> getBans();
+
+    /**
+     * Gets an unmodifiable list of the currently banned {@link net.dv8tion.jda.core.entities.User Users}.
+     * <br>If you wish to ban or unban a user, please {@link GuildController#ban(User, int) GuildController.ban(User, int)} or
+     * {@link GuildController#unban(User) GuildController.ban(User)}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The ban list cannot be fetched due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>We were removed from the Guild before finishing the task</li>
+     * </ul>
+     *
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
+     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
+     *         If the guild is temporarily not {@link #isAvailable() available}
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@literal List<}{@link net.dv8tion.jda.core.entities.Guild.Ban Ban}{@literal >}
+     *         <br>An unmodifiable list of all users currently banned from this Guild
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<List<Ban>> getBanList();
 
     /**
      * The method calculates the amount of Members that would be pruned if {@link GuildController#prune(int)} was executed.
@@ -781,27 +862,6 @@ public interface Guild extends ISnowflake
      * @return The @everyone {@link net.dv8tion.jda.core.entities.Role Role}
      */
     Role getPublicRole();
-
-    /**
-     * The default {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} for a {@link net.dv8tion.jda.core.entities.Guild Guild}.
-     * <br>This is the channel that the Discord client will default to opening when a Guild is opened for the first time
-     * either on first load or when accepting an invite.
-     * <br>This channel cannot be deleted and the {@link #getPublicRole() Public Role} always has the ability to
-     * {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ} this channel.
-     *
-     * @deprecated
-     *         As the concept of a public channel has been removed from discord this method may return null for newer guild.
-     *         <br>The default channel is now different for each user and depends on their permissions, see
-     *         {@link net.dv8tion.jda.core.entities.Member#getDefaultChannel() Member#getDefaultChannel()} for more details.
-     *         <br>If you want to get the default channel of old guilds you can use {@code guild.getTextChannelById(guild.getIdLong())}.
-     *         <br><b>This will be removed in a future version!</b>
-     *
-     * @return The {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} representing the public channel for this guild.
-     *
-     * @see    net.dv8tion.jda.core.entities.Member#getDefaultChannel()
-     */
-    @Deprecated
-    TextChannel getPublicChannel();
 
     /**
      * The default {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} for a {@link net.dv8tion.jda.core.entities.Guild Guild}.
@@ -1343,6 +1403,52 @@ public interface Guild extends ISnowflake
                     return level;
             }
             return UNKNOWN;
+        }
+    }
+
+    /**
+     * Represents a Ban object.
+     *
+     * @see #getBanList()
+     * @see <a href="https://discordapp.com/developers/docs/resources/guild#ban-object" target="_blank">Discord Docs: Ban Object</a>
+     */
+    class Ban
+    {
+        protected final User user;
+        protected final String reason;
+
+        public Ban(User user, String reason)
+        {
+            this.user = user;
+            this.reason = reason;
+        }
+
+        /**
+         * The {@link net.dv8tion.jda.core.entities.User User} that was banned
+         *
+         * @return The banned User
+         */
+        @Nonnull
+        public User getUser()
+        {
+            return user;
+        }
+
+        /**
+         * The reason why this user was banned
+         *
+         * @return The reason for this ban, or {@code null}
+         */
+        @Nullable
+        public String getReason()
+        {
+            return reason;
+        }
+
+        @Override
+        public String toString()
+        {
+            return "GuildBan:" + user + (reason == null ? "" : '(' + reason + ')');
         }
     }
 }

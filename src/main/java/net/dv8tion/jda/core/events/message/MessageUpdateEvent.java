@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,9 @@ import net.dv8tion.jda.core.entities.*;
  * Fired if a Message is edited in a {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.<br>
  * <br>
  * Use: This event indicates that a Message is edited in either a private or guild channel. Providing a MessageChannel and Message.
+ *
+ * <p><b>JDA does not have a cache for messages and is not able to provide previous information due to limitations by the
+ * Discord API!</b>
  */
 public class MessageUpdateEvent extends GenericMessageEvent
 {

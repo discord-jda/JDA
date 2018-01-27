@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -119,8 +119,6 @@ public class EmoteManager
      * <br>If these are empty the Emote will be available to everyone otherwise only available to the specified roles.
      *
      * <p>An emote's restriction roles <b>must not</b> contain {@code null}!
-     * <br>Passing the roles field will be ignored unless the application is whitelisted as an emoji provider.
-     * For more information and to request whitelisting please contact {@code support@discordapp.com}
      *
      * @param  roles
      *         The new not-null set of {@link net.dv8tion.jda.core.entities.Role Roles} for the selected {@link net.dv8tion.jda.core.entities.Emote Emote}

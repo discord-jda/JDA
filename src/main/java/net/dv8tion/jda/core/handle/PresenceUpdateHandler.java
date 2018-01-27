@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,12 @@ import net.dv8tion.jda.client.JDAClient;
 import net.dv8tion.jda.client.entities.impl.FriendImpl;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.OnlineStatus;
+import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Game;
-import net.dv8tion.jda.core.entities.impl.*;
+import net.dv8tion.jda.core.entities.impl.GuildImpl;
+import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.entities.impl.MemberImpl;
+import net.dv8tion.jda.core.entities.impl.UserImpl;
 import net.dv8tion.jda.core.events.user.UserAvatarUpdateEvent;
 import net.dv8tion.jda.core.events.user.UserGameUpdateEvent;
 import net.dv8tion.jda.core.events.user.UserNameUpdateEvent;
@@ -72,18 +76,18 @@ public class PresenceUpdateHandler extends SocketHandler
             {
                 String name = jsonUser.getString("username");
                 String discriminator = jsonUser.get("discriminator").toString();
-                String avatarId = jsonUser.isNull("avatar") ? null : jsonUser.getString("avatar");
+                String avatarId = jsonUser.optString("avatar", null);
 
-                if (!user.getName().equals(name))
+                if (!user.getName().equals(name) || !user.getDiscriminator().equals(discriminator))
                 {
                     String oldUsername = user.getName();
                     String oldDiscriminator = user.getDiscriminator();
                     user.setName(name);
                     user.setDiscriminator(discriminator);
                     api.getEventManager().handle(
-                            new UserNameUpdateEvent(
-                                    api, responseNumber,
-                                    user, oldUsername, oldDiscriminator));
+                        new UserNameUpdateEvent(
+                            api, responseNumber,
+                            user, oldUsername, oldDiscriminator));
                 }
                 String oldAvatar = user.getAvatarId();
                 if (!Objects.equals(avatarId, oldAvatar))
@@ -91,34 +95,29 @@ public class PresenceUpdateHandler extends SocketHandler
                     String oldAvatarId = user.getAvatarId();
                     user.setAvatarId(avatarId);
                     api.getEventManager().handle(
-                            new UserAvatarUpdateEvent(
-                                    api, responseNumber,
-                                    user, oldAvatarId));
+                        new UserAvatarUpdateEvent(
+                            api, responseNumber,
+                            user, oldAvatarId));
                 }
             }
 
             //Now that we've update the User's info, lets see if we need to set the specific Presence information.
             // This is stored in the Member or Relation objects.
-            String gameName = null;
-            String gameUrl = null;
-            Game.GameType type = null;
-            final JSONObject game = content.optJSONObject("game");
-            if (game != null && !game.isNull("name"))
+            final JSONObject game = content.isNull("game") ? null : content.optJSONObject("game");
+            Game nextGame = null;
+            boolean parsedGame = false;
+            try
             {
-                gameName = game.get("name").toString();
-                gameUrl = game.isNull("url") ? null : game.get("url").toString();
-                try
-                {
-                    type = game.isNull("type")
-                            ? Game.GameType.DEFAULT
-                            : Game.GameType.fromKey(Integer.parseInt(game.get("type").toString()));
-                }
-                catch (NumberFormatException ex)
-                {
-                    type = Game.GameType.DEFAULT;
-                }
+                nextGame = game == null ? null : EntityBuilder.createGame(game);
+                parsedGame = true;
             }
-            Game nextGame = gameName == null ? null : api.getEntityBuilder().createGame(gameName, gameUrl, type);
+            catch (Exception ex)
+            {
+                if (EntityBuilder.LOG.isDebugEnabled())
+                    EntityBuilder.LOG.warn("Encountered exception trying to parse a presence! UserID: {} JSON: {}", userId, game, ex);
+                else
+                    EntityBuilder.LOG.warn("Encountered exception trying to parse a presence! UserID: {} Message: {} Enable debug for details", userId, ex.getMessage());
+            }
             OnlineStatus status = OnlineStatus.fromKey(content.getString("status"));
 
             //If we are in a Guild, then we will use Member.
@@ -150,18 +149,18 @@ public class PresenceUpdateHandler extends SocketHandler
                         OnlineStatus oldStatus = member.getOnlineStatus();
                         member.setOnlineStatus(status);
                         api.getEventManager().handle(
-                                new UserOnlineStatusUpdateEvent(
-                                        api, responseNumber,
-                                        user, guild, oldStatus));
+                            new UserOnlineStatusUpdateEvent(
+                                api, responseNumber,
+                                user, guild, oldStatus));
                     }
-                    if (!Objects.equals(member.getGame(), nextGame))
+                    if (parsedGame && !Objects.equals(member.getGame(), nextGame))
                     {
                         Game oldGame = member.getGame();
                         member.setGame(nextGame);
                         api.getEventManager().handle(
-                                new UserGameUpdateEvent(
-                                        api, responseNumber,
-                                        user, guild, oldGame));
+                            new UserGameUpdateEvent(
+                                api, responseNumber,
+                                user, guild, oldGame));
                     }
                 }
             }
@@ -184,7 +183,7 @@ public class PresenceUpdateHandler extends SocketHandler
                                 api, responseNumber,
                                 user, null, oldStatus));
                     }
-                    if (!Objects.equals(friend.getGame(), nextGame))
+                    if (parsedGame && !Objects.equals(friend.getGame(), nextGame))
                     {
                         Game oldGame = friend.getGame();
                         friend.setGame(nextGame);

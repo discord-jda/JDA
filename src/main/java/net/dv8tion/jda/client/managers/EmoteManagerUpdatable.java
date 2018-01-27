@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -138,8 +138,6 @@ public class EmoteManagerUpdatable
      * An {@link net.dv8tion.jda.client.managers.fields.EmoteField EmoteField}
      * for the restriction roles of the selected {@link net.dv8tion.jda.core.entities.Emote Emote}.
      * <br>If the roles are empty this Emote will be available to everyone.
-     * <br>Passing the roles field will be ignored unless the application is whitelisted as an emoji provider.
-     * For more information and to request whitelisting please contact {@code support@discordapp.com}
      *
      * <p>To set the value use {@link net.dv8tion.jda.core.managers.fields.Field#setValue(Object) setValue(Collection)}
      * on the returned {@link net.dv8tion.jda.client.managers.fields.EmoteField EmoteField} instance.

@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,11 @@
  */
 package net.dv8tion.jda.core.events.user;
 
+import net.dv8tion.jda.client.entities.Friend;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 
 /**
@@ -26,15 +28,13 @@ import net.dv8tion.jda.core.entities.User;
  * <br>
  * Use: Retrieve the User who's Game changed and their previous Game.
  */
-public class UserGameUpdateEvent extends GenericUserEvent
+public class UserGameUpdateEvent extends GenericUserPresenceEvent
 {
-    private final Game previousGame;
-    private final Guild guild;
+    protected final Game previousGame;
 
     public UserGameUpdateEvent(JDA api, long responseNumber, User user, Guild guild, Game previousGame)
     {
-        super(api, responseNumber, user);
-        this.guild = guild;
+        super(api, responseNumber, user, guild);
         this.previousGame = previousGame;
     }
 
@@ -43,13 +43,8 @@ public class UserGameUpdateEvent extends GenericUserEvent
         return previousGame;
     }
 
-    public Guild getGuild()
+    public Game getCurrentGame()
     {
-        return guild;
-    }
-
-    public boolean isRelationshipUpdate()
-    {
-        return getGuild() == null;
+        return isRelationshipUpdate() ? getFriend().getGame() : getMember().getGame();
     }
 }

@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,13 @@ package net.dv8tion.jda.core.utils;
 import gnu.trove.impl.sync.TSynchronizedLongObjectMap;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.ISnowflake;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okio.BufferedSink;
 import okio.Okio;
 import okio.Source;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -101,6 +101,63 @@ public class MiscUtil
     public static String getDateTimeString(OffsetDateTime time)
     {
         return time.format(dtFormatter);
+    }
+
+    /**
+     * Returns the shard id the given guild will be loaded on for the given amount of shards.
+     *
+     * Discord determines which guilds a shard is connect to using the following format:
+     * {@code shardId == (guildId >>> 22) % totalShards}
+     * <br>Source for formula: <a href="https://discordapp.com/developers/docs/topics/gateway#sharding">Discord Documentation</a>
+     *
+     * @param guildId
+     *        The guild id.
+     * @param shards
+     *        The amount of shards.
+     * 
+     * @return The shard id for the guild.
+     */
+    public static int getShardForGuild(long guildId, int shards)
+    {
+        return (int) ((guildId >>> 22) % shards);
+    }
+
+    /**
+     * Returns the shard id the given guild will be loaded on for the given amount of shards.
+     *
+     * Discord determines which guilds a shard is connect to using the following format:
+     * {@code shardId == (guildId >>> 22) % totalShards}
+     * <br>Source for formula: <a href="https://discordapp.com/developers/docs/topics/gateway#sharding">Discord Documentation</a>
+     *
+     * @param guildId
+     *        The guild id.
+     * @param shards
+     *        The amount of shards.
+     *
+     * @return The shard id for the guild.
+     */
+    public static int getShardForGuild(String guildId, int shards)
+    {
+        return getShardForGuild(parseSnowflake(guildId), shards);
+    }
+
+    /**
+     * Returns the shard id the given {@link net.dv8tion.jda.core.entities.Guild Guild} will be loaded on for the given amount of shards.
+     *
+     * Discord determines which guilds a shard is connect to using the following format:
+     * {@code shardId == (guildId >>> 22) % totalShards}
+     * <br>Source for formula: <a href="https://discordapp.com/developers/docs/topics/gateway#sharding">Discord Documentation</a>
+     *
+     * @param guild
+     *        The guild.
+     * @param shards
+     *        The amount of shards.
+     *
+     * @return The shard id for the guild.
+     */
+    public static int getShardForGuild(Guild guild, int shards)
+    {
+        return getShardForGuild(guild.getIdLong(), shards);
     }
 
     /**

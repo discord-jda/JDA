@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,7 +106,7 @@ public class CallCreateHandler extends SocketHandler
             vState.setSelfMuted(voiceState.getBoolean("self_mute"));
             vState.setSelfDeafened(voiceState.getBoolean("self_deaf"));
 
-            ((JDAClientImpl) api.asClient()).getCallUserMap().put(userId, cUser);
+            api.asClient().getCallUserMap().put(userId, cUser);
         }
         api.getEventCache().playbackCache(EventCache.Type.CALL, channelId);
         return null;

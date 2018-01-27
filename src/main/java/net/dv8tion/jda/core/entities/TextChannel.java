@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.entities;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.WebhookAction;
+import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 
 import javax.annotation.CheckReturnValue;
@@ -293,6 +294,252 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
     default RestAction<Void> clearReactionsById(long messageId)
     {
         return clearReactionsById(Long.toUnsignedString(messageId));
+    }
+
+    /**
+     * Attempts to remove the reaction from a message represented by the specified {@code messageId}
+     * in this MessageChannel.
+     *
+     * <p>The unicode provided has to be a unicode representation of the emoji
+     * that is supposed to be represented by the Reaction.
+     * <br>To retrieve the characters needed you can use an api or
+     * the official discord client by escaping the emoji (\:emoji-name:)
+     * and copying the resulting emoji from the sent message.
+     *
+     * <p>This method encodes the provided unicode for you.
+     * <b>Do not encode the emoji before providing the unicode.</b>
+     *
+     * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the
+     *         {@link net.dv8tion.jda.core.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *         was revoked in the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
+     *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The request was attempted after the account lost
+     *         {@link net.dv8tion.jda.core.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION} in the
+     *         {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_EMOJI}
+     *     <br>The provided unicode character does not refer to a known emoji unicode character.
+     *     <br>Proper unicode characters for emojis can be found at
+     *         <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">http://unicode.org/emoji/charts/full-emoji-list.html</a></li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The messageId to remove the reaction from
+     * @param  unicode
+     *         The unicode characters of the emoji
+     * @param  user
+     *         The target user of which to remove from
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If provided {@code messageId} is {@code null} or empty.</li>
+     *             <li>If provided {@code unicode} is {@code null} or empty.</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have
+     *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in this channel.
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     */
+    @CheckReturnValue
+    RestAction<Void> removeReactionById(String messageId, String unicode, User user);
+
+    /**
+     * Attempts to remove the reaction from a message represented by the specified {@code messageId}
+     * in this MessageChannel.
+     *
+     * <p>The unicode provided has to be a unicode representation of the emoji
+     * that is supposed to be represented by the Reaction.
+     * <br>To retrieve the characters needed you can use an api or
+     * the official discord client by escaping the emoji (\:emoji-name:)
+     * and copying the resulting emoji from the sent message.
+     *
+     * <p>This method encodes the provided unicode for you.
+     * <b>Do not encode the emoji before providing the unicode.</b>
+     *
+     * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the
+     *         {@link net.dv8tion.jda.core.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *         was revoked in the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
+     *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The request was attempted after the account lost
+     *         {@link net.dv8tion.jda.core.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION} in the
+     *         {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_EMOJI}
+     *     <br>The provided unicode character does not refer to a known emoji unicode character.
+     *     <br>Proper unicode characters for emojis can be found at
+     *         <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">http://unicode.org/emoji/charts/full-emoji-list.html</a></li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The messageId to remove the reaction from
+     * @param  unicode
+     *         The unicode characters of the emoji
+     * @param  user
+     *         The target user of which to remove from
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If provided {@code messageId} is {@code null} or empty.</li>
+     *             <li>If provided {@code unicode} is {@code null} or empty.</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have
+     *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in this channel.
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     */
+    @CheckReturnValue
+    default RestAction<Void> removeReactionById(long messageId, String unicode, User user)
+    {
+        return removeReactionById(Long.toUnsignedString(messageId), unicode, user);
+    }
+
+    /**
+     * Attempts to remove the reaction from a message represented by the specified {@code messageId}
+     * in this MessageChannel.
+     *
+     * <p><b>An Emote is not the same as an emoji!</b>
+     * <br>Emotes are custom guild-specific images unlike global unicode emojis!
+     *
+     * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the
+     *         {@link net.dv8tion.jda.core.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *         was revoked in the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
+     *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The request was attempted after the account lost
+     *         {@link net.dv8tion.jda.core.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION} in the
+     *         {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_EMOJI}
+     *     <br>The provided unicode character does not refer to a known emoji unicode character.
+     *     <br>Proper unicode characters for emojis can be found at
+     *         <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">http://unicode.org/emoji/charts/full-emoji-list.html</a></li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The messageId to remove the reaction from
+     * @param  emote
+     *         The emote to remove
+     * @param  user
+     *         The target user of which to remove from
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If provided {@code messageId} is {@code null} or empty.</li>
+     *             <li>If provided {@code emote} is {@code null}.</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have
+     *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in this channel.
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     */
+    @CheckReturnValue
+    default RestAction<Void> removeReactionById(String messageId, Emote emote, User user)
+    {
+        Checks.notNull(emote, "Emote");
+        return removeReactionById(messageId, emote.getName() + ":" + emote.getId(), user);
+    }
+
+    /**
+     * Attempts to remove the reaction from a message represented by the specified {@code messageId}
+     * in this MessageChannel.
+     *
+     * <p><b>An Emote is not the same as an emoji!</b>
+     * <br>Emotes are custom guild-specific images unlike global unicode emojis!
+     *
+     * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the
+     *         {@link net.dv8tion.jda.core.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *         was revoked in the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
+     *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The request was attempted after the account lost
+     *         {@link net.dv8tion.jda.core.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION} in the
+     *         {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_EMOJI}
+     *     <br>The provided unicode character does not refer to a known emoji unicode character.
+     *     <br>Proper unicode characters for emojis can be found at
+     *         <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">http://unicode.org/emoji/charts/full-emoji-list.html</a></li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The messageId to remove the reaction from
+     * @param  emote
+     *         The emote to remove
+     * @param  user
+     *         The target user of which to remove from
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If provided {@code messageId} is {@code null} or empty.</li>
+     *             <li>If provided {@code emote} is {@code null}.</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have
+     *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in this channel.
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     */
+    @CheckReturnValue
+    default RestAction<Void> removeReactionById(long messageId, Emote emote, User user)
+    {
+        return removeReactionById(Long.toUnsignedString(messageId), emote, user);
     }
 
     /**

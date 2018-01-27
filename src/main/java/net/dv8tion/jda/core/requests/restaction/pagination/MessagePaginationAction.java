@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -130,11 +131,18 @@ public class MessagePaginationAction extends PaginationAction<Message, MessagePa
         EntityBuilder builder = api.getEntityBuilder();
         for (int i = 0; i < array.length(); i++)
         {
-            Message msg = builder.createMessage(array.getJSONObject(i), channel, false);
-            messages.add(msg);
-            if (useCache)
-                cached.add(msg);
-            last = msg;
+            try
+            {
+                Message msg = builder.createMessage(array.getJSONObject(i), channel, false);
+                messages.add(msg);
+                if (useCache)
+                    cached.add(msg);
+                last = msg;
+            }
+            catch (JSONException | NullPointerException e)
+            {
+                LOG.warn("Encountered an exception in MessagePagination", e);
+            }
         }
 
         request.onSuccess(messages);

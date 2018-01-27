@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,27 +17,21 @@
 package net.dv8tion.jda.client.events.message.group.react;
 
 import net.dv8tion.jda.client.entities.Group;
+import net.dv8tion.jda.client.events.message.group.GenericGroupMessageEvent;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.MessageReaction;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.GenericMessageEvent;
 
-public class GenericGroupMessageReactionEvent extends GenericMessageEvent
+public class GenericGroupMessageReactionEvent extends GenericGroupMessageEvent
 {
-    protected User issuer;
-    protected MessageReaction reaction;
+    protected final User issuer;
+    protected final MessageReaction reaction;
 
     public GenericGroupMessageReactionEvent(JDA api, long responseNumber, User user, MessageReaction reaction)
     {
-        super(api, responseNumber, reaction.getMessageIdLong(), reaction.getChannel());
+        super(api, responseNumber, reaction.getMessageIdLong(), (Group) reaction.getChannel());
         this.issuer = user;
         this.reaction = reaction;
-    }
-
-    @Override
-    public Group getChannel()
-    {
-        return (Group) channel;
     }
 
     public User getUser()

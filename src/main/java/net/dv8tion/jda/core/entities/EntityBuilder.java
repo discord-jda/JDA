@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,10 @@ import net.dv8tion.jda.bot.entities.ApplicationInfo;
 import net.dv8tion.jda.bot.entities.impl.ApplicationInfoImpl;
 import net.dv8tion.jda.client.entities.*;
 import net.dv8tion.jda.client.entities.impl.*;
-import net.dv8tion.jda.core.*;
+import net.dv8tion.jda.core.AccountType;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.OnlineStatus;
+import net.dv8tion.jda.core.WebSocketCode;
 import net.dv8tion.jda.core.audit.ActionType;
 import net.dv8tion.jda.core.audit.AuditLogChange;
 import net.dv8tion.jda.core.audit.AuditLogEntry;
@@ -30,6 +33,7 @@ import net.dv8tion.jda.core.entities.impl.*;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.handle.GuildMembersChunkHandler;
 import net.dv8tion.jda.core.handle.ReadyHandler;
+import net.dv8tion.jda.core.utils.Helpers;
 import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
@@ -43,18 +47,17 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class EntityBuilder
 {
     public static final Logger LOG = JDALogger.getLog(EntityBuilder.class);
     public static final String MISSING_CHANNEL = "MISSING_CHANNEL";
     public static final String MISSING_USER = "MISSING_USER";
-
-    private static final Pattern channelMentionPattern = Pattern.compile("<#(\\d+)>");
+    public static final String UNKNOWN_MESSAGE_TYPE = "UNKNOWN_MESSAGE_TYPE";
 
     protected final JDAImpl api;
     protected final TLongObjectMap<JSONObject> cachedGuildJsons = MiscUtil.newLongMap();
@@ -82,15 +85,17 @@ public class EntityBuilder
                 .setMfaEnabled(self.getBoolean("mfa_enabled"))
                 .setName(self.getString("username"))
                 .setDiscriminator(self.getString("discriminator"))
-                .setAvatarId(self.isNull("avatar") ? null : self.getString("avatar"))
-                .setBot(self.has("bot") && self.getBoolean("bot"));
+                .setAvatarId(self.optString("avatar", null))
+                .setBot(Helpers.optBoolean(self, "bot"));
 
         if (this.api.getAccountType() == AccountType.CLIENT)
+        {
             selfUser
-                .setEmail(!self.isNull("email") ? self.getString("email") : null)
-                .setMobile(!self.isNull("mobile") ? self.getBoolean("mobile") : false)
-                .setNitro(!self.isNull("premium") ? self.getBoolean("premium") : false)
-                .setPhoneNumber(!self.isNull("phone") ? self.getString("phone") : null);
+                .setEmail(self.optString("email", null))
+                .setMobile(Helpers.optBoolean(self, "mobile"))
+                .setNitro(Helpers.optBoolean(self, "premium"))
+                .setPhoneNumber(self.optString("phone", null));
+        }
 
         return selfUser;
     }
@@ -109,7 +114,7 @@ public class EntityBuilder
             guildObj = new GuildImpl(api, id);
             api.getGuildMap().put(id, guildObj);
         }
-        if (guild.has("unavailable") && guild.getBoolean("unavailable"))
+        if (Helpers.optBoolean(guild, "unavailable"))
         {
             guildObj.setAvailable(false);
             //This is used for when GuildCreateHandler receives a guild that is currently unavailable. During normal READY
@@ -141,8 +146,8 @@ public class EntityBuilder
         // This includes making VoiceStatus and PermissionOverrides
 
         guildObj.setAvailable(true)
-                .setIconId(guild.isNull("icon") ? null : guild.getString("icon"))
-                .setSplashId(guild.isNull("splash") ? null : guild.getString("splash"))
+                .setIconId(guild.optString("icon", null))
+                .setSplashId(guild.optString("splash", null))
                 .setRegion(guild.getString("region"))
                 .setName(guild.getString("name"))
                 .setAfkTimeout(Guild.Timeout.fromKey(guild.getInt("afk_timeout")))
@@ -150,6 +155,18 @@ public class EntityBuilder
                 .setDefaultNotificationLevel(Guild.NotificationLevel.fromKey(guild.getInt("default_message_notifications")))
                 .setRequiredMFALevel(Guild.MFALevel.fromKey(guild.getInt("mfa_level")))
                 .setExplicitContentLevel(Guild.ExplicitContentLevel.fromKey(guild.getInt("explicit_content_filter")));
+
+
+        if(guild.isNull("features"))
+            guildObj.setFeatures(Collections.emptySet());
+        else
+        {
+            guildObj.setFeatures(
+                StreamSupport.stream(guild.getJSONArray("features").spliterator(), false)
+                    .map(String::valueOf)
+                    .collect(Collectors.toSet())
+            );
+        }
 
         JSONArray roles = guild.getJSONArray("roles");
         for (int i = 0; i < roles.length(); i++)
@@ -180,11 +197,10 @@ public class EntityBuilder
 
                 for (int j = 0; j < emoteRoles.length(); j++)
                     roleSet.add(guildObj.getRoleById(emoteRoles.getString(j)));
-                final String name = object.isNull("name") ? "" : object.getString("name");
-                final boolean managed = !object.isNull("managed") && object.getBoolean("managed");
                 emoteMap.put(emoteId, emoteObj
-                            .setName(name)
-                            .setManaged(managed));
+                            .setName(object.optString("name"))
+                            .setAnimated(object.optBoolean("animated"))
+                            .setManaged(Helpers.optBoolean(object, "managed")));
             }
         }
 
@@ -442,12 +458,12 @@ public class EntityBuilder
 
             // VoiceState is considered volatile so we don't expect anything to actually exist
             GuildVoiceStateImpl voiceState = (GuildVoiceStateImpl) member.getVoiceState();
-            voiceState.setSelfMuted(!voiceStateJson.isNull("self_mute") && voiceStateJson.getBoolean("self_mute"))
-                      .setSelfDeafened(!voiceStateJson.isNull("self_deaf") && voiceStateJson.getBoolean("self_deaf"))
-                      .setGuildMuted(!voiceStateJson.isNull("mute") && voiceStateJson.getBoolean("mute"))
-                      .setGuildDeafened(!voiceStateJson.isNull("deaf") && voiceStateJson.getBoolean("deaf"))
-                      .setSuppressed(!voiceStateJson.isNull("suppress") && voiceStateJson.getBoolean("suppress"))
-                      .setSessionId(voiceStateJson.isNull("session_id") ? "" : voiceStateJson.getString("session_id"))
+            voiceState.setSelfMuted(Helpers.optBoolean(voiceStateJson, "self_mute"))
+                      .setSelfDeafened(Helpers.optBoolean(voiceStateJson, "self_deaf"))
+                      .setGuildMuted(Helpers.optBoolean(voiceStateJson, "mute"))
+                      .setGuildDeafened(Helpers.optBoolean(voiceStateJson, "deaf"))
+                      .setSuppressed(Helpers.optBoolean(voiceStateJson, "suppress"))
+                      .setSessionId(voiceStateJson.optString("session_id"))
                       .setConnectedChannel(voiceChannel);
         }
     }
@@ -495,8 +511,8 @@ public class EntityBuilder
         return userObj
                 .setName(user.getString("username"))
                 .setDiscriminator(user.get("discriminator").toString())
-                .setAvatarId(user.isNull("avatar") ? null : user.getString("avatar"))
-                .setBot(user.has("bot") && user.getBoolean("bot"));
+                .setAvatarId(user.optString("avatar", null))
+                .setBot(Helpers.optBoolean(user, "bot"));
     }
 
     public Member createMember(GuildImpl guild, JSONObject memberJson)
@@ -514,7 +530,7 @@ public class EntityBuilder
             .setGuildDeafened(memberJson.getBoolean("deaf"));
 
         member.setJoinDate(OffsetDateTime.parse(memberJson.getString("joined_at")))
-              .setNickname(memberJson.isNull("nick") ? null : memberJson.getString("nick"));
+              .setNickname(memberJson.optString("nick", null));
 
         JSONArray rolesJson = memberJson.getJSONArray("roles");
         for (int k = 0; k < rolesJson.length(); k++)
@@ -544,37 +560,43 @@ public class EntityBuilder
         JSONObject gameJson = presenceJson.isNull("game") ? null : presenceJson.getJSONObject("game");
         OnlineStatus onlineStatus = OnlineStatus.fromKey(presenceJson.getString("status"));
         Game game = null;
+        boolean parsedGame = false;
 
         if (gameJson != null && !gameJson.isNull("name"))
         {
-            String gameName = gameJson.get("name").toString();
-            String url = gameJson.isNull("url") ? null : gameJson.get("url").toString();
-
-            Game.GameType gameType;
             try
             {
-                gameType = gameJson.isNull("type")
-                           ? Game.GameType.DEFAULT
-                           : Game.GameType.fromKey(Integer.parseInt(gameJson.get("type").toString()));
+                game = createGame(gameJson);
+                parsedGame = true;
             }
-            catch (NumberFormatException e)
+            catch (Exception ex)
             {
-                gameType = Game.GameType.DEFAULT;
+                String userId;
+                if (memberOrFriend instanceof Member)
+                    userId = ((Member) memberOrFriend).getUser().getId();
+                else if (memberOrFriend instanceof Friend)
+                    userId = ((Friend) memberOrFriend).getUser().getId();
+                else
+                    userId = "unknown";
+                if (LOG.isDebugEnabled())
+                    LOG.warn("Encountered exception trying to parse a presence! UserId: {} JSON: {}", userId, gameJson, ex);
+                else
+                    LOG.warn("Encountered exception trying to parse a presence! UserId: {} Message: {} Enable debug for details", userId, ex.getMessage());
             }
-
-            game = createGame(gameName, url, gameType);
         }
         if (memberOrFriend instanceof Member)
         {
             MemberImpl member = (MemberImpl) memberOrFriend;
             member.setOnlineStatus(onlineStatus);
-            member.setGame(game);
+            if (parsedGame)
+                member.setGame(game);
         }
         else if (memberOrFriend instanceof Friend)
         {
             FriendImpl friend = (FriendImpl) memberOrFriend;
             friend.setOnlineStatus(onlineStatus);
-            friend.setGame(game);
+            if (parsedGame)
+                friend.setGame(game);
 
             OffsetDateTime lastModified = OffsetDateTime.ofInstant(
                     Instant.ofEpochMilli(presenceJson.getLong("last_modified")),
@@ -584,6 +606,77 @@ public class EntityBuilder
         }
         else
             throw new IllegalArgumentException("An object was provided to EntityBuilder#createPresence that wasn't a Member or Friend. JSON: " + presenceJson);
+    }
+
+    public static Game createGame(JSONObject gameJson)
+    {
+        String name = String.valueOf(gameJson.get("name"));
+        String url = gameJson.isNull("url") ? null : String.valueOf(gameJson.get("url"));
+        Game.GameType type;
+        try
+        {
+            type = gameJson.isNull("type")
+                ? Game.GameType.DEFAULT
+                : Game.GameType.fromKey(Integer.parseInt(gameJson.get("type").toString()));
+        }
+        catch (NumberFormatException e)
+        {
+            type = Game.GameType.DEFAULT;
+        }
+
+        long id;
+        try
+        {
+            id = gameJson.getLong("application_id");
+        }
+        catch (JSONException ex)
+        {
+            return new Game(name, url, type);
+        }
+        String details = gameJson.isNull("details") ? null : String.valueOf(gameJson.get("details"));
+        String state = gameJson.isNull("state") ? null : String.valueOf(gameJson.get("state"));
+        RichPresence.Timestamps timestamps = null;
+        if (!gameJson.isNull("timestamps"))
+        {
+            JSONObject obj = gameJson.getJSONObject("timestamps");
+            long start, end;
+            start = obj.isNull("start") ? 0 : obj.getLong("start");
+            end = obj.isNull("end") ? 0 : obj.getLong("end");
+            timestamps = new RichPresence.Timestamps(start, end);
+        }
+
+        RichPresence.Party party = null;
+        if (!gameJson.isNull("party"))
+        {
+            JSONObject obj = gameJson.getJSONObject("party");
+            String partyId = obj.isNull("id") ? null : obj.getString("id");
+            JSONArray sizeArr = obj.isNull("size") ? null : obj.getJSONArray("size");
+            int size = 0, max = 0;
+            if (sizeArr != null && sizeArr.length() > 0)
+            {
+                size = sizeArr.getInt(0);
+                max = sizeArr.length() > 1 ? sizeArr.getInt(1) : 0;
+            }
+            party = new RichPresence.Party(partyId, size, max);
+        }
+
+        String smallImageKey = null, smallImageText = null;
+        String largeImageKey = null, largeImageText = null;
+        if (!gameJson.isNull("assets"))
+        {
+            JSONObject assets = gameJson.getJSONObject("assets");
+            if (!assets.isNull("small_image"))
+            {
+                smallImageKey = String.valueOf(assets.get("small_image"));
+                smallImageText = assets.isNull("small_text") ? null : String.valueOf(assets.get("small_text"));
+            }
+            if (!assets.isNull("large_image"))
+            {
+                largeImageKey = String.valueOf(assets.get("large_image"));
+                largeImageText = assets.isNull("large_text") ? null : String.valueOf(assets.get("large_text"));
+            }
+        }
+        return new RichPresence(type, name, url, id, party, details, state, timestamps, largeImageKey, largeImageText, smallImageKey, smallImageText);
     }
 
     public Category createCategory(JSONObject json, long guildId)
@@ -639,12 +732,12 @@ public class EntityBuilder
         }
 
         return channel
-                .setParent(json.isNull("parent_id") ? 0 : json.getLong("parent_id"))
-                .setLastMessageId(json.isNull("last_message_id") ? 0 : json.getLong("last_message_id"))
+                .setParent(Helpers.optLong(json, "parent_id", 0))
+                .setLastMessageId(Helpers.optLong(json, "last_message_id", 0))
                 .setName(json.getString("name"))
-                .setTopic(json.isNull("topic") ? "" : json.getString("topic"))
+                .setTopic(json.optString("topic"))
                 .setRawPosition(json.getInt("position"))
-                .setNSFW(!json.isNull("nsfw") && json.getBoolean("nsfw"));
+                .setNSFW(Helpers.optBoolean(json, "nsfw"));
     }
 
     public VoiceChannel createVoiceChannel(JSONObject json, long guildId)
@@ -671,7 +764,7 @@ public class EntityBuilder
         }
 
         return channel
-                .setParent(json.isNull("parent_id") ? 0 : json.getLong("parent_id"))
+                .setParent(Helpers.optLong(json, "parent_id", 0))
                 .setName(json.getString("name"))
                 .setRawPosition(json.getInt("position"))
                 .setUserLimit(json.getInt("user_limit"))
@@ -693,7 +786,7 @@ public class EntityBuilder
 
         final long channelId = privatechat.getLong("id");
         PrivateChannelImpl priv = new PrivateChannelImpl(channelId, user)
-                .setLastMessageId(privatechat.isNull("last_message_id") ? -1 : privatechat.getLong("last_message_id"));
+                .setLastMessageId(Helpers.optLong(privatechat, "last_message_id", 0));
         user.setPrivateChannel(priv);
 
         if (user.isFake())
@@ -766,281 +859,231 @@ public class EntityBuilder
     public Message createMessage(JSONObject jsonObject, MessageChannel chan, boolean exceptionOnMissingUser)
     {
         final long id = jsonObject.getLong("id");
-        String content = !jsonObject.isNull("content") ? jsonObject.getString("content") : "";
+        String content = jsonObject.optString("content");
 
         JSONObject author = jsonObject.getJSONObject("author");
         final long authorId = author.getLong("id");
-        boolean fromWebhook = jsonObject.has("webhook_id");
+        final boolean fromWebhook = jsonObject.has("webhook_id");
+        final boolean pinned = Helpers.optBoolean(jsonObject, "pinned");
+        final boolean tts = Helpers.optBoolean(jsonObject, "tts");
+        final boolean mentionsEveryone = Helpers.optBoolean(jsonObject, "mention_everyone");
+        final OffsetDateTime editTime = jsonObject.isNull("edited_timestamp") ? null : OffsetDateTime.parse(jsonObject.getString("edited_timestamp"));
+        final String nonce = jsonObject.isNull("nonce") ? null : jsonObject.get("nonce").toString();
 
-        MessageImpl message = new MessageImpl(id, chan, fromWebhook)
-                .setContent(content)
-                .setTime(!jsonObject.isNull("timestamp") ? OffsetDateTime.parse(jsonObject.getString("timestamp")) : OffsetDateTime.now())
-                .setMentionsEveryone(!jsonObject.isNull("mention_everyone") && jsonObject.getBoolean("mention_everyone"))
-                .setTTS(!jsonObject.isNull("tts") && jsonObject.getBoolean("tts"))
-                .setPinned(!jsonObject.isNull("pinned") && jsonObject.getBoolean("pinned"));
-        if (chan instanceof PrivateChannel)
+        final List<Message.Attachment> attachments = map(jsonObject, "attachments", this::createMessageAttachment);
+        final List<MessageEmbed>       embeds      = map(jsonObject, "embeds",      this::createMessageEmbed);
+        final List<MessageReaction>    reactions   = map(jsonObject, "reactions",   (obj) -> createMessageReaction(chan, id, obj));
+
+        User user;
+        switch (chan.getType())
         {
-            if (authorId == api.getSelfUser().getIdLong())
-                message.setAuthor(api.getSelfUser());
-            else
-                message.setAuthor(((PrivateChannel) chan).getUser());
-        }
-        else if (chan instanceof Group)
-        {
-            UserImpl user = (UserImpl) api.getUserMap().get(authorId);
-            if (user == null)
-                user = (UserImpl) api.getFakeUserMap().get(authorId);
-            if (user == null && fromWebhook)
-                user = (UserImpl) createFakeUser(author, false);
-            if (user == null)
-            {
-                if (exceptionOnMissingUser)
-                    throw new IllegalArgumentException(MISSING_USER);   //Specifically for MESSAGE_CREATE
+            case PRIVATE:
+                if (authorId == api.getSelfUser().getIdLong())
+                    user = api.getSelfUser();
                 else
-                    user = (UserImpl) createFakeUser(author, false);  //Any message creation that isn't MESSAGE_CREATE
-            }
-            message.setAuthor(user);
+                    user = ((PrivateChannel) chan).getUser();
+                break;
+            case GROUP:
+                user = api.getUserById(authorId);
+                if (user == null)
+                    user = api.getFakeUserMap().get(authorId);
+                if (user == null && fromWebhook)
+                    user = createFakeUser(author, false);
+                if (user == null)
+                {
+                    if (exceptionOnMissingUser)
+                        throw new IllegalArgumentException(MISSING_USER); // Specifically for MESSAGE_CREATE
+                    else
+                        user = createFakeUser(author, false); // Any other message creation
+                }
 
-            //If the message was sent by a cached fake user, lets update it.
-            if (user.isFake() && !fromWebhook)
-            {
-                user.setName(author.getString("username"))
+                if (user.isFake() && !fromWebhook)
+                {
+                    UserImpl impl = (UserImpl) user;
+                    impl.setName(author.getString("username"))
                         .setDiscriminator(author.get("discriminator").toString())
-                        .setAvatarId(author.isNull("avatar") ? null : author.getString("avatar"))
-                        .setBot(author.has("bot") && author.getBoolean("bot"));
-            }
+                        .setAvatarId(author.optString("avatar", null))
+                        .setBot(Helpers.optBoolean(author, "bot"));
+                }
+                break;
+            case TEXT:
+                Guild guild = ((TextChannel) chan).getGuild();
+                Member member = guild.getMemberById(authorId);
+                user = member != null ? member.getUser() : null;
+                if (user == null)
+                {
+                    if (fromWebhook || !exceptionOnMissingUser)
+                        user = createFakeUser(author, false);
+                    else
+                        throw new IllegalArgumentException(MISSING_USER); // Specifically for MESSAGE_CREATE
+                }
+                break;
+            default: throw new IllegalArgumentException("Invalid Channel for creating a Message [" + chan.getType() + ']');
+        }
+
+        MessageType type = MessageType.fromId(jsonObject.getInt("type"));
+        switch (type)
+        {
+            case DEFAULT:
+                return new ReceivedMessage(id, chan, type,
+                    fromWebhook, mentionsEveryone, tts, pinned,
+                    content, nonce, user, editTime, reactions, attachments, embeds);
+            case UNKNOWN:
+                throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
+            default:
+                return new SystemMessage(id, chan, type,
+                    fromWebhook, mentionsEveryone, tts, pinned,
+                    content, nonce, user, editTime, reactions, attachments, embeds);
+        }
+
+    }
+
+    public MessageReaction createMessageReaction(MessageChannel chan, long id, JSONObject obj)
+    {
+        JSONObject emoji = obj.getJSONObject("emoji");
+        final Long emojiID = emoji.isNull("id") ? null : emoji.getLong("id");
+        final String name = emoji.optString("name", null);
+        final boolean animated = emoji.optBoolean("animated");
+        final int count = Helpers.optInt(obj, "count", -1);
+        final boolean me = Helpers.optBoolean(obj, "me");
+
+        final MessageReaction.ReactionEmote reactionEmote;
+        if (emojiID != null)
+        {
+            Emote emote = api.getEmoteById(emojiID);
+            // creates fake emoji because no guild has this emoji id
+            if (emote == null)
+                emote = new EmoteImpl(emojiID, api).setAnimated(animated).setName(name);
+            reactionEmote = new MessageReaction.ReactionEmote(emote);
         }
         else
         {
-            GuildImpl guild = (GuildImpl) ((TextChannel) chan).getGuild();
-            Member member = guild.getMembersMap().get(authorId);
-            User user = member != null ? member.getUser() : null;
-            if (user != null)
-                message.setAuthor(user);
-            else if (fromWebhook || !exceptionOnMissingUser)
-                message.setAuthor(createFakeUser(author, false));
-            else
-                throw new IllegalArgumentException(MISSING_USER);
+            reactionEmote = new MessageReaction.ReactionEmote(name, null, api);
         }
 
-        List<Message.Attachment> attachments = new LinkedList<>();
-        if (!jsonObject.isNull("attachments"))
-        {
-            JSONArray jsonAttachments = jsonObject.getJSONArray("attachments");
-            for (int i = 0; i < jsonAttachments.length(); i++)
-            {
-                JSONObject jsonAttachment = jsonAttachments.getJSONObject(i);
-                attachments.add(new Message.Attachment(
-                        jsonAttachment.getString("id"),
-                        jsonAttachment.getString("url"),
-                        jsonAttachment.getString("proxy_url"),
-                        jsonAttachment.getString("filename"),
-                        jsonAttachment.getInt("size"),
-                        jsonAttachment.has("height") ? jsonAttachment.getInt("height") : 0,
-                        jsonAttachment.has("width") ? jsonAttachment.getInt("width") : 0,
-                        api
-                ));
-            }
-        }
-        message.setAttachments(attachments);
-
-        List<MessageEmbed> embeds = new LinkedList<>();
-        JSONArray jsonEmbeds = jsonObject.getJSONArray("embeds");
-        for (int i = 0; i < jsonEmbeds.length(); i++)
-        {
-            embeds.add(createMessageEmbed(jsonEmbeds.getJSONObject(i)));
-        }
-        message.setEmbeds(embeds);
-
-        if (!jsonObject.isNull("edited_timestamp"))
-            message.setEditedTime(OffsetDateTime.parse(jsonObject.getString("edited_timestamp")));
-
-        if (jsonObject.has("reactions"))
-        {
-            JSONArray reactions = jsonObject.getJSONArray("reactions");
-            List<MessageReaction> list = new LinkedList<>();
-            for (int i = 0; i < reactions.length(); i++)
-            {
-                JSONObject obj = reactions.getJSONObject(i);
-                JSONObject emoji = obj.getJSONObject("emoji");
-
-                final Long emojiId = emoji.isNull("id") ? null : emoji.getLong("id");
-                String emojiName = emoji.getString("name");
-
-                boolean self = obj.has("me") && obj.getBoolean("me");
-                int count = obj.getInt("count");
-                Emote emote = null;
-                if (emojiId != null)
-                {
-                    emote = api.getEmoteById(emojiId);
-                    if (emote == null)
-                        emote = new EmoteImpl(emojiId, api).setName(emojiName);
-                }
-                MessageReaction.ReactionEmote reactionEmote;
-                if (emote == null)
-                    reactionEmote = new MessageReaction.ReactionEmote(emojiName, null, api);
-                else
-                    reactionEmote = new MessageReaction.ReactionEmote(emote);
-                list.add(new MessageReaction(chan, reactionEmote, message.getIdLong(), self, count));
-            }
-            message.setReactions(list);
-        }
-
-        if (message.isFromType(ChannelType.TEXT))
-        {
-            TextChannel textChannel = message.getTextChannel();
-            TreeMap<Integer, User> mentionedUsers = new TreeMap<>();
-            if (!jsonObject.isNull("mentions"))
-            {
-                JSONArray mentions = jsonObject.getJSONArray("mentions");
-                for (int i = 0; i < mentions.length(); i++)
-                {
-                    JSONObject mention = mentions.getJSONObject(i);
-                    User u = api.getUserById(mention.getLong("id"));
-                    if (u != null)
-                    {
-                        //We do this to properly order the mentions. The array given by discord is out of order sometimes.
-
-                        String mentionId = mention.getString("id");
-                        int index = content.indexOf("<@" + mentionId + ">");
-                        if (index < 0)
-                            index = content.indexOf("<@!" + mentionId + ">");
-                        mentionedUsers.put(index, u);
-                    }
-                }
-            }
-            message.setMentionedUsers(new LinkedList<User>(mentionedUsers.values()));
-
-            TreeMap<Integer, Role> mentionedRoles = new TreeMap<>();
-            if (!jsonObject.isNull("mention_roles"))
-            {
-                JSONArray roleMentions = jsonObject.getJSONArray("mention_roles");
-                for (int i = 0; i < roleMentions.length(); i++)
-                {
-                    String roleId = roleMentions.getString(i);
-                    Role r = textChannel.getGuild().getRoleById(roleId);
-                    if (r != null)
-                    {
-                        int index = content.indexOf("<@&" + roleId + ">");
-                        mentionedRoles.put(index, r);
-                    }
-                }
-            }
-            message.setMentionedRoles(new LinkedList<Role>(mentionedRoles.values()));
-
-            List<TextChannel> mentionedChannels = new LinkedList<>();
-            TLongObjectMap<TextChannel> chanMap = ((GuildImpl) textChannel.getGuild()).getTextChannelsMap();
-            Matcher matcher = channelMentionPattern.matcher(content);
-            while (matcher.find())
-            {
-                try
-                {
-                    TextChannel channel = chanMap.get(Long.parseUnsignedLong(matcher.group(1)));
-                    if (channel != null && !mentionedChannels.contains(channel))
-                    {
-                        mentionedChannels.add(channel);
-                    }
-                } catch (NumberFormatException ignored) {
-                }
-            }
-            message.setMentionedChannels(mentionedChannels);
-        }
-        return message;
+        return new MessageReaction(chan, reactionEmote, id, me, count);
     }
 
-    public MessageEmbed createMessageEmbed(JSONObject messageEmbed)
+    public Message.Attachment createMessageAttachment(JSONObject jsonObject)
     {
-        if (messageEmbed.isNull("type"))
-            throw new JSONException("Encountered embed object with missing/null type field for Json: " + messageEmbed);
-        EmbedType type = EmbedType.fromKey(messageEmbed.getString("type"));
-       /* if (type == EmbedType.UNKNOWN)
-            throw new JSONException("Discord provided us an unknown embed type.  Json: " + messageEmbed);*/
-        MessageEmbedImpl embed = new MessageEmbedImpl()
-                .setType(type)
-                .setUrl(messageEmbed.isNull("url") ? null : messageEmbed.getString("url"))
-                .setTitle(messageEmbed.isNull("title") ? null : messageEmbed.getString("title"))
-                .setDescription(messageEmbed.isNull("description") ? null : messageEmbed.getString("description"))
-                .setColor(messageEmbed.isNull("color") || messageEmbed.getInt("color") == 0 ? null : new Color(messageEmbed.getInt("color")))
-                .setTimestamp(messageEmbed.isNull("timestamp") ? null : OffsetDateTime.parse(messageEmbed.getString("timestamp")));
+        final int width = Helpers.optInt(jsonObject, "width", -1);
+        final int height = Helpers.optInt(jsonObject, "height", -1);
+        final int size = jsonObject.getInt("size");
+        final String url = jsonObject.optString("url", null);
+        final String proxyUrl = jsonObject.optString("proxy_url", null);
+        final String filename = jsonObject.getString("filename");
+        final long id = jsonObject.getLong("id");
+        return new Message.Attachment(id, url, proxyUrl, filename, size, height, width, api);
+    }
 
-        if (messageEmbed.has("thumbnail"))
-        {
-            JSONObject thumbnailJson = messageEmbed.getJSONObject("thumbnail");
-            embed.setThumbnail(new Thumbnail(
-                    thumbnailJson.getString("url"),
-                    thumbnailJson.getString("proxy_url"),
-                    thumbnailJson.getInt("width"),
-                    thumbnailJson.getInt("height")));
-        }
-        else embed.setThumbnail(null);
+    public MessageEmbed createMessageEmbed(JSONObject content)
+    {
+        if (content.isNull("type"))
+            throw new JSONException("Encountered embed object with missing/null type field for Json: " + content);
+        EmbedType type = EmbedType.fromKey(content.getString("type"));
+        final String url = content.optString("url", null);
+        final String title = content.optString("title", null);
+        final String description = content.optString("description", null);
+        final OffsetDateTime timestamp = content.isNull("timestamp") ? null : OffsetDateTime.parse(content.getString("timestamp"));
+        final Color color = content.isNull("color") ? null : new Color(content.getInt("color"));
 
-        if (messageEmbed.has("provider"))
+        final Thumbnail thumbnail;
+        if (content.isNull("thumbnail"))
         {
-            JSONObject providerJson = messageEmbed.getJSONObject("provider");
-            embed.setSiteProvider(new Provider(
-                    providerJson.isNull("name") ? null : providerJson.getString("name"),
-                    providerJson.isNull("url") ? null : providerJson.getString("url")));
+            thumbnail = null;
         }
-        else embed.setSiteProvider(null);
+        else
+        {
+            JSONObject obj = content.getJSONObject("thumbnail");
+            thumbnail = new Thumbnail(obj.optString("url", null),
+                                      obj.optString("proxy_url", null),
+                                      Helpers.optInt(obj, "width", -1),
+                                      Helpers.optInt(obj, "height", -1));
+        }
 
-        if (messageEmbed.has("author"))
+        final Provider provider;
+        if (content.isNull("provider"))
         {
-            JSONObject authorJson = messageEmbed.getJSONObject("author");
-            embed.setAuthor(new AuthorInfo(
-                    authorJson.isNull("name") ? null : authorJson.getString("name"),
-                    authorJson.isNull("url") ? null : authorJson.getString("url"),
-                    authorJson.isNull("icon_url") ? null : authorJson.getString("icon_url"),
-                    authorJson.isNull("proxy_icon_url") ? null : authorJson.getString("proxy_icon_url")));
+            provider = null;
         }
-        else embed.setAuthor(null);
+        else
+        {
+            JSONObject obj = content.getJSONObject("provider");
+            provider = new Provider(obj.optString("name", null),
+                                    obj.optString("url", null));
+        }
 
-        if (messageEmbed.has("image"))
+        final AuthorInfo author;
+        if (content.isNull("author"))
         {
-            JSONObject imageJson = messageEmbed.getJSONObject("image");
-            embed.setImage(new ImageInfo(
-                    imageJson.isNull("url") ? null : imageJson.getString("url"),
-                    imageJson.isNull("proxy_url") ? null : imageJson.getString("proxy_url"),
-                    imageJson.isNull("width") ? -1 : imageJson.getInt("width"),
-                    imageJson.isNull("height") ? -1 : imageJson.getInt("height")));
+            author = null;
         }
-        else embed.setImage(null);
+        else
+        {
+            JSONObject obj = content.getJSONObject("author");
+            author = new AuthorInfo(obj.optString("name", null),
+                                    obj.optString("url", null),
+                                    obj.optString("icon_url", null),
+                                    obj.optString("proxy_icon_url", null));
+        }
 
-        if (messageEmbed.has("footer"))
+        final VideoInfo video;
+        if (content.isNull("video"))
         {
-            JSONObject footerJson = messageEmbed.getJSONObject("footer");
-            embed.setFooter(new Footer(
-                    footerJson.isNull("text") ? null : footerJson.getString("text"),
-                    footerJson.isNull("icon_url") ? null : footerJson.getString("icon_url"),
-                    footerJson.isNull("proxy_icon_url") ? null : footerJson.getString("proxy_icon_url")));
+            video = null;
         }
-        else embed.setFooter(null);
+        else
+        {
+            JSONObject obj = content.getJSONObject("video");
+            video = new VideoInfo(obj.optString("url"),
+                                  Helpers.optInt(obj, "width", -1),
+                                  Helpers.optInt(obj, "height", -1));
+        }
 
-        if (messageEmbed.has("fields"))
+        final Footer footer;
+        if (content.isNull("footer"))
         {
-            JSONArray fieldsJson = messageEmbed.getJSONArray("fields");
-            List<Field> fields = new LinkedList<>();
-            for(int index=0; index<fieldsJson.length(); index++)
-            {
-                JSONObject fieldJson = fieldsJson.getJSONObject(index);
-                fields.add(new Field(
-                        fieldJson.isNull("name") ? null : fieldJson.getString("name"),
-                        fieldJson.isNull("value") ? null : fieldJson.getString("value"),
-                        !fieldJson.isNull("inline") && fieldJson.getBoolean("inline"),
-                        false)); // unchecked field instantiation
-            }
-            embed.setFields(fields);
+            footer = null;
         }
-        else embed.setFields(Collections.emptyList());
+        else
+        {
+            JSONObject obj = content.getJSONObject("footer");
+            footer = new Footer(obj.optString("text", null),
+                                obj.optString("icon_url", null),
+                                obj.optString("proxy_icon_url", null));
+        }
 
-        if (messageEmbed.has("video"))
+        final ImageInfo image;
+        if (content.isNull("image"))
         {
-            JSONObject videoJson = messageEmbed.getJSONObject("video");
-            embed.setVideoInfo(new MessageEmbed.VideoInfo(
-                    videoJson.getString("url"),
-                    videoJson.isNull("width") ? -1 : videoJson.getInt("width"),
-                    videoJson.isNull("height") ? -1 : videoJson.getInt("height")));
+            image = null;
         }
-        return embed;
+        else
+        {
+            JSONObject obj = content.getJSONObject("image");
+            image = new ImageInfo(obj.optString("url", null),
+                                  obj.optString("proxy_url", null),
+                                  Helpers.optInt(obj, "width", -1),
+                                  Helpers.optInt(obj, "height", -1));
+        }
+
+        final List<Field> fields = map(content, "fields", (obj) ->
+            new Field(obj.optString("name", null),
+                      obj.optString("value", null),
+                      Helpers.optBoolean(obj, "inline"),
+                      false)
+        );
+
+        return createMessageEmbed(url, title, description, type, timestamp,
+                color, thumbnail, provider, author, video, footer, image, fields);
+    }
+
+    public static MessageEmbed createMessageEmbed(String url, String title, String description, EmbedType type, OffsetDateTime timestamp,
+                                           Color color, Thumbnail thumbnail, Provider siteProvider, AuthorInfo author,
+                                           VideoInfo videoInfo, Footer footer, ImageInfo image, List<Field> fields)
+    {
+        return new MessageEmbed(url, title, description, type, timestamp,
+            color, thumbnail, siteProvider, author, videoInfo, footer, image, fields);
     }
 
     public PermissionOverride createPermissionOverride(JSONObject override, Channel chan)
@@ -1089,7 +1132,7 @@ public class EntityBuilder
         final long id = object.getLong("id");
         final long guildId = object.getLong("guild_id");
         final long channelId = object.getLong("channel_id");
-        String token = !object.isNull("token") ? object.getString("token") : null;
+        final String token = object.optString("token", null);
 
         TextChannel channel = api.getTextChannelById(channelId);
         if (channel == null)
@@ -1151,7 +1194,7 @@ public class EntityBuilder
                 default:
                     return null;
             }
-            ((JDAClientImpl) api.asClient()).getRelationshipMap().put(user.getIdLong(), relationship);
+            api.asClient().getRelationshipMap().put(user.getIdLong(), relationship);
         }
         return relationship;
     }
@@ -1164,15 +1207,15 @@ public class EntityBuilder
         final long groupId = groupJson.getLong("id");
         JSONArray recipients = groupJson.getJSONArray("recipients");
         final long ownerId = groupJson.getLong("owner_id");
-        String name = !groupJson.isNull("name") ? groupJson.getString("name") : null;
-        String iconId = !groupJson.isNull("icon") ? groupJson.getString("icon") : null;
-        long lastMessage = !groupJson.isNull("last_message_id") ? groupJson.getLong("last_message_id") : -1;
+        final String name = groupJson.optString("name", null);
+        final String iconId = groupJson.optString("icon", null);
+        final long lastMessage = Helpers.optLong(groupJson, "last_message_id", 0);
 
         GroupImpl group = (GroupImpl) api.asClient().getGroupById(groupId);
         if (group == null)
         {
             group = new GroupImpl(groupId, api);
-            ((JDAClientImpl) api.asClient()).getGroupMap().put(groupId, group);
+            api.asClient().getGroupMap().put(groupId, group);
         }
 
         TLongObjectMap<User> groupUsers = group.getUserMap();
@@ -1213,10 +1256,10 @@ public class EntityBuilder
 
         final JSONObject guildObject = object.getJSONObject("guild");
 
-        final String guildIconId = guildObject.isNull("icon") ? null : guildObject.getString("icon");
+        final String guildIconId = guildObject.optString("icon", null);
         final long guildId = guildObject.getLong("id");
         final String guildName = guildObject.getString("name");
-        final String guildSplashId = guildObject.isNull("splash") ? null : guildObject.getString("splash");
+        final String guildSplashId = guildObject.optString("splash", null);
 
         final Invite.Guild guild = new InviteImpl.GuildImpl(guildId, guildIconId, guildName, guildSplashId);
 
@@ -1259,7 +1302,7 @@ public class EntityBuilder
     {
         final String description = object.getString("description");
         final boolean doesBotRequireCodeGrant = object.getBoolean("bot_require_code_grant");
-        final String iconId = !object.isNull("icon") ? object.getString("icon") : null;
+        final String iconId = object.optString("icon", null);
         final long id = object.getLong("id");
         final String name = object.getString("name");
         final boolean isBotPublic = object.getBoolean("bot_public");
@@ -1295,12 +1338,12 @@ public class EntityBuilder
 
     public AuditLogEntry createAuditLogEntry(GuildImpl guild, JSONObject entryJson, JSONObject userJson)
     {
-        final long targetId = entryJson.isNull("target_id") ? 0 : entryJson.getLong("target_id");
+        final long targetId = Helpers.optLong(entryJson, "target_id", 0);
         final long id = entryJson.getLong("id");
         final int typeKey = entryJson.getInt("action_type");
         final JSONArray changes = entryJson.isNull("changes") ? null : entryJson.getJSONArray("changes");
         final JSONObject options = entryJson.isNull("options") ? null : entryJson.getJSONObject("options");
-        final String reason = entryJson.isNull("reason") ? null : entryJson.getString("reason");
+        final String reason = entryJson.optString("reason", null);
 
         final UserImpl user = (UserImpl) createFakeUser(userJson, false);
         final Set<AuditLogChange> changesList;
@@ -1352,5 +1395,21 @@ public class EntityBuilder
     private Map<String, AuditLogChange> changeToMap(Set<AuditLogChange> changesList)
     {
         return changesList.stream().collect(Collectors.toMap(AuditLogChange::getKey, UnaryOperator.identity()));
+    }
+
+    private <T> List<T> map(JSONObject jsonObject, String key, Function<JSONObject, T> convert)
+    {
+        if (jsonObject.isNull(key))
+            return Collections.emptyList();
+
+        final JSONArray arr = jsonObject.getJSONArray(key);
+        final List<T> mappedObjects = new ArrayList<>(arr.length());
+        for (int i = 0; i < arr.length(); i++)
+        {
+            JSONObject obj = arr.getJSONObject(i);
+            mappedObjects.add(convert.apply(obj));
+        }
+
+        return mappedObjects;
     }
 }

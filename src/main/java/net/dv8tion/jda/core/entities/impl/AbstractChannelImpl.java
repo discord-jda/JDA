@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -235,10 +235,8 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
                     JSONArray array = response.getArray();
                     List<Invite> invites = new ArrayList<>(array.length());
                     for (int i = 0; i < array.length(); i++)
-                    {
                         invites.add(entityBuilder.createInvite(array.getJSONObject(i)));
-                    }
-                    request.onSuccess(invites);
+                    request.onSuccess(Collections.unmodifiableList(invites));
                 }
                 else
                 {

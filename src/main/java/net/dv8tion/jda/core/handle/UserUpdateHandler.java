@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,15 +38,15 @@ public class UserUpdateHandler extends SocketHandler
 
         String name = content.getString("username");
         String discriminator = content.getString("discriminator");
-        String avatarId = !content.isNull("avatar") ? content.getString("avatar") : null;
+        String avatarId = content.optString("avatar", null);
         Boolean verified = content.has("verified") ? content.getBoolean("verified") : null;
         Boolean mfaEnabled = content.has("mfa_enabled") ? content.getBoolean("mfa_enabled") : null;
 
         //Client only
-        String email = !content.isNull("email") ? content.getString("email") : null;
-        Boolean mobile = content.has("mobile") ? content.getBoolean("mobile") : null; // mobile device 
+        String email = content.optString("email", null);
+        Boolean mobile = content.has("mobile") ? content.getBoolean("mobile") : null; // mobile device
         Boolean nitro = content.has("premium") ? content.getBoolean("premium") : null; // nitro
-        String phoneNumber = !content.isNull("phone") ? content.getString("phone") : null; // verified phone number (verification level !)
+        String phoneNumber = content.optString("phone", null); // verified phone number (verification level !)
 
         if (!Objects.equals(name, self.getName()) || !Objects.equals(discriminator, self.getDiscriminator()))
         {

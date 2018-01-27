@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,10 +73,25 @@ public class Checks
             throw new IllegalArgumentException(name + " may not be empty");
     }
 
+    public static void notEmpty(final Object[] argument, final String name)
+    {
+        notNull(argument, name);
+        if (argument.length == 0)
+            throw new IllegalArgumentException(name + " may not be empty");
+    }
+
     public static void noneNull(final Collection<?> argument, final String name)
     {
         notNull(argument, name);
         argument.forEach(it -> notNull(it, name));
+    }
+
+    public static void noneNull(final Object[] argument, final String name)
+    {
+        notNull(argument, name);
+        for (Object it : argument) {
+            notNull(it, name);
+        }
     }
 
     public static <T extends CharSequence> void noneEmpty(final Collection<T> argument, final String name)

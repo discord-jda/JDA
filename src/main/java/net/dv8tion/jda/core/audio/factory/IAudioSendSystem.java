@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,9 @@
  */
 
 package net.dv8tion.jda.core.audio.factory;
+
+import javax.annotation.CheckForNull;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Interface that acts as a UDP audio packet sending loop.
@@ -44,4 +47,13 @@ public interface IAudioSendSystem
      * and it is possible that this method could be called more than once due to edge-case shutdown conditions.
      */
     void shutdown();
+
+    /**
+     * Called with the internal JDA {@link org.slf4j.MDC MDC} context map.
+     * <br>This is guaranteed to be called before {@link #start()}.
+     *
+     * @param contextMap
+     *        The JDA internal MDC context map, or {@code null} if disabled
+     */
+    default void setContextMap(@CheckForNull ConcurrentMap<String, String> contextMap) {}
 }

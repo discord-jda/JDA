@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.requests;
 
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.ratelimit.IBucket;
+import org.slf4j.MDC;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -87,7 +88,7 @@ public abstract class RateLimiter
     private class RateLimitThreadFactory implements ThreadFactory
     {
         final String identifier;
-        AtomicInteger threadCount = new AtomicInteger(1);
+        final AtomicInteger threadCount = new AtomicInteger(1);
 
         public RateLimitThreadFactory(JDAImpl api)
         {
@@ -97,7 +98,12 @@ public abstract class RateLimiter
         @Override
         public Thread newThread(Runnable r)
         {
-            Thread t = new Thread(r, identifier + " - Thread " + threadCount.getAndIncrement());
+            Thread t = new Thread(() ->
+            {
+                if (requester.api.getContextMap() != null)
+                    MDC.setContextMap(requester.api.getContextMap());
+                r.run();
+            }, identifier + " - Thread " + threadCount.getAndIncrement());
             t.setDaemon(true);
 
             return t;

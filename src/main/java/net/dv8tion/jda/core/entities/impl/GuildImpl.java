@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
@@ -76,6 +77,7 @@ public class GuildImpl implements Guild
     private String iconId;
     private String splashId;
     private String region;
+    private Set<String> features;
     private VoiceChannel afkChannel;
     private TextChannel systemChannel;
     private Role publicRole;
@@ -112,6 +114,12 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public Set<String> getFeatures()
+    {
+        return features;
+    }
+
+    @Override
     public String getSplashId()
     {
         return splashId;
@@ -121,6 +129,34 @@ public class GuildImpl implements Guild
     public String getSplashUrl()
     {
         return splashId == null ? null : "https://cdn.discordapp.com/splashes/" + id + "/" + splashId + ".jpg";
+    }
+
+    @Override
+    public RestAction<String> getVanityUrl()
+    {
+        if (!isAvailable())
+            throw new GuildUnavailableException();
+        if (!getSelfMember().hasPermission(Permission.MANAGE_SERVER))
+            throw new InsufficientPermissionException(Permission.MANAGE_SERVER);
+        if (!getFeatures().contains("VANITY_URL"))
+            throw new IllegalStateException("This guild doesn't have a vanity url");
+
+        Route.CompiledRoute route = Route.Guilds.GET_VANITY_URL.compile(getId());
+
+        return new RestAction<String>(api, route)
+        {
+            @Override
+            protected void handleResponse(Response response, Request<String> request)
+            {
+                if (!response.isOk())
+                {
+                    request.onFailure(response);
+                    return;
+                }
+
+                request.onSuccess(response.getObject().getString("code"));
+            }
+        };
     }
 
     @Override
@@ -154,8 +190,8 @@ public class GuildImpl implements Guild
                     return;
                 }
 
-                List<Webhook> webhooks = new LinkedList<>();
                 JSONArray array = response.getArray();
+                List<Webhook> webhooks = new ArrayList<>(array.length());
                 EntityBuilder builder = api.getEntityBuilder();
 
                 for (Object object : array)
@@ -170,7 +206,7 @@ public class GuildImpl implements Guild
                     }
                 }
 
-                request.onSuccess(webhooks);
+                request.onSuccess(Collections.unmodifiableList(webhooks));
             }
         };
     }
@@ -281,6 +317,42 @@ public class GuildImpl implements Guild
         };
     }
 
+    @Nonnull
+    @Override
+    public RestAction<List<Ban>> getBanList()
+    {
+        if (!isAvailable())
+            throw new GuildUnavailableException();
+        if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS))
+            throw new InsufficientPermissionException(Permission.BAN_MEMBERS);
+
+        Route.CompiledRoute route = Route.Guilds.GET_BANS.compile(getId());
+        return new RestAction<List<Ban>>(getJDA(), route)
+        {
+            @Override
+            protected void handleResponse(Response response, Request<List<Ban>> request)
+            {
+                if (!response.isOk())
+                {
+                    request.onFailure(response);
+                    return;
+                }
+
+                EntityBuilder builder = api.getEntityBuilder();
+                List<Ban> bans = new LinkedList<>();
+                JSONArray bannedArr = response.getArray();
+
+                for (int i = 0; i < bannedArr.length(); i++)
+                {
+                    final JSONObject object = bannedArr.getJSONObject(i);
+                    JSONObject user = object.getJSONObject("user");
+                    bans.add(new Ban(builder.createFakeUser(user, false), object.optString("reason", null)));
+                }
+                request.onSuccess(Collections.unmodifiableList(bans));
+            }
+        };
+    }
+
     @Override
     public RestAction<Integer> getPrunableMemberCount(int days)
     {
@@ -310,13 +382,6 @@ public class GuildImpl implements Guild
     public Role getPublicRole()
     {
         return publicRole;
-    }
-
-    @Override
-    @Deprecated
-    public TextChannel getPublicChannel()
-    {
-        return textChannelCache.getElementById(id);
     }
 
     @Nullable
@@ -381,8 +446,7 @@ public class GuildImpl implements Guild
     @Override
     public MentionPaginationAction getRecentMentions()
     {
-        if (getJDA().getAccountType() != AccountType.CLIENT)
-            throw new AccountTypeException(AccountType.CLIENT);
+        AccountTypeException.check(getJDA().getAccountType(), AccountType.CLIENT);
         return getJDA().asClient().getRecentMentions(this);
     }
 
@@ -580,6 +644,12 @@ public class GuildImpl implements Guild
         return this;
     }
 
+    public GuildImpl setFeatures(Set<String> features)
+    {
+        this.features = Collections.unmodifiableSet(features);
+        return this;
+    }
+
     public GuildImpl setSplashId(String splashId)
     {
         this.splashId = splashId;
@@ -721,10 +791,8 @@ public class GuildImpl implements Guild
                     JSONArray array = response.getArray();
                     List<Invite> invites = new ArrayList<>(array.length());
                     for (int i = 0; i < array.length(); i++)
-                    {
                         invites.add(entityBuilder.createInvite(array.getJSONObject(i)));
-                    }
-                    request.onSuccess(invites);
+                    request.onSuccess(Collections.unmodifiableList(invites));
                 }
                 else
                 {

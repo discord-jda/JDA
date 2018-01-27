@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,27 @@
 package net.dv8tion.jda.client.events.message.group;
 
 import net.dv8tion.jda.client.entities.Group;
+import net.dv8tion.jda.client.events.group.GenericGroupEvent;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.events.message.GenericMessageEvent;
+import net.dv8tion.jda.core.entities.ChannelType;
 
-public abstract class GenericGroupMessageEvent extends GenericMessageEvent
+public abstract class GenericGroupMessageEvent extends GenericGroupEvent
 {
+    protected final long messageId;
+
     public GenericGroupMessageEvent(JDA api, long responseNumber, long messageId, Group group)
     {
-        super(api, responseNumber, messageId, group);
+        super(api, responseNumber, group);
+        this.messageId = messageId;
     }
 
-    @Override
-    public Group getChannel()
+    public String getMessageId()
     {
-        return (Group) channel;
+        return Long.toUnsignedString(messageId);
+    }
+
+    public long getMessageIdLong()
+    {
+        return messageId;
     }
 }

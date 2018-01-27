@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package net.dv8tion.jda.webhook;
 
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.impl.MessageEmbedImpl;
 import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
@@ -109,7 +108,7 @@ public class WebhookMessage
     public static WebhookMessage from(Message message)
     {
         Checks.notNull(message, "Message");
-        final String content = message.getRawContent();
+        final String content = message.getContentRaw();
         final List<MessageEmbed> embeds = message.getEmbeds();
         final boolean isTTS = message.isTTS();
         return new WebhookMessage(null, null, content, embeds, isTTS, null, null);
@@ -134,7 +133,7 @@ public class WebhookMessage
         {
             final JSONArray array = new JSONArray();
             for (MessageEmbed embed : embeds)
-                array.put(((MessageEmbedImpl) embed).toJSONObject());
+                array.put(embed.toJSONObject());
             payload.put("embeds", array);
         }
         if (avatarUrl != null)

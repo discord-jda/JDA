@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -255,7 +255,8 @@ public class ChannelAction extends AuditableRestAction<Channel>
      * Sets the bitrate for the new VoiceChannel
      *
      * @param  bitrate
-     *         The bitrate for the new Channel (min 8000) or null to use default (64000)
+     *         The bitrate for the new Channel (min {@code 8000}; max {@code 96000}/{@code 128000}
+     *         (for {@link net.dv8tion.jda.core.entities.Guild#getFeatures() VIP Guilds})) or null to use default ({@code 64000})
      *
      * @throws UnsupportedOperationException
      *         If this ChannelAction is not for a VoiceChannel
@@ -271,10 +272,11 @@ public class ChannelAction extends AuditableRestAction<Channel>
             throw new UnsupportedOperationException("Can only set the bitrate for a VoiceChannel!");
         if (bitrate != null)
         {
+            int maxBitrate = guild.getFeatures().contains("VIP_REGIONS") ? 128000 : 96000;
             if (bitrate < 8000)
                 throw new IllegalArgumentException("Bitrate must be greater than 8000.");
-            if (bitrate > 128000) // todo: checking whether guild is VIP or not (96000 max no vip)
-                throw new IllegalArgumentException("Bitrate must be less than 128000.");
+            else if (bitrate > maxBitrate)
+                throw new IllegalArgumentException("Bitrate must be less than " + maxBitrate);
         }
 
         this.bitrate = bitrate;

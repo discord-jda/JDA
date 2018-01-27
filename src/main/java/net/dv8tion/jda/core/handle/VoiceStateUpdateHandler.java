@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -198,8 +198,8 @@ public class VoiceStateUpdateHandler extends SocketHandler
     private void handleCallVoiceState(JSONObject content)
     {
         final long userId = content.getLong("user_id");
-        final Long channelId = !content.isNull("channel_id") ? content.getLong("channel_id") : null;
-        String sessionId = !content.isNull("session_id") ? content.getString("session_id") : null;
+        final Long channelId = content.isNull("channel_id") ? null : content.getLong("channel_id");
+        String sessionId = content.optString("session_id", null);
         boolean selfMuted = content.getBoolean("self_mute");
         boolean selfDeafened = content.getBoolean("self_deaf");
 
@@ -227,7 +227,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
                 return;
             }
 
-            CallUser cUser = ((JDAClientImpl) api.asClient()).getCallUserMap().get(userId);
+            CallUser cUser = api.asClient().getCallUserMap().get(userId);
             if (cUser != null && channelId != cUser.getCall().getCallableChannel().getIdLong())
             {
                 WebSocketClient.LOG.error("Received a VOICE_STATE_UPDATE for a user joining a call, but the user was already in a different call! Big error! JSON: {}", content);
@@ -242,7 +242,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
                 return;
             }
 
-            ((JDAClientImpl) api.asClient()).getCallUserMap().put(userId, cUser);
+            api.asClient().getCallUserMap().put(userId, cUser);
             vState = (CallVoiceStateImpl) cUser.getVoiceState();
             vState.setSessionId(sessionId);
             vState.setInCall(true);
@@ -254,7 +254,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
         }
         else //Leaving a call
         {
-            CallUser cUser = ((JDAClientImpl) api.asClient()).getCallUserMap().remove(userId);
+            CallUser cUser = api.asClient().getCallUserMap().remove(userId);
             if (cUser == null)
             {
                 api.getEventCache().cache(EventCache.Type.USER, userId, () -> handle(responseNumber, allContent));

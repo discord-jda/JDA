@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,14 @@ import javax.annotation.CheckReturnValue;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
+/**
+ * Extension of RestAction to allow setting a reason, only available to accounts of {@link net.dv8tion.jda.core.AccountType#BOT AccounType.BOT}
+ *
+ * @param  <T>
+ *         The return type
+ *
+ * @since  3.3.0
+ */
 public abstract class AuditableRestAction<T> extends RestAction<T>
 {
 

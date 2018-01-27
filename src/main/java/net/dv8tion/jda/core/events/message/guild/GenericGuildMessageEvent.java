@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 package net.dv8tion.jda.core.events.message.guild;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.events.message.GenericMessageEvent;
+import net.dv8tion.jda.core.events.guild.GenericGuildEvent;
 
 /**
  * <b><u>GenericGuildMessageEvent</u></b><br>
@@ -27,23 +27,40 @@ import net.dv8tion.jda.core.events.message.GenericMessageEvent;
  * <br>
  * Use: Detect any GuildMessageEvent. <i>(No real use for the JDA user)</i>
  */
-public abstract class GenericGuildMessageEvent extends GenericMessageEvent
+public abstract class GenericGuildMessageEvent extends GenericGuildEvent
 {
+    protected final long messageId;
+    protected final TextChannel channel;
 
     public GenericGuildMessageEvent(JDA api, long responseNumber, long messageId, TextChannel channel)
     {
-        super(api, responseNumber, messageId, channel);
+        super(api, responseNumber, channel.getGuild());
+        this.messageId = messageId;
+        this.channel = channel;
     }
 
-    @Override
+    public String getMessageId()
+    {
+        return Long.toUnsignedString(messageId);
+    }
+
+    public long getMessageIdLong()
+    {
+        return messageId;
+    }
+
+    public boolean isFromType(ChannelType type)
+    {
+        return getChannel().getType() == type;
+    }
+
+    public ChannelType getChannelType()
+    {
+        return getChannel().getType();
+    }
+
     public TextChannel getChannel()
     {
-        return (TextChannel) channel;
+        return channel;
     }
-
-    public Guild getGuild()
-    {
-        return getChannel().getGuild();
-    }
-
 }

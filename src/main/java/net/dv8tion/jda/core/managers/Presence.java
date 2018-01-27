@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,18 +78,18 @@ public interface Presence
 
     /**
      * Sets the {@link net.dv8tion.jda.core.entities.Game Game} for this session.
-     * <br>A Game can be retrieved via {@link net.dv8tion.jda.core.entities.Game#of(String)}.
+     * <br>A Game can be retrieved via {@link net.dv8tion.jda.core.entities.Game#playing(String)}.
      * For streams you provide a valid streaming url as second parameter
      *
      * <p>Examples:
-     * <br>{@code presence.setGame(Game.of("Thrones"));}
-     * <br>{@code presence.setGame(Game.of("Thrones", "https://twitch.tv/EasterEggs"));}
+     * <br>{@code presence.setGame(Game.playing("Thrones"));}
+     * <br>{@code presence.setGame(Game.streaming("Thrones", "https://twitch.tv/EasterEggs"));}
      *
      * @param  game
      *         A {@link net.dv8tion.jda.core.entities.Game Game} instance or null to reset
      *
-     * @see    net.dv8tion.jda.core.entities.Game#of(String)
-     * @see    net.dv8tion.jda.core.entities.Game#of(String, String)
+     * @see    net.dv8tion.jda.core.entities.Game#playing(String)
+     * @see    net.dv8tion.jda.core.entities.Game#streaming(String, String)
      */
     void setGame(Game game);
 

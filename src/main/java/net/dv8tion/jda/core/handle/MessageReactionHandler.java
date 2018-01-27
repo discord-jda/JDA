@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,8 @@ public class MessageReactionHandler extends SocketHandler
         final long channelId = content.getLong("channel_id");
 
         final Long emojiId = emoji.isNull("id") ? null : emoji.getLong("id");
-        String emojiName = emoji.isNull("name") ? null : emoji.getString("name");
+        String emojiName = emoji.optString("name", null);
+        final boolean emojiAnimated = emoji.optBoolean("animated");
 
         if (emojiId == null && emojiName == null)
         {
@@ -81,13 +82,13 @@ public class MessageReactionHandler extends SocketHandler
         {
             channel = api.getPrivateChannelById(channelId);
         }
-        if (channel == null && api.getAccountType() == AccountType.CLIENT)
-        {
-            channel = api.asClient().getGroupById(channelId);
-        }
         if (channel == null)
         {
             channel = api.getFakePrivateChannelMap().get(channelId);
+        }
+        if (channel == null && api.getAccountType() == AccountType.CLIENT)
+        {
+            channel = api.asClient().getGroupById(channelId);
         }
         if (channel == null)
         {
@@ -104,7 +105,7 @@ public class MessageReactionHandler extends SocketHandler
             {
                 if (emojiName != null)
                 {
-                    emote = new EmoteImpl(emojiId, api).setName(emojiName);
+                    emote = new EmoteImpl(emojiId, api).setAnimated(emojiAnimated).setName(emojiName);
                 }
                 else
                 {

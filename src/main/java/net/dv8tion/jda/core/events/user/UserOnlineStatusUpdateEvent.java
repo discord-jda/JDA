@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,15 +26,13 @@ import net.dv8tion.jda.core.entities.User;
  * <br>
  * Use: Retrieve the User who's status changed and their previous status.
  */
-public class UserOnlineStatusUpdateEvent extends GenericUserEvent
+public class UserOnlineStatusUpdateEvent extends GenericUserPresenceEvent
 {
-    private final OnlineStatus previousOnlineStatus;
-    private final Guild guild;
+    protected final OnlineStatus previousOnlineStatus;
 
     public UserOnlineStatusUpdateEvent(JDA api, long responseNumber, User user, Guild guild, OnlineStatus previousOnlineStatus)
     {
-        super(api, responseNumber, user);
-        this.guild = guild;
+        super(api, responseNumber, user, guild);
         this.previousOnlineStatus = previousOnlineStatus;
     }
 
@@ -43,13 +41,8 @@ public class UserOnlineStatusUpdateEvent extends GenericUserEvent
         return previousOnlineStatus;
     }
 
-    public Guild getGuild()
+    public OnlineStatus getCurrentOnlineStatus()
     {
-        return guild;
-    }
-
-    public boolean isRelationshipUpdate()
-    {
-        return getGuild() == null;
+        return isRelationshipUpdate() ? getFriend().getOnlineStatus() : getMember().getOnlineStatus();
     }
 }

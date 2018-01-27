@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,20 +17,13 @@
 package net.dv8tion.jda.client.events.message.group.react;
 
 import net.dv8tion.jda.client.entities.Group;
+import net.dv8tion.jda.client.events.message.group.GenericGroupMessageEvent;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.events.message.GenericMessageEvent;
 
-public class GroupMessageReactionRemoveAllEvent extends GenericMessageEvent
+public class GroupMessageReactionRemoveAllEvent extends GenericGroupMessageEvent
 {
-
     public GroupMessageReactionRemoveAllEvent(JDA api, long responseNumber, long messageId, Group channel)
     {
         super(api, responseNumber, messageId, channel);
-    }
-
-    @Override
-    public Group getChannel()
-    {
-        return (Group) channel;
     }
 }

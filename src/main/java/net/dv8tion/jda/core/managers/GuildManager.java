@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,9 +94,15 @@ public class GuildManager
      * @param  region
      *         The new region for this {@link net.dv8tion.jda.core.entities.Guild Guild}
      *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided region is a {@link net.dv8tion.jda.core.Region#isVip() VIP Region} but the guild does not support VIP regions.
+     *         Use {@link net.dv8tion.jda.core.entities.Guild#getFeatures() Guild#getFeatures()} to check if VIP regions are supported.
+     *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Update RestAction from {@link GuildManagerUpdatable#update() #update()}
      *
+     * @see    net.dv8tion.jda.core.Region#isVip()
+     * @see    net.dv8tion.jda.core.entities.Guild#getFeatures()
      * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#getRegionField()
      * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#update()
      */

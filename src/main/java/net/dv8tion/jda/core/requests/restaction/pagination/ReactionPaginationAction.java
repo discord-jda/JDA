@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -121,11 +122,18 @@ public class ReactionPaginationAction extends PaginationAction<User, ReactionPag
         final List<User> users = new LinkedList<>();
         for (int i = 0; i < array.length(); i++)
         {
-            final User user = builder.createFakeUser(array.getJSONObject(i), false);
-            users.add(user);
-            if (useCache)
-                cached.add(user);
-            last = user;
+            try
+            {
+                final User user = builder.createFakeUser(array.getJSONObject(i), false);
+                users.add(user);
+                if (useCache)
+                    cached.add(user);
+                last = user;
+            }
+            catch (JSONException | NullPointerException e)
+            {
+                LOG.warn("Encountered exception in ReactionPagination", e);
+            }
         }
 
         request.onSuccess(users);

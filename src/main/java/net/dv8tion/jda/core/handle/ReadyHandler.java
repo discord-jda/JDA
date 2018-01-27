@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -263,7 +263,7 @@ public class ReadyHandler extends SocketHandler
             if (guildIds.length() == 50)
             {
                 api.getClient().chunkOrSyncRequest(new JSONObject()
-                    .put("op", 8)
+                    .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
                     .put("d", new JSONObject()
                         .put("guild_id", guildIds)
                         .put("query", "")
@@ -277,7 +277,7 @@ public class ReadyHandler extends SocketHandler
         if (guildIds.length() > 0)
         {
             api.getClient().chunkOrSyncRequest(new JSONObject()
-                .put("op", 8)
+                .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
                 .put("d", new JSONObject()
                         .put("guild_id", guildIds)
                         .put("query", "")

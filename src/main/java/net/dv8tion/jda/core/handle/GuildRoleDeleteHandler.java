@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.entities.impl.MemberImpl;
 import net.dv8tion.jda.core.events.role.RoleDeleteEvent;
+import net.dv8tion.jda.core.requests.WebSocketClient;
 import org.json.JSONObject;
 
 public class GuildRoleDeleteHandler extends SocketHandler
@@ -50,8 +51,8 @@ public class GuildRoleDeleteHandler extends SocketHandler
         Role removedRole = guild.getRolesMap().remove(roleId);
         if (removedRole == null)
         {
-            api.getEventCache().cache(EventCache.Type.ROLE, roleId, () -> handle(responseNumber, allContent));
-            EventCache.LOG.debug("GUILD_ROLE_DELETE was received for a Role that is not yet cached: {}", content);
+//            api.getEventCache().cache(EventCache.Type.ROLE, roleId, () -> handle(responseNumber, allContent));
+            WebSocketClient.LOG.debug("GUILD_ROLE_DELETE was received for a Role that is not yet cached: {}", content);
             return null;
         }
 
@@ -62,9 +63,9 @@ public class GuildRoleDeleteHandler extends SocketHandler
             member.getRoleSet().remove(removedRole);
         }
         api.getEventManager().handle(
-                new RoleDeleteEvent(
-                        api, responseNumber,
-                        removedRole));
+            new RoleDeleteEvent(
+                api, responseNumber,
+                removedRole));
         api.getEventCache().clear(EventCache.Type.ROLE, roleId);
         return null;
     }

@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.commons.collections4.map.ListOrderedMap;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
@@ -531,8 +532,15 @@ public class MessageHistory
             final EntityBuilder builder = api.getEntityBuilder();
             for (int i = 0; i < array.length(); i++)
             {
-                JSONObject obj = array.getJSONObject(i);
-                result.history.put(obj.getLong("id"), builder.createMessage(obj, channel, false));
+                try
+                {
+                    JSONObject obj = array.getJSONObject(i);
+                    result.history.put(obj.getLong("id"), builder.createMessage(obj, channel, false));
+                }
+                catch (JSONException | NullPointerException e)
+                {
+                    LOG.warn("Encountered exception in MessagePagination", e);
+                }
             }
             request.onSuccess(result);
         }
