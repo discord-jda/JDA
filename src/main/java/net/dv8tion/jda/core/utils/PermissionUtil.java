@@ -377,23 +377,17 @@ public class PermissionUtil
             return Permission.ALL_PERMISSIONS;
         }
 
-        long permission = getEffectivePermission(member) | getExplicitPermission(channel, member);
-        if (isApplied(permission, Permission.ADMINISTRATOR.getRawValue()))
+        long permission = getEffectivePermission(member);
+        final long admin = Permission.ADMINISTRATOR.getRawValue();
+        if (isApplied(permission, admin))
             return Permission.ALL_PERMISSIONS;
 
-        AtomicLong allow = new AtomicLong(0);
-        AtomicLong deny = new AtomicLong(0);
+        permission |= getExplicitPermission(channel, member);
+        final long viewChannel = Permission.VIEW_CHANNEL.getRawValue();
 
-        getExplicitOverrides(channel, member, allow, deny);
-        permission = apply(permission, allow.get(), deny.get());
-
-        if (!isApplied(permission, Permission.VIEW_CHANNEL.getRawValue()))
-        {
-            //When the permission to view the channel is not applied it is not granted
-            // This means that we have no access to this channel at all
-            return 0;
-        }
-
+        //When the permission to view the channel is not applied it is not granted
+        // This means that we have no access to this channel at all
+        return isApplied(permission, viewChannel) ? permission : 0;
         /*
         // currently discord doesn't implicitly grant permissions that the user can grant others
         // so instead the user has to explicitly make an override to grant them the permission in order to be granted that permission
@@ -410,7 +404,6 @@ public class PermissionUtil
             permission |= Permission.ALL_TEXT_PERMISSIONS | Permission.ALL_VOICE_PERMISSIONS;
         }
         */
-        return apply(permission, allow.get(), deny.get());
     }
 
     /**
