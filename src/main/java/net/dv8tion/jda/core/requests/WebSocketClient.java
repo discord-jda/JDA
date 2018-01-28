@@ -54,6 +54,7 @@ import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Supplier;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterOutputStream;
@@ -1144,11 +1145,45 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             audioQueueLock.unlock();
     }
 
-    public void queueAudioReconnect(VoiceChannel channel)
+    private void locked(String comment, Runnable task)
     {
         try
         {
             audioQueueLock.lockInterruptibly();
+            task.run();
+        }
+        catch (InterruptedException e)
+        {
+            LOG.error(comment, e);
+        }
+        finally
+        {
+            maybeUnlock();
+        }
+    }
+
+    private <T> T locked(String comment, Supplier<T> task)
+    {
+        try
+        {
+            audioQueueLock.lockInterruptibly();
+            return task.get();
+        }
+        catch (InterruptedException e)
+        {
+            LOG.error(comment, e);
+            return null;
+        }
+        finally
+        {
+            maybeUnlock();
+        }
+    }
+
+    public void queueAudioReconnect(VoiceChannel channel)
+    {
+        locked("There was an error queueing the audio reconnect", () ->
+        {
             final long guildId = channel.getGuild().getIdLong();
             ConnectionRequest request = queuedAudioConnections.get(guildId);
 
@@ -1165,22 +1200,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             }
             // in all cases, update to this channel
             request.setChannel(channel);
-        }
-        catch (InterruptedException e)
-        {
-            LOG.error("There was an error queueing the audio reconnect", e);
-        }
-        finally
-        {
-            maybeUnlock();
-        }
+        });
     }
 
     public void queueAudioConnect(VoiceChannel channel)
     {
-        try
+        locked("There was an error queueing the audio connect", () ->
         {
-            audioQueueLock.lockInterruptibly();
             final long guildId = channel.getGuild().getIdLong();
             ConnectionRequest request = queuedAudioConnections.get(guildId);
 
@@ -1198,22 +1224,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
             // in all cases, update to this channel
             request.setChannel(channel);
-        }
-        catch (InterruptedException e)
-        {
-            LOG.error("There was an error queueing the audio connect", e);
-        }
-        finally
-        {
-            maybeUnlock();
-        }
+        });
     }
 
     public void queueAudioDisconnect(Guild guild)
     {
-        try
+        locked("There was an error queueing the audio disconnect", () ->
         {
-            audioQueueLock.lockInterruptibly();
             final long guildId = guild.getIdLong();
             ConnectionRequest request = queuedAudioConnections.get(guildId);
 
@@ -1227,16 +1244,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 // If we have a request, change to DISCONNECT
                 request.setStage(ConnectionStage.DISCONNECT);
             }
-            // channel is not relevant here
-        }
-        catch (InterruptedException e)
-        {
-            LOG.error("There was an error queueing the audio disconnect", e);
-        }
-        finally
-        {
-            maybeUnlock();
-        }
+        });
     }
 
     public ConnectionRequest removeAudioConnection(long guildId)
@@ -1244,38 +1252,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         //This will only be used by GuildDeleteHandler to ensure that
         // no further voice state updates are sent for this Guild
         //TODO: users may still queue new requests via the old AudioManager, how could we prevent this?
-        try
-        {
-            audioQueueLock.lockInterruptibly();
-            return queuedAudioConnections.remove(guildId);
-        }
-        catch (InterruptedException e)
-        {
-            LOG.error("There was an error cleaning up audio connections for deleted guild", e);
-        }
-        finally
-        {
-            maybeUnlock();
-        }
-        return null;
+        return locked("There was an error cleaning up audio connections for deleted guild", () -> queuedAudioConnections.remove(guildId));
     }
 
     public ConnectionRequest updateAudioConnection(long guildId, VoiceChannel connectedChannel)
     {
-        try
-        {
-            audioQueueLock.lockInterruptibly();
-            return updateAudioConnection0(guildId, connectedChannel);
-        }
-        catch (InterruptedException e)
-        {
-            LOG.error("There was an error updating the audio connection", e);
-        }
-        finally
-        {
-            maybeUnlock();
-        }
-        return null;
+        return locked("There was an error updating the audio connection", () -> updateAudioConnection0(guildId, connectedChannel));
     }
 
 
