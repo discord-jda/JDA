@@ -16,8 +16,8 @@
 package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.managers.ChannelManager;
 import net.dv8tion.jda.core.managers.ChannelManagerUpdatable;
+import net.dv8tion.jda.core.managers.front.ChannelManagerHandle;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.ChannelAction;
@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * Represents a {@link net.dv8tion.jda.core.entities.Guild Guild} channel.
  */
-public interface Channel extends ISnowflake
+public interface Channel extends ChannelManagerHandle, ISnowflake
 {
 
     /**
@@ -235,16 +235,6 @@ public interface Channel extends ISnowflake
     {
         return createCopy(getGuild());
     }
-
-    /**
-     * Returns the {@link net.dv8tion.jda.core.managers.ChannelManager ChannelManager} for this Channel.
-     * In the ChannelManager, you can modify the name, topic and position of this Channel.
-     *
-     * @return The ChannelManager of this Channel
-     *
-     * @see    #getManagerUpdatable()
-     */
-    ChannelManager getManager();
 
     /**
      * Returns the {@link net.dv8tion.jda.core.managers.ChannelManagerUpdatable ChannelManagerUpdatable} for this Channel.

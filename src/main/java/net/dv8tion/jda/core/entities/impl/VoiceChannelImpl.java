@@ -123,13 +123,13 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannelImpl> impl
 
     // -- Setters --
 
-    public VoiceChannelImpl setUserLimit(int userLimit)
+    public VoiceChannelImpl setUserLimitCache(int userLimit)
     {
         this.userLimit = userLimit;
         return this;
     }
 
-    public VoiceChannelImpl setBitrate(int bitrate)
+    public VoiceChannelImpl setBitrateCache(int bitrate)
     {
         this.bitrate = bitrate;
         return this;

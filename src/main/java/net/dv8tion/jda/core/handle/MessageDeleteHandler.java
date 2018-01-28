@@ -71,7 +71,7 @@ public class MessageDeleteHandler extends SocketHandler
                 return tChan.getGuild().getIdLong();
             }
             if (tChan.hasLatestMessage() && messageId == channel.getLatestMessageIdLong())
-                tChan.setLastMessageId(0); // Reset latest message id as it was deleted.
+                tChan.setLastMessageIdCache(0); // Reset latest message id as it was deleted.
             api.getEventManager().handle(
                     new GuildMessageDeleteEvent(
                             api, responseNumber,

@@ -16,11 +16,20 @@
 
 package net.dv8tion.jda.core.managers;
 
-import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Category;
 import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.core.managers.front.ChannelManagerHandle;
+import net.dv8tion.jda.core.requests.Request;
+import net.dv8tion.jda.core.requests.Requester;
+import net.dv8tion.jda.core.requests.Response;
+import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.core.utils.Checks;
+import okhttp3.RequestBody;
+import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 
@@ -30,9 +39,32 @@ import javax.annotation.CheckReturnValue;
  *
  * <p>This decoration allows to modify a single field by automatically building an update {@link net.dv8tion.jda.core.requests.RestAction RestAction}
  */
-public class ChannelManager
+public class ChannelManager extends AuditableRestAction<Void> implements ChannelManagerHandle
 {
-    protected final ChannelManagerUpdatable updatable;
+    /*
+       ~ TODO
+
+       - Checking whether we need to perform an update at all
+       - Documentation for bit-flag system
+     */
+    public static final int NAME      = 0x1;
+    public static final int PARENT    = 0x2;
+    public static final int TOPIC     = 0x4;
+    public static final int POSITION  = 0x8;
+    public static final int NSFW      = 0x10;
+    public static final int USERLIMIT = 0x20;
+    public static final int BITRATE   = 0x40;
+
+    protected final Channel channel;
+    protected int set = 0;
+
+    protected String name;
+    protected String parent;
+    protected String topic;
+    protected int position;
+    protected boolean nsfw;
+    protected int userlimit;
+    protected int bitrate;
 
     /**
      * Creates a new ChannelManager instance
@@ -43,17 +75,15 @@ public class ChannelManager
      */
     public ChannelManager(Channel channel)
     {
-        this.updatable = new ChannelManagerUpdatable(channel);
+        super(channel.getJDA(),
+              Route.Channels.MODIFY_CHANNEL.compile(channel.getId()));
+        this.channel = channel;
     }
 
-    /**
-     * The {@link net.dv8tion.jda.core.JDA JDA} instance of this Manager
-     *
-     * @return the corresponding JDA instance
-     */
-    public JDA getJDA()
+    @Override
+    public ChannelManager getManager()
     {
-        return updatable.getJDA();
+        return this;
     }
 
     /**
@@ -66,7 +96,7 @@ public class ChannelManager
      */
     public Channel getChannel()
     {
-        return updatable.getChannel();
+        return channel;
     }
 
     /**
@@ -80,7 +110,25 @@ public class ChannelManager
      */
     public Guild getGuild()
     {
-        return updatable.getGuild();
+        return channel.getGuild();
+    }
+
+    public ChannelManager reset(int fields)
+    {
+        //logic explanation:
+        //fields=0101
+        //set=1100
+        //field & set=0100
+        //~(field & set)=1011
+        //set & ~(fields&set)=1000
+        set &= ~(fields & set);
+        return this;
+    }
+
+    public ChannelManager reset()
+    {
+        set = 0;
+        return this;
     }
 
     /**
@@ -107,9 +155,13 @@ public class ChannelManager
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setName(String name)
+    public ChannelManager setName(String name)
     {
-        return updatable.getNameField().setValue(name).update();
+        Checks.notBlank(name, "Name");
+        Checks.check(name.length() >= 2 && name.length() <= 100, "Name must be between 2-100 characters long");
+        this.name = name;
+        set |= NAME;
+        return this;
     }
 
     /**
@@ -136,9 +188,12 @@ public class ChannelManager
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setParent(Category category)
+    public ChannelManager setParent(Category category)
     {
-        return updatable.getParentField().setValue(category).update();
+        Checks.check(category == null || category.getGuild().equals(getGuild()), "Category is not from the same guild!");
+        this.parent = category == null ? null : category.getId();
+        set |= PARENT;
+        return this;
     }
 
     /**
@@ -163,9 +218,11 @@ public class ChannelManager
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setPosition(int position)
+    public ChannelManager setPosition(int position)
     {
-        return updatable.getPositionField().setValue(position).update();
+        this.position = position;
+        set |= POSITION;
+        return this;
     }
 
     /**
@@ -192,9 +249,12 @@ public class ChannelManager
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setTopic(String topic)
+    public ChannelManager setTopic(String topic)
     {
-        return updatable.getTopicField().setValue(topic).update();
+        Checks.check(topic == null || topic.length() <= 1024, "Topic must be less or equal to 1024 characters in length");
+        this.topic = topic;
+        set |= TOPIC;
+        return this;
     }
 
     /**
@@ -214,9 +274,12 @@ public class ChannelManager
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getNSFWField()
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
-    public AuditableRestAction<Void> setNSFW(boolean nsfw)
+    @CheckReturnValue
+    public ChannelManager setNSFW(boolean nsfw)
     {
-        return updatable.getNSFWField().setValue(nsfw).update();
+        this.nsfw = nsfw;
+        set |= NSFW;
+        return this;
     }
 
     /**
@@ -243,9 +306,13 @@ public class ChannelManager
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setUserLimit(int userLimit)
+    public ChannelManager setUserLimit(int userLimit)
     {
-        return updatable.getUserLimitField().setValue(userLimit).update();
+        Checks.notNegative(userLimit, "Userlimit");
+        Checks.check(userLimit <= 99, "Userlimit may not be greater than 99");
+        this.userlimit = userLimit;
+        set |= USERLIMIT;
+        return this;
     }
 
     /**
@@ -274,8 +341,58 @@ public class ChannelManager
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setBitrate(int bitrate)
+    public ChannelManager setBitrate(int bitrate)
     {
-        return updatable.getBitrateField().setValue(bitrate).update();
+        final int maxBitrate = getGuild().getFeatures().contains("VIP_REGIONS") ? 128000 : 96000;
+        Checks.check(bitrate >= 8000, "Bitrate must be greater or equal to 8000");
+        Checks.check(bitrate <= maxBitrate, "Bitrate must be less or equal to %s", maxBitrate);
+        this.bitrate = bitrate;
+        set |= BITRATE;
+        return this;
+    }
+
+    @Override
+    protected RequestBody finalizeData()
+    {
+        if (!getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_CHANNEL))
+            throw new InsufficientPermissionException(Permission.MANAGE_CHANNEL);
+
+        JSONObject frame = new JSONObject().put("name", channel.getName());
+        if (shouldUpdate(NAME))
+            frame.put("name", name);
+        if (shouldUpdate(POSITION))
+            frame.put("position", position);
+        if (shouldUpdate(TOPIC))
+            frame.put("topic", opt(topic));
+        if (shouldUpdate(NSFW))
+            frame.put("nsfw", nsfw);
+        if (shouldUpdate(USERLIMIT))
+            frame.put("user_limit", userlimit);
+        if (shouldUpdate(BITRATE))
+            frame.put("bitrate", bitrate);
+        if (shouldUpdate(PARENT))
+            frame.put("parent_id", opt(parent));
+
+        reset();
+        return RequestBody.create(Requester.MEDIA_TYPE_JSON, frame.toString());
+    }
+
+    @Override
+    protected void handleResponse(Response response, Request<Void> request)
+    {
+        if (response.isOk())
+            request.onSuccess(null);
+        else
+            request.onFailure(response);
+    }
+
+    protected Object opt(Object it)
+    {
+        return it == null ? JSONObject.NULL : it;
+    }
+
+    protected boolean shouldUpdate(int bit)
+    {
+        return (set & bit) == bit;
     }
 }

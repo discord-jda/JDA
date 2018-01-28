@@ -275,21 +275,21 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     }
 
     @SuppressWarnings("unchecked")
-    public T setName(String name)
+    public T setNameCache(String name)
     {
         this.name = name;
         return (T) this;
     }
 
     @SuppressWarnings("unchecked")
-    public T setParent(long parentId)
+    public T setParentCache(long parentId)
     {
         this.parentId = parentId;
         return (T) this;
     }
 
     @SuppressWarnings("unchecked")
-    public T setRawPosition(int rawPosition)
+    public T setPositionCache(int rawPosition)
     {
         this.rawPosition = rawPosition;
         return (T) this;
