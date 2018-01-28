@@ -703,8 +703,8 @@ public class EntityBuilder
         }
 
         return channel
-                .setNameCache(json.getString("name"))
-                .setPositionCache(json.getInt("position"));
+                .setName(json.getString("name"))
+                .setPosition(json.getInt("position"));
     }
 
     public TextChannel createTextChannel(JSONObject json, long guildId)
@@ -732,12 +732,12 @@ public class EntityBuilder
         }
 
         return channel
-                .setParentCache(Helpers.optLong(json, "parent_id", 0))
-                .setLastMessageIdCache(Helpers.optLong(json, "last_message_id", 0))
-                .setNameCache(json.getString("name"))
-                .setTopicCache(json.optString("topic"))
-                .setPositionCache(json.getInt("position"))
-                .setNSFWCache(Helpers.optBoolean(json, "nsfw"));
+                .setParent(Helpers.optLong(json, "parent_id", 0))
+                .setLastMessageId(Helpers.optLong(json, "last_message_id", 0))
+                .setName(json.getString("name"))
+                .setTopic(json.optString("topic"))
+                .setPosition(json.getInt("position"))
+                .setNSFW(Helpers.optBoolean(json, "nsfw"));
     }
 
     public VoiceChannel createVoiceChannel(JSONObject json, long guildId)
@@ -764,11 +764,11 @@ public class EntityBuilder
         }
 
         return channel
-                .setParentCache(Helpers.optLong(json, "parent_id", 0))
-                .setNameCache(json.getString("name"))
-                .setPositionCache(json.getInt("position"))
-                .setUserLimitCache(json.getInt("user_limit"))
-                .setBitrateCache(json.getInt("bitrate"));
+                .setParent(Helpers.optLong(json, "parent_id", 0))
+                .setName(json.getString("name"))
+                .setPosition(json.getInt("position"))
+                .setUserLimit(json.getInt("user_limit"))
+                .setBitrate(json.getInt("bitrate"));
     }
 
     public PrivateChannel createPrivateChannel(JSONObject privatechat)

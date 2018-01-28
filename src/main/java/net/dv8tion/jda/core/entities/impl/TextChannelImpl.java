@@ -473,19 +473,19 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
 
     // -- Setters --
 
-    public TextChannelImpl setTopicCache(String topic)
+    public TextChannelImpl setTopic(String topic)
     {
         this.topic = topic;
         return this;
     }
 
-    public TextChannelImpl setLastMessageIdCache(long id)
+    public TextChannelImpl setLastMessageId(long id)
     {
         this.lastMessageId = id;
         return this;
     }
 
-    public TextChannelImpl setNSFWCache(boolean nsfw)
+    public TextChannelImpl setNSFW(boolean nsfw)
     {
         this.nsfw = nsfw;
         return this;

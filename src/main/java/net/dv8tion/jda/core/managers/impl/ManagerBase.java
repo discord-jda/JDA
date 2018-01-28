@@ -38,11 +38,11 @@ public abstract class ManagerBase extends AuditableRestAction<Void>
     public ManagerBase reset(int fields)
     {
         //logic explanation:
-        //fields=0101
-        //set=1100
-        //field & set=0100
-        //~(field & set)=1011
-        //set & ~(fields&set)=1000
+        //0101 = fields
+        //1100 = set
+        //0100 = fields & set
+        //1011 = ~(fields & set)
+        //1000 = set & ~(fields & set)
         set &= ~(fields & set);
         return this;
     }

@@ -86,7 +86,7 @@ public class MessageCreateHandler extends SocketHandler
                 {
                     return channel.getGuild().getIdLong();
                 }
-                channel.setLastMessageIdCache(message.getIdLong());
+                channel.setLastMessageId(message.getIdLong());
                 manager.handle(
                     new GuildMessageReceivedEvent(
                         api, responseNumber,

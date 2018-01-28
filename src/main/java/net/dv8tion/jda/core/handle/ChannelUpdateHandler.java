@@ -87,7 +87,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 final boolean oldNsfw = textChannel.isNSFW();
                 if (!Objects.equals(oldName, name))
                 {
-                    textChannel.setNameCache(name);
+                    textChannel.setName(name);
                     api.getEventManager().handle(
                             new TextChannelUpdateNameEvent(
                                     api, responseNumber,
@@ -95,7 +95,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 }
                 if (!Objects.equals(oldParent, parentId))
                 {
-                    textChannel.setParentCache(parentId == null ? 0 : parentId);
+                    textChannel.setParent(parentId == null ? 0 : parentId);
                     api.getEventManager().handle(
                            new TextChannelUpdateParentEvent(
                                api, responseNumber,
@@ -103,7 +103,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 }
                 if (!Objects.equals(oldTopic, topic))
                 {
-                    textChannel.setTopicCache(topic);
+                    textChannel.setTopic(topic);
                     api.getEventManager().handle(
                             new TextChannelUpdateTopicEvent(
                                     api, responseNumber,
@@ -111,7 +111,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 }
                 if (oldPosition != position)
                 {
-                    textChannel.setPositionCache(position);
+                    textChannel.setPosition(position);
                     api.getEventManager().handle(
                             new TextChannelUpdatePositionEvent(
                                     api, responseNumber,
@@ -120,7 +120,7 @@ public class ChannelUpdateHandler extends SocketHandler
 
                 if (oldNsfw != nsfw)
                 {
-                    textChannel.setNSFWCache(nsfw);
+                    textChannel.setNSFW(nsfw);
                     api.getEventManager().handle(
                             new TextChannelUpdateNSFWEvent(
                                     api, responseNumber,
@@ -159,7 +159,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 final int oldBitrate = voiceChannel.getBitrate();
                 if (!Objects.equals(oldName, name))
                 {
-                    voiceChannel.setNameCache(name);
+                    voiceChannel.setName(name);
                     api.getEventManager().handle(
                             new VoiceChannelUpdateNameEvent(
                                     api, responseNumber,
@@ -167,7 +167,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 }
                 if (!Objects.equals(oldParent, parentId))
                 {
-                    voiceChannel.setParentCache(parentId == null ? 0 : parentId);
+                    voiceChannel.setParent(parentId == null ? 0 : parentId);
                     api.getEventManager().handle(
                             new VoiceChannelUpdateParentEvent(
                                     api, responseNumber,
@@ -175,7 +175,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 }
                 if (oldPosition != position)
                 {
-                    voiceChannel.setPositionCache(position);
+                    voiceChannel.setPosition(position);
                     api.getEventManager().handle(
                             new VoiceChannelUpdatePositionEvent(
                                     api, responseNumber,
@@ -183,7 +183,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 }
                 if (oldLimit != userLimit)
                 {
-                    voiceChannel.setUserLimitCache(userLimit);
+                    voiceChannel.setUserLimit(userLimit);
                     api.getEventManager().handle(
                             new VoiceChannelUpdateUserLimitEvent(
                                     api, responseNumber,
@@ -191,7 +191,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 }
                 if (oldBitrate != bitrate)
                 {
-                    voiceChannel.setBitrateCache(bitrate);
+                    voiceChannel.setBitrate(bitrate);
                     api.getEventManager().handle(
                             new VoiceChannelUpdateBitrateEvent(
                                     api, responseNumber,
@@ -224,7 +224,7 @@ public class ChannelUpdateHandler extends SocketHandler
 
                 if (!Objects.equals(oldName, name))
                 {
-                    category.setNameCache(name);
+                    category.setName(name);
                     api.getEventManager().handle(
                             new CategoryUpdateNameEvent(
                                 api, responseNumber,
@@ -232,7 +232,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 }
                 if (!Objects.equals(oldPosition, position))
                 {
-                    category.setPositionCache(position);
+                    category.setPosition(position);
                     api.getEventManager().handle(
                             new CategoryUpdatePositionEvent(
                                 api, responseNumber,

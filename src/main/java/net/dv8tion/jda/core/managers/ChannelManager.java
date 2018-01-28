@@ -19,9 +19,9 @@ package net.dv8tion.jda.core.managers;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Category;
 import net.dv8tion.jda.core.entities.Channel;
+import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.core.managers.front.ChannelManagerHandle;
 import net.dv8tion.jda.core.managers.impl.ManagerBase;
 import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.requests.Route;
@@ -37,7 +37,7 @@ import javax.annotation.CheckReturnValue;
  *
  * <p>This decoration allows to modify a single field by automatically building an update {@link net.dv8tion.jda.core.requests.RestAction RestAction}
  */
-public class ChannelManager extends ManagerBase implements ChannelManagerHandle
+public class ChannelManager extends ManagerBase
 {
     /*
        ~ TODO
@@ -105,12 +105,6 @@ public class ChannelManager extends ManagerBase implements ChannelManagerHandle
     }
 
     @Override
-    public ChannelManager getManager()
-    {
-        return this;
-    }
-
-    @Override
     @CheckReturnValue
     public ChannelManager reset(int fields)
     {
@@ -138,18 +132,11 @@ public class ChannelManager extends ManagerBase implements ChannelManagerHandle
      * @param  name
      *         The new name for the selected {@link net.dv8tion.jda.core.entities.Channel Channel}
      *
-     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
      * @throws IllegalArgumentException
      *         If the provided name is {@code null} or not between 2-100 characters long
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link ChannelManagerUpdatable#update() #update()}
-     *
-     * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getNameField()
-     * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
+     * @return ChannelManager for chaining convenience
      */
-    @Override
     @CheckReturnValue
     public ChannelManager setName(String name)
     {
@@ -168,26 +155,23 @@ public class ChannelManager extends ManagerBase implements ChannelManagerHandle
      * @param  category
      *         The new parent for the selected {@link net.dv8tion.jda.core.entities.Channel Channel}
      *
-     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
      * @throws IllegalArgumentException
      *         If the provided category is not from the same Guild
      * @throws UnsupportedOperationException
      *         If the target is a category itself
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link ChannelManagerUpdatable#update() #update()}
+     * @return ChannelManager for chaining convenience
      *
      * @since  3.4.0
-     *
-     * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getParentField()
-     * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
-    @Override
     @CheckReturnValue
     public ChannelManager setParent(Category category)
     {
-        Checks.check(category == null || category.getGuild().equals(getGuild()), "Category is not from the same guild!");
+        if (category != null)
+        {
+            Checks.check(channel.getType() != ChannelType.CATEGORY, "Cannot set the parent of a category");
+            Checks.check(category.getGuild().equals(getGuild()), "Category is not from the same guild");
+        }
         this.parent = category == null ? null : category.getId();
         set |= PARENT;
         return this;
@@ -204,17 +188,8 @@ public class ChannelManager extends ManagerBase implements ChannelManagerHandle
      * @param  position
      *         The new position for the selected {@link net.dv8tion.jda.core.entities.Channel Channel}
      *
-     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have the Permission
-     *         {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} in the Guild!
-     *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link ChannelManagerUpdatable#update() #update()}
-     *
-     * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getPositionField()
-     * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
+     * @return ChannelManager for chaining convenience
      */
-    @Override
     @CheckReturnValue
     public ChannelManager setPosition(int position)
     {
@@ -233,20 +208,13 @@ public class ChannelManager extends ManagerBase implements ChannelManagerHandle
      *         The new topic for the selected {@link net.dv8tion.jda.core.entities.TextChannel TextChannel},
      *         {@code null} or empty String to reset
      *
-     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
      * @throws UnsupportedOperationException
      *         If the selected {@link net.dv8tion.jda.core.entities.Channel Channel}'s type is not {@link net.dv8tion.jda.core.entities.ChannelType#TEXT TEXT}
      * @throws IllegalArgumentException
      *         If the provided topic is greater than {@code 1024} in length
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link ChannelManagerUpdatable#update() #update()}
-     *
-     * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getTopicField()
-     * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
+     * @return ChannelManager for chaining convenience
      */
-    @Override
     @CheckReturnValue
     public ChannelManager setTopic(String topic)
     {
@@ -267,13 +235,8 @@ public class ChannelManager extends ManagerBase implements ChannelManagerHandle
      * @throws UnsupportedOperationException
      *         If the selected {@link net.dv8tion.jda.core.entities.Channel Channel}'s type is not {@link net.dv8tion.jda.core.entities.ChannelType#TEXT TEXT}
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link ChannelManagerUpdatable#update() #update()}
-     *
-     * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getNSFWField()
-     * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
+     * @return ChannelManager for chaining convenience
      */
-    @Override
     @CheckReturnValue
     public ChannelManager setNSFW(boolean nsfw)
     {
@@ -292,20 +255,13 @@ public class ChannelManager extends ManagerBase implements ChannelManagerHandle
      * @param  userLimit
      *         The new user-limit for the selected {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
      *
-     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
      * @throws UnsupportedOperationException
      *         If the selected {@link net.dv8tion.jda.core.entities.Channel Channel}'s type is not {@link net.dv8tion.jda.core.entities.ChannelType#VOICE VOICE}
      * @throws IllegalArgumentException
      *         If the provided user-limit is negative or greater than {@code 99}
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link ChannelManagerUpdatable#update() #update()}
-     *
-     * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getUserLimitField()
-     * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
+     * @return ChannelManager for chaining convenience
      */
-    @Override
     @CheckReturnValue
     public ChannelManager setUserLimit(int userLimit)
     {
@@ -327,21 +283,15 @@ public class ChannelManager extends ManagerBase implements ChannelManagerHandle
      * @param  bitrate
      *         The new bitrate for the selected {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
      *
-     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
      * @throws UnsupportedOperationException
      *         If the selected {@link net.dv8tion.jda.core.entities.Channel Channel}'s type is not {@link net.dv8tion.jda.core.entities.ChannelType#VOICE VOICE}
      * @throws IllegalArgumentException
      *         If the provided bitrate is not between 8000-96000 (or 128000 for VIP Guilds)
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link ChannelManagerUpdatable#update() #update()}
+     * @return ChannelManager for chaining convenience
      *
      * @see    net.dv8tion.jda.core.entities.Guild#getFeatures()
-     * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getBitrateField()
-     * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
-    @Override
     @CheckReturnValue
     public ChannelManager setBitrate(int bitrate)
     {

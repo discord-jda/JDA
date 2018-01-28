@@ -143,6 +143,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     }
 
     @Override
+    @Deprecated
     public ChannelManagerUpdatable getManagerUpdatable()
     {
         ChannelManagerUpdatable mng = managerUpdatable;
@@ -275,21 +276,21 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     }
 
     @SuppressWarnings("unchecked")
-    public T setNameCache(String name)
+    public T setName(String name)
     {
         this.name = name;
         return (T) this;
     }
 
     @SuppressWarnings("unchecked")
-    public T setParentCache(long parentId)
+    public T setParent(long parentId)
     {
         this.parentId = parentId;
         return (T) this;
     }
 
     @SuppressWarnings("unchecked")
-    public T setPositionCache(int rawPosition)
+    public T setPosition(int rawPosition)
     {
         this.rawPosition = rawPosition;
         return (T) this;
