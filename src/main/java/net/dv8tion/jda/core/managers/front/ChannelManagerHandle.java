@@ -19,6 +19,8 @@ package net.dv8tion.jda.core.managers.front;
 import net.dv8tion.jda.core.entities.Category;
 import net.dv8tion.jda.core.managers.ChannelManager;
 
+import javax.annotation.CheckReturnValue;
+
 public interface ChannelManagerHandle //todo docs
 {
     /**
@@ -29,36 +31,43 @@ public interface ChannelManagerHandle //todo docs
      */
     ChannelManager getManager();
 
+    @CheckReturnValue
     default ChannelManager setName(String name)
     {
         return getManager().setName(name);
     }
 
+    @CheckReturnValue
     default ChannelManager setParent(Category parent)
     {
         return getManager().setParent(parent);
     }
 
+    @CheckReturnValue
     default ChannelManager setBitrate(int bitrate)
     {
         return getManager().setBitrate(bitrate);
     }
 
+    @CheckReturnValue
     default ChannelManager setTopic(String topic)
     {
         return getManager().setTopic(topic);
     }
 
+    @CheckReturnValue
     default ChannelManager setUserLimit(int userlimit)
     {
         return getManager().setUserLimit(userlimit);
     }
 
+    @CheckReturnValue
     default ChannelManager setNSFW(boolean nsfw)
     {
         return getManager().setNSFW(nsfw);
     }
 
+    @CheckReturnValue
     default ChannelManager setPosition(int position)
     {
         return getManager().setPosition(position);

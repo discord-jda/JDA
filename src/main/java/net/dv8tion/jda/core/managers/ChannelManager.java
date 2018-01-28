@@ -22,11 +22,9 @@ import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.front.ChannelManagerHandle;
-import net.dv8tion.jda.core.requests.Request;
+import net.dv8tion.jda.core.managers.impl.ManagerBase;
 import net.dv8tion.jda.core.requests.Requester;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
-import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
@@ -39,7 +37,7 @@ import javax.annotation.CheckReturnValue;
  *
  * <p>This decoration allows to modify a single field by automatically building an update {@link net.dv8tion.jda.core.requests.RestAction RestAction}
  */
-public class ChannelManager extends AuditableRestAction<Void> implements ChannelManagerHandle
+public class ChannelManager extends ManagerBase implements ChannelManagerHandle
 {
     /*
        ~ TODO
@@ -56,7 +54,6 @@ public class ChannelManager extends AuditableRestAction<Void> implements Channel
     public static final int BITRATE   = 0x40;
 
     protected final Channel channel;
-    protected int set = 0;
 
     protected String name;
     protected String parent;
@@ -78,12 +75,6 @@ public class ChannelManager extends AuditableRestAction<Void> implements Channel
         super(channel.getJDA(),
               Route.Channels.MODIFY_CHANNEL.compile(channel.getId()));
         this.channel = channel;
-    }
-
-    @Override
-    public ChannelManager getManager()
-    {
-        return this;
     }
 
     /**
@@ -113,21 +104,25 @@ public class ChannelManager extends AuditableRestAction<Void> implements Channel
         return channel.getGuild();
     }
 
-    public ChannelManager reset(int fields)
+    @Override
+    public ChannelManager getManager()
     {
-        //logic explanation:
-        //fields=0101
-        //set=1100
-        //field & set=0100
-        //~(field & set)=1011
-        //set & ~(fields&set)=1000
-        set &= ~(fields & set);
         return this;
     }
 
+    @Override
+    @CheckReturnValue
+    public ChannelManager reset(int fields)
+    {
+        super.reset(fields);
+        return this;
+    }
+
+    @Override
+    @CheckReturnValue
     public ChannelManager reset()
     {
-        set = 0;
+        super.reset();
         return this;
     }
 
@@ -154,6 +149,7 @@ public class ChannelManager extends AuditableRestAction<Void> implements Channel
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getNameField()
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
+    @Override
     @CheckReturnValue
     public ChannelManager setName(String name)
     {
@@ -187,6 +183,7 @@ public class ChannelManager extends AuditableRestAction<Void> implements Channel
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getParentField()
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
+    @Override
     @CheckReturnValue
     public ChannelManager setParent(Category category)
     {
@@ -217,6 +214,7 @@ public class ChannelManager extends AuditableRestAction<Void> implements Channel
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getPositionField()
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
+    @Override
     @CheckReturnValue
     public ChannelManager setPosition(int position)
     {
@@ -248,6 +246,7 @@ public class ChannelManager extends AuditableRestAction<Void> implements Channel
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getTopicField()
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
+    @Override
     @CheckReturnValue
     public ChannelManager setTopic(String topic)
     {
@@ -274,6 +273,7 @@ public class ChannelManager extends AuditableRestAction<Void> implements Channel
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getNSFWField()
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
+    @Override
     @CheckReturnValue
     public ChannelManager setNSFW(boolean nsfw)
     {
@@ -305,6 +305,7 @@ public class ChannelManager extends AuditableRestAction<Void> implements Channel
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getUserLimitField()
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
+    @Override
     @CheckReturnValue
     public ChannelManager setUserLimit(int userLimit)
     {
@@ -340,6 +341,7 @@ public class ChannelManager extends AuditableRestAction<Void> implements Channel
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getBitrateField()
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
+    @Override
     @CheckReturnValue
     public ChannelManager setBitrate(int bitrate)
     {
@@ -354,6 +356,7 @@ public class ChannelManager extends AuditableRestAction<Void> implements Channel
     @Override
     protected RequestBody finalizeData()
     {
+        //todo: use finalizeChecks instead
         if (!getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_CHANNEL))
             throw new InsufficientPermissionException(Permission.MANAGE_CHANNEL);
 
@@ -375,24 +378,5 @@ public class ChannelManager extends AuditableRestAction<Void> implements Channel
 
         reset();
         return RequestBody.create(Requester.MEDIA_TYPE_JSON, frame.toString());
-    }
-
-    @Override
-    protected void handleResponse(Response response, Request<Void> request)
-    {
-        if (response.isOk())
-            request.onSuccess(null);
-        else
-            request.onFailure(response);
-    }
-
-    protected Object opt(Object it)
-    {
-        return it == null ? JSONObject.NULL : it;
-    }
-
-    protected boolean shouldUpdate(int bit)
-    {
-        return (set & bit) == bit;
     }
 }
