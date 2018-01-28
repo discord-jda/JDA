@@ -114,6 +114,14 @@ public class ChannelManager extends ManagerBase
 
     @Override
     @CheckReturnValue
+    public ManagerBase reset(int... fields)
+    {
+        super.reset(fields);
+        return this;
+    }
+
+    @Override
+    @CheckReturnValue
     public ChannelManager reset()
     {
         super.reset();

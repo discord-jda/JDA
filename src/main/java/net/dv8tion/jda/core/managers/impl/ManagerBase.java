@@ -47,6 +47,14 @@ public abstract class ManagerBase extends AuditableRestAction<Void>
         return this;
     }
 
+    public ManagerBase reset(int... fields)
+    {
+        int sum = 0;
+        for (int i : fields)
+            sum |= i;
+        return reset(sum);
+    }
+
     protected ManagerBase reset()
     {
         set = 0;
