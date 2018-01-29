@@ -149,6 +149,7 @@ public interface Webhook extends ISnowflake
      * @return An instance of {@link net.dv8tion.jda.core.managers.WebhookManagerUpdatable WebhookManagerUpdatable}
      *         for this Webhook
      */
+    @Deprecated
     WebhookManagerUpdatable getManagerUpdatable();
 
     /**

@@ -17,11 +17,18 @@
 package net.dv8tion.jda.core.managers;
 
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.Webhook;
-import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.core.managers.impl.ManagerBase;
+import net.dv8tion.jda.core.requests.Requester;
+import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.utils.Checks;
+import okhttp3.RequestBody;
+import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 
@@ -31,9 +38,17 @@ import javax.annotation.CheckReturnValue;
  *
  * <p>This decoration allows to modify a single field by automatically building an update {@link net.dv8tion.jda.core.requests.RestAction RestAction}
  */
-public class WebhookManager
+public class WebhookManager extends ManagerBase
 {
-    protected WebhookManagerUpdatable manager;
+    public static final int NAME    = 0x1;
+    public static final int CHANNEL = 0x2;
+    public static final int AVATAR  = 0x4;
+
+    protected final Webhook webhook;
+
+    protected String name;
+    protected String channel;
+    protected Icon avatar;
 
     /**
      * Creates a new WebhookManager instance
@@ -43,7 +58,8 @@ public class WebhookManager
      */
     public WebhookManager(Webhook webhook)
     {
-        this.manager = new WebhookManagerUpdatable(webhook);
+        super(webhook.getJDA(), Route.Webhooks.MODIFY_TOKEN_WEBHOOK.compile(webhook.getId(), webhook.getToken()));
+        this.webhook = webhook;
     }
 
     /**
@@ -53,7 +69,7 @@ public class WebhookManager
      */
     public JDA getJDA()
     {
-        return manager.getJDA();
+        return webhook.getJDA();
     }
 
     /**
@@ -65,7 +81,7 @@ public class WebhookManager
      */
     public Guild getGuild()
     {
-        return getWebhook().getGuild();
+        return webhook.getGuild();
     }
 
     /**
@@ -77,7 +93,7 @@ public class WebhookManager
      */
     public TextChannel getChannel()
     {
-        return getWebhook().getChannel();
+        return webhook.getChannel();
     }
 
     /**
@@ -88,7 +104,32 @@ public class WebhookManager
      */
     public Webhook getWebhook()
     {
-        return manager.getWebhook();
+        return webhook;
+    }
+
+    @Override
+    public WebhookManager reset(int fields)
+    {
+        super.reset(fields);
+        //the avatar encoding is expected to have a high memory footprint, so we clear it here
+        if ((fields & AVATAR) == AVATAR)
+            avatar = null;
+        return this;
+    }
+
+    @Override
+    public WebhookManager reset(int... fields)
+    {
+        super.reset(fields);
+        return this;
+    }
+
+    @Override
+    public WebhookManager reset()
+    {
+        super.reset();
+        avatar = null;
+        return this;
     }
 
     /**
@@ -112,9 +153,12 @@ public class WebhookManager
      * @see    net.dv8tion.jda.core.managers.WebhookManagerUpdatable#update()
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setName(String name)
+    public WebhookManager setName(String name)
     {
-        return manager.getNameField().setValue(name).update();
+        Checks.notBlank(name, "Name");
+        this.name = name;
+        set |= NAME;
+        return this;
     }
 
     /**
@@ -135,9 +179,11 @@ public class WebhookManager
      * @see    net.dv8tion.jda.core.managers.WebhookManagerUpdatable#update()
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setAvatar(Icon icon)
+    public WebhookManager setAvatar(Icon icon)
     {
-        return manager.getAvatarField().setValue(icon).update();
+        this.avatar = icon;
+        set |= AVATAR;
+        return this;
     }
 
     /**
@@ -163,9 +209,29 @@ public class WebhookManager
      * @see    net.dv8tion.jda.core.managers.WebhookManagerUpdatable#update()
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setChannel(TextChannel channel)
+    public WebhookManager setChannel(TextChannel channel)
     {
-        return manager.getChannelField().setValue(channel).update();
+        Checks.notNull(channel, "Channel");
+        Checks.check(channel.getGuild().equals(getGuild()), "Channel is not from the same guild");
+        this.channel = channel.getId();
+        set |= CHANNEL;
+        return this;
     }
 
+    @Override
+    protected RequestBody finalizeData()
+    {
+        if (!getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_WEBHOOKS))
+            throw new InsufficientPermissionException(Permission.MANAGE_WEBHOOKS);
+
+        JSONObject data = new JSONObject();
+        if (shouldUpdate(NAME))
+            data.put("name", name);
+        if (shouldUpdate(CHANNEL))
+            data.put("channel_id", channel);
+        if (shouldUpdate(AVATAR))
+            data.put("avatar", avatar == null ? JSONObject.NULL : avatar.getEncoding());
+
+        return RequestBody.create(Requester.MEDIA_TYPE_JSON, data.toString());
+    }
 }

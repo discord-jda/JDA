@@ -157,6 +157,7 @@ public interface PermissionOverride
      *
      * @see    #getManager()
      */
+    @Deprecated
     PermOverrideManagerUpdatable getManagerUpdatable();
 
     /**

@@ -48,6 +48,7 @@ import java.util.Collection;
  * the currently logged in account requires the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS}
  * in the parent {@link net.dv8tion.jda.core.entities.Channel Channel}
  */
+@Deprecated
 public class PermOverrideManagerUpdatable
 {
     protected final PermissionOverride override;

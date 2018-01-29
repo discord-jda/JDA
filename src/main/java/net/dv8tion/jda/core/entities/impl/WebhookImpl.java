@@ -136,6 +136,7 @@ public class WebhookImpl implements Webhook
     }
 
     @Override
+    @Deprecated
     public WebhookManagerUpdatable getManagerUpdatable()
     {
         WebhookManagerUpdatable mng = managerUpdatable;

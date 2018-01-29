@@ -145,6 +145,7 @@ public class PermissionOverrideImpl implements PermissionOverride
     }
 
     @Override
+    @Deprecated
     public PermOverrideManagerUpdatable getManagerUpdatable()
     {
         PermOverrideManagerUpdatable mng = managerUpdatable;
