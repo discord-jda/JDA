@@ -17,14 +17,25 @@
 package net.dv8tion.jda.client.managers;
 
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.impl.EmoteImpl;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.core.managers.impl.ManagerBase;
+import net.dv8tion.jda.core.requests.Requester;
+import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.core.utils.Checks;
+import okhttp3.RequestBody;
+import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * Decoration for a {@link net.dv8tion.jda.client.managers.EmoteManagerUpdatable EmoteManagerUpdatable} instance.
@@ -32,10 +43,15 @@ import java.util.Set;
  *
  * <p>This decoration allows to modify a single field by automatically building an update {@link net.dv8tion.jda.core.requests.RestAction RestAction}
  */
-public class EmoteManager
+public class EmoteManager extends ManagerBase
 {
+    public static final int NAME = 0x1;
+    public static final int ROLES = 0x2;
 
-    protected final EmoteManagerUpdatable updatable;
+    protected final EmoteImpl emote;
+
+    protected final List<String> roles = new LinkedList<>();
+    protected String name;
 
     /**
      * Creates a new EmoteManager instance
@@ -50,7 +66,8 @@ public class EmoteManager
      */
     public EmoteManager(EmoteImpl emote)
     {
-        this.updatable = new EmoteManagerUpdatable(emote);
+        super(emote.getJDA(), Route.Emotes.MODIFY_EMOTE.compile(emote.getGuild().getId(), emote.getId()));
+        this.emote = emote;
     }
 
     /**
@@ -60,7 +77,7 @@ public class EmoteManager
      */
     public JDA getJDA()
     {
-        return updatable.getJDA();
+        return emote.getJDA();
     }
 
     /**
@@ -72,7 +89,7 @@ public class EmoteManager
      */
     public Guild getGuild()
     {
-        return updatable.getGuild();
+        return emote.getGuild();
     }
 
     /**
@@ -83,7 +100,34 @@ public class EmoteManager
      */
     public Emote getEmote()
     {
-        return updatable.getEmote();
+        return emote;
+    }
+
+    @Override
+    @CheckReturnValue
+    public EmoteManager reset(int fields)
+    {
+        super.reset(fields);
+        if ((fields & ROLES) == ROLES)
+            roles.clear();
+        return this;
+    }
+
+    @Override
+    @CheckReturnValue
+    public EmoteManager reset(int... fields)
+    {
+        super.reset(fields);
+        return this;
+    }
+
+    @Override
+    @CheckReturnValue
+    protected EmoteManager reset()
+    {
+        super.reset();
+        roles.clear();
+        return this;
     }
 
     /**
@@ -109,9 +153,13 @@ public class EmoteManager
      * @see    net.dv8tion.jda.client.managers.EmoteManagerUpdatable#update()
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setName(String name)
+    public EmoteManager setName(String name)
     {
-        return updatable.getNameField().setValue(name).update();
+        Checks.notBlank(name, "Name");
+        Checks.check(name.length() >= 2 && name.length() <= 32, "Name must be between 2-32 characters long");
+        this.name = name;
+        set |= NAME;
+        return this;
     }
 
     /**
@@ -136,8 +184,32 @@ public class EmoteManager
      * @see    net.dv8tion.jda.client.managers.EmoteManagerUpdatable#update()
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setRoles(Set<Role> roles)
+    public EmoteManager setRoles(Set<Role> roles)
     {
-        return updatable.getRolesField().setValue(roles).update();
+        Checks.notNull(roles, "Roles");
+        roles.forEach((role) ->
+        {
+            Checks.notNull(role, "Roles");
+            Checks.check(role.getGuild().equals(getGuild()), "Roles must all be from the same guild");
+        });
+        this.roles.clear();
+        roles.stream().map(Role::getId).forEach(this.roles::add);
+        set |= ROLES;
+        return this;
+    }
+
+    @Override
+    protected RequestBody finalizeData()
+    {
+        if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
+            throw new InsufficientPermissionException(Permission.MANAGE_EMOTES);
+
+        JSONObject object = new JSONObject();
+        if (shouldUpdate(NAME))
+            object.put("name", name);
+        if (shouldUpdate(ROLES))
+            object.put("roles", roles);
+        reset();
+        return RequestBody.create(Requester.MEDIA_TYPE_JSON, object.toString());
     }
 }

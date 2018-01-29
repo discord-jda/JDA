@@ -217,6 +217,7 @@ public class RoleImpl implements Role
     }
 
     @Override
+    @Deprecated
     public RoleManagerUpdatable getManagerUpdatable()
     {
         RoleManagerUpdatable mng = managerUpdatable;

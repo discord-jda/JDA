@@ -130,6 +130,7 @@ public class EmoteImpl implements Emote
     }
 
     @Override
+    @Deprecated
     public EmoteManagerUpdatable getManagerUpdatable()
     {
         EmoteManagerUpdatable m = managerUpdatable;

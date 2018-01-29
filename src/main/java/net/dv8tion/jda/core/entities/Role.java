@@ -219,6 +219,7 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      *
      * @return The {@link net.dv8tion.jda.core.managers.RoleManagerUpdatable RoleManagerUpdatable} for this Role
      */
+    @Deprecated
     RoleManagerUpdatable getManagerUpdatable();
 
     /**

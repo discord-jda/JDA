@@ -133,6 +133,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      *
      * @return The EmoteManagerUpdatable for this Emote
      */
+    @Deprecated
     EmoteManagerUpdatable getManagerUpdatable();
 
     /**
