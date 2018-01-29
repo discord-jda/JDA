@@ -100,6 +100,11 @@ public class GuildManager extends ManagerBase
     public GuildManager reset(int fields)
     {
         super.reset(fields);
+        //clear icon fields due to memory intensive footprint
+        if ((fields & ICON) == ICON)
+            icon = null;
+        if ((fields & SPLASH) == SPLASH)
+            splash = null;
         return this;
     }
 
@@ -116,6 +121,8 @@ public class GuildManager extends ManagerBase
     public GuildManager reset()
     {
         super.reset();
+        icon = null;
+        splash = null;
         return this;
     }
 
