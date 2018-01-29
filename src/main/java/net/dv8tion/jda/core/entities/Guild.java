@@ -902,6 +902,7 @@ public interface Guild extends ISnowflake
      *
      * @return The Updatable Manager of this Guild
      */
+    @Deprecated
     GuildManagerUpdatable getManagerUpdatable();
 
     /**

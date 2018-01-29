@@ -30,6 +30,7 @@ import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import java.util.regex.Pattern;
 
 /**
  * Facade for a {@link net.dv8tion.jda.core.managers.ChannelManagerUpdatable ChannelManagerUpdatable} instance.
@@ -39,12 +40,6 @@ import javax.annotation.CheckReturnValue;
  */
 public class ChannelManager extends ManagerBase
 {
-    /*
-       ~ TODO
-
-       - Checking whether we need to perform an update at all
-       - Documentation for bit-flag system
-     */
     public static final int NAME      = 0x1;
     public static final int PARENT    = 0x2;
     public static final int TOPIC     = 0x4;
@@ -52,6 +47,8 @@ public class ChannelManager extends ManagerBase
     public static final int NSFW      = 0x10;
     public static final int USERLIMIT = 0x20;
     public static final int BITRATE   = 0x40;
+
+    protected static final Pattern alphanumeric = Pattern.compile("[0-9a-zA-Z_-]{2,100}");
 
     protected final Channel channel;
 
@@ -75,6 +72,11 @@ public class ChannelManager extends ManagerBase
         super(channel.getJDA(),
               Route.Channels.MODIFY_CHANNEL.compile(channel.getId()));
         this.channel = channel;
+    }
+
+    public ChannelType getType()
+    {
+        return channel.getType();
     }
 
     /**
@@ -135,7 +137,7 @@ public class ChannelManager extends ManagerBase
      * <br>TextChannel names may only be populated with alphanumeric (with underscore and dash).
      *
      * <p><b>Example</b>: {@code mod-only} or {@code generic_name}
-     * <br>Characters will automatically be lowercased by Discord!
+     * <br>Characters will automatically be lowercased by Discord for text channels!
      *
      * @param  name
      *         The new name for the selected {@link net.dv8tion.jda.core.entities.Channel Channel}
@@ -150,6 +152,11 @@ public class ChannelManager extends ManagerBase
     {
         Checks.notBlank(name, "Name");
         Checks.check(name.length() >= 2 && name.length() <= 100, "Name must be between 2-100 characters long");
+        if (getType() == ChannelType.TEXT)
+        {
+            Checks.check(alphanumeric.matcher(name).matches(),
+                "Name must be alphanumeric with underscores and dashes for text channels");
+        }
         this.name = name;
         set |= NAME;
         return this;
@@ -163,10 +170,10 @@ public class ChannelManager extends ManagerBase
      * @param  category
      *         The new parent for the selected {@link net.dv8tion.jda.core.entities.Channel Channel}
      *
+     * @throws IllegalStateException
+     *         If the target is a category itself
      * @throws IllegalArgumentException
      *         If the provided category is not from the same Guild
-     * @throws UnsupportedOperationException
-     *         If the target is a category itself
      *
      * @return ChannelManager for chaining convenience
      *
@@ -177,7 +184,8 @@ public class ChannelManager extends ManagerBase
     {
         if (category != null)
         {
-            Checks.check(channel.getType() != ChannelType.CATEGORY, "Cannot set the parent of a category");
+            if (getType() == ChannelType.CATEGORY)
+                throw new IllegalStateException("Cannot set the parent of a category");
             Checks.check(category.getGuild().equals(getGuild()), "Category is not from the same guild");
         }
         this.parent = category == null ? null : category.getId();
@@ -226,6 +234,8 @@ public class ChannelManager extends ManagerBase
     @CheckReturnValue
     public ChannelManager setTopic(String topic)
     {
+        if (getType() != ChannelType.TEXT)
+            throw new IllegalStateException("Can only set topic on text channels");
         Checks.check(topic == null || topic.length() <= 1024, "Topic must be less or equal to 1024 characters in length");
         this.topic = topic;
         set |= TOPIC;
@@ -248,6 +258,8 @@ public class ChannelManager extends ManagerBase
     @CheckReturnValue
     public ChannelManager setNSFW(boolean nsfw)
     {
+        if (getType() != ChannelType.TEXT)
+            throw new IllegalStateException("Can only set nsfw on text channels");
         this.nsfw = nsfw;
         set |= NSFW;
         return this;
@@ -263,7 +275,7 @@ public class ChannelManager extends ManagerBase
      * @param  userLimit
      *         The new user-limit for the selected {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
      *
-     * @throws UnsupportedOperationException
+     * @throws IllegalStateException
      *         If the selected {@link net.dv8tion.jda.core.entities.Channel Channel}'s type is not {@link net.dv8tion.jda.core.entities.ChannelType#VOICE VOICE}
      * @throws IllegalArgumentException
      *         If the provided user-limit is negative or greater than {@code 99}
@@ -273,6 +285,8 @@ public class ChannelManager extends ManagerBase
     @CheckReturnValue
     public ChannelManager setUserLimit(int userLimit)
     {
+        if (getType() != ChannelType.VOICE)
+            throw new IllegalStateException("Can only set userlimit on voice channels");
         Checks.notNegative(userLimit, "Userlimit");
         Checks.check(userLimit <= 99, "Userlimit may not be greater than 99");
         this.userlimit = userLimit;
@@ -291,7 +305,7 @@ public class ChannelManager extends ManagerBase
      * @param  bitrate
      *         The new bitrate for the selected {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
      *
-     * @throws UnsupportedOperationException
+     * @throws IllegalStateException
      *         If the selected {@link net.dv8tion.jda.core.entities.Channel Channel}'s type is not {@link net.dv8tion.jda.core.entities.ChannelType#VOICE VOICE}
      * @throws IllegalArgumentException
      *         If the provided bitrate is not between 8000-96000 (or 128000 for VIP Guilds)
@@ -303,6 +317,8 @@ public class ChannelManager extends ManagerBase
     @CheckReturnValue
     public ChannelManager setBitrate(int bitrate)
     {
+        if (getType() != ChannelType.VOICE)
+            throw new IllegalStateException("Can only set bitrate on voice channels");
         final int maxBitrate = getGuild().getFeatures().contains("VIP_REGIONS") ? 128000 : 96000;
         Checks.check(bitrate >= 8000, "Bitrate must be greater or equal to 8000");
         Checks.check(bitrate <= maxBitrate, "Bitrate must be less or equal to %s", maxBitrate);

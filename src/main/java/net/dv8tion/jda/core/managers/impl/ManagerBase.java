@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
 import java.util.function.Consumer;
@@ -49,6 +50,7 @@ public abstract class ManagerBase extends AuditableRestAction<Void>
 
     public ManagerBase reset(int... fields)
     {
+        Checks.notNull(fields, "Fields");
         int sum = 0;
         for (int i : fields)
             sum |= i;

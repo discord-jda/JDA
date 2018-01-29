@@ -51,6 +51,7 @@ import javax.annotation.CheckReturnValue;
  *
  * <p><b>To use moderation abilities like creating Roles or banning Members use {@link net.dv8tion.jda.core.managers.GuildController GuildController}</b>
  */
+@Deprecated
 public class GuildManagerUpdatable
 {    
     protected final Guild guild;

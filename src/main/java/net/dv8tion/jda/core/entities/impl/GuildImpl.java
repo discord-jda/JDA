@@ -412,6 +412,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    @Deprecated
     public GuildManagerUpdatable getManagerUpdatable()
     {
         GuildManagerUpdatable mng = managerUpdatable;
