@@ -23,9 +23,9 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.requests.RestAction;
 
+import javax.annotation.CheckReturnValue;
 import java.util.Collection;
 import java.util.List;
-import javax.annotation.CheckReturnValue;
 
 /** 
  * Represents a Discord Application from its owning client point of view
@@ -153,6 +153,7 @@ public interface Application extends ISnowflake
      *
      * @see    #getManager()
      */
+    @Deprecated
     ApplicationManagerUpdatable getManagerUpdatable();
 
     /**

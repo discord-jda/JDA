@@ -164,6 +164,7 @@ public class ApplicationImpl implements Application
     }
 
     @Override
+    @Deprecated
     public ApplicationManagerUpdatable getManagerUpdatable()
     {
         ApplicationManagerUpdatable mng = managerUpdatable;

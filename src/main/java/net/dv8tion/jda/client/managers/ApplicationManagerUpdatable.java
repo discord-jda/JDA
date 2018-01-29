@@ -28,11 +28,11 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
+import javax.annotation.CheckReturnValue;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
-import javax.annotation.CheckReturnValue;
 
 /**
  * An {@link #update() updatable} manager that allows
@@ -48,6 +48,7 @@ import javax.annotation.CheckReturnValue;
  * @since  3.0
  * @author Aljoscha Grebe
  */
+@Deprecated
 public class ApplicationManagerUpdatable
 {
     public final static Pattern URL_PATTERN = Pattern.compile("\\s*https?://.+\\..{2,}\\s*",

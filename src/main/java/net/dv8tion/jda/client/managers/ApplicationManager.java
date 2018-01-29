@@ -18,12 +18,17 @@ package net.dv8tion.jda.client.managers;
 
 import net.dv8tion.jda.client.entities.Application;
 import net.dv8tion.jda.client.entities.impl.ApplicationImpl;
-import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Icon;
-import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.managers.impl.ManagerBase;
+import net.dv8tion.jda.core.requests.Requester;
+import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.utils.Checks;
+import okhttp3.RequestBody;
+import org.json.JSONObject;
 
-import java.util.List;
 import javax.annotation.CheckReturnValue;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Facade for an {@link net.dv8tion.jda.client.managers.ApplicationManagerUpdatable ApplicationManagerUpdatable} instance.
@@ -34,13 +39,28 @@ import javax.annotation.CheckReturnValue;
  * @since  3.0
  * @author Aljoscha Grebe
  */
-public class ApplicationManager
+public class ApplicationManager extends ManagerBase
 {
-    private final ApplicationManagerUpdatable updatable;
+    public static final int DESCRIPTION  = 0x1;
+    public static final int ICON         = 0x2;
+    public static final int NAME         = 0x4;
+    public static final int REDIRECT_URI = 0x8;
+    public static final int PUBLIC       = 0x10;
+    public static final int CODE_GRANT   = 0x20;
+
+    protected final ApplicationImpl application;
+
+    protected final List<String> redirectUris = new LinkedList<>();
+    protected String name;
+    protected String description;
+    protected Icon icon;
+    protected boolean isPublic;
+    protected boolean isCodeGrant;
 
     public ApplicationManager(final ApplicationImpl application)
     {
-        this.updatable = new ApplicationManagerUpdatable(application);
+        super(application.getJDA(), Route.Applications.MODIFY_APPLICATION.compile(application.getId()));
+        this.application = application;
     }
 
     /**
@@ -51,17 +71,34 @@ public class ApplicationManager
      */
     public Application getApplication()
     {
-        return this.updatable.getApplication();
+        return application;
     }
 
-    /**
-     * The {@link net.dv8tion.jda.core.JDA JDA} instance of this Manager
-     *
-     * @return the corresponding JDA instance
-     */
-    public JDA getJDA()
+    @Override
+    @CheckReturnValue
+    public ApplicationManager reset(int fields)
     {
-        return this.updatable.getJDA();
+        super.reset(fields);
+        if ((fields & ICON) == ICON)
+            icon = null;
+        return this;
+    }
+
+    @Override
+    @CheckReturnValue
+    public ApplicationManager reset(int... fields)
+    {
+        super.reset(fields);
+        return this;
+    }
+
+    @Override
+    @CheckReturnValue
+    public ApplicationManager reset()
+    {
+        super.reset();
+        icon = null;
+        return this;
     }
 
     /**
@@ -83,9 +120,12 @@ public class ApplicationManager
      * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#update()
      */
     @CheckReturnValue
-    public RestAction<Void> setDescription(final String description)
+    public ApplicationManager setDescription(final String description)
     {
-        return this.updatable.getDescriptionField().setValue(description).update();
+        Checks.check(description == null || description.length() <= 400, "Description must be less or equal to 400 characters in length");
+        this.description = description;
+        set |= DESCRIPTION;
+        return this;
     }
 
     /**
@@ -102,9 +142,11 @@ public class ApplicationManager
      * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#update()
      */
     @CheckReturnValue
-    public RestAction<Void> setDoesBotRequireCodeGrant(final boolean requireCodeGrant)
+    public ApplicationManager setDoesBotRequireCodeGrant(final boolean requireCodeGrant)
     {
-        return this.updatable.getDoesBotRequireCodeGrantField().setValue(requireCodeGrant).update();
+        this.isCodeGrant = requireCodeGrant;
+        set |= CODE_GRANT;
+        return this;
     }
 
     /**
@@ -122,9 +164,11 @@ public class ApplicationManager
      * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#update()
      */
     @CheckReturnValue
-    public RestAction<Void> setIcon(final Icon icon)
+    public ApplicationManager setIcon(final Icon icon)
     {
-        return this.updatable.getIconField().setValue(icon).update();
+        this.icon = icon;
+        set |= ICON;
+        return this;
     }
 
     /**
@@ -141,9 +185,11 @@ public class ApplicationManager
      * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#update()
      */
     @CheckReturnValue
-    public RestAction<Void> setIsBotPublic(final boolean botPublic)
+    public ApplicationManager setIsBotPublic(final boolean botPublic)
     {
-        return this.updatable.getIsBotPublicField().setValue(botPublic).update();
+        this.isPublic = botPublic;
+        set |= PUBLIC;
+        return this;
     }
 
     /**
@@ -165,9 +211,13 @@ public class ApplicationManager
      * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#update()
      */
     @CheckReturnValue
-    public RestAction<Void> setName(final String name)
+    public ApplicationManager setName(final String name)
     {
-        return this.updatable.getNameField().setValue(name).update();
+        Checks.notBlank(name, "Name");
+        Checks.check(name.length() >= 2 && name.length() <= 32, "Name must be between 2-32 characters long");
+        this.name = name;
+        set |= NAME;
+        return this;
     }
 
     /**
@@ -190,8 +240,45 @@ public class ApplicationManager
      * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#update()
      */
     @CheckReturnValue
-    public RestAction<Void> setRedirectUris(final List<String> redirectUris)
+    public ApplicationManager setRedirectUris(final List<String> redirectUris)
     {
-        return this.updatable.getRedirectUrisField().setValue(redirectUris).update();
+        Checks.noneNull(redirectUris, "Redirects");
+        this.redirectUris.clear();
+        this.redirectUris.addAll(redirectUris);
+        set |= REDIRECT_URI;
+        return this;
+    }
+
+    @Override
+    protected RequestBody finalizeData()
+    {
+        JSONObject body = new JSONObject();
+
+        body.put("description", shouldUpdate(DESCRIPTION)
+            ? opt(description)
+            : application.getDescription());
+
+        body.put("bot_require_code_grant", shouldUpdate(CODE_GRANT)
+            ? isCodeGrant
+            : application.doesBotRequireCodeGrant());
+
+        body.put("icon", shouldUpdate(ICON)
+            ? (icon == null ? JSONObject.NULL : icon.getEncoding())
+            : application.getIconUrl());
+
+        body.put("bot_public", shouldUpdate(PUBLIC)
+            ? isPublic
+            : application.isBotPublic());
+
+        body.put("name", shouldUpdate(NAME)
+            ? name
+            : application.getName());
+
+        body.put("redirect_uris", shouldUpdate(REDIRECT_URI)
+            ? redirectUris
+            : application.getRedirectUris());
+
+        reset();
+        return RequestBody.create(Requester.MEDIA_TYPE_JSON, body.toString());
     }
 }
