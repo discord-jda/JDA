@@ -33,14 +33,6 @@ import java.util.List;
 public interface Channel extends ISnowflake
 {
     /**
-     * Returns the {@link net.dv8tion.jda.core.managers.ChannelManager ChannelManager} for this Channel.
-     * <br>In the ChannelManager, you can modify the name, topic and position of this Channel.
-     *
-     * @return The ChannelManager of this Channel
-     */
-    ChannelManager getManager();
-
-    /**
      * The {@link net.dv8tion.jda.core.entities.ChannelType ChannelType} for this Channel
      *
      * @return The channel type
@@ -242,6 +234,14 @@ public interface Channel extends ISnowflake
     {
         return createCopy(getGuild());
     }
+
+    /**
+     * Returns the {@link net.dv8tion.jda.core.managers.ChannelManager ChannelManager} for this Channel.
+     * <br>In the ChannelManager, you can modify the name, topic and position of this Channel.
+     *
+     * @return The ChannelManager of this Channel
+     */
+    ChannelManager getManager();
 
     /**
      * Returns the {@link net.dv8tion.jda.core.managers.ChannelManagerUpdatable ChannelManagerUpdatable} for this Channel.
