@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.core.managers;
 
-import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.Guild;
@@ -66,16 +65,6 @@ public class PermOverrideManager extends ManagerBase
         this.override = override;
         this.allowed = override.getAllowedRaw();
         this.denied = override.getDeniedRaw();
-    }
-
-    /**
-     * The {@link net.dv8tion.jda.core.JDA JDA} instance of this Manager
-     *
-     * @return the corresponding JDA instance
-     */
-    public JDA getJDA()
-    {
-        return override.getJDA();
     }
 
     /**

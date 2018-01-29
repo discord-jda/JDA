@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.core.managers;
 
-import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Icon;
@@ -60,16 +59,6 @@ public class WebhookManager extends ManagerBase
     {
         super(webhook.getJDA(), Route.Webhooks.MODIFY_TOKEN_WEBHOOK.compile(webhook.getId(), webhook.getToken()));
         this.webhook = webhook;
-    }
-
-    /**
-     * The {@link net.dv8tion.jda.core.JDA JDA} instance of this Manager
-     *
-     * @return the corresponding JDA instance
-     */
-    public JDA getJDA()
-    {
-        return webhook.getJDA();
     }
 
     /**

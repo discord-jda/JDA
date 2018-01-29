@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.core.managers;
 
-import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.Guild;
@@ -72,16 +71,6 @@ public class GuildManager extends ManagerBase
     {
         super(guild.getJDA(), Route.Guilds.MODIFY_GUILD.compile(guild.getId()));
         this.guild = guild;
-    }
-
-    /**
-     * The {@link net.dv8tion.jda.core.JDA JDA} instance of this Manager
-     *
-     * @return the corresponding JDA instance
-     */
-    public JDA getJDA()
-    {
-        return guild.getJDA();
     }
 
     /**

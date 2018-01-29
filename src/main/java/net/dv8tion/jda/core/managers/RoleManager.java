@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.core.managers;
 
-import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
@@ -26,7 +25,6 @@ import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.impl.ManagerBase;
 import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.requests.Route;
-import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 import okhttp3.RequestBody;
@@ -70,16 +68,6 @@ public class RoleManager extends ManagerBase
     {
         super(role.getJDA(), Route.Roles.MODIFY_ROLE.compile(role.getGuild().getId(), role.getId()));
         this.role = role;
-    }
-
-    /**
-     * The {@link net.dv8tion.jda.core.JDA JDA} instance of this Manager
-     *
-     * @return the corresponding JDA instance
-     */
-    public JDA getJDA()
-    {
-        return role.getJDA();
     }
 
     /**
