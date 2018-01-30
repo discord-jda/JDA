@@ -132,6 +132,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     }
 
     @Override
+    @Deprecated
     public AccountManagerUpdatable getManagerUpdatable()
     {
         AccountManagerUpdatable mng = managerUpdatable;

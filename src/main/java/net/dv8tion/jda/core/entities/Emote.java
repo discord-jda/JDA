@@ -110,8 +110,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
     /**
      * The {@link net.dv8tion.jda.client.managers.EmoteManager Manager} for this emote, used to modify
      * properties of the emote like name and role restrictions.
-     *
-     * <p>This will only work for {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}.
+     * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.core.requests.RestAction#queue() RestAction.queue()}.
      *
      * @throws IllegalStateException
      *         if this emote is fake
@@ -132,6 +131,9 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      *         if this emote is fake
      *
      * @return The EmoteManagerUpdatable for this Emote
+     *
+     * @deprecated
+     *         Use {@link #getManager()} instead
      */
     @Deprecated
     EmoteManagerUpdatable getManagerUpdatable();

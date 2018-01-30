@@ -31,16 +31,28 @@ import org.json.JSONObject;
 import javax.annotation.CheckReturnValue;
 
 /**
- * Facade for an {@link net.dv8tion.jda.core.managers.AccountManagerUpdatable AccountManagerUpdatable} instance.
- * <br>Simplifies managing flow for convenience.
+ * Manager providing functionality to update one or more fields for the logged in account.
  *
- * <p>This decoration allows to modify a single field by automatically building an update {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+ * <p><b>Example</b>
+ * <pre>{@code
+ * manager.setName("Minn")
+ *        .setAvatar(null)
+ *        .queue();
+ * manager.reset(AccountManager.NAME | AccountManager.AVATAR)
+ *        .setName("DV8FromTheWorld")
+ *        .setAvatar(icon)
+ *        .queue();
+ * }</pre>
  */
 public class AccountManager extends ManagerBase
 {
+    /** Used to reset the name field */
     public static final int NAME = 0x1;
+    /** Used to reset the avatar field */
     public static final int AVATAR = 0x2;
+    /** Used to reset the email field */
     public static final int EMAIL = 0x4;
+    /** Used to reset the password field */
     public static final int PASSWORD = 0x8;
 
     protected final SelfUser selfUser;
@@ -76,7 +88,26 @@ public class AccountManager extends ManagerBase
         return selfUser;
     }
 
+    /**
+     * Resets the fields specified by the provided bit-flag pattern.
+     * You can specify a combination by using a bitwise OR concat of the flag constants.
+     * <br>Example: {@code manager.reset(AccountManager.NAME | AccountManager.AVATAR);}
+     *
+     * <p><b>Flag Constants:</b>
+     * <ul>
+     *     <li>{@link #NAME}</li>
+     *     <li>{@link #AVATAR}</li>
+     *     <li>{@link #EMAIL}</li>
+     *     <li>{@link #PASSWORD}</li>
+     * </ul>
+     *
+     * @param  fields
+     *         Integer value containing the flags to reset.
+     *
+     * @return AccountManager for chaining convenience
+     */
     @Override
+    @CheckReturnValue
     public AccountManager reset(int fields)
     {
         super.reset(fields);
@@ -85,14 +116,39 @@ public class AccountManager extends ManagerBase
         return this;
     }
 
+    /**
+     * Resets the fields specified by the provided bit-flag patterns.
+     * You can specify a combination by using a bitwise OR concat of the flag constants.
+     * <br>Example: {@code manager.reset(AccountManager.NAME, AccountManager.AVATAR);}
+     *
+     * <p><b>Flag Constants:</b>
+     * <ul>
+     *     <li>{@link #NAME}</li>
+     *     <li>{@link #AVATAR}</li>
+     *     <li>{@link #EMAIL}</li>
+     *     <li>{@link #PASSWORD}</li>
+     * </ul>
+     *
+     * @param  fields
+     *         Integer values containing the flags to reset.
+     *
+     * @return AccountManager for chaining convenience
+     */
     @Override
+    @CheckReturnValue
     public AccountManager reset(int... fields)
     {
         super.reset(fields);
         return this;
     }
 
+    /**
+     * Resets all fields for this manager.
+     *
+     * @return AccountManager for chaining convenience
+     */
     @Override
+    @CheckReturnValue
     public AccountManager reset()
     {
         super.reset();
@@ -102,7 +158,6 @@ public class AccountManager extends ManagerBase
 
     /**
      * Sets the username for the currently logged in account
-     * <br>More information can be found {@link AccountManagerUpdatable#getNameField() here}!
      *
      * <p><b>Client-Accounts ({@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}) require the
      * current password to be updated. See {@link #setName(String, String)}</b>
@@ -117,9 +172,7 @@ public class AccountManager extends ManagerBase
      *             <li>Less than {@code 2} or more than {@code 32} characters in length</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
-     *         The update RestAction that will set the provided name.
-     *         <br>See {@link net.dv8tion.jda.core.managers.AccountManagerUpdatable#update(String) #update()} for more information
+     * @return AccountManager for chaining convenience
      */
     @CheckReturnValue
     public AccountManager setName(String name)
@@ -163,7 +216,6 @@ public class AccountManager extends ManagerBase
 
     /**
      * Sets the avatar for the currently logged in account
-     * <br>More information can be found {@link AccountManagerUpdatable#getAvatarField() here}!
      *
      * <p><b>Client-Accounts ({@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}) require the
      * current password to be updated. See {@link #setAvatar(net.dv8tion.jda.core.entities.Icon, String) #setAvatar(Icon, String)}</b>
@@ -172,9 +224,7 @@ public class AccountManager extends ManagerBase
      *         An {@link net.dv8tion.jda.core.entities.Icon Icon} instance representing
      *         the new Avatar for the current account, {@code null} to reset the avatar to the default avatar.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
-     *         The update RestAction that will set the provided icon as the new avatar or reset the avatar.
-     *         <br>See {@link net.dv8tion.jda.core.managers.AccountManagerUpdatable#update(String) #update()} for more information
+     * @return AccountManager for chaining convenience
      */
     @CheckReturnValue
     public AccountManager setAvatar(Icon avatar)
@@ -184,7 +234,6 @@ public class AccountManager extends ManagerBase
 
     /**
      * Sets the avatar for the currently logged in account
-     * <br>More information can be found {@link AccountManagerUpdatable#getAvatarField() here}!
      *
      * @param  avatar
      *         An {@link net.dv8tion.jda.core.entities.Icon Icon} instance representing
@@ -197,9 +246,7 @@ public class AccountManager extends ManagerBase
      *         If the provided {@code currentPassword} is {@code null} or empty and the currently
      *         logged in account is from {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
-     *         The update RestAction that will set the provided icon as the new avatar or reset the avatar.
-     *         <br>See {@link net.dv8tion.jda.core.managers.AccountManagerUpdatable#update(String) #update()} for more information
+     * @return AccountManager for chaining convenience
      */
     @CheckReturnValue
     public AccountManager setAvatar(Icon avatar, String currentPassword)
@@ -212,7 +259,6 @@ public class AccountManager extends ManagerBase
 
     /**
      * Sets the email for the currently logged in client account.
-     * <br>More information can be found {@link AccountManagerUpdatable#getEmailField() here}!
      *
      * @param  email
      *         The new email
@@ -227,9 +273,7 @@ public class AccountManager extends ManagerBase
      *             <li>If the provided {@code email} is not valid.</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
-     *         The update RestAction that will set the provided email.
-     *         <br>See {@link net.dv8tion.jda.core.managers.AccountManagerUpdatable#update(String) #update()} for more information
+     * @return AccountManager for chaining convenience
      */
     @CheckReturnValue
     public AccountManager setEmail(String email, String currentPassword)
@@ -244,7 +288,6 @@ public class AccountManager extends ManagerBase
     /**
      * Sets the password for the currently logged in client account.
      * <br>If the new password is equal to the current password this does nothing.
-     * <br>More information can be found {@link AccountManagerUpdatable#getPasswordField() here}!
      *
      * @param  newPassword
      *         The new password for the currently logged in account
@@ -256,9 +299,7 @@ public class AccountManager extends ManagerBase
      * @throws IllegalArgumentException
      *         If any of the provided passwords are {@code null} or empty
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
-     *         The update RestAction that will set the provided email.
-     *         <br>See {@link net.dv8tion.jda.core.managers.AccountManagerUpdatable#update(String) #update()} for more information
+     * @return AccountManager for chaining convenience
      */
     @CheckReturnValue
     public AccountManager setPassword(String newPassword, String currentPassword)

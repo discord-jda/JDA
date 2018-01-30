@@ -32,17 +32,27 @@ import javax.annotation.CheckReturnValue;
 import java.util.Collection;
 
 /**
- * Facade for a {@link net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable PermOverrideManagerUpdatable} instance.
- * <br>Simplifies managing flow for convenience.
+ * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}.
  *
- * <p>This decoration allows to modify a single field by automatically building an update {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+ * <p><b>Example</b>
+ * <pre>{@code
+ * manager.setDenied(Permission.MESSAGE_WRITE)
+ *        .setAllowed(Permission.MESSAGE_READ)
+ *        .queue();
+ * manager.reset(PermOverrideManager.DENIED | PermOverrideManager.ALLOWED)
+ *        .grant(Permission.MESSAGE_WRITE)
+ *        .clear(Permission.MESSAGE_MANAGE)
+ *        .queue();
+ * }</pre>
  */
 public class PermOverrideManager extends ManagerBase
 {
+    /** Used to reset the denied field */
     public static final int DENIED      = 0x1;
+    /** Used to reset the granted field */
     public static final int ALLOWED     = 0x2;
     /** Used to reset <b>all</b> permissions to their original value */
-    public static final int PERMISSIONS = 0x3; // both
+    public static final int PERMISSIONS = 0x3;
 
     protected final PermissionOverride override;
 
@@ -102,6 +112,23 @@ public class PermOverrideManager extends ManagerBase
         return override;
     }
 
+    /**
+     * Resets the fields specified by the provided bit-flag pattern.
+     * You can specify a combination by using a bitwise OR concat of the flag constants.
+     * <br>Example: {@code manager.reset(PermOverrideManager.ALLOWED | PermOverrideManager.DENIED);}
+     *
+     * <p><b>Flag Constants:</b>
+     * <ul>
+     *     <li>{@link #DENIED}</li>
+     *     <li>{@link #ALLOWED}</li>
+     *     <li>{@link #PERMISSIONS}</li>
+     * </ul>
+     *
+     * @param  fields
+     *         Integer value containing the flags to reset.
+     *
+     * @return PermOverrideManager for chaining convenience
+     */
     @Override
     @CheckReturnValue
     public PermOverrideManager reset(int fields)
@@ -114,6 +141,23 @@ public class PermOverrideManager extends ManagerBase
         return this;
     }
 
+    /**
+     * Resets the fields specified by the provided bit-flag patterns.
+     * You can specify a combination by using a bitwise OR concat of the flag constants.
+     * <br>Example: {@code manager.reset(PermOverrideManager.ALLOWED, PermOverrideManager.DENIED);}
+     *
+     * <p><b>Flag Constants:</b>
+     * <ul>
+     *     <li>{@link #DENIED}</li>
+     *     <li>{@link #ALLOWED}</li>
+     *     <li>{@link #PERMISSIONS}</li>
+     * </ul>
+     *
+     * @param  fields
+     *         Integer values containing the flags to reset.
+     *
+     * @return PermOverrideManager for chaining convenience
+     */
     @Override
     @CheckReturnValue
     public PermOverrideManager reset(int... fields)
@@ -122,6 +166,11 @@ public class PermOverrideManager extends ManagerBase
         return this;
     }
 
+    /**
+     * Resets all fields for this manager.
+     *
+     * @return PermOverrideManager for chaining convenience
+     */
     @Override
     @CheckReturnValue
     public PermOverrideManager reset()

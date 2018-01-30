@@ -37,17 +37,30 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Facade for a {@link net.dv8tion.jda.core.managers.RoleManagerUpdatable RoleManagerUpdatable} instance.
- * <br>Simplifies managing flow for convenience.
+ * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.core.entities.Role Role}.
  *
- * <p>This decoration allows to modify a single field by automatically building an update {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+ * <p><b>Example</b>
+ * <pre>{@code
+ * manager.setName("Administrator")
+ *        .setColor(null)
+ *        .queue();
+ * manager.reset(RoleManager.PERMISSION | RoleManager.NAME)
+ *        .setName("Traitor")
+ *        .setColor(Color.RED)
+ *        .queue();
+ * }</pre>
  */
 public class RoleManager extends ManagerBase
 {
+    /** Used to reset the name field */
     public static final int NAME        = 0x1;
+    /** Used to reset the color field */
     public static final int COLOR       = 0x2;
+    /** Used to reset the permission field */
     public static final int PERMISSION  = 0x4;
+    /** Used to reset the hoisted field */
     public static final int HOIST       = 0x8;
+    /** Used to reset the mentionable field */
     public static final int MENTIONABLE = 0x10;
 
     protected final Role role;
@@ -93,6 +106,25 @@ public class RoleManager extends ManagerBase
         return role;
     }
 
+    /**
+     * Resets the fields specified by the provided bit-flag pattern.
+     * You can specify a combination by using a bitwise OR concat of the flag constants.
+     * <br>Example: {@code manager.reset(RoleManager.COLOR | RoleManager.NAME);}
+     *
+     * <p><b>Flag Constants:</b>
+     * <ul>
+     *     <li>{@link #NAME}</li>
+     *     <li>{@link #COLOR}</li>
+     *     <li>{@link #PERMISSION}</li>
+     *     <li>{@link #HOIST}</li>
+     *     <li>{@link #MENTIONABLE}</li>
+     * </ul>
+     *
+     * @param  fields
+     *         Integer value containing the flags to reset.
+     *
+     * @return RoleManager for chaining convenience
+     */
     @Override
     @CheckReturnValue
     public RoleManager reset(int fields)
@@ -103,6 +135,25 @@ public class RoleManager extends ManagerBase
         return this;
     }
 
+    /**
+     * Resets the fields specified by the provided bit-flag patterns.
+     * You can specify a combination by using a bitwise OR concat of the flag constants.
+     * <br>Example: {@code manager.reset(RoleManager.COLOR, RoleManager.NAME);}
+     *
+     * <p><b>Flag Constants:</b>
+     * <ul>
+     *     <li>{@link #NAME}</li>
+     *     <li>{@link #COLOR}</li>
+     *     <li>{@link #PERMISSION}</li>
+     *     <li>{@link #HOIST}</li>
+     *     <li>{@link #MENTIONABLE}</li>
+     * </ul>
+     *
+     * @param  fields
+     *         Integer values containing the flags to reset.
+     *
+     * @return RoleManager for chaining convenience
+     */
     @Override
     @CheckReturnValue
     public RoleManager reset(int... fields)
@@ -111,6 +162,11 @@ public class RoleManager extends ManagerBase
         return this;
     }
 
+    /**
+     * Resets all fields for this manager.
+     *
+     * @return RoleManager for chaining convenience
+     */
     @Override
     @CheckReturnValue
     public RoleManager reset()
@@ -122,26 +178,16 @@ public class RoleManager extends ManagerBase
 
     /**
      * Sets the <b><u>name</u></b> of the selected {@link net.dv8tion.jda.core.entities.Role Role}.
-     * <br>Wraps {@link RoleManagerUpdatable#getNameField()}
      *
      * <p>A role name <b>must not</b> be {@code null} nor less than 1 characters or more than 32 characters long!
      *
      * @param  name
      *         The new name for the selected {@link net.dv8tion.jda.core.entities.Role Role}
      *
-     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES}
-     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
-     *         If the currently logged in account does not meet the required hierarchy position
-     *         to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
      * @throws IllegalArgumentException
      *         If the provided name is {@code null} or not between 1-32 characters long
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link RoleManagerUpdatable#update() #update()}
-     *
-     * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#getNameField()
-     * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#update()
+     * @return RoleManager for chaining convenience
      */
     @CheckReturnValue
     public RoleManager setName(String name)
@@ -155,7 +201,6 @@ public class RoleManager extends ManagerBase
 
     /**
      * Sets the {@link net.dv8tion.jda.core.Permission Permissions} of the selected {@link net.dv8tion.jda.core.entities.Role Role}.
-     * <br>Wraps {@link net.dv8tion.jda.core.managers.fields.PermissionField#setValue(Long) RoleManagerUpdatable#getPermissionField().setValue(Long)}
      *
      * <p>Permissions may only include already present Permissions for the currently logged in account.
      * <br>You are unable to give permissions you don't have!
@@ -164,17 +209,10 @@ public class RoleManager extends ManagerBase
      *         The new raw permission value for the selected {@link net.dv8tion.jda.core.entities.Role Role}
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES}
-     *         <br>or does not have permission to apply one of the specified permissions
-     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
-     *         If the currently logged in account does not meet the required hierarchy position
-     *         to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
+     *         If the currently logged in account does not have permission to apply one of the specified permissions
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link RoleManagerUpdatable#update() #update()}
+     * @return RoleManager for chaining convenience
      *
-     * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#getPermissionField()
-     * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#update()
      * @see    #setPermissions(Collection)
      * @see    #setPermissions(Permission...)
      */
@@ -205,19 +243,12 @@ public class RoleManager extends ManagerBase
      *         The new permission for the selected {@link net.dv8tion.jda.core.entities.Role Role}
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES}
-     *         <br>or does not have permission to apply one of the specified permissions
-     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
-     *         If the currently logged in account does not meet the required hierarchy position
-     *         to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
+     *         If the currently logged in account does not have permission to apply one of the specified permissions
      * @throws java.lang.IllegalArgumentException
      *         If any of the provided values is {@code null}
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link RoleManagerUpdatable#update() #update()}
+     * @return RoleManager for chaining convenience
      *
-     * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#getPermissionField()
-     * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#update()
      * @see    #setPermissions(Collection)
      * @see    #setPermissions(long)
      */
@@ -230,7 +261,6 @@ public class RoleManager extends ManagerBase
 
     /**
      * Sets the {@link net.dv8tion.jda.core.Permission Permissions} of the selected {@link net.dv8tion.jda.core.entities.Role Role}.
-     * <br>Wraps {@link net.dv8tion.jda.core.managers.fields.PermissionField#setPermissions(Collection) RoleManagerUpdatable#getPermissionField().setPermissions(Collection)}
      *
      * <p>Permissions may only include already present Permissions for the currently logged in account.
      * <br>You are unable to give permissions you don't have!
@@ -239,19 +269,12 @@ public class RoleManager extends ManagerBase
      *         The new permission for the selected {@link net.dv8tion.jda.core.entities.Role Role}
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES}
-     *         <br>or does not have permission to apply one of the specified permissions
-     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
-     *         If the currently logged in account does not meet the required hierarchy position
-     *         to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
+     *         If the currently logged in account does not have permission to apply one of the specified permissions
      * @throws java.lang.IllegalArgumentException
      *         If any of the provided values is {@code null}
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link RoleManagerUpdatable#update() #update()}
+     * @return RoleManager for chaining convenience
      *
-     * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#getPermissionField()
-     * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#update()
      * @see    #setPermissions(Permission...)
      * @see    #setPermissions(long)
      */
@@ -264,22 +287,11 @@ public class RoleManager extends ManagerBase
 
     /**
      * Sets the {@link java.awt.Color Color} of the selected {@link net.dv8tion.jda.core.entities.Role Role}.
-     * <br>Wraps {@link RoleManagerUpdatable#getColorField()}
      *
      * @param  color
      *         The new color for the selected {@link net.dv8tion.jda.core.entities.Role Role}
      *
-     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES}
-     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
-     *         If the currently logged in account does not meet the required hierarchy position
-     *         to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
-     *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link RoleManagerUpdatable#update() #update()}
-     *
-     * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#getColorField()
-     * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#update()
+     * @return RoleManager for chaining convenience
      */
     @CheckReturnValue
     public RoleManager setColor(Color color)
@@ -291,22 +303,11 @@ public class RoleManager extends ManagerBase
 
     /**
      * Sets the <b><u>hoist state</u></b> of the selected {@link net.dv8tion.jda.core.entities.Role Role}.
-     * <br>Wraps {@link RoleManagerUpdatable#getHoistedField()}
      *
      * @param  hoisted
      *         Whether the selected {@link net.dv8tion.jda.core.entities.Role Role} should be hoisted
      *
-     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES}
-     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
-     *         If the currently logged in account does not meet the required hierarchy position
-     *         to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
-     *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link RoleManagerUpdatable#update() #update()}
-     *
-     * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#getHoistedField()
-     * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#update()
+     * @return RoleManager for chaining convenience
      */
     @CheckReturnValue
     public RoleManager setHoisted(boolean hoisted)
@@ -318,22 +319,11 @@ public class RoleManager extends ManagerBase
 
     /**
      * Sets the <b><u>mentionable state</u></b> of the selected {@link net.dv8tion.jda.core.entities.Role Role}.
-     * <br>Wraps {@link RoleManagerUpdatable#getMentionableField()}
      *
      * @param  mentionable
      *         Whether the selected {@link net.dv8tion.jda.core.entities.Role Role} should be mentionable
      *
-     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES}
-     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
-     *         If the currently logged in account does not meet the required hierarchy position
-     *         to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
-     *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link RoleManagerUpdatable#update() #update()}
-     *
-     * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#getMentionableField()
-     * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#update()
+     * @return RoleManager for chaining convenience
      */
     @CheckReturnValue
     public RoleManager setMentionable(boolean mentionable)
@@ -345,7 +335,6 @@ public class RoleManager extends ManagerBase
 
     /**
      * Adds the specified {@link net.dv8tion.jda.core.Permission Permissions} to the selected {@link net.dv8tion.jda.core.entities.Role Role}.
-     * <br>Wraps {@link net.dv8tion.jda.core.managers.fields.PermissionField#givePermissions(Permission...) RoleManagerUpdatable#getPermissionField().givePermissions(Permission...)}
      *
      * <p>Permissions may only include already present Permissions for the currently logged in account.
      * <br>You are unable to give permissions you don't have!
@@ -354,17 +343,10 @@ public class RoleManager extends ManagerBase
      *         The permission to give to the selected {@link net.dv8tion.jda.core.entities.Role Role}
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES}
-     *         <br>or does not have permission to apply one of the specified permissions
-     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
-     *         If the currently logged in account does not meet the required hierarchy position
-     *         to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
+     *         If the currently logged in account does not have permission to apply one of the specified permissions
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link RoleManagerUpdatable#update() #update()}
+     * @return RoleManager for chaining convenience
      *
-     * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#getPermissionField()
-     * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#update()
      * @see    #setPermissions(Collection)
      * @see    #setPermissions(Permission...)
      */
@@ -377,7 +359,6 @@ public class RoleManager extends ManagerBase
 
     /**
      * Adds the specified {@link net.dv8tion.jda.core.Permission Permissions} to the selected {@link net.dv8tion.jda.core.entities.Role Role}.
-     * <br>Wraps {@link net.dv8tion.jda.core.managers.fields.PermissionField#givePermissions(Collection) RoleManagerUpdatable#getPermissionField().givePermissions(Collection)}
      *
      * <p>Permissions may only include already present Permissions for the currently logged in account.
      * <br>You are unable to give permissions you don't have!
@@ -386,17 +367,10 @@ public class RoleManager extends ManagerBase
      *         The permission to give to the selected {@link net.dv8tion.jda.core.entities.Role Role}
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES}
-     *         <br>or does not have permission to apply one of the specified permissions
-     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
-     *         If the currently logged in account does not meet the required hierarchy position
-     *         to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
+     *         If the currently logged in account does not have permission to apply one of the specified permissions
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link RoleManagerUpdatable#update() #update()}
+     * @return RoleManager for chaining convenience
      *
-     * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#getPermissionField()
-     * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#update()
      * @see    #setPermissions(Collection)
      * @see    #setPermissions(Permission...)
      */
@@ -409,7 +383,6 @@ public class RoleManager extends ManagerBase
 
     /**
      * Revokes the specified {@link net.dv8tion.jda.core.Permission Permissions} from the selected {@link net.dv8tion.jda.core.entities.Role Role}.
-     * <br>Wraps {@link net.dv8tion.jda.core.managers.fields.PermissionField#revokePermissions(Permission...) RoleManagerUpdatable#getPermissionField().revokePermissions(Permission...)}
      *
      * <p>Permissions may only include already present Permissions for the currently logged in account.
      * <br>You are unable to revoke permissions you don't have!
@@ -418,17 +391,10 @@ public class RoleManager extends ManagerBase
      *         The permission to give to the selected {@link net.dv8tion.jda.core.entities.Role Role}
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES}
-     *         <br>or does not have permission to revoke one of the specified permissions
-     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
-     *         If the currently logged in account does not meet the required hierarchy position
-     *         to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
+     *         If the currently logged in account does not have permission to revoke one of the specified permissions
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link RoleManagerUpdatable#update() #update()}
+     * @return RoleManager for chaining convenience
      *
-     * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#getPermissionField()
-     * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#update()
      * @see    #setPermissions(Collection)
      * @see    #setPermissions(Permission...)
      */
@@ -441,7 +407,6 @@ public class RoleManager extends ManagerBase
 
     /**
      * Revokes the specified {@link net.dv8tion.jda.core.Permission Permissions} from the selected {@link net.dv8tion.jda.core.entities.Role Role}.
-     * <br>Wraps {@link net.dv8tion.jda.core.managers.fields.PermissionField#revokePermissions(Collection) RoleManagerUpdatable#getPermissionField().revokePermissions(Collection)}
      *
      * <p>Permissions may only include already present Permissions for the currently logged in account.
      * <br>You are unable to revoke permissions you don't have!
@@ -450,17 +415,10 @@ public class RoleManager extends ManagerBase
      *         The permission to give to the selected {@link net.dv8tion.jda.core.entities.Role Role}
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES}
-     *         <br>or does not have permission to revoke one of the specified permissions
-     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
-     *         If the currently logged in account does not meet the required hierarchy position
-     *         to {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) interact} with this Role
+     *         If the currently logged in account does not have permission to revoke one of the specified permissions
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link RoleManagerUpdatable#update() #update()}
+     * @return RoleManager for chaining convenience
      *
-     * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#getPermissionField()
-     * @see    net.dv8tion.jda.core.managers.RoleManagerUpdatable#update()
      * @see    #setPermissions(Collection)
      * @see    #setPermissions(Permission...)
      */

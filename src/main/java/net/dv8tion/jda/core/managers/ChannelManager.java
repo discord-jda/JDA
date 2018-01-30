@@ -33,19 +33,37 @@ import javax.annotation.CheckReturnValue;
 import java.util.regex.Pattern;
 
 /**
- * Facade for a {@link net.dv8tion.jda.core.managers.ChannelManagerUpdatable ChannelManagerUpdatable} instance.
- * <br>Simplifies managing flow for convenience.
+ * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.core.entities.Channel Guild Channel}.
  *
- * <p>This decoration allows to modify a single field by automatically building an update {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+ * <p><b>Example</b>
+ * <pre>{@code
+ * manager.setName("github-log")
+ *        .setTopic("logs for github commits")
+ *        .setNSFW(false)
+ *        .queue();
+ * manager.reset(ChannelManager.TOPIC | ChannelManager.NAME)
+ *        .setName("nsfw-commits")
+ *        .setTopic(null)
+ *        .setNSFW(true)
+ *        .queue();
+ * }</pre>
+ *
  */
 public class ChannelManager extends ManagerBase
 {
+    /** Used to reset the name field */
     public static final int NAME      = 0x1;
+    /** Used to reset the parent field */
     public static final int PARENT    = 0x2;
+    /** Used to reset the topic field */
     public static final int TOPIC     = 0x4;
+    /** Used to reset the position field */
     public static final int POSITION  = 0x8;
+    /** Used to reset the nsfw field */
     public static final int NSFW      = 0x10;
+    /** Used to reset the userlimit field */
     public static final int USERLIMIT = 0x20;
+    /** Used to reset the bitrate field */
     public static final int BITRATE   = 0x40;
 
     protected static final Pattern alphanumeric = Pattern.compile("[0-9a-zA-Z_-]{2,100}");
@@ -84,8 +102,6 @@ public class ChannelManager extends ManagerBase
      * be modified by this Manager instance
      *
      * @return The {@link net.dv8tion.jda.core.entities.Channel Channel}
-     *
-     * @see    ChannelManagerUpdatable#getChannel()
      */
     public Channel getChannel()
     {
@@ -98,14 +114,33 @@ public class ChannelManager extends ManagerBase
      * <br>This is logically the same as calling {@code getChannel().getGuild()}
      *
      * @return The parent {@link net.dv8tion.jda.core.entities.Guild Guild}
-     *
-     * @see    ChannelManagerUpdatable#getGuild()
      */
     public Guild getGuild()
     {
         return channel.getGuild();
     }
 
+    /**
+     * Resets the fields specified by the provided bit-flag pattern.
+     * You can specify a combination by using a bitwise OR concat of the flag constants.
+     * <br>Example: {@code manager.reset(ChannelManager.NAME | ChannelManager.PARENT);}
+     *
+     * <p><b>Flag Constants:</b>
+     * <ul>
+     *     <li>{@link #NAME}</li>
+     *     <li>{@link #PARENT}</li>
+     *     <li>{@link #TOPIC}</li>
+     *     <li>{@link #POSITION}</li>
+     *     <li>{@link #NSFW}</li>
+     *     <li>{@link #USERLIMIT}</li>
+     *     <li>{@link #BITRATE}</li>
+     * </ul>
+     *
+     * @param  fields
+     *         Integer value containing the flags to reset.
+     *
+     * @return ChannelManager for chaining convenience
+     */
     @Override
     @CheckReturnValue
     public ChannelManager reset(int fields)
@@ -114,6 +149,26 @@ public class ChannelManager extends ManagerBase
         return this;
     }
 
+    /**
+     * Resets the fields specified by the provided bit-flag patterns.
+     * <br>Example: {@code manager.reset(ChannelManager.NAME, ChannelManager.PARENT);}
+     *
+     * <p><b>Flag Constants:</b>
+     * <ul>
+     *     <li>{@link #NAME}</li>
+     *     <li>{@link #PARENT}</li>
+     *     <li>{@link #TOPIC}</li>
+     *     <li>{@link #POSITION}</li>
+     *     <li>{@link #NSFW}</li>
+     *     <li>{@link #USERLIMIT}</li>
+     *     <li>{@link #BITRATE}</li>
+     * </ul>
+     *
+     * @param  fields
+     *         Integer values containing the flags to reset.
+     *
+     * @return ChannelManager for chaining convenience
+     */
     @Override
     @CheckReturnValue
     public ChannelManager reset(int... fields)
@@ -122,6 +177,11 @@ public class ChannelManager extends ManagerBase
         return this;
     }
 
+    /**
+     * Resets all fields for this manager.
+     *
+     * @return ChannelManager for chaining convenience
+     */
     @Override
     @CheckReturnValue
     public ChannelManager reset()
@@ -194,8 +254,7 @@ public class ChannelManager extends ManagerBase
     }
 
     /**
-     * Sets the <b><u>position</u></b>
-     * of the selected {@link net.dv8tion.jda.core.entities.Channel Channel}.
+     * Sets the <b><u>position</u></b> of the selected {@link net.dv8tion.jda.core.entities.Channel Channel}.
      *
      * <p><b>To modify multiple channels you should use
      * <code>Guild.{@link net.dv8tion.jda.core.managers.GuildController getController()}.{@link GuildController#modifyTextChannelPositions() modifyTextChannelPositions()}</code>
@@ -250,7 +309,7 @@ public class ChannelManager extends ManagerBase
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
-     * @throws UnsupportedOperationException
+     * @throws IllegalStateException
      *         If the selected {@link net.dv8tion.jda.core.entities.Channel Channel}'s type is not {@link net.dv8tion.jda.core.entities.ChannelType#TEXT TEXT}
      *
      * @return ChannelManager for chaining convenience

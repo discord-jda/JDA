@@ -46,6 +46,7 @@ import java.util.regex.Pattern;
  * <p><b>To update the {@link net.dv8tion.jda.core.entities.Game Game} or {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus}
  * for the current session use the {@link net.dv8tion.jda.core.managers.Presence Presence} instance of the corresponding JDA instance</b>
  */
+@Deprecated
 public class AccountManagerUpdatable
 {
     public static final Pattern EMAIL_PATTERN = Pattern.compile(".+@.+");

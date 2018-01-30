@@ -879,9 +879,7 @@ public interface Guild extends ISnowflake
     /**
      * Returns the {@link net.dv8tion.jda.core.managers.GuildManager GuildManager} for this Guild, used to modify
      * all properties and settings of the Guild.
-     * <br>This manager type is the auto-updating type. This means that single changes are made per update. If you
-     * would like batch change functionality (change more than 1 thing in a single REST call) use the Updatable manager
-     * system. For Guild: {@link #getManagerUpdatable()}.
+     * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.core.requests.RestAction#queue() RestAction.queue()}.
      *
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         if the guild is temporarily unavailable ({@link #isAvailable()})
@@ -901,6 +899,9 @@ public interface Guild extends ISnowflake
      *         if the guild is temporarily unavailable ({@link #isAvailable()})
      *
      * @return The Updatable Manager of this Guild
+     *
+     * @deprecated
+     *         Use {@link #getManager()} instead
      */
     @Deprecated
     GuildManagerUpdatable getManagerUpdatable();

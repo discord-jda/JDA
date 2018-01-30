@@ -238,6 +238,7 @@ public interface Channel extends ISnowflake
     /**
      * Returns the {@link net.dv8tion.jda.core.managers.ChannelManager ChannelManager} for this Channel.
      * <br>In the ChannelManager, you can modify the name, topic and position of this Channel.
+     * You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.core.requests.RestAction#queue() RestAction.queue()}.
      *
      * @return The ChannelManager of this Channel
      */
@@ -251,6 +252,9 @@ public interface Channel extends ISnowflake
      * @return The ChannelManagerUpdatable of this Channel
      *
      * @see    #getManager()
+     *
+     * @deprecated
+     *         Use {@link #getManager()} instead
      */
     @Deprecated
     ChannelManagerUpdatable getManagerUpdatable();

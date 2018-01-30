@@ -31,21 +31,35 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Facade for an {@link net.dv8tion.jda.client.managers.ApplicationManagerUpdatable ApplicationManagerUpdatable} instance.
- * <br>Simplifies managing flow for convenience.
+ * Manager providing functionality to update one or more fields for an {@link net.dv8tion.jda.client.entities.Application Application}.
  *
- * <p>This decoration allows to modify a single field by automatically building an update {@link net.dv8tion.jda.core.requests.RestAction RestAction}
- * 
+ * <p><b>Example</b>
+ * <pre>{@code
+ * manager.setName("Yui")
+ *        .setDescription("Simple but outdated bot")
+ *        .queue();
+ * manager.reset(ApplicationManager.NAME | ApplicationManager.PUBLIC)
+ *        .setName("BooBot")
+ *        .setDescription("Even more outdated bot")
+ *        .queue();
+ * }</pre>
+ *
  * @since  3.0
  * @author Aljoscha Grebe
  */
 public class ApplicationManager extends ManagerBase
 {
+    /** Used to reset the description field */
     public static final int DESCRIPTION  = 0x1;
+    /** Used to reset the icon field */
     public static final int ICON         = 0x2;
+    /** Used to reset the name field */
     public static final int NAME         = 0x4;
+    /** Used to reset the redirect uri field */
     public static final int REDIRECT_URI = 0x8;
+    /** Used to reset the public field */
     public static final int PUBLIC       = 0x10;
+    /** Used to reset the code grant field */
     public static final int CODE_GRANT   = 0x20;
 
     protected final ApplicationImpl application;
@@ -74,6 +88,26 @@ public class ApplicationManager extends ManagerBase
         return application;
     }
 
+    /**
+     * Resets the fields specified by the provided bit-flag pattern.
+     * You can specify a combination by using a bitwise OR concat of the flag constants.
+     * <br>Example: {@code manager.reset(ApplicationManager.NAME | ApplicationManager.ROLES);}
+     *
+     * <p><b>Flag Constants:</b>
+     * <ul>
+     *     <li>{@link #NAME}</li>
+     *     <li>{@link #ICON}</li>
+     *     <li>{@link #DESCRIPTION}</li>
+     *     <li>{@link #REDIRECT_URI}</li>
+     *     <li>{@link #PUBLIC}</li>
+     *     <li>{@link #CODE_GRANT}</li>
+     * </ul>
+     *
+     * @param  fields
+     *         Integer value containing the flags to reset.
+     *
+     * @return ApplicationManager for chaining convenience
+     */
     @Override
     @CheckReturnValue
     public ApplicationManager reset(int fields)
@@ -84,6 +118,26 @@ public class ApplicationManager extends ManagerBase
         return this;
     }
 
+    /**
+     * Resets the fields specified by the provided bit-flag patterns.
+     * You can specify a combination by using a bitwise OR concat of the flag constants.
+     * <br>Example: {@code manager.reset(ApplicationManager.NAME, ApplicationManager.ICON);}
+     *
+     * <p><b>Flag Constants:</b>
+     * <ul>
+     *     <li>{@link #NAME}</li>
+     *     <li>{@link #ICON}</li>
+     *     <li>{@link #DESCRIPTION}</li>
+     *     <li>{@link #REDIRECT_URI}</li>
+     *     <li>{@link #PUBLIC}</li>
+     *     <li>{@link #CODE_GRANT}</li>
+     * </ul>
+     *
+     * @param  fields
+     *         Integer values containing the flags to reset.
+     *
+     * @return ApplicationManager for chaining convenience
+     */
     @Override
     @CheckReturnValue
     public ApplicationManager reset(int... fields)
@@ -92,6 +146,11 @@ public class ApplicationManager extends ManagerBase
         return this;
     }
 
+    /**
+     * Resets all fields for this manager.
+     *
+     * @return ApplicationManager for chaining convenience
+     */
     @Override
     @CheckReturnValue
     public ApplicationManager reset()
@@ -103,21 +162,17 @@ public class ApplicationManager extends ManagerBase
 
     /**
      * Sets the <b><u>description</u></b> of the selected {@link net.dv8tion.jda.client.entities.Application Application}.
-     * <br>Wraps {@link net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#getDescriptionField() ApplicationManagerUpdatable#getDescriptionField()}.
      *
-     * <p>A description <b>must not</b> be than 400 characters long!
+     * <p>A description <b>must not</b> be longer than 400 characters long!
      *
      * @param  description
      *         The new description for the selected {@link net.dv8tion.jda.client.entities.Application Application}
+     *         or {@code null} to reset
      *
      * @throws IllegalArgumentException
      *         If the provided description is more than 400 characters long
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
-     *         <br>Update RestAction from {@link ApplicationManagerUpdatable#update() #update()}
-     *
-     * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#getDescriptionField()
-     * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#update()
+     * @return ApplicationManager for chaining convenience
      */
     @CheckReturnValue
     public ApplicationManager setDescription(final String description)
@@ -130,16 +185,11 @@ public class ApplicationManager extends ManagerBase
 
     /**
      * Sets the <b><u>code grant state</u></b> of the selected {@link net.dv8tion.jda.client.entities.Application Application's} bot.
-     * <br>Wraps {@link net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#getDoesBotRequireCodeGrantField() ApplicationManagerUpdatable#getDoesBotRequireCodeGrantField()}.
      *
      * @param  requireCodeGrant
      *         The new state for the selected {@link net.dv8tion.jda.client.entities.Application Application's} bot
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
-     *         <br>Update RestAction from {@link ApplicationManagerUpdatable#update() #update()}
-     *
-     * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#getDoesBotRequireCodeGrantField()
-     * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#update()
+     * @return ApplicationManager for chaining convenience
      */
     @CheckReturnValue
     public ApplicationManager setDoesBotRequireCodeGrant(final boolean requireCodeGrant)
@@ -151,17 +201,13 @@ public class ApplicationManager extends ManagerBase
 
     /**
      * Sets the <b><u>icon</u></b> of the selected {@link net.dv8tion.jda.client.entities.Application Application}.
-     * <br>Wraps {@link net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#getIconField() ApplicationManagerUpdatable#getIconField()}.
      *
      * @param  icon
      *         The new {@link net.dv8tion.jda.core.entities.Icon Icon}
      *         for the selected {@link net.dv8tion.jda.client.entities.Application Application}
+     *         or {@code null} to reset
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
-     *         <br>Update RestAction from {@link ApplicationManagerUpdatable#update() #update()}
-     *
-     * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#getIconField()
-     * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#update()
+     * @return ApplicationManager for chaining convenience
      */
     @CheckReturnValue
     public ApplicationManager setIcon(final Icon icon)
@@ -173,16 +219,11 @@ public class ApplicationManager extends ManagerBase
 
     /**
      * Sets the <b><u>public state</u></b> of the selected {@link net.dv8tion.jda.client.entities.Application Application's} bot.
-     * <br>Wraps {@link net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#getIsBotPublicField() ApplicationManagerUpdatable#getIsBotPublicField()}.
      *
      * @param  botPublic
      *         The new state for the selected {@link net.dv8tion.jda.client.entities.Application Application's} bot
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
-     *         <br>Update RestAction from {@link ApplicationManagerUpdatable#update() #update()}
-     *
-     * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#getIsBotPublicField()
-     * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#update()
+     * @return ApplicationManager for chaining convenience
      */
     @CheckReturnValue
     public ApplicationManager setIsBotPublic(final boolean botPublic)
@@ -194,7 +235,6 @@ public class ApplicationManager extends ManagerBase
 
     /**
      * Sets the <b><u>name</u></b> of the selected {@link net.dv8tion.jda.client.entities.Application Application}.
-     * <br>Wraps {@link net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#getNameField() ApplicationManagerUpdatable#getNameField()}.
      *
      * <p>A name <b>must not</b> be {@code null} nor less than 2 characters or more than 32 characters long!
      *
@@ -204,11 +244,7 @@ public class ApplicationManager extends ManagerBase
      * @throws IllegalArgumentException
      *         If the provided name is {@code null}, less than 2 or more than 32 characters long
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
-     *         <br>Update RestAction from {@link ApplicationManagerUpdatable#update() #update()}
-     *
-     * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#getNameField()
-     * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#update()
+     * @return ApplicationManager for chaining convenience
      */
     @CheckReturnValue
     public ApplicationManager setName(final String name)
@@ -222,29 +258,32 @@ public class ApplicationManager extends ManagerBase
 
     /**
      * Sets the <b><u>redirect uris</u></b> of the selected {@link net.dv8tion.jda.client.entities.Application Application}.
-     * <br>Wraps {@link net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#getRedirectUrisField() ApplicationManagerUpdatable#getRedirectUrisField()}.
-     * 
-     * <p>The {@link java.util.List List} as well as all redirect uris <b>must not</b> be {@code null}!
+     *
+     * <p>The redirect uris <b>must not</b> be {@code null}!
      * 
      * @param  redirectUris
      *         The new redirect uris
      *         for the selected {@link net.dv8tion.jda.client.entities.Application Application}
+     *         or {@code null} to reset
      *
      * @throws IllegalArgumentException
-     *         If either the provided {@link java.util.List List} or one of the uris is {@code null}
+     *         If one of the uris is {@code null}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
-     *         <br>Update RestAction from {@link ApplicationManagerUpdatable#update() #update()}
-     *
-     * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#getIconField()
-     * @see    net.dv8tion.jda.client.managers.ApplicationManagerUpdatable#update()
+     * @return ApplicationManager for chaining convenience
      */
     @CheckReturnValue
     public ApplicationManager setRedirectUris(final List<String> redirectUris)
     {
-        Checks.noneNull(redirectUris, "Redirects");
-        this.redirectUris.clear();
-        this.redirectUris.addAll(redirectUris);
+        if (redirectUris == null)
+        {
+            this.redirectUris.clear();
+        }
+        else
+        {
+            Checks.noneNull(redirectUris, "Redirects");
+            this.redirectUris.clear();
+            this.redirectUris.addAll(redirectUris);
+        }
         set |= REDIRECT_URI;
         return this;
     }

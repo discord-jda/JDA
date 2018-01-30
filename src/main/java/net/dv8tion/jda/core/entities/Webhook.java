@@ -130,13 +130,10 @@ public interface Webhook extends ISnowflake
     AuditableRestAction<Void> delete();
 
     /**
-     * The {@link net.dv8tion.jda.core.managers.WebhookManager Manager}
-     * for this Webhook.
-     * <br>This Manager <b>does not</b> require to update, it provides set methods
-     * to atomically modify fields of this Webhook.
+     * The {@link net.dv8tion.jda.core.managers.WebhookManager WebhookManager} for this Webhook.
+     * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.core.requests.RestAction#queue() RestAction.queue()}.
      *
-     * @return An instance of {@link net.dv8tion.jda.core.managers.WebhookManager WebhookManager}
-     *         for this Webhook
+     * @return The {@link net.dv8tion.jda.core.managers.WebhookManager WebhookManager} for this Webhook
      */
     WebhookManager getManager();
 
@@ -148,6 +145,9 @@ public interface Webhook extends ISnowflake
      *
      * @return An instance of {@link net.dv8tion.jda.core.managers.WebhookManagerUpdatable WebhookManagerUpdatable}
      *         for this Webhook
+     *
+     * @deprecated
+     *         Use {@link #getManager()} instead
      */
     @Deprecated
     WebhookManagerUpdatable getManagerUpdatable();

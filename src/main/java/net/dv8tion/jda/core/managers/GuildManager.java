@@ -34,23 +34,42 @@ import org.json.JSONObject;
 import javax.annotation.CheckReturnValue;
 
 /**
- * Facade for a {@link net.dv8tion.jda.core.managers.GuildManagerUpdatable GuildManagerUpdatable} instance.
- * <br>Simplifies managing flow for convenience.
+ * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.core.entities.Guild Guild}.
  *
- * <p>This decoration allows to modify a single field by automatically building an update {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+ * <p><b>Example</b>
+ * <pre>{@code
+ * manager.setName("Official JDA Guild")
+ *        .setIcon(null)
+ *        .queue();
+ * manager.reset(GuildManager.NAME | GuildManager.ICON)
+ *        .setName("Minn's Meme Den")
+ *        .setExplicitContentLevel(Guild.ExplicitContentLevel.HIGH)
+ *        .queue();
+ * }</pre>
  */
 public class GuildManager extends ManagerBase
 {
+    /** Used to reset the name field */
     public static final int NAME   = 0x1;
+    /** Used to reset the region field */
     public static final int REGION = 0x2;
+    /** Used to reset the icon field */
     public static final int ICON   = 0x4;
+    /** Used to reset the splash field */
     public static final int SPLASH = 0x8;
+    /** Used to reset the afk channel field */
     public static final int AFK_CHANNEL    = 0x10;
+    /** Used to reset the afk timeout field */
     public static final int AFK_TIMEOUT    = 0x20;
+    /** Used to reset the system channel field */
     public static final int SYSTEM_CHANNEL = 0x40;
+    /** Used to reset the mfa level field */
     public static final int MFA_LEVEL      = 0x80;
+    /** Used to reset the default notification level field */
     public static final int NOTIFICATION_LEVEL     = 0x100;
+    /** Used to reset the explicit content level field */
     public static final int EXPLICIT_CONTENT_LEVEL = 0x200;
+    /** Used to reset the verification level field */
     public static final int VERIFICATION_LEVEL     = 0x400;
 
     protected final Guild guild;
@@ -84,6 +103,31 @@ public class GuildManager extends ManagerBase
         return guild;
     }
 
+    /**
+     * Resets the fields specified by the provided bit-flag pattern.
+     * You can specify a combination by using a bitwise OR concat of the flag constants.
+     * <br>Example: {@code manager.reset(GuildManager.NAME | GuildManager.ICON);}
+     *
+     * <p><b>Flag Constants:</b>
+     * <ul>
+     *     <li>{@link #NAME}</li>
+     *     <li>{@link #ICON}</li>
+     *     <li>{@link #REGION}</li>
+     *     <li>{@link #SPLASH}</li>
+     *     <li>{@link #AFK_CHANNEL}</li>
+     *     <li>{@link #AFK_TIMEOUT}</li>
+     *     <li>{@link #SYSTEM_CHANNEL}</li>
+     *     <li>{@link #MFA_LEVEL}</li>
+     *     <li>{@link #NOTIFICATION_LEVEL}</li>
+     *     <li>{@link #EXPLICIT_CONTENT_LEVEL}</li>
+     *     <li>{@link #VERIFICATION_LEVEL}</li>
+     * </ul>
+     *
+     * @param  fields
+     *         Integer value containing the flags to reset.
+     *
+     * @return GuildManager for chaining convenience
+     */
     @Override
     @CheckReturnValue
     public GuildManager reset(int fields)
@@ -97,6 +141,31 @@ public class GuildManager extends ManagerBase
         return this;
     }
 
+    /**
+     * Resets the fields specified by the provided bit-flag patterns.
+     * You can specify a combination by using a bitwise OR concat of the flag constants.
+     * <br>Example: {@code manager.reset(GuildManager.NAME, GuildManager.ICON);}
+     *
+     * <p><b>Flag Constants:</b>
+     * <ul>
+     *     <li>{@link #NAME}</li>
+     *     <li>{@link #ICON}</li>
+     *     <li>{@link #REGION}</li>
+     *     <li>{@link #SPLASH}</li>
+     *     <li>{@link #AFK_CHANNEL}</li>
+     *     <li>{@link #AFK_TIMEOUT}</li>
+     *     <li>{@link #SYSTEM_CHANNEL}</li>
+     *     <li>{@link #MFA_LEVEL}</li>
+     *     <li>{@link #NOTIFICATION_LEVEL}</li>
+     *     <li>{@link #EXPLICIT_CONTENT_LEVEL}</li>
+     *     <li>{@link #VERIFICATION_LEVEL}</li>
+     * </ul>
+     *
+     * @param  fields
+     *         Integer values containing the flags to reset.
+     *
+     * @return GuildManager for chaining convenience
+     */
     @Override
     @CheckReturnValue
     public GuildManager reset(int... fields)
@@ -105,6 +174,11 @@ public class GuildManager extends ManagerBase
         return this;
     }
 
+    /**
+     * Resets all fields for this manager.
+     *
+     * @return GuildManager for chaining convenience
+     */
     @Override
     @CheckReturnValue
     public GuildManager reset()
@@ -167,6 +241,7 @@ public class GuildManager extends ManagerBase
      *
      * @param  icon
      *         The new icon for this {@link net.dv8tion.jda.core.entities.Guild Guild}
+     *         or {@code null} to reset
      *
      * @return GuildManager for chaining convenience
      */
@@ -183,6 +258,7 @@ public class GuildManager extends ManagerBase
      *
      * @param  splash
      *         The new splash for this {@link net.dv8tion.jda.core.entities.Guild Guild}
+     *         or {@code null} to reset
      *
      * @throws IllegalArgumentException
      *         If the guild's {@link net.dv8tion.jda.core.entities.Guild#getFeatures() features} does not include {@code INVITE_SPLASH}
@@ -203,6 +279,7 @@ public class GuildManager extends ManagerBase
      *
      * @param  afkChannel
      *         The new afk channel for this {@link net.dv8tion.jda.core.entities.Guild Guild}
+     *         or {@code null} to reset
      *
      * @throws IllegalArgumentException
      *         If the provided channel is not from this guild
@@ -223,6 +300,7 @@ public class GuildManager extends ManagerBase
      *
      * @param  systemChannel
      *         The new system channel for this {@link net.dv8tion.jda.core.entities.Guild Guild}
+     *         or {@code null} to reset
      *
      * @throws IllegalArgumentException
      *         If the provided channel is not from this guild
