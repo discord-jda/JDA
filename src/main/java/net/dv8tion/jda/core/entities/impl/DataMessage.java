@@ -74,7 +74,7 @@ public class DataMessage extends AbstractMessage
     @Override
     public List<MessageEmbed> getEmbeds()
     {
-        return Collections.singletonList(embed);
+        return embed == null ? Collections.emptyList() : Collections.singletonList(embed);
     }
 
     // UNSUPPORTED OPERATIONS ON MESSAGE BUILDER OUTPUT
