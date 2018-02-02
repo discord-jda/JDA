@@ -538,6 +538,11 @@ public interface Message extends ISnowflake, Formattable
      */
     boolean isTTS();
 
+    /**
+     * A {@link net.dv8tion.jda.core.entities.Message.Activity Activity} that contains the type and the party id.
+     *
+     * @return The activity, or {@code null} if no activity was added to the message.
+     */
     Activity getActivity();
 
     /**
@@ -1258,6 +1263,9 @@ public interface Message extends ISnowflake, Formattable
         }
     }
 
+    /**
+     * Represents a {@link net.dv8tion.jda.core.entities.Message message} activity like Spotify
+     */
     class Activity {
         private final int type;
         private final String party_id;
@@ -1267,22 +1275,42 @@ public interface Message extends ISnowflake, Formattable
             this.party_id = party_id;
         }
 
+        /**
+         *
+         * @return the type of the activity
+         */
         public int getType() {
             return type;
         }
 
+        /**
+         * Example : "spotify:86699011792191488"
+         *
+         * @return {@link java.lang.String string} containing the party service and its host (a {@link net.dv8tion.jda.core.entities.User} id)
+         */
         public String getPartyId() {
             return party_id;
         }
 
-        public String getPlattform() {
+        /**
+         * Shortcut for grabbing the service of the party
+         *
+         * @return the service name like "spotify"
+         */
+        public String getService() {
             return party_id.split(":", 2)[0];
         }
 
-        public String getInviterId() {
+        /**
+         * This is a shortcut for getting the host id of the party
+         *
+         * @return the service name like "86699011792191488"
+         */
+        public String getHostId() {
             return party_id.split(":", 2)[1];
         }
 
+        /* JDA internal */
         static Activity parseJSON(JSONObject jsonObject) {
             return new Activity(jsonObject.getInt("type"), jsonObject.getString("party_id"));
         }
