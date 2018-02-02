@@ -389,7 +389,8 @@ public abstract class AbstractMessage implements Message
     }
 
     @Override
-    public Activity getActivity() {
+    public Activity getActivity()
+    {
         unsupported();
         return null;
     }

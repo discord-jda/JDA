@@ -1267,11 +1267,13 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Represents a {@link net.dv8tion.jda.core.entities.Message message} activity like Spotify
      */
-    class Activity {
+    class Activity
+    {
         private final ActivityType type;
         private final String party_id;
 
-        Activity(ActivityType type, String party_id) {
+        Activity(ActivityType type, String party_id)
+        {
             this.type = type;
             this.party_id = party_id;
         }
@@ -1280,7 +1282,8 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return the type of the activity
          */
-        public ActivityType getType() {
+        public ActivityType getType()
+        {
             return type;
         }
 
@@ -1289,7 +1292,8 @@ public interface Message extends ISnowflake, Formattable
          * @return {@link java.lang.String string} containing the activity service and its host (a {@link net.dv8tion.jda.core.entities.User} id)<br>
          *         For example : "spotify:86699011792191488"
          */
-        public String getPartyId() {
+        public String getPartyId()
+        {
             return party_id;
         }
 
@@ -1298,7 +1302,8 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return the service name like "spotify"
          */
-        public String getService() {
+        public String getService()
+        {
             return party_id.split(":", 2)[0];
         }
 
@@ -1307,14 +1312,17 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return the service name like "86699011792191488"
          */
-        public String getHostId() {
+        public String getHostId()
+        {
             return party_id.split(":", 2)[1];
         }
 
         /* JDA internal */
-        static Activity parseJSON(JSONObject jsonObject) {
+        static Activity parseJSON(JSONObject jsonObject)
+        {
             final ActivityType type = ActivityType.fromId(jsonObject.getInt("type"));
-            if (type == ActivityType.PARTY) {
+            if (type == ActivityType.PARTY)
+            {
                 return new Activity(type, jsonObject.getString("party_id"));
             }
             WebSocketClient.LOG.debug("Received an unknown activity type in a message. JSON: {}", jsonObject);
@@ -1323,13 +1331,15 @@ public interface Message extends ISnowflake, Formattable
     }
 
     // missing data for more
-    enum ActivityType {
+    enum ActivityType
+    {
         PARTY(3),
         UNKNOWN(-1);
 
         private final int type;
 
-        public static ActivityType fromId(int id) {
+        public static ActivityType fromId(int id)
+        {
             switch (id) {
                 case 3:
                     return PARTY;
@@ -1338,11 +1348,13 @@ public interface Message extends ISnowflake, Formattable
             }
         }
 
-        ActivityType(int type) {
+        ActivityType(int type)
+        {
             this.type = type;
         }
 
-        public int getType() {
+        public int getType()
+        {
             return type;
         }
     }

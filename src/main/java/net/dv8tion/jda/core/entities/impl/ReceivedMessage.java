@@ -813,7 +813,8 @@ public class ReceivedMessage extends AbstractMessage
     }
 
     @Override
-    public Activity getActivity() {
+    public Activity getActivity()
+    {
         return activity;
     }
 }
