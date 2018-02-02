@@ -540,7 +540,7 @@ public interface Message extends ISnowflake, Formattable
     boolean isTTS();
 
     /**
-     * A {@link net.dv8tion.jda.core.entities.Message.Activity Activity} that contains the type and the party id.
+     * A {@link net.dv8tion.jda.core.entities.Message.Activity Activity} that contains its type and party id.
      *
      * @return The activity, or {@code null} if no activity was added to the message.
      */
@@ -1285,16 +1285,16 @@ public interface Message extends ISnowflake, Formattable
         }
 
         /**
-         * Example : "spotify:86699011792191488"
          *
-         * @return {@link java.lang.String string} containing the party service and its host (a {@link net.dv8tion.jda.core.entities.User} id)
+         * @return {@link java.lang.String string} containing the activity service and its host (a {@link net.dv8tion.jda.core.entities.User} id)<br>
+         *         For example : "spotify:86699011792191488"
          */
         public String getPartyId() {
             return party_id;
         }
 
         /**
-         * Shortcut for grabbing the service of the party
+         * Shortcut for grabbing the service of the activity
          *
          * @return the service name like "spotify"
          */
@@ -1303,7 +1303,7 @@ public interface Message extends ISnowflake, Formattable
         }
 
         /**
-         * This is a shortcut for getting the host id of the party
+         * This is a shortcut for getting the host id of the activity
          *
          * @return the service name like "86699011792191488"
          */
