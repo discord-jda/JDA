@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.WebSocketClient;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.MessageAction;
 import net.dv8tion.jda.core.utils.Checks;
@@ -1267,10 +1268,10 @@ public interface Message extends ISnowflake, Formattable
      * Represents a {@link net.dv8tion.jda.core.entities.Message message} activity like Spotify
      */
     class Activity {
-        private final int type;
+        private final ActivityType type;
         private final String party_id;
 
-        Activity(int type, String party_id) {
+        Activity(ActivityType type, String party_id) {
             this.type = type;
             this.party_id = party_id;
         }
@@ -1279,7 +1280,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return the type of the activity
          */
-        public int getType() {
+        public ActivityType getType() {
             return type;
         }
 
@@ -1312,16 +1313,32 @@ public interface Message extends ISnowflake, Formattable
 
         /* JDA internal */
         static Activity parseJSON(JSONObject jsonObject) {
-            return new Activity(jsonObject.getInt("type"), jsonObject.getString("party_id"));
+            final ActivityType type = ActivityType.fromId(jsonObject.getInt("type"));
+            if (type == ActivityType.PARTY) {
+                return new Activity(type, jsonObject.getString("party_id"));
+            }
+            WebSocketClient.LOG.debug("Received an unknown activity type in a message. JSON: {}", jsonObject);
+            return new Activity(type, "");
         }
     }
 
-    enum ActivityTypes {
-        PARTY(3);
+    // missing data for more
+    enum ActivityType {
+        PARTY(3),
+        UNKNOWN(-1);
 
         private final int type;
 
-        ActivityTypes(int type) {
+        public static ActivityType fromId(int id) {
+            switch (id) {
+                case 3:
+                    return PARTY;
+                default:
+                    return UNKNOWN;
+            }
+        }
+
+        ActivityType(int type) {
             this.type = type;
         }
 
