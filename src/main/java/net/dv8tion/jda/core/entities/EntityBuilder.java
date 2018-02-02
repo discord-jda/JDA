@@ -861,6 +861,7 @@ public class EntityBuilder
         final long id = jsonObject.getLong("id");
         String content = jsonObject.optString("content");
 
+        Message.Activity activity = jsonObject.isNull("activity") ? null : Message.Activity.parseJSON(jsonObject.getJSONObject("activity"));
         JSONObject author = jsonObject.getJSONObject("author");
         final long authorId = author.getLong("id");
         final boolean fromWebhook = jsonObject.has("webhook_id");
@@ -927,7 +928,8 @@ public class EntityBuilder
             case DEFAULT:
                 return new ReceivedMessage(id, chan, type,
                     fromWebhook, mentionsEveryone, tts, pinned,
-                    content, nonce, user, editTime, reactions, attachments, embeds);
+                    content, nonce, user, editTime, reactions, attachments, embeds,
+                    activity);
             case UNKNOWN:
                 throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
             default:

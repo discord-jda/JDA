@@ -28,6 +28,7 @@ import net.dv8tion.jda.core.utils.IOUtil;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 import java.io.ByteArrayInputStream;
@@ -536,6 +537,8 @@ public interface Message extends ISnowflake, Formattable
      * @return If this message is TTS.
      */
     boolean isTTS();
+
+    Activity getActivity();
 
     /**
      * Edits this Message's content to the provided String.
@@ -1252,6 +1255,50 @@ public interface Message extends ISnowflake, Formattable
         public boolean isImage()
         {
             return height > 0 && width > 0;
+        }
+    }
+
+    class Activity {
+        private final int type;
+        private final String party_id;
+
+        Activity(int type, String party_id) {
+            this.type = type;
+            this.party_id = party_id;
+        }
+
+        public int getType() {
+            return type;
+        }
+
+        public String getPartyId() {
+            return party_id;
+        }
+
+        public String getPlattform() {
+            return party_id.split(":", 2)[0];
+        }
+
+        public String getInviterId() {
+            return party_id.split(":", 2)[1];
+        }
+
+        static Activity parseJSON(JSONObject jsonObject) {
+            return new Activity(jsonObject.getInt("type"), jsonObject.getString("party_id"));
+        }
+    }
+
+    enum ActivityTypes {
+        PARTY(3);
+
+        private final int type;
+
+        ActivityTypes(int type) {
+            this.type = type;
+        }
+
+        public int getType() {
+            return type;
         }
     }
 }
