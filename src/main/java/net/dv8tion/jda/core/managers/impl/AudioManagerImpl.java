@@ -34,7 +34,6 @@ import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.NativeUtil;
-import net.dv8tion.jda.core.utils.PermissionUtil;
 
 import java.io.IOException;
 
@@ -95,6 +94,7 @@ public class AudioManagerImpl implements AudioManager
 
         if (audioConnection == null)
         {
+            checkUserlimit(channel, self);
             //Start establishing connection, joining provided channel
             queuedAudioConnection = channel;
             api.getClient().queueAudioConnect(channel);
@@ -107,20 +107,30 @@ public class AudioManagerImpl implements AudioManager
             if (channel.equals(audioConnection.getChannel()))
                 return;
 
-            final int userLimit = channel.getUserLimit(); // userLimit is 0 if no limit is set!
-            if (!self.isOwner() && !self.hasPermission(Permission.ADMINISTRATOR))
-            {
-                final long perms = PermissionUtil.getExplicitPermission(channel, self);
-                final long voicePerm = Permission.VOICE_MOVE_OTHERS.getRawValue();
-                if (userLimit > 0                                               // If there is a userlimit
-                    && userLimit <= channel.getMembers().size()                 // if that userlimit is reached
-                    && (perms & voicePerm) != voicePerm)                        // If we don't have voice move others permissions
-                    throw new InsufficientPermissionException(Permission.VOICE_MOVE_OTHERS, // then throw exception!
-                            "Unable to connect to VoiceChannel due to userlimit! Requires permission VOICE_MOVE_OTHERS to bypass");
-            }
+            checkUserlimit(channel, self);
 
             api.getClient().queueAudioConnect(channel);
             audioConnection.setChannel(channel);
+        }
+    }
+
+    private void checkUserlimit(VoiceChannel channel, Member self)
+    {
+        final int userLimit = channel.getUserLimit(); // userLimit is 0 if no limit is set!
+        if (userLimit > 0 && !self.hasPermission(Permission.ADMINISTRATOR))
+        {
+            // Check if we can actually join this channel
+            // - If there is a userlimit
+            // - If that userlimit is reached
+            // - If we don't have voice move others permissions
+            // VOICE_MOVE_OTHERS allows access because you would be able to move people out to
+            // open up a slot anyway
+            if (userLimit <= channel.getMembers().size()
+                && !guild.getSelfMember().hasPermission(channel, Permission.VOICE_MOVE_OTHERS))
+            {
+                throw new InsufficientPermissionException(Permission.VOICE_MOVE_OTHERS,
+                    "Unable to connect to VoiceChannel due to userlimit! Requires permission VOICE_MOVE_OTHERS to bypass");
+            }
         }
     }
 
