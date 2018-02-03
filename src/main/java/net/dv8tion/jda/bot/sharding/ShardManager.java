@@ -83,20 +83,20 @@ public interface ShardManager
      * <p>Note: when using the {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventListener} (default),
      * given listener <b>must</b> be instance of {@link net.dv8tion.jda.core.hooks.EventListener EventListener}!
      *
-     * @param  shardedEventListenerProvider
+     * @param  eventListenerProvider
      *         The provider of listener(s) which will react to events.
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided listener provider {@code null}.
      */
-    default void addShardedEventListeners(final IntFunction<Object> shardedEventListenerProvider)
+    default void addEventListeners(final IntFunction<Object> eventListenerProvider)
     {
-        Checks.notNull(shardedEventListenerProvider, "sharded event listener provider");
+        Checks.notNull(eventListenerProvider, "event listener provider");
         this.getShardCache().forEach(jda ->
         {
-            Object shardedListener = shardedEventListenerProvider.apply(jda.getShardInfo().getShardId());
-            Checks.notNull(shardedListener, "sharded listener");
-            jda.addEventListener(shardedListener);
+            Object listener = eventListenerProvider.apply(jda.getShardInfo().getShardId());
+            Checks.notNull(listener, "listener");
+            jda.addEventListener(listener);
         });
     }
 
