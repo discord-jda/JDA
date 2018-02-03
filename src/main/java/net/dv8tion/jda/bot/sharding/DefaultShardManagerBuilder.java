@@ -25,7 +25,6 @@ import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.SessionController;
 import okhttp3.OkHttpClient;
 
-import javax.annotation.Nonnull;
 import javax.security.auth.login.LoginException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,7 +33,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
-import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 
@@ -50,7 +48,7 @@ import java.util.stream.Collectors;
 public class DefaultShardManagerBuilder
 {
     protected final List<Object> listeners = new ArrayList<>();
-    protected final List<Function<Integer, Object>> shardedListenerProviders = new ArrayList<>();
+    protected final List<IntFunction<Object>> shardedListenerProviders = new ArrayList<>();
     protected SessionController sessionController = null;
     protected IntFunction<ConcurrentMap<String, String>> contextProvider = null;
     protected boolean enableContext = true;
@@ -241,7 +239,7 @@ public class DefaultShardManagerBuilder
      *
      * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
      */
-    public DefaultShardManagerBuilder addShardedEventListenerProvider(final Function<Integer, Object> shardedListenerProvider)
+    public DefaultShardManagerBuilder addShardedEventListenerProvider(final IntFunction<Object> shardedListenerProvider)
     {
         return this.addShardedEventListenerProviders(Collections.singleton(shardedListenerProvider));
     }
@@ -263,7 +261,7 @@ public class DefaultShardManagerBuilder
      *
      * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
      */
-    public DefaultShardManagerBuilder addShardedEventListenerProviders(final Collection<Function<Integer, Object>> shardedListenerProviders)
+    public DefaultShardManagerBuilder addShardedEventListenerProviders(final Collection<IntFunction<Object>> shardedListenerProviders)
     {
         Checks.noneNull(shardedListenerProviders, "sharded listener providers");
 
@@ -279,7 +277,7 @@ public class DefaultShardManagerBuilder
      *
      * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
      */
-    public DefaultShardManagerBuilder removeShardedEventListenerProvider(final Function<Integer, Object> shardedListenerProvider)
+    public DefaultShardManagerBuilder removeShardedEventListenerProvider(final IntFunction<Object> shardedListenerProvider)
     {
         return this.removeEventListeners(Collections.singleton(shardedListenerProvider));
     }
@@ -292,7 +290,7 @@ public class DefaultShardManagerBuilder
      *
      * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
      */
-    public DefaultShardManagerBuilder removeShardedEventListenerProviders(final Collection<Function<Integer, Object>> shardedListenerProviders)
+    public DefaultShardManagerBuilder removeShardedEventListenerProviders(final Collection<IntFunction<Object>> shardedListenerProviders)
     {
         Checks.noneNull(shardedListenerProviders, "sharded listener providers");
 

@@ -40,7 +40,6 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.IntFunction;
 
 /**
@@ -107,7 +106,7 @@ public class DefaultShardManager implements ShardManager
     /**
      * The sharded event listener providers for new and restarted JDA instances.
      */
-    protected final List<Function<Integer, Object>> shardedListenerProviders;
+    protected final List<IntFunction<Object>> shardedListenerProviders;
 
     /**
      * The maximum amount of time that JDA will back off to wait when attempting to reconnect the MainWebsocket.
@@ -266,7 +265,7 @@ public class DefaultShardManager implements ShardManager
      */
     protected DefaultShardManager(final int shardsTotal, final Collection<Integer> shardIds,
                                   final SessionController controller, final List<Object> listeners,
-                                  final List<Function<Integer, Object>> shardedListenerProviders,
+                                  final List<IntFunction<Object>> shardedListenerProviders,
                                   final String token, final IEventManager eventManager, final IAudioSendFactory audioSendFactory,
                                   final IntFunction<Game> gameProvider, final IntFunction<OnlineStatus> statusProvider,
                                   final OkHttpClient.Builder httpClientBuilder, final WebSocketFactory wsFactory,
@@ -338,7 +337,7 @@ public class DefaultShardManager implements ShardManager
     }
 
     @Override
-    public void addShardedEventListeners(Function<Integer, Object> shardedEventListenerProvider) {
+    public void addShardedEventListeners(IntFunction<Object> shardedEventListenerProvider) {
         ShardManager.super.addShardedEventListeners(shardedEventListenerProvider);
         this.shardedListenerProviders.add(shardedEventListenerProvider);
     }

@@ -89,7 +89,7 @@ public interface ShardManager
      * @throws java.lang.IllegalArgumentException
      *         If the provided listener provider {@code null}.
      */
-    default void addShardedEventListeners(final Function<Integer, Object> shardedEventListenerProvider)
+    default void addShardedEventListeners(final IntFunction<Object> shardedEventListenerProvider)
     {
         Checks.notNull(shardedEventListenerProvider, "sharded event listener provider");
         this.getShardCache().forEach(jda ->
