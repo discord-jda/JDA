@@ -50,6 +50,7 @@ public class ReceivedMessage extends AbstractMessage
     protected final List<MessageReaction> reactions;
     protected final List<Attachment> attachments;
     protected final List<MessageEmbed> embeds;
+    protected final Activity activity;
 
     // LAZY EVALUATED
     protected String altContent = null;
@@ -60,7 +61,6 @@ public class ReceivedMessage extends AbstractMessage
     protected List<Role> roleMentions = null;
     protected List<TextChannel> channelMentions = null;
     protected List<String> invites = null;
-    protected Activity activity = null;
 
     public ReceivedMessage(
         long id, MessageChannel channel, MessageType type,

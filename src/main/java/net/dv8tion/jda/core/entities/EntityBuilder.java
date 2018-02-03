@@ -33,6 +33,7 @@ import net.dv8tion.jda.core.entities.impl.*;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.handle.GuildMembersChunkHandler;
 import net.dv8tion.jda.core.handle.ReadyHandler;
+import net.dv8tion.jda.core.requests.WebSocketClient;
 import net.dv8tion.jda.core.utils.Helpers;
 import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.MiscUtil;
@@ -861,7 +862,8 @@ public class EntityBuilder
         final long id = jsonObject.getLong("id");
         String content = jsonObject.optString("content");
 
-        Message.Activity activity = jsonObject.isNull("activity") ? null : Message.Activity.parseJSON(jsonObject.getJSONObject("activity"));
+        Message.Activity activity = null;
+
         JSONObject author = jsonObject.getJSONObject("author");
         final long authorId = author.getLong("id");
         final boolean fromWebhook = jsonObject.has("webhook_id");
@@ -874,6 +876,21 @@ public class EntityBuilder
         final List<Message.Attachment> attachments = map(jsonObject, "attachments", this::createMessageAttachment);
         final List<MessageEmbed>       embeds      = map(jsonObject, "embeds",      this::createMessageEmbed);
         final List<MessageReaction>    reactions   = map(jsonObject, "reactions",   (obj) -> createMessageReaction(chan, id, obj));
+
+        if (!jsonObject.isNull("activity"))
+        {
+            JSONObject activityData = jsonObject.getJSONObject("activity");
+            Message.ActivityType activityType = Message.ActivityType.fromId(activityData.getInt("type"));
+            if (activityType == Message.ActivityType.PARTY)
+            {
+                activity = new Message.Activity(activityType, activityData.getString("party_id"));
+            }
+            else
+            {
+                WebSocketClient.LOG.debug("Received an unknown activity type in a message. JSON: {}", jsonObject);
+                activity=  new Message.Activity(activityType, "");
+            }
+        }
 
         User user;
         switch (chan.getType())

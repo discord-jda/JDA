@@ -1270,12 +1270,12 @@ public interface Message extends ISnowflake, Formattable
     class Activity
     {
         private final ActivityType type;
-        private final String party_id;
+        private final String partyId;
 
-        Activity(ActivityType type, String party_id)
+        Activity(ActivityType type, String partyId)
         {
             this.type = type;
-            this.party_id = party_id;
+            this.partyId = partyId;
         }
 
         /**
@@ -1294,7 +1294,7 @@ public interface Message extends ISnowflake, Formattable
          */
         public String getPartyId()
         {
-            return party_id;
+            return partyId;
         }
 
         /**
@@ -1304,7 +1304,7 @@ public interface Message extends ISnowflake, Formattable
          */
         public String getService()
         {
-            return party_id.split(":", 2)[0];
+            return partyId.split(":", 2)[0];
         }
 
         /**
@@ -1314,29 +1314,28 @@ public interface Message extends ISnowflake, Formattable
          */
         public String getHostId()
         {
-            return party_id.split(":", 2)[1];
-        }
-
-        /* JDA internal */
-        static Activity parseJSON(JSONObject jsonObject)
-        {
-            final ActivityType type = ActivityType.fromId(jsonObject.getInt("type"));
-            if (type == ActivityType.PARTY)
-            {
-                return new Activity(type, jsonObject.getString("party_id"));
-            }
-            WebSocketClient.LOG.debug("Received an unknown activity type in a message. JSON: {}", jsonObject);
-            return new Activity(type, "");
+            return partyId.split(":", 2)[1];
         }
     }
 
     // missing data for more
     enum ActivityType
     {
+        //GAME()
         PARTY(3),
         UNKNOWN(-1);
 
-        private final int type;
+        private final int id;
+
+        ActivityType(int id)
+        {
+            this.id = id;
+        }
+
+        public int getId()
+        {
+            return id;
+        }
 
         public static ActivityType fromId(int id)
         {
@@ -1346,16 +1345,6 @@ public interface Message extends ISnowflake, Formattable
                 default:
                     return UNKNOWN;
             }
-        }
-
-        ActivityType(int type)
-        {
-            this.type = type;
-        }
-
-        public int getType()
-        {
-            return type;
         }
     }
 }
