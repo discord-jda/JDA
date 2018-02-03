@@ -482,6 +482,24 @@ public class GuildAction extends RestAction<Void>
         }
 
         /**
+         * Sets the color for this Role
+         *
+         * @param  color
+         *         The color for this Role, or {@code null} to unset
+         *
+         * @throws java.lang.IllegalStateException
+         *         If this is the public role
+         *
+         * @return The current RoleData instance for chaining convenience
+         */
+        public RoleData setColor(Integer color)
+        {
+            checkPublic("color");
+            this.color = color;
+            return this;
+        }
+
+        /**
          * Sets the position for this Role
          *
          * @param  position

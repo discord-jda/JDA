@@ -98,7 +98,7 @@ public class MessageEmbed
     protected final String description;
     protected final EmbedType type;
     protected final OffsetDateTime timestamp;
-    protected final Color color;
+    protected final int color;
     protected final Thumbnail thumbnail;
     protected final Provider siteProvider;
     protected final AuthorInfo author;
@@ -112,7 +112,7 @@ public class MessageEmbed
 
     protected MessageEmbed(
         String url, String title, String description, EmbedType type, OffsetDateTime timestamp,
-        Color color, Thumbnail thumbnail, Provider siteProvider, AuthorInfo author,
+        int color, Thumbnail thumbnail, Provider siteProvider, AuthorInfo author,
         VideoInfo videoInfo, Footer footer, ImageInfo image, List<Field> fields)
     {
         this.url = url;
@@ -270,6 +270,17 @@ public class MessageEmbed
      */
     public Color getColor()
     {
+        return color != Role.DEFAULT_COLOR_RAW ? new Color(color) : null;
+    }
+
+    /**
+     * The raw RGB color value for this embed
+     * <br>Defaults to {@link Role#DEFAULT_COLOR_RAW} if no color is set
+     *
+     * @return The raw RGB color value or default
+     */
+    public int getColorRaw()
+    {
         return color;
     }
     
@@ -415,8 +426,8 @@ public class MessageEmbed
                 obj.put("description", description);
             if (timestamp != null)
                 obj.put("timestamp", timestamp.format(DateTimeFormatter.ISO_INSTANT));
-            if (color != null)
-                obj.put("color", color.getRGB() & 0xFFFFFF);
+            if (color != Role.DEFAULT_COLOR_RAW)
+                obj.put("color", color & 0xFFFFFF);
             if (thumbnail != null)
                 obj.put("thumbnail", new JSONObject().put("url", thumbnail.getUrl()));
             if (siteProvider != null)
