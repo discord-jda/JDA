@@ -401,6 +401,8 @@ public class EmbedBuilder
      *         or {@code null} to use no color
      *
      * @return the builder after the color has been set
+     *
+     * @see    #setColor(int)
      */
     public EmbedBuilder setColor(Color color)
     {
@@ -408,6 +410,18 @@ public class EmbedBuilder
         return this;
     }
 
+    /**
+     * Sets the raw RGB color value for the embed.
+     *
+     * <a href="http://i.imgur.com/2YnxnRM.png" target="_blank">Example</a>
+     *
+     * @param  color
+     *         The raw rgb value, or {@link Role#DEFAULT_COLOR_RAW} to use no color
+     *
+     * @return the builder after the color has been set
+     *
+     * @see    #setColor(java.awt.Color)
+     */
     public EmbedBuilder setColor(int color)
     {
         this.color = color;
