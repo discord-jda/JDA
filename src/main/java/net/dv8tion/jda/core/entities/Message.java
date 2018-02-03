@@ -1264,7 +1264,7 @@ public interface Message extends ISnowflake, Formattable
     }
 
     /**
-     * Represents a {@link net.dv8tion.jda.core.entities.Message message} activity like Spotify
+     * Represents a {@link net.dv8tion.jda.core.entities.Message} activity like Spotify.
      */
     class Activity
     {
@@ -1274,30 +1274,32 @@ public interface Message extends ISnowflake, Formattable
 
         /**
          *
-         * @param type the {@link net.dv8tion.jda.core.entities.Message.ActivityType activityType}
-         *             for the {@link net.dv8tion.jda.core.entities.Message.Activity activity}
-         * @param partyId the partyId for the {@link net.dv8tion.jda.core.entities.Message.Activity activity}
-         * @param application the {@link net.dv8tion.jda.core.entities.Message.Application application}
-         *                    for the {@link net.dv8tion.jda.core.entities.Message.Activity activity}
+         * @param  type the {@link net.dv8tion.jda.core.entities.Message.ActivityType}
+         *         for the {@link net.dv8tion.jda.core.entities.Message.Activity}.
+         *
+         * @param  partyId the partyId for the {@link net.dv8tion.jda.core.entities.Message.Activity}.
+         *
+         * @param  application the {@link net.dv8tion.jda.core.entities.Message.Application}
+         *         for the {@link net.dv8tion.jda.core.entities.Message.Activity}.
          *
          * @throws java.lang.IllegalArgumentException
          *         <ul>
-         *             <li>If {@code type} requires a not null {@link net.dv8tion.jda.core.entities.Message.Application}</li>
-         *             <li>If {@code type} gets a not required not null {@code application}</li>
+         *             <li>If {@link net.dv8tion.jda.core.entities.Message.ActivityType} requires a not null {@link net.dv8tion.jda.core.entities.Message.Application}.</li>
+         *             <li>If {@link net.dv8tion.jda.core.entities.Message.ActivityType} gets a not required not null {@link net.dv8tion.jda.core.entities.Message.Application}.</li>
          *         </ul>
          */
-        public Activity(ActivityType type, String partyId, Application application)
+        Activity(ActivityType type, String partyId, Application application)
         {
             this.type = type;
             this.partyId = partyId;
             if ((type == ActivityType.GAME && application == null) || (type != ActivityType.GAME && application != null))
-                throw new IllegalArgumentException("Whether the ActivityType is wrong or the Application is null!");
+                throw new IllegalArgumentException("Either the ActivityType is wrong or the Application is null!");
             this.application = application;
         }
 
         /**
          *
-         * @return the type of the activity
+         * @return the type of the activity.
          */
         public ActivityType getType()
         {
@@ -1305,9 +1307,10 @@ public interface Message extends ISnowflake, Formattable
         }
 
         /**
-         * {@link java.lang.String string} containing the activity service and its host (a {@link net.dv8tion.jda.core.entities.User} id)<br>
-         * For example : "spotify:86699011792191488"
-         * @return the partys id
+         * A {@link java.lang.String String} probably containing the activity service and its host (a {@link net.dv8tion.jda.core.entities.User User}) id.
+         * <br>For example : "spotify:86699011792191488".
+         *
+         * @return the partys id.
          */
         public String getPartyId()
         {
@@ -1315,10 +1318,10 @@ public interface Message extends ISnowflake, Formattable
         }
 
         /**
-         * Shortcut for grabbing the service of the activity if the {@link net.dv8tion.jda.core.entities.Message.ActivityType activityType} equals
-         * {@link net.dv8tion.jda.core.entities.Message.ActivityType#PARTY ActivityType.PARTY}
+         * Shortcut for grabbing the service of the activity if the {@link net.dv8tion.jda.core.entities.Message.ActivityType ActivityType} equals
+         * {@link net.dv8tion.jda.core.entities.Message.ActivityType#PARTY ActivityType.PARTY}.
          *
-         * @return the service name like "spotify"
+         * @return the service name like "spotify".
          */
         public String getService()
         {
@@ -1326,10 +1329,10 @@ public interface Message extends ISnowflake, Formattable
         }
 
         /**
-         * This is a shortcut for getting the host id of the activity if the {@link net.dv8tion.jda.core.entities.Message.ActivityType activityType} equals
-         * {@link net.dv8tion.jda.core.entities.Message.ActivityType#PARTY ActivityType.PARTY}
+         * This is a shortcut for getting the host id of the activity if the {@link net.dv8tion.jda.core.entities.Message.ActivityType ActivityType} equals
+         * {@link net.dv8tion.jda.core.entities.Message.ActivityType#PARTY ActivityType.PARTY}.
          *
-         * @return the host id like "86699011792191488"
+         * @return the hosts id like "86699011792191488".
          */
         public String getHostId()
         {
@@ -1337,8 +1340,9 @@ public interface Message extends ISnowflake, Formattable
         }
 
         /**
-         * Wrapping method for getting the {@link net.dv8tion.jda.core.entities.Message.Activity#getHostId()} as long
-         * @return the host id
+         * Wrapping method for getting the {@link net.dv8tion.jda.core.entities.Message.Activity#getHostId()} as long.
+         *
+         * @return the hosts id.
          *
          * @see net.dv8tion.jda.core.entities.Message.Activity#getHostId()
          */
@@ -1347,27 +1351,35 @@ public interface Message extends ISnowflake, Formattable
             return Long.parseLong(this.getHostId());
         }
 
+        /**
+         *
+         * @return A possibly {@code null} {@link net.dv8tion.jda.core.entities.Message.Application}.
+         */
         public Application getApplication()
         {
             return application;
         }
 
+        /**
+         *
+         * @return {@link org.json.JSONObject} that can be used for sending an {@link net.dv8tion.jda.core.entities.Message.Activity Activity} in a {@link net.dv8tion.jda.core.entities.Message}.
+         */
         public JSONObject toJSONObject()
         {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("type", this.type.id).put("party_id", partyId);
+            jsonObject.put("type", this.type.id).put("session_id", partyId);
             return jsonObject;
         }
     }
 
     /**
      * Represents the {@link net.dv8tion.jda.core.entities.Message} application if the
-     * {@link net.dv8tion.jda.core.entities.Message.ActivityType activityType} of the
-     * {@link net.dv8tion.jda.core.entities.Message.Activity activity} equals
-     * {@link net.dv8tion.jda.core.entities.Message.ActivityType#GAME ActivityType.GAME}
+     * {@link net.dv8tion.jda.core.entities.Message.ActivityType ActivityType} of the
+     * {@link net.dv8tion.jda.core.entities.Message.Activity Activity} equals
+     * {@link net.dv8tion.jda.core.entities.Message.ActivityType#GAME ActivityType.GAME}.
      *
      * <br>All applications can be found at:
-     * <a href="https://discordapp.com/api/v7/games" target="_blank">https://discordapp.com/api/v7/games</a>
+     * <a href="https://discordapp.com/api/v7/games" target="_blank">https://discordapp.com/api/v7/games</a>.
      */
     class Application
     {
@@ -1377,7 +1389,7 @@ public interface Message extends ISnowflake, Formattable
         private final String coverId;
         private final long id;
 
-        public Application(String name, String description, String iconId, String coverId, long id)
+        Application(String name, String description, String iconId, String coverId, long id)
         {
             this.name = name;
             this.description = description;
@@ -1388,7 +1400,7 @@ public interface Message extends ISnowflake, Formattable
 
         /**
          *
-         * @return the applications name
+         * @return the applications name.
          */
         public String getName()
         {
@@ -1397,7 +1409,7 @@ public interface Message extends ISnowflake, Formattable
 
         /**
          *
-         * @return the applications description
+         * @return the applications description.
          */
         public String getDescription()
         {
@@ -1406,7 +1418,7 @@ public interface Message extends ISnowflake, Formattable
 
         /**
          *
-         * @return the applications icon id
+         * @return the applications icon id.
          */
         public String getIconId()
         {
@@ -1415,7 +1427,7 @@ public interface Message extends ISnowflake, Formattable
 
         /**
          *
-         * @return the applications cover image/id
+         * @return the applications cover image/id.
          */
         public String getCoverId()
         {
@@ -1424,13 +1436,17 @@ public interface Message extends ISnowflake, Formattable
 
         /**
          *
-         * @return the applications id
+         * @return the applications id.
          */
         public long getId()
         {
             return id;
         }
 
+        /**
+         *
+         * @return {@link org.json.JSONObject} that can be used for sending an {@link net.dv8tion.jda.core.entities.Message.Activity Activity} in a {@link net.dv8tion.jda.core.entities.Message}.
+         */
         public JSONObject toJSONObject()
         {
             JSONObject jsonObject = new JSONObject();
@@ -1448,8 +1464,18 @@ public interface Message extends ISnowflake, Formattable
     // missing data for more
     enum ActivityType
     {
+        /**
+         * A {@link net.dv8tion.jda.core.entities.Message.Activity Activity} type used for game parties.
+         */
         GAME(1),
+        /**
+         * A {@link net.dv8tion.jda.core.entities.Message.Activity Activity} type used for spotify parties.
+         */
         PARTY(3),
+        /**
+         * Unknown Discord {@link net.dv8tion.jda.core.entities.Message.Activity Activity} type. Should never happen and would only possibly happen if Discord implemented a new
+         * {@link net.dv8tion.jda.core.entities.Message.Activity Activity} type and JDA had yet to implement support for it.
+         */
         UNKNOWN(-1);
 
         private final int id;
@@ -1459,6 +1485,10 @@ public interface Message extends ISnowflake, Formattable
             this.id = id;
         }
 
+        /**
+         *
+         * @return the id of the type.
+         */
         public int getId()
         {
             return id;

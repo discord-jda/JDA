@@ -35,6 +35,7 @@ public enum ErrorResponse
     UNKNOWN_USER(       10013, "Unknown User"),
     UNKNOWN_EMOJI(      10014, "Unknown Emoji"),
     UNKNOWN_WEBHOOK(    10015, "Unknown Webhook"),
+    UNKNOWN_SESSION(    10020, "Unknown Session"),
     BOTS_NOT_ALLOWED(   20001, "Bots cannot use this endpoint"),
     ONLY_BOTS_ALLOWED(  20002, "Only bots can use this endpoint"),
     MAX_GUILDS(         30001, "Maximum number of Guilds reached (100)"),

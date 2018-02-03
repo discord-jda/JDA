@@ -324,6 +324,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The send request was attempted after the channel was deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_SESSION UNKNOWN_SESSION}
+     *     <br>The session was not found.</li>
      * </ul>
      *
      * @param  msg
@@ -834,6 +837,36 @@ public interface MessageChannel extends ISnowflake, Formattable
         final long maxSize = getJDA().getSelfUser().getAllowedFileSize();
         Checks.check(data.length <= maxSize, "File is to big! Max file-size is %d bytes", maxSize);
         return sendFile(new ByteArrayInputStream(data), fileName, message);
+    }
+
+    /**
+     * Sends a {@link net.dv8tion.jda.core.entities.Message Message} with the {@link net.dv8tion.jda.core.entities.Message.Activity Activity}
+     * to this {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.
+     *
+     * <p>For {@link net.dv8tion.jda.core.requests.ErrorResponse} information, refer to {@link #sendMessage(Message)}.
+     *
+     * @param  activity
+     *         the {@link net.dv8tion.jda.core.entities.Message.Activity} to send in the {@link net.dv8tion.jda.core.entities.Message}.
+     *
+     * @throws net.dv8tion.jda.client.exceptions.VerificationLevelException
+     *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel} and
+     *         {@link net.dv8tion.jda.core.entities.TextChannel#getGuild() TextChannel.getGuild()}{@link net.dv8tion.jda.core.entities.Guild#checkVerification() .checkVerification()}
+     *         returns false.
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided activity is {@code null}
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}
+     *         and both the currently logged in account and the target user are bots.
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.MessageAction MessageAction}
+     *         <br>The newly created Message after it has been sent to Discord.
+     */
+    @CheckReturnValue
+    default MessageAction sendActivity(Message.Activity activity) {
+        Checks.notNull(activity, "activity");
+
+        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
+        return new MessageAction(getJDA(), route, this).setActivity(activity);
     }
 
     /**

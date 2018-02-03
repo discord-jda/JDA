@@ -506,6 +506,15 @@ public class MessageAction extends RestAction<Message> implements Appendable
         return this;
     }
 
+    /**
+     * Sets the {@link net.dv8tion.jda.core.entities.Message.Activity Activity} and its {@link net.dv8tion.jda.core.entities.Message.Application Application}
+     * that should be used for this Message.
+     * @param  activity
+     *         the activity discord will display
+     *
+     * @return Updated MessageAction for chaining convenience
+     */
+    @CheckReturnValue
     public MessageAction setActivity(Message.Activity activity)
     {
         this.activity = activity;
