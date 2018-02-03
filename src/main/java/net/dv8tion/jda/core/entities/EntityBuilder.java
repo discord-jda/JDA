@@ -881,14 +881,33 @@ public class EntityBuilder
         {
             JSONObject activityData = jsonObject.getJSONObject("activity");
             Message.ActivityType activityType = Message.ActivityType.fromId(activityData.getInt("type"));
-            if (activityType == Message.ActivityType.PARTY)
+            final String partyId = activityData.getString("party_id");
+            Message.Application application = null;
+
+            switch (activityType)
             {
-                activity = new Message.Activity(activityType, activityData.getString("party_id"));
-            }
-            else
-            {
-                WebSocketClient.LOG.debug("Received an unknown activity type in a message. JSON: {}", jsonObject);
-                activity=  new Message.Activity(activityType, "");
+                case PARTY:
+                    activity = new Message.Activity(activityType, partyId, application);
+                    break;
+                case GAME:
+                    {
+                        if (!jsonObject.isNull("application"))
+                        {
+                            JSONObject applicationData = jsonObject.getJSONObject("application");
+                            final String name = applicationData.getString("name");
+                            final String description = applicationData.getString("description");
+                            final String iconId = applicationData.getString("icon");
+                            final String coverId = applicationData.getString("cover_image");
+                            final long applicationId = activityData.getLong("id");
+                            application = new Message.Application(name, description, iconId, coverId, applicationId);
+                            activity = new Message.Activity(activityType, partyId, application);
+                        }
+                        break;
+                    }
+                default:
+                    WebSocketClient.LOG.debug("Received an unknown activity type in a message. JSON: {}", jsonObject);
+                    activity = new Message.Activity(activityType, partyId, application);
+                    break;
             }
         }
 
@@ -952,7 +971,8 @@ public class EntityBuilder
             default:
                 return new SystemMessage(id, chan, type,
                     fromWebhook, mentionsEveryone, tts, pinned,
-                    content, nonce, user, editTime, reactions, attachments, embeds);
+                    content, nonce, user, editTime, reactions, attachments, embeds,
+                    activity);
         }
 
     }

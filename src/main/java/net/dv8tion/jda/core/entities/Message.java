@@ -20,7 +20,6 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.requests.WebSocketClient;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.MessageAction;
 import net.dv8tion.jda.core.utils.Checks;
@@ -1271,11 +1270,29 @@ public interface Message extends ISnowflake, Formattable
     {
         private final ActivityType type;
         private final String partyId;
+        private final Application application;
 
-        Activity(ActivityType type, String partyId)
+        /**
+         *
+         * @param type the {@link net.dv8tion.jda.core.entities.Message.ActivityType activityType}
+         *             for the {@link net.dv8tion.jda.core.entities.Message.Activity activity}
+         * @param partyId the partyId for the {@link net.dv8tion.jda.core.entities.Message.Activity activity}
+         * @param application the {@link net.dv8tion.jda.core.entities.Message.Application application}
+         *                    for the {@link net.dv8tion.jda.core.entities.Message.Activity activity}
+         *
+         * @throws java.lang.IllegalArgumentException
+         *         <ul>
+         *             <li>If {@code type} requires a not null {@link net.dv8tion.jda.core.entities.Message.Application}</li>
+         *             <li>If {@code type} gets a not required not null {@code application}</li>
+         *         </ul>
+         */
+        public Activity(ActivityType type, String partyId, Application application)
         {
             this.type = type;
             this.partyId = partyId;
+            if ((type == ActivityType.GAME && application == null) || (type != ActivityType.GAME && application != null))
+                throw new IllegalArgumentException("Whether the ActivityType is wrong or the Application is null!");
+            this.application = application;
         }
 
         /**
@@ -1288,9 +1305,9 @@ public interface Message extends ISnowflake, Formattable
         }
 
         /**
-         *
-         * @return {@link java.lang.String string} containing the activity service and its host (a {@link net.dv8tion.jda.core.entities.User} id)<br>
-         *         For example : "spotify:86699011792191488"
+         * {@link java.lang.String string} containing the activity service and its host (a {@link net.dv8tion.jda.core.entities.User} id)<br>
+         * For example : "spotify:86699011792191488"
+         * @return the partys id
          */
         public String getPartyId()
         {
@@ -1298,30 +1315,140 @@ public interface Message extends ISnowflake, Formattable
         }
 
         /**
-         * Shortcut for grabbing the service of the activity
+         * Shortcut for grabbing the service of the activity if the {@link net.dv8tion.jda.core.entities.Message.ActivityType activityType} equals
+         * {@link net.dv8tion.jda.core.entities.Message.ActivityType#PARTY ActivityType.PARTY}
          *
          * @return the service name like "spotify"
          */
         public String getService()
         {
-            return partyId.split(":", 2)[0];
+            return (this.type == ActivityType.PARTY) ? partyId.split(":", 2)[0] : null;
         }
 
         /**
-         * This is a shortcut for getting the host id of the activity
+         * This is a shortcut for getting the host id of the activity if the {@link net.dv8tion.jda.core.entities.Message.ActivityType activityType} equals
+         * {@link net.dv8tion.jda.core.entities.Message.ActivityType#PARTY ActivityType.PARTY}
          *
-         * @return the service name like "86699011792191488"
+         * @return the host id like "86699011792191488"
          */
         public String getHostId()
         {
-            return partyId.split(":", 2)[1];
+            return (this.type == ActivityType.PARTY) ? partyId.split(":", 2)[1] : "-1";
+        }
+
+        /**
+         * Wrapping method for getting the {@link net.dv8tion.jda.core.entities.Message.Activity#getHostId()} as long
+         * @return the host id
+         *
+         * @see net.dv8tion.jda.core.entities.Message.Activity#getHostId()
+         */
+        public long getHostIdLong()
+        {
+            return Long.parseLong(this.getHostId());
+        }
+
+        public Application getApplication()
+        {
+            return application;
+        }
+
+        public JSONObject toJSONObject()
+        {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("type", this.type.id).put("party_id", partyId);
+            return jsonObject;
+        }
+    }
+
+    /**
+     * Represents the {@link net.dv8tion.jda.core.entities.Message} application if the
+     * {@link net.dv8tion.jda.core.entities.Message.ActivityType activityType} of the
+     * {@link net.dv8tion.jda.core.entities.Message.Activity activity} equals
+     * {@link net.dv8tion.jda.core.entities.Message.ActivityType#GAME ActivityType.GAME}
+     *
+     * <br>All applications can be found at:
+     * <a href="https://discordapp.com/api/v7/games" target="_blank">https://discordapp.com/api/v7/games</a>
+     */
+    class Application
+    {
+        private final String name;
+        private final String description;
+        private final String iconId;
+        private final String coverId;
+        private final long id;
+
+        public Application(String name, String description, String iconId, String coverId, long id)
+        {
+            this.name = name;
+            this.description = description;
+            this.iconId = iconId;
+            this.coverId = coverId;
+            this.id = id;
+        }
+
+        /**
+         *
+         * @return the applications name
+         */
+        public String getName()
+        {
+            return name;
+        }
+
+        /**
+         *
+         * @return the applications description
+         */
+        public String getDescription()
+        {
+            return description;
+        }
+
+        /**
+         *
+         * @return the applications icon id
+         */
+        public String getIconId()
+        {
+            return iconId;
+        }
+
+        /**
+         *
+         * @return the applications cover image/id
+         */
+        public String getCoverId()
+        {
+            return coverId;
+        }
+
+        /**
+         *
+         * @return the applications id
+         */
+        public long getId()
+        {
+            return id;
+        }
+
+        public JSONObject toJSONObject()
+        {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("name", name).put("id", Long.toUnsignedString(id));
+            if (iconId != null)
+                jsonObject.put("icon", iconId);
+            if (description != null)
+                jsonObject.put("description", description);
+            if (coverId != null)
+                jsonObject.put("cover_image", coverId);
+            return jsonObject;
         }
     }
 
     // missing data for more
     enum ActivityType
     {
-        //GAME()
+        GAME(1),
         PARTY(3),
         UNKNOWN(-1);
 

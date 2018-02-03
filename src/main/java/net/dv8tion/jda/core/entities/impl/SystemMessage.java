@@ -29,9 +29,10 @@ public class SystemMessage extends ReceivedMessage
         long id, MessageChannel channel, MessageType type,
         boolean fromWebhook, boolean mentionsEveryone, boolean tts, boolean pinned,
         String content, String nonce, User author, OffsetDateTime editTime,
-        List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds)
+        List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds,
+        Activity activity)
     {
-        super(id, channel, type, fromWebhook, mentionsEveryone, tts, pinned, content, nonce, author, editTime, reactions, attachments, embeds, null);
+        super(id, channel, type, fromWebhook, mentionsEveryone, tts, pinned, content, nonce, author, editTime, reactions, attachments, embeds, activity);
     }
 
     @Override

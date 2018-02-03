@@ -72,6 +72,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
     protected final Map<String, InputStream> files = new HashMap<>();
     protected final StringBuilder content;
     protected final MessageChannel channel;
+    protected Message.Activity activity = null;
     protected MessageEmbed embed = null;
     protected String nonce = null;
     protected boolean tts = false, override = false;
@@ -505,6 +506,12 @@ public class MessageAction extends RestAction<Message> implements Appendable
         return this;
     }
 
+    public MessageAction setActivity(Message.Activity activity)
+    {
+        this.activity = activity;
+        return this;
+    }
+
     protected RequestBody asMultipart()
     {
         final MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
@@ -542,6 +549,14 @@ public class MessageAction extends RestAction<Message> implements Appendable
                 obj.put("nonce", JSONObject.NULL);
             else
                 obj.put("nonce", nonce);
+            if (activity == null)
+                obj.put("activity", JSONObject.NULL);
+            else
+            {
+                obj.put("activity", getJSONActivity(activity));
+                if (activity.getType() == Message.ActivityType.GAME)
+                    obj.put("application", getJSONApplication(activity.getApplication()));
+            }
             obj.put("tts", tts);
         }
         else
@@ -552,6 +567,11 @@ public class MessageAction extends RestAction<Message> implements Appendable
                 obj.put("content", content.toString());
             if (nonce != null)
                 obj.put("nonce", nonce);
+            if (activity != null) {
+                obj.put("activity", getJSONActivity(activity));
+                if (activity.getType() == Message.ActivityType.GAME)
+                    obj.put("application", getJSONApplication(activity.getApplication()));
+            }
             obj.put("tts", tts);
         }
         return obj;
@@ -560,6 +580,16 @@ public class MessageAction extends RestAction<Message> implements Appendable
     protected static JSONObject getJSONEmbed(final MessageEmbed embed)
     {
         return embed.toJSONObject();
+    }
+
+    protected static JSONObject getJSONActivity(final Message.Activity activity)
+    {
+        return activity.toJSONObject();
+    }
+
+    protected static JSONObject getJSONApplication(final Message.Application application)
+    {
+        return application.toJSONObject();
     }
 
     protected void checkFileAmount()
