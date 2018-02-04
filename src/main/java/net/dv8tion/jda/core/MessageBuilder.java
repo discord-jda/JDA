@@ -176,7 +176,7 @@ public class MessageBuilder implements Appendable
 
     /**
      * Sets the {@link net.dv8tion.jda.core.entities.Message.Activity Activity} of the resulting Message.
-     * <br>This will override already set activity.
+     * <br>This will override already set activity. <strong>Be careful with this feature!</strong>
      *
      * @param  activity
      *         the activity to use, or {@code null} to reset the activity.

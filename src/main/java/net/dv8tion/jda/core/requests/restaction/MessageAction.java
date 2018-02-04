@@ -509,6 +509,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
     /**
      * Sets the {@link net.dv8tion.jda.core.entities.Message.Activity Activity} and its {@link net.dv8tion.jda.core.entities.Message.Application Application}
      * that should be used for this Message.
+     * <br><strong>Be careful with this feature!</strong>
      * @param  activity
      *         the activity discord will display
      *

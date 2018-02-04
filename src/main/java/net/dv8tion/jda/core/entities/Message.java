@@ -1496,12 +1496,11 @@ public interface Message extends ISnowflake, Formattable
 
         public static ActivityType fromId(int id)
         {
-            switch (id) {
-                case 3:
-                    return PARTY;
-                default:
-                    return UNKNOWN;
+            for (ActivityType activityType : values()) {
+                if (activityType.id == id)
+                    return activityType;
             }
+            return UNKNOWN;
         }
     }
 }

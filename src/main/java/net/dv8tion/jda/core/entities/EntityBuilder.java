@@ -898,7 +898,7 @@ public class EntityBuilder
                             final String description = applicationData.getString("description");
                             final String iconId = applicationData.getString("icon");
                             final String coverId = applicationData.getString("cover_image");
-                            final long applicationId = activityData.getLong("id");
+                            final long applicationId = applicationData.getLong("id");
                             application = new Message.Application(name, description, iconId, coverId, applicationId);
                             activity = new Message.Activity(activityType, partyId, application);
                         }
