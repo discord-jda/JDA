@@ -835,7 +835,7 @@ public class MessageBuilder implements Appendable
         if (message.length() > Message.MAX_CONTENT_LENGTH)
             throw new IllegalStateException("Cannot build a Message with more than 2000 characters. Please limit your input.");
 
-        return new DataMessage(isTTS, message, nonce, embed);
+        return new DataMessage(isTTS, message, nonce, embed, activity);
     }
 
     /**
@@ -904,7 +904,7 @@ public class MessageBuilder implements Appendable
 
     protected DataMessage build(int beginIndex, int endIndex)
     {
-        return new DataMessage(isTTS, builder.substring(beginIndex, endIndex), null, null);
+        return new DataMessage(isTTS, builder.substring(beginIndex, endIndex), null, null, null);
     }
 
     /**

@@ -26,11 +26,13 @@ import java.util.Objects;
 public class DataMessage extends AbstractMessage
 {
     private MessageEmbed embed;
+    private Activity activity;
 
-    public DataMessage(boolean tts, String content, String nonce, MessageEmbed embed)
+    public DataMessage(boolean tts, String content, String nonce, MessageEmbed embed, Activity activity)
     {
         super(content, nonce, tts);
         this.embed = embed;
+        this.activity = activity;
     }
 
     @Override
@@ -71,10 +73,22 @@ public class DataMessage extends AbstractMessage
         return this;
     }
 
+    public DataMessage setActivity(Activity activity)
+    {
+        this.activity = activity;
+        return this;
+    }
+
     @Override
     public List<MessageEmbed> getEmbeds()
     {
         return embed == null ? Collections.emptyList() : Collections.singletonList(embed);
+    }
+
+    @Override
+    public Activity getActivity()
+    {
+        return activity;
     }
 
     // UNSUPPORTED OPERATIONS ON MESSAGE BUILDER OUTPUT
