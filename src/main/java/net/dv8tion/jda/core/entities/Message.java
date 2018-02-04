@@ -1288,7 +1288,7 @@ public interface Message extends ISnowflake, Formattable
          *             <li>If {@link net.dv8tion.jda.core.entities.Message.ActivityType} gets a not required not null {@link net.dv8tion.jda.core.entities.Message.Application}.</li>
          *         </ul>
          */
-        Activity(ActivityType type, String partyId, Application application)
+        public Activity(ActivityType type, String partyId, Application application)
         {
             this.type = type;
             this.partyId = partyId;
@@ -1389,7 +1389,7 @@ public interface Message extends ISnowflake, Formattable
         private final String coverId;
         private final long id;
 
-        Application(String name, String description, String iconId, String coverId, long id)
+        public Application(String name, String description, String iconId, String coverId, long id)
         {
             this.name = name;
             this.description = description;
