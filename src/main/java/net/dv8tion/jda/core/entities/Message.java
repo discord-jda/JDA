@@ -539,7 +539,7 @@ public interface Message extends ISnowflake, Formattable
     boolean isTTS();
 
     /**
-     * A {@link net.dv8tion.jda.core.entities.Message.Activity Activity} that contains its type and party id.
+     * A {@link net.dv8tion.jda.core.entities.Message.Activity Activity} that contains its type and party id that is <strong>not</strong> reusable.
      *
      * @return The activity, or {@code null} if no activity was added to the message.
      */
