@@ -40,10 +40,13 @@ public class RichPresence extends Game
     protected final Timestamps timestamps;
     protected final Image largeImage;
     protected final Image smallImage;
+    protected final String sessionId;
+    protected final String syncId;
+    protected final int flags;
 
     protected RichPresence(
         GameType type, String name, String url, long applicationId,
-        Party party, String details, String state, Timestamps timestamps,
+        Party party, String details, String state, Timestamps timestamps, String syncId, String sessionId, int flags,
         String largeImageKey, String largeImageText, String smallImageKey, String smallImageText)
     {
         super(name, url, type);
@@ -52,6 +55,9 @@ public class RichPresence extends Game
         this.details = details;
         this.state = state;
         this.timestamps = timestamps;
+        this.sessionId = sessionId;
+        this.syncId = syncId;
+        this.flags = flags;
         this.largeImage = largeImageKey != null ? new Image(largeImageKey, largeImageText) : null;
         this.smallImage = smallImageKey != null ? new Image(smallImageKey, smallImageText) : null;
     }
@@ -87,6 +93,40 @@ public class RichPresence extends Game
     public String getApplicationId()
     {
         return Long.toUnsignedString(applicationId);
+    }
+
+    /**
+     * Session ID for this presence.
+     * <br>Used by spotify integration.
+     *
+     * @return Session ID
+     */
+    @Nullable
+    public String getSessionId()
+    {
+        return sessionId;
+    }
+
+    /**
+     * Sync ID for this presence.
+     * <br>Used by spotify integration.
+     *
+     * @return Sync ID
+     */
+    @Nullable
+    public String getSyncId()
+    {
+        return syncId;
+    }
+
+    /**
+     * Flags for this presence
+     *
+     * @return The flags for this presence
+     */
+    public int getFlags()
+    {
+        return flags;
     }
 
     /**
@@ -233,6 +273,8 @@ public class RichPresence extends Game
         @Nonnull
         public String getUrl()
         {
+            if (key.startsWith("spotify:"))
+                return "https://i.scdn.co/image/" + key.substring("spotify:".length());
             return "https://cdn.discordapp.com/app-assets/" + applicationId + "/" + key + ".png";
         }
 
