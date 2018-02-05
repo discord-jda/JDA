@@ -255,16 +255,6 @@ public abstract class RestAction<T>
      * <br>If the provided supplier evaluates to {@code false} or throws an exception this will not be finished.
      * When an exception is thrown from the supplier it will be provided to the failure callback.
      *
-     * <p><b>Warning</b>
-     * <br>If the checks are not met and the rest action is not executed by the queue worker,
-     * the success and failure consumers for {@link #queue(Consumer, Consumer)} will not be executed
-     * and the RequestFuture for {@link #submit()} will never finish!
-     * <br>If set to a non-null value, the methods {@link #complete()} and {@link #complete(boolean)} will throw
-     * a {@link java.lang.IllegalStateException IllegalStateException} to counter possible deadlocks.
-     * A RestAction cannot complete if the checks evaluate to false thus making it unsafe to be used.
-     * Keep in mind that some JDA internals require the use of {@link #complete(boolean)} to retrieve volatile information
-     * from the API to continue with the lifecycle events.
-     *
      * @param  checks
      *         The checks to run before executing the request, or {@code null} to run no checks
      *
@@ -373,10 +363,6 @@ public abstract class RestAction<T>
      *
      * <p><b>This might throw {@link java.lang.RuntimeException RuntimeExceptions}</b>
      *
-     * @throws java.lang.IllegalStateException
-     *         If the current RestAction has checks enabled;
-     *         use {@code setCheck(null)} to disable all last-second checks before using
-     *
      * @return The response value
      */
     public T complete()
@@ -405,16 +391,11 @@ public abstract class RestAction<T>
      * @throws RateLimitedException
      *         If we were rate limited and the {@code shouldQueue} is false.
      *         Use {@link #complete()} to avoid this Exception.
-     * @throws java.lang.IllegalStateException
-     *         If the current RestAction has checks enabled;
-     *         use {@code setCheck(null)} to disable all last-second checks before using
      *
      * @return The response value
      */
     public T complete(boolean shouldQueue) throws RateLimitedException
     {
-        if (checks != null)
-            throw new IllegalStateException("Cannot complete RestAction with set checks! Use setCheck(null) before trying again!");
         try
         {
             return submit(shouldQueue).get();
