@@ -894,18 +894,20 @@ public class EntityBuilder
                         if (!jsonObject.isNull("application"))
                         {
                             JSONObject applicationData = jsonObject.getJSONObject("application");
+
                             final String name = applicationData.getString("name");
                             final String description = applicationData.getString("description");
                             final String iconId = applicationData.getString("icon");
                             final String coverId = applicationData.getString("cover_image");
                             final long applicationId = applicationData.getLong("id");
+
                             application = new Message.Application(name, description, iconId, coverId, applicationId);
                             activity = new Message.Activity(activityType, partyId, application);
                         }
                         break;
                     }
                 default:
-                    WebSocketClient.LOG.debug("Received an unknown activity type in a message. JSON: {}", jsonObject);
+                    WebSocketClient.LOG.debug("Received an unknown activity type in a message. JSON: {}", activityData);
                     activity = new Message.Activity(activityType, partyId, application);
                     break;
             }

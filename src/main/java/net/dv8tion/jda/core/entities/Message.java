@@ -1461,7 +1461,9 @@ public interface Message extends ISnowflake, Formattable
         }
     }
 
-    // missing data for more
+    /**
+     * An enum containing {@link net.dv8tion.jda.core.entities.Message.Activity Activity} types
+     */
     enum ActivityType
     {
         /**

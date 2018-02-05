@@ -87,8 +87,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
     public MessageAction(JDA api, Route.CompiledRoute route, MessageChannel channel, StringBuilder contentBuilder)
     {
         super(api, route);
-        Checks.check(contentBuilder.length() <= Message.MAX_CONTENT_LENGTH,
-            "Cannot build a Message with more than %d characters. Please limit your input.", Message.MAX_CONTENT_LENGTH);
+        Checks.check(contentBuilder.length() <= Message.MAX_CONTENT_LENGTH, CONTENT_TOO_BIG);
         this.content = contentBuilder;
         this.channel = channel;
     }
@@ -104,7 +103,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
     public boolean isEmpty()
     {
         return Helpers.isBlank(content)
-            && (embed == null || embed.isEmpty() || !hasPermission(Permission.MESSAGE_EMBED_LINKS));
+            && ( (embed == null || embed.isEmpty() || !hasPermission(Permission.MESSAGE_EMBED_LINKS)) || (activity == null || !hasPermission(Permission.MESSAGE_ATTACH_FILES)) );
     }
 
     /**

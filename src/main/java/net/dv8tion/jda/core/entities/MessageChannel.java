@@ -863,7 +863,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     @CheckReturnValue
     default MessageAction sendActivity(Message.Activity activity) {
-        Checks.notNull(activity, "activity");
+        Checks.notNull(activity, "Provided activity");
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
         return new MessageAction(getJDA(), route, this).setActivity(activity);
