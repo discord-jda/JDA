@@ -132,13 +132,14 @@ public class Game
         Game oGame = (Game) o;
         return oGame.getType() == type
             && Objects.equals(name, oGame.getName())
-            && Objects.equals(url, oGame.getUrl());
+            && Objects.equals(url, oGame.getUrl())
+            && Objects.equals(timestamps, oGame.timestamps);
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash(name, type, url);
+        return Objects.hash(name, type, url, timestamps);
     }
 
     @Override
