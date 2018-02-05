@@ -162,6 +162,7 @@ public abstract class RestAction<T>
             LOG.error("RestAction queue returned failure: [{}] {}", t.getClass().getSimpleName(), t.getMessage());
         }
     };
+
     protected static boolean passContext = false;
 
     protected final JDAImpl api;
@@ -760,5 +761,47 @@ public abstract class RestAction<T>
 
         @Override
         protected void handleResponse(Response response, Request<T> request) { }
+    }
+
+    /*
+        useful for final permission checks:
+
+        @Override
+        protected BooleanSupplier finalizeChecks()
+        {
+            return new CheckWrapper(super.finalizeChecks(), () -> hasPermission(Permission.MESSAGE_WRITE));
+        }
+     */
+    protected static class CheckWrapper implements BooleanSupplier
+    {
+        public static final CheckWrapper EMPTY = new CheckWrapper(null, null)
+        {
+            public boolean getAsBoolean() { return true; }
+        };
+
+        protected final BooleanSupplier pre;
+        protected final BooleanSupplier wrapped;
+
+        public CheckWrapper(BooleanSupplier wrapped, BooleanSupplier pre)
+        {
+            this.pre = pre;
+            this.wrapped = wrapped;
+        }
+
+        public boolean pre()
+        {
+            return pre != null && pre.getAsBoolean();
+        }
+
+        public boolean test()
+        {
+            return wrapped != null && wrapped.getAsBoolean();
+        }
+
+        @Override
+        public boolean getAsBoolean()
+        {
+            return pre() && test();
+        }
     }
 }
