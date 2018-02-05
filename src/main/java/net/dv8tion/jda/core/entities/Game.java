@@ -17,6 +17,7 @@ package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.utils.Checks;
 
+import javax.annotation.Nullable;
 import java.util.Objects;
 
 /**
@@ -31,6 +32,7 @@ public class Game
     protected final String name;
     protected final String url;
     protected final Game.GameType type;
+    protected final RichPresence.Timestamps timestamps;
 
     protected Game(String name)
     {
@@ -44,9 +46,15 @@ public class Game
 
     protected Game(String name, String url, GameType type)
     {
+        this(name, url, type, null);
+    }
+
+    protected Game(String name, String url, GameType type, RichPresence.Timestamps timestamps)
+    {
         this.name = name;
         this.url = url;
         this.type = type;
+        this.timestamps = timestamps;
     }
 
     /**
@@ -100,6 +108,17 @@ public class Game
     public GameType getType()
     {
         return type;
+    }
+
+    /**
+     * Information on the match duration, start, and end.
+     *
+     * @return {@link net.dv8tion.jda.core.entities.RichPresence.Timestamps Timestamps} wrapper of {@code null} if unset
+     */
+    @Nullable
+    public RichPresence.Timestamps getTimestamps()
+    {
+        return timestamps;
     }
 
     @Override
