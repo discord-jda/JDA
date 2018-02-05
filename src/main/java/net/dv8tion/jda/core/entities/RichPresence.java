@@ -37,7 +37,6 @@ public class RichPresence extends Game
     protected final Party party;
     protected final String details;
     protected final String state;
-    protected final Timestamps timestamps;
     protected final Image largeImage;
     protected final Image smallImage;
     protected final String sessionId;
@@ -49,12 +48,11 @@ public class RichPresence extends Game
         Party party, String details, String state, Timestamps timestamps, String syncId, String sessionId, int flags,
         String largeImageKey, String largeImageText, String smallImageKey, String smallImageText)
     {
-        super(name, url, type);
+        super(name, url, type, timestamps);
         this.applicationId = applicationId;
         this.party = party;
         this.details = details;
         this.state = state;
-        this.timestamps = timestamps;
         this.sessionId = sessionId;
         this.syncId = syncId;
         this.flags = flags;
@@ -162,17 +160,6 @@ public class RichPresence extends Game
     public Party getParty()
     {
         return party;
-    }
-
-    /**
-     * Information on the match duration, start, and end.
-     *
-     * @return {@link net.dv8tion.jda.core.entities.RichPresence.Timestamps Timestamps} wrapper of {@code null} if unset
-     */
-    @Nullable
-    public Timestamps getTimestamps()
-    {
-        return timestamps;
     }
 
     /**

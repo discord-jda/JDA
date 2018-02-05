@@ -624,16 +624,6 @@ public class EntityBuilder
             type = Game.GameType.DEFAULT;
         }
 
-        // data for spotify
-        String sessionId = gameJson.optString("session_id", null);
-        String syncId = gameJson.optString("sync_id", null);
-        int flags = Helpers.optInt(gameJson, "flags", 0);
-        // for rich presence apps
-        long id = Helpers.optLong(gameJson, "application_id", 0);
-        if (sessionId == null && id == 0) // normal game
-            return new Game(name, url, type);
-        String details = gameJson.isNull("details") ? null : String.valueOf(gameJson.get("details"));
-        String state = gameJson.isNull("state") ? null : String.valueOf(gameJson.get("state"));
         RichPresence.Timestamps timestamps = null;
         if (!gameJson.isNull("timestamps"))
         {
@@ -643,6 +633,17 @@ public class EntityBuilder
             end = obj.isNull("end") ? 0 : obj.getLong("end");
             timestamps = new RichPresence.Timestamps(start, end);
         }
+
+        // data for spotify
+        String sessionId = gameJson.optString("session_id", null);
+        String syncId = gameJson.optString("sync_id", null);
+        int flags = Helpers.optInt(gameJson, "flags", 0);
+        // for rich presence apps
+        long id = Helpers.optLong(gameJson, "application_id", 0);
+        if (sessionId == null && id == 0) // normal game
+            return new Game(name, url, type, timestamps);
+        String details = gameJson.isNull("details") ? null : String.valueOf(gameJson.get("details"));
+        String state = gameJson.isNull("state") ? null : String.valueOf(gameJson.get("state"));
 
         RichPresence.Party party = null;
         if (!gameJson.isNull("party"))
