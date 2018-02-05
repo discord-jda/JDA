@@ -193,7 +193,7 @@ public class RichPresence extends Game
     @Override
     public int hashCode()
     {
-        return Objects.hash(applicationId, state, details, party, timestamps, largeImage, smallImage);
+        return Objects.hash(applicationId, state, details, party, sessionId, syncId, flags, timestamps, largeImage, smallImage);
     }
 
     @Override
@@ -211,6 +211,9 @@ public class RichPresence extends Game
             && Objects.equals(state, p.state)
             && Objects.equals(details, p.details)
             && Objects.equals(party, p.party)
+            && Objects.equals(sessionId, p.sessionId)
+            && Objects.equals(syncId, p.syncId)
+            && Objects.equals(flags, p.flags)
             && Objects.equals(timestamps, p.timestamps)
             && Objects.equals(largeImage, p.largeImage)
             && Objects.equals(smallImage, p.smallImage);
