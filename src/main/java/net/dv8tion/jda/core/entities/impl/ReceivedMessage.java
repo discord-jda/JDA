@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.MessageBuilder;
@@ -50,6 +51,8 @@ public class ReceivedMessage extends AbstractMessage
     protected final List<MessageReaction> reactions;
     protected final List<Attachment> attachments;
     protected final List<MessageEmbed> embeds;
+    protected final TLongSet mentionedUsers;
+    protected final TLongSet mentionedRoles;
 
     // LAZY EVALUATED
     protected String altContent = null;
@@ -63,7 +66,7 @@ public class ReceivedMessage extends AbstractMessage
 
     public ReceivedMessage(
         long id, MessageChannel channel, MessageType type,
-        boolean fromWebhook, boolean mentionsEveryone, boolean tts, boolean pinned,
+        boolean fromWebhook, boolean mentionsEveryone, TLongSet mentionedUsers, TLongSet mentionedRoles, boolean tts, boolean pinned,
         String content, String nonce, User author, OffsetDateTime editTime,
         List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds)
     {
@@ -80,6 +83,8 @@ public class ReceivedMessage extends AbstractMessage
         this.reactions = Collections.unmodifiableList(reactions);
         this.attachments = Collections.unmodifiableList(attachments);
         this.embeds = Collections.unmodifiableList(embeds);
+        this.mentionedUsers = mentionedUsers;
+        this.mentionedRoles = mentionedRoles;
     }
 
     @Override
@@ -176,6 +181,8 @@ public class ReceivedMessage extends AbstractMessage
                 try
                 {
                     long id = MiscUtil.parseSnowflake(matcher.group(1));
+                    if(!mentionedUsers.contains(id))
+                        continue;
                     User user = getJDA().getUserById(id);
                     if (user == null)
                         user = api.getFakeUserMap().get(id);
@@ -225,6 +232,8 @@ public class ReceivedMessage extends AbstractMessage
                 try
                 {
                     long id = MiscUtil.parseSnowflake(matcher.group(1));
+                    if(!mentionedRoles.contains(id))
+                        continue;
                     Role role = null;
                     if (isFromType(ChannelType.TEXT)) // role lookup is faster if its in the same guild (no global map)
                         role = getGuild().getRoleById(id);

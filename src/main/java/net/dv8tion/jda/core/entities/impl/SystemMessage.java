@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.MessageAction;
@@ -31,7 +32,8 @@ public class SystemMessage extends ReceivedMessage
         String content, String nonce, User author, OffsetDateTime editTime,
         List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds)
     {
-        super(id, channel, type, fromWebhook, mentionsEveryone, tts, pinned, content, nonce, author, editTime, reactions, attachments, embeds);
+        super(id, channel, type, fromWebhook, mentionsEveryone, new TLongHashSet(0), new TLongHashSet(0),
+            tts, pinned, content, nonce, author, editTime, reactions, attachments, embeds);
     }
 
     @Override
