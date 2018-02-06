@@ -883,21 +883,22 @@ public class EntityBuilder
         if (!jsonObject.isNull("activity"))
         {
             JSONObject activityData = jsonObject.getJSONObject("activity");
-            MessageActivity.ActivityType activityType = MessageActivity.ActivityType.fromId(activityData.optInt("type", -1));
+            MessageActivity.ActivityType activityType = MessageActivity.ActivityType.fromId(activityData.getInt("type"));
             final String partyId = activityData.optString("party_id", null);
             MessageActivity.Application application = null;
 
             switch (activityType)
             {
-                case PARTY: {
+                case LISTENING:
                     break;
-                }
-                case GAME: {
+                case JOIN:
+                case SPECTATE:
+                case JOIN_REQUEST:
                         if (!jsonObject.isNull("application"))
                         {
                             JSONObject applicationData = jsonObject.getJSONObject("application");
 
-                            final String name = applicationData.optString("name", null);
+                            final String name = applicationData.getString("name");
                             final String description = applicationData.getString("description");
                             final String iconId = applicationData.getString("icon");
                             final String coverId = applicationData.getString("cover_image");
@@ -906,11 +907,10 @@ public class EntityBuilder
                             application = new MessageActivity.Application(name, description, iconId, coverId, applicationId);
                         }
                         break;
-                }
-                default: {
+                default:
                     WebSocketClient.LOG.debug("Received an unknown activity type in a message. JSON: {}", activityData);
                     break;
-                }
+
             }
             activity = new MessageActivity(activityType, partyId, application);
         }

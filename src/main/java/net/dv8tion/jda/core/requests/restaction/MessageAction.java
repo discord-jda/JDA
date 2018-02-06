@@ -566,7 +566,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
             else
             {
                 obj.put("activity", getJSONActivity(activity));
-                if (activity.getType() == MessageActivity.ActivityType.GAME)
+                if (activity.getType() != MessageActivity.ActivityType.LISTENING)
                     obj.put("application", getJSONApplication(activity.getApplication()));
             }
             obj.put("tts", tts);
@@ -582,7 +582,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
             if (activity != null)
             {
                 obj.put("activity", getJSONActivity(activity));
-                if (activity.getType() == MessageActivity.ActivityType.GAME)
+                if (activity.getType() != MessageActivity.ActivityType.LISTENING)
                     obj.put("application", getJSONApplication(activity.getApplication()));
             }
             obj.put("tts", tts);

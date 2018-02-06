@@ -16,7 +16,8 @@
 package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.utils.Checks;
-import org.json.JSONObject;
+
+import javax.annotation.Nullable;
 
 /**
  * Represents a {@link net.dv8tion.jda.core.entities.Message} activity.
@@ -48,7 +49,7 @@ public class MessageActivity
     {
         this.type = type;
         this.partyId = partyId;
-        Checks.check(!(type == ActivityType.GAME && application == null), "Either the ActivityType is wrong or the Application is null!");
+        Checks.check(!(type != ActivityType.LISTENING && application == null), "Either the ActivityType is wrong or the Application is null!");
         this.application = application;
     }
 
@@ -83,7 +84,7 @@ public class MessageActivity
     }
 
     /**
-     * The current
+     * The current {@link net.dv8tion.jda.core.entities.MessageActivity.ActivityType ActivityType}
      *
      * @return the type of the activity.
      */
@@ -93,19 +94,13 @@ public class MessageActivity
     }
 
     /**
-     * A {@link java.lang.String String} probably containing the activity service and its host (a {@link net.dv8tion.jda.core.entities.User User}) id.
-     * <br>For example : "spotify:86699011792191488".
+     * The party id discord uses internally, it may be {@code null}.
      *
-     * @return the partys id.
+     * @return the parties id.
      */
-    public String getPartyId()
+    @Nullable public String getPartyId()
     {
         return partyId;
-    }
-
-    public boolean isSpotify()
-    {
-        return partyId.matches("spotify:\\d{17,20}");
     }
 
     /**
@@ -114,7 +109,7 @@ public class MessageActivity
      *
      * @return the session id and {@code null} if it is not set.
      */
-    public String getSessionId()
+    @Nullable public String getSessionId()
     {
         return sessionId;
     }
@@ -151,8 +146,8 @@ public class MessageActivity
     /**
      * Represents the {@link net.dv8tion.jda.core.entities.Message} application if the
      * {@link net.dv8tion.jda.core.entities.MessageActivity.ActivityType ActivityType} of the
-     * {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity} equals
-     * {@link net.dv8tion.jda.core.entities.MessageActivity.ActivityType#GAME ActivityType.GAME}.
+     * {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity} not equals
+     * {@link net.dv8tion.jda.core.entities.MessageActivity.ActivityType#LISTENING ActivityType.LISTENING}.
      *
      * <br>Many applications can be found at:
      * <a href="https://discordapp.com/api/v7/games" target="_blank">https://discordapp.com/api/v7/games</a>.
@@ -243,13 +238,21 @@ public class MessageActivity
     public enum ActivityType
     {
         /**
-         * A {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity} type.
+         * The {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity} type used for inviting people to join a game.
          */
-        GAME(1),
+        JOIN(1),
         /**
-         * A {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity} type.
+         * The {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity} type used for inviting people to spectate a game.
          */
-        PARTY(3),
+        SPECTATE(2),
+        /**
+         * The {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity} type used for inviting people to listen Spotify together.
+         */
+        LISTENING(3),
+        /**
+         * The {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity} type used for requesting to join a game.
+         */
+        JOIN_REQUEST(5),
         /**
          * Unknown Discord {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity} type. Should never happen and would only possibly happen if Discord implemented a new
          * {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity} type and JDA had yet to implement support for it.
