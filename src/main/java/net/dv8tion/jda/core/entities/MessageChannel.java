@@ -840,13 +840,14 @@ public interface MessageChannel extends ISnowflake, Formattable
     }
 
     /**
-     * Sends a {@link net.dv8tion.jda.core.entities.Message Message} with the {@link net.dv8tion.jda.core.entities.Message.Activity Activity}
+     * Sends a {@link net.dv8tion.jda.core.entities.Message Message} with the {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity}
      * to this {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.
+     * <b>Be careful with this feature because the {@code sessionId} of the {@code activity} may be null!</b>
      *
      * <p>For {@link net.dv8tion.jda.core.requests.ErrorResponse} information, refer to {@link #sendMessage(Message)}.
      *
      * @param  activity
-     *         the {@link net.dv8tion.jda.core.entities.Message.Activity} to send in the {@link net.dv8tion.jda.core.entities.Message}.
+     *         the {@link net.dv8tion.jda.core.entities.MessageActivity} to send in the {@link net.dv8tion.jda.core.entities.Message}.
      *
      * @throws net.dv8tion.jda.client.exceptions.VerificationLevelException
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel} and
@@ -862,7 +863,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         <br>The newly created Message after it has been sent to Discord.
      */
     @CheckReturnValue
-    default MessageAction sendActivity(Message.Activity activity) {
+    default MessageAction sendActivity(MessageActivity activity) {
         Checks.notNull(activity, "Provided activity");
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());

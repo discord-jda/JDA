@@ -45,7 +45,7 @@ public class MessageBuilder implements Appendable
     protected boolean isTTS = false;
     protected String nonce;
     protected MessageEmbed embed;
-    protected Message.Activity activity;
+    protected MessageActivity activity;
 
     public MessageBuilder() {}
 
@@ -64,7 +64,7 @@ public class MessageBuilder implements Appendable
             List<MessageEmbed> embeds = message.getEmbeds();
             if (embeds != null && !embeds.isEmpty())
                 embed = embeds.get(0);
-            Message.Activity activity = message.getActivity();
+            MessageActivity activity = message.getActivity();
             if (activity != null)
                 this.activity = activity;
         }
@@ -175,15 +175,15 @@ public class MessageBuilder implements Appendable
     }
 
     /**
-     * Sets the {@link net.dv8tion.jda.core.entities.Message.Activity Activity} of the resulting Message.
-     * <br>This will override already set activity. <strong>Be careful with this feature!</strong>
+     * Sets the {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity} of the resulting Message.
+     * <br>This will override already set activity. <b>Be careful with this feature because the {@code sessionId} of the {@code activity} may be null!</b>
      *
      * @param  activity
      *         the activity to use, or {@code null} to reset the activity.
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
-    public MessageBuilder setActivity(Message.Activity activity)
+    public MessageBuilder setActivity(MessageActivity activity)
     {
         this.activity = activity;
         return this;

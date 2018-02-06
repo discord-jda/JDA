@@ -50,7 +50,7 @@ public class ReceivedMessage extends AbstractMessage
     protected final List<MessageReaction> reactions;
     protected final List<Attachment> attachments;
     protected final List<MessageEmbed> embeds;
-    protected final Activity activity;
+    protected final MessageActivity activity;
 
     // LAZY EVALUATED
     protected String altContent = null;
@@ -67,7 +67,7 @@ public class ReceivedMessage extends AbstractMessage
         boolean fromWebhook, boolean mentionsEveryone, boolean tts, boolean pinned,
         String content, String nonce, User author, OffsetDateTime editTime,
         List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds,
-        Activity activity)
+        MessageActivity activity)
     {
         super(content, nonce, tts);
         this.id = id;
@@ -813,7 +813,7 @@ public class ReceivedMessage extends AbstractMessage
     }
 
     @Override
-    public Activity getActivity()
+    public MessageActivity getActivity()
     {
         return activity;
     }

@@ -865,7 +865,7 @@ public class EntityBuilder
         final long id = jsonObject.getLong("id");
         String content = jsonObject.optString("content");
 
-        Message.Activity activity = null;
+        MessageActivity activity = null;
 
         JSONObject author = jsonObject.getJSONObject("author");
         final long authorId = author.getLong("id");
@@ -883,37 +883,36 @@ public class EntityBuilder
         if (!jsonObject.isNull("activity"))
         {
             JSONObject activityData = jsonObject.getJSONObject("activity");
-            Message.ActivityType activityType = Message.ActivityType.fromId(activityData.getInt("type"));
-            final String partyId = activityData.getString("party_id");
-            Message.Application application = null;
+            MessageActivity.ActivityType activityType = MessageActivity.ActivityType.fromId(activityData.optInt("type", -1));
+            final String partyId = activityData.optString("party_id", null);
+            MessageActivity.Application application = null;
 
             switch (activityType)
             {
-                case PARTY:
-                    activity = new Message.Activity(activityType, partyId, application);
+                case PARTY: {
                     break;
-                case GAME:
-                    {
+                }
+                case GAME: {
                         if (!jsonObject.isNull("application"))
                         {
                             JSONObject applicationData = jsonObject.getJSONObject("application");
 
-                            final String name = applicationData.getString("name");
+                            final String name = applicationData.optString("name", null);
                             final String description = applicationData.getString("description");
                             final String iconId = applicationData.getString("icon");
                             final String coverId = applicationData.getString("cover_image");
                             final long applicationId = applicationData.getLong("id");
 
-                            application = new Message.Application(name, description, iconId, coverId, applicationId);
-                            activity = new Message.Activity(activityType, partyId, application);
+                            application = new MessageActivity.Application(name, description, iconId, coverId, applicationId);
                         }
                         break;
-                    }
-                default:
+                }
+                default: {
                     WebSocketClient.LOG.debug("Received an unknown activity type in a message. JSON: {}", activityData);
-                    activity = new Message.Activity(activityType, partyId, application);
                     break;
+                }
             }
+            activity = new MessageActivity(activityType, partyId, application);
         }
 
         User user;

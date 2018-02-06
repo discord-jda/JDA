@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import net.dv8tion.jda.core.entities.MessageActivity;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.MessageType;
 
@@ -26,9 +27,9 @@ import java.util.Objects;
 public class DataMessage extends AbstractMessage
 {
     private MessageEmbed embed;
-    private Activity activity;
+    private MessageActivity activity;
 
-    public DataMessage(boolean tts, String content, String nonce, MessageEmbed embed, Activity activity)
+    public DataMessage(boolean tts, String content, String nonce, MessageEmbed embed, MessageActivity activity)
     {
         super(content, nonce, tts);
         this.embed = embed;
@@ -73,7 +74,7 @@ public class DataMessage extends AbstractMessage
         return this;
     }
 
-    public DataMessage setActivity(Activity activity)
+    public DataMessage setActivity(MessageActivity activity)
     {
         this.activity = activity;
         return this;
@@ -86,7 +87,7 @@ public class DataMessage extends AbstractMessage
     }
 
     @Override
-    public Activity getActivity()
+    public MessageActivity getActivity()
     {
         return activity;
     }

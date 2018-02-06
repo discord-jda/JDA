@@ -30,7 +30,7 @@ public class SystemMessage extends ReceivedMessage
         boolean fromWebhook, boolean mentionsEveryone, boolean tts, boolean pinned,
         String content, String nonce, User author, OffsetDateTime editTime,
         List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds,
-        Activity activity)
+        MessageActivity activity)
     {
         super(id, channel, type, fromWebhook, mentionsEveryone, tts, pinned, content, nonce, author, editTime, reactions, attachments, embeds, activity);
     }
