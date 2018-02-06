@@ -137,9 +137,20 @@ public class AudioWebSocket extends WebSocketAdapter
     public void onTextMessage(WebSocket websocket, String message)
     {
         //reading thread
-        if (api.getContextMap() != null)
-            MDC.setContextMap(api.getContextMap());
-        JSONObject contentAll = new JSONObject(message);
+        try
+        {
+            if (api.getContextMap() != null)
+                MDC.setContextMap(api.getContextMap());
+            handleEvent(new JSONObject(message));
+        }
+        catch (Exception ex)
+        {
+            LOG.error("Encountered exception trying to handle an event message: {}", message, ex);
+        }
+    }
+
+    private void handleEvent(JSONObject contentAll)
+    {
         int opCode = contentAll.getInt("op");
 
         switch(opCode)
