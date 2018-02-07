@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.MessageType;
 
@@ -27,12 +29,13 @@ public class DataMessage extends AbstractMessage
 {
     private MessageEmbed embed;
 
-    public DataMessage(boolean tts, String content, String nonce, MessageEmbed embed)
+    public DataMessage(boolean tts, String content, @Nullable String nonce, @Nullable MessageEmbed embed)
     {
         super(content, nonce, tts);
         this.embed = embed;
     }
 
+    @NonNull
     @Override
     public MessageType getType()
     {
@@ -40,7 +43,7 @@ public class DataMessage extends AbstractMessage
     }
 
     @Override
-    public boolean equals(Object o)
+    public boolean equals(@Nullable Object o)
     {
         if (this == o)
             return true;
@@ -65,12 +68,14 @@ public class DataMessage extends AbstractMessage
         return String.format("DataMessage(%.30s)", getContentRaw());
     }
 
-    public DataMessage setEmbed(MessageEmbed embed)
+    @NonNull
+    public DataMessage setEmbed(@Nullable MessageEmbed embed)
     {
         this.embed = embed;
         return this;
     }
 
+    @NonNull
     @Override
     public List<MessageEmbed> getEmbeds()
     {

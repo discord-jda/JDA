@@ -16,14 +16,15 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.utils.PermissionUtil;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.PermissionUtil;
 
-import javax.annotation.Nullable;
 import java.awt.Color;
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -47,30 +48,35 @@ public class MemberImpl implements Member
         this.voiceState = new GuildVoiceStateImpl(guild, this);
     }
 
+    @NonNull
     @Override
     public User getUser()
     {
         return user;
     }
 
+    @NonNull
     @Override
     public Guild getGuild()
     {
         return guild;
     }
 
+    @NonNull
     @Override
     public JDA getJDA()
     {
         return user.getJDA();
     }
 
+    @NonNull
     @Override
     public OffsetDateTime getJoinDate()
     {
-        return joinDate;
+        return joinDate == null ? OffsetDateTime.now() : joinDate;
     }
 
+    @NonNull
     @Override
     public GuildVoiceState getVoiceState()
     {
@@ -83,6 +89,7 @@ public class MemberImpl implements Member
         return game;
     }
 
+    @NonNull
     @Override
     public OnlineStatus getOnlineStatus()
     {
@@ -95,12 +102,14 @@ public class MemberImpl implements Member
         return nickname;
     }
 
+    @NonNull
     @Override
     public String getEffectiveName()
     {
         return nickname != null ? nickname : user.getName();
     }
 
+    @NonNull
     @Override
     public List<Role> getRoles()
     {
@@ -121,6 +130,7 @@ public class MemberImpl implements Member
         return null;
     }
 
+    @NonNull
     @Override
     public List<Permission> getPermissions()
     {
@@ -129,6 +139,7 @@ public class MemberImpl implements Member
                         PermissionUtil.getEffectivePermission(this)));
     }
 
+    @NonNull
     @Override
     public List<Permission> getPermissions(Channel channel)
     {
@@ -191,7 +202,7 @@ public class MemberImpl implements Member
         return this.equals(guild.getOwner());
     }
 
-    public MemberImpl setNickname(String nickname)
+    public MemberImpl setNickname(@Nullable String nickname)
     {
         this.nickname = nickname;
         return this;
@@ -203,7 +214,7 @@ public class MemberImpl implements Member
         return this;
     }
 
-    public MemberImpl setGame(Game game)
+    public MemberImpl setGame(@Nullable Game game)
     {
         this.game = game;
         return this;
@@ -221,7 +232,7 @@ public class MemberImpl implements Member
     }
 
     @Override
-    public boolean equals(Object o)
+    public boolean equals(@Nullable Object o)
     {
         if (!(o instanceof Member))
             return false;
@@ -242,6 +253,7 @@ public class MemberImpl implements Member
         return "MB:" + getEffectiveName() + '(' + user.toString() + " / " + guild.toString() +')';
     }
 
+    @NonNull
     @Override
     public String getAsMention()
     {

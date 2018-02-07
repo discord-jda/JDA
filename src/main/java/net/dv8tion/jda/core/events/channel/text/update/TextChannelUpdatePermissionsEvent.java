@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.core.events.channel.text.update;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.IPermissionHolder;
 import net.dv8tion.jda.core.entities.Member;
@@ -40,11 +41,13 @@ public class TextChannelUpdatePermissionsEvent extends GenericTextChannelUpdateE
         this.changed = permHolders;
     }
 
+    @NonNull
     public List<IPermissionHolder> getChangedPermissionHolders()
     {
         return changed;
     }
 
+    @NonNull
     public List<Role> getChangedRoles()
     {
         return changed.stream()
@@ -53,6 +56,7 @@ public class TextChannelUpdatePermissionsEvent extends GenericTextChannelUpdateE
                       .collect(Collectors.toList());
     }
 
+    @NonNull
     public List<Member> getMembersWithPermissionChanges()
     {
         return changed.stream()

@@ -21,4 +21,11 @@
  * which is fired for <b>every</b> update and specifications for explicit settings such
  * as the {@link net.dv8tion.jda.core.events.guild.update.GuildUpdateNameEvent name} of the Guild.
  */
+@ParametersAreNonnullByDefault
+@DefaultAnnotationForParameters(NonNull.class)
 package net.dv8tion.jda.core.events.guild.update;
+
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
+
+import javax.annotation.ParametersAreNonnullByDefault;

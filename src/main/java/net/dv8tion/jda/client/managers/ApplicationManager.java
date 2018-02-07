@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.client.managers;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
 import net.dv8tion.jda.client.entities.Application;
 import net.dv8tion.jda.client.entities.impl.ApplicationImpl;
 import net.dv8tion.jda.core.JDA;
@@ -23,7 +24,6 @@ import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.requests.RestAction;
 
 import java.util.List;
-import javax.annotation.CheckReturnValue;
 
 /**
  * Facade for an {@link net.dv8tion.jda.client.managers.ApplicationManagerUpdatable ApplicationManagerUpdatable} instance.

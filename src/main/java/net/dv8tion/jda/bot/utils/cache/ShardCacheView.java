@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.bot.utils.cache;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 
@@ -33,6 +35,7 @@ public interface ShardCacheView extends CacheView<JDA>
      *
      * @return Possibly-null entity for the specified shard ID
      */
+    @Nullable
     JDA getElementById(int id);
 
     /**
@@ -48,7 +51,8 @@ public interface ShardCacheView extends CacheView<JDA>
      *
      * @return Possibly-null entity for the specified shard ID
      */
-    default JDA getElementById(String id)
+    @Nullable
+    default JDA getElementById(@NonNull String id)
     {
         return getElementById(Integer.parseUnsignedInt(id));
     }

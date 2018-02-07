@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.events.self;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 
 public class SelfUpdateNameEvent extends GenericSelfUpdateEvent
@@ -30,11 +31,13 @@ public class SelfUpdateNameEvent extends GenericSelfUpdateEvent
         this.oldDiscriminator = oldDiscriminator;
     }
 
+    @NonNull
     public String getOldName()
     {
         return oldName;
     }
 
+    @NonNull
     public String getOldDiscriminator()
     {
         return oldDiscriminator;

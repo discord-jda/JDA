@@ -16,10 +16,9 @@
 
 package net.dv8tion.jda.client.entities;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
 import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.requests.RestAction;
-
-import javax.annotation.CheckReturnValue;
 
 public interface CallableChannel extends ISnowflake
 {

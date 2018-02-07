@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.webhook;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.requests.Requester;
@@ -46,9 +48,9 @@ public class WebhookMessage
     protected final boolean isTTS;
     protected final InputStream file;
 
-    protected WebhookMessage(final String username, final String avatarUrl, final String content,
+    protected WebhookMessage(@Nullable final String username, @Nullable final String avatarUrl, final String content,
                              final List<MessageEmbed> embeds, final boolean isTTS,
-                             final InputStream file, final String fileName)
+                             @Nullable final InputStream file, @Nullable final String fileName)
     {
         this.username = username;
         this.avatarUrl = avatarUrl;
@@ -71,6 +73,7 @@ public class WebhookMessage
      *
      * @return The resulting WebhookMessage instance
      */
+    @NonNull
     public static WebhookMessage of(MessageEmbed... embeds)
     {
         return new WebhookMessageBuilder().addEmbeds(embeds).build();
@@ -88,6 +91,7 @@ public class WebhookMessage
      *
      * @return The resulting WebhookMessage instance
      */
+    @NonNull
     public static WebhookMessage of(Collection<MessageEmbed> embeds)
     {
         return new WebhookMessageBuilder().addEmbeds(embeds).build();
@@ -105,6 +109,7 @@ public class WebhookMessage
      *
      * @return The resulting WebhookMessage instance
      */
+    @NonNull
     public static WebhookMessage from(Message message)
     {
         Checks.notNull(message, "Message");

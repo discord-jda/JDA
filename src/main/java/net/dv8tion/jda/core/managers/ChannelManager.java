@@ -16,13 +16,14 @@
 
 package net.dv8tion.jda.core.managers;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Category;
 import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
-
-import javax.annotation.CheckReturnValue;
 
 /**
  * Facade for a {@link net.dv8tion.jda.core.managers.ChannelManagerUpdatable ChannelManagerUpdatable} instance.
@@ -51,6 +52,7 @@ public class ChannelManager
      *
      * @return the corresponding JDA instance
      */
+    @NonNull
     public JDA getJDA()
     {
         return updatable.getJDA();
@@ -64,6 +66,7 @@ public class ChannelManager
      *
      * @see    ChannelManagerUpdatable#getChannel()
      */
+    @NonNull
     public Channel getChannel()
     {
         return updatable.getChannel();
@@ -78,6 +81,7 @@ public class ChannelManager
      *
      * @see    ChannelManagerUpdatable#getGuild()
      */
+    @NonNull
     public Guild getGuild()
     {
         return updatable.getGuild();
@@ -106,6 +110,7 @@ public class ChannelManager
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getNameField()
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
+    @NonNull
     @CheckReturnValue
     public AuditableRestAction<Void> setName(String name)
     {
@@ -135,8 +140,9 @@ public class ChannelManager
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getParentField()
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
+    @NonNull
     @CheckReturnValue
-    public AuditableRestAction<Void> setParent(Category category)
+    public AuditableRestAction<Void> setParent(@Nullable Category category)
     {
         return updatable.getParentField().setValue(category).update();
     }
@@ -162,6 +168,7 @@ public class ChannelManager
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getPositionField()
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
+    @NonNull
     @CheckReturnValue
     public AuditableRestAction<Void> setPosition(int position)
     {
@@ -191,8 +198,9 @@ public class ChannelManager
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getTopicField()
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
+    @NonNull
     @CheckReturnValue
-    public AuditableRestAction<Void> setTopic(String topic)
+    public AuditableRestAction<Void> setTopic(@Nullable String topic)
     {
         return updatable.getTopicField().setValue(topic).update();
     }
@@ -214,6 +222,8 @@ public class ChannelManager
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getNSFWField()
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
+    @NonNull
+    @CheckReturnValue
     public AuditableRestAction<Void> setNSFW(boolean nsfw)
     {
         return updatable.getNSFWField().setValue(nsfw).update();
@@ -242,6 +252,7 @@ public class ChannelManager
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getUserLimitField()
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
+    @NonNull
     @CheckReturnValue
     public AuditableRestAction<Void> setUserLimit(int userLimit)
     {
@@ -273,6 +284,7 @@ public class ChannelManager
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getBitrateField()
      * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
+    @NonNull
     @CheckReturnValue
     public AuditableRestAction<Void> setBitrate(int bitrate)
     {

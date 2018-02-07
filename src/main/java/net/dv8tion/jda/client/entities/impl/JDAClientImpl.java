@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.client.entities.impl;
 
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.client.JDAClient;
 import net.dv8tion.jda.client.entities.*;
@@ -38,11 +40,14 @@ import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.core.utils.cache.impl.SnowflakeCacheViewImpl;
 import org.json.JSONArray;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@ParametersAreNonnullByDefault
+@DefaultAnnotationForParameters(NonNull.class)
 public class JDAClientImpl implements JDAClient
 {
     protected final JDAImpl api;

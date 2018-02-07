@@ -20,7 +20,6 @@ import net.dv8tion.jda.client.entities.CallableChannel;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.client.entities.impl.CallImpl;
 import net.dv8tion.jda.client.entities.impl.GroupImpl;
-import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.client.events.call.CallDeleteEvent;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.entities.impl.PrivateChannelImpl;

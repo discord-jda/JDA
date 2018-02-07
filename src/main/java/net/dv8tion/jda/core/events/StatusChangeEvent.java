@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.core.events;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 
 /**
@@ -35,11 +36,13 @@ public class StatusChangeEvent extends Event
         this.oldStatus = oldStatus;
     }
 
+    @NonNull
     public JDA.Status getStatus()
     {
         return newStatus;
     }
 
+    @NonNull
     public JDA.Status getOldStatus()
     {
         return oldStatus;

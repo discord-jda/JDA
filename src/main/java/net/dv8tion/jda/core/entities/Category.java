@@ -16,10 +16,11 @@
 
 package net.dv8tion.jda.core.entities;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.requests.restaction.ChannelAction;
 import net.dv8tion.jda.core.requests.restaction.order.CategoryOrderAction;
 
-import javax.annotation.CheckReturnValue;
 import java.util.List;
 
 /**
@@ -38,6 +39,7 @@ public interface Category extends Channel, Comparable<Category>
      *
      * @return Immutable list of all child channels
      */
+    @NonNull
     List<Channel> getChannels();
 
     /**
@@ -46,6 +48,7 @@ public interface Category extends Channel, Comparable<Category>
      *
      * @return Immutable list of all child TextChannels
      */
+    @NonNull
     List<TextChannel> getTextChannels();
 
     /**
@@ -54,6 +57,7 @@ public interface Category extends Channel, Comparable<Category>
      *
      * @return Immutable list of all child VoiceChannels
      */
+    @NonNull
     List<VoiceChannel> getVoiceChannels();
 
     /**
@@ -86,6 +90,7 @@ public interface Category extends Channel, Comparable<Category>
      * @return A specific {@link net.dv8tion.jda.core.requests.restaction.ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new TextChannel before creating it
      */
+    @NonNull
     @CheckReturnValue
     ChannelAction createTextChannel(String name);
 
@@ -119,6 +124,7 @@ public interface Category extends Channel, Comparable<Category>
      * @return A specific {@link net.dv8tion.jda.core.requests.restaction.ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new VoiceChannel before creating it
      */
+    @NonNull
     @CheckReturnValue
     ChannelAction createVoiceChannel(String name);
 

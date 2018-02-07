@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.managers.WebhookManager;
@@ -31,11 +33,9 @@ import net.dv8tion.jda.webhook.WebhookClientBuilder;
  * The implementation for {@link net.dv8tion.jda.core.entities.Webhook Webhook}
  *
  * @since  3.0
- * @author Florian Spieß
  */
 public class WebhookImpl implements Webhook
 {
-
     protected volatile WebhookManagerUpdatable managerUpdatable = null;
     protected volatile WebhookManager manager = null;
 
@@ -47,61 +47,69 @@ public class WebhookImpl implements Webhook
     private User user;
     private String token;
 
-
     public WebhookImpl(TextChannel channel, long id)
     {
         this.channel = channel;
         this.id = id;
     }
 
+    @NonNull
     @Override
     public JDA getJDA()
     {
         return channel.getJDA();
     }
 
+    @NonNull
     @Override
     public Guild getGuild()
     {
         return channel.getGuild();
     }
 
+    @NonNull
     @Override
     public TextChannel getChannel()
     {
         return channel;
     }
 
+    @NonNull
     @Override
     public Member getOwner()
     {
         return owner;
     }
 
+    @NonNull
     @Override
     public User getDefaultUser()
     {
         return user;
     }
 
+    @NonNull
     @Override
     public String getName()
     {
         return user.getName();
     }
 
+    @NonNull
     @Override
     public String getToken()
     {
         return token;
     }
 
+    @NonNull
     @Override
     public String getUrl()
     {
         return Requester.DISCORD_API_PREFIX + "webhooks/" + getId() + "/" + getToken();
     }
 
+    @NonNull
     @Override
     public AuditableRestAction<Void> delete()
     {
@@ -119,6 +127,7 @@ public class WebhookImpl implements Webhook
         };
     }
 
+    @NonNull
     @Override
     public WebhookManager getManager()
     {
@@ -135,6 +144,7 @@ public class WebhookImpl implements Webhook
         return mng;
     }
 
+    @NonNull
     @Override
     public WebhookManagerUpdatable getManagerUpdatable()
     {
@@ -151,6 +161,7 @@ public class WebhookImpl implements Webhook
         return mng;
     }
 
+    @NonNull
     @Override
     public WebhookClientBuilder newClient()
     {
@@ -192,7 +203,7 @@ public class WebhookImpl implements Webhook
     }
 
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(@Nullable Object obj)
     {
         return obj instanceof WebhookImpl
                 && ((WebhookImpl) obj).id == this.id;

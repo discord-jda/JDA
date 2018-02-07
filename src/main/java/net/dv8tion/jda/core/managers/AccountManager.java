@@ -16,12 +16,13 @@
 
 package net.dv8tion.jda.core.managers;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.entities.SelfUser;
 import net.dv8tion.jda.core.requests.RestAction;
-
-import javax.annotation.CheckReturnValue;
 
 /**
  * Facade for an {@link net.dv8tion.jda.core.managers.AccountManagerUpdatable AccountManagerUpdatable} instance.
@@ -44,12 +45,12 @@ public class AccountManager
         this.updatable = new AccountManagerUpdatable(selfUser);
     }
 
-
     /**
      * The {@link net.dv8tion.jda.core.JDA JDA} instance of this AccountManager
      *
      * @return the corresponding JDA instance
      */
+    @NonNull
     public JDA getJDA()
     {
         return updatable.getJDA();
@@ -62,6 +63,7 @@ public class AccountManager
      *
      * @return The corresponding SelfUser
      */
+    @NonNull
     public SelfUser getSelfUser()
     {
         return updatable.getSelfUser();
@@ -88,6 +90,7 @@ public class AccountManager
      *         The update RestAction that will set the provided name.
      *         <br>See {@link net.dv8tion.jda.core.managers.AccountManagerUpdatable#update(String) #update()} for more information
      */
+    @NonNull
     @CheckReturnValue
     public RestAction<Void> setName(String name)
     {
@@ -117,8 +120,9 @@ public class AccountManager
      *         The update RestAction that will set the provided name.
      *         <br>See {@link net.dv8tion.jda.core.managers.AccountManagerUpdatable#update(String) #update()} for more information
      */
+    @NonNull
     @CheckReturnValue
-    public RestAction<Void> setName(String name, String currentPassword)
+    public RestAction<Void> setName(String name, @Nullable String currentPassword)
     {
         return updatable.getNameField().setValue(name).update(currentPassword);
     }
@@ -138,8 +142,9 @@ public class AccountManager
      *         The update RestAction that will set the provided icon as the new avatar or reset the avatar.
      *         <br>See {@link net.dv8tion.jda.core.managers.AccountManagerUpdatable#update(String) #update()} for more information
      */
+    @NonNull
     @CheckReturnValue
-    public RestAction<Void> setAvatar(Icon avatar)
+    public RestAction<Void> setAvatar(@Nullable Icon avatar)
     {
         return setAvatar(avatar, null);
     }
@@ -163,8 +168,9 @@ public class AccountManager
      *         The update RestAction that will set the provided icon as the new avatar or reset the avatar.
      *         <br>See {@link net.dv8tion.jda.core.managers.AccountManagerUpdatable#update(String) #update()} for more information
      */
+    @NonNull
     @CheckReturnValue
-    public RestAction<Void> setAvatar(Icon avatar, String currentPassword)
+    public RestAction<Void> setAvatar(@Nullable Icon avatar, @Nullable String currentPassword)
     {
         return updatable.getAvatarField().setValue(avatar).update(currentPassword);
     }
@@ -190,6 +196,7 @@ public class AccountManager
      *         The update RestAction that will set the provided email.
      *         <br>See {@link net.dv8tion.jda.core.managers.AccountManagerUpdatable#update(String) #update()} for more information
      */
+    @NonNull
     @CheckReturnValue
     public RestAction<Void> setEmail(String email, String currentPassword)
     {
@@ -215,6 +222,7 @@ public class AccountManager
      *         The update RestAction that will set the provided email.
      *         <br>See {@link net.dv8tion.jda.core.managers.AccountManagerUpdatable#update(String) #update()} for more information
      */
+    @NonNull
     @CheckReturnValue
     public RestAction<Void> setPassword(String newPassword, String currentPassword)
     {

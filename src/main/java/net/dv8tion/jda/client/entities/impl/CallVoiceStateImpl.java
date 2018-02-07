@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.client.entities.impl;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.client.entities.*;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.AudioChannel;
@@ -48,6 +49,7 @@ public class CallVoiceStateImpl implements CallVoiceState
         return selfDeafened;
     }
 
+    @NonNull
     @Override
     public JDA getJDA()
     {

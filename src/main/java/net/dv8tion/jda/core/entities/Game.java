@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.core.entities;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.utils.Checks;
 
 import java.util.Objects;
@@ -37,12 +39,12 @@ public class Game
         this(name, null, GameType.DEFAULT);
     }
 
-    protected Game(String name, String url)
+    protected Game(String name, @Nullable String url)
     {
         this(name, url, GameType.STREAMING);
     }
 
-    protected Game(String name, String url, GameType type)
+    protected Game(String name, @Nullable String url, GameType type)
     {
         this.name = name;
         this.url = url;
@@ -66,6 +68,7 @@ public class Game
      *
      * @return RichPresence or {@code null} if {@link #isRich()} returns {@code false}
      */
+    @Nullable
     public RichPresence asRichPresence()
     {
         return null;
@@ -76,6 +79,7 @@ public class Game
      *
      * @return Possibly-null String containing the Game's name.
      */
+    @NonNull
     public String getName()
     {
         return name;
@@ -87,6 +91,7 @@ public class Game
      *
      * @return Possibly-null String containing the Game's URL.
      */
+    @Nullable
     public String getUrl()
     {
         return url;
@@ -97,13 +102,14 @@ public class Game
      *
      * @return Never-null {@link net.dv8tion.jda.core.entities.Game.GameType GameType} representing the type of Game
      */
+    @NonNull
     public GameType getType()
     {
         return type;
     }
 
     @Override
-    public boolean equals(Object o)
+    public boolean equals(@Nullable Object o)
     {
         if (!(o instanceof Game))
             return false;
@@ -144,6 +150,7 @@ public class Game
      *
      * @return A valid Game instance with the provided name with {@link GameType#DEFAULT}
      */
+    @NonNull
     public static Game playing(String name)
     {
         Checks.notBlank(name, "Name");
@@ -167,7 +174,8 @@ public class Game
      *
      * @see    #isValidStreamingUrl(String)
      */
-    public static Game streaming(String name, String url)
+    @NonNull
+    public static Game streaming(String name, @Nullable String url)
     {
         Checks.notEmpty(name, "Provided game name");
         GameType type;
@@ -190,6 +198,7 @@ public class Game
      *
      * @return A valid Game instance with the provided name with {@link GameType#LISTENING}
      */
+    @NonNull
     public static Game listening(String name)
     {
         Checks.notBlank(name, "Name");
@@ -208,6 +217,7 @@ public class Game
      *
      * @return A valid Game instance with the provided name with {@link GameType#WATCHING}
      */
+    @NonNull
     public static Game watching(String name)
     {
         Checks.notBlank(name, "Name");
@@ -227,6 +237,7 @@ public class Game
      *
      * @return A valid Game instance with the provided name and url
      */
+    @NonNull
     public static Game of(GameType type, String name)
     {
         return of(type, name, null);
@@ -251,7 +262,8 @@ public class Game
      *
      * @see    #isValidStreamingUrl(String)
      */
-    public static Game of(GameType type, String name, String url)
+    @NonNull
+    public static Game of(GameType type, String name, @Nullable String url)
     {
         Checks.notNull(type, "Type");
         switch (type)
@@ -277,7 +289,7 @@ public class Game
      *
      * @return True if the provided url is valid for triggering Discord's streaming status
      */
-    public static boolean isValidStreamingUrl(String url)
+    public static boolean isValidStreamingUrl(@Nullable String url)
     {
         return url != null && url.matches("https?://(www\\.)?twitch\\.tv/.+");
     }

@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.events.role.update;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Role;
@@ -33,6 +34,7 @@ public class RoleUpdatePermissionsEvent extends GenericRoleUpdateEvent
         this.oldPermissionsRaw = oldPermissionsRaw;
     }
 
+    @NonNull
     public List<Permission> getOldPermissions()
     {
         return Collections.unmodifiableList(

@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.requests.restaction.order;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
@@ -93,6 +94,7 @@ public class RoleOrderAction extends OrderAction<Role, RoleOrderAction>
      *
      * @return The corresponding {@link net.dv8tion.jda.core.entities.Guild Guild}
      */
+    @NonNull
     public Guild getGuild()
     {
         return guild;

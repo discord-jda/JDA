@@ -15,6 +15,9 @@
  */
 package net.dv8tion.jda.core.entities;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
@@ -29,7 +32,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import javax.annotation.CheckReturnValue;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -141,6 +143,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return immutable list of mentioned users
      */
+    @NonNull
     List<User> getMentionedUsers();
 
     /**
@@ -154,6 +157,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return immutable list of mentioned TextChannels
      */
+    @NonNull
     List<TextChannel> getMentionedChannels();
 
     /**
@@ -167,6 +171,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return immutable list of mentioned Roles
      */
+    @NonNull
     List<Role> getMentionedRoles();
 
     /**
@@ -189,6 +194,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @since  3.4.0
      */
+    @NonNull
     List<Member> getMentionedMembers(Guild guild);
 
     /**
@@ -207,6 +213,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @since  3.4.0
      */
+    @NonNull
     List<Member> getMentionedMembers();
 
     /**
@@ -229,6 +236,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @since  3.4.0
      */
+    @NonNull
     List<IMentionable> getMentions(MentionType... types);
 
     /**
@@ -271,6 +279,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return Time of the most recent edit, or {@code null} if the Message has never been edited.
      */
+    @Nullable
     OffsetDateTime getEditedTime();
 
     /**
@@ -281,6 +290,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return Message author
      */
+    @NonNull
     User getAuthor();
 
     /**
@@ -295,6 +305,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return Message author, or {@code null} if the message was not sent from a TextChannel.
      */
+    @Nullable
     Member getMember();
 
     /**
@@ -316,6 +327,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The textual content of the message with mentions resolved to be visually like the Discord client.
      */
+    @NonNull
     String getContentDisplay();
 
     /**
@@ -326,6 +338,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The raw textual content of the message, containing unresolved Discord message formatting.
      */
+    @NonNull
     String getContentRaw();
 
     /**
@@ -335,6 +348,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The textual content from {@link #getContentDisplay()} with all text formatting characters removed or escaped.
      */
+    @NonNull
     String getContentStripped();
 
     /**
@@ -349,6 +363,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return Immutable list of invite codes
      */
+    @NonNull
     List<String> getInvites();
 
     /**
@@ -363,6 +378,7 @@ public interface Message extends ISnowflake, Formattable
      * @see    net.dv8tion.jda.core.MessageBuilder#setNonce(String)
      * @see    <a href="https://en.wikipedia.org/wiki/Cryptographic_nonce" target="_blank">Cryptographic Nonce - Wikipedia</a>
      */
+    @Nullable
     String getNonce();
 
     /**
@@ -394,6 +410,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The ChannelType which this message was received from.
      */
+    @NonNull
     ChannelType getChannelType();
 
     /**
@@ -413,6 +430,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The MessageChannel of this Message
      */
+    @NonNull
     MessageChannel getChannel();
 
     /**
@@ -473,6 +491,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.core.entities.Category Category} for this message
      */
+    @Nullable
     Category getCategory();
 
     /**
@@ -495,6 +514,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return Unmodifiable list of {@link net.dv8tion.jda.core.entities.Message.Attachment Attachments}.
      */
+    @NonNull
     List<Attachment> getAttachments();
 
     /**
@@ -503,6 +523,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return Unmodifiable list of all given MessageEmbeds.
      */
+    @NonNull
     List<MessageEmbed> getEmbeds();
 
     /**
@@ -521,6 +542,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return An immutable list of the Emotes used in this message (example match {@literal <:jda:230988580904763393>})
      */
+    @NonNull
     List<Emote> getEmotes();
 
     /**
@@ -528,6 +550,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return immutable list of all MessageReactions on this message.
      */
+    @NonNull
     List<MessageReaction> getReactions();
 
     /**
@@ -570,6 +593,7 @@ public interface Message extends ISnowflake, Formattable
      * @return {@link net.dv8tion.jda.core.requests.restaction.MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.core.entities.Message Message} with the updated content
      */
+    @NonNull
     @CheckReturnValue
     MessageAction editMessage(CharSequence newContent);
 
@@ -607,6 +631,7 @@ public interface Message extends ISnowflake, Formattable
      * @return {@link net.dv8tion.jda.core.requests.restaction.MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.core.entities.Message Message} with the updated content
      */
+    @NonNull
     @CheckReturnValue
     MessageAction editMessage(MessageEmbed newContent);
 
@@ -656,6 +681,7 @@ public interface Message extends ISnowflake, Formattable
      * @return {@link net.dv8tion.jda.core.requests.restaction.MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.core.entities.Message Message} with the updated content
      */
+    @NonNull
     @CheckReturnValue
     MessageAction editMessageFormat(String format, Object... args);
 
@@ -688,13 +714,14 @@ public interface Message extends ISnowflake, Formattable
      * @throws java.lang.IllegalStateException
      *         <ul>
      *             <li>If the message attempting to be edited was not created by the currently logged in account</li>
-     *             <li>If the message contains a MessageEmebd that is not
+     *             <li>If the message contains a MessageEmbed that is not
      *                 {@link net.dv8tion.jda.core.entities.MessageEmbed#isSendable(net.dv8tion.jda.core.AccountType) sendable}</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.core.entities.Message Message} with the updated content
      */
+    @NonNull
     @CheckReturnValue
     MessageAction editMessage(Message newContent);
 
@@ -734,6 +761,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @NonNull
     @CheckReturnValue
     AuditableRestAction<Void> delete();
 
@@ -745,6 +773,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return  the corresponding JDA instance
      */
+    @NonNull
     JDA getJDA();
 
     /**
@@ -789,6 +818,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
+    @NonNull
     @CheckReturnValue
     RestAction<Void> pin();
 
@@ -827,6 +857,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
+    @NonNull
     @CheckReturnValue
     RestAction<Void> unpin();
 
@@ -881,6 +912,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
+    @NonNull
     @CheckReturnValue
     RestAction<Void> addReaction(Emote emote);
 
@@ -930,6 +962,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
+    @NonNull
     @CheckReturnValue
     RestAction<Void> addReaction(String unicode);
 
@@ -966,6 +999,7 @@ public interface Message extends ISnowflake, Formattable
      *         {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
+    @NonNull
     @CheckReturnValue
     RestAction<Void> clearReactions();
 
@@ -978,6 +1012,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The {@link net.dv8tion.jda.core.entities.MessageType MessageType} of this message.
      */
+    @NonNull
     MessageType getType();
 
     /**
@@ -1019,6 +1054,7 @@ public interface Message extends ISnowflake, Formattable
             this.pattern = Pattern.compile(regex);
         }
 
+        @NonNull
         public Pattern getPattern()
         {
             return pattern;
@@ -1057,6 +1093,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return The corresponding JDA instance for this Attachment
          */
+        @NonNull
         public JDA getJDA()
         {
             return jda;
@@ -1073,6 +1110,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return Non-null String containing the Attachment URL.
          */
+        @NonNull
         public String getUrl()
         {
             return url;
@@ -1085,6 +1123,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return Non-null String containing the proxied Attachment url.
          */
+        @NonNull
         public String getProxyUrl()
         {
             return proxyUrl;
@@ -1095,6 +1134,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return Non-null String containing the Attachment file name.
          */
+        @NonNull
         public String getFileName()
         {
             return fileName;
@@ -1119,6 +1159,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @since  3.4.0
          */
+        @NonNull
         public Icon getAsIcon() throws IOException
         {
             if (!isImage())
@@ -1163,6 +1204,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @since  3.4.0
          */
+        @NonNull
         public InputStream getInputStream() throws IOException
         {
             try (Response response = openConnection())
@@ -1200,6 +1242,7 @@ public interface Message extends ISnowflake, Formattable
             }
         }
 
+        @NonNull
         protected Response openConnection() throws IOException
         {
             final OkHttpClient client = jda.getRequester().getHttpClient();
@@ -1212,7 +1255,7 @@ public interface Message extends ISnowflake, Formattable
 
         /**
          * The size of the attachment in bytes.
-         * <br>Example: if {@link #getSize() getSize()} returns 1024, then the attachment is 1024 bytes, or 1KB, in size.
+         * <br>Example: if getSize() returns 1024, then the attachment is 1024 bytes, or 1KB, in size.
          *
          * @return Positive int containing the size of the Attachment.
          */

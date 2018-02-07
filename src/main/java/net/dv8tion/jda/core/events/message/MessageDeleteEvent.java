@@ -30,7 +30,6 @@ import net.dv8tion.jda.core.entities.*;
  */
 public class MessageDeleteEvent extends GenericMessageEvent
 {
-
     public MessageDeleteEvent(JDA api, long responseNumber, long messageId, MessageChannel channel)
     {
         super(api, responseNumber, messageId, channel);

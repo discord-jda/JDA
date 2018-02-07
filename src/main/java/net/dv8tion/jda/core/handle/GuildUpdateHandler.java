@@ -48,7 +48,7 @@ public class GuildUpdateHandler extends SocketHandler
 
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
         Member owner = guild.getMembersMap().get(content.getLong("owner_id"));
-        String name = content.getString("name");
+        String name = content.optString("name", null);
         String iconId = content.optString("icon", null);
         String splashId = content.optString("splash", null);
         String region = content.getString("region");
@@ -62,7 +62,7 @@ public class GuildUpdateHandler extends SocketHandler
         TextChannel systemChannel = content.isNull("system_channel_id")
                 ? null : guild.getTextChannelsMap().get(content.getLong("system_channel_id"));
         Set<String> features;
-        if(!content.isNull("features"))
+        if (!content.isNull("features"))
         {
             JSONArray featureArr = content.getJSONArray("features");
             features = StreamSupport.stream(featureArr.spliterator(), false).map(String::valueOf).collect(Collectors.toSet());
@@ -72,7 +72,7 @@ public class GuildUpdateHandler extends SocketHandler
             features = Collections.emptySet();
         }
 
-        if (!Objects.equals(owner, guild.getOwner()))
+        if (owner != null && !Objects.equals(owner, guild.getOwner()))
         {
             Member oldOwner = guild.getOwner();
             guild.setOwner(owner);
@@ -81,7 +81,7 @@ public class GuildUpdateHandler extends SocketHandler
                         api, responseNumber,
                         guild, oldOwner));
         }
-        if (!Objects.equals(name, guild.getName()))
+        if (name != null && !Objects.equals(name, guild.getName()))
         {
             String oldName = guild.getName();
             guild.setName(name);

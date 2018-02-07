@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.core.events.channel.priv;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.User;
@@ -36,11 +37,13 @@ public class PrivateChannelCreateEvent extends Event
         this.channel = channel;
     }
 
+    @NonNull
     public User getUser()
     {
         return channel.getUser();
     }
 
+    @NonNull
     public PrivateChannel getPrivateChannel()
     {
         return channel;

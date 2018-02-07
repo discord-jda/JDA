@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.entities;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.Permission;
 
 import java.util.Collection;
@@ -34,6 +35,7 @@ public interface IPermissionHolder
      * 
      * @return A never-null Guild to which this PermissionHolder is linked
      */
+    @NonNull
     Guild getGuild();
 
     /**
@@ -41,6 +43,7 @@ public interface IPermissionHolder
      *
      * @return An immutable List of Permissions granted to this PermissionHolder.
      */
+    @NonNull
     List<Permission> getPermissions();
 
     /**

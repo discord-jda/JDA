@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.requests;
 
 import com.neovisionaries.ws.client.*;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import gnu.trove.iterator.TLongObjectIterator;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
@@ -109,12 +110,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected volatile ConnectNode connectNode = null;
 
-    public WebSocketClient(JDAImpl api)
+    public WebSocketClient(JDAImpl api, @Nullable String gateway)
     {
         this.api = api;
         this.shardInfo = api.getShardInfo();
         this.shouldReconnect = api.isAutoReconnect();
-        this.connectNode = new StartingNode();
+        this.connectNode = new StartingNode(gateway);
         api.getSessionController().appendSession(connectNode);
     }
 
@@ -404,7 +405,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         socket.sendClose(code);
     }
 
-    public void close(int code, String reason)
+    public void close(int code, @Nullable String reason)
     {
         socket.sendClose(code, reason);
     }
@@ -422,7 +423,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         ### Start Internal methods ###
      */
 
-    protected synchronized void connect()
+    protected synchronized void connect(@Nullable String gateway)
     {
         if (api.getStatus() != JDA.Status.ATTEMPTING_TO_RECONNECT)
             api.setStatus(JDA.Status.CONNECTING_TO_WEBSOCKET);
@@ -430,7 +431,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             throw new RejectedExecutionException("JDA is shutdown!");
         initiating = true;
 
-        String url = api.getGatewayUrl() + "?encoding=json&compress=zlib-stream&v=" + DISCORD_GATEWAY_VERSION;
+        String url = getGatewayUrl(gateway);
 
         try
         {
@@ -447,17 +448,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
-    protected String getGateway()
+    private String getGatewayUrl(@Nullable String url)
     {
-        try
-        {
-            return api.getSessionController().getGateway(api)
-                + "?encoding=json&compress=zlib-stream&v=" + DISCORD_GATEWAY_VERSION;
-        }
-        catch (Exception ex)
-        {
-            return null;
-        }
+        return (url == null ? api.getGateway() : url) + "?encoding=json&compress=zlib-stream&v=" + DISCORD_GATEWAY_VERSION;
     }
 
     @Override
@@ -550,7 +543,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             zlibContext = new Inflater();
             readBuffer = null;
             if (isInvalidate)
-                invalidate(); // 1000 means our session is dropped so we cannot resume
+                invalidate();
             api.getEventManager().handle(new DisconnectEvent(api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now()));
             if (sessionId == null)
                 queueReconnect();
@@ -633,7 +626,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             LOG.warn("Attempting to reconnect!");
             try
             {
-                connect();
+                connect(null);
                 break;
             }
             catch (RejectedExecutionException ex)
@@ -1255,13 +1248,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         return locked("There was an error cleaning up audio connections for deleted guild", () -> queuedAudioConnections.remove(guildId));
     }
 
-    public ConnectionRequest updateAudioConnection(long guildId, VoiceChannel connectedChannel)
+    public ConnectionRequest updateAudioConnection(long guildId, @Nullable VoiceChannel connectedChannel)
     {
         return locked("There was an error updating the audio connection", () -> updateAudioConnection0(guildId, connectedChannel));
     }
 
 
-    public ConnectionRequest updateAudioConnection0(long guildId, VoiceChannel connectedChannel)
+    public ConnectionRequest updateAudioConnection0(long guildId, @Nullable VoiceChannel connectedChannel)
     {
         //Called by VoiceStateUpdateHandler when we receive a response from discord
         // about our request to CONNECT or DISCONNECT.
@@ -1439,6 +1432,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected class StartingNode extends ConnectNode
     {
+        protected final String gateway;
+
+        public StartingNode(@Nullable String gateway)
+        {
+            this.gateway = gateway;
+        }
+
         @Override
         public boolean isReconnect()
         {
@@ -1452,7 +1452,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 return;
             setupHandlers();
             setupSendingThread();
-            connect();
+            connect(gateway);
             while (!isLast && api.getStatus().ordinal() < JDA.Status.AWAITING_LOGIN_CONFIRMATION.ordinal())
                 Thread.sleep(50);
         }

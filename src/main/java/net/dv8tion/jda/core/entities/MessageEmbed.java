@@ -15,6 +15,9 @@
  */
 package net.dv8tion.jda.core.entities;
 
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.utils.Checks;
@@ -22,6 +25,7 @@ import net.dv8tion.jda.core.utils.Helpers;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.annotation.ParametersAreNullableByDefault;
 import java.awt.Color;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -35,6 +39,8 @@ import java.util.Objects;
  * <a href="http://imgur.com/a/yOb5n" target="_blank">http://imgur.com/a/yOb5n</a>
  * <br>This class has many possibilities for null values, so be careful!
  */
+@ParametersAreNullableByDefault
+@DefaultAnnotationForParameters(Nullable.class)
 public class MessageEmbed
 {
     /**
@@ -111,7 +117,7 @@ public class MessageEmbed
     protected volatile JSONObject json = null;
 
     protected MessageEmbed(
-        String url, String title, String description, EmbedType type, OffsetDateTime timestamp,
+        String url, String title, String description, @NonNull EmbedType type, OffsetDateTime timestamp,
         Color color, Thumbnail thumbnail, Provider siteProvider, AuthorInfo author,
         VideoInfo videoInfo, Footer footer, ImageInfo image, List<Field> fields)
     {
@@ -170,6 +176,7 @@ public class MessageEmbed
      *
      * @return The {@link net.dv8tion.jda.core.entities.EmbedType EmbedType} of this embed.
      */
+    @NonNull
     public EmbedType getType()
     {
         return type;
@@ -354,7 +361,7 @@ public class MessageEmbed
      *
      * @see    #getLength()
      */
-    public boolean isSendable(AccountType type)
+    public boolean isSendable(@NonNull AccountType type)
     {
         Checks.notNull(type, "AccountType");
         final int length = getLength();
@@ -398,6 +405,7 @@ public class MessageEmbed
      *
      * @return JSONObject for this embed
      */
+    @NonNull
     public JSONObject toJSONObject()
     {
         if (json != null)
@@ -480,7 +488,7 @@ public class MessageEmbed
         protected final int width;
         protected final int height;
 
-        public Thumbnail(String url, String proxyUrl, int width, int height)
+        public Thumbnail(@Nullable String url, @Nullable String proxyUrl, int width, int height)
         {
             this.url = url;
             this.proxyUrl = proxyUrl;
@@ -530,7 +538,7 @@ public class MessageEmbed
         }
 
         @Override
-        public boolean equals(Object obj)
+        public boolean equals(@Nullable Object obj)
         {
             if (!(obj instanceof Thumbnail))
                 return false;
@@ -551,7 +559,7 @@ public class MessageEmbed
         protected final String name;
         protected final String url;
 
-        public Provider(String name, String url)
+        public Provider(@Nullable String name, @Nullable String url)
         {
             this.name = name;
             this.url = url;
@@ -580,7 +588,7 @@ public class MessageEmbed
         }
 
         @Override
-        public boolean equals(Object obj)
+        public boolean equals(@Nullable Object obj)
         {
             if (!(obj instanceof Provider))
                 return false;
@@ -601,7 +609,7 @@ public class MessageEmbed
         protected final int width;
         protected final int height;
 
-        public VideoInfo(String url, int width, int height)
+        public VideoInfo(@Nullable String url, int width, int height)
         {
             this.url = url;
             this.width = width;
@@ -646,7 +654,7 @@ public class MessageEmbed
         }
 
         @Override
-        public boolean equals(Object obj)
+        public boolean equals(@Nullable Object obj)
         {
             if (!(obj instanceof VideoInfo))
                 return false;
@@ -667,7 +675,7 @@ public class MessageEmbed
         protected final int width;
         protected final int height;
 
-        public ImageInfo(String url, String proxyUrl, int width, int height)
+        public ImageInfo(@Nullable String url, @Nullable String proxyUrl, int width, int height)
         {
             this.url = url;
             this.proxyUrl = proxyUrl;
@@ -740,7 +748,7 @@ public class MessageEmbed
         protected final String iconUrl;
         protected final String proxyIconUrl;
 
-        public AuthorInfo(String name, String url, String iconUrl, String proxyIconUrl)
+        public AuthorInfo(@Nullable String name, @Nullable String url, @Nullable String iconUrl, @Nullable String proxyIconUrl)
         {
             this.name = name;
             this.url = url;
@@ -791,7 +799,7 @@ public class MessageEmbed
         }
 
         @Override
-        public boolean equals(Object obj)
+        public boolean equals(@Nullable Object obj)
         {
             if (!(obj instanceof AuthorInfo))
                 return false;
@@ -812,7 +820,7 @@ public class MessageEmbed
         protected final String iconUrl;
         protected final String proxyIconUrl;
 
-        public Footer(String text, String iconUrl, String proxyIconUrl)
+        public Footer(@Nullable String text, @Nullable String iconUrl, @Nullable String proxyIconUrl)
         {
             this.text = text;
             this.iconUrl = iconUrl;
@@ -851,7 +859,7 @@ public class MessageEmbed
         }
 
         @Override
-        public boolean equals(Object obj)
+        public boolean equals(@Nullable Object obj)
         {
             if (!(obj instanceof Footer))
                 return false;
@@ -877,7 +885,7 @@ public class MessageEmbed
         protected final String value;
         protected final boolean inline;
 
-        protected Field(String name, String value, boolean inline, boolean checked)
+        protected Field(@Nullable String name, @Nullable String value, boolean inline, boolean checked)
         {
             if (checked)
             {
@@ -905,7 +913,7 @@ public class MessageEmbed
             }
         }
         
-        public Field(String name, String value, boolean inline)
+        public Field(@Nullable String name, @Nullable String value, boolean inline)
         {
             this(name, value, inline, true);
         }
@@ -941,7 +949,7 @@ public class MessageEmbed
         }
 
         @Override
-        public boolean equals(Object obj)
+        public boolean equals(@Nullable Object obj)
         {
             if (!(obj instanceof Field))
                 return false;

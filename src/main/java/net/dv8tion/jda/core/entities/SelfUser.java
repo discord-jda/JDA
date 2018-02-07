@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.core.entities;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.managers.AccountManager;
 import net.dv8tion.jda.core.managers.AccountManagerUpdatable;
@@ -52,6 +54,7 @@ public interface SelfUser extends User
      *
      * @return The email of the currently logged in account.
      */
+    @Nullable
     String getEmail() throws AccountTypeException;
 
     /**
@@ -88,6 +91,7 @@ public interface SelfUser extends User
      *
      * @return The phone of the currently logged in account or null if there's no number associated
      */
+    @Nullable
     String getPhoneNumber() throws AccountTypeException;
 
     /**
@@ -110,6 +114,7 @@ public interface SelfUser extends User
      *
      * @return An AccountManager instance for the current account
      */
+    @NonNull
     AccountManager getManager();
 
     /**
@@ -120,5 +125,6 @@ public interface SelfUser extends User
      *
      * @return An AccountManagerUpdatable instance for the current account
      */
+    @NonNull
     AccountManagerUpdatable getManagerUpdatable();
 }

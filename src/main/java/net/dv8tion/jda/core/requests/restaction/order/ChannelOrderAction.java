@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.requests.restaction.order;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.ChannelType;
@@ -113,6 +114,7 @@ public class ChannelOrderAction<T extends Channel> extends OrderAction<T, Channe
      *
      * @return The corresponding {@link net.dv8tion.jda.core.entities.Guild Guild}
      */
+    @NonNull
     public Guild getGuild()
     {
         return guild;
@@ -124,6 +126,7 @@ public class ChannelOrderAction<T extends Channel> extends OrderAction<T, Channe
      *
      * @return The corresponding {@link net.dv8tion.jda.core.entities.ChannelType ChannelType}
      */
+    @NonNull
     public ChannelType getChannelType()
     {
         return type;

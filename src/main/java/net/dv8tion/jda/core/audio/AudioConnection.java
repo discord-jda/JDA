@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.audio;
 
 import com.sun.jna.ptr.PointerByReference;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import gnu.trove.map.TIntLongMap;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntLongHashMap;
@@ -146,13 +147,13 @@ public class AudioConnection
         readyThread.start();
     }
 
-    public void setSendingHandler(AudioSendHandler handler)
+    public void setSendingHandler(@Nullable AudioSendHandler handler)
     {
         this.sendHandler = handler;
         setupSendSystem();
     }
 
-    public void setReceivingHandler(AudioReceiveHandler handler)
+    public void setReceivingHandler(@Nullable AudioReceiveHandler handler)
     {
         this.receiveHandler = handler;
         setupReceiveSystem();

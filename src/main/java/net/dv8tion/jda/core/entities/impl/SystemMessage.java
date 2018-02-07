@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.MessageAction;
@@ -28,60 +30,69 @@ public class SystemMessage extends ReceivedMessage
     public SystemMessage(
         long id, MessageChannel channel, MessageType type,
         boolean fromWebhook, boolean mentionsEveryone, boolean tts, boolean pinned,
-        String content, String nonce, User author, OffsetDateTime editTime,
+        String content, @Nullable String nonce, User author, @Nullable OffsetDateTime editTime,
         List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds)
     {
         super(id, channel, type, fromWebhook, mentionsEveryone, tts, pinned, content, nonce, author, editTime, reactions, attachments, embeds);
     }
 
+    @NonNull
     @Override
     public RestAction<Void> pin()
     {
         throw new UnsupportedOperationException("Cannot pin message of this Message Type. MessageType: " + getType());
     }
 
+    @NonNull
     @Override
     public RestAction<Void> unpin()
     {
         throw new UnsupportedOperationException("Cannot unpin message of this Message Type. MessageType: " + getType());
     }
 
+    @NonNull
     @Override
     public RestAction<Void> addReaction(Emote emote)
     {
         throw new UnsupportedOperationException("Cannot add reactions to message of this Message Type. MessageType: " + getType());
     }
 
+    @NonNull
     @Override
     public RestAction<Void> addReaction(String unicode)
     {
         throw new UnsupportedOperationException("Cannot add reactions to message of this Message Type. MessageType: " + getType());
     }
 
+    @NonNull
     @Override
     public RestAction<Void> clearReactions()
     {
         throw new UnsupportedOperationException("Cannot clear reactions for message of this Message Type. MessageType: " + getType());
     }
 
+    @NonNull
     @Override
     public MessageAction editMessage(CharSequence newContent)
     {
         throw new UnsupportedOperationException("Cannot edit message of this Message Type. MessageType: " + getType());
     }
 
+    @NonNull
     @Override
     public MessageAction editMessage(MessageEmbed newContent)
     {
         throw new UnsupportedOperationException("Cannot edit message of this Message Type. MessageType: " + getType());
     }
 
+    @NonNull
     @Override
     public MessageAction editMessageFormat(String format, Object... args)
     {
         throw new UnsupportedOperationException("Cannot edit message of this Message Type. MessageType: " + getType());
     }
 
+    @NonNull
     @Override
     public MessageAction editMessage(Message newContent)
     {

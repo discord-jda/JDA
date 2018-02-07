@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.requests.restaction.pagination;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.MessageReaction;
 import net.dv8tion.jda.core.entities.User;
@@ -51,7 +52,6 @@ import java.util.List;
  * </code></pre>
  *
  * @since  3.1
- * @author Florian Spieß
  */
 public class ReactionPaginationAction extends PaginationAction<User, ReactionPaginationAction>
 {
@@ -84,6 +84,7 @@ public class ReactionPaginationAction extends PaginationAction<User, ReactionPag
      *
      * @return The current MessageReaction
      */
+    @NonNull
     public MessageReaction getReaction()
     {
         return reaction;
@@ -117,7 +118,7 @@ public class ReactionPaginationAction extends PaginationAction<User, ReactionPag
             return;
         }
 
-        final EntityBuilder builder = api.getEntityBuilder();;
+        final EntityBuilder builder = api.getEntityBuilder();
         final JSONArray array = response.getArray();
         final List<User> users = new LinkedList<>();
         for (int i = 0; i < array.length(); i++)

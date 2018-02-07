@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.managers;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.audio.AudioReceiveHandler;
 import net.dv8tion.jda.core.audio.AudioSendHandler;
@@ -81,6 +83,7 @@ public interface AudioManager
      *
      * @return The corresponding JDA instance
      */
+    @NonNull
     JDA getJDA();
 
     /**
@@ -88,6 +91,7 @@ public interface AudioManager
      *
      * @return The Guild that this AudioManager manages.
      */
+    @NonNull
     Guild getGuild();
 
     /**
@@ -109,6 +113,7 @@ public interface AudioManager
      * @return The {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} that JDA is attempting to create an
      *         audio connection with, or {@code null} if JDA isn't attempting to create a connection.
      */
+    @Nullable
     VoiceChannel getQueuedAudioConnection();
 
     /**
@@ -119,6 +124,7 @@ public interface AudioManager
      * @return The {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} the audio connection is connected to
      *         or {@code null} if not connected.
      */
+    @Nullable
     VoiceChannel getConnectedChannel();
 
     /**
@@ -165,7 +171,7 @@ public interface AudioManager
      * @param handler
      *        The {@link net.dv8tion.jda.core.audio.AudioSendHandler AudioSendHandler} used to provide audio data.
      */
-    void setSendingHandler(AudioSendHandler handler);
+    void setSendingHandler(@Nullable AudioSendHandler handler);
 
     /**
      * The currently set {@link net.dv8tion.jda.core.audio.AudioSendHandler AudioSendHandler}. If there is
@@ -173,6 +179,7 @@ public interface AudioManager
      *
      * @return The currently active {@link net.dv8tion.jda.core.audio.AudioSendHandler AudioSendHandler} or {@code null}.
      */
+    @Nullable
     AudioSendHandler getSendingHandler();
 
     /**
@@ -188,7 +195,7 @@ public interface AudioManager
      *        The {@link net.dv8tion.jda.core.audio.AudioReceiveHandler AudioReceiveHandler} used to process
      *        received audio data.
      */
-    void setReceivingHandler(AudioReceiveHandler handler);
+    void setReceivingHandler(@Nullable AudioReceiveHandler handler);
 
     /**
      * The currently set {@link net.dv8tion.jda.core.audio.AudioReceiveHandler AudioReceiveHandler}.
@@ -196,6 +203,7 @@ public interface AudioManager
      *
      * @return The currently active {@link net.dv8tion.jda.core.audio.AudioReceiveHandler AudioReceiveHandler} or {@code null}.
      */
+    @Nullable
     AudioReceiveHandler getReceiveHandler();
 
     /**
@@ -206,7 +214,7 @@ public interface AudioManager
      * @param listener
      *        A {@link net.dv8tion.jda.core.audio.hooks.ConnectionListener ConnectionListener} instance
      */
-    void setConnectionListener(ConnectionListener listener);
+    void setConnectionListener(@Nullable ConnectionListener listener);
 
     /**
      * The currently set {@link net.dv8tion.jda.core.audio.hooks.ConnectionListener ConnectionListener}
@@ -215,6 +223,7 @@ public interface AudioManager
      * @return The current {@link net.dv8tion.jda.core.audio.hooks.ConnectionListener ConnectionListener} instance
      *         for this AudioManager.
      */
+    @Nullable
     ConnectionListener getConnectionListener();
 
     /**
@@ -223,6 +232,7 @@ public interface AudioManager
      *
      * @return The current {@link net.dv8tion.jda.core.audio.hooks.ConnectionStatus ConnectionStatus}.
      */
+    @NonNull
     ConnectionStatus getConnectionStatus();
 
     /**

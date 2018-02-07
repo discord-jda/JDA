@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.core.entities;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 
 public interface VoiceState
@@ -40,6 +42,7 @@ public interface VoiceState
      *
      * @return The corresponding JDA instance
      */
+    @NonNull
     JDA getJDA();
 
     /**
@@ -47,6 +50,7 @@ public interface VoiceState
      *
      * @return A possibly-null AudioChannel
      */
+    @Nullable
     AudioChannel getAudioChannel();
 
     /**
@@ -54,5 +58,6 @@ public interface VoiceState
      *
      * @return The Session-Id
      */
+    @Nullable
     String getSessionId();
 }

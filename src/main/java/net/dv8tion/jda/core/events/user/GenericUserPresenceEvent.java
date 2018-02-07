@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.events.user;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.client.entities.Friend;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
@@ -26,7 +27,7 @@ public abstract class GenericUserPresenceEvent extends GenericUserEvent
 {
     protected final Guild guild;
 
-    public GenericUserPresenceEvent(JDA api, long responseNumber, User user, Guild guild)
+    public GenericUserPresenceEvent(JDA api, long responseNumber, User user, @Nullable Guild guild)
     {
         super(api, responseNumber, user);
         this.guild = guild;

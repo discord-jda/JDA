@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.events.role;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
@@ -31,11 +32,13 @@ public abstract class GenericRoleEvent extends Event
         this.role = role;
     }
 
+    @NonNull
     public Role getRole()
     {
         return role;
     }
 
+    @NonNull
     public Guild getGuild()
     {
         return role.getGuild();

@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.utils.cache.impl;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 
@@ -23,7 +24,7 @@ import java.util.function.Function;
 
 public class SnowflakeCacheViewImpl<T extends ISnowflake> extends AbstractCacheView<T> implements SnowflakeCacheView<T>
 {
-    public SnowflakeCacheViewImpl(Function<T, String> nameMapper)
+    public SnowflakeCacheViewImpl(@Nullable Function<T, String> nameMapper)
     {
         super(nameMapper);
     }

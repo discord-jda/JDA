@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.core.events.message.guild;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -37,6 +38,7 @@ public class GuildMessageEmbedEvent extends GenericGuildMessageEvent
         this.embeds = embeds;
     }
 
+    @NonNull
     public List<MessageEmbed> getMessageEmbeds()
     {
         return embeds;

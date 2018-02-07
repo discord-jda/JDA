@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.events;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 
 /**
@@ -52,6 +53,7 @@ public class ExceptionEvent extends Event
      *
      * @return The cause
      */
+    @NonNull
     public Throwable getCause()
     {
         return throwable;

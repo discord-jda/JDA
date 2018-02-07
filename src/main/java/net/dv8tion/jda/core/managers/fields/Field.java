@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.core.managers.fields;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
+
 import java.util.Objects;
 import java.util.function.Supplier;
 
@@ -150,6 +153,7 @@ public abstract class Field<T, M>
      *
      * @return The Manager of this specific Field instance
      */
+    @NonNull
     public M getManager()
     {
         return manager;
@@ -162,6 +166,7 @@ public abstract class Field<T, M>
      * @return The specific manager instance for chaining convenience
      *         <br>Similar to {@link #setValue(Object)}
      */
+    @NonNull
     public M reset()
     {
         this.value = null;
@@ -187,7 +192,7 @@ public abstract class Field<T, M>
     public abstract void checkValue(T value);
 
     @Override
-    public boolean equals(Object o)
+    public boolean equals(@Nullable Object o)
     {
         return isSet() && Objects.equals(o, value);
     }
@@ -196,5 +201,13 @@ public abstract class Field<T, M>
     public String toString()
     {
         throw new UnsupportedOperationException("toString is disabled for Fields due to possible, accidental usage in JSON bodies.");
+    }
+
+    public static <F> Supplier<F> unsupported(String message)
+    {
+        return () ->
+        {
+            throw new UnsupportedOperationException(message);
+        };
     }
 }

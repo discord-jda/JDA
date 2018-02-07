@@ -30,4 +30,11 @@
  *
  * <p><b>Note: All of the standard EventManager implementations are synchronized</b>
  */
+@ParametersAreNonnullByDefault
+@DefaultAnnotationForParameters(NonNull.class)
 package net.dv8tion.jda.core.hooks;
+
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
+
+import javax.annotation.ParametersAreNonnullByDefault;

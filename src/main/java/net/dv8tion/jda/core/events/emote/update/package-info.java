@@ -16,6 +16,12 @@
 
 /**
  * Events that track updates for existing {@link net.dv8tion.jda.core.entities.Emote Emotes}
- *
  */
+@ParametersAreNonnullByDefault
+@DefaultAnnotationForParameters(NonNull.class)
 package net.dv8tion.jda.core.events.emote.update;
+
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
+
+import javax.annotation.ParametersAreNonnullByDefault;

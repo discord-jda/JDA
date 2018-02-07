@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.client.requests.restaction;
 
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.client.entities.Application;
 import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
@@ -26,6 +29,8 @@ import net.dv8tion.jda.core.requests.Route;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 /**
  * Extension of {@link net.dv8tion.jda.core.requests.RestAction RestAction} specifically
  * designed to create a {@link net.dv8tion.jda.client.entities.Application Application}.
@@ -34,6 +39,8 @@ import org.json.JSONObject;
  * @since  3.0
  * @author Aljoscha Grebe
  */
+@ParametersAreNonnullByDefault
+@DefaultAnnotationForParameters(NonNull.class)
 public class ApplicationAction extends RestAction<Application>
 {
     protected String description = null;
@@ -87,7 +94,7 @@ public class ApplicationAction extends RestAction<Application>
      *
      * @return The current ApplicationAction for chaining
      */
-    public ApplicationAction setDescription(final String description)
+    public ApplicationAction setDescription(@Nullable final String description)
     {
         if (description != null && description.length() > 400)
             throw new IllegalArgumentException("The description must not be more than 400 characters!");
@@ -104,7 +111,7 @@ public class ApplicationAction extends RestAction<Application>
      *
      * @return The current ApplicationAction for chaining
      */
-    public ApplicationAction setIcon(final Icon icon)
+    public ApplicationAction setIcon(@Nullable final Icon icon)
     {
         this.icon = icon;
         return this;

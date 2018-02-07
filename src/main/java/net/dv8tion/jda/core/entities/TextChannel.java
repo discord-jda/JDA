@@ -15,13 +15,15 @@
  */
 package net.dv8tion.jda.core.entities;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.WebhookAction;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 
-import javax.annotation.CheckReturnValue;
 import java.util.Collection;
 import java.util.FormattableFlags;
 import java.util.Formatter;
@@ -43,6 +45,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *
      * @return Possibly-null String containing the topic of this TextChannel.
      */
+    @Nullable
     String getTopic();
     
     /**
@@ -68,6 +71,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.core.entities.Webhook Webhook}{@literal >}
      *         <br>An immutable list of Webhook attached to this channel
      */
+    @NonNull
     @CheckReturnValue
     RestAction<List<Webhook>> getWebhooks();
 
@@ -96,6 +100,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * @return A specific {@link net.dv8tion.jda.core.requests.restaction.WebhookAction WebhookAction}
      *         <br>This action allows to set fields for the new webhook before creating it
      */
+    @NonNull
     @CheckReturnValue
     WebhookAction createWebhook(String name);
 
@@ -141,6 +146,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *
      * @see    #deleteMessagesByIds(Collection)
      */
+    @NonNull
     @CheckReturnValue
     RestAction<Void> deleteMessages(Collection<Message> messages);
 
@@ -189,6 +195,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *
      * @see    #deleteMessages(Collection)
      */
+    @NonNull
     @CheckReturnValue
     RestAction<Void> deleteMessagesByIds(Collection<String> messageIds);
 
@@ -224,6 +231,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @NonNull
     @CheckReturnValue
     AuditableRestAction<Void> deleteWebhookById(String id);
 
@@ -258,6 +266,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @NonNull
     @CheckReturnValue
     RestAction<Void> clearReactionsById(String messageId);
 
@@ -290,6 +299,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @NonNull
     @CheckReturnValue
     default RestAction<Void> clearReactionsById(long messageId)
     {
@@ -355,6 +365,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction}
      */
+    @NonNull
     @CheckReturnValue
     RestAction<Void> removeReactionById(String messageId, String unicode, User user);
 
@@ -417,6 +428,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction}
      */
+    @NonNull
     @CheckReturnValue
     default RestAction<Void> removeReactionById(long messageId, String unicode, User user)
     {
@@ -476,6 +488,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction}
      */
+    @NonNull
     @CheckReturnValue
     default RestAction<Void> removeReactionById(String messageId, Emote emote, User user)
     {
@@ -536,6 +549,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction}
      */
+    @NonNull
     @CheckReturnValue
     default RestAction<Void> removeReactionById(long messageId, Emote emote, User user)
     {
@@ -549,7 +563,11 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * {@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}.
      *
      * @return True, if we are able to read and send messages in this channel
+     *
+     * @deprecated
+     *         Use {@link net.dv8tion.jda.core.entities.Member#hasPermission(Channel, net.dv8tion.jda.core.Permission...) Member.hasPermission(Permission.MESSAGE_WRITE)} instead.
      */
+    @Deprecated
     boolean canTalk();
 
     /**
@@ -562,7 +580,11 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *         The Member to check
      *
      * @return True, if the specified member is able to read and send messages in this channel
+     *
+     * @deprecated
+     *         Use {@link net.dv8tion.jda.core.entities.Member#hasPermission(Channel, net.dv8tion.jda.core.Permission...) Member.hasPermission(Permission.MESSAGE_WRITE)} instead.
      */
+    @Deprecated
     boolean canTalk(Member member);
 
     @Override

@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.events.guild.update;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
@@ -30,6 +31,7 @@ public class GuildUpdateOwnerEvent extends GenericGuildUpdateEvent
         this.oldOwner = oldOwner;
     }
 
+    @NonNull
     public Member getOldOwner()
     {
         return oldOwner;

@@ -19,4 +19,11 @@
  * of a {@link net.dv8tion.jda.core.entities.Guild Guild} such as join/leave or
  * updates of the specific Member such as new {@link net.dv8tion.jda.core.entities.Role Roles} or a new nickname.
  */
+@ParametersAreNonnullByDefault
+@DefaultAnnotationForParameters(NonNull.class)
 package net.dv8tion.jda.core.events.guild.member;
+
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
+
+import javax.annotation.ParametersAreNonnullByDefault;

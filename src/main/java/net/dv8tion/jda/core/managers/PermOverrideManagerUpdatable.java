@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.core.managers;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Channel;
@@ -29,7 +32,6 @@ import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
-import javax.annotation.CheckReturnValue;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -72,6 +74,7 @@ public class PermOverrideManagerUpdatable
      *
      * @return the corresponding JDA instance
      */
+    @NonNull
     public JDA getJDA()
     {
         return override.getJDA();
@@ -84,6 +87,7 @@ public class PermOverrideManagerUpdatable
      *
      * @return The parent {@link net.dv8tion.jda.core.entities.Guild Guild}
      */
+    @NonNull
     public Guild getGuild()
     {
         return override.getGuild();
@@ -96,6 +100,7 @@ public class PermOverrideManagerUpdatable
      *
      * @return The parent {@link net.dv8tion.jda.core.entities.Channel Channel}
      */
+    @NonNull
     public Channel getChannel()
     {
         return override.getChannel();
@@ -107,6 +112,7 @@ public class PermOverrideManagerUpdatable
      *
      * @return The target {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
      */
+    @NonNull
     public PermissionOverride getPermissionOverride()
     {
         return override;
@@ -124,6 +130,7 @@ public class PermOverrideManagerUpdatable
      *
      * @return The current Manager instance for chaining convenience
      */
+    @NonNull
     @CheckReturnValue
     public PermOverrideManagerUpdatable grant(long permissions)
     {
@@ -144,6 +151,7 @@ public class PermOverrideManagerUpdatable
      *
      * @return The current Manager instance for chaining convenience
      */
+    @NonNull
     @CheckReturnValue
     public PermOverrideManagerUpdatable grant(Permission... permissions)
     {
@@ -164,6 +172,7 @@ public class PermOverrideManagerUpdatable
      *
      * @return The current Manager instance for chaining convenience
      */
+    @NonNull
     @CheckReturnValue
     public PermOverrideManagerUpdatable grant(Collection<Permission> permissions)
     {
@@ -194,6 +203,7 @@ public class PermOverrideManagerUpdatable
      *
      * @return The current Manager instance for chaining convenience
      */
+    @NonNull
     @CheckReturnValue
     public PermOverrideManagerUpdatable deny(long permissions)
     {
@@ -214,6 +224,7 @@ public class PermOverrideManagerUpdatable
      *
      * @return The current Manager instance for chaining convenience
      */
+    @NonNull
     @CheckReturnValue
     public PermOverrideManagerUpdatable deny(Permission... permissions)
     {
@@ -234,6 +245,7 @@ public class PermOverrideManagerUpdatable
      *
      * @return The current Manager instance for chaining convenience
      */
+    @NonNull
     @CheckReturnValue
     public PermOverrideManagerUpdatable deny(Collection<Permission> permissions)
     {
@@ -265,6 +277,7 @@ public class PermOverrideManagerUpdatable
      *
      * @return The current Manager instance for chaining convenience
      */
+    @NonNull
     @CheckReturnValue
     public PermOverrideManagerUpdatable clear(long permission)
     {
@@ -286,6 +299,7 @@ public class PermOverrideManagerUpdatable
      *
      * @return The current Manager instance for chaining convenience
      */
+    @NonNull
     @CheckReturnValue
     public PermOverrideManagerUpdatable clear(Permission... permissions)
     {
@@ -307,6 +321,7 @@ public class PermOverrideManagerUpdatable
      *
      * @return The current Manager instance for chaining convenience
      */
+    @NonNull
     @CheckReturnValue
     public PermOverrideManagerUpdatable clear(Collection<Permission> permissions)
     {
@@ -336,6 +351,7 @@ public class PermOverrideManagerUpdatable
      * @return Granted {@link net.dv8tion.jda.core.Permission Permissions} value
      *         or {@code null} if {@link #isSet()} is {@code false}
      */
+    @Nullable
     public Long getAllowBits()
     {
         return allow;
@@ -352,6 +368,7 @@ public class PermOverrideManagerUpdatable
      * @return Denied {@link net.dv8tion.jda.core.Permission Permissions} value
      *         or {@code null} if {@link #isSet()} is {@code false}
      */
+    @Nullable
     public Long getDenyBits()
     {
         return deny;
@@ -369,6 +386,7 @@ public class PermOverrideManagerUpdatable
      * @return Inherited {@link net.dv8tion.jda.core.Permission Permissions} value
      *         or {@code null} if {@link #isSet()} is {@code false}
      */
+    @Nullable
     public Long getInheritBits()
     {
         if (!set)
@@ -434,6 +452,7 @@ public class PermOverrideManagerUpdatable
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Applies all changes that have been made in a single api-call.
      */
+    @NonNull
     @CheckReturnValue
     public AuditableRestAction<Void> update()
     {

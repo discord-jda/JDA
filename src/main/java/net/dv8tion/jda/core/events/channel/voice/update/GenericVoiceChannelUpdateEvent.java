@@ -29,7 +29,6 @@ import net.dv8tion.jda.core.events.channel.voice.GenericVoiceChannelEvent;
  */
 public abstract class GenericVoiceChannelUpdateEvent extends GenericVoiceChannelEvent
 {
-
     public GenericVoiceChannelUpdateEvent(JDA api, long responseNumber, VoiceChannel channel)
     {
         super(api, responseNumber, channel);

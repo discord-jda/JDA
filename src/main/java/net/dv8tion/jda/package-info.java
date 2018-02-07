@@ -21,7 +21,7 @@
  * <p>From here you can navigate to the library features.
  * <ul>
  *     <li>{@link net.dv8tion.jda.core Core Features}
- *     <br>Package which includes the core functionalities of JDA, available throughout all feature pacakges</li>
+ *     <br>Package which includes the core functionalities of JDA, available throughout all feature packages</li>
  *
  *     <li>{@link net.dv8tion.jda.bot Bot Features}
  *     <br>Package which includes functionalities that are only available for accounts of {@link net.dv8tion.jda.core.AccountType#BOT AccountType BOT}</li>
@@ -34,4 +34,11 @@
  *     <br>Functionality to send/execute webhooks without a bound JDA instance</li>
  * </ul>
  */
+@ParametersAreNonnullByDefault
+@DefaultAnnotationForParameters(NonNull.class)
 package net.dv8tion.jda;
+
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
+
+import javax.annotation.ParametersAreNonnullByDefault;

@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.core.requests.restaction;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.entities.Webhook;
@@ -25,8 +28,6 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
-
-import javax.annotation.CheckReturnValue;
 
 /**
  * {@link net.dv8tion.jda.core.entities.Webhook Webhook} Builder system created as an extension of {@link net.dv8tion.jda.core.requests.RestAction}
@@ -54,6 +55,7 @@ public class WebhookAction extends AuditableRestAction<Webhook>
      *
      * @return The current WebhookAction for chaining convenience.
      */
+    @NonNull
     @CheckReturnValue
     public WebhookAction setName(String name)
     {
@@ -73,8 +75,9 @@ public class WebhookAction extends AuditableRestAction<Webhook>
      *
      * @return The current WebhookAction for chaining convenience.
      */
+    @NonNull
     @CheckReturnValue
-    public WebhookAction setAvatar(Icon icon)
+    public WebhookAction setAvatar(@Nullable Icon icon)
     {
         this.avatar = icon;
         return this;

@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.core.requests;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
@@ -178,7 +181,7 @@ public abstract class RestAction<T>
      *         The {@link net.dv8tion.jda.core.requests.Route.CompiledRoute Route.CompiledRoute}
      *         to be used for rate limit handling
      */
-    public RestAction(JDA api, Route.CompiledRoute route)
+    public RestAction(JDA api, @Nullable Route.CompiledRoute route)
     {
         this(api, route, (RequestBody) null);
     }
@@ -194,7 +197,7 @@ public abstract class RestAction<T>
      * @param  data
      *         The data that should be sent to the specified route. (can be null)
      */
-    public RestAction(JDA api, Route.CompiledRoute route, RequestBody data)
+    public RestAction(JDA api, @Nullable Route.CompiledRoute route, @Nullable RequestBody data)
     {
         Checks.notNull(api, "api");
 
@@ -214,7 +217,7 @@ public abstract class RestAction<T>
      * @param  data
      *         The data that should be sent to the specified route. (can be null)
      */
-    public RestAction(JDA api, Route.CompiledRoute route, JSONObject data)
+    public RestAction(JDA api, @Nullable Route.CompiledRoute route, @Nullable JSONObject data)
     {
         this(api, route, data == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, data.toString()));
 
@@ -226,6 +229,7 @@ public abstract class RestAction<T>
      *
      * @return The corresponding JDA instance
      */
+    @NonNull
     public JDA getJDA()
     {
         return api;
@@ -254,7 +258,7 @@ public abstract class RestAction<T>
      *         The success callback that will be called at a convenient time
      *         for the API. (can be null)
      */
-    public void queue(Consumer<T> success)
+    public void queue(@Nullable Consumer<T> success)
     {
         queue(success, null);
     }
@@ -271,7 +275,7 @@ public abstract class RestAction<T>
      *         The failure callback that will be called if the Request
      *         encounters an exception at its execution point.
      */
-    public void queue(Consumer<T> success, Consumer<Throwable> failure)
+    public void queue(@Nullable Consumer<T> success, @Nullable Consumer<Throwable> failure)
     {
         Route.CompiledRoute route = finalizeRoute();
         Checks.notNull(route, "Route");
@@ -293,6 +297,8 @@ public abstract class RestAction<T>
      *
      * @return Never-null {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the completion promise
      */
+    @NonNull
+    @CheckReturnValue
     public RequestFuture<T> submit()
     {
         return submit(true);
@@ -310,6 +316,8 @@ public abstract class RestAction<T>
      *
      * @return Never-null {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} task representing the completion promise
      */
+    @NonNull
+    @CheckReturnValue
     public RequestFuture<T> submit(boolean shouldQueue)
     {
         Route.CompiledRoute route = finalizeRoute();
@@ -403,6 +411,7 @@ public abstract class RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture} representing the
      *         delayed operation
      */
+    @NonNull
     public ScheduledFuture<T> submitAfter(long delay, TimeUnit unit)
     {
         return submitAfter(delay, unit, api.pool);
@@ -432,6 +441,7 @@ public abstract class RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
      */
+    @NonNull
     public ScheduledFuture<T> submitAfter(long delay, TimeUnit unit, ScheduledExecutorService executor)
     {
         Checks.notNull(executor, "Scheduler");
@@ -495,6 +505,7 @@ public abstract class RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
      */
+    @NonNull
     public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit)
     {
         return queueAfter(delay, unit, api.pool);
@@ -527,7 +538,8 @@ public abstract class RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
      */
-    public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<T> success)
+    @NonNull
+    public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, @Nullable Consumer<T> success)
     {
         return queueAfter(delay, unit, success, api.pool);
     }
@@ -560,7 +572,8 @@ public abstract class RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
      */
-    public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<T> success, Consumer<Throwable> failure)
+    @NonNull
+    public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, @Nullable Consumer<T> success, @Nullable Consumer<Throwable> failure)
     {
         return queueAfter(delay, unit, success, failure, api.pool);
     }
@@ -590,6 +603,7 @@ public abstract class RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
      */
+    @NonNull
     public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, ScheduledExecutorService executor)
     {
         return queueAfter(delay, unit, null, executor);
@@ -623,7 +637,8 @@ public abstract class RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
      */
-    public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<T> success, ScheduledExecutorService executor)
+    @NonNull
+    public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, @Nullable Consumer<T> success, ScheduledExecutorService executor)
     {
         return queueAfter(delay, unit, success, null, executor);
     }
@@ -656,7 +671,8 @@ public abstract class RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
      */
-    public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<T> success, Consumer<Throwable> failure, ScheduledExecutorService executor)
+    @NonNull
+    public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, @Nullable Consumer<T> success, @Nullable Consumer<Throwable> failure, ScheduledExecutorService executor)
     {
         Checks.notNull(executor, "Scheduler");
         Checks.notNull(unit, "TimeUnit");
@@ -695,19 +711,20 @@ public abstract class RestAction<T>
     {
         private final T returnObj;
 
-        public EmptyRestAction(JDA api, T returnObj)
+        public EmptyRestAction(JDA api, @Nullable T returnObj)
         {
             super(api, null);
             this.returnObj = returnObj;
         }
 
         @Override
-        public void queue(Consumer<T> success, Consumer<Throwable> failure)
+        public void queue(@Nullable Consumer<T> success, @Nullable Consumer<Throwable> failure)
         {
             if (success != null)
                 success.accept(returnObj);
         }
 
+        @NonNull
         @Override
         public RequestFuture<T> submit(boolean shouldQueue)
         {

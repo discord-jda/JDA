@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.events.emote;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Guild;
@@ -23,7 +24,6 @@ import net.dv8tion.jda.core.events.Event;
 
 public class GenericEmoteEvent extends Event
 {
-
     protected final Emote emote;
 
     public GenericEmoteEvent(JDA api, long responseNumber, Emote emote)
@@ -32,11 +32,14 @@ public class GenericEmoteEvent extends Event
         this.emote = emote;
     }
 
+    @NonNull
+    @SuppressWarnings("ConstantConditions")
     public Guild getGuild()
     {
         return emote.getGuild();
     }
 
+    @NonNull
     public Emote getEmote()
     {
         return emote;

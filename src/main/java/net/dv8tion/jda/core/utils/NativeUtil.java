@@ -23,7 +23,7 @@ import java.io.*;
  * Credit to the original author: Adam Heinrich
  * <p>
  * A simple library class which helps with loading dynamic libraries stored in the
- * JAR archive. These libraries usualy contain implementation of some methods in
+ * JAR archive. These libraries usually contain implementation of some methods in
  * native code (using JNI - Java Native Interface).
  * <p>
  * <a href="http://adamheinrich.com/blog/2012/how-to-load-native-jni-library-from-jar">
@@ -61,7 +61,7 @@ public class NativeUtil
         String[] parts = path.split("/");
         String filename = (parts.length > 1) ? parts[parts.length - 1] : null;
 
-        // Split filename to prexif and suffix (extension)
+        // Split filename to prefix and suffix (extension)
         String prefix = "";
         String suffix = null;
         if (filename != null) {

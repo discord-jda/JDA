@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.core;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.bot.JDABot;
 import net.dv8tion.jda.client.JDAClient;
 import net.dv8tion.jda.core.entities.*;
@@ -26,9 +29,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.GuildAction;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
-import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
-import javax.annotation.CheckReturnValue;
 import java.util.Collection;
 import java.util.List;
 
@@ -172,6 +173,7 @@ public interface JDA
      *
      * @return Current JDA status.
      */
+    @NonNull
     Status getStatus();
 
     /**
@@ -194,6 +196,7 @@ public interface JDA
      *
      * @return Immutable list of all cf-ray values for this session
      */
+    @NonNull
     List<String> getCloudflareRays();
 
     /**
@@ -203,6 +206,7 @@ public interface JDA
      *
      * @return List of all websocket traces
      */
+    @NonNull
     List<String> getWebSocketTrace();
 
     /**
@@ -248,6 +252,7 @@ public interface JDA
      *
      * @return List of currently registered Objects acting as EventListeners.
      */
+    @NonNull
     List<Object> getRegisteredListeners();
 
     /**
@@ -273,6 +278,8 @@ public interface JDA
      * @return {@link net.dv8tion.jda.core.requests.restaction.GuildAction GuildAction}
      *         <br>Allows for setting various details for the resulting Guild
      */
+    @NonNull
+    @CheckReturnValue
     GuildAction createGuild(String name);
 
     /**
@@ -285,6 +292,7 @@ public interface JDA
      *
      * @return {@link net.dv8tion.jda.core.utils.cache.CacheView CacheView}
      */
+    @NonNull
     CacheView<AudioManager> getAudioManagerCache();
 
     /**
@@ -292,6 +300,7 @@ public interface JDA
      *
      * @return Immutable list of all created AudioManager instances
      */
+    @NonNull
     default List<AudioManager> getAudioManagers()
     {
         return getAudioManagerCache().asList();
@@ -304,6 +313,7 @@ public interface JDA
      *
      * @return {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
+    @NonNull
     SnowflakeCacheView<User> getUserCache();
 
     /**
@@ -317,6 +327,7 @@ public interface JDA
      *
      * @return List of all {@link net.dv8tion.jda.core.entities.User Users} that are visible to JDA.
      */
+    @NonNull
     default List<User> getUsers()
     {
         return getUserCache().asList();
@@ -334,6 +345,7 @@ public interface JDA
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.User User} with matching id.
      */
+    @Nullable
     default User getUserById(String id)
     {
         return getUserCache().getElementById(id);
@@ -348,6 +360,7 @@ public interface JDA
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.User User} with matching id.
      */
+    @Nullable
     default User getUserById(long id)
     {
         return getUserCache().getElementById(id);
@@ -366,6 +379,7 @@ public interface JDA
      *
      * @return Possibly-empty list of {@link net.dv8tion.jda.core.entities.User Users} that all have the same name as the provided name.
      */
+    @NonNull
     default List<User> getUsersByName(String name, boolean ignoreCase)
     {
         return getUserCache().getElementsByName(name, ignoreCase);
@@ -379,6 +393,7 @@ public interface JDA
      *
      * @return Unmodifiable list of all {@link net.dv8tion.jda.core.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.core.entities.User Users} in them.
      */
+    @NonNull
     List<Guild> getMutualGuilds(User... users);
 
     /**
@@ -389,6 +404,7 @@ public interface JDA
      *
      * @return Unmodifiable list of all {@link net.dv8tion.jda.core.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.core.entities.User Users} in them.
      */
+    @NonNull
     List<Guild> getMutualGuilds(Collection<User> users);
 
     /**
@@ -420,6 +436,7 @@ public interface JDA
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.User User}
      *         <br>On request, gets the User with id matching provided id from Discord.
      */
+    @NonNull
     @CheckReturnValue
     RestAction<User> retrieveUserById(String id);
 
@@ -444,6 +461,7 @@ public interface JDA
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.User User}
      *         <br>On request, gets the User with id matching provided id from Discord.
      */
+    @NonNull
     @CheckReturnValue
     RestAction<User> retrieveUserById(long id);
 
@@ -453,6 +471,7 @@ public interface JDA
      *
      * @return {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
+    @NonNull
     SnowflakeCacheView<Guild> getGuildCache();
 
     /**
@@ -467,6 +486,7 @@ public interface JDA
      *
      * @return Possibly-empty list of all the {@link net.dv8tion.jda.core.entities.Guild Guilds} that this account is connected to.
      */
+    @NonNull
     default List<Guild> getGuilds()
     {
         return getGuildCache().asList();
@@ -484,6 +504,7 @@ public interface JDA
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Guild Guild} with matching id.
      */
+    @Nullable
     default Guild getGuildById(String id)
     {
         return getGuildCache().getElementById(id);
@@ -498,6 +519,7 @@ public interface JDA
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Guild Guild} with matching id.
      */
+    @Nullable
     default Guild getGuildById(long id)
     {
         return getGuildCache().getElementById(id);
@@ -514,6 +536,7 @@ public interface JDA
      *
      * @return Possibly-empty list of all the {@link net.dv8tion.jda.core.entities.Guild Guilds} that all have the same name as the provided name.
      */
+    @NonNull
     default List<Guild> getGuildsByName(String name, boolean ignoreCase)
     {
         return getGuildCache().getElementsByName(name, ignoreCase);
@@ -527,6 +550,7 @@ public interface JDA
      *
      * @see    net.dv8tion.jda.core.utils.cache.CacheView#allSnowflakes(java.util.function.Supplier) CacheView.allSnowflakes(...)
      */
+    @NonNull
     SnowflakeCacheView<Role> getRoleCache();
 
     /**
@@ -536,6 +560,7 @@ public interface JDA
      *
      * @return Immutable List of all visible Roles
      */
+    @NonNull
     default List<Role> getRoles()
     {
         return getRoleCache().asList();
@@ -552,6 +577,7 @@ public interface JDA
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      */
+    @Nullable
     default Role getRoleById(String id)
     {
         return getRoleCache().getElementById(id);
@@ -566,6 +592,7 @@ public interface JDA
      *         The id of the searched Role
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Role Role} for the specified ID
      */
+    @Nullable
     default Role getRoleById(long id)
     {
         return getRoleCache().getElementById(id);
@@ -582,6 +609,7 @@ public interface JDA
      *         Whether to use {@link String#equalsIgnoreCase(String)}
      * @return Immutable List of all Roles matching the parameters provided.
      */
+    @NonNull
     default List<Role> getRolesByName(String name, boolean ignoreCase)
     {
         return getRoleCache().getElementsByName(name, ignoreCase);
@@ -593,6 +621,7 @@ public interface JDA
      *
      * @return {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
+    @NonNull
     SnowflakeCacheView<Category> getCategoryCache();
 
     /**
@@ -605,6 +634,7 @@ public interface JDA
      * @throws java.lang.IllegalArgumentException
      *         If the provided ID is not a valid {@code long}
      */
+    @Nullable
     default Category getCategoryById(String id)
     {
         return getCategoryCache().getElementById(id);
@@ -618,6 +648,7 @@ public interface JDA
      *         The snowflake ID of the wanted Category
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Category Category} for the provided ID.
      */
+    @Nullable
     default Category getCategoryById(long id)
     {
         return getCategoryCache().getElementById(id);
@@ -628,6 +659,7 @@ public interface JDA
      *
      * @return An immutable list of all visible {@link net.dv8tion.jda.core.entities.Category Categories}.
      */
+    @NonNull
     default List<Category> getCategories()
     {
         return getCategoryCache().asList();
@@ -645,6 +677,7 @@ public interface JDA
      * @throws java.lang.IllegalArgumentException
      *         If the provided name is {@code null}
      */
+    @NonNull
     default List<Category> getCategoriesByName(String name, boolean ignoreCase)
     {
         return getCategoryCache().getElementsByName(name, ignoreCase);
@@ -656,6 +689,7 @@ public interface JDA
      *
      * @return {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
+    @NonNull
     SnowflakeCacheView<TextChannel> getTextChannelCache();
 
     /**
@@ -670,6 +704,7 @@ public interface JDA
      *
      * @return Possibly-empty list of all known {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}.
      */
+    @NonNull
     default List<TextChannel> getTextChannels()
     {
         return getTextChannelCache().asList();
@@ -693,6 +728,7 @@ public interface JDA
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} with matching id.
      */
+    @Nullable
     default TextChannel getTextChannelById(String id)
     {
         return getTextChannelCache().getElementById(id);
@@ -714,6 +750,7 @@ public interface JDA
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} with matching id.
      */
+    @Nullable
     default TextChannel getTextChannelById(long id)
     {
         return getTextChannelCache().getElementById(id);
@@ -737,6 +774,7 @@ public interface JDA
      * @return Possibly-empty list of all the {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} that all have the
      *         same name as the provided name.
      */
+    @NonNull
     default List<TextChannel> getTextChannelsByName(String name, boolean ignoreCase)
     {
         return getTextChannelCache().getElementsByName(name, ignoreCase);
@@ -748,6 +786,7 @@ public interface JDA
      *
      * @return {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
+    @NonNull
     SnowflakeCacheView<VoiceChannel> getVoiceChannelCache();
 
     /**
@@ -756,6 +795,7 @@ public interface JDA
      *
      * @return Possible-empty list of all known {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels}.
      */
+    @NonNull
     default List<VoiceChannel> getVoiceChannels()
     {
         return getVoiceChannelCache().asList();
@@ -773,6 +813,7 @@ public interface JDA
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} with matching id.
      */
+    @Nullable
     default VoiceChannel getVoiceChannelById(String id)
     {
         return getVoiceChannelCache().getElementById(id);
@@ -788,6 +829,7 @@ public interface JDA
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} with matching id.
      */
+    @Nullable
     default VoiceChannel getVoiceChannelById(long id)
     {
         return getVoiceChannelCache().getElementById(id);
@@ -805,6 +847,7 @@ public interface JDA
      * @return Possibly-empty list of all the {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels} that all have the
      *         same name as the provided name.
      */
+    @NonNull
     default List<VoiceChannel> getVoiceChannelByName(String name, boolean ignoreCase)
     {
         return getVoiceChannelCache().getElementsByName(name, ignoreCase);
@@ -816,6 +859,7 @@ public interface JDA
      *
      * @return {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
+    @NonNull
     SnowflakeCacheView<PrivateChannel> getPrivateChannelCache();
 
     /**
@@ -823,6 +867,7 @@ public interface JDA
      *
      * @return Possibly-empty list of all {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannels}.
      */
+    @NonNull
     default List<PrivateChannel> getPrivateChannels()
     {
         return getPrivateChannelCache().asList();
@@ -840,6 +885,7 @@ public interface JDA
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} with matching id.
      */
+    @Nullable
     default PrivateChannel getPrivateChannelById(String id)
     {
         return getPrivateChannelCache().getElementById(id);
@@ -855,6 +901,7 @@ public interface JDA
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} with matching id.
      */
+    @Nullable
     default PrivateChannel getPrivateChannelById(long id)
     {
         return getPrivateChannelCache().getElementById(id);
@@ -868,6 +915,7 @@ public interface JDA
      *
      * @see    net.dv8tion.jda.core.utils.cache.CacheView#allSnowflakes(java.util.function.Supplier) CacheView.allSnowflakes(...)
      */
+    @NonNull
     SnowflakeCacheView<Emote> getEmoteCache();
 
     /**
@@ -881,6 +929,7 @@ public interface JDA
      *
      * @return An immutable list of Emotes (which may or may not be available to usage).
      */
+    @NonNull
     default List<Emote> getEmotes()
     {
         return getEmoteCache().asList();
@@ -898,6 +947,7 @@ public interface JDA
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      */
+    @Nullable
     default Emote getEmoteById(String id)
     {
         return getEmoteCache().getElementById(id);
@@ -913,6 +963,7 @@ public interface JDA
      * @return An {@link net.dv8tion.jda.core.entities.Emote Emote} represented by this id or null if none is found in
      *         our cache.
      */
+    @Nullable
     default Emote getEmoteById(long id)
     {
         return getEmoteCache().getElementById(id);
@@ -933,6 +984,7 @@ public interface JDA
      * @return Possibly-empty list of all the {@link net.dv8tion.jda.core.entities.Emote Emotes} that all have the same
      *         name as the provided name.
      */
+    @NonNull
     default List<Emote> getEmotesByName(String name, boolean ignoreCase)
     {
         return getEmoteCache().getElementsByName(name, ignoreCase);
@@ -944,8 +996,12 @@ public interface JDA
      * use the AccountManager which is accessible by {@link net.dv8tion.jda.core.entities.SelfUser#getManager()} or
      * {@link net.dv8tion.jda.core.entities.SelfUser#getManagerUpdatable()}.
      *
+     * @throws java.lang.IllegalStateException
+     *         If JDA has not finished loading yet!
+     *
      * @return The currently logged in account.
      */
+    @NonNull
     SelfUser getSelfUser();
 
     /**
@@ -954,6 +1010,7 @@ public interface JDA
      *
      * @return The never-null {@link net.dv8tion.jda.core.managers.Presence Presence} for this session.
      */
+    @NonNull
     Presence getPresence();
 
     /**
@@ -969,6 +1026,7 @@ public interface JDA
      *
      * @return Never-null, 18 character length string containing the auth token.
      */
+    @NonNull
     String getToken();
 
     /**
@@ -1072,6 +1130,7 @@ public interface JDA
      *
      * @return The current AccountType.
      */
+    @NonNull
     AccountType getAccountType();
 
     /**
@@ -1082,6 +1141,7 @@ public interface JDA
      *
      * @return The {@link net.dv8tion.jda.client.JDAClient} registry for this instance of JDA.
      */
+    @NonNull
     JDAClient asClient();
 
     /**
@@ -1092,5 +1152,6 @@ public interface JDA
      *
      * @return The {@link net.dv8tion.jda.bot.JDABot} registry for this instance of JDA.
      */
+    @NonNull
     JDABot asBot();
 }

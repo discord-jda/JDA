@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.core.utils;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import gnu.trove.impl.sync.TSynchronizedLongObjectMap;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
@@ -25,6 +26,7 @@ import okhttp3.RequestBody;
 import okio.BufferedSink;
 import okio.Okio;
 import okio.Source;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -64,6 +66,7 @@ public class MiscUtil
      *
      * @return The creation time of the JDA entity as OffsetDateTime
      */
+    @NonNull
     public static OffsetDateTime getCreationTime(long entityId)
     {
         long timestamp = (entityId >>> TIMESTAMP_OFFSET) + DISCORD_EPOCH;
@@ -84,6 +87,7 @@ public class MiscUtil
      *
      * @return The creation time of the JDA entity as OffsetDateTime
      */
+    @NonNull
     public static OffsetDateTime getCreationTime(ISnowflake entity)
     {
         Checks.notNull(entity, "Entity");
@@ -98,6 +102,7 @@ public class MiscUtil
      *
      * @return The String of the formatted OffsetDateTime
      */
+    @NonNull
     public static String getDateTimeString(OffsetDateTime time)
     {
         return time.format(dtFormatter);
@@ -168,6 +173,7 @@ public class MiscUtil
      *
      * @return a new thread-safe {@link gnu.trove.map.TLongObjectMap TLongObjectMap}
      */
+    @NonNull
     public static <T> TLongObjectMap<T> newLongMap()
     {
         return new TSynchronizedLongObjectMap<>(new TLongObjectHashMap<T>(), new Object());
@@ -182,6 +188,7 @@ public class MiscUtil
      *
      * @return The encoded String
      */
+    @NonNull
     public static String encodeUTF8(String chars)
     {
         try
@@ -194,6 +201,18 @@ public class MiscUtil
         }
     }
 
+    /**
+     * Checks for validity of the given input.
+     * <br>Parses the {@code long} representation or throws and exception.
+     *
+     * @param  input
+     *         The input to check and parse
+     *
+     * @throws java.lang.NumberFormatException
+     *         If the provided input is not a valid snowflake
+     *
+     * @return The long representation of the given input
+     */
     public static long parseSnowflake(String input)
     {
         Checks.notEmpty(input, "ID");
@@ -257,6 +276,7 @@ public class MiscUtil
      *
      * @return RequestBody capable of transmitting the provided InputStream of data
      */
+    @NonNull
     public static RequestBody createRequestBody(final MediaType contentType, final InputStream stream)
     {
         return new RequestBody()

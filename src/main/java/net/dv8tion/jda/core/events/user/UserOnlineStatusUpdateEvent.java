@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.core.events.user;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Guild;
@@ -30,17 +32,19 @@ public class UserOnlineStatusUpdateEvent extends GenericUserPresenceEvent
 {
     protected final OnlineStatus previousOnlineStatus;
 
-    public UserOnlineStatusUpdateEvent(JDA api, long responseNumber, User user, Guild guild, OnlineStatus previousOnlineStatus)
+    public UserOnlineStatusUpdateEvent(JDA api, long responseNumber, User user, @Nullable Guild guild, OnlineStatus previousOnlineStatus)
     {
         super(api, responseNumber, user, guild);
         this.previousOnlineStatus = previousOnlineStatus;
     }
 
+    @NonNull
     public OnlineStatus getPreviousOnlineStatus()
     {
         return previousOnlineStatus;
     }
 
+    @NonNull
     public OnlineStatus getCurrentOnlineStatus()
     {
         return isRelationshipUpdate() ? getFriend().getOnlineStatus() : getMember().getOnlineStatus();

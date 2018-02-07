@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.utils;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.utils.tuple.Pair;
 
@@ -128,6 +129,7 @@ public interface SessionController
      *
      * @return The gateway endpoint
      */
+    @NonNull
     String getGateway(JDA api);
 
     /**
@@ -142,6 +144,7 @@ public interface SessionController
      *
      * @see    #getGateway(net.dv8tion.jda.core.JDA)
      */
+    @NonNull
     Pair<String, Integer> getGatewayBot(JDA api);
 
     /**
@@ -164,6 +167,7 @@ public interface SessionController
          *
          * @return The JDA instance
          */
+        @NonNull
         JDA getJDA();
 
         /**

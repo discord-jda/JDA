@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.entities;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.utils.MiscUtil;
 
 import java.util.Formattable;
@@ -55,6 +56,7 @@ public interface IMentionable extends Formattable
      *
      * @return A resolvable mention.
      */
+    @NonNull
     String getAsMention();
 
     @Override

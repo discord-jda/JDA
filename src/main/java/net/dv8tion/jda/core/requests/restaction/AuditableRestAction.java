@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.core.requests.restaction;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.utils.MiscUtil;
@@ -23,7 +26,6 @@ import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.json.JSONObject;
 
-import javax.annotation.CheckReturnValue;
 import java.util.function.Consumer;
 
 /**
@@ -39,17 +41,17 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
 
     protected String reason = null;
 
-    public AuditableRestAction(JDA api, Route.CompiledRoute route)
+    public AuditableRestAction(JDA api, @Nullable Route.CompiledRoute route)
     {
         super(api, route);
     }
 
-    public AuditableRestAction(JDA api, Route.CompiledRoute route, RequestBody data)
+    public AuditableRestAction(JDA api, @Nullable Route.CompiledRoute route, @Nullable RequestBody data)
     {
         super(api, route, data);
     }
 
-    public AuditableRestAction(JDA api, Route.CompiledRoute route, JSONObject data)
+    public AuditableRestAction(JDA api, @Nullable Route.CompiledRoute route, @Nullable JSONObject data)
     {
         super(api, route, data);
     }
@@ -73,8 +75,9 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
      *
      * @return The current AuditableRestAction instance for chaining convenience
      */
+    @NonNull
     @CheckReturnValue
-    public AuditableRestAction<T> reason(String reason)
+    public AuditableRestAction<T> reason(@Nullable String reason)
     {
         this.reason = reason;
         return this;
@@ -96,6 +99,7 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
         return headers;
     }
 
+    @NonNull
     private String uriEncode(String input)
     {
         String formEncode = MiscUtil.encodeUTF8(input);
@@ -119,19 +123,20 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
             this(api, null);
         }
 
-        public EmptyRestAction(JDA api, T content)
+        public EmptyRestAction(JDA api, @Nullable T content)
         {
             super(api, null);
             this.content = content;
         }
 
         @Override
-        public void queue(Consumer<T> success, Consumer<Throwable> failure)
+        public void queue(@Nullable Consumer<T> success, @Nullable Consumer<Throwable> failure)
         {
             if (success != null)
                 success.accept(content);
         }
 
+        @NonNull
         @Override
         public RequestFuture<T> submit(boolean shouldQueue)
         {

@@ -18,4 +18,11 @@
  * Implementations of {@link net.dv8tion.jda.core.requests.RateLimiter RateLimiter}
  * that handle the rate limit responses for the {@link net.dv8tion.jda.core.requests.Requester Requester}!
  */
+@ParametersAreNonnullByDefault
+@DefaultAnnotationForParameters(NonNull.class)
 package net.dv8tion.jda.core.requests.ratelimit;
+
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
+
+import javax.annotation.ParametersAreNonnullByDefault;

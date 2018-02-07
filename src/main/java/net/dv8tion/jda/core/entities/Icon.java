@@ -16,13 +16,14 @@
 
 package net.dv8tion.jda.core.entities;
 
-import net.dv8tion.jda.core.utils.IOUtil;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.IOUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.Base64;
 
 /**
@@ -34,6 +35,7 @@ import java.util.Base64;
  */
 public class Icon
 {
+    public static final Charset CHARSET = Charset.forName("UTF-8");
     protected final String encoding;
 
     protected Icon(String base64Encoding)
@@ -47,6 +49,7 @@ public class Icon
      *
      * @return String representation of the encoded data for this icon
      */
+    @NonNull
     public String getEncoding()
     {
         return encoding;
@@ -68,6 +71,7 @@ public class Icon
      *
      * @see    net.dv8tion.jda.core.utils.IOUtil#readFully(File)
      */
+    @NonNull
     public static Icon from(File file) throws IOException
     {
         Checks.notNull(file, "Provided File");
@@ -93,6 +97,7 @@ public class Icon
      *
      * @see    net.dv8tion.jda.core.utils.IOUtil#readFully(InputStream)
      */
+    @NonNull
     public static Icon from(InputStream stream) throws IOException
     {
         Checks.notNull(stream, "InputStream");
@@ -111,17 +116,11 @@ public class Icon
      *
      * @return An Icon instance representing the specified image data
      */
+    @NonNull
     public static Icon from(byte[] data)
     {
         Checks.notNull(data, "Provided byte[]");
 
-        try
-        {
-            return new Icon(new String(Base64.getEncoder().encode(data), "UTF-8"));
-        }
-        catch (UnsupportedEncodingException e)
-        {
-            throw new AssertionError(e); // thanks JDK 1.4
-        }
+        return new Icon(new String(Base64.getEncoder().encode(data), CHARSET));
     }
 }

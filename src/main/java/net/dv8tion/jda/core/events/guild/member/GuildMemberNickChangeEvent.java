@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.events.guild.member;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
@@ -30,18 +31,20 @@ public class GuildMemberNickChangeEvent extends GenericGuildMemberEvent
 {
     private final String prevNick, newNick;
 
-    public GuildMemberNickChangeEvent(JDA api, long responseNumber, Guild guild, Member member, String prevNick, String newNick)
+    public GuildMemberNickChangeEvent(JDA api, long responseNumber, Guild guild, Member member, @Nullable String prevNick, @Nullable String newNick)
     {
         super(api, responseNumber, guild, member);
         this.prevNick = prevNick;
         this.newNick = newNick;
     }
 
+    @Nullable
     public String getPrevNick()
     {
         return prevNick;
     }
 
+    @Nullable
     public String getNewNick()
     {
         return newNick;

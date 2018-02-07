@@ -25,4 +25,11 @@
  * <br>Some events are specific for JDA internal events such as the {@link net.dv8tion.jda.core.events.ReadyEvent ReadyEvent}
  * which is only fired when JDA finishes to setup its internal cache.
  */
+@ParametersAreNonnullByDefault
+@DefaultAnnotationForParameters(NonNull.class)
 package net.dv8tion.jda.core.events;
+
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
+
+import javax.annotation.ParametersAreNonnullByDefault;

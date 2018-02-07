@@ -19,4 +19,11 @@
  * that can be used to operate on a specific case before executing the request.
  * <br>Such as setting specific options for a new entity before creating it
  */
+@ParametersAreNonnullByDefault
+@DefaultAnnotationForParameters(NonNull.class)
 package net.dv8tion.jda.core.requests.restaction;
+
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
+
+import javax.annotation.ParametersAreNonnullByDefault;

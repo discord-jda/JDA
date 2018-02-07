@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.core.utils;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.core.OnlineStatus;
@@ -502,7 +504,7 @@ public class WidgetUtil
         }
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@Nullable Object obj) {
             if (!(obj instanceof Widget))
                 return false;
             Widget oWidget = (Widget) obj;
@@ -580,6 +582,7 @@ public class WidgetUtil
                 return id;
             }
 
+            @NonNull
             @Override
             public String getAsMention()
             {
@@ -728,7 +731,7 @@ public class WidgetUtil
             }
 
             @Override
-            public boolean equals(Object obj) {
+            public boolean equals(@Nullable Object obj) {
                 if (!(obj instanceof Member))
                     return false;
                 Member oMember = (Member) obj;
@@ -818,7 +821,7 @@ public class WidgetUtil
             }
 
             @Override
-            public boolean equals(Object obj) {
+            public boolean equals(@Nullable Object obj) {
                 if (!(obj instanceof VoiceChannel))
                     return false;
                 VoiceChannel oVChannel = (VoiceChannel) obj;
@@ -848,7 +851,7 @@ public class WidgetUtil
                 this(null, false, false, false, false, false, member, widget);
             }
             
-            private VoiceState(VoiceChannel channel, boolean muted, boolean deafened, boolean suppress, boolean selfMute, boolean selfDeaf, Member member, Widget widget)
+            private VoiceState(@Nullable VoiceChannel channel, boolean muted, boolean deafened, boolean suppress, boolean selfMute, boolean selfDeaf, Member member, Widget widget)
             {
                 this.channel = channel;
                 this.muted = muted;
@@ -967,7 +970,7 @@ public class WidgetUtil
             }
             
             @Override
-            public boolean equals(Object obj) {
+            public boolean equals(@Nullable Object obj) {
                 if (!(obj instanceof VoiceState))
                     return false;
                 VoiceState oState = (VoiceState) obj;

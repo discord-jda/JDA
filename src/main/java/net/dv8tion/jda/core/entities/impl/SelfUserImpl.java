@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.core.entities.impl;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.PrivateChannel;
@@ -50,12 +52,14 @@ public class SelfUserImpl extends UserImpl implements SelfUser
         return false;
     }
 
+    @NonNull
     @Override
     public PrivateChannel getPrivateChannel()
     {
         throw new UnsupportedOperationException("You cannot get a PrivateChannel with yourself (SelfUser)");
     }
 
+    @NonNull
     @Override
     public RestAction<PrivateChannel> openPrivateChannel()
     {
@@ -115,6 +119,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
             return Message.MAX_FILE_SIZE;
     }
 
+    @NonNull
     @Override
     public AccountManager getManager()
     {
@@ -131,6 +136,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
         return mng;
     }
 
+    @NonNull
     @Override
     public AccountManagerUpdatable getManagerUpdatable()
     {
@@ -159,13 +165,13 @@ public class SelfUserImpl extends UserImpl implements SelfUser
         return this;
     }
 
-    public SelfUserImpl setEmail(String email)
+    public SelfUserImpl setEmail(@Nullable String email)
     {
         this.email = email;
         return this;
     }
 
-    public SelfUserImpl setPhoneNumber(String phoneNumber)
+    public SelfUserImpl setPhoneNumber(@Nullable String phoneNumber)
     {
         this.phoneNumber = phoneNumber;
         return this;

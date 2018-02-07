@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.client.managers.EmoteManager;
 import net.dv8tion.jda.client.managers.EmoteManagerUpdatable;
 import net.dv8tion.jda.core.JDA;
@@ -35,11 +37,9 @@ import java.util.*;
  * Represents a Custom Emote. (Emoji in official Discord API terminology)
  *
  * @since  2.2
- * @author Florian Spieß
  */
 public class EmoteImpl implements Emote
 {
-
     private final long id;
     private final GuildImpl guild;
     private final JDAImpl api;
@@ -75,6 +75,7 @@ public class EmoteImpl implements Emote
         return guild;
     }
 
+    @NonNull
     @Override
     public List<Role> getRoles()
     {
@@ -83,16 +84,23 @@ public class EmoteImpl implements Emote
         return Collections.unmodifiableList(new LinkedList<>(roles));
     }
 
+    @NonNull
     @Override
     public String getName()
     {
-        return name;
+        return name == null ? "" : name;
     }
 
     @Override
     public boolean isManaged()
     {
         return managed;
+    }
+
+    @Override
+    public boolean isAnimated()
+    {
+        return animated;
     }
 
     @Override
@@ -107,12 +115,14 @@ public class EmoteImpl implements Emote
         return id;
     }
 
+    @NonNull
     @Override
     public JDA getJDA()
     {
         return api;
     }
 
+    @NonNull
     @Override
     public EmoteManager getManager()
     {
@@ -129,6 +139,7 @@ public class EmoteImpl implements Emote
         return m;
     }
 
+    @NonNull
     @Override
     public EmoteManagerUpdatable getManagerUpdatable()
     {
@@ -145,12 +156,7 @@ public class EmoteImpl implements Emote
         return m;
     }
 
-    @Override
-    public boolean isAnimated()
-    {
-        return animated;
-    }
-
+    @NonNull
     @Override
     public AuditableRestAction<Void> delete()
     {
@@ -177,7 +183,7 @@ public class EmoteImpl implements Emote
 
     // -- Setters --
 
-    public EmoteImpl setName(String name)
+    public EmoteImpl setName(@Nullable String name)
     {
         this.name = name;
         return this;
@@ -205,7 +211,7 @@ public class EmoteImpl implements Emote
     // -- Object overrides --
 
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(@Nullable Object obj)
     {
         if (!(obj instanceof EmoteImpl))
             return false;

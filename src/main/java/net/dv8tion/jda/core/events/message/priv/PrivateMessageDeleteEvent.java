@@ -26,10 +26,8 @@ import net.dv8tion.jda.core.entities.PrivateChannel;
  */
 public class PrivateMessageDeleteEvent extends GenericPrivateMessageEvent
 {
-
     public PrivateMessageDeleteEvent(JDA api, long responseNumber, long messageId, PrivateChannel channel)
     {
         super(api, responseNumber, messageId, channel);
     }
-
 }

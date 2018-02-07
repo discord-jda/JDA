@@ -16,7 +16,8 @@
 
 package net.dv8tion.jda.core.audio.factory;
 
-import javax.annotation.CheckForNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
+
 import java.util.concurrent.ConcurrentMap;
 
 /**
@@ -55,5 +56,5 @@ public interface IAudioSendSystem
      * @param contextMap
      *        The JDA internal MDC context map, or {@code null} if disabled
      */
-    default void setContextMap(@CheckForNull ConcurrentMap<String, String> contextMap) {}
+    default void setContextMap(@Nullable ConcurrentMap<String, String> contextMap) {}
 }

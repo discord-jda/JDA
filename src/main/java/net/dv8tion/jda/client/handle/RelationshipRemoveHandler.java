@@ -19,7 +19,6 @@ package net.dv8tion.jda.client.handle;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.client.entities.Relationship;
 import net.dv8tion.jda.client.entities.RelationshipType;
-import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.client.events.relationship.FriendRemovedEvent;
 import net.dv8tion.jda.client.events.relationship.FriendRequestCanceledEvent;
 import net.dv8tion.jda.client.events.relationship.FriendRequestIgnoredEvent;

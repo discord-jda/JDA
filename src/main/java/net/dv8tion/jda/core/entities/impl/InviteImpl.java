@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
@@ -45,8 +47,8 @@ public class InviteImpl implements Invite
     private final OffsetDateTime timeCreated;
     private final int uses;
 
-    public InviteImpl(final JDAImpl api, final String code, final boolean expanded, final User inviter,
-            final int maxAge, final int maxUses, final boolean temporary, final OffsetDateTime timeCreated,
+    public InviteImpl(final JDAImpl api, final String code, final boolean expanded, @Nullable final User inviter,
+            final int maxAge, final int maxUses, final boolean temporary, @Nullable final OffsetDateTime timeCreated,
             final int uses, final Channel channel, final Guild guild)
     {
         this.api = api;
@@ -87,6 +89,7 @@ public class InviteImpl implements Invite
         };
     }
 
+    @NonNull
     @Override
     public AuditableRestAction<Void> delete()
     {
@@ -105,6 +108,7 @@ public class InviteImpl implements Invite
         };
     }
 
+    @NonNull
     @Override
     public RestAction<Invite> expand()
     {
@@ -124,7 +128,7 @@ public class InviteImpl implements Invite
                 ? guild.getTextChannelById(this.channel.getIdLong())
                 : guild.getVoiceChannelById(this.channel.getIdLong());
 
-        if (member.hasPermission(channel, Permission.MANAGE_CHANNEL))
+        if (channel != null && member.hasPermission(channel, Permission.MANAGE_CHANNEL))
         {
             route = Route.Invites.GET_CHANNEL_INVITES.compile(channel.getId());
         }
@@ -165,18 +169,21 @@ public class InviteImpl implements Invite
         };
     }
 
+    @NonNull
     @Override
     public Channel getChannel()
     {
         return this.channel;
     }
 
+    @NonNull
     @Override
     public String getCode()
     {
         return this.code;
     }
 
+    @Nullable
     @Override
     public OffsetDateTime getCreationTime()
     {
@@ -185,18 +192,21 @@ public class InviteImpl implements Invite
         return this.timeCreated;
     }
 
+    @NonNull
     @Override
     public Guild getGuild()
     {
         return this.guild;
     }
 
+    @Nullable
     @Override
     public User getInviter()
     {
         return this.inviter;
     }
 
+    @NonNull
     @Override
     public JDAImpl getJDA()
     {
@@ -286,7 +296,7 @@ public class InviteImpl implements Invite
         private final String iconId, name, splashId;
         private final long id;
 
-        public GuildImpl(final long id, final String iconId, final String name, final String splashId)
+        public GuildImpl(final long id, @Nullable final String iconId, final String name, @Nullable final String splashId)
         {
             this.id = id;
             this.iconId = iconId;

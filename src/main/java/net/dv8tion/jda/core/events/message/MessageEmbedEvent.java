@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.core.events.message;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
@@ -38,6 +39,7 @@ public class MessageEmbedEvent extends GenericMessageEvent
         this.embeds = Collections.unmodifiableList(embeds);
     }
 
+    @NonNull
     public List<MessageEmbed> getMessageEmbeds()
     {
         return embeds;

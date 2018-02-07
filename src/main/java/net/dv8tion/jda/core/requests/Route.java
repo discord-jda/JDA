@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.requests;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.Helpers;
 
@@ -355,7 +356,7 @@ public class Route
     }
 
     @Override
-    public boolean equals(Object o)
+    public boolean equals(@Nullable Object o)
     {
         if (!(o instanceof Route))
             return false;
@@ -430,7 +431,7 @@ public class Route
         }
 
         @Override
-        public boolean equals(Object o)
+        public boolean equals(@Nullable Object o)
         {
             if (!(o instanceof CompiledRoute))
                 return false;

@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.core.requests.restaction;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.requests.Request;
@@ -26,7 +29,6 @@ import okhttp3.RequestBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.annotation.CheckReturnValue;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -87,6 +89,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
      *
      * @return The current ChannelAction, for chaining convenience
      */
+    @NonNull
     @CheckReturnValue
     public ChannelAction setName(String name)
     {
@@ -112,8 +115,9 @@ public class ChannelAction extends AuditableRestAction<Channel>
      *
      * @return The current ChannelAction, for chaining convenience
      */
+    @NonNull
     @CheckReturnValue
-    public ChannelAction setParent(Category category)
+    public ChannelAction setParent(@Nullable Category category)
     {
         Checks.check(category == null || category.getGuild().equals(guild), "Category is not from same guild!");
         this.parent = category;
@@ -133,8 +137,9 @@ public class ChannelAction extends AuditableRestAction<Channel>
      *
      * @return The current ChannelAction, for chaining convenience
      */
+    @NonNull
     @CheckReturnValue
-    public ChannelAction setTopic(String topic)
+    public ChannelAction setTopic(@Nullable String topic)
     {
         if (type != ChannelType.TEXT)
             throw new UnsupportedOperationException("Can only set the topic for a TextChannel!");
@@ -155,6 +160,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
      *
      * @return The current ChannelAction, for chaining convenience
      */
+    @NonNull
     @CheckReturnValue
     public ChannelAction setNSFW(boolean nsfw)
     {
@@ -181,8 +187,9 @@ public class ChannelAction extends AuditableRestAction<Channel>
      *
      * @return The current ChannelAction, for chaining convenience
      */
+    @NonNull
     @CheckReturnValue
-    public ChannelAction addPermissionOverride(IPermissionHolder target, Collection<Permission> allow, Collection<Permission> deny)
+    public ChannelAction addPermissionOverride(IPermissionHolder target, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny)
     {
         checkPermissions(allow);
         checkPermissions(deny);
@@ -218,6 +225,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
      * @see    net.dv8tion.jda.core.Permission#getRaw(java.util.Collection)
      * @see    net.dv8tion.jda.core.Permission#getRaw(net.dv8tion.jda.core.Permission...)
      */
+    @NonNull
     @CheckReturnValue
     public ChannelAction addPermissionOverride(IPermissionHolder target, long allow, long deny)
     {
@@ -258,8 +266,9 @@ public class ChannelAction extends AuditableRestAction<Channel>
      *
      * @return The current ChannelAction, for chaining convenience
      */
+    @NonNull
     @CheckReturnValue
-    public ChannelAction setBitrate(Integer bitrate)
+    public ChannelAction setBitrate(@Nullable Integer bitrate)
     {
         if (type != ChannelType.VOICE)
             throw new UnsupportedOperationException("Can only set the bitrate for a VoiceChannel!");
@@ -289,8 +298,9 @@ public class ChannelAction extends AuditableRestAction<Channel>
      *
      * @return The current ChannelAction, for chaining convenience
      */
+    @NonNull
     @CheckReturnValue
-    public ChannelAction setUserlimit(Integer userlimit)
+    public ChannelAction setUserlimit(@Nullable Integer userlimit)
     {
         if (type != ChannelType.VOICE)
             throw new UnsupportedOperationException("Can only set the userlimit for a VoiceChannel!");
@@ -336,7 +346,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
             return;
         }
 
-        EntityBuilder builder = api.getEntityBuilder();;
+        EntityBuilder builder = api.getEntityBuilder();
         Channel channel;
         switch (type)
         {
@@ -356,7 +366,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
         request.onSuccess(channel);
     }
 
-    protected void checkPermissions(Permission... permissions)
+    protected void checkPermissions(@Nullable Permission... permissions)
     {
         if (permissions == null)
             return;
@@ -364,7 +374,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
             Checks.notNull(p, "Permissions");
     }
 
-    protected void checkPermissions(Collection<Permission> permissions)
+    protected void checkPermissions(@Nullable Collection<Permission> permissions)
     {
         if (permissions == null)
             return;

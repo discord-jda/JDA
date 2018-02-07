@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.core.hooks;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.Event;
 
@@ -68,6 +69,7 @@ public class AnnotatedEventManager implements IEventManager
         }
     }
 
+    @NonNull
     @Override
     public List<Object> getRegisteredListeners()
     {

@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.core.events.message.priv;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
@@ -35,14 +36,15 @@ public class PrivateMessageReceivedEvent extends GenericPrivateMessageEvent
         this.message = message;
     }
 
+    @NonNull
     public Message getMessage()
     {
         return message;
     }
 
+    @NonNull
     public User getAuthor()
     {
         return message.getAuthor();
     }
-
 }

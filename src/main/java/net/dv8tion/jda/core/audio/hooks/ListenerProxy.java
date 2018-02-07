@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.audio.hooks;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.entities.User;
 
 public class ListenerProxy implements ConnectionListener
@@ -80,7 +81,7 @@ public class ListenerProxy implements ConnectionListener
         }
     }
 
-    public void setListener(ConnectionListener listener)
+    public void setListener(@Nullable ConnectionListener listener)
     {
         synchronized (listenerLock)
         {

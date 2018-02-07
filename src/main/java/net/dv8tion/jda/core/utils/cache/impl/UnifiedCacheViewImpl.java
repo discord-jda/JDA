@@ -16,15 +16,16 @@
 
 package net.dv8tion.jda.core.utils.cache.impl;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.core.utils.cache.MemberCacheView;
-import net.dv8tion.jda.core.utils.cache.UnifiedMemberCacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.core.utils.cache.UnifiedMemberCacheView;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -51,6 +52,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
         return generator.get().allMatch(CacheView::isEmpty);
     }
 
+    @NonNull
     @Override
     public List<T> asList()
     {
@@ -59,6 +61,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
         return Collections.unmodifiableList(list);
     }
 
+    @NonNull
     @Override
     public Set<T> asSet()
     {
@@ -67,6 +70,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
         return Collections.unmodifiableSet(set);
     }
 
+    @NonNull
     @Override
     public List<T> getElementsByName(String name, boolean ignoreCase)
     {
@@ -76,19 +80,21 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
                 .collect(Collectors.toList()));
     }
 
+    @NonNull
     @Override
     public Stream<T> stream()
     {
         return generator.get().flatMap(CacheView::stream).distinct();
     }
 
+    @NonNull
     @Override
     public Stream<T> parallelStream()
     {
         return generator.get().flatMap(CacheView::parallelStream).distinct();
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Iterator<T> iterator()
     {
@@ -122,6 +128,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
             super(generator);
         }
 
+        @NonNull
         @Override
         public List<Member> getElementsById(long id)
         {
@@ -132,6 +139,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
                 .collect(Collectors.toList()));
         }
 
+        @NonNull
         @Override
         public List<Member> getElementsByUsername(String name, boolean ignoreCase)
         {
@@ -141,8 +149,9 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
                 .collect(Collectors.toList()));
         }
 
+        @NonNull
         @Override
-        public List<Member> getElementsByNickname(String name, boolean ignoreCase)
+        public List<Member> getElementsByNickname(@Nullable String name, boolean ignoreCase)
         {
             return Collections.unmodifiableList(generator.get()
                 .distinct()
@@ -150,6 +159,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
                 .collect(Collectors.toList()));
         }
 
+        @NonNull
         @Override
         public List<Member> getElementsWithRoles(Role... roles)
         {
@@ -159,6 +169,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
                 .collect(Collectors.toList()));
         }
 
+        @NonNull
         @Override
         public List<Member> getElementsWithRoles(Collection<Role> roles)
         {

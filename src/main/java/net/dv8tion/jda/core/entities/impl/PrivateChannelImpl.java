@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.client.entities.Call;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -43,6 +45,7 @@ public class PrivateChannelImpl implements PrivateChannel
         this.user = user;
     }
 
+    @NonNull
     @Override
     public User getUser()
     {
@@ -64,24 +67,28 @@ public class PrivateChannelImpl implements PrivateChannel
         return lastMessageId > 0;
     }
 
+    @NonNull
     @Override
     public String getName()
     {
         return user.getName();
     }
 
+    @NonNull
     @Override
     public ChannelType getType()
     {
         return ChannelType.PRIVATE;
     }
 
+    @NonNull
     @Override
     public JDA getJDA()
     {
         return user.getJDA();
     }
 
+    @NonNull
     @Override
     public RestAction<Void> close()
     {
@@ -123,6 +130,7 @@ public class PrivateChannelImpl implements PrivateChannel
         return currentCall;
     }
 
+    @NonNull
     @Override
     public MessageAction sendMessage(CharSequence text)
     {
@@ -130,6 +138,7 @@ public class PrivateChannelImpl implements PrivateChannel
         return PrivateChannel.super.sendMessage(text);
     }
 
+    @NonNull
     @Override
     public MessageAction sendMessage(MessageEmbed embed)
     {
@@ -137,6 +146,7 @@ public class PrivateChannelImpl implements PrivateChannel
         return PrivateChannel.super.sendMessage(embed);
     }
 
+    @NonNull
     @Override
     public MessageAction sendMessage(Message msg)
     {
@@ -144,8 +154,9 @@ public class PrivateChannelImpl implements PrivateChannel
         return PrivateChannel.super.sendMessage(msg);
     }
 
+    @NonNull
     @Override
-    public MessageAction sendFile(InputStream data, String fileName, Message message)
+    public MessageAction sendFile(InputStream data, String fileName, @Nullable Message message)
     {
         checkBot();
         return PrivateChannel.super.sendFile(data, fileName, message);
@@ -157,7 +168,7 @@ public class PrivateChannelImpl implements PrivateChannel
         return this;
     }
 
-    public PrivateChannelImpl setCurrentCall(Call currentCall)
+    public PrivateChannelImpl setCurrentCall(@Nullable Call currentCall)
     {
         this.currentCall = currentCall;
         return this;
@@ -179,7 +190,7 @@ public class PrivateChannelImpl implements PrivateChannel
     }
 
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(@Nullable Object obj)
     {
         return obj instanceof PrivateChannelImpl
                 && this.id == ((PrivateChannelImpl) obj).id;

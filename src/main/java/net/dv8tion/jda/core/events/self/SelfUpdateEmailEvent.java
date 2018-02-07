@@ -16,18 +16,20 @@
 
 package net.dv8tion.jda.core.events.self;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 
 public class SelfUpdateEmailEvent extends GenericSelfUpdateEvent
 {
     private final String oldEmail;
 
-    public SelfUpdateEmailEvent(JDA api, long responseNumber, String oldEmail)
+    public SelfUpdateEmailEvent(JDA api, long responseNumber, @Nullable String oldEmail)
     {
         super(api, responseNumber);
         this.oldEmail = oldEmail;
     }
 
+    @Nullable
     public String getOldEmail()
     {
         return oldEmail;

@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.core.hooks;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.Event;
 
@@ -63,11 +65,12 @@ public class InterfacedEventManager implements IEventManager
     }
 
     @Override
-    public void unregister(Object listener)
+    public void unregister(@Nullable Object listener)
     {
         listeners.remove(listener);
     }
 
+    @NonNull
     @Override
     public List<Object> getRegisteredListeners()
     {

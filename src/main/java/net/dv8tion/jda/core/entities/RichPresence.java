@@ -16,10 +16,12 @@
 
 package net.dv8tion.jda.core.entities;
 
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.utils.Checks;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNullableByDefault;
 import java.time.Instant;
 import java.time.temporal.TemporalUnit;
 import java.util.Objects;
@@ -30,6 +32,8 @@ import java.util.Objects;
  *
  * @since  3.4.0
  */
+@ParametersAreNullableByDefault
+@DefaultAnnotationForParameters(Nullable.class)
 public class RichPresence extends Game
 {
     protected final long applicationId;
@@ -42,7 +46,7 @@ public class RichPresence extends Game
     protected final Image smallImage;
 
     protected RichPresence(
-        GameType type, String name, String url, long applicationId,
+        @NonNull GameType type, @NonNull String name, String url, long applicationId,
         Party party, String details, String state, Timestamps timestamps,
         String largeImageKey, String largeImageText, String smallImageKey, String smallImageText)
     {
@@ -62,6 +66,7 @@ public class RichPresence extends Game
         return true;
     }
 
+    @NonNull
     @Override
     public RichPresence asRichPresence()
     {
@@ -83,7 +88,7 @@ public class RichPresence extends Game
      *
      * @return The ID for the application
      */
-    @Nonnull
+    @NonNull
     public String getApplicationId()
     {
         return Long.toUnsignedString(applicationId);
@@ -170,7 +175,7 @@ public class RichPresence extends Game
     }
 
     @Override
-    public boolean equals(Object o)
+    public boolean equals(@Nullable Object o)
     {
         if (this == o)
             return true;
@@ -197,7 +202,7 @@ public class RichPresence extends Game
         protected final String key;
         protected final String text;
 
-        public Image(String key, String text)
+        public Image(@NonNull String key, String text)
         {
             this.key = key;
             this.text = text;
@@ -208,7 +213,7 @@ public class RichPresence extends Game
          *
          * @return The key for this image
          */
-        @Nonnull
+        @NonNull
         public String getKey()
         {
             return key;
@@ -230,7 +235,7 @@ public class RichPresence extends Game
          *
          * @return URL for this image
          */
-        @Nonnull
+        @NonNull
         public String getUrl()
         {
             return "https://cdn.discordapp.com/app-assets/" + applicationId + "/" + key + ".png";

@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.utils;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+
 import java.io.*;
 
 public class IOUtil
@@ -38,6 +40,7 @@ public class IOUtil
      *
      * @return A byte[] containing all of the file's data
      */
+    @NonNull
     public static byte[] readFully(File file) throws IOException
     {
         Checks.notNull(file, "File");
@@ -63,7 +66,7 @@ public class IOUtil
 
             // Read in the bytes
             int offset = 0;
-            int numRead = 0;
+            int numRead;
             while (offset < bytes.length && (numRead = is.read(bytes, offset, bytes.length - offset)) >= 0)
             {
                 offset += numRead;
@@ -96,6 +99,7 @@ public class IOUtil
      *
      * @return A byte[] containing all of the data provided by the InputStream
      */
+    @NonNull
     public static byte[] readFully(InputStream stream) throws IOException
     {
         Checks.notNull(stream, "InputStream");
@@ -103,7 +107,7 @@ public class IOUtil
         byte[] buffer = new byte[1024];
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream())
         {
-            int readAmount = 0;
+            int readAmount;
             while ((readAmount = stream.read(buffer)) != -1)
             {
                 bos.write(buffer, 0, readAmount);

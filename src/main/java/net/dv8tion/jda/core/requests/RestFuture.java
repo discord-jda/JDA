@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.requests;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.utils.Promise;
 import okhttp3.RequestBody;
@@ -31,7 +32,7 @@ public class RestFuture<T> extends Promise<T>
         ((JDAImpl) restAction.getJDA()).getRequester().request(this.request);
     }
 
-    public RestFuture(final T t)
+    public RestFuture(@Nullable final T t)
     {
         super(t);
         this.request = null;

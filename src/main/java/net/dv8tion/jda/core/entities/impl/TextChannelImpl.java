@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.client.exceptions.VerificationLevelException;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
@@ -52,12 +54,14 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         super(id, guild);
     }
 
+    @NonNull
     @Override
     public String getAsMention()
     {
         return "<#" + id + '>';
     }
 
+    @NonNull
     @Override
     public RestAction<List<Webhook>> getWebhooks()
     {
@@ -96,6 +100,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         };
     }
 
+    @NonNull
     @Override
     public WebhookAction createWebhook(String name)
     {
@@ -109,6 +114,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         return new WebhookAction(getJDA(), route, name);
     }
 
+    @NonNull
     @Override
     public RestAction<Void> deleteMessages(Collection<Message> messages)
     {
@@ -119,6 +125,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
                 .collect(Collectors.toList()));
     }
 
+    @NonNull
     @Override
     public RestAction<Void> deleteMessagesByIds(Collection<String> messageIds)
     {
@@ -148,6 +155,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         };
     }
 
+    @NonNull
     @Override
     public AuditableRestAction<Void> deleteWebhookById(String id)
     {
@@ -200,6 +208,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         return lastMessageId != 0;
     }
 
+    @NonNull
     @Override
     public ChannelType getType()
     {
@@ -217,6 +226,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         return nsfw || name.equals("nsfw") || name.startsWith("nsfw-");
     }
 
+    @NonNull
     @Override
     public List<Member> getMembers()
     {
@@ -239,6 +249,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         throw new AssertionError("Somehow when determining position we never found the TextChannel in the Guild's channels? wtf?");
     }
 
+    @NonNull
     @Override
     public ChannelAction createCopy(Guild guild)
     {
@@ -260,6 +271,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         return action;
     }
 
+    @NonNull
     @Override
     public MessageAction sendMessage(CharSequence text)
     {
@@ -269,6 +281,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         return TextChannel.super.sendMessage(text);
     }
 
+    @NonNull
     @Override
     public MessageAction sendMessage(MessageEmbed embed)
     {
@@ -280,6 +293,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         return TextChannel.super.sendMessage(embed);
     }
 
+    @NonNull
     @Override
     public MessageAction sendMessage(Message msg)
     {
@@ -295,8 +309,9 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         return TextChannel.super.sendMessage(msg);
     }
 
+    @NonNull
     @Override
-    public MessageAction sendFile(InputStream data, String fileName, Message message)
+    public MessageAction sendFile(InputStream data, String fileName, @Nullable Message message)
     {
         checkVerification();
         checkPermission(Permission.MESSAGE_READ);
@@ -307,6 +322,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         return TextChannel.super.sendFile(data, fileName, message);
     }
 
+    @NonNull
     @Override
     public RestAction<Message> getMessageById(String messageId)
     {
@@ -317,6 +333,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         return TextChannel.super.getMessageById(messageId);
     }
 
+    @NonNull
     @Override
     public AuditableRestAction<Void> deleteMessageById(String messageId)
     {
@@ -327,6 +344,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         return TextChannel.super.deleteMessageById(messageId);
     }
 
+    @NonNull
     @Override
     public RestAction<Void> pinMessageById(String messageId)
     {
@@ -337,6 +355,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         return TextChannel.super.pinMessageById(messageId);
     }
 
+    @NonNull
     @Override
     public RestAction<Void> unpinMessageById(String messageId)
     {
@@ -347,6 +366,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         return TextChannel.super.unpinMessageById(messageId);
     }
 
+    @NonNull
     @Override
     public RestAction<List<Message>> getPinnedMessages()
     {
@@ -356,6 +376,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         return TextChannel.super.getPinnedMessages();
     }
 
+    @NonNull
     @Override
     public RestAction<Void> addReactionById(String messageId, String unicode)
     {
@@ -365,6 +386,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         return TextChannel.super.addReactionById(messageId, unicode);
     }
 
+    @NonNull
     @Override
     public RestAction<Void> addReactionById(String messageId, Emote emote)
     {
@@ -374,6 +396,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         return TextChannel.super.addReactionById(messageId, emote);
     }
 
+    @NonNull
     @Override
     public RestAction<Void> clearReactionsById(String messageId)
     {
@@ -394,6 +417,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         };
     }
 
+    @NonNull
     @Override
     public RestAction<Void> removeReactionById(String messageId, String unicode, User user)
     {
@@ -421,6 +445,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         };
     }
 
+    @NonNull
     @Override
     public MessageAction editMessageById(String messageId, CharSequence newContent)
     {
@@ -429,6 +454,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         return TextChannel.super.editMessageById(messageId, newContent);
     }
 
+    @NonNull
     @Override
     public MessageAction editMessageById(String messageId, MessageEmbed newEmbed)
     {
@@ -438,6 +464,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         return TextChannel.super.editMessageById(messageId, newEmbed);
     }
 
+    @NonNull
     @Override
     public MessageAction editMessageById(String id, Message newContent)
     {
@@ -473,7 +500,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
 
     // -- Setters --
 
-    public TextChannelImpl setTopic(String topic)
+    public TextChannelImpl setTopic(@Nullable String topic)
     {
         this.topic = topic;
         return this;

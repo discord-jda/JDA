@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.core.events;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 
 /**
@@ -47,6 +48,7 @@ public abstract class Event
      *
      * @return The corresponding JDA instance
      */
+    @NonNull
     public JDA getJDA()
     {
         return api;

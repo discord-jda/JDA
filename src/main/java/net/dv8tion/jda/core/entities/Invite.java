@@ -16,12 +16,14 @@
 
 package net.dv8tion.jda.core.entities;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.impl.InviteImpl;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
-import javax.annotation.CheckReturnValue;
 import java.time.OffsetDateTime;
 
 /**
@@ -51,6 +53,8 @@ public interface Invite
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Invite Invite}
      *         <br>The Invite object
      */
+    @NonNull
+    @CheckReturnValue
     static RestAction<Invite> resolve(final JDA api, final String code)
     {
         return InviteImpl.resolve(api, code);
@@ -66,6 +70,7 @@ public interface Invite
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @NonNull
     @CheckReturnValue
     AuditableRestAction<Void> delete();
 
@@ -84,6 +89,7 @@ public interface Invite
      *
      * @see    #isExpanded()
      */
+    @NonNull
     @CheckReturnValue
     RestAction<Invite> expand();
 
@@ -95,6 +101,7 @@ public interface Invite
      * 
      * @see    net.dv8tion.jda.core.entities.Invite.Channel
      */
+    @NonNull
     Channel getChannel();
 
     /**
@@ -102,6 +109,7 @@ public interface Invite
      *
      * @return the invite code
      */
+    @NonNull
     String getCode();
 
     /**
@@ -110,6 +118,7 @@ public interface Invite
      *
      * @return Invite URL for this Invite
      */
+    @NonNull
     default String getURL()
     {
         return "https://discord.gg/" + getCode();
@@ -128,6 +137,7 @@ public interface Invite
      * @see    #expand()
      * @see    #isExpanded()
      */
+    @Nullable
     OffsetDateTime getCreationTime();
 
     /**
@@ -138,6 +148,7 @@ public interface Invite
      * 
      * @see    net.dv8tion.jda.core.entities.Invite.Guild
      */
+    @NonNull
     Guild getGuild();
 
     /**
@@ -145,6 +156,7 @@ public interface Invite
      *
      * @return The user who created this invite
      */
+    @Nullable
     User getInviter();
 
     /**
@@ -152,6 +164,7 @@ public interface Invite
      *
      * @return the corresponding JDA instance
      */
+    @NonNull
     JDA getJDA();
 
     /**

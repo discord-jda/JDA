@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.core.entities;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
@@ -26,9 +29,10 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.pagination.ReactionPaginationAction;
+import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 
-import javax.annotation.CheckReturnValue;
+import java.time.OffsetDateTime;
 import java.util.Objects;
 
 /**
@@ -37,11 +41,9 @@ import java.util.Objects;
  * built from Discord is needed to see changes.
  *
  * @since  3.0
- * @author Florian Spieß
  */
 public class MessageReaction
 {
-
     private final MessageChannel channel;
     private final ReactionEmote emote;
     private final long messageId;
@@ -76,6 +78,7 @@ public class MessageReaction
      *
      * @return The JDA instance of this Reaction
      */
+    @NonNull
     public JDA getJDA()
     {
         return channel.getJDA();
@@ -117,6 +120,7 @@ public class MessageReaction
      *
      * @return The ChannelType
      */
+    @NonNull
     public ChannelType getChannelType()
     {
         return channel.getType();
@@ -143,6 +147,7 @@ public class MessageReaction
      *
      * @return {@link net.dv8tion.jda.core.entities.Guild Guild} this Reaction was used in, or {@code null}
      */
+    @Nullable
     public Guild getGuild()
     {
         TextChannel channel = getTextChannel();
@@ -155,6 +160,7 @@ public class MessageReaction
      *
      * @return The {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} or {@code null}
      */
+    @Nullable
     public TextChannel getTextChannel()
     {
         return getChannel() instanceof TextChannel ? (TextChannel) getChannel() : null;
@@ -166,6 +172,7 @@ public class MessageReaction
      *
      * @return The {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} or {@code null}
      */
+    @Nullable
     public PrivateChannel getPrivateChannel()
     {
         return getChannel() instanceof PrivateChannel ? (PrivateChannel) getChannel() : null;
@@ -177,6 +184,7 @@ public class MessageReaction
      *
      * @return The {@link net.dv8tion.jda.client.entities.Group Group} or {@code null}
      */
+    @Nullable
     public Group getGroup()
     {
         return getChannel() instanceof Group ? (Group) getChannel() : null;
@@ -188,6 +196,7 @@ public class MessageReaction
      *
      * @return The channel this Reaction was used in
      */
+    @NonNull
     public MessageChannel getChannel()
     {
         return channel;
@@ -199,6 +208,7 @@ public class MessageReaction
      *
      * @return The final instance of this Reaction's Emote/Emoji
      */
+    @NonNull
     public ReactionEmote getReactionEmote()
     {
         return emote;
@@ -209,6 +219,7 @@ public class MessageReaction
      *
      * @return The message id this reaction is attached to
      */
+    @NonNull
     public String getMessageId()
     {
         return Long.toUnsignedString(messageId);
@@ -242,8 +253,9 @@ public class MessageReaction
      * </ul>
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction}
-     *         <br>Retrieves an immutable list of users that reacted with this Reaction.
+     *         <br>Iterable {@link net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction PaginationAction} to get all users
      */
+    @NonNull
     @CheckReturnValue
     public ReactionPaginationAction getUsers()
     {
@@ -274,8 +286,9 @@ public class MessageReaction
      *         if the provided amount is not between 1-100
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction}
-     *         <br>Retrieves an immutable list of users that reacted with this Reaction.
+     *         <br>Iterable {@link net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction PaginationAction} to get all users
      */
+    @NonNull
     @CheckReturnValue
     public ReactionPaginationAction getUsers(int amount)
     {
@@ -302,6 +315,7 @@ public class MessageReaction
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
      *         Nothing is returned on success
      */
+    @NonNull
     @CheckReturnValue
     public RestAction<Void> removeReaction()
     {
@@ -340,11 +354,11 @@ public class MessageReaction
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
      *         Nothing is returned on success
      */
+    @NonNull
     @CheckReturnValue
     public RestAction<Void> removeReaction(User user)
     {
-        if (user == null)
-            throw new IllegalArgumentException("Provided User was null!");
+        Checks.notNull(user, "User");
         if (!user.equals(getJDA().getSelfUser()))
         {
             if (channel.getType() == ChannelType.TEXT)
@@ -381,7 +395,7 @@ public class MessageReaction
     }
 
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(@Nullable Object obj)
     {
         if (obj == this)
             return true;
@@ -402,16 +416,27 @@ public class MessageReaction
     /**
      * Represents an Emoji/Emote of a MessageReaction
      * <br>This is used to wrap both emojis and emotes
+     *
+     * <p><b>Unicode</b>
+     * <br>The normal emoji used by Discord are specified by unicode.
+     * These emoji return {@code false} with {@link #isEmote()} and have no id.
+     * Instead you should compare them using the {@link #getName()}. {@code emote.getName().equals("\uD83D\uDC40")} would check if this
+     * reaction is the eyes emoji.
+     *
+     * <p><b>Custom Emotes</b>
+     * <br>The custom server emotes (and integration emotes) in discord are not part of unicode.
+     * Instead users upload images together with names (see {@link net.dv8tion.jda.core.managers.GuildController#createEmote(String, Icon, Role...) GuildController.createEmote(String, Icon)}).
+     * Those emotes then have an id {@link #getId()} and return {@code true} for {@link #isEmote()}. {@code emote.getIdLong() == 245267426227388416L} would check
+     * if the emote has the correct ID. Note that {@link #getIdLong()} may throw an exception.
      */
-    public static class ReactionEmote implements ISnowflake
+    public static class ReactionEmote
     {
-
         private final JDA api;
         private final String name;
         private final Long id;
         private Emote emote = null;
 
-        public ReactionEmote(String name, Long id, JDA api)
+        public ReactionEmote(String name, @Nullable Long id, JDA api)
         {
             this.name = name;
             this.id = id;
@@ -425,8 +450,8 @@ public class MessageReaction
         }
 
         /**
-         * Whether this is an {@link net.dv8tion.jda.core.entities.Emote Emote}
-         * wrapper.
+         * Whether this is a custom {@link net.dv8tion.jda.core.entities.Emote Emote}.
+         * <br>When false this is a unicode emoji.
          *
          * @return True, if {@link #getId()} is not null
          */
@@ -435,13 +460,25 @@ public class MessageReaction
             return emote != null;
         }
 
-        @Override
+        /**
+         * The id of this ReactionEmote or {@code null} if this is not a custom emote.
+         *
+         * @return The id or {@code null}
+         */
+        @Nullable
         public String getId()
         {
             return id != null ? String.valueOf(id) : null;
         }
 
-        @Override
+        /**
+         * The id of this ReactionEmote
+         *
+         * @throws java.lang.IllegalStateException
+         *         If {@link #isEmote()} is false.
+         *
+         * @return The id of this emote
+         */
         public long getIdLong()
         {
             if (id == null)
@@ -450,11 +487,27 @@ public class MessageReaction
         }
 
         /**
+         * The time when this emote was created.
+         * <br>Not correlating to reaction time.
+         *
+         * @throws java.lang.IllegalStateException
+         *         If this is not a custom server emote
+         *
+         * @return The time when this emote was created
+         */
+        @NonNull
+        public OffsetDateTime getCreationTime()
+        {
+            return MiscUtil.getCreationTime(getIdLong());
+        }
+
+        /**
          * The name for this emote/emoji
          * <br>For unicode emojis this will be the unicode of said emoji.
          *
          * @return The name for this emote/emoji
          */
+        @NonNull
         public String getName()
         {
             return name;
@@ -467,6 +520,7 @@ public class MessageReaction
          *
          * @return The possibly-null Emote for the Reaction instance
          */
+        @NonNull
         public Emote getEmote()
         {
             return emote;
@@ -477,13 +531,14 @@ public class MessageReaction
          *
          * @return The JDA instance of the Reaction
          */
+        @NonNull
         public JDA getJDA()
         {
             return api;
         }
 
         @Override
-        public boolean equals(Object obj)
+        public boolean equals(@Nullable Object obj)
         {
             return obj instanceof ReactionEmote
                     && Objects.equals(((ReactionEmote) obj).id, id)

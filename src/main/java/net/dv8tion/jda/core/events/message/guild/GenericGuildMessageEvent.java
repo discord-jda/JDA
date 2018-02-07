@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.core.events.message.guild;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -39,6 +40,7 @@ public abstract class GenericGuildMessageEvent extends GenericGuildEvent
         this.channel = channel;
     }
 
+    @NonNull
     public String getMessageId()
     {
         return Long.toUnsignedString(messageId);
@@ -54,11 +56,13 @@ public abstract class GenericGuildMessageEvent extends GenericGuildEvent
         return getChannel().getType() == type;
     }
 
+    @NonNull
     public ChannelType getChannelType()
     {
         return getChannel().getType();
     }
 
+    @NonNull
     public TextChannel getChannel()
     {
         return channel;

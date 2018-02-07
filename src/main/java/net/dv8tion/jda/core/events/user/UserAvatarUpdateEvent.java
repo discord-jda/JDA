@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.core.events.user;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.User;
 
@@ -28,17 +29,19 @@ public class UserAvatarUpdateEvent extends GenericUserEvent
 {
     private final String previousAvatarId;
 
-    public UserAvatarUpdateEvent(JDA api, long responseNumber, User user, String previousAvatarId)
+    public UserAvatarUpdateEvent(JDA api, long responseNumber, User user, @Nullable String previousAvatarId)
     {
         super(api, responseNumber, user);
         this.previousAvatarId = previousAvatarId;
     }
 
+    @Nullable
     public String getPreviousAvatarId()
     {
         return previousAvatarId;
     }
 
+    @Nullable
     public String getPreviousAvatarUrl()
     {
         return previousAvatarId == null ? null : "https://cdn.discordapp.com/avatars/" + getUser().getId() + "/" + previousAvatarId + ".jpg";

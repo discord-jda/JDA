@@ -16,11 +16,15 @@
 
 package net.dv8tion.jda.client.managers;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.client.entities.Application;
 import net.dv8tion.jda.client.entities.impl.ApplicationImpl;
 import net.dv8tion.jda.client.managers.fields.ApplicationField;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Icon;
+import net.dv8tion.jda.core.managers.fields.Field;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
@@ -28,11 +32,11 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
-import javax.annotation.CheckReturnValue;
 
 /**
  * An {@link #update() updatable} manager that allows
@@ -48,6 +52,8 @@ import javax.annotation.CheckReturnValue;
  * @since  3.0
  * @author Aljoscha Grebe
  */
+@ParametersAreNonnullByDefault
+@DefaultAnnotationForParameters(NonNull.class)
 public class ApplicationManagerUpdatable
 {
     public final static Pattern URL_PATTERN = Pattern.compile("\\s*https?://.+\\..{2,}\\s*",
@@ -242,18 +248,10 @@ public class ApplicationManagerUpdatable
             }
         };
 
-        this.icon = new ApplicationField<Icon>(this, null)
+        this.icon = new ApplicationField<Icon>(this, Field.unsupported("Cannot easily provide the original Avatar. Use Application#getIconUrl() and download it yourself."))
         {
             @Override
-            public void checkValue(final Icon value)
-            {}
-
-            @Override
-            public Icon getOriginalValue()
-            {
-                throw new UnsupportedOperationException(
-                        "Cannot easily provide the original Avatar. Use Application#getIconUrl() and download it yourself.");
-            }
+            public void checkValue(final Icon value) {}
 
             @Override
             public boolean shouldUpdate()
@@ -328,7 +326,7 @@ public class ApplicationManagerUpdatable
 
         final JSONObject body = new JSONObject();
 
-        // All fields are required or they are resetted to default
+        // All fields are required or they are reset to default
 
         body.put("description",
                 this.description.shouldUpdate() ? this.description.getValue() : this.description.getOriginalValue());

@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.core.events.guild.member;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
@@ -38,11 +39,13 @@ public abstract class GenericGuildMemberEvent extends GenericGuildEvent
         this.member = member;
     }
 
+    @NonNull
     public User getUser()
     {
         return getMember().getUser();
     }
 
+    @NonNull
     public Member getMember()
     {
         return member;

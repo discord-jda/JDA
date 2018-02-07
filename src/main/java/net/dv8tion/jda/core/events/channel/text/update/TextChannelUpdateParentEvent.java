@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.events.channel.text.update;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Category;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -24,12 +25,13 @@ public class TextChannelUpdateParentEvent extends GenericTextChannelUpdateEvent
 {
     protected final Category oldParent;
 
-    public TextChannelUpdateParentEvent(JDA api, long responseNumber, TextChannel channel, Category oldParent)
+    public TextChannelUpdateParentEvent(JDA api, long responseNumber, TextChannel channel, @Nullable Category oldParent)
     {
         super(api, responseNumber, channel);
         this.oldParent = oldParent;
     }
 
+    @Nullable
     public Category getOldParent()
     {
         return oldParent;

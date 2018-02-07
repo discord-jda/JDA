@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.audit;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.ISnowflake;
@@ -23,6 +25,7 @@ import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.UserImpl;
 import net.dv8tion.jda.core.utils.Checks;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -47,8 +50,8 @@ public class AuditLogEntry implements ISnowflake
     protected final Map<String, Object> options;
     protected final ActionType type;
 
-    public AuditLogEntry(ActionType type, long id, long targetId, GuildImpl guild, UserImpl user, String reason,
-                         Map<String, AuditLogChange> changes, Map<String, Object> options)
+    public AuditLogEntry(ActionType type, long id, long targetId, GuildImpl guild, UserImpl user, @Nullable String reason,
+                         @Nullable Map<String, AuditLogChange> changes, @Nullable Map<String, Object> options)
     {
         this.type = type;
         this.id = id;
@@ -89,6 +92,7 @@ public class AuditLogEntry implements ISnowflake
      *
      * @return The target id
      */
+    @NonNull
     public String getTargetId()
     {
         return Long.toUnsignedString(targetId);
@@ -99,6 +103,7 @@ public class AuditLogEntry implements ISnowflake
      *
      * @return The Guild instance
      */
+    @NonNull
     public Guild getGuild()
     {
         return guild;
@@ -110,6 +115,7 @@ public class AuditLogEntry implements ISnowflake
      *
      * @return The User instance
      */
+    @NonNull
     public User getUser()
     {
         return user;
@@ -130,6 +136,7 @@ public class AuditLogEntry implements ISnowflake
      *
      * @return The corresponding JDA instance
      */
+    @NonNull
     public JDA getJDA()
     {
         return guild.getJDA();
@@ -143,6 +150,7 @@ public class AuditLogEntry implements ISnowflake
      *
      * @return Key-Value Map of changes
      */
+    @NonNull
     public Map<String, AuditLogChange> getChanges()
     {
         return changes;
@@ -157,7 +165,7 @@ public class AuditLogEntry implements ISnowflake
      *
      * @return Possibly-null value corresponding to the specified key
      */
-    public AuditLogChange getChangeByKey(final AuditLogKey key)
+    public AuditLogChange getChangeByKey(@Nullable final AuditLogKey key)
     {
         return key == null ? null : getChangeByKey(key.getKey());
     }
@@ -187,6 +195,7 @@ public class AuditLogEntry implements ISnowflake
      *
      * @return Possibly-empty, never-null immutable list of {@link AuditLogChange AuditLogChanges}
      */
+    @NonNull
     public List<AuditLogChange> getChangesForKeys(AuditLogKey... keys)
     {
         Checks.notNull(keys, "Keys");
@@ -212,6 +221,7 @@ public class AuditLogEntry implements ISnowflake
      *
      * @return Key-Value Map of changes
      */
+    @NonNull
     public Map<String, Object> getOptions()
     {
         return options;
@@ -272,6 +282,7 @@ public class AuditLogEntry implements ISnowflake
      *
      * @return Unmodifiable list of representative values
      */
+    @NonNull
     public List<Object> getOptions(AuditLogOption... options)
     {
         Checks.notNull(options, "Options");
@@ -291,6 +302,7 @@ public class AuditLogEntry implements ISnowflake
      *
      * @return The {@link net.dv8tion.jda.core.audit.ActionType ActionType}
      */
+    @NonNull
     public ActionType getType()
     {
         return type;
@@ -303,6 +315,7 @@ public class AuditLogEntry implements ISnowflake
      *
      * @return The {@link net.dv8tion.jda.core.audit.TargetType TargetType}
      */
+    @NonNull
     public TargetType getTargetType()
     {
         return type.getTargetType();
@@ -315,7 +328,7 @@ public class AuditLogEntry implements ISnowflake
     }
 
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(@Nullable Object obj)
     {
         if (!(obj instanceof AuditLogEntry))
             return false;

@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.core.events.channel.voice.update;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 
@@ -34,6 +35,7 @@ public class VoiceChannelUpdateNameEvent extends GenericVoiceChannelUpdateEvent
         this.oldName = oldName;
     }
 
+    @NonNull
     public String getOldName()
     {
         return oldName;

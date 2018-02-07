@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.core;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.entities.EmbedType;
 import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.MessageEmbed;
@@ -57,7 +59,7 @@ public class EmbedBuilder
      */
     public EmbedBuilder() { }
 
-    public EmbedBuilder(EmbedBuilder builder)
+    public EmbedBuilder(@Nullable EmbedBuilder builder)
     {
         if (builder != null)
         {
@@ -80,7 +82,7 @@ public class EmbedBuilder
      * @param  embed
      *         the existing embed
      */
-    public EmbedBuilder(MessageEmbed embed)
+    public EmbedBuilder(@Nullable MessageEmbed embed)
     {
         if(embed != null)
         {
@@ -107,6 +109,7 @@ public class EmbedBuilder
      *
      * @return the built, sendable {@link net.dv8tion.jda.core.entities.MessageEmbed}
      */
+    @NonNull
     public MessageEmbed build()
     {
         if (isEmpty())
@@ -125,6 +128,7 @@ public class EmbedBuilder
      *
      * @return The current EmbedBuilder with default values
      */
+    @NonNull
     public EmbedBuilder clear()
     {
         description.setLength(0);
@@ -227,7 +231,8 @@ public class EmbedBuilder
      *
      * @return the builder after the title has been set
      */
-    public EmbedBuilder setTitle(String title)
+    @NonNull
+    public EmbedBuilder setTitle(@Nullable String title)
     {
         return setTitle(title, null);
     }
@@ -253,7 +258,8 @@ public class EmbedBuilder
      *
      * @return the builder after the title has been set
      */
-    public EmbedBuilder setTitle(String title, String url)
+    @NonNull
+    public EmbedBuilder setTitle(@Nullable String title, @Nullable String url)
     {
         if (title == null)
         {
@@ -283,6 +289,7 @@ public class EmbedBuilder
      *
      * @return StringBuilder with current description context
      */
+    @NonNull
     public StringBuilder getDescriptionBuilder()
     {
         return description;
@@ -301,7 +308,8 @@ public class EmbedBuilder
      *
      * @return the builder after the description has been set
      */
-    public final EmbedBuilder setDescription(CharSequence description)
+    @NonNull
+    public EmbedBuilder setDescription(@Nullable CharSequence description)
     {
         this.description.setLength(0);
         if (description != null && description.length() >= 1)
@@ -325,6 +333,7 @@ public class EmbedBuilder
      *
      * @return the builder after the description has been set
      */
+    @NonNull
     public EmbedBuilder appendDescription(CharSequence description)
     {
         Checks.notNull(description, "description");
@@ -347,7 +356,8 @@ public class EmbedBuilder
      *
      * @return the builder after the timestamp has been set
      */
-    public EmbedBuilder setTimestamp(TemporalAccessor temporal)
+    @NonNull
+    public EmbedBuilder setTimestamp(@Nullable TemporalAccessor temporal)
     {
         if (temporal == null)
         {
@@ -401,7 +411,8 @@ public class EmbedBuilder
      *
      * @return the builder after the color has been set
      */
-    public EmbedBuilder setColor(Color color)
+    @NonNull
+    public EmbedBuilder setColor(@Nullable Color color)
     {
         this.color = color;
         return this;
@@ -440,7 +451,8 @@ public class EmbedBuilder
      *
      * @return the builder after the thumbnail has been set
      */
-    public EmbedBuilder setThumbnail(String url)
+    @NonNull
+    public EmbedBuilder setThumbnail(@Nullable String url)
     {
         if (url == null)
         {
@@ -489,7 +501,8 @@ public class EmbedBuilder
      *
      * @see    net.dv8tion.jda.core.entities.MessageChannel#sendFile(java.io.File, String, net.dv8tion.jda.core.entities.Message) MessageChannel.sendFile(...)
      */
-    public EmbedBuilder setImage(String url)
+    @NonNull
+    public EmbedBuilder setImage(@Nullable String url)
     {
         if (url == null)
         {
@@ -515,7 +528,8 @@ public class EmbedBuilder
      *
      * @return the builder after the author has been set
      */
-    public EmbedBuilder setAuthor(String name)
+    @NonNull
+    public EmbedBuilder setAuthor(@Nullable String name)
     {
         return setAuthor(name, null, null);
     }
@@ -540,7 +554,8 @@ public class EmbedBuilder
      *
      * @return the builder after the author has been set
      */
-    public EmbedBuilder setAuthor(String name, String url)
+    @NonNull
+    public EmbedBuilder setAuthor(@Nullable String name, @Nullable String url)
     {
         return setAuthor(name, url, null);
     }
@@ -585,7 +600,8 @@ public class EmbedBuilder
      *
      * @return the builder after the author has been set
      */
-    public EmbedBuilder setAuthor(String name, String url, String iconUrl)
+    @NonNull
+    public EmbedBuilder setAuthor(@Nullable String name, @Nullable String url, @Nullable String iconUrl)
     {
         //We only check if the name is null because its presence is what determines if the
         // the author will appear in the embed.
@@ -638,7 +654,8 @@ public class EmbedBuilder
      *
      * @return the builder after the footer has been set
      */
-    public EmbedBuilder setFooter(String text, String iconUrl)
+    @NonNull
+    public EmbedBuilder setFooter(@Nullable String text, @Nullable String iconUrl)
     {
         //We only check if the text is null because its presence is what determines if the
         // footer will appear in the embed.
@@ -665,7 +682,8 @@ public class EmbedBuilder
      *
      * @return the builder after the field has been added
      */
-    public EmbedBuilder addField(MessageEmbed.Field field)
+    @NonNull
+    public EmbedBuilder addField(@Nullable MessageEmbed.Field field)
     {
         return field == null ? this : addField(field.getName(), field.getValue(), field.isInline());
     }
@@ -695,7 +713,8 @@ public class EmbedBuilder
      *
      * @return the builder after the field has been added
      */
-    public EmbedBuilder addField(String name, String value, boolean inline)
+    @NonNull
+    public EmbedBuilder addField(@Nullable String name, @Nullable String value, boolean inline)
     {
         if (name == null && value == null)
             return this;
@@ -714,6 +733,7 @@ public class EmbedBuilder
      *
      * @return the builder after the field has been added
      */
+    @NonNull
     public EmbedBuilder addBlankField(boolean inline)
     {
         this.fields.add(new MessageEmbed.Field(ZERO_WIDTH_SPACE, ZERO_WIDTH_SPACE, inline));
@@ -728,6 +748,7 @@ public class EmbedBuilder
      *
      * @return the builder after the field has been added
      */
+    @NonNull
     public EmbedBuilder clearFields()
     {
         this.fields.clear();
@@ -742,16 +763,17 @@ public class EmbedBuilder
      *
      * @return Mutable List of {@link net.dv8tion.jda.core.entities.MessageEmbed.Field Fields}
      */
+    @NonNull
     public List<MessageEmbed.Field> getFields()
     {
         return fields;
     }
 
-    private void urlCheck(String url)
+    private void urlCheck(@Nullable String url)
     {
         if (url == null)
             return;
-        else if (url.length() > MessageEmbed.URL_MAX_LENGTH)
+        if (url.length() > MessageEmbed.URL_MAX_LENGTH)
             throw new IllegalArgumentException("URL cannot be longer than " + MessageEmbed.URL_MAX_LENGTH + " characters.");
         else if (!URL_PATTERN.matcher(url).matches())
             throw new IllegalArgumentException("URL must be a valid http or https url.");

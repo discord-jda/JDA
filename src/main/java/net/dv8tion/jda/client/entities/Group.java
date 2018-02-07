@@ -16,12 +16,13 @@
 
 package net.dv8tion.jda.client.entities;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 
-import javax.annotation.CheckReturnValue;
 import java.util.List;
 
 public interface Group extends MessageChannel, CallableChannel
@@ -33,6 +34,7 @@ public interface Group extends MessageChannel, CallableChannel
      * @return
      *      Possibly-null name of the group.
      */
+    @NonNull
     String getName();
     String getIconId();
     String getIconUrl();

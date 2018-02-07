@@ -16,6 +16,13 @@
 
 package net.dv8tion.jda.core.utils;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
+import org.slf4j.helpers.FormattingTuple;
+import org.slf4j.helpers.MarkerIgnoringBase;
+import org.slf4j.helpers.MessageFormatter;
+import org.slf4j.helpers.Util;
+import org.slf4j.spi.LocationAwareLogger;
+
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -26,12 +33,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
-
-import org.slf4j.helpers.FormattingTuple;
-import org.slf4j.helpers.MarkerIgnoringBase;
-import org.slf4j.helpers.MessageFormatter;
-import org.slf4j.helpers.Util;
-import org.slf4j.spi.LocationAwareLogger;
 
 class SimpleLogger extends MarkerIgnoringBase {
 
@@ -80,12 +81,12 @@ class SimpleLogger extends MarkerIgnoringBase {
         try {
             prop = System.getProperty(name);
         } catch (SecurityException e) {
-            ; // Ignore
+            // Ignore
         }
         return (prop == null) ? SIMPLE_LOGGER_PROPS.getProperty(name) : prop;
     }
 
-    private static String getStringProperty(String name, String defaultValue) {
+    private static String getStringProperty(String name, @Nullable String defaultValue) {
         String prop = getStringProperty(name);
         return (prop == null) ? defaultValue : prop;
     }
@@ -207,7 +208,7 @@ class SimpleLogger extends MarkerIgnoringBase {
         return LOG_LEVEL_INFO;
     }
 
-    private void log(int level, String message, Throwable t) {
+    private void log(int level, String message, @Nullable Throwable t) {
         if (!isLevelEnabled(level)) {
             return;
         }
@@ -294,7 +295,7 @@ class SimpleLogger extends MarkerIgnoringBase {
         return name.substring(name.lastIndexOf(".") + 1);
     }
 
-    private void formatAndLog(int level, String format, Object arg1, Object arg2) {
+    private void formatAndLog(int level, String format, Object arg1, @Nullable Object arg2) {
         if (!isLevelEnabled(level)) {
             return;
         }

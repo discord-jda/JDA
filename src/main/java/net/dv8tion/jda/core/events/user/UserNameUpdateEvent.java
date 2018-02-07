@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.core.events.user;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.User;
 
@@ -36,11 +37,13 @@ public class UserNameUpdateEvent extends GenericUserEvent
         this.oldDiscriminator = oldDiscriminator;
     }
 
+    @NonNull
     public String getOldName()
     {
         return oldName;
     }
 
+    @NonNull
     public String getOldDiscriminator()
     {
         return oldDiscriminator;

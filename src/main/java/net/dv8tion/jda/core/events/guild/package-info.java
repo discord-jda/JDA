@@ -19,4 +19,11 @@
  * such as whether the current logged in account joins/leaves a Guild.
  * <br>This includes events that indicate whether a Guild becomes {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}!
  */
+@ParametersAreNonnullByDefault
+@DefaultAnnotationForParameters(NonNull.class)
 package net.dv8tion.jda.core.events.guild;
+
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
+
+import javax.annotation.ParametersAreNonnullByDefault;

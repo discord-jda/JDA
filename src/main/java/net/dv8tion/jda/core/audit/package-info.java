@@ -25,6 +25,12 @@
  * <br>To identify what kind of entry is represented use {@link net.dv8tion.jda.core.audit.ActionType ActionType}!
  *
  * @since  3.1.1
- * @author Florian Spieß
  */
+@ParametersAreNonnullByDefault
+@DefaultAnnotationForParameters(NonNull.class)
 package net.dv8tion.jda.core.audit;
+
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
+
+import javax.annotation.ParametersAreNonnullByDefault;

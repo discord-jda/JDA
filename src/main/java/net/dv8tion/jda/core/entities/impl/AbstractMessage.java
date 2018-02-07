@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
@@ -38,13 +40,14 @@ public abstract class AbstractMessage implements Message
     protected final String nonce;
     protected final boolean isTTS;
 
-    public AbstractMessage(String content, String nonce, boolean isTTS)
+    public AbstractMessage(String content, @Nullable String nonce, boolean isTTS)
     {
         this.content = content;
         this.nonce = nonce;
         this.isTTS = isTTS;
     }
 
+    @NonNull
     @Override
     public String getContentRaw()
     {
@@ -101,6 +104,7 @@ public abstract class AbstractMessage implements Message
         }
     }
 
+    @NonNull
     @Override
     public List<User> getMentionedUsers()
     {
@@ -108,6 +112,7 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @NonNull
     @Override
     public List<TextChannel> getMentionedChannels()
     {
@@ -115,6 +120,7 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @NonNull
     @Override
     public List<Role> getMentionedRoles()
     {
@@ -122,6 +128,7 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @NonNull
     @Override
     public List<Member> getMentionedMembers(Guild guild)
     {
@@ -129,6 +136,7 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @NonNull
     @Override
     public List<Member> getMentionedMembers()
     {
@@ -136,6 +144,7 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @NonNull
     @Override
     public List<IMentionable> getMentions(MentionType... types)
     {
@@ -171,6 +180,7 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @NonNull
     @Override
     public User getAuthor()
     {
@@ -178,6 +188,7 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @NonNull
     @Override
     public Member getMember()
     {
@@ -185,6 +196,7 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @NonNull
     @Override
     public String getContentDisplay()
     {
@@ -192,6 +204,7 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @NonNull
     @Override
     public String getContentStripped()
     {
@@ -199,6 +212,7 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @NonNull
     @Override
     public List<String> getInvites()
     {
@@ -213,6 +227,7 @@ public abstract class AbstractMessage implements Message
         return false;
     }
 
+    @NonNull
     @Override
     public ChannelType getChannelType()
     {
@@ -227,6 +242,7 @@ public abstract class AbstractMessage implements Message
         return false;
     }
 
+    @NonNull
     @Override
     public MessageChannel getChannel()
     {
@@ -269,6 +285,7 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @NonNull
     @Override
     public List<Attachment> getAttachments()
     {
@@ -276,6 +293,7 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @NonNull
     @Override
     public List<MessageEmbed> getEmbeds()
     {
@@ -283,6 +301,7 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @NonNull
     @Override
     public List<Emote> getEmotes()
     {
@@ -290,6 +309,7 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @NonNull
     @Override
     public List<MessageReaction> getReactions()
     {
@@ -297,6 +317,7 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @NonNull
     @Override
     public MessageAction editMessage(CharSequence newContent)
     {
@@ -304,6 +325,7 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @NonNull
     @Override
     public MessageAction editMessage(MessageEmbed newContent)
     {
@@ -311,6 +333,7 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @NonNull
     @Override
     public MessageAction editMessageFormat(String format, Object... args)
     {
@@ -318,6 +341,7 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @NonNull
     @Override
     public MessageAction editMessage(Message newContent)
     {
@@ -325,6 +349,7 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @NonNull
     @Override
     public AuditableRestAction<Void> delete()
     {
@@ -332,6 +357,7 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @NonNull
     @Override
     public JDA getJDA()
     {
@@ -346,6 +372,7 @@ public abstract class AbstractMessage implements Message
         return false;
     }
 
+    @NonNull
     @Override
     public RestAction<Void> pin()
     {
@@ -353,6 +380,7 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @NonNull
     @Override
     public RestAction<Void> unpin()
     {
@@ -360,6 +388,7 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @NonNull
     @Override
     public RestAction<Void> addReaction(Emote emote)
     {
@@ -367,6 +396,7 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @NonNull
     @Override
     public RestAction<Void> addReaction(String unicode)
     {
@@ -374,6 +404,7 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @NonNull
     @Override
     public RestAction<Void> clearReactions()
     {
@@ -381,6 +412,7 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @NonNull
     @Override
     public MessageType getType()
     {

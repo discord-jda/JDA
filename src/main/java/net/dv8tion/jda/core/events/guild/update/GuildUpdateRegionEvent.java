@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.events.guild.update;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.Guild;
@@ -46,6 +47,7 @@ public class GuildUpdateRegionEvent extends GenericGuildUpdateEvent
      *
      * @return Resolved {@link net.dv8tion.jda.core.Region Region} constant from the raw name
      */
+    @NonNull
     public Region getOldRegion()
     {
         return Region.fromKey(oldRegion);
@@ -58,6 +60,7 @@ public class GuildUpdateRegionEvent extends GenericGuildUpdateEvent
      *
      * @return Raw name of the old voice region
      */
+    @NonNull
     public String getOldRegionRaw()
     {
         return oldRegion;
@@ -71,6 +74,7 @@ public class GuildUpdateRegionEvent extends GenericGuildUpdateEvent
      *
      * @return Resolved {@link net.dv8tion.jda.core.Region Region} constant from the raw name
      */
+    @NonNull
     public Region getNewRegion()
     {
         return Region.fromKey(newRegion);
@@ -83,6 +87,7 @@ public class GuildUpdateRegionEvent extends GenericGuildUpdateEvent
      *
      * @return Raw name of the updated voice region
      */
+    @NonNull
     public String getNewRegionRaw()
     {
         return newRegion;

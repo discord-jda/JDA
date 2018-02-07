@@ -19,4 +19,11 @@
  * <br>This is utilized in updatable Managers. Managers that allow
  * users to modify multiple {@code Field}s of an existing entity.
  */
+@ParametersAreNonnullByDefault
+@DefaultAnnotationForParameters(NonNull.class)
 package net.dv8tion.jda.core.managers.fields;
+
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
+
+import javax.annotation.ParametersAreNonnullByDefault;

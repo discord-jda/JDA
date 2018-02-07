@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.events.channel.category.update;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Category;
 
@@ -40,6 +41,7 @@ public class CategoryUpdateNameEvent extends GenericCategoryUpdateEvent
      *
      * @return The previous name
      */
+    @NonNull
     public String getOldName()
     {
         return oldName;

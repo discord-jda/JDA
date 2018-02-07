@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.requests;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.events.http.HttpRequestEvent;
@@ -40,7 +42,9 @@ public class Request<T>
 
     private boolean isCanceled = false;
 
-    public Request(RestAction<T> restAction, Consumer<T> onSuccess, Consumer<Throwable> onFailure, boolean shouldQueue, RequestBody body, Object rawBody, Route.CompiledRoute route, CaseInsensitiveMap<String, String> headers)
+    public Request(RestAction<T> restAction, Consumer<T> onSuccess, Consumer<Throwable> onFailure,
+                   boolean shouldQueue, @Nullable RequestBody body, @Nullable Object rawBody,
+                   Route.CompiledRoute route, @Nullable CaseInsensitiveMap<String, String> headers)
     {
         this.restAction = restAction;
         this.onSuccess = onSuccess;
@@ -54,7 +58,7 @@ public class Request<T>
         this.api = (JDAImpl) restAction.getJDA();
     }
 
-    public void onSuccess(T successObj)
+    public void onSuccess(@Nullable T successObj)
     {
         api.pool.execute(() ->
         {
@@ -103,41 +107,49 @@ public class Request<T>
         });
     }
 
+    @NonNull
     public JDAImpl getJDA()
     {
         return api;
     }
 
+    @NonNull
     public RestAction<T> getRestAction()
     {
         return restAction;
     }
 
+    @NonNull
     public Consumer<T> getOnSuccess()
     {
         return onSuccess;
     }
 
+    @NonNull
     public Consumer<Throwable> getOnFailure()
     {
         return onFailure;
     }
 
-    public CaseInsensitiveMap<String, String> getHeaders()
-    {
-        return headers;
-    }
-
+    @NonNull
     public Route.CompiledRoute getRoute()
     {
         return route;
     }
 
+    @Nullable
+    public CaseInsensitiveMap<String, String> getHeaders()
+    {
+        return headers;
+    }
+
+    @Nullable
     public RequestBody getBody()
     {
         return body;
     }
 
+    @Nullable
     public Object getRawBody()
     {
         return rawBody;

@@ -17,6 +17,8 @@
 package net.dv8tion.jda.core.entities.impl;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.bot.entities.impl.JDABotImpl;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
@@ -87,13 +89,13 @@ public class JDAImpl implements JDA
 
     protected final SessionController sessionController;
 
+    public SelfUserImpl selfUser;
     protected WebSocketClient client;
     protected Requester requester;
     protected IEventManager eventManager = new InterfacedEventManager();
     protected IAudioSendFactory audioSendFactory = new DefaultSendFactory();
     protected ScheduledThreadPoolExecutor audioKeepAlivePool;
     protected Status status = Status.INITIALIZING;
-    protected SelfUser selfUser;
     protected ShardInfo shardInfo;
     protected boolean audioEnabled;
     protected boolean bulkDeleteSplittingEnabled;
@@ -101,11 +103,10 @@ public class JDAImpl implements JDA
     protected long responseTotal;
     protected long ping = -1;
     protected String token;
-    protected String gatewayUrl;
 
-    public JDAImpl(AccountType accountType, String token, SessionController controller, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory,
+    public JDAImpl(AccountType accountType, String token, @Nullable SessionController controller, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory,
                    boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled, boolean retryOnTimeout, boolean enableMDC,
-                   int corePoolSize, int maxReconnectDelay, ConcurrentMap<String, String> contextMap)
+                   int corePoolSize, int maxReconnectDelay, @Nullable ConcurrentMap<String, String> contextMap)
     {
         this.accountType = accountType;
         this.setToken(token);
@@ -136,9 +137,8 @@ public class JDAImpl implements JDA
         return sessionController;
     }
 
-    public int login(String gatewayUrl, ShardInfo shardInfo) throws LoginException
+    public int login(@Nullable String gatewayUrl, @Nullable ShardInfo shardInfo) throws LoginException
     {
-        this.gatewayUrl = gatewayUrl;
         this.shardInfo = shardInfo;
 
         setStatus(Status.LOGGING_IN);
@@ -161,7 +161,7 @@ public class JDAImpl implements JDA
         verifyToken();
         LOG.info("Login Successful!");
 
-        client = new WebSocketClient(this);
+        client = new WebSocketClient(this, gatewayUrl);
         // remove our MDC metadata when we exit our code
         if (previousContext != null)
             previousContext.forEach(MDC::put);
@@ -203,6 +203,7 @@ public class JDAImpl implements JDA
 
     public void setToken(String token)
     {
+        Checks.notNull(token, "Token");
         if (getAccountType() == AccountType.BOT)
             this.token = "Bot " + token;
         else
@@ -309,6 +310,7 @@ public class JDAImpl implements JDA
         return userResponse;
     }
 
+    @NonNull
     @Override
     public String getToken()
     {
@@ -347,6 +349,7 @@ public class JDAImpl implements JDA
         return autoReconnect;
     }
 
+    @NonNull
     @Override
     public Status getStatus()
     {
@@ -359,18 +362,21 @@ public class JDAImpl implements JDA
         return ping;
     }
 
+    @NonNull
     @Override
     public List<String> getCloudflareRays()
     {
         return Collections.unmodifiableList(new LinkedList<>(client.getCfRays()));
     }
 
+    @NonNull
     @Override
     public List<String> getWebSocketTrace()
     {
         return Collections.unmodifiableList(new LinkedList<>(client.getTraces()));
     }
 
+    @NonNull
     @Override
     public List<Guild> getMutualGuilds(User... users)
     {
@@ -378,6 +384,7 @@ public class JDAImpl implements JDA
         return getMutualGuilds(Arrays.asList(users));
     }
 
+    @NonNull
     @Override
     public List<Guild> getMutualGuilds(Collection<User> users)
     {
@@ -389,12 +396,14 @@ public class JDAImpl implements JDA
                 .collect(Collectors.toList()));
     }
 
+    @NonNull
     @Override
     public RestAction<User> retrieveUserById(String id)
     {
         return retrieveUserById(MiscUtil.parseSnowflake(id));
     }
 
+    @NonNull
     @Override
     public RestAction<User> retrieveUserById(long id)
     {
@@ -422,62 +431,75 @@ public class JDAImpl implements JDA
         };
     }
 
+    @NonNull
     @Override
     public CacheView<AudioManager> getAudioManagerCache()
     {
         return audioManagers;
     }
 
+    @NonNull
     @Override
     public SnowflakeCacheView<Guild> getGuildCache()
     {
         return guildCache;
     }
 
+    @NonNull
     @Override
     public SnowflakeCacheView<Role> getRoleCache()
     {
         return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getRoleCache));
     }
 
+    @NonNull
     @Override
     public SnowflakeCacheView<Emote> getEmoteCache()
     {
         return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getEmoteCache));
     }
 
+    @NonNull
     @Override
     public SnowflakeCacheView<Category> getCategoryCache()
     {
         return categories;
     }
 
+    @NonNull
     @Override
     public SnowflakeCacheView<TextChannel> getTextChannelCache()
     {
         return textChannelCache;
     }
 
+    @NonNull
     @Override
     public SnowflakeCacheView<VoiceChannel> getVoiceChannelCache()
     {
         return voiceChannelCache;
     }
 
+    @NonNull
     @Override
     public SnowflakeCacheView<PrivateChannel> getPrivateChannelCache()
     {
         return privateChannelCache;
     }
 
+    @NonNull
     @Override
     public SnowflakeCacheView<User> getUserCache()
     {
         return userCache;
     }
 
+    @NonNull
+    @Override
     public SelfUser getSelfUser()
     {
+        if (selfUser == null)
+            throw new IllegalStateException("JDA has not finished loading! Wait for the ReadyEvent or use buildBlocking!");
         return selfUser;
     }
 
@@ -523,6 +545,7 @@ public class JDAImpl implements JDA
         setStatus(Status.SHUTDOWN);
     }
 
+    @NonNull
     @Override
     public JDAClientImpl asClient()
     {
@@ -530,6 +553,7 @@ public class JDAImpl implements JDA
         return jdaClient;
     }
 
+    @NonNull
     @Override
     public JDABotImpl asBot()
     {
@@ -549,12 +573,14 @@ public class JDAImpl implements JDA
         return maxReconnectDelay;
     }
 
+    @Nullable
     @Override
     public ShardInfo getShardInfo()
     {
         return shardInfo;
     }
 
+    @NonNull
     @Override
     public Presence getPresence()
     {
@@ -567,6 +593,7 @@ public class JDAImpl implements JDA
     //    return new AuditableRestAction.FailedRestAction<>(new UnsupportedOperationException("nice try but next time think first :)"));
     //}
 
+    @NonNull
     @Override
     public AccountType getAccountType()
     {
@@ -597,12 +624,14 @@ public class JDAImpl implements JDA
             eventManager.unregister(listener);
     }
 
+    @NonNull
     @Override
     public List<Object> getRegisteredListeners()
     {
         return Collections.unmodifiableList(eventManager.getRegisteredListeners());
     }
 
+    @NonNull
     @Override
     public GuildAction createGuild(String name)
     {
@@ -710,7 +739,7 @@ public class JDAImpl implements JDA
         return audioManagers.getMap();
     }
 
-    public void setSelfUser(SelfUser selfUser)
+    public void setSelfUser(SelfUserImpl selfUser)
     {
         this.selfUser = selfUser;
     }
@@ -767,10 +796,5 @@ public class JDAImpl implements JDA
             }
         }
         return akap;
-    }
-
-    public String getGatewayUrl()
-    {
-        return gatewayUrl;
     }
 }

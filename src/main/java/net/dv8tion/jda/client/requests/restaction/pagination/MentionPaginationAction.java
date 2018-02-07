@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.client.requests.restaction.pagination;
 
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Guild;
@@ -27,6 +30,7 @@ import net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -52,8 +56,9 @@ import java.util.List;
  * </code></pre>
  *
  * @since  3.0
- * @author Florian Spieß
  */
+@ParametersAreNonnullByDefault
+@DefaultAnnotationForParameters(NonNull.class)
 public class MentionPaginationAction extends PaginationAction<Message, MentionPaginationAction>
 {
 
@@ -93,7 +98,7 @@ public class MentionPaginationAction extends PaginationAction<Message, MentionPa
         this(guild.getJDA(), guild);
     }
 
-    private MentionPaginationAction(JDA api, Guild guild)
+    private MentionPaginationAction(JDA api, @Nullable Guild guild)
     {
         super(api, Route.Self.GET_RECENT_MENTIONS.compile(), 1, 100, 100);
 
@@ -176,7 +181,7 @@ public class MentionPaginationAction extends PaginationAction<Message, MentionPa
             return;
         }
 
-        EntityBuilder builder = api.getEntityBuilder();;
+        EntityBuilder builder = api.getEntityBuilder();
         List<Message> mentions = new LinkedList<>();
         JSONArray arr = response.getArray();
         for (int i = 0; i < arr.length(); i++)

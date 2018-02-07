@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.requests;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -38,13 +39,13 @@ public class Response implements Closeable
     private final Set<String> cfRays;
     private Exception exception;
 
-    protected Response(final okhttp3.Response response, final Exception exception, final Set<String> cfRays)
+    protected Response(@Nullable okhttp3.Response response, final Exception exception, final Set<String> cfRays)
     {
         this(response, response != null ? response.code() : ERROR_CODE, ERROR_MESSAGE, -1, cfRays);
         this.exception = exception;
     }
 
-    protected Response(final okhttp3.Response response, final int code, final String message, final long retryAfter, final Set<String> cfRays)
+    protected Response(@Nullable okhttp3.Response response, final int code, final String message, final long retryAfter, final Set<String> cfRays)
     {
         this.rawResponse = response;
         this.code = code;

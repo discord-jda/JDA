@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Channel;
@@ -30,8 +32,8 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.RoleAction;
-import net.dv8tion.jda.core.utils.PermissionUtil;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.PermissionUtil;
 
 import java.awt.Color;
 import java.time.OffsetDateTime;
@@ -85,10 +87,11 @@ public class RoleImpl implements Role
         return rawPosition;
     }
 
+    @NonNull
     @Override
     public String getName()
     {
-        return name;
+        return name == null ? "" : name;
     }
 
     @Override
@@ -115,6 +118,7 @@ public class RoleImpl implements Role
         return rawPermissions;
     }
 
+    @NonNull
     @Override
     public List<Permission> getPermissions()
     {
@@ -182,12 +186,14 @@ public class RoleImpl implements Role
         return PermissionUtil.canInteract(this, role);
     }
 
+    @NonNull
     @Override
     public Guild getGuild()
     {
         return guild;
     }
 
+    @NonNull
     @Override
     public RoleAction createCopy(Guild guild)
     {
@@ -200,6 +206,7 @@ public class RoleImpl implements Role
                     .setPermissions(rawPermissions);
     }
 
+    @NonNull
     @Override
     public RoleManager getManager()
     {
@@ -216,6 +223,7 @@ public class RoleImpl implements Role
         return mng;
     }
 
+    @NonNull
     @Override
     public RoleManagerUpdatable getManagerUpdatable()
     {
@@ -232,6 +240,7 @@ public class RoleImpl implements Role
         return mng;
     }
 
+    @NonNull
     @Override
     public AuditableRestAction<Void> delete()
     {
@@ -256,12 +265,14 @@ public class RoleImpl implements Role
         };
     }
 
+    @NonNull
     @Override
     public JDA getJDA()
     {
         return guild.getJDA();
     }
 
+    @NonNull
     @Override
     public String getAsMention()
     {
@@ -275,7 +286,7 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public boolean equals(Object o)
+    public boolean equals(@Nullable Object o)
     {
         if (!(o instanceof Role))
             return false;
@@ -324,7 +335,7 @@ public class RoleImpl implements Role
         return this;
     }
 
-    public RoleImpl setColor(Color color)
+    public RoleImpl setColor(@Nullable Color color)
     {
         this.color = color;
         return this;

@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.core.events.http;
 
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
@@ -27,7 +30,7 @@ import okhttp3.ResponseBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.Collections;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Set;
 
 /**
@@ -35,6 +38,8 @@ import java.util.Set;
  * 
  * <p>Depending on the request and its result not all values have to be populated.
  */
+@ParametersAreNonnullByDefault
+@DefaultAnnotationForParameters(NonNull.class)
 public class HttpRequestEvent extends Event
 {
     private final Request<?> request;
@@ -48,76 +53,91 @@ public class HttpRequestEvent extends Event
         this.response = response;
     }
 
+    @NonNull
     public Request<?> getRequest()
     {
         return this.request;
     }
 
+    @Nullable
     public RequestBody getRequestBody()
     {
         return this.request.getBody();
     }
 
+    @Nullable
     public Object getRequestBodyRaw()
     {
         return this.request.getRawBody();
     }
 
+    @Nullable
     public Headers getRequestHeaders()
     {
         return this.response.getRawResponse() == null ? null : this.response.getRawResponse().request().headers();
     }
 
+    @Nullable
     public okhttp3.Request getRequestRaw()
     {
         return this.response.getRawResponse() == null ? null : this.response.getRawResponse().request();
     }
 
+    @NonNull
     public Response getResponse()
     {
         return this.response;
     }
 
+    @Nullable
     public ResponseBody getResponseBody()
     {
         return this.response.getRawResponse() == null ? null : this.response.getRawResponse().body();
     }
 
+    @Nullable
     public JSONArray getResponseBodyAsArray()
     {
         return this.response.getArray();
     }
 
+    @Nullable
     public JSONObject getResponseBodyAsObject()
     {
         return this.response.getObject();
     }
 
+    @NonNull
     public String getResponseBodyAsString()
     {
         return this.response.getString();
     }
 
+    @Nullable
     public Headers getResponseHeaders()
     {
         return this.response.getRawResponse() == null ? null : this.response.getRawResponse().headers();
     }
 
+    @Nullable
     public okhttp3.Response getResponseRaw()
     {
         return this.response.getRawResponse();
     }
 
+    @NonNull
     public Set<String> getCFRays()
     {
         return this.response.getCFRays();
     }
 
+    @NonNull
     public RestAction<?> getRestAction()
     {
         return this.request.getRestAction();
     }
 
+    @NonNull
     public CompiledRoute getRoute()
     {
         return this.request.getRoute();

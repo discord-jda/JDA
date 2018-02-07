@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.events.self;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 
 /**
@@ -26,7 +27,7 @@ public class SelfUpdatePhoneNumberEvent extends GenericSelfUpdateEvent
 {
     private final String oldPhoneNumber;
 
-    public SelfUpdatePhoneNumberEvent(JDA api, long responseNumber, String oldPhoneNumber)
+    public SelfUpdatePhoneNumberEvent(JDA api, long responseNumber, @Nullable String oldPhoneNumber)
     {
         super(api, responseNumber);
         this.oldPhoneNumber = oldPhoneNumber;
@@ -37,6 +38,7 @@ public class SelfUpdatePhoneNumberEvent extends GenericSelfUpdateEvent
      *
      * @return The old phone number or {@code null}.
      */
+    @Nullable
     public String getOldPhoneNumber()
     {
         return oldPhoneNumber;

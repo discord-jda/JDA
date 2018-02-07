@@ -1,5 +1,5 @@
 /*
- *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
+ *     Copyright 2015-2017 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 /**
- * Events that are fired for {@link net.dv8tion.jda.core.entities.Message Messages} in
- * a {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.
- * Such as {@link net.dv8tion.jda.core.events.message.MessageReceivedEvent receiving}.
- *
- * <p>These events combine all {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}
- * messages but specifications can be found in subpackages.
+ * Contains the {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} interface
+ * and a default implementation with {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder}.
  */
 @ParametersAreNonnullByDefault
 @DefaultAnnotationForParameters(NonNull.class)
-package net.dv8tion.jda.core.events.message;
+package net.dv8tion.jda.bot.sharding;
 
 import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
 import edu.umd.cs.findbugs.annotations.NonNull;

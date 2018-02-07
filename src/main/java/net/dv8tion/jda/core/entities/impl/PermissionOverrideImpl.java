@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
@@ -68,24 +70,28 @@ public class PermissionOverrideImpl implements PermissionOverride
         return deny;
     }
 
+    @NonNull
     @Override
     public List<Permission> getAllowed()
     {
         return Collections.unmodifiableList(Permission.getPermissions(allow));
     }
 
+    @NonNull
     @Override
     public List<Permission> getInherit()
     {
         return Collections.unmodifiableList(Permission.getPermissions(getInheritRaw()));
     }
 
+    @NonNull
     @Override
     public List<Permission> getDenied()
     {
         return Collections.unmodifiableList(Permission.getPermissions(deny));
     }
 
+    @NonNull
     @Override
     public JDA getJDA()
     {
@@ -104,12 +110,14 @@ public class PermissionOverrideImpl implements PermissionOverride
         return isRoleOverride() ? (Role) permissionHolder : null;
     }
 
+    @NonNull
     @Override
     public Channel getChannel()
     {
         return channel;
     }
 
+    @NonNull
     @Override
     public Guild getGuild()
     {
@@ -128,6 +136,7 @@ public class PermissionOverrideImpl implements PermissionOverride
         return permissionHolder instanceof Role;
     }
 
+    @NonNull
     @Override
     public PermOverrideManager getManager()
     {
@@ -144,6 +153,7 @@ public class PermissionOverrideImpl implements PermissionOverride
         return mng;
     }
 
+    @NonNull
     @Override
     public PermOverrideManagerUpdatable getManagerUpdatable()
     {
@@ -160,6 +170,7 @@ public class PermissionOverrideImpl implements PermissionOverride
         return mng;
     }
 
+    @NonNull
     @Override
     public AuditableRestAction<Void> delete()
     {
@@ -194,7 +205,7 @@ public class PermissionOverrideImpl implements PermissionOverride
     }
 
     @Override
-    public boolean equals(Object o)
+    public boolean equals(@Nullable Object o)
     {
         if (!(o instanceof PermissionOverrideImpl))
             return false;

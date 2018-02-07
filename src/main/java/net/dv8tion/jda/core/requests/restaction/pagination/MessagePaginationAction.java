@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.requests.restaction.pagination;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
@@ -60,7 +61,6 @@ import java.util.List;
  * </code></pre>
  *
  * @since  3.1
- * @author Florian Spieß
  */
 public class MessagePaginationAction extends PaginationAction<Message, MessagePaginationAction>
 {
@@ -86,6 +86,7 @@ public class MessagePaginationAction extends PaginationAction<Message, MessagePa
      *
      * @return {@link net.dv8tion.jda.core.entities.ChannelType ChannelType}
      */
+    @NonNull
     public ChannelType getType()
     {
         return getChannel().getType();
@@ -96,6 +97,7 @@ public class MessagePaginationAction extends PaginationAction<Message, MessagePa
      *
      * @return The MessageChannel instance
      */
+    @NonNull
     public MessageChannel getChannel()
     {
         return channel;

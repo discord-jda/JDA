@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.core.events;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.requests.CloseCode;
 
@@ -43,6 +45,7 @@ public class ShutdownEvent extends Event
      * @return {@link java.time.OffsetDateTime OffsetDateTime} representing
      *         the point in time when the connection was dropped.
      */
+    @NonNull
     public OffsetDateTime getShutdownTime()
     {
         return shutdownTime;
@@ -56,6 +59,7 @@ public class ShutdownEvent extends Event
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.requests.CloseCode CloseCode}
      */
+    @Nullable
     public CloseCode getCloseCode()
     {
         return CloseCode.from(code);

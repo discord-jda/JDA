@@ -16,13 +16,15 @@
 
 package net.dv8tion.jda.core.entities;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.client.managers.EmoteManager;
 import net.dv8tion.jda.client.managers.EmoteManagerUpdatable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 
-import javax.annotation.CheckReturnValue;
 import java.util.List;
 
 /**
@@ -35,7 +37,6 @@ import java.util.List;
  */
 public interface Emote extends ISnowflake, IMentionable, IFakeable
 {
-
     /**
      * The {@link net.dv8tion.jda.core.entities.Guild Guild} this emote is attached to.
      *
@@ -43,6 +44,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      *
      * @return Guild of this emote or null if it is a fake entity
      */
+    @Nullable
     Guild getGuild();
 
     /**
@@ -54,6 +56,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      *
      * @return An immutable list of the roles this emote is active for (all roles if empty)
      */
+    @NonNull
     List<Role> getRoles();
 
     /**
@@ -61,6 +64,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      *
      * @return String representation of this emote's name
      */
+    @NonNull
     String getName();
 
     /**
@@ -73,10 +77,20 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
     boolean isManaged();
 
     /**
+     * Whether or not this Emote is animated.
+     *
+     * <p>Animated Emotes are available to Discord Nitro users as well as Bot accounts.
+     *
+     * @return Whether the Emote is animated or not.
+     */
+    boolean isAnimated();
+
+    /**
      * The {@link net.dv8tion.jda.core.JDA JDA} instance of this Emote
      *
      * @return The JDA instance of this Emote
      */
+    @NonNull
     JDA getJDA();
 
     /**
@@ -104,6 +118,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         The RestAction to delete this Emote.
      */
+    @NonNull
     @CheckReturnValue
     AuditableRestAction<Void> delete();
 
@@ -118,6 +133,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      *
      * @return The EmoteManager for this Emote
      */
+    @NonNull
     EmoteManager getManager();
 
     /**
@@ -133,16 +149,8 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      *
      * @return The EmoteManagerUpdatable for this Emote
      */
+    @NonNull
     EmoteManagerUpdatable getManagerUpdatable();
-
-    /**
-     * Whether or not this Emote is animated.
-     *
-     * <p>Animated Emotes are available to Discord Nitro users as well as Bot accounts.
-     *
-     * @return Whether the Emote is animated or not.
-     */
-    boolean isAnimated();
 
     /**
      * A String representation of the URL which leads to image displayed within the official Discord&trade; client
@@ -150,6 +158,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      *
      * @return Discord CDN link to the Emote's image
      */
+    @NonNull
     default String getImageUrl()
     {
         return "https://cdn.discordapp.com/emojis/" + getId() + (isAnimated() ? ".gif" : ".png");
@@ -163,6 +172,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      *
      * @see    <a href="https://discordapp.com/developers/docs/resources/channel#message-formatting">Message Formatting</a>
      */
+    @NonNull
     @Override
     default String getAsMention()
     {

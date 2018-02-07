@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.events.guild.update;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 
@@ -23,12 +24,13 @@ public class GuildUpdateAfkTimeoutEvent extends GenericGuildUpdateEvent
 {
     private final Guild.Timeout oldAfkTimeout;
 
-    public GuildUpdateAfkTimeoutEvent(JDA api, long responseNumber, Guild guild, Guild.Timeout oldAfkTimeout)
+    public GuildUpdateAfkTimeoutEvent(JDA api, long responseNumber, Guild guild, @Nullable Guild.Timeout oldAfkTimeout)
     {
         super(api, responseNumber, guild);
         this.oldAfkTimeout = oldAfkTimeout;
     }
 
+    @Nullable
     public Guild.Timeout getOldAfkTimeout()
     {
         return oldAfkTimeout;

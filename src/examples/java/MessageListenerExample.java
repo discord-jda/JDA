@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -77,7 +78,7 @@ public class MessageListenerExample extends ListenerAdapter
      *          sent in a channel.
      */
     @Override
-    public void onMessageReceived(MessageReceivedEvent event)
+    public void onMessageReceived(@NonNull MessageReceivedEvent event)
     {
         //These are provided with every event in JDA
         JDA jda = event.getJDA();                       //JDA, the core of the api.
@@ -115,7 +116,7 @@ public class MessageListenerExample extends ListenerAdapter
                 name = member.getEffectiveName();       //This will either use the Member's nickname if they have one,
             }                                           // otherwise it will default to their username. (User#getName())
 
-            System.out.printf("(%s)[%s]<%s>: %s\n", guild.getName(), textChannel.getName(), name, msg);
+            System.out.printf("(%s)[%s]<%s>: %s%n", guild.getName(), textChannel.getName(), name, msg);
         }
         else if (event.isFromType(ChannelType.PRIVATE)) //If this message was sent to a PrivateChannel
         {
@@ -123,15 +124,15 @@ public class MessageListenerExample extends ListenerAdapter
             //In this example we don't directly use the privateChannel, however, be sure, there are uses for it!
             PrivateChannel privateChannel = event.getPrivateChannel();
 
-            System.out.printf("[PRIV]<%s>: %s\n", author.getName(), msg);
+            System.out.printf("[PRIV]<%s>: %s%n", author.getName(), msg);
         }
         else if (event.isFromType(ChannelType.GROUP))   //If this message was sent to a Group. This is CLIENT only!
         {
             //The message was sent in a Group. It should be noted that Groups are CLIENT only.
             Group group = event.getGroup();
-            String groupName = group.getName() != null ? group.getName() : "";  //A group name can be null due to it being unnamed.
+            String groupName = group.getName();  //A group name can be empty due to it being unnamed.
 
-            System.out.printf("[GRP: %s]<%s>: %s\n", groupName, author.getName(), msg);
+            System.out.printf("[GRP: %s]<%s>: %s%n", groupName, author.getName(), msg);
         }
 
 
@@ -163,7 +164,7 @@ public class MessageListenerExample extends ListenerAdapter
             {                                                               // what they are or how they work, try google!
                 if (roll < 3)
                 {
-                    channel.sendMessage("The roll for messageId: " + sentMessage.getId() + " wasn't very good... Must be bad luck!\n").queue();
+                    channel.sendMessageFormat("The roll for messageId: %s wasn't very good... Must be bad luck!", sentMessage.getId()).queue();
                 }
             });
         }
@@ -202,6 +203,13 @@ public class MessageListenerExample extends ListenerAdapter
                     for (User user : mentionedUsers)
                     {
                         Member member = guild.getMember(user);  //We get the member object for each mentioned user to kick them!
+                        if (member == null)
+                        {
+                            //the member is null if the user is not part of this guild
+                            // we use the formattable features of user to display them with their discord tag (Name#XXXX)
+                            channel.sendMessageFormat("Cannot kick %#s, they are not in this guild!", user).queue();
+                            return;
+                        }
 
                         //We need to make sure that we can interact with them. Interacting with a Member means you are higher
                         // in the Role hierarchy than they are. Remember, NO ONE is above the Guild's Owner. (Guild#getOwner())

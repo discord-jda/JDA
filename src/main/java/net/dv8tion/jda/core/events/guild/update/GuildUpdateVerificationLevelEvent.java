@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.events.guild.update;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 
@@ -29,6 +30,7 @@ public class GuildUpdateVerificationLevelEvent extends GenericGuildUpdateEvent
         this.oldVerificationLevel = oldVerificationLevel;
     }
 
+    @NonNull
     public Guild.VerificationLevel getOldVerificationLevel()
     {
         return oldVerificationLevel;

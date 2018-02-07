@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.PrivateChannel;
@@ -49,12 +51,14 @@ public class UserImpl implements User
         this.api = api;
     }
 
+    @NonNull
     @Override
     public String getName()
     {
-        return name;
+        return name == null ? "" : name;
     }
 
+    @NonNull
     @Override
     public String getDiscriminator()
     {
@@ -74,18 +78,21 @@ public class UserImpl implements User
                 + (getAvatarId().startsWith("a_") ? ".gif" : ".png");
     }
 
+    @NonNull
     @Override
     public String getDefaultAvatarId()
     {
         return DefaultAvatar.values()[Integer.parseInt(getDiscriminator()) % DefaultAvatar.values().length].toString();
     }
 
+    @NonNull
     @Override
     public String getDefaultAvatarUrl()
     {
         return "https://discordapp.com/assets/" + getDefaultAvatarId() + ".png";
     }
 
+    @NonNull
     @Override
     public String getEffectiveAvatarUrl()
     {
@@ -99,6 +106,7 @@ public class UserImpl implements User
         return privateChannel != null;
     }
 
+    @NonNull
     @Override
     public RestAction<PrivateChannel> openPrivateChannel()
     {
@@ -129,12 +137,14 @@ public class UserImpl implements User
         };
     }
 
+    @NonNull
     @Override
     public List<Guild> getMutualGuilds()
     {
         return getJDA().getMutualGuilds(this);
     }
 
+    @NonNull
     public PrivateChannel getPrivateChannel()
     {
         if (!hasPrivateChannel())
@@ -149,12 +159,14 @@ public class UserImpl implements User
         return bot;
     }
 
+    @NonNull
     @Override
     public JDA getJDA()
     {
         return api;
     }
 
+    @NonNull
     @Override
     public String getAsMention()
     {
@@ -174,7 +186,7 @@ public class UserImpl implements User
     }
 
     @Override
-    public boolean equals(Object o)
+    public boolean equals(@Nullable Object o)
     {
         if (!(o instanceof UserImpl))
             return false;
@@ -208,13 +220,13 @@ public class UserImpl implements User
         return this;
     }
 
-    public UserImpl setAvatarId(String avatarId)
+    public UserImpl setAvatarId(@Nullable String avatarId)
     {
         this.avatarId = avatarId;
         return this;
     }
 
-    public UserImpl setPrivateChannel(PrivateChannel privateChannel)
+    public UserImpl setPrivateChannel(@Nullable PrivateChannel privateChannel)
     {
         this.privateChannel = privateChannel;
         return this;

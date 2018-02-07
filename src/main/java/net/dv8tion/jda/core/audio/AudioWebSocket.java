@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.audio;
 
 import com.neovisionaries.ws.client.*;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.entities.Guild;
@@ -73,7 +74,7 @@ public class AudioWebSocket extends WebSocketAdapter
 
     public WebSocket socket;
 
-    public AudioWebSocket(ConnectionListener listener, String endpoint, JDAImpl api, Guild guild, String sessionId, String token, boolean shouldReconnect)
+    public AudioWebSocket(ConnectionListener listener, String endpoint, JDAImpl api, Guild guild, @Nullable String sessionId, @Nullable String token, boolean shouldReconnect)
     {
         this.listener = listener;
         this.endpoint = endpoint;
@@ -100,7 +101,7 @@ public class AudioWebSocket extends WebSocketAdapter
         socket.sendText(message);
     }
 
-    protected void send(int op, Object data)
+    protected void send(int op, @Nullable Object data)
     {
         send(new JSONObject()
             .put("op", op)

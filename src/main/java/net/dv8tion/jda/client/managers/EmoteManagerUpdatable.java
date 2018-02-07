@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.client.managers;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.client.managers.fields.EmoteField;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
@@ -32,7 +35,7 @@ import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
-import javax.annotation.CheckReturnValue;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,6 +56,8 @@ import java.util.stream.Collectors;
  * the currently logged in account requires the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES MANAGE_EMOTES} and
  * must be from {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}
  */
+@ParametersAreNonnullByDefault
+@DefaultAnnotationForParameters(NonNull.class)
 public class EmoteManagerUpdatable
 {
     public static final Pattern NAME_PATTERN = Pattern.compile("^\\w+$");

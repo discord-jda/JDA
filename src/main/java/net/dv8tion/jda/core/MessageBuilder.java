@@ -15,6 +15,9 @@
  */
 package net.dv8tion.jda.core;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.DataMessage;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
@@ -22,7 +25,6 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.MessageAction;
 import net.dv8tion.jda.core.utils.Checks;
 
-import javax.annotation.CheckReturnValue;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -48,13 +50,13 @@ public class MessageBuilder implements Appendable
 
     public MessageBuilder() {}
 
-    public MessageBuilder(CharSequence content)
+    public MessageBuilder(@Nullable CharSequence content)
     {
         if (content != null)
             builder.append(content);
     }
 
-    public MessageBuilder(Message message)
+    public MessageBuilder(@Nullable Message message)
     {
         if (message != null)
         {
@@ -66,7 +68,7 @@ public class MessageBuilder implements Appendable
         }
     }
 
-    public MessageBuilder(MessageBuilder builder)
+    public MessageBuilder(@Nullable MessageBuilder builder)
     {
         if (builder != null)
         {
@@ -77,13 +79,13 @@ public class MessageBuilder implements Appendable
         }
     }
 
-    public MessageBuilder(EmbedBuilder builder)
+    public MessageBuilder(@Nullable EmbedBuilder builder)
     {
         if (builder != null)
             this.embed = builder.build();
     }
 
-    public MessageBuilder(MessageEmbed embed)
+    public MessageBuilder(@Nullable MessageEmbed embed)
     {
         this.embed = embed;
     }
@@ -98,6 +100,7 @@ public class MessageBuilder implements Appendable
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
+    @NonNull
     public MessageBuilder setTTS(boolean tts)
     {
         this.isTTS = tts;
@@ -113,7 +116,8 @@ public class MessageBuilder implements Appendable
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
-    public MessageBuilder setEmbed(MessageEmbed embed)
+    @NonNull
+    public MessageBuilder setEmbed(@Nullable MessageEmbed embed)
     {
         this.embed = embed;
         return this;
@@ -134,7 +138,8 @@ public class MessageBuilder implements Appendable
      * @see    net.dv8tion.jda.core.entities.Message#getNonce()
      * @see    <a href="https://en.wikipedia.org/wiki/Cryptographic_nonce" target="_blank">Cryptographic Nonce - Wikipedia</a>
      */
-    public MessageBuilder setNonce(String nonce)
+    @NonNull
+    public MessageBuilder setNonce(@Nullable String nonce)
     {
         this.nonce = nonce;
         return this;
@@ -154,7 +159,8 @@ public class MessageBuilder implements Appendable
      *
      * @see    net.dv8tion.jda.core.entities.Message#getContentRaw()
      */
-    public MessageBuilder setContent(String content)
+    @NonNull
+    public MessageBuilder setContent(@Nullable String content)
     {
         if (content == null)
         {
@@ -169,20 +175,23 @@ public class MessageBuilder implements Appendable
         return this;
     }
 
+    @NonNull
     @Override
-    public MessageBuilder append(CharSequence text)
+    public MessageBuilder append(@Nullable CharSequence text)
     {
         builder.append(text);
         return this;
     }
 
+    @NonNull
     @Override
-    public MessageBuilder append(CharSequence text, int start, int end)
+    public MessageBuilder append(@Nullable CharSequence text, int start, int end)
     {
         builder.append(text, start, end);
         return this;
     }
 
+    @NonNull
     @Override
     public MessageBuilder append(char c)
     {
@@ -199,7 +208,8 @@ public class MessageBuilder implements Appendable
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
-    public MessageBuilder append(Object object)
+    @NonNull
+    public MessageBuilder append(@Nullable Object object)
     {
         return append(String.valueOf(object));
     }
@@ -214,6 +224,7 @@ public class MessageBuilder implements Appendable
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
+    @NonNull
     public MessageBuilder append(IMentionable mention)
     {
         builder.append(mention.getAsMention());
@@ -230,7 +241,8 @@ public class MessageBuilder implements Appendable
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
-    public MessageBuilder append(CharSequence text, Formatting... format)
+    @NonNull
+    public MessageBuilder append(@Nullable CharSequence text, Formatting... format)
     {
         boolean blockPresent = false;
         for (Formatting formatting : format)
@@ -308,7 +320,8 @@ public class MessageBuilder implements Appendable
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
-    public MessageBuilder appendFormat(String format, Object... args)
+    @NonNull
+    public MessageBuilder appendFormat(String format, @Nullable Object... args)
     {
         Checks.notEmpty(format, "Format String");
         this.append(String.format(format, args));
@@ -327,7 +340,8 @@ public class MessageBuilder implements Appendable
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
-    public MessageBuilder appendCodeBlock(CharSequence text, CharSequence language)
+    @NonNull
+    public MessageBuilder appendCodeBlock(@Nullable CharSequence text, @Nullable CharSequence language)
     {
         builder.append("```").append(language).append('\n').append(text).append("\n```");
         return this;
@@ -371,6 +385,7 @@ public class MessageBuilder implements Appendable
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
+    @NonNull
     public MessageBuilder replace(String target, String replacement)
     {
         int index = builder.indexOf(target);
@@ -392,6 +407,7 @@ public class MessageBuilder implements Appendable
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
+    @NonNull
     public MessageBuilder replaceFirst(String target, String replacement)
     {
         int index = builder.indexOf(target);
@@ -412,6 +428,7 @@ public class MessageBuilder implements Appendable
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
+    @NonNull
     public MessageBuilder replaceLast(String target, String replacement)
     {
         int index = builder.lastIndexOf(target);
@@ -433,6 +450,7 @@ public class MessageBuilder implements Appendable
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
+    @NonNull
     public MessageBuilder stripMentions(JDA jda)
     {
         // Note: Users can rename to "everyone" or "here", so those
@@ -452,6 +470,7 @@ public class MessageBuilder implements Appendable
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
+    @NonNull
     public MessageBuilder stripMentions(Guild guild)
     {
         // Note: Users can rename to "everyone" or "here", so those
@@ -473,6 +492,7 @@ public class MessageBuilder implements Appendable
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
+    @NonNull
     public MessageBuilder stripMentions(Guild guild, Message.MentionType... types)
     {
         return this.stripMentions(guild.getJDA(), guild, types);
@@ -491,6 +511,7 @@ public class MessageBuilder implements Appendable
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
+    @NonNull
     public MessageBuilder stripMentions(JDA jda, Message.MentionType... types)
     {
         return this.stripMentions(jda, null, types);
@@ -594,6 +615,7 @@ public class MessageBuilder implements Appendable
      *
      * @return The {@link StringBuilder} used by this {@link MessageBuilder}
      */
+    @NonNull
     public StringBuilder getStringBuilder()
     {
         return this.builder;
@@ -604,6 +626,7 @@ public class MessageBuilder implements Appendable
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
+    @NonNull
     public MessageBuilder clear() {
         this.builder.setLength(0);
         this.embed = null;
@@ -767,6 +790,7 @@ public class MessageBuilder implements Appendable
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.MessageAction MessageAction}
      */
+    @NonNull
     @CheckReturnValue
     public MessageAction sendTo(MessageChannel channel)
     {
@@ -807,6 +831,7 @@ public class MessageBuilder implements Appendable
      *
      * @return the created {@link net.dv8tion.jda.core.entities.Message Message}
      */
+    @NonNull
     public Message build()
     {
         String message = builder.toString();
@@ -834,7 +859,8 @@ public class MessageBuilder implements Appendable
      *
      * @return the created {@link net.dv8tion.jda.core.entities.Message Messages}
      */
-    public Queue<Message> buildAll(SplitPolicy... policy)
+    @NonNull
+    public Queue<Message> buildAll(@Nullable SplitPolicy... policy)
     {
         if (this.isEmpty())
             throw new UnsupportedOperationException("Cannot build a Message with no content. (You never added any content to the message)");
@@ -856,9 +882,9 @@ public class MessageBuilder implements Appendable
         messageLoop:
         while (currentBeginIndex < builder.length() - 2001)
         {
-            for (int i = 0; i < policy.length; i++)
+            for (SplitPolicy aPolicy : policy)
             {
-                int currentEndIndex = policy[i].nextMessage(currentBeginIndex, this);
+                int currentEndIndex = aPolicy.nextMessage(currentBeginIndex, this);
                 if (currentEndIndex != -1)
                 {
                     messages.add(build(currentBeginIndex, currentEndIndex));
@@ -882,6 +908,7 @@ public class MessageBuilder implements Appendable
         return messages;
     }
 
+    @NonNull
     protected DataMessage build(int beginIndex, int endIndex)
     {
         return new DataMessage(isTTS, builder.substring(beginIndex, endIndex), null, null);

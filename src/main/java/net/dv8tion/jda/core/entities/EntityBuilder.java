@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.entities;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.bot.entities.ApplicationInfo;
 import net.dv8tion.jda.bot.entities.impl.ApplicationInfoImpl;
@@ -70,7 +71,7 @@ public class EntityBuilder
 
     public SelfUser createSelfUser(JSONObject self)
     {
-        SelfUserImpl selfUser = ((SelfUserImpl) api.getSelfUser());
+        SelfUserImpl selfUser = api.selfUser;
         if (selfUser == null)
         {
             final long id = self.getLong("id");
@@ -105,7 +106,7 @@ public class EntityBuilder
         return new Game(name, url, type);
     }
 
-    public void createGuildFirstPass(JSONObject guild, Consumer<Guild> secondPassCallback)
+    public void createGuildFirstPass(JSONObject guild, @Nullable Consumer<Guild> secondPassCallback)
     {
         final long id = guild.getLong("id");
         GuildImpl guildObj = ((GuildImpl) api.getGuildMap().get(id));
@@ -156,10 +157,7 @@ public class EntityBuilder
                 .setRequiredMFALevel(Guild.MFALevel.fromKey(guild.getInt("mfa_level")))
                 .setExplicitContentLevel(Guild.ExplicitContentLevel.fromKey(guild.getInt("explicit_content_filter")));
 
-
-        if(guild.isNull("features"))
-            guildObj.setFeatures(Collections.emptySet());
-        else
+        if (!guild.isNull("features"))
         {
             guildObj.setFeatures(
                 StreamSupport.stream(guild.getJSONArray("features").spliterator(), false)
@@ -324,7 +322,7 @@ public class EntityBuilder
         //This should only occur on small user count guilds.
 
         JSONArray channels = guild.getJSONArray("channels");
-        createGuildChannelPass(guildObj, channels); //Actually creates PermissionOverrides
+        createGuildChannelPass(channels); //Actually creates PermissionOverrides
 
         JSONArray voiceStates = guild.getJSONArray("voice_states");
         createGuildVoiceStatePass(guildObj, voiceStates);
@@ -356,11 +354,11 @@ public class EntityBuilder
         if (owner != null)
             guildObj.setOwner(owner);
 
-        if (guildObj.getOwner() == null)
+        if (guildObj.owner == null)
             LOG.error("Never set the Owner of the Guild: {} because we don't have the owner User object! How?!", guildObj.getId());
 
         JSONArray channels = guildJson.getJSONArray("channels");
-        createGuildChannelPass(guildObj, channels);
+        createGuildChannelPass(channels);
 
         JSONArray voiceStates = guildJson.getJSONArray("voice_states");
         createGuildVoiceStatePass(guildObj, voiceStates);
@@ -399,7 +397,7 @@ public class EntityBuilder
         }
     }
 
-    private void createGuildChannelPass(GuildImpl guildObj, JSONArray channels)
+    private void createGuildChannelPass(JSONArray channels)
     {
         for (int i = 0; i < channels.length(); i++)
         {
@@ -966,13 +964,13 @@ public class EntityBuilder
 
     public Message.Attachment createMessageAttachment(JSONObject jsonObject)
     {
+        final long id = jsonObject.getLong("id");
+        final String url = jsonObject.getString("url");
+        final String proxyUrl = jsonObject.getString("proxy_url");
         final int width = Helpers.optInt(jsonObject, "width", -1);
         final int height = Helpers.optInt(jsonObject, "height", -1);
         final int size = jsonObject.getInt("size");
-        final String url = jsonObject.optString("url", null);
-        final String proxyUrl = jsonObject.optString("proxy_url", null);
-        final String filename = jsonObject.getString("filename");
-        final long id = jsonObject.getLong("id");
+        final String filename = jsonObject.optString("filename");
         return new Message.Attachment(id, url, proxyUrl, filename, size, height, width, api);
     }
 
@@ -1078,9 +1076,9 @@ public class EntityBuilder
                 color, thumbnail, provider, author, video, footer, image, fields);
     }
 
-    public static MessageEmbed createMessageEmbed(String url, String title, String description, EmbedType type, OffsetDateTime timestamp,
-                                           Color color, Thumbnail thumbnail, Provider siteProvider, AuthorInfo author,
-                                           VideoInfo videoInfo, Footer footer, ImageInfo image, List<Field> fields)
+    public static MessageEmbed createMessageEmbed(@Nullable String url, @Nullable String title, @Nullable String description, EmbedType type, @Nullable OffsetDateTime timestamp,
+                                                  @Nullable Color color, @Nullable Thumbnail thumbnail, @Nullable Provider siteProvider, @Nullable AuthorInfo author,
+                                                  @Nullable VideoInfo videoInfo, @Nullable Footer footer, @Nullable ImageInfo image, @Nullable List<Field> fields)
     {
         return new MessageEmbed(url, title, description, type, timestamp,
             color, thumbnail, siteProvider, author, videoInfo, footer, image, fields);
@@ -1159,7 +1157,17 @@ public class EntityBuilder
             owner = createFakeUser(ownerJson, false);
         }
 
-        return new WebhookImpl(channel, id).setToken(token).setOwner(channel.getGuild().getMember(owner)).setUser(defaultUser);
+        final Guild guild = channel.getGuild();
+        Member ownerMember = guild.getMember(owner);
+        if (ownerMember == null)
+        {
+            LOG.warn("Creating a Webhook entity with owner that is not in the guild, defaulting to guild owner! GuildId: {} Owner: {}", guild.getId(), owner);
+            ownerMember = guild.getOwner();
+        }
+        return new WebhookImpl(channel, id)
+                    .setToken(token)
+                    .setOwner(ownerMember)
+                    .setUser(defaultUser);
     }
 
     public Relationship createRelationship(JSONObject relationshipJson)

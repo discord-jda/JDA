@@ -16,4 +16,7 @@
 /**
  * Events for {@link net.dv8tion.jda.core.entities.Category Categories}
  */
+@ParametersAreNonnullByDefault
 package net.dv8tion.jda.core.events.channel.category;
+
+import javax.annotation.ParametersAreNonnullByDefault;

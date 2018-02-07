@@ -16,6 +16,9 @@
 package net.dv8tion.jda.core.managers.impl;
 
 import com.sun.jna.Platform;
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.audio.AudioConnection;
@@ -35,8 +38,11 @@ import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.NativeUtil;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
 
+@ParametersAreNonnullByDefault
+@DefaultAnnotationForParameters(NonNull.class)
 public class AudioManagerImpl implements AudioManager
 {
     public static final ThreadGroup AUDIO_THREADS = new ThreadGroup("jda-audio");
@@ -153,12 +159,14 @@ public class AudioManagerImpl implements AudioManager
         }
     }
 
+    @NonNull
     @Override
     public JDA getJDA()
     {
         return api;
     }
 
+    @NonNull
     @Override
     public Guild getGuild()
     {
@@ -171,12 +179,14 @@ public class AudioManagerImpl implements AudioManager
         return queuedAudioConnection != null;
     }
 
+    @Nullable
     @Override
     public VoiceChannel getQueuedAudioConnection()
     {
         return queuedAudioConnection;
     }
 
+    @Nullable
     @Override
     public VoiceChannel getConnectedChannel()
     {
@@ -202,13 +212,14 @@ public class AudioManagerImpl implements AudioManager
     }
 
     @Override
-    public void setSendingHandler(AudioSendHandler handler)
+    public void setSendingHandler(@Nullable AudioSendHandler handler)
     {
         sendHandler = handler;
         if (audioConnection != null)
             audioConnection.setSendingHandler(handler);
     }
 
+    @Nullable
     @Override
     public AudioSendHandler getSendingHandler()
     {
@@ -216,13 +227,14 @@ public class AudioManagerImpl implements AudioManager
     }
 
     @Override
-    public void setReceivingHandler(AudioReceiveHandler handler)
+    public void setReceivingHandler(@Nullable AudioReceiveHandler handler)
     {
         receiveHandler = handler;
         if (audioConnection != null)
             audioConnection.setReceivingHandler(handler);
     }
 
+    @Nullable
     @Override
     public AudioReceiveHandler getReceiveHandler()
     {
@@ -230,17 +242,19 @@ public class AudioManagerImpl implements AudioManager
     }
 
     @Override
-    public void setConnectionListener(ConnectionListener listener)
+    public void setConnectionListener(@Nullable ConnectionListener listener)
     {
         this.connectionListener.setListener(listener);
     }
 
+    @Nullable
     @Override
     public ConnectionListener getConnectionListener()
     {
         return connectionListener.getListener();
     }
 
+    @NonNull
     @Override
     public ConnectionStatus getConnectionStatus()
     {
@@ -297,12 +311,13 @@ public class AudioManagerImpl implements AudioManager
         return selfDeafened;
     }
 
+    @NonNull
     public ConnectionListener getListenerProxy()
     {
         return connectionListener;
     }
 
-    public void setAudioConnection(AudioConnection audioConnection)
+    public void setAudioConnection(@Nullable AudioConnection audioConnection)
     {
         this.audioConnection = audioConnection;
         if (audioConnection == null)
@@ -321,12 +336,12 @@ public class AudioManagerImpl implements AudioManager
         this.queuedAudioConnection = queuedChannel;
     }
 
-    public void setQueuedAudioConnection(VoiceChannel channel)
+    public void setQueuedAudioConnection(@Nullable VoiceChannel channel)
     {
         queuedAudioConnection = channel;
     }
 
-    public void setConnectedChannel(VoiceChannel channel)
+    public void setConnectedChannel(@Nullable VoiceChannel channel)
     {
         if (audioConnection != null)
             audioConnection.setChannel(channel);

@@ -16,12 +16,12 @@
 
 package net.dv8tion.jda.core.requests.restaction.order;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.entities.Category;
 import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.utils.Checks;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 
 /**
@@ -72,7 +72,7 @@ public class CategoryOrderAction<T extends Channel> extends ChannelOrderAction<T
      * @return The {@link net.dv8tion.jda.core.entities.Category Category}
      *         of this CategoryOrderAction.
      */
-    @Nonnull
+    @NonNull
     public Category getCategory()
     {
         return category;
@@ -86,7 +86,7 @@ public class CategoryOrderAction<T extends Channel> extends ChannelOrderAction<T
         Checks.check(orderList.contains(entity), "Provided channel is not in the list of orderable channels!");
     }
 
-    @Nonnull
+    @NonNull
     private static Collection<? extends Channel> getChannelsOfType(Category category, ChannelType type)
     {
         Checks.notNull(type, "ChannelType");

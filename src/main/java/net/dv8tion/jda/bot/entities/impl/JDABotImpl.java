@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.bot.entities.impl;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.bot.JDABot;
 import net.dv8tion.jda.bot.entities.ApplicationInfo;
 import net.dv8tion.jda.bot.sharding.ShardManager;
@@ -53,7 +54,7 @@ public class JDABotImpl implements JDABot
         return new RestAction<ApplicationInfo>(getJDA(), route)
         {
             @Override
-            protected void handleResponse(Response response, Request<ApplicationInfo> request)
+            protected void handleResponse(@NonNull Response response, @NonNull Request<ApplicationInfo> request)
             {
                 if (!response.isOk())
                 {

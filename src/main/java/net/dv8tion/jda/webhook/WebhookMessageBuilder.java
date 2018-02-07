@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.webhook;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
@@ -48,7 +50,7 @@ public class WebhookMessageBuilder
      *         The {@link net.dv8tion.jda.core.entities.Message Message} used
      *         to set initial values of the builder
      */
-    public WebhookMessageBuilder(Message message)
+    public WebhookMessageBuilder(@Nullable Message message)
     {
         if (message != null)
         {
@@ -79,6 +81,7 @@ public class WebhookMessageBuilder
      *
      * @return The current WebhookMessageBuilder for chaining convenience
      */
+    @NonNull
     public WebhookMessageBuilder reset()
     {
         content.setLength(0);
@@ -96,6 +99,7 @@ public class WebhookMessageBuilder
      *
      * @return The current WebhookMessageBuilder for chaining convenience
      */
+    @NonNull
     public WebhookMessageBuilder resetEmbeds()
     {
         this.embeds.clear();
@@ -117,6 +121,7 @@ public class WebhookMessageBuilder
      *
      * @return The current WebhookMessageBuilder for chaining convenience
      */
+    @NonNull
     public WebhookMessageBuilder addEmbeds(MessageEmbed... embeds)
     {
         Checks.notNull(embeds, "Embeds");
@@ -145,6 +150,7 @@ public class WebhookMessageBuilder
      *
      * @return The current WebhookMessageBuilder for chaining convenience
      */
+    @NonNull
     public WebhookMessageBuilder addEmbeds(Collection<MessageEmbed> embeds)
     {
         Checks.notNull(embeds, "Embeds");
@@ -170,7 +176,8 @@ public class WebhookMessageBuilder
      *
      * @return The current WebhookMessageBuilder for chaining convenience
      */
-    public WebhookMessageBuilder setContent(String content)
+    @NonNull
+    public WebhookMessageBuilder setContent(@Nullable String content)
     {
         Checks.check(content == null || content.length() <= 2000,
             "Content may not exceed 2000 characters!");
@@ -193,6 +200,7 @@ public class WebhookMessageBuilder
      *
      * @return The current WebhookMessageBuilder for chaining convenience
      */
+    @NonNull
     public WebhookMessageBuilder append(String content)
     {
         Checks.notNull(content, "Content");
@@ -211,7 +219,8 @@ public class WebhookMessageBuilder
      *
      * @return The current WebhookMessageBuilder for chaining convenience
      */
-    public WebhookMessageBuilder setUsername(String username)
+    @NonNull
+    public WebhookMessageBuilder setUsername(@Nullable String username)
     {
         this.username = Helpers.isBlank(username) ? null : username;
         return this;
@@ -226,7 +235,8 @@ public class WebhookMessageBuilder
      *
      * @return The current WebhookMessageBuilder for chaining convenience
      */
-    public WebhookMessageBuilder setAvatarUrl(String avatarUrl)
+    @NonNull
+    public WebhookMessageBuilder setAvatarUrl(@Nullable String avatarUrl)
     {
         this.avatarUrl = Helpers.isBlank(avatarUrl) ? null : avatarUrl;
         return this;
@@ -244,7 +254,8 @@ public class WebhookMessageBuilder
      *
      * @return The current WebhookMessageBuilder for chaining convenience
      */
-    public WebhookMessageBuilder setFile(File file)
+    @NonNull
+    public WebhookMessageBuilder setFile(@Nullable File file)
     {
         return setFile(file, file == null ? null : file.getName());
     }
@@ -263,7 +274,8 @@ public class WebhookMessageBuilder
      *
      * @return The current WebhookMessageBuilder for chaining convenience
      */
-    public WebhookMessageBuilder setFile(File file, String fileName)
+    @NonNull
+    public WebhookMessageBuilder setFile(@Nullable File file, @Nullable String fileName)
     {
         if (file == null)
         {
@@ -299,7 +311,8 @@ public class WebhookMessageBuilder
      *
      * @return The current WebhookMessageBuilder for chaining convenience
      */
-    public WebhookMessageBuilder setFile(byte[] data, String fileName)
+    @NonNull
+    public WebhookMessageBuilder setFile(@Nullable byte[] data, @Nullable String fileName)
     {
         if (data == null)
         {
@@ -324,7 +337,8 @@ public class WebhookMessageBuilder
      *
      * @return The current WebhookMessageBuilder for chaining convenience
      */
-    public WebhookMessageBuilder setFile(InputStream data, String fileName)
+    @NonNull
+    public WebhookMessageBuilder setFile(@Nullable InputStream data, @Nullable String fileName)
     {
         Checks.check(data == null || !Helpers.isBlank(fileName),
             "The provided file name must not be null, empty or blank!");
@@ -341,6 +355,7 @@ public class WebhookMessageBuilder
      *
      * @return The current WebhookMessageBuilder for chaining convenience
      */
+    @NonNull
     public WebhookMessageBuilder setTTS(boolean tts)
     {
         isTTS = tts;
@@ -356,6 +371,7 @@ public class WebhookMessageBuilder
      *
      * @return The resulting {@link net.dv8tion.jda.webhook.WebhookMessage WebhookMessage}
      */
+    @NonNull
     public WebhookMessage build()
     {
         if (isEmpty())

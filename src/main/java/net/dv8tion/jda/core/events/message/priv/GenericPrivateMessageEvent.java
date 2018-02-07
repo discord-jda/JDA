@@ -15,8 +15,8 @@
  */
 package net.dv8tion.jda.core.events.message.priv;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.events.Event;
 
@@ -39,11 +39,13 @@ public abstract class GenericPrivateMessageEvent extends Event
         this.channel = channel;
     }
 
+    @NonNull
     public PrivateChannel getChannel()
     {
         return channel;
     }
 
+    @NonNull
     public String getMessageId()
     {
         return Long.toUnsignedString(messageId);

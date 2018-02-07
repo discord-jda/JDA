@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.managers;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
@@ -31,7 +33,6 @@ import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
-import javax.annotation.CheckReturnValue;
 import java.awt.Color;
 
 /**
@@ -77,6 +78,7 @@ public class RoleManagerUpdatable
      *
      * @return the corresponding JDA instance
      */
+    @NonNull
     public JDA getJDA()
     {
         return role.getJDA();
@@ -89,6 +91,7 @@ public class RoleManagerUpdatable
      *
      * @return The parent {@link net.dv8tion.jda.core.entities.Guild Guild}
      */
+    @NonNull
     public Guild getGuild()
     {
         return role.getGuild();
@@ -100,6 +103,7 @@ public class RoleManagerUpdatable
      *
      * @return The target Role
      */
+    @NonNull
     public Role getRole()
     {
         return role;
@@ -118,6 +122,7 @@ public class RoleManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.RoleField RoleField} - Type: {@code String}
      */
+    @NonNull
     public RoleField<String> getNameField()
     {
         return name;
@@ -133,6 +138,7 @@ public class RoleManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.RoleField RoleField} - Type: {@link java.awt.Color Color}
      */
+    @NonNull
     public RoleField<Color> getColorField()
     {
         return color;
@@ -151,6 +157,7 @@ public class RoleManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.RoleField RoleField} - Type: {@code Boolean}
      */
+    @NonNull
     public RoleField<Boolean> getHoistedField()
     {
         return hoisted;
@@ -169,6 +176,7 @@ public class RoleManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.RoleField RoleField} - Type: {@code Boolean}
      */
+    @NonNull
     public RoleField<Boolean> getMentionableField()
     {
         return mentionable;
@@ -187,6 +195,7 @@ public class RoleManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.PermissionField PermissionField}
      */
+    @NonNull
     public PermissionField getPermissionField()
     {
         return permissions;
@@ -236,6 +245,7 @@ public class RoleManagerUpdatable
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Applies all changes that have been made in a single api-call.
      */
+    @NonNull
     @CheckReturnValue
     public AuditableRestAction<Void> update()
     {

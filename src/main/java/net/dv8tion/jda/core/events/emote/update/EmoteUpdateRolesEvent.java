@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.events.emote.update;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Role;
@@ -35,11 +36,13 @@ public class EmoteUpdateRolesEvent extends GenericEmoteUpdateEvent
         this.oldRoles = Collections.unmodifiableList(new LinkedList<>(oldRoles));
     }
 
+    @NonNull
     public List<Role> getOldRoles()
     {
         return oldRoles;
     }
 
+    @NonNull
     public List<Role> getNewRoles()
     {
         return emote.getRoles();

@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.core.managers.impl;
 
+import edu.umd.cs.findbugs.annotations.DefaultAnnotationForParameters;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.WebSocketCode;
@@ -25,13 +28,16 @@ import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
+import javax.annotation.ParametersAreNullableByDefault;
+
 /**
  * The Presence associated with the provided JDA instance
  * <br><b>Note that this does not automatically handle the 5/60 second rate limit!</b>
  *
  * @since  3.0
- * @author Florian Spieß
  */
+@ParametersAreNullableByDefault
+@DefaultAnnotationForParameters(Nullable.class)
 public class PresenceImpl implements Presence
 {
 
@@ -46,7 +52,7 @@ public class PresenceImpl implements Presence
      * @param jda
      *        The not-null JDAImpl instance to use
      */
-    public PresenceImpl(JDAImpl jda)
+    public PresenceImpl(@NonNull JDAImpl jda)
     {
         this.api = jda;
     }
@@ -55,18 +61,21 @@ public class PresenceImpl implements Presence
     /* -- Public Getters -- */
 
 
+    @NonNull
     @Override
     public JDA getJDA()
     {
         return api;
     }
 
+    @Nullable
     @Override
     public OnlineStatus getStatus()
     {
         return status;
     }
 
+    @Nullable
     @Override
     public Game getGame()
     {
@@ -148,7 +157,7 @@ public class PresenceImpl implements Presence
     /* -- Impl Setters -- */
 
 
-    public PresenceImpl setCacheStatus(OnlineStatus status)
+    public PresenceImpl setCacheStatus(@NonNull OnlineStatus status)
     {
         if (status == null)
             throw new NullPointerException("Null OnlineStatus is not allowed.");
@@ -201,7 +210,7 @@ public class PresenceImpl implements Presence
     /* -- Terminal -- */
 
 
-    protected void update(JSONObject data)
+    protected void update(@NonNull JSONObject data)
     {
         api.getClient().send(new JSONObject()
             .put("d", data)

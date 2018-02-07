@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.managers;
 
+import edu.umd.cs.findbugs.annotations.CheckReturnValue;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.Region;
@@ -25,6 +27,7 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.core.managers.fields.Field;
 import net.dv8tion.jda.core.managers.fields.GuildField;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
@@ -32,8 +35,6 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
-
-import javax.annotation.CheckReturnValue;
 
 /**
  * An {@link #update() updatable} manager that allows
@@ -84,6 +85,7 @@ public class GuildManagerUpdatable
      *
      * @return the corresponding JDA instance
      */
+    @NonNull
     public JDA getJDA()
     {
         return guild.getJDA();
@@ -95,6 +97,7 @@ public class GuildManagerUpdatable
      *
      * @return The {@link net.dv8tion.jda.core.entities.Guild Guild} of this Manager
      */
+    @NonNull
     public Guild getGuild()
     {
         return guild;
@@ -116,6 +119,7 @@ public class GuildManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.GuildField GuildField} - Type: {@code String}
      */
+    @NonNull
     public GuildField<String> getNameField()
     {
         checkAvailable();
@@ -145,6 +149,7 @@ public class GuildManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.GuildField GuildField} - Type: {@link net.dv8tion.jda.core.Region Region}
      */
+    @NonNull
     public GuildField<Region> getRegionField()
     {
         checkAvailable();
@@ -165,6 +170,7 @@ public class GuildManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.GuildField GuildField} - Type: {@link net.dv8tion.jda.core.entities.Icon Icon}
      */
+    @NonNull
     public GuildField<Icon> getIconField()
     {
         checkAvailable();
@@ -185,6 +191,7 @@ public class GuildManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.GuildField GuildField} - Type: {@link net.dv8tion.jda.core.entities.Icon Icon}
      */
+    @NonNull
     public GuildField<Icon> getSplashField()
     {
         checkAvailable();
@@ -209,6 +216,7 @@ public class GuildManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.GuildField GuildField} - Type: {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
      */
+    @NonNull
     public GuildField<VoiceChannel> getAfkChannelField()
     {
         checkAvailable();
@@ -233,6 +241,7 @@ public class GuildManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.GuildField GuildField} - Type: {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      */
+    @NonNull
     public GuildField<TextChannel> getSystemChannelField()
     {
         checkAvailable();
@@ -257,6 +266,7 @@ public class GuildManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.GuildField GuildField} - Type: {@link net.dv8tion.jda.core.entities.Guild.Timeout Guild.Timeout}
      */
+    @NonNull
     public GuildField<Guild.Timeout> getAfkTimeoutField()
     {
         checkAvailable();
@@ -281,6 +291,7 @@ public class GuildManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.GuildField GuildField} - Type: {@link net.dv8tion.jda.core.entities.Guild.VerificationLevel Guild.VerificationLevel}
      */
+    @NonNull
     public GuildField<Guild.VerificationLevel> getVerificationLevelField()
     {
         checkAvailable();
@@ -305,6 +316,7 @@ public class GuildManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.GuildField GuildField} - Type: {@link net.dv8tion.jda.core.entities.Guild.NotificationLevel Guild.NotificationLevel}
      */
+    @NonNull
     public GuildField<Guild.NotificationLevel> getDefaultNotificationLevelField()
     {
         checkAvailable();
@@ -329,6 +341,7 @@ public class GuildManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.GuildField GuildField} - Type: {@link net.dv8tion.jda.core.entities.Guild.MFALevel Guild.MFALevel}
      */
+    @NonNull
     public GuildField<Guild.MFALevel> getRequiredMFALevelField()
     {
         checkAvailable();
@@ -352,6 +365,7 @@ public class GuildManagerUpdatable
      *
      * @return {@link net.dv8tion.jda.core.managers.fields.GuildField GuildField} - Type: {@link net.dv8tion.jda.core.entities.Guild.ExplicitContentLevel Guild.ExplicitContentLevel}
      */
+    @NonNull
     public GuildField<Guild.ExplicitContentLevel> getExplicitContentLevelField()
     {
         checkAvailable();
@@ -404,6 +418,7 @@ public class GuildManagerUpdatable
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>Applies all changes that have been made in a single api-call.
      */
+    @NonNull
     @CheckReturnValue
     public AuditableRestAction<Void> update()
     {
@@ -501,16 +516,10 @@ public class GuildManagerUpdatable
             }
         };
 
-        this.icon = new GuildField<Icon>(this, null)
+        this.icon = new GuildField<Icon>(this, Field.unsupported("Cannot easily provide the original Icon. Use Guild#getIconUrl() and download it yourself."))
         {
             @Override
             public void checkValue(Icon value) { }
-
-            @Override
-            public Icon getOriginalValue()
-            {
-                throw new UnsupportedOperationException("Cannot easily provide the original Icon. Use Guild#getIconUrl() and download it yourself.");
-            }
 
             @Override
             public boolean shouldUpdate()
@@ -519,16 +528,10 @@ public class GuildManagerUpdatable
             }
         };
 
-        this.splash = new GuildField<Icon>(this, null)
+        this.splash = new GuildField<Icon>(this, Field.unsupported("Cannot easily provide the original Splash. Use Guild#getSplashUrl() and download it yourself."))
         {
             @Override
             public void checkValue(Icon value) { }
-
-            @Override
-            public Icon getOriginalValue()
-            {
-                throw new UnsupportedOperationException("Cannot easily provide the original Splash. Use Guild#getSplashUrl() and download it yourself.");
-            }
 
             @Override
             public boolean shouldUpdate()

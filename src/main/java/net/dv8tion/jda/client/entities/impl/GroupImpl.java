@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.client.entities.impl;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.client.entities.Call;
 import net.dv8tion.jda.client.entities.Friend;
@@ -67,12 +69,14 @@ public class GroupImpl implements Group
         return lastMessageId > 0;
     }
 
+    @NonNull
     @Override
     public String getName()
     {
-        return name;
+        return name == null ? "" : name;
     }
 
+    @NonNull
     @Override
     public ChannelType getType()
     {
@@ -157,6 +161,7 @@ public class GroupImpl implements Group
         return null;
     }
 
+    @NonNull
     @Override
     public JDA getJDA()
     {
@@ -170,7 +175,7 @@ public class GroupImpl implements Group
     }
 
     @Override
-    public boolean equals(Object o)
+    public boolean equals(@Nullable Object o)
     {
         if (!(o instanceof GroupImpl))
             return false;
@@ -190,7 +195,7 @@ public class GroupImpl implements Group
         return userCache.getMap();
     }
 
-    public GroupImpl setCurrentCall(Call call)
+    public GroupImpl setCurrentCall(@Nullable Call call)
     {
         this.currentCall = call;
         return this;
@@ -208,7 +213,7 @@ public class GroupImpl implements Group
         return this;
     }
 
-    public GroupImpl setIconId(String iconId)
+    public GroupImpl setIconId(@Nullable String iconId)
     {
         this.iconId = iconId;
         return this;
@@ -218,12 +223,6 @@ public class GroupImpl implements Group
     {
         this.lastMessageId = lastMessageId;
         return this;
-    }
-
-    private void checkNull(Object obj, String name)
-    {
-        if (obj == null)
-            throw new NullPointerException("Provided " + name + " was null!");
     }
 
     @Override
