@@ -24,7 +24,6 @@ import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.impl.EmoteImpl;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.impl.ManagerBase;
-import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.RequestBody;
@@ -250,6 +249,6 @@ public class EmoteManager extends ManagerBase
         if (shouldUpdate(ROLES))
             object.put("roles", roles);
         reset();
-        return RequestBody.create(Requester.MEDIA_TYPE_JSON, object.toString());
+        return getRequestBody(object);
     }
 }

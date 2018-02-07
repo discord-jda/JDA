@@ -23,7 +23,6 @@ import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.impl.ManagerBase;
-import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.RequestBody;
@@ -410,6 +409,6 @@ public class ChannelManager extends ManagerBase
             frame.put("parent_id", opt(parent));
 
         reset();
-        return RequestBody.create(Requester.MEDIA_TYPE_JSON, frame.toString());
+        return getRequestBody(frame);
     }
 }

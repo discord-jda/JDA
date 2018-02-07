@@ -21,7 +21,6 @@ import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.entities.SelfUser;
 import net.dv8tion.jda.core.managers.impl.ManagerBase;
 import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
@@ -343,7 +342,7 @@ public class AccountManager extends ManagerBase
         }
 
         reset();
-        return RequestBody.create(Requester.MEDIA_TYPE_JSON, body.toString());
+        return getRequestBody(body);
     }
 
     @Override

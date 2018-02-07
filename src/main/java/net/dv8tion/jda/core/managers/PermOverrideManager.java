@@ -22,7 +22,6 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.PermissionOverride;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.impl.ManagerBase;
-import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.RequestBody;
@@ -368,13 +367,12 @@ public class PermOverrideManager extends ManagerBase
         if (!getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
             throw new InsufficientPermissionException(Permission.MANAGE_PERMISSIONS);
         String targetId = override.isMemberOverride() ? override.getMember().getUser().getId() : override.getRole().getId();
-        RequestBody data = RequestBody.create(
-            Requester.MEDIA_TYPE_JSON,
+        RequestBody data = getRequestBody(
             new JSONObject()
                 .put("id", targetId)
                 .put("type", override.isMemberOverride() ? "member" : "role")
                 .put("allow", shouldUpdate(ALLOWED) ? this.allowed : JSONObject.NULL)
-                .put("deny",  shouldUpdate(DENIED)  ? this.denied  : JSONObject.NULL).toString());
+                .put("deny",  shouldUpdate(DENIED)  ? this.denied  : JSONObject.NULL));
         reset();
         return data;
     }

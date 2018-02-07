@@ -25,7 +25,6 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.impl.ManagerBase;
-import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.RequestBody;
@@ -454,6 +453,6 @@ public class GuildManager extends ManagerBase
             body.put("explicit_content_filter", explicitContentLevel);
 
         reset(); //now that we've built our JSON object, reset the manager back to the non-modified state
-        return RequestBody.create(Requester.MEDIA_TYPE_JSON, body.toString());
+        return getRequestBody(body);
     }
 }

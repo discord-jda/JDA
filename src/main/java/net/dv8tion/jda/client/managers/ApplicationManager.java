@@ -20,7 +20,6 @@ import net.dv8tion.jda.client.entities.Application;
 import net.dv8tion.jda.client.entities.impl.ApplicationImpl;
 import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.managers.impl.ManagerBase;
-import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.RequestBody;
@@ -318,6 +317,6 @@ public class ApplicationManager extends ManagerBase
             : application.getRedirectUris());
 
         reset();
-        return RequestBody.create(Requester.MEDIA_TYPE_JSON, body.toString());
+        return getRequestBody(body);
     }
 }

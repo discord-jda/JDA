@@ -23,7 +23,6 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.Webhook;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.impl.ManagerBase;
-import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.RequestBody;
@@ -255,6 +254,6 @@ public class WebhookManager extends ManagerBase
         if (shouldUpdate(AVATAR))
             data.put("avatar", avatar == null ? JSONObject.NULL : avatar.getEncoding());
 
-        return RequestBody.create(Requester.MEDIA_TYPE_JSON, data.toString());
+        return getRequestBody(data);
     }
 }
