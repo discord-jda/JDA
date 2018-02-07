@@ -191,7 +191,6 @@ public class MessageActivity
 
         /**
          * The icon id of this {@link net.dv8tion.jda.core.entities.MessageActivity.Application}.
-         * <br> You can get it as an image by formatting this link {@code https://cdn.discordapp.com/game-assets/{id}/{icon_id}.webp?size=256}
          *
          * @return the applications icon id.
          */
@@ -201,14 +200,33 @@ public class MessageActivity
         }
 
         /**
+         * The url of the icon image for this application.
+         *
+         * @return the url of the icon
+         */
+        public String getIconUrl()
+        {
+            return "https://cdn.discordapp.com/game-assets/" + id + "/" + iconId + ".png";
+        }
+
+        /**
          * The cover aka splash id of this {@link net.dv8tion.jda.core.entities.MessageActivity.Application}.
-         * <br> You can get it as an image by formatting this link {@code https://cdn.discordapp.com/game-assets/{id}/{cover_id}.webp?size=256}
          *
          * @return the applications cover image/id.
          */
         public String getCoverId()
         {
             return coverId;
+        }
+
+        /**
+         * The url of the cover image for this application.
+         *
+         * @return the url of the cover/splash
+         */
+        public String getCoverUrl()
+        {
+            return "https://cdn.discordapp.com/game-assets/" + id + "/" + coverId + ".png";
         }
 
         /**
