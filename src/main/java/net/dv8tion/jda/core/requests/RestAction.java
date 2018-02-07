@@ -313,12 +313,12 @@ public abstract class RestAction<T>
         Checks.notNull(route, "Route");
         RequestBody data = finalizeData();
         CaseInsensitiveMap<String, String> headers = finalizeHeaders();
-        BooleanSupplier checks = finalizeChecks();
+        BooleanSupplier finisher = getFinisher();
         if (success == null)
             success = DEFAULT_SUCCESS;
         if (failure == null)
             failure = DEFAULT_FAILURE;
-        api.getRequester().request(new Request<>(this, success, failure, checks, true, data, rawData, route, headers));
+        api.getRequester().request(new Request<>(this, success, failure, finisher, true, data, rawData, route, headers));
     }
 
     /**
@@ -353,8 +353,8 @@ public abstract class RestAction<T>
         Checks.notNull(route, "Route");
         RequestBody data = finalizeData();
         CaseInsensitiveMap<String, String> headers = finalizeHeaders();
-        BooleanSupplier checks = finalizeChecks();
-        return new RestFuture<>(this, shouldQueue, checks, data, rawData, route, headers);
+        BooleanSupplier finisher = getFinisher();
+        return new RestFuture<>(this, shouldQueue, finisher, data, rawData, route, headers);
     }
 
     /**
@@ -704,7 +704,7 @@ public abstract class RestAction<T>
     protected RequestBody finalizeData() { return data; }
     protected Route.CompiledRoute finalizeRoute() { return route; }
     protected CaseInsensitiveMap<String, String> finalizeHeaders() { return null; }
-    protected BooleanSupplier finalizeChecks() { return checks; }
+    protected BooleanSupplier finalizeChecks() { return null; }
 
     protected RequestBody getRequestBody(JSONObject object)
     {
@@ -718,6 +718,13 @@ public abstract class RestAction<T>
         this.rawData = array;
 
         return array == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, array.toString());
+    }
+
+    private CheckWrapper getFinisher()
+    {
+        BooleanSupplier pre = finalizeChecks();
+        BooleanSupplier wrapped = this.checks;
+        return (pre != null || wrapped != null) ? new CheckWrapper(wrapped, pre) : CheckWrapper.EMPTY;
     }
 
     protected abstract void handleResponse(Response response, Request<T> request);
@@ -769,7 +776,8 @@ public abstract class RestAction<T>
         @Override
         protected BooleanSupplier finalizeChecks()
         {
-            return new CheckWrapper(super.finalizeChecks(), () -> hasPermission(Permission.MESSAGE_WRITE));
+            // throw exception, if missing perms
+            return () -> hasPermission(Permission.MESSAGE_WRITE);
         }
      */
     protected static class CheckWrapper implements BooleanSupplier
@@ -790,12 +798,12 @@ public abstract class RestAction<T>
 
         public boolean pre()
         {
-            return pre != null && pre.getAsBoolean();
+            return pre == null || pre.getAsBoolean();
         }
 
         public boolean test()
         {
-            return wrapped != null && wrapped.getAsBoolean();
+            return wrapped == null || wrapped.getAsBoolean();
         }
 
         @Override
