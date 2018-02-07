@@ -206,7 +206,7 @@ public class MessageActivity
          */
         public String getIconUrl()
         {
-            return "https://cdn.discordapp.com/game-assets/" + id + "/" + iconId + ".png";
+            return "https://cdn.discordapp.com/application/" + id + "/" + iconId + ".png";
         }
 
         /**
@@ -226,7 +226,7 @@ public class MessageActivity
          */
         public String getCoverUrl()
         {
-            return "https://cdn.discordapp.com/game-assets/" + id + "/" + coverId + ".png";
+            return "https://cdn.discordapp.com/application/" + id + "/" + coverId + ".png";
         }
 
         /**
