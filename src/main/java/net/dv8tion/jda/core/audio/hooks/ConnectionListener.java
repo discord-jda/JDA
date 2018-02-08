@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.audio.hooks;
 
+import net.dv8tion.jda.core.audio.AudioConnection;
 import net.dv8tion.jda.core.entities.User;
 
 /**
@@ -61,8 +62,8 @@ public interface ConnectionListener
      *
      * @param  user
      *         Never-null {@link net.dv8tion.jda.core.entities.User User} who's talking status has changed.
-     * @param  speaking
-     *         If true, the user has begun transmitting audio.
+     * @param  speakingFlag
+     *         If the flag is SPEAKING, the user has begun transmitting audio. If the flag is SOUNDSHARE, the user has begun transmitting their system sound.
      */
-    void onUserSpeaking(User user, boolean speaking);
+    void onUserSpeaking(User user, AudioConnection.SpeakingFlag speakingFlag);
 }

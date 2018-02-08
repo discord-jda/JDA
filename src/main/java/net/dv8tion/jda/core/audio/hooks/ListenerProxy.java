@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.audio.hooks;
 
+import net.dv8tion.jda.core.audio.AudioConnection;
 import net.dv8tion.jda.core.entities.User;
 
 public class ListenerProxy implements ConnectionListener
@@ -62,7 +63,7 @@ public class ListenerProxy implements ConnectionListener
     }
 
     @Override
-    public void onUserSpeaking(User user, boolean speaking)
+    public void onUserSpeaking(User user, AudioConnection.SpeakingFlag speakingFlag)
     {
         synchronized (listenerLock)
         {
@@ -71,7 +72,7 @@ public class ListenerProxy implements ConnectionListener
 
             try
             {
-                listener.onUserSpeaking(user, speaking);
+                listener.onUserSpeaking(user, speakingFlag);
             }
             catch (Throwable t)
             {
