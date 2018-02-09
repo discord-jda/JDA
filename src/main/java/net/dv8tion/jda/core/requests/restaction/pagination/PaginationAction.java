@@ -30,6 +30,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -129,6 +130,12 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
         this.maxLimit = 0;
         this.minLimit = 0;
         this.limit = new AtomicInteger(0);
+    }
+
+    @Override
+    public M setCheck(BooleanSupplier checks)
+    {
+        return (M) super.setCheck(checks);
     }
 
     /**

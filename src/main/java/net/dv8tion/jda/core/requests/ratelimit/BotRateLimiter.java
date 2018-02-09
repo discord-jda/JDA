@@ -206,10 +206,10 @@ public class BotRateLimiter extends RateLimiter
     {
         final String route;
         final RateLimit rateLimit;
+        final ConcurrentLinkedQueue<Request> requests = new ConcurrentLinkedQueue<>();
         volatile long resetTime = 0;
         volatile int routeUsageRemaining = 1;    //These are default values to only allow 1 request until we have properly
         volatile int routeUsageLimit = 1;        // ratelimit information.
-        volatile ConcurrentLinkedQueue<Request> requests = new ConcurrentLinkedQueue<>();
 
         public Bucket(String route, RateLimit rateLimit)
         {
@@ -307,6 +307,8 @@ public class BotRateLimiter extends RateLimiter
                         try
                         {
                             request = it.next();
+                            if (isSkipped(it, request))
+                                continue;
                             Long retryAfter = requester.execute(request);
                             if (retryAfter != null)
                                 break;
