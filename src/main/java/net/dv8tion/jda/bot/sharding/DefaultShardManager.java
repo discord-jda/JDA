@@ -343,6 +343,11 @@ public class DefaultShardManager implements ShardManager
     }
 
     @Override
+    public void removeEventListenersProvider(IntFunction<Object> eventListenerProvider) {
+        this.listenerProviders.remove(eventListenerProvider);
+    }
+
+    @Override
     public int getShardsQueued()
     {
         return this.queue.size();
