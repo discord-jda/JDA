@@ -337,13 +337,15 @@ public class DefaultShardManager implements ShardManager
     }
 
     @Override
-    public void addEventListeners(IntFunction<Object> eventListenerProvider) {
+    public void addEventListeners(IntFunction<Object> eventListenerProvider)
+    {
         ShardManager.super.addEventListeners(eventListenerProvider);
         this.listenerProviders.add(eventListenerProvider);
     }
 
     @Override
-    public void removeEventListenerProvider(IntFunction<Object> eventListenerProvider) {
+    public void removeEventListenerProvider(IntFunction<Object> eventListenerProvider)
+    {
         this.listenerProviders.remove(eventListenerProvider);
     }
 
