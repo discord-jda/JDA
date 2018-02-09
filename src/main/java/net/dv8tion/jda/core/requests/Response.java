@@ -85,13 +85,13 @@ public class Response implements Closeable
     @Nullable
     public JSONArray getArray()
     {
-        return parseBody(JSONArray.class, stream -> new JSONArray(new JSONTokener(new InputStreamReader(stream))));
+        return parseBody(JSONArray.class, stream -> new JSONArray(getTokenizer(stream)));
     }
 
     @Nullable
     public JSONObject getObject()
     {
-        return parseBody(JSONObject.class, stream -> new JSONObject(new JSONTokener(new InputStreamReader(stream))));
+        return parseBody(JSONObject.class, stream -> new JSONObject(getTokenizer(stream)));
     }
 
     @Nullable
@@ -151,15 +151,19 @@ public class Response implements Closeable
             rawResponse.close();
     }
 
+    private JSONTokener getTokenizer(InputStream stream)
+    {
+        return new JSONTokener(new InputStreamReader(stream));
+    }
+
     @Nullable
     @SuppressWarnings("ConstantConditions")
     private <T> T parseBody(Class<T> clazz, Function<InputStream, T> parser)
     {
         if (attemptedParsing)
-            {
+        {
             if (object != null && clazz.isAssignableFrom(object.getClass()))
                 return clazz.cast(object);
-
             return null;
         }
 
@@ -170,9 +174,7 @@ public class Response implements Closeable
         try
         {
             T t = parser.apply(body);
-
             this.object = t;
-
             return t;
         }
         catch (final Exception e)
