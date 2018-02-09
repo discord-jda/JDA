@@ -31,6 +31,7 @@ import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import java.util.function.BooleanSupplier;
 
 /**
  * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.core.entities.Guild Guild}.
@@ -420,13 +421,21 @@ public class GuildManager extends ManagerBase
     }
 
     @Override
+    protected BooleanSupplier finalizeChecks()
+    {
+        return () ->
+        {
+            if (!guild.getSelfMember().hasPermission(Permission.MANAGE_SERVER))
+                throw new InsufficientPermissionException(Permission.MANAGE_SERVER);
+            return true;
+        };
+    }
+
+    @Override
     protected RequestBody finalizeData()
     {
-        //todo use checks instead
         if (!guild.isAvailable())
             throw new GuildUnavailableException();
-        if (!guild.getSelfMember().hasPermission(Permission.MANAGE_SERVER))
-            throw new InsufficientPermissionException(Permission.MANAGE_SERVER);
 
         JSONObject body = new JSONObject().put("name", guild.getName());
         if (shouldUpdate(NAME))

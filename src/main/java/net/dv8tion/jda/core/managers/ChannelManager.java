@@ -29,6 +29,7 @@ import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import java.util.function.BooleanSupplier;
 import java.util.regex.Pattern;
 
 /**
@@ -386,12 +387,19 @@ public class ChannelManager extends ManagerBase
     }
 
     @Override
+    protected BooleanSupplier finalizeChecks()
+    {
+        return () ->
+        {
+            if (!getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_CHANNEL))
+                throw new InsufficientPermissionException(Permission.MANAGE_CHANNEL);
+            return true;
+        };
+    }
+
+    @Override
     protected RequestBody finalizeData()
     {
-        //todo: use finalizeChecks instead
-        if (!getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_CHANNEL))
-            throw new InsufficientPermissionException(Permission.MANAGE_CHANNEL);
-
         JSONObject frame = new JSONObject().put("name", channel.getName());
         if (shouldUpdate(NAME))
             frame.put("name", name);

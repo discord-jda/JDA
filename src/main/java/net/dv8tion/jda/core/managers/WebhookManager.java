@@ -29,6 +29,7 @@ import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import java.util.function.BooleanSupplier;
 
 /**
  * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.core.entities.Webhook Webhook}.
@@ -241,11 +242,19 @@ public class WebhookManager extends ManagerBase
     }
 
     @Override
+    protected BooleanSupplier finalizeChecks()
+    {
+        return () ->
+        {
+            if (!getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_WEBHOOKS))
+                throw new InsufficientPermissionException(Permission.MANAGE_WEBHOOKS);
+            return true;
+        };
+    }
+
+    @Override
     protected RequestBody finalizeData()
     {
-        if (!getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_WEBHOOKS))
-            throw new InsufficientPermissionException(Permission.MANAGE_WEBHOOKS);
-
         JSONObject data = new JSONObject();
         if (shouldUpdate(NAME))
             data.put("name", name);

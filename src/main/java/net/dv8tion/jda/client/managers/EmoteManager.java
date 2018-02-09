@@ -33,6 +33,7 @@ import javax.annotation.CheckReturnValue;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BooleanSupplier;
 
 /**
  * Manager providing functionality to update one or more fields for an {@link net.dv8tion.jda.core.entities.Emote Emote}.
@@ -238,11 +239,19 @@ public class EmoteManager extends ManagerBase
     }
 
     @Override
+    protected BooleanSupplier finalizeChecks()
+    {
+        return () ->
+        {
+            if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
+                throw new InsufficientPermissionException(Permission.MANAGE_EMOTES);
+            return true;
+        };
+    }
+
+    @Override
     protected RequestBody finalizeData()
     {
-        if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
-            throw new InsufficientPermissionException(Permission.MANAGE_EMOTES);
-
         JSONObject object = new JSONObject();
         if (shouldUpdate(NAME))
             object.put("name", name);
