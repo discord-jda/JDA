@@ -18,6 +18,7 @@ package net.dv8tion.jda.bot.sharding;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.IntFunction;
+import java.util.function.IntPredicate;
 import java.util.stream.Collectors;
 
 import net.dv8tion.jda.bot.entities.ApplicationInfo;
@@ -87,7 +88,7 @@ public interface ShardManager
      *         The provider of listener(s) which will react to events.
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the provided listener provider {@code null}.
+     *         If the provided listener provider or any of the listeners or provides are {@code null}.
      */
     default void addEventListeners(final IntFunction<Object> eventListenerProvider)
     {
@@ -98,6 +99,53 @@ public interface ShardManager
             Checks.notNull(listener, "listener");
             jda.addEventListener(listener);
         });
+    }
+
+    /**
+     * Remove all listeners from shards for which id's the provided filter returns {@code true}.
+     * The filter tests shard ids, and for those ids that it returns {@code true} for, the corresponding shards will
+     * have all their listeners removed.
+     *
+     * @param shardFilter
+     *        a filter that returns {@code true} for those shard ids that should have all their listeners removed
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided shard filter is {@code null}.
+     */
+    default void removeEventListeners(final IntPredicate shardFilter)
+    {
+        Checks.notNull(shardFilter, "shard id filter");
+        this.getShardCache().forEach(jda ->
+        {
+            if (shardFilter.test(jda.getShardInfo().getShardId()))
+            {
+                jda.removeEventListener(jda.getRegisteredListeners().toArray());
+            }
+        });
+    }
+
+    /**
+     * Remove listeners provided by the listener provider from each shard.
+     * This is the complementary method to {@link ShardManager#addEventListeners(IntFunction)}.
+     *
+     * The listener provider gets a shard id applied and is expected to return a listener, that will be removed from the
+     * respective shard.
+     *
+     * <p><b>Note:</b> The produced listeners need to be the exact same objects that were added. If your listener
+     * provider is based on creating a new listener object on each call, this removal method will not work for you.
+     *
+     * @param  eventListenerProvider
+     *         The provider of listeners to remove.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided listener provider is {@code null}.
+     */
+    default void removeEventListeners(IntFunction<Object> eventListenerProvider)
+    {
+        Checks.notNull(eventListenerProvider, "event listener provider");
+        for (JDA jda : this.getShardCache()) {
+            jda.removeEventListener(eventListenerProvider.apply(jda.getShardInfo().getShardId()));
+        }
     }
 
     /**
