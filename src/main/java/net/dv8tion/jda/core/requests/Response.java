@@ -151,12 +151,17 @@ public class Response implements Closeable
             rawResponse.close();
     }
 
-    @SuppressWarnings("ConstantConditions")
     @Nullable
+    @SuppressWarnings("ConstantConditions")
     private <T> T parseBody(Class<T> clazz, Function<InputStream, T> parser)
     {
-        if (attemptedParsing && object != null && clazz.isAssignableFrom(object.getClass()))
-            return clazz.cast(object);
+        if (attemptedParsing)
+            {
+            if (object != null && clazz.isAssignableFrom(object.getClass()))
+                return clazz.cast(object);
+
+            return null;
+        }
 
         attemptedParsing = true;
         if (body == null || rawResponse == null || rawResponse.body().contentLength() == 0)
