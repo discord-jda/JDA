@@ -20,9 +20,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import javax.annotation.Nullable;
 import java.io.*;
-import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Response implements Closeable
@@ -81,19 +82,28 @@ public class Response implements Closeable
         this(response, response.code(), response.message(), retryAfter, cfRays);
     }
 
+    @Nullable
     public JSONArray getArray()
     {
-        return parseObject() instanceof JSONArray ? (JSONArray) this.object : null;
+        return parseBody(JSONArray.class, stream -> new JSONArray(new JSONTokener(new InputStreamReader(stream))));
     }
 
+    @Nullable
     public JSONObject getObject()
     {
-        return parseObject() instanceof JSONObject ? (JSONObject) this.object : null;
+        return parseBody(JSONObject.class, stream -> new JSONObject(new JSONTokener(new InputStreamReader(stream))));
     }
 
+    @Nullable
     public String getString()
     {
-        return Objects.toString(parseObject());
+        return parseBody(String.class, stream -> new BufferedReader(new InputStreamReader(stream)).lines().collect(Collectors.joining()));
+    }
+
+    @Nullable
+    public <T> T get(Class<T> clazz, Function<InputStream, T> parser)
+    {
+        return parseBody(clazz, parser);
     }
 
     public okhttp3.Response getRawResponse()
@@ -141,35 +151,24 @@ public class Response implements Closeable
             rawResponse.close();
     }
 
-    private Object parseObject()
+    @SuppressWarnings("ConstantConditions")
+    @Nullable
+    private <T> T parseBody(Class<T> clazz, Function<InputStream, T> parser)
     {
-        if (attemptedParsing)
-            return object;
+        if (attemptedParsing && object != null && clazz.isAssignableFrom(object.getClass()))
+            return clazz.cast(object);
+
         attemptedParsing = true;
         if (body == null || rawResponse == null || rawResponse.body().contentLength() == 0)
             return null;
-        BufferedReader reader = null;
+
         try
         {
-            // this doesn't add overhead as org.json would do that itself otherwise
-            reader = new BufferedReader(new InputStreamReader(body));
-            char begin; // not sure if I really like this... but we somehow have to get if this is an object or an array
-            int mark = 1;
-            do
-            {
-                reader.mark(mark++);
-                begin = (char) reader.read();
-            }
-            while (Character.isWhitespace(begin));
+            T t = parser.apply(body);
 
-            reader.reset();
+            this.object = t;
 
-            if (begin == '{')
-                this.object = new JSONObject(new JSONTokener(reader));
-            else if (begin == '[')
-                this.object = new JSONArray(new JSONTokener(reader));
-            else
-                this.object = reader.lines().collect(Collectors.joining());
+            return t;
         }
         catch (final Exception e)
         {
@@ -180,10 +179,8 @@ public class Response implements Closeable
             try
             {
                 body.close();
-                reader.close();
             }
             catch (NullPointerException | IOException ignored) {}
         }
-        return object;
     }
 }
