@@ -49,7 +49,7 @@ public class Request<T>
     {
         this.restAction = restAction;
         this.onSuccess = onSuccess;
-        if (RestAction.passContext)
+        if (RestAction.isPassContext())
             this.onFailure = ContextException.here(onFailure);
         else
             this.onFailure = onFailure;

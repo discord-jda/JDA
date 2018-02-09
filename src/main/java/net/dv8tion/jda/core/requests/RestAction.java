@@ -163,6 +163,8 @@ public abstract class RestAction<T>
         }
     };
 
+    private static final Consumer FALLBACK_CONSUMER = o -> {};
+
     protected static boolean passContext = false;
 
     protected final JDAImpl api;
@@ -187,6 +189,20 @@ public abstract class RestAction<T>
     public static void setPassContext(boolean enable)
     {
         passContext = enable;
+    }
+
+    /**
+     * Whether RestActions will use {@link net.dv8tion.jda.core.exceptions.ContextException ContextException}
+     * automatically to keep track of the caller context.
+     * <br>If set to {@code true} this can cause performance drops due to the creation of stack-traces on execution.
+     *
+     * @return True, if RestActions will keep track of context automatically
+     *
+     * @see    #setPassContext(boolean)
+     */
+    public static boolean isPassContext()
+    {
+        return passContext;
     }
 
     /**
@@ -315,9 +331,9 @@ public abstract class RestAction<T>
         CaseInsensitiveMap<String, String> headers = finalizeHeaders();
         BooleanSupplier finisher = getFinisher();
         if (success == null)
-            success = DEFAULT_SUCCESS;
+            success = DEFAULT_SUCCESS == null ? FALLBACK_CONSUMER : DEFAULT_SUCCESS;
         if (failure == null)
-            failure = DEFAULT_FAILURE;
+            failure = DEFAULT_FAILURE == null ? FALLBACK_CONSUMER : DEFAULT_FAILURE;
         api.getRequester().request(new Request<>(this, success, failure, finisher, true, data, rawData, route, headers));
     }
 
