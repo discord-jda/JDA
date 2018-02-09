@@ -120,8 +120,8 @@ public class ClientRateLimiter extends RateLimiter
     {
         final String route;
         final RateLimit rateLimit;
+        final ConcurrentLinkedQueue<Request> requests = new ConcurrentLinkedQueue<>();
         volatile long retryAfter = 0;
-        volatile ConcurrentLinkedQueue<Request> requests = new ConcurrentLinkedQueue<>();
 
         public Bucket(String route, RateLimit rateLimit)
         {
@@ -203,6 +203,8 @@ public class ClientRateLimiter extends RateLimiter
                         try
                         {
                             request = it.next();
+                            if (isSkipped(it, request))
+                                continue;
                             Long retryAfter = requester.execute(request);
                             if (retryAfter != null)
                                 break;

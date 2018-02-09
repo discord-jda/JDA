@@ -26,6 +26,8 @@ import net.dv8tion.jda.core.requests.Route;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
 
+import java.util.function.BooleanSupplier;
+
 /**
  * Extension of {@link net.dv8tion.jda.core.requests.RestAction RestAction} specifically
  * designed to create a {@link net.dv8tion.jda.client.entities.Application Application}.
@@ -45,6 +47,12 @@ public class ApplicationAction extends RestAction<Application>
         super(api, Route.Applications.CREATE_APPLICATION.compile());
 
        this.setName(name);
+    }
+
+    @Override
+    public ApplicationAction setCheck(BooleanSupplier checks)
+    {
+        return (ApplicationAction) super.setCheck(checks);
     }
 
     @Override
