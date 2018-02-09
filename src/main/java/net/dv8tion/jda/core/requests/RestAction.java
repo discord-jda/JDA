@@ -30,6 +30,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import java.util.concurrent.*;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 /**
@@ -162,12 +163,47 @@ public abstract class RestAction<T>
         }
     };
 
+    private static final Consumer FALLBACK_CONSUMER = o -> {};
+
+    protected static boolean passContext = false;
+
     protected final JDAImpl api;
 
     private final Route.CompiledRoute route;
     private final RequestBody data;
 
     private Object rawData;
+    private BooleanSupplier checks;
+
+    /**
+     * If enabled this will pass a {@link net.dv8tion.jda.core.exceptions.ContextException ContextException}
+     * as root-cause to all failure consumers.
+     * Note that the {@link #DEFAULT_FAILURE} does not print a stack-trace at all unless specified!
+     * <br>This might cause performance decrease due to the creation of exceptions for <b>every</b> execution.
+     *
+     * <p>It is recommended to pass a context consumer as failure manually using {@code queue(success, ContextException.here(failure))}
+     *
+     * @param  enable
+     *         True, if context should be passed to all failure consumers
+     */
+    public static void setPassContext(boolean enable)
+    {
+        passContext = enable;
+    }
+
+    /**
+     * Whether RestActions will use {@link net.dv8tion.jda.core.exceptions.ContextException ContextException}
+     * automatically to keep track of the caller context.
+     * <br>If set to {@code true} this can cause performance drops due to the creation of stack-traces on execution.
+     *
+     * @return True, if RestActions will keep track of context automatically
+     *
+     * @see    #setPassContext(boolean)
+     */
+    public static boolean isPassContext()
+    {
+        return passContext;
+    }
 
     /**
      * Creates a new RestAction instance
@@ -232,6 +268,22 @@ public abstract class RestAction<T>
     }
 
     /**
+     * Sets the last-second checks before finally executing the http request in the queue.
+     * <br>If the provided supplier evaluates to {@code false} or throws an exception this will not be finished.
+     * When an exception is thrown from the supplier it will be provided to the failure callback.
+     *
+     * @param  checks
+     *         The checks to run before executing the request, or {@code null} to run no checks
+     *
+     * @return The current RestAction for chaining convenience
+     */
+    public RestAction<T> setCheck(BooleanSupplier checks)
+    {
+        this.checks = checks;
+        return this;
+    }
+
+    /**
      * Submits a Request for execution.
      * <br>Using the default callback functions:
      * {@link #DEFAULT_SUCCESS DEFAULT_SUCCESS} and
@@ -277,11 +329,12 @@ public abstract class RestAction<T>
         Checks.notNull(route, "Route");
         RequestBody data = finalizeData();
         CaseInsensitiveMap<String, String> headers = finalizeHeaders();
+        BooleanSupplier finisher = getFinisher();
         if (success == null)
-            success = DEFAULT_SUCCESS;
+            success = DEFAULT_SUCCESS == null ? FALLBACK_CONSUMER : DEFAULT_SUCCESS;
         if (failure == null)
-            failure = DEFAULT_FAILURE;
-        api.getRequester().request(new Request<>(this, success, failure, true, data, rawData, route, headers));
+            failure = DEFAULT_FAILURE == null ? FALLBACK_CONSUMER : DEFAULT_FAILURE;
+        api.getRequester().request(new Request<>(this, success, failure, finisher, true, data, rawData, route, headers));
     }
 
     /**
@@ -316,7 +369,8 @@ public abstract class RestAction<T>
         Checks.notNull(route, "Route");
         RequestBody data = finalizeData();
         CaseInsensitiveMap<String, String> headers = finalizeHeaders();
-        return new RestFuture<>(this, shouldQueue, data, rawData, route, headers);
+        BooleanSupplier finisher = getFinisher();
+        return new RestFuture<>(this, shouldQueue, finisher, data, rawData, route, headers);
     }
 
     /**
@@ -352,8 +406,8 @@ public abstract class RestAction<T>
      *         Whether this should automatically handle rate limitations (default true)
      *
      * @throws RateLimitedException
-     *         If we were rate limited and the {@code shouldQueue} is false
-     *         <br>Use {@link #complete()} to avoid this Exception.
+     *         If we were rate limited and the {@code shouldQueue} is false.
+     *         Use {@link #complete()} to avoid this Exception.
      *
      * @return The response value
      */
@@ -666,6 +720,7 @@ public abstract class RestAction<T>
     protected RequestBody finalizeData() { return data; }
     protected Route.CompiledRoute finalizeRoute() { return route; }
     protected CaseInsensitiveMap<String, String> finalizeHeaders() { return null; }
+    protected BooleanSupplier finalizeChecks() { return null; }
 
     protected RequestBody getRequestBody(JSONObject object)
     {
@@ -679,6 +734,13 @@ public abstract class RestAction<T>
         this.rawData = array;
 
         return array == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, array.toString());
+    }
+
+    private CheckWrapper getFinisher()
+    {
+        BooleanSupplier pre = finalizeChecks();
+        BooleanSupplier wrapped = this.checks;
+        return (pre != null || wrapped != null) ? new CheckWrapper(wrapped, pre) : CheckWrapper.EMPTY;
     }
 
     protected abstract void handleResponse(Response response, Request<T> request);
@@ -722,5 +784,48 @@ public abstract class RestAction<T>
 
         @Override
         protected void handleResponse(Response response, Request<T> request) { }
+    }
+
+    /*
+        useful for final permission checks:
+
+        @Override
+        protected BooleanSupplier finalizeChecks()
+        {
+            // throw exception, if missing perms
+            return () -> hasPermission(Permission.MESSAGE_WRITE);
+        }
+     */
+    protected static class CheckWrapper implements BooleanSupplier
+    {
+        public static final CheckWrapper EMPTY = new CheckWrapper(null, null)
+        {
+            public boolean getAsBoolean() { return true; }
+        };
+
+        protected final BooleanSupplier pre;
+        protected final BooleanSupplier wrapped;
+
+        public CheckWrapper(BooleanSupplier wrapped, BooleanSupplier pre)
+        {
+            this.pre = pre;
+            this.wrapped = wrapped;
+        }
+
+        public boolean pre()
+        {
+            return pre == null || pre.getAsBoolean();
+        }
+
+        public boolean test()
+        {
+            return wrapped == null || wrapped.getAsBoolean();
+        }
+
+        @Override
+        public boolean getAsBoolean()
+        {
+            return pre() && test();
+        }
     }
 }

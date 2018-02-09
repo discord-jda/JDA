@@ -164,8 +164,8 @@ public class Requester
             do
             {
                 //If the request has been canceled via the Future, don't execute.
-                if (apiRequest.isCanceled())
-                    return null;
+                //if (apiRequest.isCanceled())
+                //    return null;
                 Call call = httpClient.newCall(request);
                 firstSuccess = call.execute();
                 responses[attempt] = firstSuccess;
