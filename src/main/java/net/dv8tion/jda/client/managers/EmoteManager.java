@@ -30,7 +30,7 @@ import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
@@ -58,7 +58,7 @@ public class EmoteManager extends ManagerBase
 
     protected final EmoteImpl emote;
 
-    protected final List<String> roles = new LinkedList<>();
+    protected final List<String> roles = new ArrayList<>();
     protected String name;
 
     /**
@@ -133,7 +133,7 @@ public class EmoteManager extends ManagerBase
     {
         super.reset(fields);
         if ((fields & ROLES) == ROLES)
-            roles.clear();
+            withLock(this.roles, List::clear);
         return this;
     }
 
@@ -171,7 +171,7 @@ public class EmoteManager extends ManagerBase
     protected EmoteManager reset()
     {
         super.reset();
-        roles.clear();
+        withLock(this.roles, List::clear);
         return this;
     }
 
@@ -221,7 +221,7 @@ public class EmoteManager extends ManagerBase
     {
         if (roles == null)
         {
-            this.roles.clear();
+            withLock(this.roles, List::clear);
         }
         else
         {
@@ -231,8 +231,11 @@ public class EmoteManager extends ManagerBase
                 Checks.notNull(role, "Roles");
                 Checks.check(role.getGuild().equals(getGuild()), "Roles must all be from the same guild");
             });
-            this.roles.clear();
-            roles.stream().map(Role::getId).forEach(this.roles::add);
+            withLock(this.roles, (list) ->
+            {
+                list.clear();
+                roles.stream().map(Role::getId).forEach(list::add);
+            });
         }
         set |= ROLES;
         return this;
@@ -255,9 +258,14 @@ public class EmoteManager extends ManagerBase
         JSONObject object = new JSONObject();
         if (shouldUpdate(NAME))
             object.put("name", name);
-        if (shouldUpdate(ROLES))
-            object.put("roles", roles);
+        withLock(this.roles, (list) ->
+        {
+            if (shouldUpdate(ROLES))
+                object.put("roles", list);
+        });
+
         reset();
         return getRequestBody(object);
     }
+
 }

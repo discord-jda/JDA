@@ -26,7 +26,7 @@ import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -63,7 +63,7 @@ public class ApplicationManager extends ManagerBase
 
     protected final ApplicationImpl application;
 
-    protected final List<String> redirectUris = new LinkedList<>();
+    protected final List<String> redirectUris = new ArrayList<>();
     protected String name;
     protected String description;
     protected Icon icon;
@@ -114,6 +114,8 @@ public class ApplicationManager extends ManagerBase
         super.reset(fields);
         if ((fields & ICON) == ICON)
             icon = null;
+        if ((fields & REDIRECT_URI) == REDIRECT_URI)
+            withLock(this.redirectUris, List::clear);
         return this;
     }
 
@@ -156,6 +158,7 @@ public class ApplicationManager extends ManagerBase
     {
         super.reset();
         icon = null;
+        withLock(this.redirectUris, List::clear);
         return this;
     }
 
@@ -275,13 +278,16 @@ public class ApplicationManager extends ManagerBase
     {
         if (redirectUris == null)
         {
-            this.redirectUris.clear();
+            withLock(this.redirectUris, List::clear);
         }
         else
         {
             Checks.noneNull(redirectUris, "Redirects");
-            this.redirectUris.clear();
-            this.redirectUris.addAll(redirectUris);
+            withLock(this.redirectUris, (list) ->
+            {
+                list.clear();
+                list.addAll(redirectUris);
+            });
         }
         set |= REDIRECT_URI;
         return this;
@@ -293,28 +299,24 @@ public class ApplicationManager extends ManagerBase
         JSONObject body = new JSONObject();
 
         body.put("description", shouldUpdate(DESCRIPTION)
-            ? opt(description)
-            : application.getDescription());
+            ? opt(description) : application.getDescription());
 
         body.put("bot_require_code_grant", shouldUpdate(CODE_GRANT)
-            ? isCodeGrant
-            : application.doesBotRequireCodeGrant());
+            ? isCodeGrant : application.doesBotRequireCodeGrant());
 
         body.put("icon", shouldUpdate(ICON)
             ? (icon == null ? JSONObject.NULL : icon.getEncoding())
             : application.getIconUrl());
 
         body.put("bot_public", shouldUpdate(PUBLIC)
-            ? isPublic
-            : application.isBotPublic());
+            ? isPublic : application.isBotPublic());
 
         body.put("name", shouldUpdate(NAME)
-            ? name
-            : application.getName());
+            ? name : application.getName());
 
-        body.put("redirect_uris", shouldUpdate(REDIRECT_URI)
-            ? redirectUris
-            : application.getRedirectUris());
+        withLock(this.redirectUris, (list) ->
+            body.put("redirect_uris", shouldUpdate(REDIRECT_URI)
+                ? list : application.getRedirectUris()));
 
         reset();
         return getRequestBody(body);

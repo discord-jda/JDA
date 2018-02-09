@@ -103,4 +103,12 @@ public abstract class ManagerBase extends AuditableRestAction<Void>
     {
         return (set & bit) == bit;
     }
+
+    protected <E> void withLock(E object, Consumer<E> consumer)
+    {
+        synchronized (object)
+        {
+            consumer.accept(object);
+        }
+    }
 }
