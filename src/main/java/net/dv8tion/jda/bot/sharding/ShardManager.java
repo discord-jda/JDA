@@ -106,18 +106,18 @@ public interface ShardManager
      * The provider takes shard ids, and returns a collection of listeners that shall be removed from the respective
      * shards.
      *
-     * @param eventListenersProvider
+     * @param eventListenerProvider
      *        gets shard ids applied and is expected to return a collection of listeners that shall be removed from
      *        the respective shards
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided event listeners provider is {@code null}.
      */
-    default void removeEventListeners(final IntFunction<Collection<Object>> eventListenersProvider)
+    default void removeEventListeners(final IntFunction<Collection<Object>> eventListenerProvider)
     {
-        Checks.notNull(eventListenersProvider, "event listeners provider");
+        Checks.notNull(eventListenerProvider, "event listener provider");
         this.getShardCache().forEach(jda ->
-            jda.removeEventListener(eventListenersProvider.apply(jda.getShardInfo().getShardId()))
+            jda.removeEventListener(eventListenerProvider.apply(jda.getShardInfo().getShardId()))
         );
     }
 
@@ -131,7 +131,7 @@ public interface ShardManager
      * @throws java.lang.IllegalArgumentException
      *         If the provided listener provider is {@code null}.
      */
-    void removeEventListenersProvider(IntFunction<Object> eventListenerProvider);
+    void removeEventListenerProvider(IntFunction<Object> eventListenerProvider);
 
     /**
      * Returns the amount of shards queued for (re)connecting.
