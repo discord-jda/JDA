@@ -37,6 +37,7 @@ public class Response implements Closeable
     private final okhttp3.Response rawResponse;
     private final Set<String> cfRays;
     private Object object;
+    private boolean attemptedParsing = false;
     private Exception exception;
 
     protected Response(final okhttp3.Response response, final Exception exception, final Set<String> cfRays)
@@ -53,6 +54,12 @@ public class Response implements Closeable
         this.exception = null;
         this.retryAfter = retryAfter;
         this.cfRays = cfRays;
+
+        if (response == null)
+        {
+            this.body = null;
+            return;
+        }
 
         try
         {
@@ -136,9 +143,10 @@ public class Response implements Closeable
 
     private Object parseObject()
     {
-        if (object != null)
+        if (attemptedParsing)
             return object;
-        if (rawResponse == null || rawResponse.body().contentLength() == 0)
+        attemptedParsing = true;
+        if (body == null || rawResponse == null || rawResponse.body().contentLength() == 0)
             return null;
         BufferedReader reader = null;
         try
