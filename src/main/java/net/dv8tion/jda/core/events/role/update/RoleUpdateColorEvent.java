@@ -33,7 +33,7 @@ public class RoleUpdateColorEvent extends GenericRoleUpdateEvent
 
     public Color getOldColor()
     {
-        return oldColor != 0 ? new Color(oldColor) : null;
+        return oldColor != Role.DEFAULT_COLOR_RAW ? new Color(oldColor) : null;
     }
 
     public int getOldColorRaw()
