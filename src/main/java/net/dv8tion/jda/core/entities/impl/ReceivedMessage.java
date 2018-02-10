@@ -324,7 +324,7 @@ public class ReceivedMessage extends AbstractMessage
         Checks.notNull(types, "Mention Types");
         if (types.length == 0)
             return isMentioned(mentionable, MentionType.values());
-        final boolean isUserEntity = mentionable instanceof Role || mentionable instanceof User || mentionable instanceof Member;
+        final boolean isUserEntity = mentionable instanceof User || mentionable instanceof Member;
         for (MentionType type : types)
         {
             switch (type)
