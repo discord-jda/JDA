@@ -279,7 +279,7 @@ public class DefaultShardManagerBuilder
      */
     public DefaultShardManagerBuilder removeEventListenerProvider(final IntFunction<Object> listenerProvider)
     {
-        return this.removeEventListeners(Collections.singleton(listenerProvider));
+        return this.removeEventListenerProviders(Collections.singleton(listenerProvider));
     }
 
     /**
