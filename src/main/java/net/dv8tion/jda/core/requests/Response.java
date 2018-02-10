@@ -20,9 +20,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import javax.annotation.Nullable;
 import java.io.*;
-import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Response implements Closeable
@@ -33,9 +34,11 @@ public class Response implements Closeable
     public final int code;
     public final String message;
     public final long retryAfter;
-    private final Object object;
+    private final InputStream body;
     private final okhttp3.Response rawResponse;
     private final Set<String> cfRays;
+    private Object object;
+    private boolean attemptedParsing = false;
     private Exception exception;
 
     protected Response(final okhttp3.Response response, final Exception exception, final Set<String> cfRays)
@@ -53,48 +56,19 @@ public class Response implements Closeable
         this.retryAfter = retryAfter;
         this.cfRays = cfRays;
 
-        if (response == null || response.body().contentLength() == 0)
+        if (response == null)
         {
-            this.object = null;
+            this.body = null;
             return;
         }
 
-        InputStream body = null;
-        BufferedReader reader = null;
         try
         {
-            body = Requester.getBody(response);
-            // this doesn't add overhead as org.json would do that itself otherwise
-            reader = new BufferedReader(new InputStreamReader(body));
-            char begin; // not sure if I really like this... but we somehow have to get if this is an object or an array
-            int mark = 1;
-            do
-            {
-                reader.mark(mark++);
-                begin = (char) reader.read();
-            }
-            while (Character.isWhitespace(begin));
-
-            reader.reset();
-
-            if (begin == '{')
-                this.object = new JSONObject(new JSONTokener(reader));
-            else if (begin == '[')
-                this.object = new JSONArray(new JSONTokener(reader));
-            else
-                this.object = reader.lines().collect(Collectors.joining());
+            this.body = Requester.getBody(response);
         }
         catch (final Exception e)
         {
             throw new IllegalStateException("An error occurred while parsing the response for a RestAction", e);
-        }
-        finally
-        {
-            try
-            {
-                body.close();
-                reader.close();
-            } catch (NullPointerException | IOException ignored) {}
         }
     }
 
@@ -108,19 +82,28 @@ public class Response implements Closeable
         this(response, response.code(), response.message(), retryAfter, cfRays);
     }
 
+    @Nullable
     public JSONArray getArray()
     {
-        return this.object instanceof JSONArray ? (JSONArray) this.object : null;
+        return parseBody(JSONArray.class, stream -> new JSONArray(getTokenizer(stream)));
     }
 
+    @Nullable
     public JSONObject getObject()
     {
-        return this.object instanceof JSONObject ? (JSONObject) this.object : null;
+        return parseBody(JSONObject.class, stream -> new JSONObject(getTokenizer(stream)));
     }
 
+    @Nullable
     public String getString()
     {
-        return Objects.toString(object);
+        return parseBody(String.class, stream -> new BufferedReader(new InputStreamReader(stream)).lines().collect(Collectors.joining()));
+    }
+
+    @Nullable
+    public <T> T get(Class<T> clazz, Function<InputStream, T> parser)
+    {
+        return parseBody(clazz, parser);
     }
 
     public okhttp3.Response getRawResponse()
@@ -166,5 +149,45 @@ public class Response implements Closeable
     {
         if (rawResponse != null)
             rawResponse.close();
+    }
+
+    private JSONTokener getTokenizer(InputStream stream)
+    {
+        return new JSONTokener(new InputStreamReader(stream));
+    }
+
+    @Nullable
+    @SuppressWarnings("ConstantConditions")
+    private <T> T parseBody(Class<T> clazz, Function<InputStream, T> parser)
+    {
+        if (attemptedParsing)
+        {
+            if (object != null && clazz.isAssignableFrom(object.getClass()))
+                return clazz.cast(object);
+            return null;
+        }
+
+        attemptedParsing = true;
+        if (body == null || rawResponse == null || rawResponse.body().contentLength() == 0)
+            return null;
+
+        try
+        {
+            T t = parser.apply(body);
+            this.object = t;
+            return t;
+        }
+        catch (final Exception e)
+        {
+            throw new IllegalStateException("An error occurred while parsing the response for a RestAction", e);
+        }
+        finally
+        {
+            try
+            {
+                body.close();
+            }
+            catch (NullPointerException | IOException ignored) {}
+        }
     }
 }
