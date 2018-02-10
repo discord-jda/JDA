@@ -125,13 +125,18 @@ public interface ShardManager
      * Remove a listener provider. This will stop further created / restarted shards from getting a listener added by
      * that provider.
      *
+     * Default is a no-op for backwards compatibility, see implementations like
+     * {@link DefaultShardManager#removeEventListenerProvider(IntFunction)} for actual code
+     *
      * @param  eventListenerProvider
      *         The provider of listeners that shall be removed.
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided listener provider is {@code null}.
      */
-    void removeEventListenerProvider(IntFunction<Object> eventListenerProvider);
+    default void removeEventListenerProvider(IntFunction<Object> eventListenerProvider)
+    {
+    }
 
     /**
      * Returns the amount of shards queued for (re)connecting.
