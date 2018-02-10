@@ -22,15 +22,15 @@ import net.dv8tion.jda.bot.utils.cache.impl.ShardCacheViewImpl;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
-import net.dv8tion.jda.core.ShardedRateLimiter;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
-import net.dv8tion.jda.core.requests.SessionReconnectQueue;
-import net.dv8tion.jda.core.requests.WebSocketClient;
-import net.dv8tion.jda.core.utils.*;
+import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.JDALogger;
+import net.dv8tion.jda.core.utils.SessionController;
+import net.dv8tion.jda.core.utils.SessionControllerAdapter;
 import net.dv8tion.jda.core.utils.tuple.Pair;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
@@ -39,7 +39,6 @@ import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
 import java.util.function.IntFunction;
 
 /**
@@ -229,8 +228,6 @@ public class DefaultShardManager implements ShardManager
      *         The {@link com.neovisionaries.ws.client.WebSocketFactory WebSocketFactory}
      * @param  threadFactory
      *         The {@link java.util.concurrent.ThreadFactory ThreadFactory}
-     * @param  shardedRateLimiter
-     *         The {@link net.dv8tion.jda.core.ShardedRateLimiter ShardedRateLimiter}
      * @param  maxReconnectDelay
      *         The max reconnect delay
      * @param  corePoolSize
@@ -260,7 +257,7 @@ public class DefaultShardManager implements ShardManager
                                   final String token, final IEventManager eventManager, final IAudioSendFactory audioSendFactory,
                                   final IntFunction<Game> gameProvider, final IntFunction<OnlineStatus> statusProvider,
                                   final OkHttpClient.Builder httpClientBuilder, final WebSocketFactory wsFactory,
-                                  final ThreadFactory threadFactory, final ShardedRateLimiter shardedRateLimiter,
+                                  final ThreadFactory threadFactory,
                                   final int maxReconnectDelay, final int corePoolSize, final boolean enableVoice,
                                   final boolean enableShutdownHook, final boolean enableBulkDeleteSplitting,
                                   final boolean autoReconnect, final IntFunction<Boolean> idleProvider,
@@ -277,10 +274,7 @@ public class DefaultShardManager implements ShardManager
         this.httpClientBuilder = httpClientBuilder == null ? new OkHttpClient.Builder() : httpClientBuilder;
         this.wsFactory = wsFactory == null ? new WebSocketFactory() : wsFactory;
         this.executor = createExecutor(threadFactory);
-        if (shardedRateLimiter != null && controller == null)
-            this.controller = new ProvidingSessionController(null, shardedRateLimiter);
-        else
-            this.controller = controller == null ? new SessionControllerAdapter() : controller;
+        this.controller = controller == null ? new SessionControllerAdapter() : controller;
         this.maxReconnectDelay = maxReconnectDelay;
         this.corePoolSize = corePoolSize;
         this.enableVoice = enableVoice;
@@ -652,55 +646,5 @@ public class DefaultShardManager implements ShardManager
             : threadFactory;
 
         return Executors.newSingleThreadScheduledExecutor(factory);
-    }
-
-    /**
-     * This method creates the internal {@link net.dv8tion.jda.core.requests.SessionReconnectQueue SessionReconnectQueue}.
-     * It is intended as a hook for custom implementations to create their own queue.
-     *
-     * <p><b>NOTE: The default implementation will add reconnects to the same queue as connects so they don't interfere with each other
-     * (they share the same rate limit). If you override this you need to take care of it yourself.</b>
-     *
-     * @return A new ScheduledExecutorService
-     *
-     * @deprecated
-     *         Use {@link net.dv8tion.jda.core.utils.SessionController SessionController} directly instead
-     */
-    @Deprecated
-    protected SessionReconnectQueue createReconnectQueue()
-    {
-        return new ForwardingSessionReconnectQueue(
-            jda -> queue.add(jda.getShardInfo().getShardId()),
-            jda -> queue.remove(jda.getShardInfo().getShardId()));
-    }
-
-    @Deprecated
-    public class ForwardingSessionReconnectQueue extends SessionReconnectQueue
-    {
-        private final Consumer<JDA> appender;
-        private final Consumer<JDA> remover;
-
-        public ForwardingSessionReconnectQueue(Consumer<JDA> appender, Consumer<JDA> remover)
-        {
-            super(null);
-
-            this.appender = appender == null ? jda -> {} : appender;
-            this.remover = remover == null ? jda -> {} : remover;
-        }
-
-        @Override
-        public void appendSession(final WebSocketClient client)
-        {
-            this.appender.accept(client.getJDA());
-        }
-
-        @Override
-        public void removeSession(final WebSocketClient client)
-        {
-            this.remover.accept(client.getJDA());
-        }
-
-        @Override
-        protected void runWorker() { /* just to overwrite */ }
     }
 }

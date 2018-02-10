@@ -23,15 +23,16 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
-import net.dv8tion.jda.core.requests.SessionReconnectQueue;
 import net.dv8tion.jda.core.utils.Checks;
-import net.dv8tion.jda.core.utils.ProvidingSessionController;
 import net.dv8tion.jda.core.utils.SessionController;
 import net.dv8tion.jda.core.utils.SessionControllerAdapter;
 import okhttp3.OkHttpClient;
 
 import javax.security.auth.login.LoginException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 
 /**
@@ -52,8 +53,6 @@ public class JDABuilder
     protected ConcurrentMap<String, String> contextMap = null;
     protected boolean enableContext = true;
     protected SessionController controller = null;
-    protected SessionReconnectQueue reconnectQueue = null;
-    protected ShardedRateLimiter shardRateLimiter = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
     protected WebSocketFactory wsFactory = null;
     protected AccountType accountType;
@@ -136,64 +135,6 @@ public class JDABuilder
     }
 
     /**
-     * Sets the queue that will be used to reconnect sessions.
-     * <br>This will ensure that sessions do not reconnect at the same time!
-     *
-     * <p><b>It is required to use the same instance of this queue for all JDA sessions of the same bot account!
-     * <br>Not doing that may result in <u>API spam and finally an IP ban.</u></b>
-     *
-     * @param  queue
-     *         {@link net.dv8tion.jda.core.requests.SessionReconnectQueue SessionReconnectQueue} to use
-     *
-     * @return The JDABuilder instance. Useful for chaining.
-     *
-     * @deprecated
-     *         This system has been completely moved into a new central object {@link net.dv8tion.jda.core.utils.SessionController SessionController}.
-     *         <br>Use {@link #setSessionController(SessionController)} instead!
-     */
-    @Deprecated
-    public JDABuilder setReconnectQueue(SessionReconnectQueue queue)
-    {
-        this.reconnectQueue = queue;
-        return this;
-    }
-
-    /**
-     * Sets the {@link net.dv8tion.jda.core.ShardedRateLimiter ShardedRateLimiter} that will be used to keep
-     * track of rate limits across sessions.
-     * <br>When one shard hits the global rate limit all others will be informed by this value wrapper.
-     * This does nothing for {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}!
-     *
-     * <p>It is recommended to use the same ShardedRateLimiter for all shards and not one each. This is
-     * similar to {@link net.dv8tion.jda.core.requests.SessionReconnectQueue SessionReconnectQueue}!
-     *
-     * <p><b>This value is set when invoking {@link #setToken(String)} and cannot be unset using {@code null}. The re-use of this builder
-     * to build each shard is sufficient and setting it is not required.</b>
-     * <br>Providing {@code null} is equivalent to doing {@code setShardedRateLimiter(new ShardedRateLimiter())}.
-     *
-     * <p>When you construct multiple JDABuilder instances to build shards it is recommended to use the same ShardedRateLimiter on
-     * all of them. But it is to be <u>avoided</u> to use the same ShardedRateLimiter for different accounts/tokens!
-     *
-     * @param  rateLimiter
-     *         ShardedRateLimiter used to keep track of cross-session rate limits
-     *
-     * @return The JDABuilder instance. Useful for chaining.
-     *
-     * @deprecated
-     *         This system has been completely moved into a new central object {@link net.dv8tion.jda.core.utils.SessionController SessionController}.
-     *         <br>Use {@link #setSessionController(SessionController)} instead!
-     */
-    @Deprecated
-    public JDABuilder setShardedRateLimiter(ShardedRateLimiter rateLimiter)
-    {
-        if (accountType != AccountType.BOT)
-            this.shardRateLimiter = null;
-        else
-            this.shardRateLimiter = rateLimiter == null ? new ShardedRateLimiter() : rateLimiter;
-        return this;
-    }
-
-    /**
      * Whether the Requester should retry when
      * a {@link java.net.SocketTimeoutException SocketTimeoutException} occurs.
      * <br><b>Default</b>: {@code true}
@@ -216,9 +157,6 @@ public class JDABuilder
      * {@link net.dv8tion.jda.core.JDABuilder#buildAsync() buildAsync()}
      * or {@link net.dv8tion.jda.core.JDABuilder#buildBlocking() buildBlocking()}
      * is called.
-     *
-     * <p><u><b>This will reset the prior provided {@link #setShardedRateLimiter(ShardedRateLimiter)} setting
-     * if this token is different to the previously set token!</b></u>
      *
      * <h2>For {@link net.dv8tion.jda.core.AccountType#BOT}</h2>
      * <ol>
@@ -244,11 +182,6 @@ public class JDABuilder
      */
     public JDABuilder setToken(String token)
     {
-        //Share ratelimit for the same token
-        // when this builder is used to build different accounts this makes sure we don't use the
-        // same ratelimiter on them as it would be inaccurate
-        if (accountType == AccountType.BOT && !Objects.equals(token, this.token))
-            shardRateLimiter = new ShardedRateLimiter();
         this.token = token;
         return this;
     }
@@ -552,9 +485,6 @@ public class JDABuilder
      *
      * <p>Please note, that a shard will not know about guilds which are not assigned to it.
      *
-     * <p><u><b>When sharding it is a required to use a {@link net.dv8tion.jda.core.requests.SessionReconnectQueue SessionReconnectQueue}
-     * to ensure that shards will not reconnect at the same time and cause API spam. See {@link #setReconnectQueue(SessionReconnectQueue)}</b></u>
-     *
      * <p><b>It is not possible to use sharding with an account for {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}!</b>
      *
      * @param  shardId
@@ -591,9 +521,6 @@ public class JDABuilder
      * <br>When {@link #useSharding(int, int)} is enabled, this is set by default.
      *
      * <p>When set, this allows the builder to build shards with respect to the login ratelimit automatically.
-     *
-     * <p><b>Setting this disables the {@link #setShardedRateLimiter(ShardedRateLimiter)} and {@link #setReconnectQueue(net.dv8tion.jda.core.requests.SessionReconnectQueue)}
-     * settings.</b>
      *
      * @param  controller
      *         The {@link net.dv8tion.jda.core.utils.SessionController SessionController} to use
@@ -633,13 +560,9 @@ public class JDABuilder
         OkHttpClient.Builder httpClientBuilder = this.httpClientBuilder == null ? new OkHttpClient.Builder() : this.httpClientBuilder;
         WebSocketFactory wsFactory = this.wsFactory == null ? new WebSocketFactory() : this.wsFactory;
 
-        if (controller == null)
-        {
-            if (reconnectQueue != null || shardRateLimiter != null)
-                controller = new ProvidingSessionController(reconnectQueue, shardRateLimiter);
-            else if (shardInfo != null)
-                controller = new SessionControllerAdapter();
-        }
+        if (controller == null && shardInfo != null)
+            controller = new SessionControllerAdapter();
+        
         JDAImpl jda = new JDAImpl(accountType, token, controller, httpClientBuilder, wsFactory, autoReconnect, enableVoice, enableShutdownHook,
                 enableBulkDeleteSplitting, requestTimeoutRetry, enableContext, corePoolSize, maxReconnectDelay, contextMap);
 
