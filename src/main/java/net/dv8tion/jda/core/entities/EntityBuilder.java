@@ -925,9 +925,12 @@ public class EntityBuilder
 
         TLongSet mentionedRoles = new TLongHashSet();
         TLongSet mentionedUsers = new TLongHashSet(map(jsonObject, "mentions", (o) -> o.getLong("id")));
-        JSONArray roleMentionArr = jsonObject.getJSONArray("mention_roles");
-        for (int i = 0; i < roleMentionArr.length(); i++)
-            mentionedRoles.add(roleMentionArr.getLong(i));
+        JSONArray roleMentionArr = jsonObject.optJSONArray("mention_roles");
+        if (roleMentionArr != null)
+        {
+            for (int i = 0; i < roleMentionArr.length(); i++)
+                mentionedRoles.add(roleMentionArr.getLong(i));
+        }
 
         MessageType type = MessageType.fromId(jsonObject.getInt("type"));
         switch (type)
