@@ -324,19 +324,20 @@ public class ReceivedMessage extends AbstractMessage
         Checks.notNull(types, "Mention Types");
         if (types.length == 0)
             return isMentioned(mentionable, MentionType.values());
+        final boolean isUserEntity = mentionable instanceof Role || mentionable instanceof User || mentionable instanceof Member;
         for (MentionType type : types)
         {
             switch (type)
             {
                 case HERE:
                 {
-                    if (isMass("@here"))
+                    if (isMass("@here") && isUserEntity)
                         return true;
                     break;
                 }
                 case EVERYONE:
                 {
-                    if (isMass("@everyone"))
+                    if (isMass("@everyone") && isUserEntity)
                         return true;
                     break;
                 }
