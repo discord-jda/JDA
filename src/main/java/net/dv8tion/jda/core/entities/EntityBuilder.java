@@ -923,19 +923,11 @@ public class EntityBuilder
             default: throw new IllegalArgumentException("Invalid Channel for creating a Message [" + chan.getType() + ']');
         }
 
-        TLongSet mentionedUsers = new TLongHashSet();
-        JSONArray mentionArr = jsonObject.getJSONArray("mentions");
-        for(int i=0; i<mentionArr.length(); i++)
-        {
-            mentionedUsers.add(mentionArr.getJSONObject(i).getLong("id"));
-        }
-
         TLongSet mentionedRoles = new TLongHashSet();
+        TLongSet mentionedUsers = new TLongHashSet(map(jsonObject, "mentions", (o) -> o.getLong("id")));
         JSONArray roleMentionArr = jsonObject.getJSONArray("mention_roles");
-        for(int i=0; i<roleMentionArr.length(); i++)
-        {
+        for (int i = 0; i < roleMentionArr.length(); i++)
             mentionedRoles.add(roleMentionArr.getLong(i));
-        }
 
         MessageType type = MessageType.fromId(jsonObject.getInt("type"));
         switch (type)
@@ -947,8 +939,8 @@ public class EntityBuilder
             case UNKNOWN:
                 throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
             default:
-                return new SystemMessage(id, chan, type,
-                    fromWebhook, mentionsEveryone, tts, pinned,
+                return new SystemMessage(id, chan, type, fromWebhook,
+                    mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
                     content, nonce, user, editTime, reactions, attachments, embeds);
         }
 
