@@ -986,7 +986,6 @@ public class EntityBuilder
                     content, nonce, user, editTime, reactions, attachments, embeds,
                     activity);
         }
-
     }
 
     public MessageReaction createMessageReaction(MessageChannel chan, long id, JSONObject obj)
