@@ -51,6 +51,7 @@ public class ReceivedMessage extends AbstractMessage
     protected final List<MessageReaction> reactions;
     protected final List<Attachment> attachments;
     protected final List<MessageEmbed> embeds;
+    protected final MessageActivity activity;
     protected final TLongSet mentionedUsers;
     protected final TLongSet mentionedRoles;
 
@@ -68,7 +69,8 @@ public class ReceivedMessage extends AbstractMessage
         long id, MessageChannel channel, MessageType type,
         boolean fromWebhook, boolean mentionsEveryone, TLongSet mentionedUsers, TLongSet mentionedRoles, boolean tts, boolean pinned,
         String content, String nonce, User author, OffsetDateTime editTime,
-        List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds)
+        List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds,
+        MessageActivity activity)
     {
         super(content, nonce, tts);
         this.id = id;
@@ -83,6 +85,7 @@ public class ReceivedMessage extends AbstractMessage
         this.reactions = Collections.unmodifiableList(reactions);
         this.attachments = Collections.unmodifiableList(attachments);
         this.embeds = Collections.unmodifiableList(embeds);
+        this.activity = activity;
         this.mentionedUsers = mentionedUsers;
         this.mentionedRoles = mentionedRoles;
     }
@@ -817,5 +820,11 @@ public class ReceivedMessage extends AbstractMessage
             this.format = format;
             this.start = start;
         }
+    }
+
+    @Override
+    public MessageActivity getActivity()
+    {
+        return activity;
     }
 }

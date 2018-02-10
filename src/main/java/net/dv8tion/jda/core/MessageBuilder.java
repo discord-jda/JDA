@@ -45,6 +45,7 @@ public class MessageBuilder implements Appendable
     protected boolean isTTS = false;
     protected String nonce;
     protected MessageEmbed embed;
+    protected MessageActivity activity;
 
     public MessageBuilder() {}
 
@@ -63,6 +64,9 @@ public class MessageBuilder implements Appendable
             List<MessageEmbed> embeds = message.getEmbeds();
             if (embeds != null && !embeds.isEmpty())
                 embed = embeds.get(0);
+            MessageActivity activity = message.getActivity();
+            if (activity != null)
+                this.activity = activity;
         }
     }
 
@@ -74,6 +78,7 @@ public class MessageBuilder implements Appendable
             this.builder.append(builder.builder);
             this.nonce = builder.nonce;
             this.embed = builder.embed;
+            this.activity = builder.activity;
         }
     }
 
@@ -169,6 +174,21 @@ public class MessageBuilder implements Appendable
         return this;
     }
 
+    /**
+     * Sets the {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity} of the resulting Message.
+     * <br>This will override already set activity. <b>Be careful with this feature because the {@code sessionId} of the {@code activity} may be null!</b>
+     *
+     * @param  activity
+     *         the activity to use, or {@code null} to reset the activity.
+     *
+     * @return The MessageBuilder instance. Useful for chaining.
+     */
+    public MessageBuilder setActivity(MessageActivity activity)
+    {
+        this.activity = activity;
+        return this;
+    }
+
     @Override
     public MessageBuilder append(CharSequence text)
     {
@@ -210,7 +230,7 @@ public class MessageBuilder implements Appendable
      * {@link net.dv8tion.jda.core.entities.User User} or {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
      *
      * @param  mention
-     *         the mention to append
+     *         the mention to append.
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
@@ -815,7 +835,7 @@ public class MessageBuilder implements Appendable
         if (message.length() > Message.MAX_CONTENT_LENGTH)
             throw new IllegalStateException("Cannot build a Message with more than 2000 characters. Please limit your input.");
 
-        return new DataMessage(isTTS, message, nonce, embed);
+        return new DataMessage(isTTS, message, nonce, embed, activity);
     }
 
     /**
@@ -884,7 +904,7 @@ public class MessageBuilder implements Appendable
 
     protected DataMessage build(int beginIndex, int endIndex)
     {
-        return new DataMessage(isTTS, builder.substring(beginIndex, endIndex), null, null);
+        return new DataMessage(isTTS, builder.substring(beginIndex, endIndex), null, null, null);
     }
 
     /**

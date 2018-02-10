@@ -72,6 +72,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
     protected final Map<String, InputStream> files = new HashMap<>();
     protected final StringBuilder content;
     protected final MessageChannel channel;
+    protected MessageActivity activity = null;
     protected MessageEmbed embed = null;
     protected String nonce = null;
     protected boolean tts = false, override = false;
@@ -86,8 +87,7 @@ public class MessageAction extends RestAction<Message> implements Appendable
     public MessageAction(JDA api, Route.CompiledRoute route, MessageChannel channel, StringBuilder contentBuilder)
     {
         super(api, route);
-        Checks.check(contentBuilder.length() <= Message.MAX_CONTENT_LENGTH,
-            "Cannot build a Message with more than %d characters. Please limit your input.", Message.MAX_CONTENT_LENGTH);
+        Checks.check(contentBuilder.length() <= Message.MAX_CONTENT_LENGTH, CONTENT_TOO_BIG);
         this.content = contentBuilder;
         this.channel = channel;
     }
@@ -103,7 +103,8 @@ public class MessageAction extends RestAction<Message> implements Appendable
     public boolean isEmpty()
     {
         return Helpers.isBlank(content)
-            && (embed == null || embed.isEmpty() || !hasPermission(Permission.MESSAGE_EMBED_LINKS));
+            && (embed == null || embed.isEmpty() || !hasPermission(Permission.MESSAGE_EMBED_LINKS))
+            && (activity == null || !hasPermission(Permission.MESSAGE_ATTACH_FILES));
     }
 
     /**
@@ -505,6 +506,22 @@ public class MessageAction extends RestAction<Message> implements Appendable
         return this;
     }
 
+    /**
+     * Sets the {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity} and its {@link net.dv8tion.jda.core.entities.MessageActivity.Application Application}
+     * that should be used for this Message.
+     * <br><b>Be careful with this feature because the {@code sessionId} of the {@code activity} may be null!</b>
+     * @param  activity
+     *         the activity discord will display
+     *
+     * @return Updated MessageAction for chaining convenience
+     */
+    @CheckReturnValue
+    public MessageAction setActivity(MessageActivity activity)
+    {
+        this.activity = activity;
+        return this;
+    }
+
     protected RequestBody asMultipart()
     {
         final MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
@@ -542,6 +559,16 @@ public class MessageAction extends RestAction<Message> implements Appendable
                 obj.put("nonce", JSONObject.NULL);
             else
                 obj.put("nonce", nonce);
+            if (activity == null)
+            {
+                obj.put("activity", JSONObject.NULL);
+            }
+            else
+            {
+                obj.put("activity", getJSONActivity(activity));
+                if (activity.getType() != MessageActivity.ActivityType.LISTENING)
+                    obj.put("application", getJSONApplication(activity.getApplication()));
+            }
             obj.put("tts", tts);
         }
         else
@@ -552,6 +579,12 @@ public class MessageAction extends RestAction<Message> implements Appendable
                 obj.put("content", content.toString());
             if (nonce != null)
                 obj.put("nonce", nonce);
+            if (activity != null)
+            {
+                obj.put("activity", getJSONActivity(activity));
+                if (activity.getType() != MessageActivity.ActivityType.LISTENING)
+                    obj.put("application", getJSONApplication(activity.getApplication()));
+            }
             obj.put("tts", tts);
         }
         return obj;
@@ -560,6 +593,27 @@ public class MessageAction extends RestAction<Message> implements Appendable
     protected static JSONObject getJSONEmbed(final MessageEmbed embed)
     {
         return embed.toJSONObject();
+    }
+
+    protected static JSONObject getJSONActivity(final MessageActivity activity)
+    {
+        Checks.notBlank(activity.getSessionId(), "The provided sessionId");
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("type", activity.getType().getId()).put("session_id", activity.getSessionId());
+        return jsonObject;
+    }
+
+    protected static JSONObject getJSONApplication(final MessageActivity.Application application)
+    {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("name", application.getName()).put("id", application.getId());
+        if (application.getIconId() != null)
+            jsonObject.put("icon", application.getIconId());
+        if (application.getDescription() != null)
+            jsonObject.put("description", application.getDescription());
+        if (application.getCoverId() != null)
+            jsonObject.put("cover_image", application.getCoverId());
+        return jsonObject;
     }
 
     protected void checkFileAmount()
