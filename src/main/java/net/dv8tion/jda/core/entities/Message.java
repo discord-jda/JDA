@@ -237,6 +237,11 @@ public interface Message extends ISnowflake, Formattable
      * <br>If no filtering {@link net.dv8tion.jda.core.entities.Message.MentionType MentionTypes} are
      * specified this will fallback to all mention types.
      *
+     * <p>{@link Message.MentionType#HERE MentionType.HERE} and {@link Message.MentionType#EVERYONE MentionType.EVERYONE}
+     * will only be checked, if the given {@link net.dv8tion.jda.core.entities.IMentionable IMentionable} is of type
+     * {@link net.dv8tion.jda.core.entities.User User} or {@link net.dv8tion.jda.core.entities.Member Member}.
+     * <br>Online status of Users/Members is <b>NOT</b> considered when checking {@link Message.MentionType#HERE MentionType.HERE}.
+     *
      * @param  mentionable
      *         The mentionable entity to check on.
      * @param  types
