@@ -653,11 +653,11 @@ public class EntityBuilder
             JSONObject obj = gameJson.getJSONObject("party");
             String partyId = obj.isNull("id") ? null : obj.getString("id");
             JSONArray sizeArr = obj.isNull("size") ? null : obj.getJSONArray("size");
-            int size = 0, max = 0;
+            long size = 0, max = 0;
             if (sizeArr != null && sizeArr.length() > 0)
             {
-                size = sizeArr.getInt(0);
-                max = sizeArr.length() > 1 ? sizeArr.getInt(1) : 0;
+                size = sizeArr.getLong(0);
+                max = sizeArr.isNull(1) ? 0 : sizeArr.getLong(1);
             }
             party = new RichPresence.Party(partyId, size, max);
         }

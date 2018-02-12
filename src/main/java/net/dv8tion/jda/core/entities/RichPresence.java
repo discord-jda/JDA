@@ -399,11 +399,11 @@ public class RichPresence extends Game
     public static class Party
     {
         protected final String id;
-        protected final int size;
+        protected final long size;
 
-        protected final int max;
+        protected final long max;
 
-        public Party(String id, int size, int max)
+        public Party(String id, long size, long max)
         {
             this.id = id;
             this.size = size;
@@ -428,6 +428,16 @@ public class RichPresence extends Game
          */
         public int getSize()
         {
+            return (int)size;
+        }
+
+        /**
+         * The current size of this party, or {@code 0} if unset
+         *
+         * @return The current size of this party, or {@code 0} if unset
+         */
+        public long getSizeAsLong()
+        {
             return size;
         }
 
@@ -437,6 +447,16 @@ public class RichPresence extends Game
          * @return The maximum size of this party, or {@code 0} if unset
          */
         public int getMax()
+        {
+            return (int)max;
+        }
+
+        /**
+         * The maximum size of this party, or {@code 0} if unset
+         *
+         * @return The maximum size of this party, or {@code 0} if unset
+         */
+        public long getMaxAsLong()
         {
             return max;
         }
