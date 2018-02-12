@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.utils;
 
+import com.neovisionaries.ws.client.OpeningHandshakeException;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
@@ -25,6 +26,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.tuple.Pair;
 import org.json.JSONObject;
+import org.slf4j.Logger;
 
 import javax.security.auth.login.LoginException;
 import java.util.Queue;
@@ -34,6 +36,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class SessionControllerAdapter implements SessionController
 {
+    protected static final Logger log = JDALogger.getLog(SessionControllerAdapter.class);
     protected final Object lock = new Object();
     protected Queue<SessionConnectNode> connectQueue;
     protected AtomicLong globalRatelimit;
@@ -169,6 +172,12 @@ public class SessionControllerAdapter implements SessionController
         {
             super("SessionControllerAdapter-Worker");
             this.delay = delay;
+            super.setUncaughtExceptionHandler(this::handleFailure);
+        }
+
+        protected void handleFailure(Thread thread, Throwable exception)
+        {
+            log.error("Worker has failed with throwable!", exception);
         }
 
         @Override
@@ -185,8 +194,19 @@ public class SessionControllerAdapter implements SessionController
             }
             catch (InterruptedException ex)
             {
-                JDALogger.getLog(SessionControllerAdapter.class).error("Unable to backoff", ex);
+                log.error("Unable to backoff", ex);
             }
+            processQueue();
+            synchronized (lock)
+            {
+                workerHandle = null;
+                if (!connectQueue.isEmpty())
+                    runWorker();
+            }
+        }
+
+        protected void processQueue()
+        {
             while (!connectQueue.isEmpty())
             {
                 SessionConnectNode node = connectQueue.poll();
@@ -199,17 +219,21 @@ public class SessionControllerAdapter implements SessionController
                     if (this.delay > 0)
                         Thread.sleep(this.delay);
                 }
-                catch (InterruptedException e)
+                catch (IllegalStateException e)
                 {
-                    JDALogger.getLog(SessionControllerAdapter.class).error("Failed to run node", e);
+                    Throwable t = e.getCause();
+                    if (t instanceof OpeningHandshakeException)
+                        log.error("Failed opening handshake, appending to queue. Message: {}", e.getMessage());
+                    else
+                        log.error("Failed to establish connection for a node, appending to queue", e);
                     appendSession(node);
                 }
-            }
-            synchronized (lock)
-            {
-                workerHandle = null;
-                if (!connectQueue.isEmpty())
-                    runWorker();
+                catch (InterruptedException e)
+                {
+                    log.error("Failed to run node", e);
+                    appendSession(node);
+                    return; // caller should start a new thread
+                }
             }
         }
     }

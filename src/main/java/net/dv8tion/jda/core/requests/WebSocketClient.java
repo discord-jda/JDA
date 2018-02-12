@@ -115,7 +115,21 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         this.shardInfo = api.getShardInfo();
         this.shouldReconnect = api.isAutoReconnect();
         this.connectNode = new StartingNode();
-        api.getSessionController().appendSession(connectNode);
+        try
+        {
+            api.getSessionController().appendSession(connectNode);
+        }
+        catch (RuntimeException | Error e)
+        {
+            LOG.error("Failed to append new session to session controller queue. Shutting down!", e);
+            this.api.setStatus(JDA.Status.SHUTDOWN);
+            this.api.getEventManager().handle(
+                new ShutdownEvent(api, OffsetDateTime.now(), 1006));
+            if (e instanceof RuntimeException)
+                throw (RuntimeException) e;
+            else
+                throw (Error) e;
+        }
     }
 
     public JDA getJDA()
@@ -396,17 +410,20 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     public void close()
     {
-        socket.sendClose(1000);
+        if (socket != null)
+            socket.sendClose(1000);
     }
 
     public void close(int code)
     {
-        socket.sendClose(code);
+        if (socket != null)
+            socket.sendClose(code);
     }
 
     public void close(int code, String reason)
     {
-        socket.sendClose(code, reason);
+        if (socket != null)
+            socket.sendClose(code, reason);
     }
 
     public synchronized void shutdown()
@@ -552,10 +569,19 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             if (isInvalidate)
                 invalidate(); // 1000 means our session is dropped so we cannot resume
             api.getEventManager().handle(new DisconnectEvent(api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now()));
-            if (sessionId == null)
+            try
+            {
+                if (sessionId == null)
+                    queueReconnect();
+                else // if resume is possible
+                    reconnect();
+            }
+            catch (InterruptedException e)
+            {
+                LOG.error("Failed to resume due to interrupted thread", e);
+                invalidate();
                 queueReconnect();
-            else // if resume is possible
-                reconnect();
+            }
         }
     }
 
@@ -578,7 +604,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
-    protected void reconnect()
+    protected void reconnect() throws InterruptedException
     {
         reconnect(false, true);
     }
@@ -592,7 +618,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
      * @param  shouldHandleIdentify
      *         whether SessionReconnectQueue already handled an IDENTIFY rate limit for this session
      */
-    public void reconnect(boolean callFromQueue, boolean shouldHandleIdentify)
+    public void reconnect(boolean callFromQueue, boolean shouldHandleIdentify) throws InterruptedException
     {
         if (callFromQueue && api.getContextMap() != null)
             api.getContextMap().forEach(MDC::put);
@@ -613,23 +639,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         while (shouldReconnect)
         {
-            try
-            {
-                api.setStatus(JDA.Status.WAITING_TO_RECONNECT);
-                if (handleIdentifyRateLimit && shouldHandleIdentify)
-                {
-                    LOG.error("Encountered IDENTIFY (OP {}) Rate Limit! Waiting {} seconds before trying again!",
-                        WebSocketCode.IDENTIFY, IDENTIFY_DELAY);
-                    Thread.sleep(IDENTIFY_DELAY * 1000);
-                }
-                else
-                {
-                    Thread.sleep(reconnectTimeoutS * 1000);
-                }
-                handleIdentifyRateLimit = false;
-                api.setStatus(JDA.Status.ATTEMPTING_TO_RECONNECT);
-            }
-            catch (InterruptedException ignored) {}
+            api.setStatus(JDA.Status.WAITING_TO_RECONNECT);
+            int delay = IDENTIFY_DELAY;
+            if (handleIdentifyRateLimit && shouldHandleIdentify)
+                LOG.error("Encountered IDENTIFY (OP {}) Rate Limit! Waiting {} seconds before trying again!", WebSocketCode.IDENTIFY, IDENTIFY_DELAY);
+            else
+                delay = reconnectTimeoutS;
+            Thread.sleep(delay * 1000);
+            handleIdentifyRateLimit = false;
+            api.setStatus(JDA.Status.ATTEMPTING_TO_RECONNECT);
             LOG.warn("Attempting to reconnect!");
             try
             {
