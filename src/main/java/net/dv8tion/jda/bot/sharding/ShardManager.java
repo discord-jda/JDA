@@ -108,6 +108,8 @@ public interface ShardManager
     /**
      * The SelfUser of the logged in account.
      *
+     * <p>Note: shard-specific methods should not be used on this, such as SelfUser#getJDA.
+     *
      * @throws java.lang.IllegalStateException
      *         If there is no running shard
      *
