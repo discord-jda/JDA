@@ -120,7 +120,7 @@ public interface ShardManager
         return this.getShardCache().stream()
                 .findAny()
                 .orElseThrow(() -> new IllegalStateException("no active shards"))
-                .getSelfUser()
+                .getSelfUser();
     }
 
     /**
