@@ -30,6 +30,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.core.entities.SelfUser;
 
 /**
  * This class acts as a manager for multiple shards.
@@ -102,6 +103,24 @@ public interface ShardManager
     default int getShardsTotal()
     {
         return this.getShardsQueued() + this.getShardsRunning();
+    }
+
+    /**
+     * The SelfUser of the logged in account.
+     *
+     * <p>Note: shard-specific methods should not be used on this, such as SelfUser#getJDA.
+     *
+     * @throws java.lang.IllegalStateException
+     *         If there is no running shard
+     *
+     * @return The {@link net.dv8tion.jda.core.entities.SelfUser} for the currently logged in account.
+     */
+    default SelfUser getSelfUser()
+    {
+        return this.getShardCache().stream()
+                .findAny()
+                .orElseThrow(() -> new IllegalStateException("no active shards"))
+                .getSelfUser();
     }
 
     /**
