@@ -191,12 +191,6 @@ public class PrivateChannelImpl implements PrivateChannel
         return "PC:" + getUser().getName() + '(' + id + ')';
     }
 
-    private void checkNull(Object obj, String name)
-    {
-        if (obj == null)
-            throw new NullPointerException("Provided " + name + " was null!");
-    }
-
     private void checkBot()
     {
         if (user.isBot() && getJDA().getAccountType() == AccountType.BOT)

@@ -283,40 +283,6 @@ public class GuildImpl implements Guild
         return emoteCache;
     }
 
-    @Override
-    public RestAction<List<User>> getBans()
-    {
-        if (!isAvailable())
-            throw new GuildUnavailableException();
-        if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS))
-            throw new InsufficientPermissionException(Permission.BAN_MEMBERS);
-
-        Route.CompiledRoute route = Route.Guilds.GET_BANS.compile(getId());
-        return new RestAction<List<User>>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<List<User>> request)
-            {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                }
-
-                EntityBuilder builder = api.getEntityBuilder();
-                List<User> bans = new LinkedList<>();
-                JSONArray bannedArr = response.getArray();
-
-                for (int i = 0; i < bannedArr.length(); i++)
-                {
-                    JSONObject user = bannedArr.getJSONObject(i).getJSONObject("user");
-                    bans.add(builder.createFakeUser(user, false));
-                }
-                request.onSuccess(Collections.unmodifiableList(bans));
-            }
-        };
-    }
-
     @Nonnull
     @Override
     public RestAction<List<Ban>> getBanList()

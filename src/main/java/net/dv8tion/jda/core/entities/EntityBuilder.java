@@ -17,6 +17,8 @@
 package net.dv8tion.jda.core.entities;
 
 import gnu.trove.map.TLongObjectMap;
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.bot.entities.ApplicationInfo;
 import net.dv8tion.jda.bot.entities.impl.ApplicationInfoImpl;
 import net.dv8tion.jda.client.entities.*;
@@ -651,11 +653,11 @@ public class EntityBuilder
             JSONObject obj = gameJson.getJSONObject("party");
             String partyId = obj.isNull("id") ? null : obj.getString("id");
             JSONArray sizeArr = obj.isNull("size") ? null : obj.getJSONArray("size");
-            int size = 0, max = 0;
+            long size = 0, max = 0;
             if (sizeArr != null && sizeArr.length() > 0)
             {
-                size = sizeArr.getInt(0);
-                max = sizeArr.length() > 1 ? sizeArr.getInt(1) : 0;
+                size = sizeArr.getLong(0);
+                max = sizeArr.isNull(1) ? 0 : sizeArr.getLong(1);
             }
             party = new RichPresence.Party(partyId, size, max);
         }
@@ -921,18 +923,27 @@ public class EntityBuilder
             default: throw new IllegalArgumentException("Invalid Channel for creating a Message [" + chan.getType() + ']');
         }
 
+        TLongSet mentionedRoles = new TLongHashSet();
+        TLongSet mentionedUsers = new TLongHashSet(map(jsonObject, "mentions", (o) -> o.getLong("id")));
+        JSONArray roleMentionArr = jsonObject.optJSONArray("mention_roles");
+        if (roleMentionArr != null)
+        {
+            for (int i = 0; i < roleMentionArr.length(); i++)
+                mentionedRoles.add(roleMentionArr.getLong(i));
+        }
+
         MessageType type = MessageType.fromId(jsonObject.getInt("type"));
         switch (type)
         {
             case DEFAULT:
-                return new ReceivedMessage(id, chan, type,
-                    fromWebhook, mentionsEveryone, tts, pinned,
+                return new ReceivedMessage(id, chan, type, fromWebhook,
+                    mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
                     content, nonce, user, editTime, reactions, attachments, embeds);
             case UNKNOWN:
                 throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
             default:
-                return new SystemMessage(id, chan, type,
-                    fromWebhook, mentionsEveryone, tts, pinned,
+                return new SystemMessage(id, chan, type, fromWebhook,
+                    mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
                     content, nonce, user, editTime, reactions, attachments, embeds);
         }
 

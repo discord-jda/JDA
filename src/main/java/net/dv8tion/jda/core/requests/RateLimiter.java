@@ -22,6 +22,7 @@ import org.slf4j.MDC;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -42,6 +43,29 @@ public abstract class RateLimiter
         this.pool = new ScheduledThreadPoolExecutor(poolSize, new RateLimitThreadFactory(requester.getJDA()));
     }
 
+    protected boolean isSkipped(Iterator<Request> it, Request request)
+    {
+        try
+        {
+            if (request.isCanceled() || !request.runChecks())
+            {
+                cancel(it, request, new CancellationException("RestAction has been cancelled"));
+                return true;
+            }
+        }
+        catch (Throwable exception)
+        {
+            cancel(it, request, exception);
+            return true;
+        }
+        return false;
+    }
+
+    private void cancel(Iterator<Request> it, Request request, Throwable exception)
+    {
+        request.onFailure(exception);
+        it.remove();
+    }
 
     // -- Required Implementations --
     public abstract Long getRateLimit(Route.CompiledRoute route);

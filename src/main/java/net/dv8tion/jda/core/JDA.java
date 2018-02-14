@@ -26,7 +26,6 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.GuildAction;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
-import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
 import javax.annotation.CheckReturnValue;
 import java.util.Collection;
@@ -63,7 +62,7 @@ public interface JDA
         /**JDA's main websocket has been disconnected. This <b>DOES NOT</b> mean JDA has shutdown permanently.
          * This is an in-between status. Most likely ATTEMPTING_TO_RECONNECT or SHUTTING_DOWN/SHUTDOWN will soon follow.*/
         DISCONNECTED,
-        /** JDA session has been added to {@link net.dv8tion.jda.core.requests.SessionReconnectQueue SessionReconnectQueue}
+        /** JDA session has been added to {@link net.dv8tion.jda.core.utils.SessionController SessionController}
          * and is awaiting to be dequeued for reconnecting.*/
         RECONNECT_QUEUED,
         /**When trying to reconnect to Discord JDA encountered an issue, most likely related to a lack of internet connection,

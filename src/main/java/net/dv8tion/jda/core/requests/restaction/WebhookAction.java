@@ -27,6 +27,7 @@ import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import java.util.function.BooleanSupplier;
 
 /**
  * {@link net.dv8tion.jda.core.entities.Webhook Webhook} Builder system created as an extension of {@link net.dv8tion.jda.core.requests.RestAction}
@@ -62,6 +63,12 @@ public class WebhookAction extends AuditableRestAction<Webhook>
 
         this.name = name;
         return this;
+    }
+
+    @Override
+    public WebhookAction setCheck(BooleanSupplier checks)
+    {
+        return (WebhookAction) super.setCheck(checks);
     }
 
     /**

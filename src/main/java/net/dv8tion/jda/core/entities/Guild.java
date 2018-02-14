@@ -784,36 +784,6 @@ public interface Guild extends ISnowflake
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link #isAvailable() available}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@literal List<}{@link net.dv8tion.jda.core.entities.User User}{@literal >}
-     *         <br>An unmodifiable list of all users currently banned from this Guild
-     *
-     * @deprecated
-     *         Use {@link #getBanList()} instead
-     */
-    @Deprecated
-    @CheckReturnValue
-    RestAction<List<User>> getBans();
-
-    /**
-     * Gets an unmodifiable list of the currently banned {@link net.dv8tion.jda.core.entities.User Users}.
-     * <br>If you wish to ban or unban a user, please {@link GuildController#ban(User, int) GuildController.ban(User, int)} or
-     * {@link GuildController#unban(User) GuildController.ban(User)}.
-     *
-     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The ban list cannot be fetched due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>We were removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link #isAvailable() available}
-     *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@literal List<}{@link net.dv8tion.jda.core.entities.Guild.Ban Ban}{@literal >}
      *         <br>An unmodifiable list of all users currently banned from this Guild
      */
