@@ -26,9 +26,11 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.core.utils.MiscUtil;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class PermissionOverrideImpl implements PermissionOverride
 {
@@ -36,7 +38,7 @@ public class PermissionOverrideImpl implements PermissionOverride
     private final Channel channel;
     private final IPermissionHolder permissionHolder;
 
-    protected final Object mngLock = new Object();
+    protected final ReentrantLock mngLock = new ReentrantLock();
     protected volatile PermOverrideManager manager;
     protected volatile PermOverrideManagerUpdatable managerUpdatable;
 
@@ -134,12 +136,12 @@ public class PermissionOverrideImpl implements PermissionOverride
         PermOverrideManager mng = manager;
         if (mng == null)
         {
-            synchronized (mngLock)
+            mng = MiscUtil.locked(mngLock, () ->
             {
-                mng = manager;
-                if (mng == null)
-                    mng = manager = new PermOverrideManager(this);
-            }
+                if (manager == null)
+                    manager = new PermOverrideManager(this);
+                return manager;
+            });
         }
         return mng;
     }
@@ -151,12 +153,12 @@ public class PermissionOverrideImpl implements PermissionOverride
         PermOverrideManagerUpdatable mng = managerUpdatable;
         if (mng == null)
         {
-            synchronized (mngLock)
+            mng = MiscUtil.locked(mngLock, () ->
             {
-                mng = managerUpdatable;
-                if (mng == null)
-                    mng = managerUpdatable = new PermOverrideManagerUpdatable(this);
-            }
+                if (managerUpdatable == null)
+                    managerUpdatable = new PermOverrideManagerUpdatable(this);
+                return managerUpdatable;
+            });
         }
         return mng;
     }

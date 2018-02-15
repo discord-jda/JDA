@@ -28,7 +28,6 @@ import javax.annotation.CheckReturnValue;
  * An object representing Webhooks in Discord
  *
  * @since  3.0
- * @author Florian Spieß
  */
 public interface Webhook extends ISnowflake
 {

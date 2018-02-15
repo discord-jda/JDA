@@ -28,14 +28,15 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.core.utils.MiscUtil;
 
 import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Represents a Custom Emote. (Emoji in official Discord API terminology)
  *
  * @since  2.2
- * @author Florian Spieß
  */
 public class EmoteImpl implements Emote
 {
@@ -45,7 +46,7 @@ public class EmoteImpl implements Emote
     private final JDAImpl api;
     private final Set<Role> roles;
 
-    private final Object mngLock = new Object();
+    private final ReentrantLock mngLock = new ReentrantLock();
     private volatile EmoteManager manager = null;
     private volatile EmoteManagerUpdatable managerUpdatable = null;
 
@@ -119,12 +120,12 @@ public class EmoteImpl implements Emote
         EmoteManager m = manager;
         if (m == null)
         {
-            synchronized (mngLock)
+            m = MiscUtil.locked(mngLock, () ->
             {
-                m = manager;
-                if (m == null)
-                    m = manager = new EmoteManager(this);
-            }
+                if (manager == null)
+                    manager = new EmoteManager(this);
+                return manager;
+            });
         }
         return m;
     }
@@ -136,12 +137,12 @@ public class EmoteImpl implements Emote
         EmoteManagerUpdatable m = managerUpdatable;
         if (m == null)
         {
-            synchronized (mngLock)
+            m = MiscUtil.locked(mngLock, () ->
             {
-                m = managerUpdatable;
-                if (m == null)
-                    m = managerUpdatable = new EmoteManagerUpdatable(this);
-            }
+                if (managerUpdatable == null)
+                    managerUpdatable = new EmoteManagerUpdatable(this);
+                return managerUpdatable;
+            });
         }
         return m;
     }

@@ -25,6 +25,7 @@ import okhttp3.RequestBody;
 import okio.BufferedSink;
 import okio.Okio;
 import okio.Source;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -34,6 +35,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Formatter;
 import java.util.TimeZone;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Supplier;
 
 public class MiscUtil
 {
@@ -208,6 +211,42 @@ public class MiscUtil
         {
             throw new NumberFormatException(
                 String.format("The specified ID is not a valid snowflake (%s). Expecting a valid long value!", input));
+        }
+    }
+
+    public static <E> E locked(ReentrantLock lock, Supplier<E> task)
+    {
+        try
+        {
+            lock.lockInterruptibly();
+            return task.get();
+        }
+        catch (InterruptedException e)
+        {
+            throw new IllegalStateException(e);
+        }
+        finally
+        {
+            if (lock.isHeldByCurrentThread())
+                lock.unlock();
+        }
+    }
+
+    public static void locked(ReentrantLock lock, Runnable task)
+    {
+        try
+        {
+            lock.lockInterruptibly();
+            task.run();
+        }
+        catch (InterruptedException e)
+        {
+            throw new IllegalStateException(e);
+        }
+        finally
+        {
+            if (lock.isHeldByCurrentThread())
+                lock.unlock();
         }
     }
 

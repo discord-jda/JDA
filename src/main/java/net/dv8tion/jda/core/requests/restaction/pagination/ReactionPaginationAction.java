@@ -51,7 +51,6 @@ import java.util.List;
  * </code></pre>
  *
  * @since  3.1
- * @author Florian Spieß
  */
 public class ReactionPaginationAction extends PaginationAction<User, ReactionPaginationAction>
 {

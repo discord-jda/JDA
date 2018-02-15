@@ -31,7 +31,6 @@ import java.util.List;
  * <p><b>This does not represent unicode emojis like they are used in the official client! (:smiley: is not a custom emoji)</b>
  *
  * @since  2.2
- * @author Florian Spieß
  */
 public interface Emote extends ISnowflake, IMentionable, IFakeable
 {

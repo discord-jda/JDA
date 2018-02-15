@@ -23,10 +23,13 @@ import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.managers.AccountManager;
 import net.dv8tion.jda.core.managers.AccountManagerUpdatable;
 import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.utils.MiscUtil;
+
+import java.util.concurrent.locks.ReentrantLock;
 
 public class SelfUserImpl extends UserImpl implements SelfUser
 {
-    protected final Object mngLock = new Object();
+    protected final ReentrantLock mngLock = new ReentrantLock();
     protected volatile AccountManager manager;
     protected volatile AccountManagerUpdatable managerUpdatable;
 
@@ -121,12 +124,12 @@ public class SelfUserImpl extends UserImpl implements SelfUser
         AccountManager mng = manager;
         if (mng == null)
         {
-            synchronized (mngLock)
+            mng = MiscUtil.locked(mngLock, () ->
             {
-                mng = manager;
-                if (mng == null)
-                    mng = manager = new AccountManager(this);
-            }
+                if (manager == null)
+                    manager = new AccountManager(this);
+                return manager;
+            });
         }
         return mng;
     }
@@ -138,12 +141,12 @@ public class SelfUserImpl extends UserImpl implements SelfUser
         AccountManagerUpdatable mng = managerUpdatable;
         if (mng == null)
         {
-            synchronized (mngLock)
+            mng = MiscUtil.locked(mngLock, () ->
             {
-                mng = managerUpdatable;
-                if (mng == null)
-                    mng = managerUpdatable = new AccountManagerUpdatable(this);
-            }
+                if (managerUpdatable == null)
+                    managerUpdatable = new AccountManagerUpdatable(this);
+                return managerUpdatable;
+            });
         }
         return mng;
     }

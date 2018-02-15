@@ -52,7 +52,6 @@ import java.util.List;
  * </code></pre>
  *
  * @since  3.0
- * @author Florian Spieß
  */
 public class MentionPaginationAction extends PaginationAction<Message, MentionPaginationAction>
 {

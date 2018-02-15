@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> implements Channel
@@ -47,7 +48,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
 
     protected final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
 
-    protected final Object mngLock = new Object();
+    protected final ReentrantLock mngLock = new ReentrantLock();
     protected volatile ChannelManager manager;
     protected volatile ChannelManagerUpdatable managerUpdatable;
 
@@ -132,12 +133,12 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         ChannelManager mng = manager;
         if (mng == null)
         {
-            synchronized (mngLock)
+            mng = MiscUtil.locked(mngLock, () ->
             {
-                mng = manager;
-                if (mng == null)
-                    mng = manager = new ChannelManager(this);
-            }
+                if (manager == null)
+                    manager = new ChannelManager(this);
+                return manager;
+            });
         }
         return mng;
     }
@@ -149,12 +150,12 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         ChannelManagerUpdatable mng = managerUpdatable;
         if (mng == null)
         {
-            synchronized (mngLock)
+            mng = MiscUtil.locked(mngLock, () ->
             {
-                mng = managerUpdatable;
-                if (mng == null)
-                    mng = managerUpdatable = new ChannelManagerUpdatable(this);
-            }
+                if (managerUpdatable == null)
+                    managerUpdatable = new ChannelManagerUpdatable(this);
+                return managerUpdatable;
+            });
         }
         return mng;
     }

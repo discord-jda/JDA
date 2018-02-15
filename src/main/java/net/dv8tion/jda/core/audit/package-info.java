@@ -25,6 +25,5 @@
  * <br>To identify what kind of entry is represented use {@link net.dv8tion.jda.core.audit.ActionType ActionType}!
  *
  * @since  3.1.1
- * @author Florian Spieß
  */
 package net.dv8tion.jda.core.audit;

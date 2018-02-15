@@ -38,7 +38,6 @@ import java.util.function.BooleanSupplier;
  * This extension allows setting properties before executing the action.
  *
  * @since  3.0
- * @author Florian Spieß
  */
 public class RoleAction extends AuditableRestAction<Role>
 {

@@ -51,6 +51,7 @@ import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 public class GuildImpl implements Guild
@@ -67,7 +68,7 @@ public class GuildImpl implements Guild
 
     private final TLongObjectMap<JSONObject> cachedPresences = MiscUtil.newLongMap();
 
-    private final Object mngLock = new Object();
+    private final ReentrantLock mngLock = new ReentrantLock();
     private volatile GuildManager manager;
     private volatile GuildManagerUpdatable managerUpdatable;
     private volatile GuildController controller;
@@ -367,12 +368,12 @@ public class GuildImpl implements Guild
         GuildManager mng = manager;
         if (mng == null)
         {
-            synchronized (mngLock)
+            mng = MiscUtil.locked(mngLock, () ->
             {
-                mng = manager;
-                if (mng == null)
-                    mng = manager = new GuildManager(this);
-            }
+                if (manager == null)
+                    manager = new GuildManager(this);
+                return manager;
+            });
         }
         return mng;
     }
@@ -384,12 +385,12 @@ public class GuildImpl implements Guild
         GuildManagerUpdatable mng = managerUpdatable;
         if (mng == null)
         {
-            synchronized (mngLock)
+            mng = MiscUtil.locked(mngLock, () ->
             {
-                mng = managerUpdatable;
-                if (mng == null)
-                    mng = managerUpdatable = new GuildManagerUpdatable(this);
-            }
+                if (managerUpdatable == null)
+                    managerUpdatable = new GuildManagerUpdatable(this);
+                return managerUpdatable;
+            });
         }
         return mng;
     }
@@ -400,12 +401,12 @@ public class GuildImpl implements Guild
         GuildController ctrl = controller;
         if (ctrl == null)
         {
-            synchronized (mngLock)
+            ctrl = MiscUtil.locked(mngLock, () ->
             {
-                ctrl = controller;
-                if (ctrl == null)
-                    ctrl = controller = new GuildController(this);
-            }
+                if (controller == null)
+                    controller = new GuildController(this);
+                return controller;
+            });
         }
         return ctrl;
     }
