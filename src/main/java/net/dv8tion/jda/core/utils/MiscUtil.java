@@ -55,7 +55,7 @@ public class MiscUtil
      */
     public static long getDiscordTimestamp(long millisTimestamp)
     {
-        return (millisTimestamp << TIMESTAMP_OFFSET) + DISCORD_EPOCH;
+        return (millisTimestamp - DISCORD_EPOCH) << TIMESTAMP_OFFSET;
     }
 
     /**
