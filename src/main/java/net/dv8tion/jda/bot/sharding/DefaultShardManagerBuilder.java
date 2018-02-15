@@ -17,7 +17,6 @@ package net.dv8tion.jda.bot.sharding;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
 import net.dv8tion.jda.core.OnlineStatus;
-import net.dv8tion.jda.core.ShardedRateLimiter;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.hooks.IEventManager;
@@ -65,7 +64,6 @@ public class DefaultShardManagerBuilder
     protected IntFunction<OnlineStatus> statusProvider = null;
     protected Collection<Integer> shards = null;
     protected IEventManager eventManager = null;
-    protected ShardedRateLimiter shardedRateLimiter = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
     protected WebSocketFactory wsFactory = null;
     protected IAudioSendFactory audioSendFactory = null;
@@ -83,8 +81,6 @@ public class DefaultShardManagerBuilder
      * Sets the {@link net.dv8tion.jda.core.utils.SessionController SessionController}
      * for the resulting ShardManager instance. This can be used to sync behaviour and state between shards
      * of a bot and should be one and the same instance on all builders for the shards.
-     *
-     * <p><b>Setting this disables the {@link #setShardedRateLimiter(ShardedRateLimiter)} settings.</b>
      *
      * @param  controller
      *         The {@link net.dv8tion.jda.core.utils.SessionController SessionController} to use
@@ -547,32 +543,6 @@ public class DefaultShardManagerBuilder
     }
 
     /**
-     * Sets the {@link net.dv8tion.jda.core.ShardedRateLimiter ShardedRateLimiter} that will be used to keep
-     * track of rate limits across sessions.
-     * <br>When one shard hits the global rate limit all others will be informed by this value wrapper.
-     *
-     * <p>It is recommended to use the same ShardedRateLimiter for all shards and not one each. This is
-     * similar to {@link net.dv8tion.jda.core.requests.SessionReconnectQueue SessionReconnectQueue}!
-     *
-     * <p>When you construct multiple ShardManagers manage your shards it is recommended to use the same ShardedRateLimiter on
-     * all of them. But it is to be <u>avoided</u> to use the same ShardedRateLimiter for different accounts/tokens!
-     *
-     * <p><b>If none is provided the ShardManager will use fall back to JDA's default implementation!</b>
-     *
-     * @param  shardedRateLimiter
-     *         ShardedRateLimiter used to keep track of cross-session rate limits
-     *
-     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
-     */
-    @Deprecated
-    public DefaultShardManagerBuilder setShardedRateLimiter(ShardedRateLimiter shardedRateLimiter)
-    {
-        Checks.notNull(shardedRateLimiter, "shardedRateLimiter");
-        this.shardedRateLimiter = shardedRateLimiter;
-        return this;
-    }
-
-    /**
      * Sets the list of shards the {@link DefaultShardManager DefaultShardManager} should contain.
      *
      * <p><b>This does not have any effect if the total shard count is set to {@code -1} (get recommended shards from discord).</b>
@@ -763,7 +733,7 @@ public class DefaultShardManagerBuilder
             this.shardsTotal, this.shards, this.sessionController,
             this.listeners, this.token, this.eventManager,
             this.audioSendFactory, this.gameProvider, this.statusProvider,
-            this.httpClientBuilder, this.wsFactory, this.threadFactory, this.shardedRateLimiter,
+            this.httpClientBuilder, this.wsFactory, this.threadFactory,
             this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting,
             this.autoReconnect, this.idleProvider, this.retryOnTimeout, this.useShutdownNow, this.enableContext, this.contextProvider);
 
