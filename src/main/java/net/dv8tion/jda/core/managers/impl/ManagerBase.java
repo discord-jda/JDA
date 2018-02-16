@@ -63,12 +63,15 @@ public abstract class ManagerBase extends AuditableRestAction<Void>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void queue(Consumer<Void> success, Consumer<Throwable> failure)
     {
         if (shouldUpdate())
             super.queue(success, failure);
-        else
+        else if (success != null)
             success.accept(null);
+        else if (DEFAULT_SUCCESS != null)
+            DEFAULT_SUCCESS.accept(null);
     }
 
     @Override
