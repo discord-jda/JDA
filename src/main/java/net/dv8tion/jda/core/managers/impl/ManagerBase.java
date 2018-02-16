@@ -40,11 +40,10 @@ public abstract class ManagerBase extends AuditableRestAction<Void>
     {
         //logic explanation:
         //0101 = fields
+        //1010 = ~fields
         //1100 = set
-        //0100 = fields & set
-        //1011 = ~(fields & set)
-        //1000 = set & ~(fields & set)
-        set &= ~(fields & set);
+        //1000 = set & ~fields
+        set &= ~fields;
         return this;
     }
 
