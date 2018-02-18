@@ -31,7 +31,6 @@ import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
-import java.util.function.BooleanSupplier;
 
 /**
  * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.core.entities.Guild Guild}.
@@ -46,6 +45,8 @@ import java.util.function.BooleanSupplier;
  *        .setExplicitContentLevel(Guild.ExplicitContentLevel.HIGH)
  *        .queue();
  * }</pre>
+ *
+ * @see net.dv8tion.jda.core.entities.Guild#getManager()
  */
 public class GuildManager extends ManagerBase
 {
@@ -133,11 +134,18 @@ public class GuildManager extends ManagerBase
     public GuildManager reset(int fields)
     {
         super.reset(fields);
-        //clear icon fields due to memory intensive footprint
+        if ((fields & NAME) == NAME)
+            this.name = null;
+        if ((fields & REGION) == REGION)
+            this.region = null;
         if ((fields & ICON) == ICON)
-            icon = null;
+            this.icon = null;
         if ((fields & SPLASH) == SPLASH)
-            splash = null;
+            this.splash = null;
+        if ((fields & AFK_CHANNEL) == AFK_CHANNEL)
+            this.afkChannel = null;
+        if ((fields & SYSTEM_CHANNEL) == SYSTEM_CHANNEL)
+            this.systemChannel = null;
         return this;
     }
 
@@ -184,8 +192,12 @@ public class GuildManager extends ManagerBase
     public GuildManager reset()
     {
         super.reset();
-        icon = null;
-        splash = null;
+        this.name = null;
+        this.region = null;
+        this.icon = null;
+        this.splash = null;
+        this.afkChannel = null;
+        this.systemChannel = null;
         return this;
     }
 
@@ -421,17 +433,6 @@ public class GuildManager extends ManagerBase
     }
 
     @Override
-    protected BooleanSupplier finalizeChecks()
-    {
-        return () ->
-        {
-            if (!guild.getSelfMember().hasPermission(Permission.MANAGE_SERVER))
-                throw new InsufficientPermissionException(Permission.MANAGE_SERVER);
-            return true;
-        };
-    }
-
-    @Override
     protected RequestBody finalizeData()
     {
         if (!guild.isAvailable())
@@ -463,5 +464,13 @@ public class GuildManager extends ManagerBase
 
         reset(); //now that we've built our JSON object, reset the manager back to the non-modified state
         return getRequestBody(body);
+    }
+
+    @Override
+    protected boolean checkPermissions()
+    {
+        if (!guild.getSelfMember().hasPermission(Permission.MANAGE_SERVER))
+            throw new InsufficientPermissionException(Permission.MANAGE_SERVER);
+        return super.checkPermissions();
     }
 }

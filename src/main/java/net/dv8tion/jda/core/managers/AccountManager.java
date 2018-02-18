@@ -42,6 +42,9 @@ import javax.annotation.CheckReturnValue;
  *        .setAvatar(icon)
  *        .queue();
  * }</pre>
+ *
+ * @see net.dv8tion.jda.core.JDA#getSelfUser() JDA.getSelfUser()
+ * @see net.dv8tion.jda.core.entities.SelfUser#getManager()
  */
 public class AccountManager extends ManagerBase
 {
@@ -181,7 +184,6 @@ public class AccountManager extends ManagerBase
 
     /**
      * Sets the username for the currently logged in account
-     * <br>More information can be found {@link AccountManagerUpdatable#getNameField() here}!
      *
      * @param  name
      *         The new username
@@ -198,9 +200,7 @@ public class AccountManager extends ManagerBase
      *             <li>Less than 2 or more than 32 characters in length</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
-     *         The update RestAction that will set the provided name.
-     *         <br>See {@link net.dv8tion.jda.core.managers.AccountManagerUpdatable#update(String) #update()} for more information
+     * @return AccountManager for chaining convenience
      */
     @CheckReturnValue
     public AccountManager setName(String name, String currentPassword)

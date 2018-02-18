@@ -45,6 +45,8 @@ import java.util.List;
  *
  * @since  3.0
  * @author Aljoscha Grebe
+ *
+ * @see    net.dv8tion.jda.client.entities.Application#getManager()
  */
 public class ApplicationManager extends ManagerBase
 {

@@ -29,7 +29,6 @@ import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
-import java.util.function.BooleanSupplier;
 import java.util.regex.Pattern;
 
 /**
@@ -48,6 +47,7 @@ import java.util.regex.Pattern;
  *        .queue();
  * }</pre>
  *
+ * @see net.dv8tion.jda.core.entities.Channel#getManager()
  */
 public class ChannelManager extends ManagerBase
 {
@@ -146,6 +146,12 @@ public class ChannelManager extends ManagerBase
     public ChannelManager reset(int fields)
     {
         super.reset(fields);
+        if ((fields & NAME) == NAME)
+            this.name = null;
+        if ((fields & PARENT) == PARENT)
+            this.parent = null;
+        if ((fields & TOPIC) == TOPIC)
+            this.topic = null;
         return this;
     }
 
@@ -187,6 +193,9 @@ public class ChannelManager extends ManagerBase
     public ChannelManager reset()
     {
         super.reset();
+        this.name = null;
+        this.parent = null;
+        this.topic = null;
         return this;
     }
 
@@ -387,17 +396,6 @@ public class ChannelManager extends ManagerBase
     }
 
     @Override
-    protected BooleanSupplier finalizeChecks()
-    {
-        return () ->
-        {
-            if (!getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_CHANNEL))
-                throw new InsufficientPermissionException(Permission.MANAGE_CHANNEL);
-            return true;
-        };
-    }
-
-    @Override
     protected RequestBody finalizeData()
     {
         JSONObject frame = new JSONObject().put("name", channel.getName());
@@ -418,5 +416,13 @@ public class ChannelManager extends ManagerBase
 
         reset();
         return getRequestBody(frame);
+    }
+
+    @Override
+    protected boolean checkPermissions()
+    {
+        if (!getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_CHANNEL))
+            throw new InsufficientPermissionException(Permission.MANAGE_CHANNEL);
+        return super.checkPermissions();
     }
 }

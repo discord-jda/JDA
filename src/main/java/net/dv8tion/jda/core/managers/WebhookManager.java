@@ -29,7 +29,6 @@ import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
-import java.util.function.BooleanSupplier;
 
 /**
  * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.core.entities.Webhook Webhook}.
@@ -44,6 +43,8 @@ import java.util.function.BooleanSupplier;
  *        .setAvatar(null)
  *        .queue();
  * }</pre>
+ *
+ * @see net.dv8tion.jda.core.entities.Webhook#getManager()
  */
 public class WebhookManager extends ManagerBase
 {
@@ -129,9 +130,12 @@ public class WebhookManager extends ManagerBase
     public WebhookManager reset(int fields)
     {
         super.reset(fields);
-        //the avatar encoding is expected to have a high memory footprint, so we clear it here
+        if ((fields & NAME) == NAME)
+            this.name = null;
+        if ((fields & CHANNEL) == CHANNEL)
+            this.channel = null;
         if ((fields & AVATAR) == AVATAR)
-            avatar = null;
+            this.avatar = null;
         return this;
     }
 
@@ -170,7 +174,9 @@ public class WebhookManager extends ManagerBase
     public WebhookManager reset()
     {
         super.reset();
-        avatar = null;
+        this.name = null;
+        this.channel = null;
+        this.avatar = null;
         return this;
     }
 
@@ -242,17 +248,6 @@ public class WebhookManager extends ManagerBase
     }
 
     @Override
-    protected BooleanSupplier finalizeChecks()
-    {
-        return () ->
-        {
-            if (!getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_WEBHOOKS))
-                throw new InsufficientPermissionException(Permission.MANAGE_WEBHOOKS);
-            return true;
-        };
-    }
-
-    @Override
     protected RequestBody finalizeData()
     {
         JSONObject data = new JSONObject();
@@ -264,5 +259,13 @@ public class WebhookManager extends ManagerBase
             data.put("avatar", avatar == null ? JSONObject.NULL : avatar.getEncoding());
 
         return getRequestBody(data);
+    }
+
+    @Override
+    protected boolean checkPermissions()
+    {
+        if (!getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_WEBHOOKS))
+            throw new InsufficientPermissionException(Permission.MANAGE_WEBHOOKS);
+        return super.checkPermissions();
     }
 }

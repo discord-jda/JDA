@@ -113,6 +113,8 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      *
      * @throws IllegalStateException
      *         if this emote is fake
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}
      *
      * @return The EmoteManager for this Emote
      */

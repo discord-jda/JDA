@@ -33,7 +33,6 @@ import javax.annotation.CheckReturnValue;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.function.BooleanSupplier;
 
 /**
  * Manager providing functionality to update one or more fields for an {@link net.dv8tion.jda.core.entities.Emote Emote}.
@@ -48,6 +47,8 @@ import java.util.function.BooleanSupplier;
  *        .setRoles(roles)
  *        .queue();
  * }</pre>
+ *
+ * @see net.dv8tion.jda.core.entities.Emote#getManager()
  */
 public class EmoteManager extends ManagerBase
 {
@@ -134,6 +135,8 @@ public class EmoteManager extends ManagerBase
         super.reset(fields);
         if ((fields & ROLES) == ROLES)
             withLock(this.roles, List::clear);
+        if ((fields & NAME) == NAME)
+            this.name = null;
         return this;
     }
 
@@ -172,6 +175,7 @@ public class EmoteManager extends ManagerBase
     {
         super.reset();
         withLock(this.roles, List::clear);
+        this.name = null;
         return this;
     }
 
@@ -242,17 +246,6 @@ public class EmoteManager extends ManagerBase
     }
 
     @Override
-    protected BooleanSupplier finalizeChecks()
-    {
-        return () ->
-        {
-            if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
-                throw new InsufficientPermissionException(Permission.MANAGE_EMOTES);
-            return true;
-        };
-    }
-
-    @Override
     protected RequestBody finalizeData()
     {
         JSONObject object = new JSONObject();
@@ -268,4 +261,11 @@ public class EmoteManager extends ManagerBase
         return getRequestBody(object);
     }
 
+    @Override
+    protected boolean checkPermissions()
+    {
+        if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
+            throw new InsufficientPermissionException(Permission.MANAGE_EMOTES);
+        return super.checkPermissions();
+    }
 }

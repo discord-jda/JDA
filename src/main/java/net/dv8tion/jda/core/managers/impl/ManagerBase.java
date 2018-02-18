@@ -25,6 +25,7 @@ import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 public abstract class ManagerBase extends AuditableRestAction<Void>
@@ -34,6 +35,7 @@ public abstract class ManagerBase extends AuditableRestAction<Void>
     protected ManagerBase(JDA api, Route.CompiledRoute route)
     {
         super(api, route);
+        checkPermissions();
     }
 
     public ManagerBase reset(int fields)
@@ -91,6 +93,12 @@ public abstract class ManagerBase extends AuditableRestAction<Void>
             request.onFailure(response);
     }
 
+    @Override
+    protected BooleanSupplier finalizeChecks()
+    {
+        return this::checkPermissions;
+    }
+
     protected Object opt(Object it)
     {
         return it == null ? JSONObject.NULL : it;
@@ -112,5 +120,10 @@ public abstract class ManagerBase extends AuditableRestAction<Void>
         {
             consumer.accept(object);
         }
+    }
+
+    protected boolean checkPermissions()
+    {
+        return true;
     }
 }

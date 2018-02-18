@@ -34,7 +34,6 @@ import java.awt.Color;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.BooleanSupplier;
 
 /**
  * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.core.entities.Role Role}.
@@ -49,6 +48,8 @@ import java.util.function.BooleanSupplier;
  *        .setColor(Color.RED)
  *        .queue();
  * }</pre>
+ *
+ * @see net.dv8tion.jda.core.entities.Role#getManager()
  */
 public class RoleManager extends ManagerBase
 {
@@ -130,8 +131,8 @@ public class RoleManager extends ManagerBase
     public RoleManager reset(int fields)
     {
         super.reset(fields);
-        if ((fields & PERMISSION) == PERMISSION)
-            permissions = 0;
+        if ((fields & NAME) == NAME)
+            this.name = null;
         return this;
     }
 
@@ -172,7 +173,7 @@ public class RoleManager extends ManagerBase
     public RoleManager reset()
     {
         super.reset();
-        permissions = 0;
+        this.name = null;
         return this;
     }
 
@@ -430,28 +431,6 @@ public class RoleManager extends ManagerBase
     }
 
     @Override
-    protected BooleanSupplier finalizeChecks()
-    {
-        return () ->
-        {
-            Member selfMember = getGuild().getSelfMember();
-            long selfPermissions = PermissionUtil.getEffectivePermission(selfMember);
-            if ((selfPermissions & Permission.MANAGE_ROLES.getRawValue()) == 0)
-                throw new InsufficientPermissionException(Permission.MANAGE_ROLES);
-            if (!selfMember.canInteract(role))
-                throw new HierarchyException("Cannot modify a role that is higher or equal in hierarchy");
-            long missingRaw = ~selfPermissions & permissions;
-            if (missingRaw != 0)
-            {
-                List<Permission> missingPermissions = Permission.getPermissions(missingRaw);
-                if (!missingPermissions.isEmpty())
-                    throw new InsufficientPermissionException(missingPermissions.get(0));
-            }
-            return true;
-        };
-    }
-
-    @Override
     protected RequestBody finalizeData()
     {
         JSONObject object = new JSONObject().put("name", role.getName());
@@ -467,5 +446,24 @@ public class RoleManager extends ManagerBase
             object.put("color", color & 0xFFFFFF);
         reset();
         return getRequestBody(object);
+    }
+
+    @Override
+    protected boolean checkPermissions()
+    {
+        Member selfMember = getGuild().getSelfMember();
+        long selfPermissions = PermissionUtil.getEffectivePermission(selfMember);
+        if ((selfPermissions & Permission.MANAGE_ROLES.getRawValue()) == 0)
+            throw new InsufficientPermissionException(Permission.MANAGE_ROLES);
+        if (!selfMember.canInteract(role))
+            throw new HierarchyException("Cannot modify a role that is higher or equal in hierarchy");
+        long missingRaw = ~selfPermissions & permissions;
+        if (missingRaw != 0)
+        {
+            List<Permission> missingPermissions = Permission.getPermissions(missingRaw);
+            if (!missingPermissions.isEmpty())
+                throw new InsufficientPermissionException(missingPermissions.get(0));
+        }
+        return super.checkPermissions();
     }
 }

@@ -940,8 +940,7 @@ public interface JDA
     /**
      * Returns the currently logged in account represented by {@link net.dv8tion.jda.core.entities.SelfUser SelfUser}.
      * <br>Account settings <b>cannot</b> be modified using this object. If you wish to modify account settings please
-     * use the AccountManager which is accessible by {@link net.dv8tion.jda.core.entities.SelfUser#getManager()} or
-     * {@link net.dv8tion.jda.core.entities.SelfUser#getManagerUpdatable()}.
+     * use the AccountManager which is accessible by {@link net.dv8tion.jda.core.entities.SelfUser#getManager()}.
      *
      * @return The currently logged in account.
      */

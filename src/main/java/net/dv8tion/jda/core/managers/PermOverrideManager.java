@@ -29,7 +29,6 @@ import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 import java.util.Collection;
-import java.util.function.BooleanSupplier;
 
 /**
  * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}.
@@ -44,6 +43,8 @@ import java.util.function.BooleanSupplier;
  *        .clear(Permission.MESSAGE_MANAGE)
  *        .queue();
  * }</pre>
+ *
+ * @see net.dv8tion.jda.core.entities.PermissionOverride#getManager()
  */
 public class PermOverrideManager extends ManagerBase
 {
@@ -363,17 +364,6 @@ public class PermOverrideManager extends ManagerBase
     }
 
     @Override
-    protected BooleanSupplier finalizeChecks()
-    {
-        return () ->
-        {
-            if (!getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
-                throw new InsufficientPermissionException(Permission.MANAGE_PERMISSIONS);
-            return true;
-        };
-    }
-
-    @Override
     protected RequestBody finalizeData()
     {
         String targetId = override.isMemberOverride() ? override.getMember().getUser().getId() : override.getRole().getId();
@@ -385,5 +375,13 @@ public class PermOverrideManager extends ManagerBase
                 .put("deny",  shouldUpdate(DENIED)  ? this.denied  : JSONObject.NULL));
         reset();
         return data;
+    }
+
+    @Override
+    protected boolean checkPermissions()
+    {
+        if (!getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
+            throw new InsufficientPermissionException(Permission.MANAGE_PERMISSIONS);
+        return super.checkPermissions();
     }
 }

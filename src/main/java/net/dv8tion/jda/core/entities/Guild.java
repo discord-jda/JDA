@@ -43,8 +43,7 @@ public interface Guild extends ISnowflake
     /**
      * The human readable name of the {@link net.dv8tion.jda.core.entities.Guild Guild}.
      * <p>
-     * This value can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setName(String)}
-     * or {@link net.dv8tion.jda.core.managers.GuildManagerUpdatable#getNameField()}.
+     * This value can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setName(String)}.
      *
      * @return Never-null String containing the Guild's name.
      */
@@ -54,8 +53,7 @@ public interface Guild extends ISnowflake
      * The Discord hash-id of the {@link net.dv8tion.jda.core.entities.Guild Guild} icon image.
      * If no icon has been set, this returns {@code null}.
      * <p>
-     * The Guild icon can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setIcon(Icon)}
-     * or {@link net.dv8tion.jda.core.managers.GuildManagerUpdatable#getIconField()}.
+     * The Guild icon can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setIcon(Icon)}.
      *
      * @return Possibly-null String containing the Guild's icon hash-id.
      */
@@ -65,8 +63,7 @@ public interface Guild extends ISnowflake
      * The URL of the {@link net.dv8tion.jda.core.entities.Guild Guild} icon image.
      * If no icon has been set, this returns {@code null}.
      * <p>
-     * The Guild icon can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setIcon(Icon)}
-     * or {@link net.dv8tion.jda.core.managers.GuildManagerUpdatable#getIconField()}.
+     * The Guild icon can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setIcon(Icon)}.
      *
      * @return Possibly-null String containing the Guild's icon URL.
      */
@@ -94,8 +91,7 @@ public interface Guild extends ISnowflake
      * If no splash has been set, this returns {@code null}.
      * <br>Splash images are VIP/Partner Guild only.
      * <p>
-     * The Guild splash can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setSplash(Icon)}
-     * or {@link net.dv8tion.jda.core.managers.GuildManagerUpdatable#getSplashField()}.
+     * The Guild splash can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setSplash(Icon)}.
      *
      * @return Possibly-null String containing the Guild's splash hash-id
      */
@@ -107,8 +103,7 @@ public interface Guild extends ISnowflake
      * If no splash has been set, this returns {@code null}.
      * <br>Splash images are VIP/Partner Guild only.
      * <p>
-     * The Guild splash can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setSplash(Icon)}
-     * or {@link net.dv8tion.jda.core.managers.GuildManagerUpdatable#getSplashField()}.
+     * The Guild splash can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setSplash(Icon)}.
      *
      * @return Possibly-null String containing the Guild's splash URL.
      */
@@ -152,8 +147,7 @@ public interface Guild extends ISnowflake
      * {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} for longer than {@link #getAfkTimeout()}.
      * <br>If no channel has been set as the AFK channel, this returns {@code null}.
      * <p>
-     * This value can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setAfkChannel(VoiceChannel)}
-     * or {@link net.dv8tion.jda.core.managers.GuildManagerUpdatable#getAfkChannelField()}.
+     * This value can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setAfkChannel(VoiceChannel)}.
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} that is the AFK Channel.
      */
@@ -164,8 +158,7 @@ public interface Guild extends ISnowflake
      * which newly joined {@link net.dv8tion.jda.core.entities.Member Members} will be announced in.
      * <br>If no channel has been set as the system channel, this returns {@code null}.
      * <p>
-     * This value can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setSystemChannel(TextChannel)}
-     * or {@link net.dv8tion.jda.core.managers.GuildManagerUpdatable#getSystemChannelField()}.
+     * This value can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setSystemChannel(TextChannel)}.
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} that is the system Channel.
      */
@@ -187,8 +180,7 @@ public interface Guild extends ISnowflake
      * will be automatically moved to the AFK channel after they have been inactive for longer than the returned Timeout.
      * <br>Default is {@link Timeout#SECONDS_300 300 seconds (5 minutes)}.
      * <p>
-     * This value can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setAfkTimeout(net.dv8tion.jda.core.entities.Guild.Timeout)}
-     * or {@link net.dv8tion.jda.core.managers.GuildManagerUpdatable#getAfkTimeoutField()}.
+     * This value can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setAfkTimeout(net.dv8tion.jda.core.entities.Guild.Timeout)}.
      *
      * @return The {@link net.dv8tion.jda.core.entities.Guild.Timeout Timeout} set for this Guild.
      */
@@ -200,8 +192,7 @@ public interface Guild extends ISnowflake
      * <br>If the Region is not recognized, returns {@link net.dv8tion.jda.core.Region#UNKNOWN UNKNOWN} but you
      * can still use the {@link #getRegionRaw()} to retrieve the raw name this region has.
      *
-     * <p>This value can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setRegion(net.dv8tion.jda.core.Region)}
-     * or {@link net.dv8tion.jda.core.managers.GuildManagerUpdatable#getRegionField()}.
+     * <p>This value can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setRegion(net.dv8tion.jda.core.Region)}.
      *
      * @return The the audio Region this Guild is using for audio connections. Can return Region.UNKNOWN.
      */
@@ -215,8 +206,7 @@ public interface Guild extends ISnowflake
      * for audio connections.
      * <br>This is resolved to an enum constant of {@link net.dv8tion.jda.core.Region Region} by {@link #getRegion()}!
      *
-     * <p>This value can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setRegion(net.dv8tion.jda.core.Region)}
-     * or {@link net.dv8tion.jda.core.managers.GuildManagerUpdatable#getRegionField()}.
+     * <p>This value can be modified using {@link net.dv8tion.jda.core.managers.GuildManager#setRegion(net.dv8tion.jda.core.Region)}.
      *
      * @return Raw region name
      */
@@ -853,6 +843,8 @@ public interface Guild extends ISnowflake
      *
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         if the guild is temporarily unavailable ({@link #isAvailable()})
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER Permission.MANAGE_SERVER}
      *
      * @return The Manager of this Guild
      */
@@ -1061,8 +1053,7 @@ public interface Guild extends ISnowflake
      * can send messages in a Guild.
      * <br>For a short description of the different values, see {@link net.dv8tion.jda.core.entities.Guild.VerificationLevel}.
      * <p>
-     * This value can be modified using {@link GuildManager#setVerificationLevel(net.dv8tion.jda.core.entities.Guild.VerificationLevel)}
-     * or {@link net.dv8tion.jda.core.managers.GuildManagerUpdatable#getVerificationLevelField()}
+     * This value can be modified using {@link GuildManager#setVerificationLevel(net.dv8tion.jda.core.entities.Guild.VerificationLevel)}.
      *
      * @return The Verification-Level of this Guild.
      */
@@ -1073,8 +1064,7 @@ public interface Guild extends ISnowflake
      * for messages. The value returned is the default level set for any new Members that join the Guild.
      * <br>For a short description of the different values, see {@link net.dv8tion.jda.core.entities.Guild.NotificationLevel NotificationLevel}.
      * <p>
-     * This value can be modified using {@link GuildManager#setDefaultNotificationLevel(net.dv8tion.jda.core.entities.Guild.NotificationLevel)}
-     * or {@link net.dv8tion.jda.core.managers.GuildManagerUpdatable#getDefaultNotificationLevelField()}
+     * This value can be modified using {@link GuildManager#setDefaultNotificationLevel(net.dv8tion.jda.core.entities.Guild.NotificationLevel)}.
      *
      * @return The default message Notification-Level of this Guild.
      */
@@ -1084,8 +1074,7 @@ public interface Guild extends ISnowflake
      * Returns the level of multifactor authentication required to execute administrator restricted functions in this guild.
      * <br>For a short description of the different values, see {@link net.dv8tion.jda.core.entities.Guild.MFALevel MFALevel}.
      * <p>
-     * This value can be modified using {@link GuildManager#setRequiredMFALevel(net.dv8tion.jda.core.entities.Guild.MFALevel)}
-     * or {@link net.dv8tion.jda.core.managers.GuildManagerUpdatable#getRequiredMFALevelField()}
+     * This value can be modified using {@link GuildManager#setRequiredMFALevel(net.dv8tion.jda.core.entities.Guild.MFALevel)}.
      *
      * @return The MFA-Level required by this Guild.
      */

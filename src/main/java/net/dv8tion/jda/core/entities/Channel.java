@@ -240,6 +240,9 @@ public interface Channel extends ISnowflake
      * <br>In the ChannelManager, you can modify the name, topic and position of this Channel.
      * You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.core.requests.RestAction#queue() RestAction.queue()}.
      *
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL Permission.MANAGE_CHANNEL}
+     *
      * @return The ChannelManager of this Channel
      */
     ChannelManager getManager();

@@ -207,6 +207,11 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      * In the RoleManager, you can modify all its values.
      * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.core.requests.RestAction#queue() RestAction.queue()}.
      *
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
+     * @throws net.dv8tion.jda.core.exceptions.HierarchyException
+     *         If the currently logged in account does not have the required position to modify this role
+     *
      * @return The RoleManager of this Role
      */
     RoleManager getManager();
