@@ -82,6 +82,7 @@ public class RoleManager extends ManagerBase
     {
         super(role.getJDA(), Route.Roles.MODIFY_ROLE.compile(role.getGuild().getId(), role.getId()));
         this.role = role;
+        checkPermissions();
     }
 
     /**

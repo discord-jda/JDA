@@ -90,6 +90,7 @@ public class ChannelManager extends ManagerBase
         super(channel.getJDA(),
               Route.Channels.MODIFY_CHANNEL.compile(channel.getId()));
         this.channel = channel;
+        checkPermissions();
     }
 
     public ChannelType getType()

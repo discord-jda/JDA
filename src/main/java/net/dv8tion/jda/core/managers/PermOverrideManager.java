@@ -76,6 +76,15 @@ public class PermOverrideManager extends ManagerBase
         this.override = override;
         this.allowed = override.getAllowedRaw();
         this.denied = override.getDeniedRaw();
+        checkPermissions();
+    }
+
+    private void setupValues()
+    {
+        if (!shouldUpdate(ALLOWED))
+            this.allowed = override.getAllowedRaw();
+        if (!shouldUpdate(DENIED))
+            this.denied = override.getDeniedRaw();
     }
 
     /**
@@ -135,10 +144,6 @@ public class PermOverrideManager extends ManagerBase
     public PermOverrideManager reset(int fields)
     {
         super.reset(fields);
-        if ((fields & ALLOWED) == ALLOWED)
-            this.allowed = override.getAllowedRaw();
-        if ((fields & DENIED) == DENIED)
-            this.denied = override.getDeniedRaw();
         return this;
     }
 
@@ -177,8 +182,6 @@ public class PermOverrideManager extends ManagerBase
     public PermOverrideManager reset()
     {
         super.reset();
-        this.allowed = override.getAllowedRaw();
-        this.denied = override.getDeniedRaw();
         return this;
     }
 
@@ -196,6 +199,7 @@ public class PermOverrideManager extends ManagerBase
     {
         if (permissions == 0)
             return this;
+        setupValues();
         this.allowed |= permissions;
         this.denied &= ~permissions;
         this.set |= ALLOWED;
@@ -253,6 +257,7 @@ public class PermOverrideManager extends ManagerBase
     {
         if (permissions == 0)
             return this;
+        setupValues();
         this.denied |= permissions;
         this.allowed &= ~permissions;
         this.set |= DENIED;
@@ -309,6 +314,7 @@ public class PermOverrideManager extends ManagerBase
     @CheckReturnValue
     public PermOverrideManager clear(long permissions)
     {
+        setupValues();
         if ((allowed & permissions) != 0)
         {
             this.allowed &= ~permissions;
@@ -371,8 +377,8 @@ public class PermOverrideManager extends ManagerBase
             new JSONObject()
                 .put("id", targetId)
                 .put("type", override.isMemberOverride() ? "member" : "role")
-                .put("allow", shouldUpdate(ALLOWED) ? this.allowed : JSONObject.NULL)
-                .put("deny",  shouldUpdate(DENIED)  ? this.denied  : JSONObject.NULL));
+                .put("allow", this.allowed)
+                .put("deny",  this.denied));
         reset();
         return data;
     }

@@ -91,6 +91,7 @@ public class GuildManager extends ManagerBase
     {
         super(guild.getJDA(), Route.Guilds.MODIFY_GUILD.compile(guild.getId()));
         this.guild = guild;
+        checkPermissions();
     }
 
     /**

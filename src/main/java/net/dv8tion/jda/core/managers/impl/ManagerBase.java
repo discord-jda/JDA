@@ -35,7 +35,6 @@ public abstract class ManagerBase extends AuditableRestAction<Void>
     protected ManagerBase(JDA api, Route.CompiledRoute route)
     {
         super(api, route);
-        checkPermissions();
     }
 
     public ManagerBase reset(int fields)
