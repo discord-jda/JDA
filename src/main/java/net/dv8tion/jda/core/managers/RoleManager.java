@@ -304,6 +304,22 @@ public class RoleManager extends ManagerBase
     }
 
     /**
+     * Sets the rgb color of the selected {@link net.dv8tion.jda.core.entities.Role Role}.
+     *
+     * @param  rgb
+     *         The new color for the selected {@link net.dv8tion.jda.core.entities.Role Role}
+     *
+     * @return RoleManager for chaining convenience
+     */
+    @CheckReturnValue
+    public RoleManager setColor(int rgb)
+    {
+        this.color = rgb;
+        set |= COLOR;
+        return this;
+    }
+
+    /**
      * Sets the <b><u>hoist state</u></b> of the selected {@link net.dv8tion.jda.core.entities.Role Role}.
      *
      * @param  hoisted
@@ -438,7 +454,7 @@ public class RoleManager extends ManagerBase
         if (shouldUpdate(NAME))
             object.put("name", name);
         if (shouldUpdate(PERMISSION))
-            object.put("permission", permissions);
+            object.put("permissions", permissions);
         if (shouldUpdate(HOIST))
             object.put("hoist", hoist);
         if (shouldUpdate(MENTIONABLE))
