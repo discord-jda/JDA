@@ -52,19 +52,19 @@ import java.util.regex.Pattern;
 public class ChannelManager extends ManagerBase
 {
     /** Used to reset the name field */
-    public static final int NAME      = 0x1;
+    public static final long NAME      = 0x1;
     /** Used to reset the parent field */
-    public static final int PARENT    = 0x2;
+    public static final long PARENT    = 0x2;
     /** Used to reset the topic field */
-    public static final int TOPIC     = 0x4;
+    public static final long TOPIC     = 0x4;
     /** Used to reset the position field */
-    public static final int POSITION  = 0x8;
+    public static final long POSITION  = 0x8;
     /** Used to reset the nsfw field */
-    public static final int NSFW      = 0x10;
+    public static final long NSFW      = 0x10;
     /** Used to reset the userlimit field */
-    public static final int USERLIMIT = 0x20;
+    public static final long USERLIMIT = 0x20;
     /** Used to reset the bitrate field */
-    public static final int BITRATE   = 0x40;
+    public static final long BITRATE   = 0x40;
 
     protected static final Pattern alphanumeric = Pattern.compile("[0-9a-zA-Z_-]{2,100}");
 
@@ -144,7 +144,7 @@ public class ChannelManager extends ManagerBase
      */
     @Override
     @CheckReturnValue
-    public ChannelManager reset(int fields)
+    public ChannelManager reset(long fields)
     {
         super.reset(fields);
         if ((fields & NAME) == NAME)
@@ -178,7 +178,7 @@ public class ChannelManager extends ManagerBase
      */
     @Override
     @CheckReturnValue
-    public ChannelManager reset(int... fields)
+    public ChannelManager reset(long... fields)
     {
         super.reset(fields);
         return this;

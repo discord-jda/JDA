@@ -51,17 +51,17 @@ import java.util.List;
 public class ApplicationManager extends ManagerBase
 {
     /** Used to reset the description field */
-    public static final int DESCRIPTION  = 0x1;
+    public static final long DESCRIPTION  = 0x1;
     /** Used to reset the icon field */
-    public static final int ICON         = 0x2;
+    public static final long ICON         = 0x2;
     /** Used to reset the name field */
-    public static final int NAME         = 0x4;
+    public static final long NAME         = 0x4;
     /** Used to reset the redirect uri field */
-    public static final int REDIRECT_URI = 0x8;
+    public static final long REDIRECT_URI = 0x8;
     /** Used to reset the public field */
-    public static final int PUBLIC       = 0x10;
+    public static final long PUBLIC       = 0x10;
     /** Used to reset the code grant field */
-    public static final int CODE_GRANT   = 0x20;
+    public static final long CODE_GRANT   = 0x20;
 
     protected final ApplicationImpl application;
 
@@ -111,7 +111,7 @@ public class ApplicationManager extends ManagerBase
      */
     @Override
     @CheckReturnValue
-    public ApplicationManager reset(int fields)
+    public ApplicationManager reset(long fields)
     {
         super.reset(fields);
         if ((fields & ICON) == ICON)
@@ -143,7 +143,7 @@ public class ApplicationManager extends ManagerBase
      */
     @Override
     @CheckReturnValue
-    public ApplicationManager reset(int... fields)
+    public ApplicationManager reset(long... fields)
     {
         super.reset(fields);
         return this;

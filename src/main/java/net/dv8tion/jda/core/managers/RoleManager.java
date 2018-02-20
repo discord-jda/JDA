@@ -54,15 +54,15 @@ import java.util.List;
 public class RoleManager extends ManagerBase
 {
     /** Used to reset the name field */
-    public static final int NAME        = 0x1;
+    public static final long NAME        = 0x1;
     /** Used to reset the color field */
-    public static final int COLOR       = 0x2;
+    public static final long COLOR       = 0x2;
     /** Used to reset the permission field */
-    public static final int PERMISSION  = 0x4;
+    public static final long PERMISSION  = 0x4;
     /** Used to reset the hoisted field */
-    public static final int HOIST       = 0x8;
+    public static final long HOIST       = 0x8;
     /** Used to reset the mentionable field */
-    public static final int MENTIONABLE = 0x10;
+    public static final long MENTIONABLE = 0x10;
 
     protected final Role role;
 
@@ -129,7 +129,7 @@ public class RoleManager extends ManagerBase
      */
     @Override
     @CheckReturnValue
-    public RoleManager reset(int fields)
+    public RoleManager reset(long fields)
     {
         super.reset(fields);
         if ((fields & NAME) == NAME)
@@ -158,7 +158,7 @@ public class RoleManager extends ManagerBase
      */
     @Override
     @CheckReturnValue
-    public RoleManager reset(int... fields)
+    public RoleManager reset(long... fields)
     {
         super.reset(fields);
         return this;

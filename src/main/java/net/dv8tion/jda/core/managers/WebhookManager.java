@@ -49,11 +49,11 @@ import javax.annotation.CheckReturnValue;
 public class WebhookManager extends ManagerBase
 {
     /** Used to reset the name field */
-    public static final int NAME    = 0x1;
+    public static final long NAME    = 0x1;
     /** Used to reset the channel field */
-    public static final int CHANNEL = 0x2;
+    public static final long CHANNEL = 0x2;
     /** Used to reset the avatar field */
-    public static final int AVATAR  = 0x4;
+    public static final long AVATAR  = 0x4;
 
     protected final Webhook webhook;
 
@@ -128,7 +128,7 @@ public class WebhookManager extends ManagerBase
      */
     @Override
     @CheckReturnValue
-    public WebhookManager reset(int fields)
+    public WebhookManager reset(long fields)
     {
         super.reset(fields);
         if ((fields & NAME) == NAME)
@@ -159,7 +159,7 @@ public class WebhookManager extends ManagerBase
      */
     @Override
     @CheckReturnValue
-    public WebhookManager reset(int... fields)
+    public WebhookManager reset(long... fields)
     {
         super.reset(fields);
         return this;

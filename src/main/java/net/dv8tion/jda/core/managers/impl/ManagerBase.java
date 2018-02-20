@@ -30,14 +30,14 @@ import java.util.function.Consumer;
 
 public abstract class ManagerBase extends AuditableRestAction<Void>
 {
-    protected int set = 0;
+    protected long set = 0;
 
     protected ManagerBase(JDA api, Route.CompiledRoute route)
     {
         super(api, route);
     }
 
-    public ManagerBase reset(int fields)
+    public ManagerBase reset(long fields)
     {
         //logic explanation:
         //0101 = fields
@@ -48,11 +48,11 @@ public abstract class ManagerBase extends AuditableRestAction<Void>
         return this;
     }
 
-    public ManagerBase reset(int... fields)
+    public ManagerBase reset(long... fields)
     {
         Checks.notNull(fields, "Fields");
         int sum = 0;
-        for (int i : fields)
+        for (long i : fields)
             sum |= i;
         return reset(sum);
     }
@@ -108,7 +108,7 @@ public abstract class ManagerBase extends AuditableRestAction<Void>
         return set != 0;
     }
 
-    protected boolean shouldUpdate(int bit)
+    protected boolean shouldUpdate(long bit)
     {
         return (set & bit) == bit;
     }

@@ -49,13 +49,13 @@ import javax.annotation.CheckReturnValue;
 public class AccountManager extends ManagerBase
 {
     /** Used to reset the name field */
-    public static final int NAME = 0x1;
+    public static final long NAME = 0x1;
     /** Used to reset the avatar field */
-    public static final int AVATAR = 0x2;
+    public static final long AVATAR = 0x2;
     /** Used to reset the email field */
-    public static final int EMAIL = 0x4;
+    public static final long EMAIL = 0x4;
     /** Used to reset the password field */
-    public static final int PASSWORD = 0x8;
+    public static final long PASSWORD = 0x8;
 
     protected final SelfUser selfUser;
 
@@ -110,7 +110,7 @@ public class AccountManager extends ManagerBase
      */
     @Override
     @CheckReturnValue
-    public AccountManager reset(int fields)
+    public AccountManager reset(long fields)
     {
         super.reset(fields);
         if ((fields & AVATAR) == AVATAR)
@@ -138,7 +138,7 @@ public class AccountManager extends ManagerBase
      */
     @Override
     @CheckReturnValue
-    public AccountManager reset(int... fields)
+    public AccountManager reset(long... fields)
     {
         super.reset(fields);
         return this;

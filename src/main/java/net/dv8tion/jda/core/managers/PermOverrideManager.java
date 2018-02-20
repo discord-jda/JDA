@@ -49,11 +49,11 @@ import java.util.Collection;
 public class PermOverrideManager extends ManagerBase
 {
     /** Used to reset the denied field */
-    public static final int DENIED      = 0x1;
+    public static final long DENIED      = 0x1;
     /** Used to reset the granted field */
-    public static final int ALLOWED     = 0x2;
+    public static final long ALLOWED     = 0x2;
     /** Used to reset <b>all</b> permissions to their original value */
-    public static final int PERMISSIONS = 0x3;
+    public static final long PERMISSIONS = 0x3;
 
     protected final PermissionOverride override;
 
@@ -141,7 +141,7 @@ public class PermOverrideManager extends ManagerBase
      */
     @Override
     @CheckReturnValue
-    public PermOverrideManager reset(int fields)
+    public PermOverrideManager reset(long fields)
     {
         super.reset(fields);
         return this;
@@ -166,7 +166,7 @@ public class PermOverrideManager extends ManagerBase
      */
     @Override
     @CheckReturnValue
-    public PermOverrideManager reset(int... fields)
+    public PermOverrideManager reset(long... fields)
     {
         super.reset(fields);
         return this;

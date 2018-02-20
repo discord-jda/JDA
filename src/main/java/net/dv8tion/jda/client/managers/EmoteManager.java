@@ -53,9 +53,10 @@ import java.util.Set;
 public class EmoteManager extends ManagerBase
 {
     /** Used to reset the name field */
-    public static final int NAME = 0x1;
+    public static final long NAME = 0x1;
+
     /** Used to reset the roles field */
-    public static final int ROLES = 0x2;
+    public static final long ROLES = 0x2;
 
     protected final EmoteImpl emote;
 
@@ -131,7 +132,7 @@ public class EmoteManager extends ManagerBase
      */
     @Override
     @CheckReturnValue
-    public EmoteManager reset(int fields)
+    public EmoteManager reset(long fields)
     {
         super.reset(fields);
         if ((fields & ROLES) == ROLES)
@@ -159,7 +160,7 @@ public class EmoteManager extends ManagerBase
      */
     @Override
     @CheckReturnValue
-    public EmoteManager reset(int... fields)
+    public EmoteManager reset(long... fields)
     {
         super.reset(fields);
         return this;

@@ -51,27 +51,27 @@ import javax.annotation.CheckReturnValue;
 public class GuildManager extends ManagerBase
 {
     /** Used to reset the name field */
-    public static final int NAME   = 0x1;
+    public static final long NAME   = 0x1;
     /** Used to reset the region field */
-    public static final int REGION = 0x2;
+    public static final long REGION = 0x2;
     /** Used to reset the icon field */
-    public static final int ICON   = 0x4;
+    public static final long ICON   = 0x4;
     /** Used to reset the splash field */
-    public static final int SPLASH = 0x8;
+    public static final long SPLASH = 0x8;
     /** Used to reset the afk channel field */
-    public static final int AFK_CHANNEL    = 0x10;
+    public static final long AFK_CHANNEL    = 0x10;
     /** Used to reset the afk timeout field */
-    public static final int AFK_TIMEOUT    = 0x20;
+    public static final long AFK_TIMEOUT    = 0x20;
     /** Used to reset the system channel field */
-    public static final int SYSTEM_CHANNEL = 0x40;
+    public static final long SYSTEM_CHANNEL = 0x40;
     /** Used to reset the mfa level field */
-    public static final int MFA_LEVEL      = 0x80;
+    public static final long MFA_LEVEL      = 0x80;
     /** Used to reset the default notification level field */
-    public static final int NOTIFICATION_LEVEL     = 0x100;
+    public static final long NOTIFICATION_LEVEL     = 0x100;
     /** Used to reset the explicit content level field */
-    public static final int EXPLICIT_CONTENT_LEVEL = 0x200;
+    public static final long EXPLICIT_CONTENT_LEVEL = 0x200;
     /** Used to reset the verification level field */
-    public static final int VERIFICATION_LEVEL     = 0x400;
+    public static final long VERIFICATION_LEVEL     = 0x400;
 
     protected final Guild guild;
 
@@ -132,7 +132,7 @@ public class GuildManager extends ManagerBase
      */
     @Override
     @CheckReturnValue
-    public GuildManager reset(int fields)
+    public GuildManager reset(long fields)
     {
         super.reset(fields);
         if ((fields & NAME) == NAME)
@@ -177,7 +177,7 @@ public class GuildManager extends ManagerBase
      */
     @Override
     @CheckReturnValue
-    public GuildManager reset(int... fields)
+    public GuildManager reset(long... fields)
     {
         super.reset(fields);
         return this;
