@@ -76,7 +76,8 @@ public class PermOverrideManager extends ManagerBase
         this.override = override;
         this.allowed = override.getAllowedRaw();
         this.denied = override.getDeniedRaw();
-        checkPermissions();
+        if (isPermissionChecksEnabled())
+            checkPermissions();
     }
 
     private void setupValues()

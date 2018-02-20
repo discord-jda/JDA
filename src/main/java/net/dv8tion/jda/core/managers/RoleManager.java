@@ -82,7 +82,8 @@ public class RoleManager extends ManagerBase
     {
         super(role.getJDA(), Route.Roles.MODIFY_ROLE.compile(role.getGuild().getId(), role.getId()));
         this.role = role;
-        checkPermissions();
+        if (isPermissionChecksEnabled())
+            checkPermissions();
     }
 
     /**
@@ -223,7 +224,7 @@ public class RoleManager extends ManagerBase
     {
         long selfPermissions = PermissionUtil.getEffectivePermission(getGuild().getSelfMember());
         long missingPerms = ~selfPermissions & perms;
-        if (missingPerms != 0)
+        if (missingPerms != 0 && isPermissionChecksEnabled())
         {
             List<Permission> permissionList = Permission.getPermissions(missingPerms);
             if (!permissionList.isEmpty())

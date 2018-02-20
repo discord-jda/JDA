@@ -78,7 +78,8 @@ public class EmoteManager extends ManagerBase
         if (emote.isFake())
             throw new IllegalStateException("Cannot modify a fake emote");
         this.emote = emote;
-        checkPermissions();
+        if (isPermissionChecksEnabled())
+            checkPermissions();
     }
 
     /**

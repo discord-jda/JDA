@@ -30,7 +30,42 @@ import java.util.function.Consumer;
 
 public abstract class ManagerBase extends AuditableRestAction<Void>
 {
+    private static boolean enablePermissionChecks = true;
     protected long set = 0;
+
+    /**
+     * Enables internal checks for missing permissions
+     * <br>When this is disabled the chances of hitting a
+     * {@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS ErrorResponse.MISSING_PERMISSIONS} is increased significantly,
+     * otherwise JDA will check permissions and cancel the execution using
+     * {@link net.dv8tion.jda.core.exceptions.InsufficientPermissionException InsufficientPermissionException}.
+     * <br><b>Default: true</b>
+     *
+     * @param enable
+     *        True, if JDA should perform permissions checks internally
+     *
+     * @see   #isPermissionChecksEnabled()
+     */
+    public static void setPermissionChecksEnabled(boolean enable)
+    {
+        enablePermissionChecks = enable;
+    }
+
+    /**
+     * Whether internal checks for missing permissions are enabled
+     * <br>When this is disabled the chances of hitting a
+     * {@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS ErrorResponse.MISSING_PERMISSIONS} is increased significantly,
+     * otherwise JDA will check permissions and cancel the execution using
+     * {@link net.dv8tion.jda.core.exceptions.InsufficientPermissionException InsufficientPermissionException}.
+     *
+     * @return True, if internal permission checks are enabled
+     *
+     * @see    #setPermissionChecksEnabled(boolean)
+     */
+    public static boolean isPermissionChecksEnabled()
+    {
+        return enablePermissionChecks;
+    }
 
     protected ManagerBase(JDA api, Route.CompiledRoute route)
     {
@@ -95,7 +130,7 @@ public abstract class ManagerBase extends AuditableRestAction<Void>
     @Override
     protected BooleanSupplier finalizeChecks()
     {
-        return this::checkPermissions;
+        return enablePermissionChecks ? this::checkPermissions : super.finalizeChecks();
     }
 
     protected Object opt(Object it)
