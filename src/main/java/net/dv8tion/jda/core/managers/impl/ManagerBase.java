@@ -86,9 +86,16 @@ public abstract class ManagerBase extends AuditableRestAction<Void>
     public ManagerBase reset(long... fields)
     {
         Checks.notNull(fields, "Fields");
-        int sum = 0;
-        for (long i : fields)
-            sum |= i;
+        //trivial case
+        if (fields.length == 0)
+            return this;
+        else if (fields.length == 1)
+            return reset(fields[0]);
+
+        //complex case
+        long sum = fields[0];
+        for (int i = 1; i < fields.length; i++)
+            sum |= fields[i];
         return reset(sum);
     }
 
