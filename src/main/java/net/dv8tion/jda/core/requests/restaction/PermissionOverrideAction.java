@@ -76,12 +76,6 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
         this.role = null;
     }
 
-    @Override
-    public PermissionOverrideAction setCheck(BooleanSupplier checks)
-    {
-        return (PermissionOverrideAction) super.setCheck(checks);
-    }
-
     /**
      * Creates a new PermissionOverrideAction instance
      *
@@ -102,6 +96,11 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
         this.role = role;
     }
 
+    @Override
+    public PermissionOverrideAction setCheck(BooleanSupplier checks)
+    {
+        return (PermissionOverrideAction) super.setCheck(checks);
+    }
 
     /**
      * The currently set of allowed permission bits.
