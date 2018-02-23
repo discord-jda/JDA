@@ -16,14 +16,15 @@
 
 package net.dv8tion.jda.core.requests;
 
+import net.dv8tion.jda.core.utils.IOFunction;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import javax.annotation.Nullable;
 import java.io.*;
+import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Response implements Closeable
@@ -37,6 +38,7 @@ public class Response implements Closeable
     private final InputStream body;
     private final okhttp3.Response rawResponse;
     private final Set<String> cfRays;
+    private String fallbackString;
     private Object object;
     private boolean attemptedParsing = false;
     private Exception exception;
@@ -82,28 +84,35 @@ public class Response implements Closeable
         this(response, response.code(), response.message(), retryAfter, cfRays);
     }
 
-    @Nullable
     public JSONArray getArray()
     {
-        return parseBody(JSONArray.class, stream -> new JSONArray(getTokenizer(stream)));
+        return get(JSONArray.class, reader -> new JSONArray(new JSONTokener(reader)));
     }
 
-    @Nullable
+    public Optional<JSONArray> optArray()
+    {
+        return parseBody(true, JSONArray.class, reader -> new JSONArray(new JSONTokener(reader)));
+    }
+
     public JSONObject getObject()
     {
-        return parseBody(JSONObject.class, stream -> new JSONObject(getTokenizer(stream)));
+        return get(JSONObject.class, reader -> new JSONObject(new JSONTokener(reader)));
     }
 
-    @Nullable
+    public Optional<JSONObject> optObject()
+    {
+        return parseBody(true, JSONObject.class, reader -> new JSONObject(new JSONTokener(reader)));
+    }
+
     public String getString()
     {
-        return parseBody(String.class, stream -> new BufferedReader(new InputStreamReader(stream)).lines().collect(Collectors.joining()));
+        return parseBody(String.class, reader -> reader.lines().collect(Collectors.joining()))
+            .orElseGet(() -> fallbackString == null ? "N/A" : fallbackString);
     }
 
-    @Nullable
-    public <T> T get(Class<T> clazz, Function<InputStream, T> parser)
+    public <T> T get(Class<T> clazz, IOFunction<BufferedReader, T> parser)
     {
-        return parseBody(clazz, parser);
+        return parseBody(clazz, parser).orElseThrow(IllegalStateException::new);
     }
 
     public okhttp3.Response getRawResponse()
@@ -151,43 +160,47 @@ public class Response implements Closeable
             rawResponse.close();
     }
 
-    private JSONTokener getTokenizer(InputStream stream)
+    private <T> Optional<T> parseBody(Class<T> clazz, IOFunction<BufferedReader, T> parser)
     {
-        return new JSONTokener(new InputStreamReader(stream));
+        return parseBody(false, clazz, parser);
     }
 
-    @Nullable
     @SuppressWarnings("ConstantConditions")
-    private <T> T parseBody(Class<T> clazz, Function<InputStream, T> parser)
+    private <T> Optional<T> parseBody(boolean opt, Class<T> clazz, IOFunction<BufferedReader, T> parser)
     {
         if (attemptedParsing)
         {
             if (object != null && clazz.isAssignableFrom(object.getClass()))
-                return clazz.cast(object);
-            return null;
+                return Optional.of(clazz.cast(object));
+            return Optional.empty();
         }
 
         attemptedParsing = true;
         if (body == null || rawResponse == null || rawResponse.body().contentLength() == 0)
-            return null;
+            return Optional.empty();
 
+        BufferedReader reader = null;
         try
         {
-            T t = parser.apply(body);
+            reader = new BufferedReader(new InputStreamReader(body));
+            reader.mark(1024);
+            T t = parser.apply(reader);
             this.object = t;
-            return t;
+            return Optional.ofNullable(t);
         }
         catch (final Exception e)
         {
-            throw new IllegalStateException("An error occurred while parsing the response for a RestAction", e);
-        }
-        finally
-        {
             try
             {
-                body.close();
+                reader.reset();
+                this.fallbackString = reader.lines().collect(Collectors.joining());
+                reader.close();
             }
             catch (NullPointerException | IOException ignored) {}
+            if (opt && e instanceof JSONException)
+                return Optional.empty();
+            else
+                throw new IllegalStateException("An error occurred while parsing the response for a RestAction", e);
         }
     }
 }
