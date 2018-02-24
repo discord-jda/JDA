@@ -458,7 +458,7 @@ public class GuildManager extends ManagerBase
         if (shouldUpdate(VERIFICATION_LEVEL))
             body.put("verification_level", verificationLevel);
         if (shouldUpdate(NOTIFICATION_LEVEL))
-            body.put("default_notification_level", notificationLevel);
+            body.put("default_message_notifications", notificationLevel);
         if (shouldUpdate(MFA_LEVEL))
             body.put("mfa_level", mfaLevel);
         if (shouldUpdate(EXPLICIT_CONTENT_LEVEL))

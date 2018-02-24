@@ -432,7 +432,7 @@ public class GuildManagerUpdatable
         if (verificationLevel.shouldUpdate())
             body.put("verification_level", verificationLevel.getValue().getKey());
         if (defaultNotificationLevel.shouldUpdate())
-            body.put("default_notification_level", defaultNotificationLevel.getValue().getKey());
+            body.put("default_message_notifications", defaultNotificationLevel.getValue().getKey());
         if (mfaLevel.shouldUpdate())
             body.put("mfa_level", mfaLevel.getValue().getKey());
         if (explicitContentLevel.shouldUpdate())
