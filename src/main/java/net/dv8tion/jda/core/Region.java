@@ -22,6 +22,7 @@ package net.dv8tion.jda.core;
  */
 public enum Region
 {
+    JAPAN("japan", "Japan", false),
     AMSTERDAM("amsterdam", "Amsterdam", false),
     BRAZIL("brazil", "Brazil", false),
     EU_WEST("eu-west", "EU West", false),
@@ -37,6 +38,7 @@ public enum Region
     US_CENTRAL("us-central", "US Central", false),
     US_SOUTH("us-south", "US South", false),
 
+    VIP_JAPAN("vip-japan", "Japan (VIP)", false),
     VIP_AMSTERDAM("vip-amsterdam", "Amsterdam (VIP)", true),
     VIP_BRAZIL("vip-brazil", "Brazil (VIP)", true),
     VIP_EU_WEST("vip-eu-west", "EU West (VIP)", true),
