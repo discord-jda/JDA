@@ -32,9 +32,7 @@ public class Response implements Closeable
     public static final int ERROR_CODE = -1;
     public static final String ERROR_MESSAGE = "ERROR";
     public static final IOFunction<BufferedReader, JSONObject> JSON_SERIALIZE_OBJECT = reader -> new JSONObject(new JSONTokener(reader));
-
     public static final IOFunction<BufferedReader, JSONArray> JSON_SERIALIZE_ARRAY = reader -> new JSONArray(new JSONTokener(reader));
-
 
     public final int code;
     public final String message;
