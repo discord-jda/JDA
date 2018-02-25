@@ -31,6 +31,10 @@ public class Response implements Closeable
 {
     public static final int ERROR_CODE = -1;
     public static final String ERROR_MESSAGE = "ERROR";
+    public static final IOFunction<BufferedReader, JSONObject> JSON_SERIALIZE_OBJECT = reader -> new JSONObject(new JSONTokener(reader));
+
+    public static final IOFunction<BufferedReader, JSONArray> JSON_SERIALIZE_ARRAY = reader -> new JSONArray(new JSONTokener(reader));
+
 
     public final int code;
     public final String message;
@@ -86,27 +90,27 @@ public class Response implements Closeable
 
     public JSONArray getArray()
     {
-        return get(JSONArray.class, reader -> new JSONArray(new JSONTokener(reader)));
+        return get(JSONArray.class, JSON_SERIALIZE_ARRAY);
     }
 
     public Optional<JSONArray> optArray()
     {
-        return parseBody(true, JSONArray.class, reader -> new JSONArray(new JSONTokener(reader)));
+        return parseBody(true, JSONArray.class, JSON_SERIALIZE_ARRAY);
     }
 
     public JSONObject getObject()
     {
-        return get(JSONObject.class, reader -> new JSONObject(new JSONTokener(reader)));
+        return get(JSONObject.class, JSON_SERIALIZE_OBJECT);
     }
 
     public Optional<JSONObject> optObject()
     {
-        return parseBody(true, JSONObject.class, reader -> new JSONObject(new JSONTokener(reader)));
+        return parseBody(true, JSONObject.class, JSON_SERIALIZE_OBJECT);
     }
 
     public String getString()
     {
-        return parseBody(String.class, reader -> reader.lines().collect(Collectors.joining()))
+        return parseBody(String.class, this::readString)
             .orElseGet(() -> fallbackString == null ? "N/A" : fallbackString);
     }
 
@@ -160,6 +164,11 @@ public class Response implements Closeable
             rawResponse.close();
     }
 
+    private String readString(BufferedReader reader)
+    {
+        return reader.lines().collect(Collectors.joining("\n"));
+    }
+
     private <T> Optional<T> parseBody(Class<T> clazz, IOFunction<BufferedReader, T> parser)
     {
         return parseBody(false, clazz, parser);
@@ -193,7 +202,7 @@ public class Response implements Closeable
             try
             {
                 reader.reset();
-                this.fallbackString = reader.lines().collect(Collectors.joining());
+                this.fallbackString = readString(reader);
                 reader.close();
             }
             catch (NullPointerException | IOException ignored) {}
