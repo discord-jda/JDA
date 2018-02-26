@@ -303,9 +303,9 @@ public interface CacheView<T> extends Iterable<T>
      */
     class SimpleCacheView<T> extends AbstractCacheView<T>
     {
-        public SimpleCacheView(Function<T, String> nameMapper)
+        public SimpleCacheView(Class<T> type, Function<T, String> nameMapper)
         {
-            super(nameMapper);
+            super(type, nameMapper);
         }
     }
 }
