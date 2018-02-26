@@ -20,7 +20,6 @@ import net.dv8tion.jda.core.entities.ISnowflake;
 import org.apache.commons.collections4.iterators.ObjectArrayIterator;
 
 import javax.annotation.Nonnull;
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -82,7 +81,7 @@ public class SortedSnowflakeCacheView<T extends ISnowflake & Comparable<T>> exte
     @SuppressWarnings("unchecked")
     public Iterator<T> iterator()
     {
-        T[] arr = elements.values((T[]) Array.newInstance(type, 0));
+        T[] arr = elements.values(emptyArray);
         Arrays.sort(arr, comparator);
         return new ObjectArrayIterator<>(arr);
     }

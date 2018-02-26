@@ -33,6 +33,7 @@ import java.util.stream.StreamSupport;
 
 public class ShardCacheViewImpl implements ShardCacheView
 {
+    protected static final JDA[] EMPTY_ARRAY = new JDA[0];
     protected final TIntObjectMap<JDA> elements;
 
     public ShardCacheViewImpl()
@@ -124,7 +125,7 @@ public class ShardCacheViewImpl implements ShardCacheView
     @Override
     public Iterator<JDA> iterator()
     {
-        JDA[] arr = elements.values(new JDA[0]);
+        JDA[] arr = elements.values(EMPTY_ARRAY);
         return new ObjectArrayIterator<>(arr);
     }
 
