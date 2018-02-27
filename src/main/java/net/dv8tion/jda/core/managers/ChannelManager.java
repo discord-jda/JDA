@@ -224,10 +224,7 @@ public class ChannelManager extends ManagerBase
         Checks.notBlank(name, "Name");
         Checks.check(name.length() >= 2 && name.length() <= 100, "Name must be between 2-100 characters long");
         if (getType() == ChannelType.TEXT)
-        {
-            Checks.check(alphanumeric.matcher(name).matches(),
-                "Name must be alphanumeric with underscores and dashes for text channels");
-        }
+            Checks.noWhitespace(name, "Name");
         this.name = name;
         set |= NAME;
         return this;
