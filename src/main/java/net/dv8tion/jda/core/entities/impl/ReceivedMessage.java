@@ -174,7 +174,7 @@ public class ReceivedMessage extends AbstractMessage
     {
         if (userMentions == null)
         {
-            userMentions = new ArrayList<>();
+            LinkedHashSet<User> set = new LinkedHashSet<>();
             Matcher matcher = MentionType.USER.getPattern().matcher(content);
             while (matcher.find())
             {
@@ -187,10 +187,10 @@ public class ReceivedMessage extends AbstractMessage
                     if (user == null)
                         user = api.getFakeUserMap().get(id);
                     if (user != null)
-                        userMentions.add(user);
+                        set.add(user);
                 } catch (NumberFormatException ignored) {}
             }
-            userMentions = Collections.unmodifiableList(userMentions);
+            userMentions = Collections.unmodifiableList(new ArrayList<>(set));
         }
 
         return userMentions;
@@ -201,7 +201,7 @@ public class ReceivedMessage extends AbstractMessage
     {
         if (channelMentions == null)
         {
-            channelMentions = new ArrayList<>();
+            LinkedHashSet<TextChannel> set = new LinkedHashSet<>();
             Matcher matcher = MentionType.CHANNEL.getPattern().matcher(content);
             while (matcher.find())
             {
@@ -210,11 +210,11 @@ public class ReceivedMessage extends AbstractMessage
                     String id = matcher.group(1);
                     TextChannel channel = getJDA().getTextChannelById(id);
                     if (channel != null)
-                        channelMentions.add(channel);
+                        set.add(channel);
                 }
                 catch (NumberFormatException ignored) {}
             }
-            channelMentions = Collections.unmodifiableList(channelMentions);
+            channelMentions = Collections.unmodifiableList(new ArrayList<>(set));
         }
 
         return channelMentions;
@@ -225,7 +225,7 @@ public class ReceivedMessage extends AbstractMessage
     {
         if (roleMentions == null)
         {
-            roleMentions = new ArrayList<>();
+            LinkedHashSet<Role> set = new LinkedHashSet<>();
             Matcher matcher = MentionType.ROLE.getPattern().matcher(content);
             while (matcher.find())
             {
@@ -240,11 +240,11 @@ public class ReceivedMessage extends AbstractMessage
                     if (role == null)
                         role = getJDA().getRoleById(id);
                     if (role != null)
-                        roleMentions.add(role);
+                        set.add(role);
                 }
                 catch (NumberFormatException ignored) {}
             }
-            roleMentions = Collections.unmodifiableList(roleMentions);
+            roleMentions = Collections.unmodifiableList(new ArrayList<>(set));
         }
 
         return roleMentions;
