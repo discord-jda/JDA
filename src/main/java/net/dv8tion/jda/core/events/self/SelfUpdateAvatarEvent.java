@@ -18,6 +18,11 @@ package net.dv8tion.jda.core.events.self;
 
 import net.dv8tion.jda.core.JDA;
 
+/**
+ * Indicates that the avatar of the current user changed.
+ *
+ * <p>Can be used to retrieve the old avatar.
+ */
 public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent
 {
     private final String oldAvatarId;
@@ -28,13 +33,23 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent
         this.oldAvatarId = oldAvatarId;
     }
 
+    /**
+     * The old avatar id
+     *
+     * @return The old avatar id
+     */
     public String getOldAvatarId()
     {
         return oldAvatarId;
     }
 
+    /**
+     * The old avatar url
+     *
+     * @return  The old avatar url
+     */
     public String getOldAvatarUrl()
     {
-        return oldAvatarId == null ? null : "https://cdn.discordapp.com/avatars/" + getSelfUser().getId() + "/" + oldAvatarId + ".jpg";
+        return oldAvatarId == null ? null : "https://cdn.discordapp.com/avatars/" + getSelfUser().getId() + "/" + oldAvatarId + (oldAvatarId.startsWith("a_") ? ".gif" : ".png");
     }
 }

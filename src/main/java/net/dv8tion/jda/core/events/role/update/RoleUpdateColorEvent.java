@@ -21,6 +21,11 @@ import net.dv8tion.jda.core.entities.Role;
 
 import java.awt.Color;
 
+/**
+ * Indicates that a {@link net.dv8tion.jda.core.entities.Role Role} updated its color.
+ *
+ * <p>Can be used to retrieve the old color.
+ */
 public class RoleUpdateColorEvent extends GenericRoleUpdateEvent
 {
     private final Color oldColor;
@@ -31,6 +36,11 @@ public class RoleUpdateColorEvent extends GenericRoleUpdateEvent
         this.oldColor = oldColor;
     }
 
+    /**
+     * The old color
+     *
+     * @return The old color
+     */
     public Color getOldColor()
     {
         return oldColor;

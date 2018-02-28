@@ -21,8 +21,7 @@ import net.dv8tion.jda.core.requests.CloseCode;
 import java.time.OffsetDateTime;
 
 /**
- * Indicates that JDA has fully disconnected from Discord
- * and will not attempt to reconnect again.
+ * Indicates that JDA has fully disconnected from Discord and will not attempt to reconnect again.
  * <br>At this stage all internal cache is invalid!
  */
 public class ShutdownEvent extends Event
@@ -32,7 +31,7 @@ public class ShutdownEvent extends Event
 
     public ShutdownEvent(JDA api, OffsetDateTime shutdownTime, int code)
     {
-        super(api, -1);
+        super(api);
         this.shutdownTime = shutdownTime;
         this.code = code;
     }

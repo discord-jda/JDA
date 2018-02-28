@@ -19,6 +19,11 @@ package net.dv8tion.jda.core.events.role.update;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Role;
 
+/**
+ * Indicates that a {@link net.dv8tion.jda.core.entities.Role Role} updated its name.
+ *
+ * <p>Can be used to retrieve the old name.
+ */
 public class RoleUpdateNameEvent extends GenericRoleUpdateEvent
 {
     private final String oldName;
@@ -29,6 +34,11 @@ public class RoleUpdateNameEvent extends GenericRoleUpdateEvent
         this.oldName = oldName;
     }
 
+    /**
+     * The old name
+     *
+     * @return The old name
+     */
     public String getOldName()
     {
         return oldName;

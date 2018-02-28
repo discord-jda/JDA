@@ -18,6 +18,11 @@ package net.dv8tion.jda.core.events.self;
 
 import net.dv8tion.jda.core.JDA;
 
+/**
+ * Indicates that the name/discriminator of the current user changed.
+ *
+ * <p>Can be used to retrieve the old name/discriminator.
+ */
 public class SelfUpdateNameEvent extends GenericSelfUpdateEvent
 {
     private final String oldName;
@@ -30,11 +35,21 @@ public class SelfUpdateNameEvent extends GenericSelfUpdateEvent
         this.oldDiscriminator = oldDiscriminator;
     }
 
+    /**
+     * The old name
+     *
+     * @return The old name
+     */
     public String getOldName()
     {
         return oldName;
     }
 
+    /**
+     * The old discriminator
+     *
+     * @return The old discriminator
+     */
     public String getOldDiscriminator()
     {
         return oldDiscriminator;

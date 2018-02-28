@@ -19,6 +19,11 @@ package net.dv8tion.jda.core.events.role.update;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Role;
 
+/**
+ * Indicates that a {@link net.dv8tion.jda.core.entities.Role Role} updated its hoist state.
+ *
+ * <p>Can be used to retrieve the hoist state.
+ */
 public class RoleUpdateHoistedEvent extends GenericRoleUpdateEvent
 {
     private final boolean wasHoisted;
@@ -29,6 +34,11 @@ public class RoleUpdateHoistedEvent extends GenericRoleUpdateEvent
         this.wasHoisted = wasHoisted;
     }
 
+    /**
+     * Whether the role was hoisted
+     *
+     * @return True, if the role was hoisted before this update
+     */
     public boolean wasHoisted()
     {
         return wasHoisted;

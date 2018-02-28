@@ -19,6 +19,11 @@ package net.dv8tion.jda.core.events.emote.update;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Emote;
 
+/**
+ * Indicates that the name of an {@link net.dv8tion.jda.core.entities.Emote Emote} changed.
+ *
+ * <p>Can be used to retrieve the old name
+ */
 public class EmoteUpdateNameEvent extends GenericEmoteUpdateEvent
 {
     protected final String oldName;
@@ -29,11 +34,21 @@ public class EmoteUpdateNameEvent extends GenericEmoteUpdateEvent
         this.oldName = oldName;
     }
 
+    /**
+     * The old name
+     *
+     * @return The old name
+     */
     public String getOldName()
     {
         return oldName;
     }
 
+    /**
+     * The new name
+     *
+     * @return The new name
+     */
     public String getNewName()
     {
         return emote.getName();

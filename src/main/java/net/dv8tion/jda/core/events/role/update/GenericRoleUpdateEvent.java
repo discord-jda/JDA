@@ -20,6 +20,12 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.events.role.GenericRoleEvent;
 
+/**
+ * Indicates that a {@link net.dv8tion.jda.core.entities.Role Role} was updated.
+ * <br>Every RoleUpdateEvent is derived from this event and can be casted.
+ *
+ * <p>Can be used to detect any RoleUpdateEvent.
+ */
 public abstract class GenericRoleUpdateEvent extends GenericRoleEvent
 {
     public GenericRoleUpdateEvent(JDA api, long responseNumber, Role role)

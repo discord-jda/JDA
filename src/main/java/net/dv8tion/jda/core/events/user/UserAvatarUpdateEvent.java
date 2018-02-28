@@ -19,10 +19,9 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.User;
 
 /**
- * <b><u>UserAvatarUpdateEvent</u></b><br>
- * Fired if the Avatar of a {@link net.dv8tion.jda.core.entities.User User} changes.<br>
- * <br>
- * Use: Retrieve the User who's Avatar changed and their previous Avatar ID/URL.
+ * Indicates that the Avatar of a {@link net.dv8tion.jda.core.entities.User User} changed.
+ *
+ * <p>Can be used to retrieve the User who changed their avatar and their previous Avatar ID/URL.
  */
 public class UserAvatarUpdateEvent extends GenericUserEvent
 {
@@ -34,13 +33,23 @@ public class UserAvatarUpdateEvent extends GenericUserEvent
         this.previousAvatarId = previousAvatarId;
     }
 
+    /**
+     * The previous avatar id
+     *
+     * @return The previous avatar id
+     */
     public String getPreviousAvatarId()
     {
         return previousAvatarId;
     }
 
+    /**
+     * The previous avatar url
+     *
+     * @return The previous avatar url
+     */
     public String getPreviousAvatarUrl()
     {
-        return previousAvatarId == null ? null : "https://cdn.discordapp.com/avatars/" + getUser().getId() + "/" + previousAvatarId + ".jpg";
+        return previousAvatarId == null ? null : "https://cdn.discordapp.com/avatars/" + getUser().getId() + "/" + previousAvatarId + (previousAvatarId.startsWith("a_") ? ".gif" : ".png");
     }
 }

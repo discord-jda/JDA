@@ -22,6 +22,13 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 
+/**
+ * Indicates that the presence of a {@link net.dv8tion.jda.core.entities.User User} has changed.
+ * <br>Users don't have presences directly, this is fired when either a {@link net.dv8tion.jda.core.entities.Member Member} from a {@link net.dv8tion.jda.core.entities.Guild Guild}
+ * or one of the client's {@link net.dv8tion.jda.client.entities.Friend Friends} changes their presence.
+ *
+ * <p>Can be used to track the presence updates of members/friends.
+ */
 public abstract class GenericUserPresenceEvent extends GenericUserEvent
 {
     protected final Guild guild;
@@ -32,21 +39,41 @@ public abstract class GenericUserPresenceEvent extends GenericUserEvent
         this.guild = guild;
     }
 
+    /**
+     * Possibly-null guild in which the presence has changed.
+     *
+     * @return The guild, or null if this is related to a {@link net.dv8tion.jda.client.entities.Friend Friend}
+     */
     public Guild getGuild()
     {
         return guild;
     }
 
+    /**
+     * Possibly-null member who changed their presence.
+     *
+     * @return The member, or null if this is related to a {@link net.dv8tion.jda.client.entities.Friend Friend}
+     */
     public Member getMember()
     {
-        return isRelationshipUpdate() ? null : getGuild().getMember(getUser());
+        return !isRelationshipUpdate() ? getGuild().getMember(getUser()) : null;
     }
 
+    /**
+     * Possibly-null friend who changed their presence.
+     *
+     * @return The friend, or null if this is related to a {@link net.dv8tion.jda.core.entities.Member Member}
+     */
     public Friend getFriend()
     {
         return isRelationshipUpdate() ? getJDA().asClient().getFriend(getUser()) : null;
     }
 
+    /**
+     * Whether this is a change for a friend presence.
+     *
+     * @return True, if this was the presence update for a {@link net.dv8tion.jda.client.entities.Friend Friend}
+     */
     public boolean isRelationshipUpdate()
     {
         return getGuild() == null;

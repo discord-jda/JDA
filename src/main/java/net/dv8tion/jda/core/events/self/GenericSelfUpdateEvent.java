@@ -20,6 +20,12 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.SelfUser;
 import net.dv8tion.jda.core.events.Event;
 
+/**
+ * Indicates that a {@link net.dv8tion.jda.core.entities.SelfUser SelfUser} changed or started an activity.
+ * <br>Every SelfUserEvent is derived from this event and can be casted.
+ *
+ * <p>Can be used to detect any SelfUserEvent.
+ */
 public abstract class GenericSelfUpdateEvent extends Event
 {
     public GenericSelfUpdateEvent(JDA api, long responseNumber)
@@ -27,6 +33,11 @@ public abstract class GenericSelfUpdateEvent extends Event
         super(api, responseNumber);
     }
 
+    /**
+     * The {@link net.dv8tion.jda.core.entities.SelfUser SelfUser}
+     *
+     * @return The {@link net.dv8tion.jda.core.entities.SelfUser SelfUser}
+     */
     public SelfUser getSelfUser()
     {
         return api.getSelfUser();

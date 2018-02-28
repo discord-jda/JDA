@@ -19,6 +19,11 @@ package net.dv8tion.jda.core.events.role.update;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Role;
 
+/**
+ * Indicates that a {@link net.dv8tion.jda.core.entities.Role Role} updated its mentionable state.
+ *
+ * <p>Can be used to retrieve the old mentionable state.
+ */
 public class RoleUpdateMentionableEvent extends GenericRoleUpdateEvent
 {
     private final boolean wasMentionable;
@@ -29,6 +34,11 @@ public class RoleUpdateMentionableEvent extends GenericRoleUpdateEvent
         this.wasMentionable = wasMentionable;
     }
 
+    /**
+     * Whether the role was mentionable
+     *
+     * @return True, if this role was mentionable before this update
+     */
     public boolean wasMentionable()
     {
         return wasMentionable;

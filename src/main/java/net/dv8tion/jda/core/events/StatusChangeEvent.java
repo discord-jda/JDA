@@ -18,10 +18,9 @@ package net.dv8tion.jda.core.events;
 import net.dv8tion.jda.core.JDA;
 
 /**
- * <b><u>StatusChangedEvent</u></b><br>
- * Fired if our {@link net.dv8tion.jda.core.JDA.Status Status} changed. (Example: SHUTTING_DOWN -&gt; SHUTDOWN)<br>
- * <br>
- * Use: Detect internal status changes. Possibly to log or forward on user's end.
+ * Indicates that our {@link net.dv8tion.jda.core.JDA.Status Status} changed. (Example: SHUTTING_DOWN -&gt; SHUTDOWN)
+ *
+ * <br>Can be used to detect internal status changes. Possibly to log or forward on user's end.
  */
 public class StatusChangeEvent extends Event
 {
@@ -30,16 +29,26 @@ public class StatusChangeEvent extends Event
 
     public StatusChangeEvent(JDA api, JDA.Status newStatus, JDA.Status oldStatus)
     {
-        super(api, -1);
+        super(api);
         this.newStatus = newStatus;
         this.oldStatus = oldStatus;
     }
 
+    /**
+     * The status that we changed to
+     *
+     * @return The new status
+     */
     public JDA.Status getStatus()
     {
         return newStatus;
     }
 
+    /**
+     * The previous status
+     *
+     * @return The previous status
+     */
     public JDA.Status getOldStatus()
     {
         return oldStatus;

@@ -19,6 +19,11 @@ package net.dv8tion.jda.core.events.role.update;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Role;
 
+/**
+ * Indicates that a {@link net.dv8tion.jda.core.entities.Role Role} updated its position.
+ *
+ * <p>Can be used to retrieve the old position.
+ */
 public class RoleUpdatePositionEvent extends GenericRoleUpdateEvent
 {
     private final int oldPosition;
@@ -31,11 +36,21 @@ public class RoleUpdatePositionEvent extends GenericRoleUpdateEvent
         this.oldPositionRaw = oldPositionRaw;
     }
 
+    /**
+     * The old position
+     *
+     * @return The old position
+     */
     public int getOldPosition()
     {
         return oldPosition;
     }
 
+    /**
+     * The old position
+     *
+     * @return The old position
+     */
     public int getOldPositionRaw()
     {
         return oldPositionRaw;

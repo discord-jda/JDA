@@ -18,6 +18,11 @@ package net.dv8tion.jda.core.events.self;
 
 import net.dv8tion.jda.core.JDA;
 
+/**
+ * Indicates that the verification state of the current user changed. (client-only)
+ *
+ * <p>Can be used to retrieve the old verification state.
+ */
 public class SelfUpdateVerifiedEvent extends GenericSelfUpdateEvent
 {
     private final boolean wasVerified;
@@ -28,6 +33,11 @@ public class SelfUpdateVerifiedEvent extends GenericSelfUpdateEvent
         this.wasVerified = wasVerified;
     }
 
+    /**
+     * Whether the account was verified
+     *
+     * @return True, if this account was previously verified
+     */
     public boolean wasVerified()
     {
         return wasVerified;

@@ -25,6 +25,11 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Indicates that the role whitelist for an {@link net.dv8tion.jda.core.entities.Emote Emote} changed.
+ *
+ * <p>Can be used to retrieve the old role whitelist
+ */
 public class EmoteUpdateRolesEvent extends GenericEmoteUpdateEvent
 {
     protected final List<Role> oldRoles;
@@ -35,11 +40,21 @@ public class EmoteUpdateRolesEvent extends GenericEmoteUpdateEvent
         this.oldRoles = Collections.unmodifiableList(new LinkedList<>(oldRoles));
     }
 
+    /**
+     * The old role whitelist
+     *
+     * @return The old role whitelist
+     */
     public List<Role> getOldRoles()
     {
         return oldRoles;
     }
 
+    /**
+     * The new role whitelist
+     *
+     * @return The new role whitelist
+     */
     public List<Role> getNewRoles()
     {
         return emote.getRoles();

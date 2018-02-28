@@ -18,6 +18,11 @@ package net.dv8tion.jda.core.events.self;
 
 import net.dv8tion.jda.core.JDA;
 
+/**
+ * Indicates that the email of the current user changed. (client-only)
+ *
+ * <p>Can be used to retrieve the old email.
+ */
 public class SelfUpdateEmailEvent extends GenericSelfUpdateEvent
 {
     private final String oldEmail;
@@ -28,6 +33,11 @@ public class SelfUpdateEmailEvent extends GenericSelfUpdateEvent
         this.oldEmail = oldEmail;
     }
 
+    /**
+     * The old email
+     *
+     * @return The old email
+     */
     public String getOldEmail()
     {
         return oldEmail;

@@ -18,11 +18,11 @@ package net.dv8tion.jda.core.events;
 import net.dv8tion.jda.core.JDA;
 
 /**
- * <b><u>ReconnectedEvent</u></b><br>
- * Fired if JDA successfully re-established it's connection to the WebSocket.<br>
- * All Objects have been replaced when this is fired and events were likely missed in the downtime.<br>
- * <br>
- * Use: This marks the continuation of event flow stopped by the {@link net.dv8tion.jda.core.events.DisconnectEvent DisconnectEvent}. User should replace any cached Objects (like User/Guild objects).
+ * Indicates if JDA successfully re-established its connection to the gateway.
+ * <br>All Objects have been replaced when this is fired and events were likely missed in the downtime.
+ *
+ * <p>Can be used to mark the continuation of event flow which was stopped by the {@link net.dv8tion.jda.core.events.DisconnectEvent DisconnectEvent}.
+ * User should replace any cached Objects (like User/Guild objects).
  */
 public class ReconnectedEvent extends Event
 {

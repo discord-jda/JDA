@@ -23,6 +23,11 @@ import net.dv8tion.jda.core.entities.Role;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Indicates that a {@link net.dv8tion.jda.core.entities.Role Role} updated its permissions.
+ *
+ * <p>Can be used to retrieve the old permissions.
+ */
 public class RoleUpdatePermissionsEvent extends GenericRoleUpdateEvent
 {
     private final long oldPermissionsRaw;
@@ -33,12 +38,22 @@ public class RoleUpdatePermissionsEvent extends GenericRoleUpdateEvent
         this.oldPermissionsRaw = oldPermissionsRaw;
     }
 
+    /**
+     * The old permissions
+     *
+     * @return The old permissions
+     */
     public List<Permission> getOldPermissions()
     {
         return Collections.unmodifiableList(
                 Permission.getPermissions(oldPermissionsRaw));
     }
 
+    /**
+     * The old permissions
+     *
+     * @return The old permissions
+     */
     public long getOldPermissionsRaw()
     {
         return oldPermissionsRaw;

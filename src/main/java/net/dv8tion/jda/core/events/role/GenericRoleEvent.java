@@ -21,6 +21,12 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.events.Event;
 
+/**
+ * Indicates that a {@link net.dv8tion.jda.core.entities.Role Role} was created/deleted/changed.
+ * <br>Every RoleEvent is derived from this event and can be casted.
+ *
+ * <p>Can be used to detect any RoleEvent.
+ */
 public abstract class GenericRoleEvent extends Event
 {
     protected final Role role;
@@ -31,11 +37,21 @@ public abstract class GenericRoleEvent extends Event
         this.role = role;
     }
 
+    /**
+     * The role for this event
+     *
+     * @return The role for this event
+     */
     public Role getRole()
     {
         return role;
     }
 
+    /**
+     * The guild of the role
+     *
+     * @return The guild of the role
+     */
     public Guild getGuild()
     {
         return role.getGuild();
