@@ -21,7 +21,7 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
 
 /**
- * <b><u>GuildMessageReceivedEvent</u></b><br>
+ * <b><u>GuildMessageUpdateEvent</u></b><br>
  * Fired if a Message is edited in a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.<br>
  * <br>
  * Use: Retrieve affected TextChannel and Message.
