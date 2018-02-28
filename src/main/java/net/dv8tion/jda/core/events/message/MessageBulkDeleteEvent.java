@@ -46,6 +46,11 @@ public class MessageBulkDeleteEvent extends Event
         return channel;
     }
 
+    public Guild getGuild()
+    {
+        return channel.getGuild();
+    }
+
     public List<String> getMessageIds()
     {
         return messageIds;
