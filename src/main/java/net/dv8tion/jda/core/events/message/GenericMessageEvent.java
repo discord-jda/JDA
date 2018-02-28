@@ -17,7 +17,9 @@ package net.dv8tion.jda.core.events.message;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.ChannelType;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.Event;
 
 /**
@@ -64,4 +66,17 @@ public abstract class GenericMessageEvent extends Event
         return channel.getType();
     }
 
+    /**
+     * Returns the {@link net.dv8tion.jda.core.entities.Guild Guild} the Message was received in.
+     * <br>If this Message was not received in a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel},
+     * this will return {@code null}.
+     *
+     * @return The Guild the Message was received in or null if not from a TextChannel
+     *
+     * @see net.dv8tion.jda.core.events.message.GenericMessageEvent#isFromType(ChannelType)
+     */
+    public Guild getGuild()
+    {
+        return isFromType(ChannelType.TEXT) ? ((TextChannel) channel).getGuild() : null;
+    }
 }

@@ -67,9 +67,4 @@ public class MessageUpdateEvent extends GenericMessageEvent
     {
         return message.getTextChannel();
     }
-
-    public Guild getGuild()
-    {
-        return message.getGuild();
-    }
 }

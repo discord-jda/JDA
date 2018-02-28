@@ -33,12 +33,6 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
         this.reaction = reaction;
     }
 
-    public Guild getGuild()
-    {
-        TextChannel channel = getTextChannel();
-        return channel != null ? channel.getGuild() : null;
-    }
-
     public TextChannel getTextChannel()
     {
         return isFromType(ChannelType.TEXT) ? (TextChannel) getChannel() : null;

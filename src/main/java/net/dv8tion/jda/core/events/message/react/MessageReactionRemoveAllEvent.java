@@ -29,12 +29,6 @@ public class MessageReactionRemoveAllEvent extends GenericMessageEvent
         super(api, responseNumber, messageId, channel);
     }
 
-    public Guild getGuild()
-    {
-        TextChannel channel = getTextChannel();
-        return channel != null ? channel.getGuild() : null;
-    }
-
     public TextChannel getTextChannel()
     {
         return isFromType(ChannelType.TEXT) ? (TextChannel) getChannel() : null;

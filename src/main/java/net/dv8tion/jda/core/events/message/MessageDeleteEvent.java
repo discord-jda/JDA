@@ -50,9 +50,4 @@ public class MessageDeleteEvent extends GenericMessageEvent
     {
         return isFromType(ChannelType.TEXT) ? (TextChannel) channel : null;
     }
-
-    public Guild getGuild()
-    {
-        return isFromType(ChannelType.TEXT) ? getTextChannel().getGuild() : null;
-    }
 }
