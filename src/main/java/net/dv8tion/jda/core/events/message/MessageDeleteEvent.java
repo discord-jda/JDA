@@ -35,24 +35,4 @@ public class MessageDeleteEvent extends GenericMessageEvent
     {
         super(api, responseNumber, messageId, channel);
     }
-
-    public PrivateChannel getPrivateChannel()
-    {
-        return isFromType(ChannelType.PRIVATE) ? (PrivateChannel) channel : null;
-    }
-
-    public Group getGroup()
-    {
-        return isFromType(ChannelType.GROUP) ? (Group) channel : null;
-    }
-
-    public TextChannel getTextChannel()
-    {
-        return isFromType(ChannelType.TEXT) ? (TextChannel) channel : null;
-    }
-
-    public Guild getGuild()
-    {
-        return isFromType(ChannelType.TEXT) ? getTextChannel().getGuild() : null;
-    }
 }
