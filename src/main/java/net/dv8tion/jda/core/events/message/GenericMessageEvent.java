@@ -79,7 +79,7 @@ public abstract class GenericMessageEvent extends Event
      */
     public Guild getGuild()
     {
-        return isFromType(ChannelType.TEXT) ? ((TextChannel) channel).getGuild() : null;
+        return isFromType(ChannelType.TEXT) ? getTextChannel().getGuild() : null;
     }
 
     /**
