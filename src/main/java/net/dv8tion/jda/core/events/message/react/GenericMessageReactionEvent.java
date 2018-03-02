@@ -21,6 +21,12 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.GenericMessageEvent;
 
+/**
+ * Indicates that a MessageReaction was added/removed.
+ * <br>Every MessageReactionEvent is derived from this event and can be casted.
+ *
+ * <p>Can be used to detect both remove and add events.
+ */
 public class GenericMessageReactionEvent extends GenericMessageEvent
 {
     protected User issuer;
@@ -33,22 +39,44 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
         this.reaction = reaction;
     }
 
+    /**
+     * The reacting {@link net.dv8tion.jda.core.entities.User User}
+     *
+     * @return The reacting user
+     */
     public User getUser()
     {
         return issuer;
     }
 
+    /**
+     * The {@link net.dv8tion.jda.core.entities.Member Member} instance for the reacting user
+     * or {@code null} if the reaction was not in a guild.
+     *
+     * @return Member of the reacting user or null
+     */
     public Member getMember()
     {
         Guild guild = getGuild();
         return guild != null ? guild.getMember(getUser()) : null;
     }
 
+    /**
+     * The {@link net.dv8tion.jda.core.entities.MessageReaction MessageReaction}
+     *
+     * @return The MessageReaction
+     */
     public MessageReaction getReaction()
     {
         return reaction;
     }
 
+    /**
+     * The {@link net.dv8tion.jda.core.entities.MessageReaction.ReactionEmote ReactionEmote}
+     * of the reaction, shortcut for {@code getReaction().getReactionEmote()}
+     *
+     * @return The ReactionEmote instance
+     */
     public MessageReaction.ReactionEmote getReactionEmote()
     {
         return reaction.getReactionEmote();

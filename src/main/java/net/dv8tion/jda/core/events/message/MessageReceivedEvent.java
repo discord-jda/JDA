@@ -19,12 +19,11 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 
 /**
- * <b><u>MessageReceivedEvent</u></b><br>
- * Fired if a Message is received in a {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.
+ * Indicates that a Message was received in a {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.
  * <br>This includes {@link net.dv8tion.jda.core.entities.TextChannel TextChannel},
  * {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} and {@link net.dv8tion.jda.client.entities.Group Group}!
- * <p>
- * Use: This event indicates that a Message is received in either a guild, private channel or group. Providing a MessageChannel and Message.
+ * 
+ * <p>Can be used to detect that a Message is received in either a guild, private channel or group. Providing a MessageChannel and Message.
  */
 public class MessageReceivedEvent extends GenericMessageEvent
 {
@@ -37,7 +36,7 @@ public class MessageReceivedEvent extends GenericMessageEvent
     }
 
     /**
-     * Returns the received {@link net.dv8tion.jda.core.entities.Message Message} object.
+     * The received {@link net.dv8tion.jda.core.entities.Message Message} object.
      *
      * @return The received {@link net.dv8tion.jda.core.entities.Message Message} object.
      */
@@ -47,7 +46,7 @@ public class MessageReceivedEvent extends GenericMessageEvent
     }
 
     /**
-     * Returns the Author of the Message received as {@link net.dv8tion.jda.core.entities.User User} object.
+     * The Author of the Message received as {@link net.dv8tion.jda.core.entities.User User} object.
      * <br>This will be never-null but might be a fake user if Message was sent via Webhook (Guild only).
      *
      * @return The Author of the Message.
@@ -61,7 +60,7 @@ public class MessageReceivedEvent extends GenericMessageEvent
     }
 
     /**
-     * Returns the Author of the Message received as {@link net.dv8tion.jda.core.entities.Member Member} object.
+     * The Author of the Message received as {@link net.dv8tion.jda.core.entities.Member Member} object.
      * <br>This will be {@code null} in case of Message being received in
      * a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel},
      * a {@link net.dv8tion.jda.client.entities.Group Group}
@@ -77,10 +76,10 @@ public class MessageReceivedEvent extends GenericMessageEvent
     }
 
     /**
-     * Returns whether or not the Message received was sent via a Webhook.
+     * Whether or not the Message received was sent via a Webhook.
      * <br>This is a shortcut for {@code getMessage().isWebhookMessage()}.
      *
-     * @return Whether or not the Message was sent via Webhook
+     * @return True, if the Message was sent via Webhook
      */
     public boolean isWebhookMessage()
     {

@@ -21,11 +21,10 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.guild.GenericGuildEvent;
 
 /**
- * <b><u>GenericGuildMessageEvent</u></b><br>
- * Fired whenever a {@link net.dv8tion.jda.core.entities.Message Message} event is fired from a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.<br>
- * Every GuildMessageEvent is an instance of this event and can be casted. (no exceptions)<br>
- * <br>
- * Use: Detect any GuildMessageEvent. <i>(No real use for the JDA user)</i>
+ * Indicatest that a {@link net.dv8tion.jda.core.entities.Message Message} event is fired from a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
+ * <br>Every GuildMessageEvent is derived from this event and can be casted.
+ * 
+ * <p>Can be used to detect any GuildMessageEvent.
  */
 public abstract class GenericGuildMessageEvent extends GenericGuildEvent
 {
@@ -39,26 +38,62 @@ public abstract class GenericGuildMessageEvent extends GenericGuildEvent
         this.channel = channel;
     }
 
+    /**
+     * The message id
+     *
+     * @return The message id
+     */
     public String getMessageId()
     {
         return Long.toUnsignedString(messageId);
     }
 
+    /**
+     * The message id
+     *
+     * @return The message id
+     */
     public long getMessageIdLong()
     {
         return messageId;
     }
 
+    /**
+     * Deprecated
+     *
+     * @param  type
+     *         The channel type
+     *
+     * @return True, if provided with ChannelType.TEXT
+     *
+     * @deprecated
+     *         It's nonsense for this to exist
+     */
+    @Deprecated
     public boolean isFromType(ChannelType type)
     {
         return getChannel().getType() == type;
     }
 
+    /**
+     * Deprecated
+     *
+     * @return ChannelType.TEXT
+     *
+     * @deprecated
+     *         It's nonsense for this to exist
+     */
+    @Deprecated
     public ChannelType getChannelType()
     {
         return getChannel().getType();
     }
 
+    /**
+     * The {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} for this message
+     *
+     * @return The TextChannel for this message
+     */
     public TextChannel getChannel()
     {
         return channel;

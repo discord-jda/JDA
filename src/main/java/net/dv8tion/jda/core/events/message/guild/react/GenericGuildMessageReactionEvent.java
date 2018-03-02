@@ -20,7 +20,12 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
 
-public class GenericGuildMessageReactionEvent extends GenericGuildMessageEvent
+/**
+ * Indicates that a {@link net.dv8tion.jda.core.entities.MessageReaction MessageReaction} was added or removed in a TextChannel.
+ *
+ * <p>Can be used to detect when a reaction is added or removed in a TextChannel.
+ */
+public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessageEvent
 {
     protected final User issuer;
     protected final MessageReaction reaction;
@@ -32,26 +37,52 @@ public class GenericGuildMessageReactionEvent extends GenericGuildMessageEvent
         this.reaction = reaction;
     }
 
+    /**
+     * The {@link net.dv8tion.jda.core.entities.Guild Guild} for the channel
+     *
+     * @return The Guild
+     */
     public Guild getGuild()
     {
         return getChannel().getGuild();
     }
 
+    /**
+     * The reacting {@link net.dv8tion.jda.core.entities.User User}
+     *
+     * @return The reacting user
+     */
     public User getUser()
     {
         return issuer;
     }
 
+    /**
+     * The {@link net.dv8tion.jda.core.entities.Member Member} instance for the reacting user
+     *
+     * @return The member instance for the reacting user
+     */
     public Member getMember()
     {
         return getGuild().getMember(getUser());
     }
 
+    /**
+     * The {@link net.dv8tion.jda.core.entities.MessageReaction MessageReaction}
+     *
+     * @return The message reaction
+     */
     public MessageReaction getReaction()
     {
         return reaction;
     }
 
+    /**
+     * The {@link net.dv8tion.jda.core.entities.MessageReaction.ReactionEmote ReactionEmote}
+     * <br>Shorcut for {@code getReaction().getReactionEmote()}
+     *
+     * @return The reaction emote
+     */
     public MessageReaction.ReactionEmote getReactionEmote()
     {
         return reaction.getReactionEmote();

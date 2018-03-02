@@ -22,6 +22,11 @@ import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.priv.GenericPrivateMessageEvent;
 
+/**
+ * Indicates that a {@link net.dv8tion.jda.core.entities.MessageReaction MessageReaction} was added or removed.
+ *
+ * <p>Can be used to detect when a message reaction is added or removed from a message.
+ */
 public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEvent
 {
     protected final User issuer;
@@ -34,16 +39,32 @@ public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEve
         this.reaction = reaction;
     }
 
+    /**
+     * The reacting {@link net.dv8tion.jda.core.entities.User User}
+     *
+     * @return The reacting user
+     */
     public User getUser()
     {
         return issuer;
     }
 
+    /**
+     * The {@link net.dv8tion.jda.core.entities.MessageReaction MessageReaction}
+     *
+     * @return The message reaction
+     */
     public MessageReaction getReaction()
     {
         return reaction;
     }
 
+    /**
+     * The {@link net.dv8tion.jda.core.entities.MessageReaction.ReactionEmote ReactionEmote}
+     * <br>Shorcut for {@code getReaction().getReactionEmote()}
+     *
+     * @return The message reaction emote
+     */
     public MessageReaction.ReactionEmote getReactionEmote()
     {
         return reaction.getReactionEmote();

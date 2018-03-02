@@ -22,10 +22,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * <b><u>MessageEmbedEvent</u></b><br>
- * Fired if a Message contains an {@link net.dv8tion.jda.core.entities.MessageEmbed Embed} in a {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.<br>
- * <br>
- * Use: Grab MessageEmbeds from any message. No matter if private or guild.
+ * Indicates that a Message contains an {@link net.dv8tion.jda.core.entities.MessageEmbed Embed} in a {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.
+ * <br>Discord may need to do additional calculations and resizing tasks on messages that embed websites, thus they send the message only with content and link and use this update to add the missing embed later when the server finishes those calculations.
+ * 
+ * <p>Can be used to retrieve MessageEmbeds from any message. No matter if private or guild.
  */
 public class MessageEmbedEvent extends GenericMessageEvent
 {
@@ -37,6 +37,11 @@ public class MessageEmbedEvent extends GenericMessageEvent
         this.embeds = Collections.unmodifiableList(embeds);
     }
 
+    /**
+     * The list of {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbeds}
+     *
+     * @return The list of MessageEmbeds
+     */
     public List<MessageEmbed> getMessageEmbeds()
     {
         return embeds;

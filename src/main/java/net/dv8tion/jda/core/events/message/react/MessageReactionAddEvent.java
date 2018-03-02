@@ -20,6 +20,12 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.MessageReaction;
 import net.dv8tion.jda.core.entities.User;
 
+/**
+ * Indicates that a user added a reaction to a message
+ * <br>This includes unicode and custom emoji
+ *
+ * <p>Can be used to track when a user adds a reaction to a message
+ */
 public class MessageReactionAddEvent extends GenericMessageReactionEvent
 {
     public MessageReactionAddEvent(JDA api, long responseNumber, User user, MessageReaction reaction)
