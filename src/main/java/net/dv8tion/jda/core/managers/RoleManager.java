@@ -135,6 +135,8 @@ public class RoleManager extends ManagerBase
         super.reset(fields);
         if ((fields & NAME) == NAME)
             this.name = null;
+        if ((fields & COLOR) == COLOR)
+            this.color = Role.DEFAULT_COLOR_RAW;
         return this;
     }
 
@@ -176,6 +178,7 @@ public class RoleManager extends ManagerBase
     {
         super.reset();
         this.name = null;
+        this.color = Role.DEFAULT_COLOR_RAW;
         return this;
     }
 
@@ -299,7 +302,7 @@ public class RoleManager extends ManagerBase
     @CheckReturnValue
     public RoleManager setColor(Color color)
     {
-        this.color = color == null ? 0 : color.getRGB();
+        this.color = color == null ? Role.DEFAULT_COLOR_RAW : color.getRGB();
         set |= COLOR;
         return this;
     }
@@ -311,6 +314,8 @@ public class RoleManager extends ManagerBase
      *         The new color for the selected {@link net.dv8tion.jda.core.entities.Role Role}
      *
      * @return RoleManager for chaining convenience
+     *
+     * @see    Role#DEFAULT_COLOR_RAW Role.DEFAULT_COLOR_RAW
      */
     @CheckReturnValue
     public RoleManager setColor(int rgb)
@@ -461,7 +466,7 @@ public class RoleManager extends ManagerBase
         if (shouldUpdate(MENTIONABLE))
             object.put("mentionable", mentionable);
         if (shouldUpdate(COLOR))
-            object.put("color", color & 0xFFFFFF);
+            object.put("color", color == Role.DEFAULT_COLOR_RAW ? 0 : color & 0xFFFFFF);
         reset();
         return getRequestBody(object);
     }
