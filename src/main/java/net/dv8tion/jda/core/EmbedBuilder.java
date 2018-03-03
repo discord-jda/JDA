@@ -716,11 +716,11 @@ public class EmbedBuilder
      *
      * @return the builder after the field has been added
      */
-    public EmbedBuilder addField(String name, String value, boolean inline)
+    public EmbedBuilder addField(String name, Object value, boolean inline)
     {
         if (name == null && value == null)
             return this;
-        this.fields.add(new MessageEmbed.Field(name, value, inline));
+        this.fields.add(new MessageEmbed.Field(name, String.valueOf(value), inline));
         return this;
     }
     
