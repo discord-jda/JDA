@@ -20,6 +20,7 @@ import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.client.requests.restaction.pagination.MentionPaginationAction;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
@@ -94,6 +95,35 @@ public class GuildImpl implements Guild
     {
         this.id = id;
         this.api = api;
+    }
+
+    @Override
+    public RestAction<EnumSet<Region>> retrieveRegions()
+    {
+        Route.CompiledRoute route = Route.Guilds.GET_VOICE_REGIONS.compile(getId());
+        return new RestAction<EnumSet<Region>>(api, route)
+        {
+            @Override
+            protected void handleResponse(Response response, Request<EnumSet<Region>> request)
+            {
+                if (!response.isOk())
+                {
+                    request.onFailure(response);
+                    return;
+                }
+                EnumSet<Region> set = EnumSet.noneOf(Region.class);
+                JSONArray arr = response.getArray();
+                for (int i = 0; arr != null && i < arr.length(); i++)
+                {
+                    JSONObject obj = arr.getJSONObject(i);
+                    String id = obj.optString("id");
+                    Region region = Region.fromKey(id);
+                    if (region != Region.UNKNOWN)
+                        set.add(region);
+                }
+                request.onSuccess(set);
+            }
+        };
     }
 
     @Override

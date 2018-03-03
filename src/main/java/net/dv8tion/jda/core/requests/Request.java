@@ -89,7 +89,7 @@ public class Request<T>
         else
         {
             onFailure(ErrorResponseException.create(
-                    ErrorResponse.fromJSON(response.getObject()), response));
+                    ErrorResponse.fromJSON(response.optObject().orElse(null)), response));
         }
     }
 

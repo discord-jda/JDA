@@ -182,29 +182,43 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     @Override
     public PermissionOverrideAction createPermissionOverride(Member member)
     {
+        Checks.notNull(member, "member");
+        if (overrides.containsKey(member.getUser().getIdLong()))
+            throw new IllegalStateException("Provided member already has a PermissionOverride in this channel!");
+
+        return putPermissionOverride(member);
+    }
+
+    @Override
+    public PermissionOverrideAction createPermissionOverride(Role role)
+    {
+        Checks.notNull(role, "role");
+        if (overrides.containsKey(role.getIdLong()))
+            throw new IllegalStateException("Provided role already has a PermissionOverride in this channel!");
+
+        return putPermissionOverride(role);
+    }
+
+    @Override
+    public PermissionOverrideAction putPermissionOverride(Member member)
+    {
         checkPermission(Permission.MANAGE_PERMISSIONS);
         Checks.notNull(member, "member");
 
         if (!guild.equals(member.getGuild()))
             throw new IllegalArgumentException("Provided member is not from the same guild as this channel!");
-        if (overrides.containsKey(member.getUser().getIdLong()))
-            throw new IllegalStateException("Provided member already has a PermissionOverride in this channel!");
-
         Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(getId(), member.getUser().getId());
         return new PermissionOverrideAction(getJDA(), route, this, member);
     }
 
     @Override
-    public PermissionOverrideAction createPermissionOverride(Role role)
+    public PermissionOverrideAction putPermissionOverride(Role role)
     {
         checkPermission(Permission.MANAGE_PERMISSIONS);
         Checks.notNull(role, "role");
 
         if (!guild.equals(role.getGuild()))
             throw new IllegalArgumentException("Provided role is not from the same guild as this channel!");
-        if (overrides.containsKey(role.getIdLong()))
-            throw new IllegalStateException("Provided role already has a PermissionOverride in this channel!");
-
         Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(getId(), role.getId());
         return new PermissionOverrideAction(getJDA(), route, this, role);
     }

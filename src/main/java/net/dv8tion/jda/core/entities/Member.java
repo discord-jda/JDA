@@ -126,8 +126,19 @@ public interface Member extends IMentionable, IPermissionHolder
      * <br>If all roles have default color, this returns null.
      *
      * @return The display Color for this Member.
+     *
+     * @see    #getColorRaw()
      */
     Color getColor();
+
+    /**
+     * The raw RGB value for the color of this member.
+     * <br>Defaulting to {@link net.dv8tion.jda.core.entities.Role#DEFAULT_COLOR_RAW Role.DEFAULT_COLOR_RAW}
+     * if this member uses the default color (special property, it changes depending on theme used in the client)
+     *
+     * @return The raw RGB value or the role default
+     */
+    int getColorRaw();
 
     /**
      * The Permissions this Member holds in the specified {@link net.dv8tion.jda.core.entities.Channel Channel}.

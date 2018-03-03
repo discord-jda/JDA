@@ -31,6 +31,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -40,6 +41,13 @@ import java.util.Set;
  */
 public interface Guild extends ISnowflake
 {
+    /**
+     * Retrieves the available regions for this Guild
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type {@link java.util.EnumSet EnumSet}
+     */
+    RestAction<EnumSet<Region>> retrieveRegions();
+
     /**
      * The human readable name of the {@link net.dv8tion.jda.core.entities.Guild Guild}.
      * <p>
