@@ -28,9 +28,9 @@ import java.awt.Color;
  */
 public class RoleUpdateColorEvent extends GenericRoleUpdateEvent
 {
-    private final Color oldColor;
+    private final int oldColor;
 
-    public RoleUpdateColorEvent(JDA api, long responseNumber, Role role, Color oldColor)
+    public RoleUpdateColorEvent(JDA api, long responseNumber, Role role, int oldColor)
     {
         super(api, responseNumber, role);
         this.oldColor = oldColor;
@@ -42,6 +42,11 @@ public class RoleUpdateColorEvent extends GenericRoleUpdateEvent
      * @return The old color
      */
     public Color getOldColor()
+    {
+        return oldColor != Role.DEFAULT_COLOR_RAW ? new Color(oldColor) : null;
+    }
+
+    public int getOldColorRaw()
     {
         return oldColor;
     }

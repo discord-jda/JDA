@@ -15,13 +15,13 @@
  */
 package net.dv8tion.jda.core.handle;
 
+import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.entities.impl.RoleImpl;
 import net.dv8tion.jda.core.events.role.update.*;
 import org.json.JSONObject;
 
-import java.awt.Color;
 import java.util.Objects;
 
 public class GuildRoleUpdateHandler extends SocketHandler
@@ -58,7 +58,9 @@ public class GuildRoleUpdateHandler extends SocketHandler
         }
 
         String name = rolejson.getString("name");
-        Color color = rolejson.getInt("color") != 0 ? new Color(rolejson.getInt("color")) : null;
+        int color = rolejson.getInt("color");
+        if (color == 0)
+            color = Role.DEFAULT_COLOR_RAW;
         int position = rolejson.getInt("position");
         long permissions = rolejson.getLong("permissions");
         boolean hoisted = rolejson.getBoolean("hoist");
@@ -73,9 +75,9 @@ public class GuildRoleUpdateHandler extends SocketHandler
                             api, responseNumber,
                             role, oldName));
         }
-        if (!Objects.equals(color, role.getColor()))
+        if (color != role.getColorRaw())
         {
-            Color oldColor = role.getColor();
+            int oldColor = role.getColorRaw();
             role.setColor(color);
             api.getEventManager().handle(
                     new RoleUpdateColorEvent(
