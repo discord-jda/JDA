@@ -18,6 +18,7 @@ package net.dv8tion.jda.core;
 import net.dv8tion.jda.core.entities.EmbedType;
 import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.MessageEmbed;
+import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.Helpers;
 
@@ -43,9 +44,9 @@ public class EmbedBuilder
 
     private final List<MessageEmbed.Field> fields = new LinkedList<>();
     private final StringBuilder description = new StringBuilder();
+    private int color = Role.DEFAULT_COLOR_RAW;
     private String url, title;
     private OffsetDateTime timestamp;
-    private Color color;
     private MessageEmbed.Thumbnail thumbnail;
     private MessageEmbed.AuthorInfo author;
     private MessageEmbed.Footer footer;
@@ -88,7 +89,7 @@ public class EmbedBuilder
             this.url = embed.getUrl();
             this.title = embed.getTitle();
             this.timestamp = embed.getTimestamp();
-            this.color = embed.getColor();
+            this.color = embed.getColorRaw();
             this.thumbnail = embed.getThumbnail();
             this.author = embed.getAuthor();
             this.footer = embed.getFooter();
@@ -132,7 +133,7 @@ public class EmbedBuilder
         url = null;
         title = null;
         timestamp = null;
-        color = null;
+        color = Role.DEFAULT_COLOR_RAW;
         thumbnail = null;
         author = null;
         footer = null;
@@ -400,8 +401,28 @@ public class EmbedBuilder
      *         or {@code null} to use no color
      *
      * @return the builder after the color has been set
+     *
+     * @see    #setColor(int)
      */
     public EmbedBuilder setColor(Color color)
+    {
+        this.color = color == null ? Role.DEFAULT_COLOR_RAW : color.getRGB();
+        return this;
+    }
+
+    /**
+     * Sets the raw RGB color value for the embed.
+     *
+     * <a href="http://i.imgur.com/2YnxnRM.png" target="_blank">Example</a>
+     *
+     * @param  color
+     *         The raw rgb value, or {@link Role#DEFAULT_COLOR_RAW} to use no color
+     *
+     * @return the builder after the color has been set
+     *
+     * @see    #setColor(java.awt.Color)
+     */
+    public EmbedBuilder setColor(int color)
     {
         this.color = color;
         return this;

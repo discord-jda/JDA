@@ -44,7 +44,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
-import java.awt.Color;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -832,12 +831,13 @@ public class EntityBuilder
             role = new RoleImpl(id, guild);
             guild.getRolesMap().put(id, role);
         }
+        final int color = roleJson.getInt("color");
         return role.setName(roleJson.getString("name"))
                 .setRawPosition(roleJson.getInt("position"))
                 .setRawPermissions(roleJson.getLong("permissions"))
                 .setManaged(roleJson.getBoolean("managed"))
                 .setHoisted(roleJson.getBoolean("hoist"))
-                .setColor(roleJson.getInt("color") != 0 ? new Color(roleJson.getInt("color")) : null)
+                .setColor(color == 0 ? Role.DEFAULT_COLOR_RAW : color)
                 .setMentionable(roleJson.has("mentionable") && roleJson.getBoolean("mentionable"));
     }
 
@@ -996,7 +996,7 @@ public class EntityBuilder
         final String title = content.optString("title", null);
         final String description = content.optString("description", null);
         final OffsetDateTime timestamp = content.isNull("timestamp") ? null : OffsetDateTime.parse(content.getString("timestamp"));
-        final Color color = content.isNull("color") ? null : new Color(content.getInt("color"));
+        final int color = content.isNull("color") ? Role.DEFAULT_COLOR_RAW : content.getInt("color");
 
         final Thumbnail thumbnail;
         if (content.isNull("thumbnail"))
@@ -1090,7 +1090,7 @@ public class EntityBuilder
     }
 
     public static MessageEmbed createMessageEmbed(String url, String title, String description, EmbedType type, OffsetDateTime timestamp,
-                                           Color color, Thumbnail thumbnail, Provider siteProvider, AuthorInfo author,
+                                           int color, Thumbnail thumbnail, Provider siteProvider, AuthorInfo author,
                                            VideoInfo videoInfo, Footer footer, ImageInfo image, List<Field> fields)
     {
         return new MessageEmbed(url, title, description, type, timestamp,
