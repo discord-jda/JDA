@@ -19,6 +19,11 @@ package net.dv8tion.jda.core.events.guild.update;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 
+/**
+ * Indicates that the name of a {@link net.dv8tion.jda.core.entities.Guild Guild} changed.
+ *
+ * <p>Can be used to detect when a guild name changes and retrieve the old one
+ */
 public class GuildUpdateNameEvent extends GenericGuildUpdateEvent
 {
     private final String oldName;
@@ -29,6 +34,11 @@ public class GuildUpdateNameEvent extends GenericGuildUpdateEvent
         this.oldName = oldName;
     }
 
+    /**
+     * The old name
+     *
+     * @return The old name
+     */
     public String getOldName()
     {
         return oldName;

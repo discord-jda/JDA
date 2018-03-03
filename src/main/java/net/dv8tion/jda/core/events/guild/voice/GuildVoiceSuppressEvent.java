@@ -19,6 +19,13 @@ package net.dv8tion.jda.core.events.guild.voice;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Member;
 
+/**
+ * Indicates that a {@link net.dv8tion.jda.core.entities.Member Member} was (un-)suppressed.
+ *
+ * <p>Can be used to detect when a member is suppressed or un-suppressed.
+ *
+ * @see net.dv8tion.jda.core.entities.GuildVoiceState#isSuppressed() GuildVoiceState.isSuppressed()
+ */
 public class GuildVoiceSuppressEvent extends GenericGuildVoiceEvent
 {
     protected final boolean suppressed;
@@ -29,6 +36,12 @@ public class GuildVoiceSuppressEvent extends GenericGuildVoiceEvent
         this.suppressed = member.getVoiceState().isSuppressed();
     }
 
+    /**
+     * Whether the member was suppressed in this event
+     *
+     * @return True, if the member was suppressed,
+     *         <br>False, if the member was un-suppressed
+     */
     public boolean isSuppressed()
     {
         return suppressed;

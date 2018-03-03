@@ -99,14 +99,14 @@ public class GuildMemberUpdateHandler extends SocketHandler
             api.getEventManager().handle(
                     new GuildMemberRoleRemoveEvent(
                             api, responseNumber,
-                            guild, member, removedRoles));
+                            member, removedRoles));
         }
         if (newRoles.size() > 0)
         {
             api.getEventManager().handle(
                     new GuildMemberRoleAddEvent(
                             api, responseNumber,
-                            guild, member, newRoles));
+                            member, newRoles));
         }
         if (content.has("nick"))
         {
@@ -118,7 +118,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
                 api.getEventManager().handle(
                         new GuildMemberNickChangeEvent(
                                 api, responseNumber,
-                                guild, member, prevNick, newNick));
+                                member, prevNick, newNick));
             }
         }
         return null;

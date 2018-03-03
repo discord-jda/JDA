@@ -20,6 +20,11 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 
+/**
+ * Indicates that the owner of a {@link net.dv8tion.jda.core.entities.Guild Guild} changed.
+ *
+ * <p>Can be used to detect when an owner of a guild changes and retrieve the old one
+ */
 public class GuildUpdateOwnerEvent extends GenericGuildUpdateEvent
 {
     private final Member oldOwner;
@@ -30,6 +35,11 @@ public class GuildUpdateOwnerEvent extends GenericGuildUpdateEvent
         this.oldOwner = oldOwner;
     }
 
+    /**
+     * The old owner
+     *
+     * @return The old owner
+     */
     public Member getOldOwner()
     {
         return oldOwner;

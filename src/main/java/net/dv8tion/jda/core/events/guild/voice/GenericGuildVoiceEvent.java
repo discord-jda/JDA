@@ -21,6 +21,12 @@ import net.dv8tion.jda.core.entities.GuildVoiceState;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.guild.GenericGuildEvent;
 
+/**
+ * Indicates that a {@link net.dv8tion.jda.core.entities.Guild Guild} voice event is fired.
+ * <br>Every GuildVoiceEvent is an instance of this event and can be casted.
+ *
+ * <p>Can be used to detect any GuildVoiceEvent.
+ */
 public abstract class GenericGuildVoiceEvent extends GenericGuildEvent
 {
     protected final Member member;
@@ -31,11 +37,22 @@ public abstract class GenericGuildVoiceEvent extends GenericGuildEvent
         this.member = member;
     }
 
+    /**
+     * The affected {@link net.dv8tion.jda.core.entities.Member Member}
+     *
+     * @return The affected Member
+     */
     public Member getMember()
     {
         return member;
     }
 
+    /**
+     * The {@link net.dv8tion.jda.core.entities.GuildVoiceState GuildVoiceState} of the member
+     * <br>Shortcut for {@code getMember().getVoiceState()}
+     *
+     * @return The {@link net.dv8tion.jda.core.entities.GuildVoiceState GuildVoiceState} of the member
+     */
     public GuildVoiceState getVoiceState()
     {
         return member.getVoiceState();

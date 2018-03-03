@@ -21,7 +21,7 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.guild.GenericGuildEvent;
 
 /**
- * Indicatest that a {@link net.dv8tion.jda.core.entities.Message Message} event is fired from a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
+ * Indicates that a {@link net.dv8tion.jda.core.entities.Message Message} event is fired from a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
  * <br>Every GuildMessageEvent is derived from this event and can be casted.
  * 
  * <p>Can be used to detect any GuildMessageEvent.

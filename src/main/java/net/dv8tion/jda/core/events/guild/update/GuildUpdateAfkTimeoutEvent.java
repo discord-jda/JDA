@@ -19,6 +19,11 @@ package net.dv8tion.jda.core.events.guild.update;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 
+/**
+ * Indicates that the {@link net.dv8tion.jda.core.entities.Guild.Timeout AFK-Timeout} of a {@link net.dv8tion.jda.core.entities.Guild Guild} changed.
+ *
+ * <p>Can be used to detect when an afk timeout changes and retrieve the old one
+ */
 public class GuildUpdateAfkTimeoutEvent extends GenericGuildUpdateEvent
 {
     private final Guild.Timeout oldAfkTimeout;
@@ -29,6 +34,11 @@ public class GuildUpdateAfkTimeoutEvent extends GenericGuildUpdateEvent
         this.oldAfkTimeout = oldAfkTimeout;
     }
 
+    /**
+     * The old {@link net.dv8tion.jda.core.entities.Guild.Timeout AFK-Timeout}
+     *
+     * @return The old AFK-Timeout
+     */
     public Guild.Timeout getOldAfkTimeout()
     {
         return oldAfkTimeout;

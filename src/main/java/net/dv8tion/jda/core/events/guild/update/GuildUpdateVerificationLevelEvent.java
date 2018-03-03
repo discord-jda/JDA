@@ -19,6 +19,11 @@ package net.dv8tion.jda.core.events.guild.update;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 
+/**
+ * Indicates that the {@link net.dv8tion.jda.core.entities.Guild.VerificationLevel VerificationLevel} of a {@link net.dv8tion.jda.core.entities.Guild Guild} changed.
+ *
+ * <p>Can be used to detect when a VerificationLevel changes and retrieve the old one
+ */
 public class GuildUpdateVerificationLevelEvent extends GenericGuildUpdateEvent
 {
     private final Guild.VerificationLevel oldVerificationLevel;
@@ -29,6 +34,11 @@ public class GuildUpdateVerificationLevelEvent extends GenericGuildUpdateEvent
         this.oldVerificationLevel = oldVerificationLevel;
     }
 
+    /**
+     * The old {@link net.dv8tion.jda.core.entities.Guild.VerificationLevel VerificationLevel}
+     *
+     * @return The old VerificationLevel
+     */
     public Guild.VerificationLevel getOldVerificationLevel()
     {
         return oldVerificationLevel;

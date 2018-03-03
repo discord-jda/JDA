@@ -21,10 +21,9 @@ import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.Guild;
 
 /**
- * <b><u>GuildUpdateRegionEvent</u></b>
- * <br>Fired when the voice region of a {@link net.dv8tion.jda.core.entities.Guild Guild} has been
- * updated.
- * This can be used to retrieve the old and new region in either raw string names or resolved enum constants of {@link net.dv8tion.jda.core.Region Region}!
+ * Indicates that the {@link net.dv8tion.jda.core.Region Region} of a {@link net.dv8tion.jda.core.entities.Guild Guild} changed.
+ *
+ * <p>Can be used to detect when a Region changes and retrieve the old one
  */
 public class GuildUpdateRegionEvent extends GenericGuildUpdateEvent
 {

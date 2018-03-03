@@ -22,7 +22,9 @@ import net.dv8tion.jda.core.entities.Guild;
 import java.util.Set;
 
 /**
- * This event is fired, when the Set of features of a {@link net.dv8tion.jda.core.entities.Guild Guild} changes.
+ * Indicates that the features of a {@link net.dv8tion.jda.core.entities.Guild Guild} changed.
+ *
+ * <p>Can be used to detect when the features change and retrieve the old ones
  */
 public class GuildUpdateFeaturesEvent extends GenericGuildUpdateEvent
 {

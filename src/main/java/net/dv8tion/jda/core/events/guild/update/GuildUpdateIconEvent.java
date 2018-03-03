@@ -19,6 +19,11 @@ package net.dv8tion.jda.core.events.guild.update;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 
+/**
+ * Indicates that the Icon of a {@link net.dv8tion.jda.core.entities.Guild Guild} changed.
+ *
+ * <p>Can be used to detect when a guild icon changes and retrieve the old one
+ */
 public class GuildUpdateIconEvent extends GenericGuildUpdateEvent
 {
     private final String oldIconId;
@@ -29,13 +34,23 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent
         this.oldIconId = oldIconId;
     }
 
+    /**
+     * The old icon id
+     *
+     * @return The old icon id, or null
+     */
     public String getOldIconId()
     {
         return oldIconId;
     }
 
+    /**
+     * The url of the old icon
+     *
+     * @return The url of the old icon, or null
+     */
     public String getOldIconUrl()
     {
-        return oldIconId == null ? null : "https://cdn.discordapp.com/icons/" + guild.getId() + "/" + oldIconId + ".jpg";
+        return oldIconId == null ? null : "https://cdn.discordapp.com/icons/" + guild.getId() + "/" + oldIconId + ".png";
     }
 }

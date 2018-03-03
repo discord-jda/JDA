@@ -38,16 +38,6 @@ public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessa
     }
 
     /**
-     * The {@link net.dv8tion.jda.core.entities.Guild Guild} for the channel
-     *
-     * @return The Guild
-     */
-    public Guild getGuild()
-    {
-        return getChannel().getGuild();
-    }
-
-    /**
      * The reacting {@link net.dv8tion.jda.core.entities.User User}
      *
      * @return The reacting user
@@ -79,7 +69,7 @@ public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessa
 
     /**
      * The {@link net.dv8tion.jda.core.entities.MessageReaction.ReactionEmote ReactionEmote}
-     * <br>Shorcut for {@code getReaction().getReactionEmote()}
+     * <br>Shortcut for {@code getReaction().getReactionEmote()}
      *
      * @return The reaction emote
      */

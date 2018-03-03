@@ -20,10 +20,9 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.events.guild.GenericGuildEvent;
 
 /**
- * <b><u>GuildUpdateEvent</u></b><br>
- * Fired whenever a {@link net.dv8tion.jda.core.entities.Guild Guild} updates.<br>
- * <br>
- * Use: Detect what Guild updated.
+ * Indicates that a {@link net.dv8tion.jda.core.entities.Guild Guild} was updated.
+ *
+ * <p>Can be used to detect when a Guild is updated.
  */
 public abstract class GenericGuildUpdateEvent extends GenericGuildEvent
 {

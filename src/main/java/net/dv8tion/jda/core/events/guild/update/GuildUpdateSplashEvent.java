@@ -19,6 +19,11 @@ package net.dv8tion.jda.core.events.guild.update;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 
+/**
+ * Indicates that the splash of a {@link net.dv8tion.jda.core.entities.Guild Guild} changed.
+ *
+ * <p>Can be used to detect when a guild splash changes and retrieve the old one
+ */
 public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent
 {
     private final String oldSplashId;
@@ -29,11 +34,21 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent
         this.oldSplashId = oldSplashId;
     }
 
+    /**
+     * The old splash id
+     *
+     * @return The old splash id, or null
+     */
     public String getOldSplashId()
     {
         return oldSplashId;
     }
 
+    /**
+     * The url of the old splash
+     *
+     * @return The url of the old splash, or null
+     */
     public String getOldSplashUrl()
     {
         return oldSplashId == null ? null : "https://cdn.discordapp.com/splashes/" + guild.getId() + "/" + oldSplashId + ".jpg";

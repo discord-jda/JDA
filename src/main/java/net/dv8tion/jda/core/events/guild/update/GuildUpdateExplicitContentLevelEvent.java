@@ -20,11 +20,9 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 
 /**
- * <b><u>GuildUpdateExplicitContentLevelEvent</u></b><br>
- * Fired whenever a {@link net.dv8tion.jda.core.entities.Guild Guild}
- * updates its {@link net.dv8tion.jda.core.entities.Guild.ExplicitContentLevel ExplicitContentLevel}.<br>
- * <br>
- * Use: Detect what Guild updated its level and what level was set prior to that update.
+ * Indicates that the {@link net.dv8tion.jda.core.entities.Guild.ExplicitContentLevel ExplicitContentLevel} of a {@link net.dv8tion.jda.core.entities.Guild Guild} changed.
+ *
+ * <p>Can be used to detect when an ExplicitContentLevel changes and retrieve the old one
  */
 public class GuildUpdateExplicitContentLevelEvent extends GenericGuildUpdateEvent
 {
