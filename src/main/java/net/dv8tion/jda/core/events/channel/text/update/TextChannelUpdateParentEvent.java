@@ -20,6 +20,11 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Category;
 import net.dv8tion.jda.core.entities.TextChannel;
 
+/**
+ * Indicates that a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}'s parent changed.
+ *
+ * <p>Can be used to detect that the parent of a TextChannel changes.
+ */
 public class TextChannelUpdateParentEvent extends GenericTextChannelUpdateEvent
 {
     protected final Category oldParent;
@@ -30,6 +35,11 @@ public class TextChannelUpdateParentEvent extends GenericTextChannelUpdateEvent
         this.oldParent = oldParent;
     }
 
+    /**
+     * The old parent {@link net.dv8tion.jda.core.entities.Category Category}
+     *
+     * @return The old parent category, or null
+     */
     public Category getOldParent()
     {
         return oldParent;

@@ -22,9 +22,10 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.events.Event;
 
 /**
- * <b><u>GenericCategoryEvent</u></b>
- * <p>Fired for all {@link net.dv8tion.jda.core.entities.Category Category} events.
- * <br>Every category event is a subclass of this event and can be casted (no exceptions)
+ * Indicates that a {@link net.dv8tion.jda.core.entities.Category Category} was created/deleted/updated.
+ * <br>Every category event is a subclass of this event and can be casted
+ *
+ * <p>Can be used to detect that any category event was fired
  */
 public abstract class GenericCategoryEvent extends Event
 {

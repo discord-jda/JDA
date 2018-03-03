@@ -25,10 +25,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * <b><u>VoiceChannelUpdatePermissionsEvent</u></b><br>
- * Fired if a {@link VoiceChannel VoiceChannel}'s permission overrides change.<br>
- * <br>
- * Use: Get affected VoiceChannel, affected Guild and affected {@link net.dv8tion.jda.core.entities.Role Roles}/{@link net.dv8tion.jda.core.entities.User Users}.
+ * Indicates that a {@link VoiceChannel VoiceChannel}'s permission overrides changed.
+ *
+ * <p>Can be used to get affected VoiceChannel, affected Guild and affected {@link net.dv8tion.jda.core.entities.Role Roles}/{@link net.dv8tion.jda.core.entities.User Users}.
  */
 public class VoiceChannelUpdatePermissionsEvent extends GenericVoiceChannelUpdateEvent
 {
@@ -40,26 +39,55 @@ public class VoiceChannelUpdatePermissionsEvent extends GenericVoiceChannelUpdat
         this.changedPermHolders = changed;
     }
 
+    /**
+     * The affected {@link net.dv8tion.jda.core.entities.IPermissionHolder IPermissionHolders}
+     *
+     * @return The affected permission holders
+     *
+     * @see    #getChangedRoles()
+     * @see    #getChangedMembers()
+     */
     public List<IPermissionHolder> getChangedPermissionHolders()
     {
         return changedPermHolders;
     }
 
+    /**
+     * List of affected {@link net.dv8tion.jda.core.entities.Role Roles}
+     *
+     * @return List of affected roles
+     */
     public List<Role> getChangedRoles()
     {
-        return changedPermHolders
-                .stream()
+        return changedPermHolders.stream()
                 .filter(p -> p instanceof Role)
                 .map(Role.class::cast)
                 .collect(Collectors.toList());
     }
 
-    public List<Member> getMemberWithPermissionChanges()
+    /**
+     * List of affected {@link net.dv8tion.jda.core.entities.Member Members}
+     *
+     * @return List of affected members
+     */
+    public List<Member> getChangedMembers()
     {
-        return changedPermHolders
-                .stream()
+        return changedPermHolders.stream()
                 .filter(p -> p instanceof Member)
                 .map(Member.class::cast)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Deprecated.
+     *
+     * @return List of affected members
+     *
+     * @deprecated
+     *         Use {@link #getChangedMembers()} instead
+     */
+    public List<Member> getMemberWithPermissionChanges()
+    {
+        return getChangedMembers();
     }
 }

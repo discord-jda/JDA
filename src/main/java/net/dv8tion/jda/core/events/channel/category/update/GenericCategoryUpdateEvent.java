@@ -21,9 +21,10 @@ import net.dv8tion.jda.core.entities.Category;
 import net.dv8tion.jda.core.events.channel.category.GenericCategoryEvent;
 
 /**
- * <b><u>GenericCategoryUpdateEvent</u></b>
- * <p>Fired for all {@link net.dv8tion.jda.core.entities.Category Category} update events.
- * <br>Every category update event is a subclass of this event and can be casted (no exceptions)
+ * Indicates that a {@link net.dv8tion.jda.core.entities.Category Category} was updated.
+ * <br>Every category update event derived from this event and can be casted.
+ *
+ * <p>Can be used to detect any category update event
  */
 public abstract class GenericCategoryUpdateEvent extends GenericCategoryEvent
 {

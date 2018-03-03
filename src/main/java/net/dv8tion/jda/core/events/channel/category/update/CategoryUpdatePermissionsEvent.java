@@ -26,10 +26,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * <b><u>CategoryUpdatePermissionEvent</u></b>
- * <p>Fired when the permissions of a {@link net.dv8tion.jda.core.entities.Category Category} are updated.
+ * Indicates that the permissions of a {@link net.dv8tion.jda.core.entities.Category Category} were updated.
  *
- * <p>Use: Retrieve the changed permissions
+ * <p>Can be used to retrieve the changed permissions
  */
 public class CategoryUpdatePermissionsEvent extends GenericCategoryUpdateEvent
 {
@@ -69,11 +68,25 @@ public class CategoryUpdatePermissionsEvent extends GenericCategoryUpdateEvent
      *
      * @return Immutable list of affected members
      */
-    public List<Member> getMembersWithPermissionChanges()
+    public List<Member> getChangedMembers()
     {
         return changed.stream()
             .filter(it -> it instanceof Member)
             .map(Member.class::cast)
             .collect(Collectors.toList());
+    }
+
+    /**
+     * Deprecated.
+     *
+     * @return List of affected members
+     *
+     * @deprecated
+     *         Use {@link #getChangedMembers()} instead
+     */
+    @Deprecated
+    public List<Member> getMembersWithPermissionChanges()
+    {
+        return getChangedMembers();
     }
 }

@@ -21,15 +21,13 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.channel.voice.GenericVoiceChannelEvent;
 
 /**
- * <b><u>GenericVoiceChannelUpdateEvent</u></b><br>
- * Fired whenever a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} updates.<br>
- * Every VoiceChannelUpdateEvent is an instance of this event and can be casted. (no exceptions)<br>
- * <br>
- * Use: Detect any VoiceChannelUpdateEvent.
+ * Indicates that a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} updated.
+ * <br>Every VoiceChannelUpdateEvent is derived from this event and can be casted.
+ *
+ * <p>Can be used to detect any VoiceChannelUpdateEvent.
  */
 public abstract class GenericVoiceChannelUpdateEvent extends GenericVoiceChannelEvent
 {
-
     public GenericVoiceChannelUpdateEvent(JDA api, long responseNumber, VoiceChannel channel)
     {
         super(api, responseNumber, channel);

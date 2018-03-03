@@ -21,10 +21,9 @@ import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.Event;
 
 /**
- * <b><u>PrivateChannelDeleteEvent</u></b><br>
- * Fired if a {@link net.dv8tion.jda.core.entities.PrivateChannel Private Channel} was deleted.<br>
- * <br>
- * Use: Retrieve the issuing {@link net.dv8tion.jda.core.entities.User User}.
+ * Indicates that a {@link net.dv8tion.jda.core.entities.PrivateChannel Private Channel} was deleted.
+ *
+ * <p>Can be used to retrieve the issuing {@link net.dv8tion.jda.core.entities.User User}.
  */
 public class PrivateChannelDeleteEvent extends Event
 {
@@ -36,11 +35,36 @@ public class PrivateChannelDeleteEvent extends Event
         this.channel = channel;
     }
 
+    /**
+     * The target {@link net.dv8tion.jda.core.entities.User User}
+     * <br>Shortcut for {@code getPrivateChannel().getUser()}
+     *
+     * @return The User
+     */
     public User getUser()
     {
         return channel.getUser();
     }
 
+    /**
+     * The {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}
+     *
+     * @return The PrivateChannel
+     */
+    public PrivateChannel getChannel()
+    {
+        return channel;
+    }
+
+    /**
+     * Deprecated
+     *
+     * @return The PrivateChannel
+     *
+     * @deprecated
+     *         Use {@link #getChannel()} instead
+     */
+    @Deprecated
     public PrivateChannel getPrivateChannel()
     {
         return channel;

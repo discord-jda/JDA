@@ -19,10 +19,9 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.TextChannel;
 
 /**
- * <b><u>TextChannelUpdateTopicEvent</u></b><br>
- * Fired if a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}'s topic changes.<br>
- * <br>
- * Use: Detect when a TextChannel topic changes and get it's previous topic.
+ * Indicates that a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}'s topic changed.
+ *
+ * <p>Can be used to detect when a TextChannel topic changes and get its previous topic.
  */
 public class TextChannelUpdateTopicEvent extends GenericTextChannelUpdateEvent
 {
@@ -34,6 +33,11 @@ public class TextChannelUpdateTopicEvent extends GenericTextChannelUpdateEvent
         this.oldTopic = oldTopic;
     }
 
+    /**
+     * The old topic
+     *
+     * @return The old topic, or null
+     */
     public String getOldTopic()
     {
         return oldTopic;

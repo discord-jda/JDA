@@ -19,10 +19,9 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 
 /**
- * <b><u>VoiceChannelUpdateBitrateEvent</u></b><br>
- * Fired if a {@link VoiceChannel VoiceChannel}'s bitrate changes.<br>
- * <br>
- * Use: Get affected VoiceChannel, affected Guild and previous bitrate.
+ * Indicates that a {@link VoiceChannel VoiceChannel}'s bitrate changed.
+ *
+ * <p>Can be sued to get affected VoiceChannel, affected Guild and previous bitrate.
  */
 public class VoiceChannelUpdateBitrateEvent extends GenericVoiceChannelUpdateEvent
 {
@@ -34,6 +33,11 @@ public class VoiceChannelUpdateBitrateEvent extends GenericVoiceChannelUpdateEve
         this.oldBitrate = oldBitrate;
     }
 
+    /**
+     * The old bitrate
+     *
+     * @return The old bitrate
+     */
     public int getOldBitrate()
     {
         return oldBitrate;

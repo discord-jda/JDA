@@ -21,11 +21,10 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.Event;
 
 /**
- * <b><u>GenericVoiceChannelEvent</u></b><br>
- * Fired whenever a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} event is fired.<br>
- * Every VoiceChannelEvent is an instance of this event and can be casted. (no exceptions)<br>
- * <br>
- * Use: Detect any VoiceChannelEvent.
+ * Indicates that a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} event was fired.
+ * <br>Every VoiceChannelEvent is derived from this event and can be casted.
+ *
+ * <p>Can be used to detect any VoiceChannelEvent.
  */
 public abstract class GenericVoiceChannelEvent extends Event
 {
@@ -37,11 +36,22 @@ public abstract class GenericVoiceChannelEvent extends Event
         this.channel = channel;
     }
 
+    /**
+     * The {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
+     *
+     * @return The VoiceChannel
+     */
     public VoiceChannel getChannel()
     {
         return channel;
     }
 
+    /**
+     * The {@link net.dv8tion.jda.core.entities.Guild Guild}
+     * <br>Shortcut for {@code getChannel().getGuild()}
+     *
+     * @return The Guild
+     */
     public Guild getGuild()
     {
         return channel.getGuild();

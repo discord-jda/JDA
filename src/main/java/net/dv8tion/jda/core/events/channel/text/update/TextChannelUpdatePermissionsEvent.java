@@ -25,10 +25,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * <b><u>TextChannelUpdatePermissionsEvent</u></b><br>
- * Fired if a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}'s permission overrides change.<br>
- * <br>
- * Use: Detect when a TextChannel's permission overrides change and get affected {@link net.dv8tion.jda.core.entities.Role Roles}/{@link net.dv8tion.jda.core.entities.User Users}.
+ * Indicates that a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}'s permission overrides changed.
+ *
+ * <p>Can be use to detect when a TextChannel's permission overrides change and get affected {@link net.dv8tion.jda.core.entities.Role Roles}/{@link net.dv8tion.jda.core.entities.User Users}.
  */
 public class TextChannelUpdatePermissionsEvent extends GenericTextChannelUpdateEvent
 {
@@ -40,11 +39,24 @@ public class TextChannelUpdatePermissionsEvent extends GenericTextChannelUpdateE
         this.changed = permHolders;
     }
 
+    /**
+     * The affected {@link net.dv8tion.jda.core.entities.IPermissionHolder IPermissionHolders}
+     *
+     * @return The affected permission holders
+     *
+     * @see    #getChangedRoles()
+     * @see    #getChangedMembers()
+     */
     public List<IPermissionHolder> getChangedPermissionHolders()
     {
         return changed;
     }
 
+    /**
+     * List of affected {@link net.dv8tion.jda.core.entities.Role Roles}
+     *
+     * @return List of affected roles
+     */
     public List<Role> getChangedRoles()
     {
         return changed.stream()
@@ -53,11 +65,30 @@ public class TextChannelUpdatePermissionsEvent extends GenericTextChannelUpdateE
                       .collect(Collectors.toList());
     }
 
-    public List<Member> getMembersWithPermissionChanges()
+    /**
+     * List of affected {@link net.dv8tion.jda.core.entities.Member Members}
+     *
+     * @return List of affected members
+     */
+    public List<Member> getChangedMembers()
     {
         return changed.stream()
-                .filter(it -> it instanceof Member)
-                .map(Member.class::cast)
-                .collect(Collectors.toList());
+                      .filter(it -> it instanceof Member)
+                      .map(Member.class::cast)
+                      .collect(Collectors.toList());
+    }
+
+    /**
+     * Deprecated.
+     *
+     * @return List of affected members
+     *
+     * @deprecated
+     *         Use {@link #getChangedMembers()} instead
+     */
+    @Deprecated
+    public List<Member> getMembersWithPermissionChanges()
+    {
+        return getChangedMembers();
     }
 }

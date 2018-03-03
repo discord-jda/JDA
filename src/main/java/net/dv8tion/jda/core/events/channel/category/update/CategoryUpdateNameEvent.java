@@ -20,10 +20,9 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Category;
 
 /**
- * <b><u>CategoryUpdateNameEvent</u></b>
- * <p>Fired when the name of a {@link net.dv8tion.jda.core.entities.Category Category} is updated.
+ * Indicates that the name of a {@link net.dv8tion.jda.core.entities.Category Category} was updated.
  *
- * <p>Use: Retrieve the old name
+ * <p>Can be used to retrieve the old name
  */
 public class CategoryUpdateNameEvent extends GenericCategoryUpdateEvent
 {

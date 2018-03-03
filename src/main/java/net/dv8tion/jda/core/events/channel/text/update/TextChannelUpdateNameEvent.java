@@ -19,20 +19,25 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.TextChannel;
 
 /**
- * <b><u>TextChannelUpdateNameEvent</u></b><br>
- * Fired if a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}'s name changes.<br>
- * <br>
- * Use: Detect when a TextChannel name changes and get it's previous name.
+ * Indicates that a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}'s name changed.
+ *
+ * <p>Can be used to detect when a TextChannel name changes and get its previous name.
  */
 public class TextChannelUpdateNameEvent extends GenericTextChannelUpdateEvent
 {
     private final String oldName;
+
     public TextChannelUpdateNameEvent(JDA api, long responseNumber, TextChannel channel, String oldName)
     {
         super(api, responseNumber, channel);
         this.oldName = oldName;
     }
 
+    /**
+     * The old name
+     *
+     * @return The old name
+     */
     public String getOldName()
     {
         return oldName;
