@@ -38,7 +38,7 @@ public class GuildBanEvent extends GenericGuildEvent
     }
 
     /**
-     * The banned {@link net.dv8tion.jda.core.entities.User User
+     * The banned {@link net.dv8tion.jda.core.entities.User User}
      * <br>Possibly fake user.
      *
      * @return The banned user

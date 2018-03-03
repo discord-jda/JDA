@@ -61,7 +61,7 @@ public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEve
 
     /**
      * The {@link net.dv8tion.jda.core.entities.MessageReaction.ReactionEmote ReactionEmote}
-     * <br>Shorcut for {@code getReaction().getReactionEmote()}
+     * <br>Shortcut for {@code getReaction().getReactionEmote()}
      *
      * @return The message reaction emote
      */
