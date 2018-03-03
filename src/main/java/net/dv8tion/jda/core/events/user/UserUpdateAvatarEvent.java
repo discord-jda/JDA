@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.core.events.user;
 
 import net.dv8tion.jda.core.JDA;
@@ -22,18 +23,17 @@ import net.dv8tion.jda.core.entities.User;
  * Indicates that the Avatar of a {@link net.dv8tion.jda.core.entities.User User} changed.
  *
  * <p>Can be used to retrieve the User who changed their avatar and their previous Avatar ID/URL.
- *
- * @deprecated Use {@link net.dv8tion.jda.core.events.user.UserUpdateAvatarEvent UserUpdateAvatarEvent}
  */
-@Deprecated
-public class UserAvatarUpdateEvent extends GenericUserEvent
+public class UserUpdateAvatarEvent extends GenericUserEvent
 {
-    private final String previousAvatarId;
+    private final String oldAvatarId;
+    private final String newAvatarId;
 
-    public UserAvatarUpdateEvent(JDA api, long responseNumber, User user, String previousAvatarId)
+    public UserUpdateAvatarEvent(JDA api, long responseNumber, User user, String oldAvatar)
     {
         super(api, responseNumber, user);
-        this.previousAvatarId = previousAvatarId;
+        this.oldAvatarId = oldAvatar;
+        this.newAvatarId = user.getAvatarId();
     }
 
     /**
@@ -41,9 +41,9 @@ public class UserAvatarUpdateEvent extends GenericUserEvent
      *
      * @return The previous avatar id
      */
-    public String getPreviousAvatarId()
+    public String getOldAvatarId()
     {
-        return previousAvatarId;
+        return oldAvatarId;
     }
 
     /**
@@ -51,8 +51,28 @@ public class UserAvatarUpdateEvent extends GenericUserEvent
      *
      * @return The previous avatar url
      */
-    public String getPreviousAvatarUrl()
+    public String getOldAvatarUrl()
     {
-        return previousAvatarId == null ? null : "https://cdn.discordapp.com/avatars/" + getUser().getId() + "/" + previousAvatarId + (previousAvatarId.startsWith("a_") ? ".gif" : ".png");
+        return oldAvatarId == null ? null : "https://cdn.discordapp.com/avatars/" + getUser().getId() + "/" + oldAvatarId + (oldAvatarId.startsWith("a_") ? ".gif" : ".png");
+    }
+
+    /**
+     * The new avatar id
+     *
+     * @return The new avatar id
+     */
+    public String getNewAvatarId()
+    {
+        return newAvatarId;
+    }
+
+    /**
+     * The url of the new avatar
+     *
+     * @return The url of the new avatar
+     */
+    public String getNewAvatarUrl()
+    {
+        return newAvatarId == null ? null : "https://cdn.discordapp.com/avatars/" + getUser().getId() + "/" + newAvatarId + (newAvatarId.startsWith("a_") ? ".gif" : ".png");
     }
 }

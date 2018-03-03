@@ -13,39 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.core.events.user;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.User;
 
 /**
- * Indicates that the username/discriminator of a {@link net.dv8tion.jda.core.entities.User User} changed. (Not Nickname)
+ * Indicates that the discriminator of a {@link net.dv8tion.jda.core.entities.User User} changed.
  *
- * <p>Can be used to retrieve the User who changed their username/discriminator and their previous username/discriminator.
- *
- * @deprecated Use {@link net.dv8tion.jda.core.events.user.UserUpdateNameEvent UserUpdateNameEvent} and {@link net.dv8tion.jda.core.events.user.UserUpdateDiscriminatorEvent UserUpdateDiscriminatorEvent}
+ * <p>Can be used to retrieve the User who changed their discriminator and their previous discriminator.
  */
-@Deprecated
-public class UserNameUpdateEvent extends GenericUserEvent
+public class UserUpdateDiscriminatorEvent extends GenericUserEvent
 {
-    private final String oldName;
     private final String oldDiscriminator;
+    private final String newDiscriminator;
 
-    public UserNameUpdateEvent(JDA api, long responseNumber, User user, String oldName, String oldDiscriminator)
+    public UserUpdateDiscriminatorEvent(JDA api, long responseNumber, User user, String oldDiscriminator)
     {
         super(api, responseNumber, user);
-        this.oldName = oldName;
         this.oldDiscriminator = oldDiscriminator;
-    }
-
-    /**
-     * The old username
-     *
-     * @return The old username
-     */
-    public String getOldName()
-    {
-        return oldName;
+        this.newDiscriminator = user.getDiscriminator();
     }
 
     /**
@@ -56,5 +44,15 @@ public class UserNameUpdateEvent extends GenericUserEvent
     public String getOldDiscriminator()
     {
         return oldDiscriminator;
+    }
+
+    /**
+     * The new discriminator
+     *
+     * @return The new discriminator
+     */
+    public String getNewDiscriminator()
+    {
+        return newDiscriminator;
     }
 }

@@ -13,49 +13,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.core.events.user;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.OnlineStatus;
+import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 
 /**
- * Indicates that the {@link OnlineStatus OnlineStatus} of a {@link net.dv8tion.jda.core.entities.User User} changed.
+ * Indicates that the {@link net.dv8tion.jda.core.entities.Game Game} of a {@link net.dv8tion.jda.core.entities.User User} changes.
  * <br>As with any presence updates this either happened for a {@link net.dv8tion.jda.core.entities.Member Member} in a Guild or a {@link net.dv8tion.jda.client.entities.Friend Friend}!
  *
- * <p>Can be used to retrieve the User who changed their status and their previous status.
- *
- * @deprecated Use {@link net.dv8tion.jda.core.events.user.UserUpdateOnlineStatusEvent UserUpdateOnlineStatusEvent} instead
+ * <p>Can be used to retrieve the User who changed their Game and their previous Game.
  */
-@Deprecated
-public class UserOnlineStatusUpdateEvent extends GenericUserPresenceEvent
+public class UserUpdateGameEvent extends GenericUserPresenceEvent
 {
-    protected final OnlineStatus previousOnlineStatus;
+    private final Game oldGame;
+    private final Game newGame;
 
-    public UserOnlineStatusUpdateEvent(JDA api, long responseNumber, User user, Guild guild, OnlineStatus previousOnlineStatus)
+    public UserUpdateGameEvent(JDA api, long responseNumber, User user, Guild guild, Game previousGame)
     {
         super(api, responseNumber, user, guild);
-        this.previousOnlineStatus = previousOnlineStatus;
+        this.oldGame = previousGame;
+        this.newGame = isRelationshipUpdate() ? getFriend().getGame() : getMember().getGame();
     }
 
     /**
-     * The previous status
+     * The previous {@link net.dv8tion.jda.core.entities.Game Game}
      *
-     * @return The previous status
+     * @return The previous {@link net.dv8tion.jda.core.entities.Game Game}
      */
-    public OnlineStatus getPreviousOnlineStatus()
+    public Game getOldGame()
     {
-        return previousOnlineStatus;
+        return oldGame;
     }
 
     /**
-     * The current status
+     * The new {@link net.dv8tion.jda.core.entities.Game Game}
      *
-     * @return The current status
+     * @return The new {@link net.dv8tion.jda.core.entities.Game Game}
      */
-    public OnlineStatus getCurrentOnlineStatus()
+    public Game getNewGame()
     {
-        return isRelationshipUpdate() ? getFriend().getOnlineStatus() : getMember().getOnlineStatus();
+        return newGame;
     }
 }

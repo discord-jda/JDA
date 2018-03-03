@@ -13,29 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.core.events.user;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.User;
 
 /**
- * Indicates that the username/discriminator of a {@link net.dv8tion.jda.core.entities.User User} changed. (Not Nickname)
+ * Indicates that the username of a {@link net.dv8tion.jda.core.entities.User User} changed. (Not Nickname)
  *
- * <p>Can be used to retrieve the User who changed their username/discriminator and their previous username/discriminator.
- *
- * @deprecated Use {@link net.dv8tion.jda.core.events.user.UserUpdateNameEvent UserUpdateNameEvent} and {@link net.dv8tion.jda.core.events.user.UserUpdateDiscriminatorEvent UserUpdateDiscriminatorEvent}
+ * <p>Can be used to retrieve the User who changed their username and their previous username.
  */
-@Deprecated
-public class UserNameUpdateEvent extends GenericUserEvent
+public class UserUpdateNameEvent extends GenericUserEvent
 {
     private final String oldName;
-    private final String oldDiscriminator;
+    private final String newName;
 
-    public UserNameUpdateEvent(JDA api, long responseNumber, User user, String oldName, String oldDiscriminator)
+    public UserUpdateNameEvent(JDA api, long responseNumber, User user, String oldName)
     {
         super(api, responseNumber, user);
         this.oldName = oldName;
-        this.oldDiscriminator = oldDiscriminator;
+        this.newName = user.getName();
     }
 
     /**
@@ -49,12 +47,12 @@ public class UserNameUpdateEvent extends GenericUserEvent
     }
 
     /**
-     * The old discriminator
+     * The new username
      *
-     * @return The old discriminator
+     * @return The new username
      */
-    public String getOldDiscriminator()
+    public String getNewName()
     {
-        return oldDiscriminator;
+        return newName;
     }
 }

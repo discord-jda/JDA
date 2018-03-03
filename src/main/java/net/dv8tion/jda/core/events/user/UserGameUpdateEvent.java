@@ -25,7 +25,10 @@ import net.dv8tion.jda.core.entities.User;
  * <br>As with any presence updates this either happened for a {@link net.dv8tion.jda.core.entities.Member Member} in a Guild or a {@link net.dv8tion.jda.client.entities.Friend Friend}!
  *
  * <p>Can be used to retrieve the User who changed their Game and their previous Game.
+ *
+ * @deprecated Use {@link net.dv8tion.jda.core.events.user.UserUpdateGameEvent UserUpdateGameEvent}
  */
+@Deprecated
 public class UserGameUpdateEvent extends GenericUserPresenceEvent
 {
     protected final Game previousGame;

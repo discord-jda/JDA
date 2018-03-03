@@ -25,10 +25,7 @@ import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.entities.impl.MemberImpl;
 import net.dv8tion.jda.core.entities.impl.UserImpl;
-import net.dv8tion.jda.core.events.user.UserAvatarUpdateEvent;
-import net.dv8tion.jda.core.events.user.UserGameUpdateEvent;
-import net.dv8tion.jda.core.events.user.UserNameUpdateEvent;
-import net.dv8tion.jda.core.events.user.UserOnlineStatusUpdateEvent;
+import net.dv8tion.jda.core.events.user.*;
 import org.json.JSONObject;
 
 import java.util.Objects;
@@ -77,25 +74,32 @@ public class PresenceUpdateHandler extends SocketHandler
                 String name = jsonUser.getString("username");
                 String discriminator = jsonUser.get("discriminator").toString();
                 String avatarId = jsonUser.optString("avatar", null);
+                String oldAvatar = user.getAvatarId();
 
-                if (!user.getName().equals(name) || !user.getDiscriminator().equals(discriminator))
+                if (!user.getName().equals(name))
                 {
                     String oldUsername = user.getName();
-                    String oldDiscriminator = user.getDiscriminator();
                     user.setName(name);
+                    api.getEventManager().handle(
+                        new UserUpdateNameEvent(
+                            api, responseNumber,
+                            user, oldUsername));
+                }
+                if (!user.getDiscriminator().equals(discriminator))
+                {
+                    String oldDiscriminator = user.getDiscriminator();
                     user.setDiscriminator(discriminator);
                     api.getEventManager().handle(
-                        new UserNameUpdateEvent(
+                        new UserUpdateDiscriminatorEvent(
                             api, responseNumber,
-                            user, oldUsername, oldDiscriminator));
+                            user, oldDiscriminator));
                 }
-                String oldAvatar = user.getAvatarId();
                 if (!Objects.equals(avatarId, oldAvatar))
                 {
                     String oldAvatarId = user.getAvatarId();
                     user.setAvatarId(avatarId);
                     api.getEventManager().handle(
-                        new UserAvatarUpdateEvent(
+                        new UserUpdateAvatarEvent(
                             api, responseNumber,
                             user, oldAvatarId));
                 }
@@ -149,7 +153,7 @@ public class PresenceUpdateHandler extends SocketHandler
                         OnlineStatus oldStatus = member.getOnlineStatus();
                         member.setOnlineStatus(status);
                         api.getEventManager().handle(
-                            new UserOnlineStatusUpdateEvent(
+                            new UserUpdateOnlineStatusEvent(
                                 api, responseNumber,
                                 user, guild, oldStatus));
                     }
@@ -158,7 +162,7 @@ public class PresenceUpdateHandler extends SocketHandler
                         Game oldGame = member.getGame();
                         member.setGame(nextGame);
                         api.getEventManager().handle(
-                            new UserGameUpdateEvent(
+                            new UserUpdateGameEvent(
                                 api, responseNumber,
                                 user, guild, oldGame));
                     }
@@ -179,7 +183,7 @@ public class PresenceUpdateHandler extends SocketHandler
                         OnlineStatus oldStatus = friend.getOnlineStatus();
                         friend.setOnlineStatus(status);
                         api.getEventManager().handle(
-                            new UserOnlineStatusUpdateEvent(
+                            new UserUpdateOnlineStatusEvent(
                                 api, responseNumber,
                                 user, null, oldStatus));
                     }
@@ -188,7 +192,7 @@ public class PresenceUpdateHandler extends SocketHandler
                         Game oldGame = friend.getGame();
                         friend.setGame(nextGame);
                         api.getEventManager().handle(
-                            new UserGameUpdateEvent(
+                            new UserUpdateGameEvent(
                                 api, responseNumber,
                                 user, null, oldGame));
                     }

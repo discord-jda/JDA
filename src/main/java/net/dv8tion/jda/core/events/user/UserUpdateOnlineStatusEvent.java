@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.core.events.user;
 
 import net.dv8tion.jda.core.JDA;
@@ -25,37 +26,36 @@ import net.dv8tion.jda.core.entities.User;
  * <br>As with any presence updates this either happened for a {@link net.dv8tion.jda.core.entities.Member Member} in a Guild or a {@link net.dv8tion.jda.client.entities.Friend Friend}!
  *
  * <p>Can be used to retrieve the User who changed their status and their previous status.
- *
- * @deprecated Use {@link net.dv8tion.jda.core.events.user.UserUpdateOnlineStatusEvent UserUpdateOnlineStatusEvent} instead
  */
-@Deprecated
-public class UserOnlineStatusUpdateEvent extends GenericUserPresenceEvent
+public class UserUpdateOnlineStatusEvent extends GenericUserPresenceEvent
 {
-    protected final OnlineStatus previousOnlineStatus;
+    private final OnlineStatus oldOnlineStatus;
+    private final OnlineStatus newOnlineStatus;
 
-    public UserOnlineStatusUpdateEvent(JDA api, long responseNumber, User user, Guild guild, OnlineStatus previousOnlineStatus)
+    public UserUpdateOnlineStatusEvent(JDA api, long responseNumber, User user, Guild guild, OnlineStatus oldOnlineStatus)
     {
         super(api, responseNumber, user, guild);
-        this.previousOnlineStatus = previousOnlineStatus;
+        this.oldOnlineStatus = oldOnlineStatus;
+        this.newOnlineStatus = isRelationshipUpdate() ? getFriend().getOnlineStatus() : getMember().getOnlineStatus();
     }
 
     /**
-     * The previous status
+     * The old status
      *
-     * @return The previous status
+     * @return The old status
      */
-    public OnlineStatus getPreviousOnlineStatus()
+    public OnlineStatus getOldOnlineStatus()
     {
-        return previousOnlineStatus;
+        return oldOnlineStatus;
     }
 
     /**
-     * The current status
+     * The new status
      *
-     * @return The current status
+     * @return The new status
      */
-    public OnlineStatus getCurrentOnlineStatus()
+    public OnlineStatus getNewOnlineStatus()
     {
-        return isRelationshipUpdate() ? getFriend().getOnlineStatus() : getMember().getOnlineStatus();
+        return newOnlineStatus;
     }
 }
