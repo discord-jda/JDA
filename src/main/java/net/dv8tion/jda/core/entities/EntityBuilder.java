@@ -101,9 +101,9 @@ public class EntityBuilder
         return selfUser;
     }
 
-    public Game createGame(String name, String url, Game.GameType type)
+    public Game createGame(String name, String url, Game.ActivityType type)
     {
-        return new Game(name, url, type);
+        return new Game(name, url, type.getKey());
     }
 
     public void createGuildFirstPass(JSONObject guild, Consumer<Guild> secondPassCallback)
@@ -613,16 +613,16 @@ public class EntityBuilder
     {
         String name = String.valueOf(gameJson.get("name"));
         String url = gameJson.isNull("url") ? null : String.valueOf(gameJson.get("url"));
-        Game.GameType type;
+        Game.ActivityType type;
         try
         {
             type = gameJson.isNull("type")
-                ? Game.GameType.DEFAULT
-                : Game.GameType.fromKey(Integer.parseInt(gameJson.get("type").toString()));
+                ? Game.ActivityType.DEFAULT
+                : Game.ActivityType.fromKey(Integer.parseInt(gameJson.get("type").toString()));
         }
         catch (NumberFormatException e)
         {
-            type = Game.GameType.DEFAULT;
+            type = Game.ActivityType.DEFAULT;
         }
 
         long id;
@@ -632,7 +632,7 @@ public class EntityBuilder
         }
         catch (JSONException ex)
         {
-            return new Game(name, url, type);
+            return new Game(name, url, type.getKey());
         }
         String details = gameJson.isNull("details") ? null : String.valueOf(gameJson.get("details"));
         String state = gameJson.isNull("state") ? null : String.valueOf(gameJson.get("state"));
@@ -677,7 +677,7 @@ public class EntityBuilder
                 largeImageText = assets.isNull("large_text") ? null : String.valueOf(assets.get("large_text"));
             }
         }
-        return new RichPresence(type, name, url, id, party, details, state, timestamps, largeImageKey, largeImageText, smallImageKey, smallImageText);
+        return new RichPresence(type.getKey(), name, url, id, party, details, state, timestamps, largeImageKey, largeImageText, smallImageKey, smallImageText);
     }
 
     public Category createCategory(JSONObject json, long guildId)

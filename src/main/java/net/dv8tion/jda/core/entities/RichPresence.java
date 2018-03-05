@@ -42,7 +42,7 @@ public class RichPresence extends Game
     protected final Image smallImage;
 
     protected RichPresence(
-        GameType type, String name, String url, long applicationId,
+        int type, String name, String url, long applicationId,
         Party party, String details, String state, Timestamps timestamps,
         String largeImageKey, String largeImageText, String smallImageKey, String smallImageText)
     {
