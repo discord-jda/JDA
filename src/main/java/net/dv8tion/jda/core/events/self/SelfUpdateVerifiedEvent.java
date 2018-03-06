@@ -22,9 +22,12 @@ import net.dv8tion.jda.core.JDA;
  * Indicates that the verification state of the current user changed. (client-only)
  *
  * <p>Can be used to retrieve the old verification state.
+ *
+ * <p>Identifier: {@code verified}
  */
-public class SelfUpdateVerifiedEvent extends GenericSelfUpdateEvent
+public class SelfUpdateVerifiedEvent extends GenericSelfUpdateEvent<Boolean>
 {
+    public static final String IDENTIFIER = "verified";
     private final boolean wasVerified;
 
     public SelfUpdateVerifiedEvent(JDA api, long responseNumber, boolean wasVerified)
@@ -41,5 +44,23 @@ public class SelfUpdateVerifiedEvent extends GenericSelfUpdateEvent
     public boolean wasVerified()
     {
         return wasVerified;
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return IDENTIFIER;
+    }
+
+    @Override
+    public Boolean getOldValue()
+    {
+        return wasVerified;
+    }
+
+    @Override
+    public Boolean getNewValue()
+    {
+        return !wasVerified;
     }
 }

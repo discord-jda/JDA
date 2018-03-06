@@ -23,7 +23,7 @@ import net.dv8tion.jda.core.entities.User;
  *
  * <p>Can be used to retrieve the User who changed their username/discriminator and their previous username/discriminator.
  *
- * @deprecated Use {@link net.dv8tion.jda.core.events.user.UserUpdateNameEvent UserUpdateNameEvent} and {@link net.dv8tion.jda.core.events.user.UserUpdateDiscriminatorEvent UserUpdateDiscriminatorEvent}
+ * @deprecated Use {@link net.dv8tion.jda.core.events.user.update.UserUpdateNameEvent UserUpdateNameEvent} and {@link net.dv8tion.jda.core.events.user.update.UserUpdateDiscriminatorEvent UserUpdateDiscriminatorEvent}
  */
 @Deprecated
 public class UserNameUpdateEvent extends GenericUserEvent

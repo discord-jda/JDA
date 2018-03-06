@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.events.user;
+package net.dv8tion.jda.core.events.user.update;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
@@ -26,9 +26,13 @@ import net.dv8tion.jda.core.entities.User;
  * <br>As with any presence updates this either happened for a {@link net.dv8tion.jda.core.entities.Member Member} in a Guild or a {@link net.dv8tion.jda.client.entities.Friend Friend}!
  *
  * <p>Can be used to retrieve the User who changed their status and their previous status.
+ *
+ * <p>Identifier: {@code status}
  */
-public class UserUpdateOnlineStatusEvent extends GenericUserPresenceEvent
+public class UserUpdateOnlineStatusEvent extends GenericUserPresenceEvent<OnlineStatus>
 {
+    public static final String IDENTIFIER = "status";
+
     private final OnlineStatus oldOnlineStatus;
     private final OnlineStatus newOnlineStatus;
 
@@ -55,6 +59,24 @@ public class UserUpdateOnlineStatusEvent extends GenericUserPresenceEvent
      * @return The new status
      */
     public OnlineStatus getNewOnlineStatus()
+    {
+        return newOnlineStatus;
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return IDENTIFIER;
+    }
+
+    @Override
+    public OnlineStatus getOldValue()
+    {
+        return oldOnlineStatus;
+    }
+
+    @Override
+    public OnlineStatus getNewValue()
     {
         return newOnlineStatus;
     }

@@ -19,44 +19,44 @@ package net.dv8tion.jda.core.events.self;
 import net.dv8tion.jda.core.JDA;
 
 /**
- * Indicates that the email of the current user changed. (client-only)
+ * Indicates that the discriminator of the current user changed.
  *
- * <p>Can be used to retrieve the old email.
+ * <p>Can be used to retrieve the old discriminator.
  *
- * <p>Identifier: {@code email}
+ * <p>Identifier: {@code discriminator}
  */
-public class SelfUpdateEmailEvent extends GenericSelfUpdateEvent<String>
+public class SelfUpdateDiscriminatorEvent extends GenericSelfUpdateEvent<String>
 {
-    public static final String IDENTIFIER = "email";
+    public static final String IDENTIFIER = "discriminator";
 
-    private final String oldEmail;
-    private final String newEmail;
+    private final String oldDiscriminator;
+    private final String newDiscriminator;
 
-    public SelfUpdateEmailEvent(JDA api, long responseNumber, String oldEmail)
+    public SelfUpdateDiscriminatorEvent(JDA api, long responseNumber, String oldDiscriminator)
     {
         super(api, responseNumber);
-        this.oldEmail = oldEmail;
-        this.newEmail = getSelfUser().getEmail();
+        this.oldDiscriminator = oldDiscriminator;
+        this.newDiscriminator = getSelfUser().getDiscriminator();
     }
 
     /**
-     * The old email
+     * The old discriminator
      *
-     * @return The old email
+     * @return The old discriminator
      */
-    public String getOldEmail()
+    public String getOldDiscriminator()
     {
-        return oldEmail;
+        return oldDiscriminator;
     }
 
     /**
-     * The new email
+     * The new discriminator
      *
-     * @return The new email
+     * @return The new discriminator
      */
-    public String getNewEmail()
+    public String getNewDiscriminator()
     {
-        return newEmail;
+        return newDiscriminator;
     }
 
     @Override
@@ -68,12 +68,12 @@ public class SelfUpdateEmailEvent extends GenericSelfUpdateEvent<String>
     @Override
     public String getOldValue()
     {
-        return oldEmail;
+        return oldDiscriminator;
     }
 
     @Override
     public String getNewValue()
     {
-        return newEmail;
+        return newDiscriminator;
     }
 }

@@ -23,7 +23,7 @@ import net.dv8tion.jda.core.entities.User;
  *
  * <p>Can be used to retrieve the User who changed their avatar and their previous Avatar ID/URL.
  *
- * @deprecated Use {@link net.dv8tion.jda.core.events.user.UserUpdateAvatarEvent UserUpdateAvatarEvent}
+ * @deprecated Use {@link net.dv8tion.jda.core.events.user.update.UserUpdateAvatarEvent UserUpdateAvatarEvent}
  */
 @Deprecated
 public class UserAvatarUpdateEvent extends GenericUserEvent

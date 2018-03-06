@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.events.user;
+package net.dv8tion.jda.core.events.user.update;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.User;
@@ -23,9 +23,13 @@ import net.dv8tion.jda.core.entities.User;
  * Indicates that the username of a {@link net.dv8tion.jda.core.entities.User User} changed. (Not Nickname)
  *
  * <p>Can be used to retrieve the User who changed their username and their previous username.
+ *
+ * <p>Identifier: {@code name}
  */
-public class UserUpdateNameEvent extends GenericUserEvent
+public class UserUpdateNameEvent extends GenericUserUpdateEvent<String>
 {
+    public static final String IDENTIFIER = "name";
+
     private final String oldName;
     private final String newName;
 
@@ -52,6 +56,24 @@ public class UserUpdateNameEvent extends GenericUserEvent
      * @return The new username
      */
     public String getNewName()
+    {
+        return newName;
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return IDENTIFIER;
+    }
+
+    @Override
+    public String getOldValue()
+    {
+        return oldName;
+    }
+
+    @Override
+    public String getNewValue()
     {
         return newName;
     }

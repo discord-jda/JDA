@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.events.user;
+package net.dv8tion.jda.core.events.user.update;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.User;
@@ -23,9 +23,13 @@ import net.dv8tion.jda.core.entities.User;
  * Indicates that the discriminator of a {@link net.dv8tion.jda.core.entities.User User} changed.
  *
  * <p>Can be used to retrieve the User who changed their discriminator and their previous discriminator.
+ *
+ * <p>Identifier: {@code discriminator}
  */
-public class UserUpdateDiscriminatorEvent extends GenericUserEvent
+public class UserUpdateDiscriminatorEvent extends GenericUserUpdateEvent<String>
 {
+    public static final String IDENTIFIER = "discriminator";
+
     private final String oldDiscriminator;
     private final String newDiscriminator;
 
@@ -52,6 +56,24 @@ public class UserUpdateDiscriminatorEvent extends GenericUserEvent
      * @return The new discriminator
      */
     public String getNewDiscriminator()
+    {
+        return newDiscriminator;
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return IDENTIFIER;
+    }
+
+    @Override
+    public String getOldValue()
+    {
+        return oldDiscriminator;
+    }
+
+    @Override
+    public String getNewValue()
     {
         return newDiscriminator;
     }

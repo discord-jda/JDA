@@ -19,6 +19,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.events.user.update.UserUpdateOnlineStatusEvent;
 
 /**
  * Indicates that the {@link OnlineStatus OnlineStatus} of a {@link net.dv8tion.jda.core.entities.User User} changed.
@@ -26,16 +27,16 @@ import net.dv8tion.jda.core.entities.User;
  *
  * <p>Can be used to retrieve the User who changed their status and their previous status.
  *
- * @deprecated Use {@link net.dv8tion.jda.core.events.user.UserUpdateOnlineStatusEvent UserUpdateOnlineStatusEvent} instead
+ * @deprecated Use {@link net.dv8tion.jda.core.events.user.update.UserUpdateOnlineStatusEvent UserUpdateOnlineStatusEvent} instead
  */
 @Deprecated
-public class UserOnlineStatusUpdateEvent extends GenericUserPresenceEvent
+public class UserOnlineStatusUpdateEvent extends UserUpdateOnlineStatusEvent
 {
     protected final OnlineStatus previousOnlineStatus;
 
     public UserOnlineStatusUpdateEvent(JDA api, long responseNumber, User user, Guild guild, OnlineStatus previousOnlineStatus)
     {
-        super(api, responseNumber, user, guild);
+        super(api, responseNumber, user, guild, previousOnlineStatus);
         this.previousOnlineStatus = previousOnlineStatus;
     }
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.events.user;
+package net.dv8tion.jda.core.events.user.update;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.User;
@@ -23,9 +23,13 @@ import net.dv8tion.jda.core.entities.User;
  * Indicates that the Avatar of a {@link net.dv8tion.jda.core.entities.User User} changed.
  *
  * <p>Can be used to retrieve the User who changed their avatar and their previous Avatar ID/URL.
+ *
+ * <p>Identifier: {@code avatar}
  */
-public class UserUpdateAvatarEvent extends GenericUserEvent
+public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String>
 {
+    public static final String IDENTIFIER = "avatar";
+
     private final String oldAvatarId;
     private final String newAvatarId;
 
@@ -74,5 +78,23 @@ public class UserUpdateAvatarEvent extends GenericUserEvent
     public String getNewAvatarUrl()
     {
         return newAvatarId == null ? null : "https://cdn.discordapp.com/avatars/" + getUser().getId() + "/" + newAvatarId + (newAvatarId.startsWith("a_") ? ".gif" : ".png");
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return IDENTIFIER;
+    }
+
+    @Override
+    public String getOldValue()
+    {
+        return getOldAvatarId();
+    }
+
+    @Override
+    public String getNewValue()
+    {
+        return getNewAvatarId();
     }
 }

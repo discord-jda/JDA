@@ -14,35 +14,29 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.events.role.update;
+package net.dv8tion.jda.core.events.user.update;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.UpdateEvent;
-import net.dv8tion.jda.core.events.role.GenericRoleEvent;
+import net.dv8tion.jda.core.events.user.GenericUserEvent;
 
-/**
- * Indicates that a {@link net.dv8tion.jda.core.entities.Role Role} was updated.
- * <br>Every RoleUpdateEvent is derived from this event and can be casted.
- *
- * <p>Can be used to detect any RoleUpdateEvent.
- */
-public abstract class GenericRoleUpdateEvent<T> extends GenericRoleEvent implements UpdateEvent<Role, T>
+public abstract class GenericUserUpdateEvent<T> extends GenericUserEvent implements UpdateEvent<User, T>
 {
-    public GenericRoleUpdateEvent(JDA api, long responseNumber, Role role)
+    public GenericUserUpdateEvent(JDA api, long responseNumber, User user)
     {
-        super(api, responseNumber, role);
+        super(api, responseNumber, user);
     }
 
     @Override
-    public Role getEntity()
+    public User getEntity()
     {
-        return role;
+        return getUser();
     }
 
     @Override
     public String toString()
     {
-        return "RoleUpdate[" + getPropertyIdentifier() + "](" + getOldValue() + "->" + getNewValue() + ")";
+        return "UserUpdate[" + getPropertyIdentifier() + "](" + getOldValue() + "->" + getNewValue() + ')';
     }
 }

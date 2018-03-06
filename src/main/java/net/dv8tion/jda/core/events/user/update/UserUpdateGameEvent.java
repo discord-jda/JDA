@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.events.user;
+package net.dv8tion.jda.core.events.user.update;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Game;
@@ -26,9 +26,13 @@ import net.dv8tion.jda.core.entities.User;
  * <br>As with any presence updates this either happened for a {@link net.dv8tion.jda.core.entities.Member Member} in a Guild or a {@link net.dv8tion.jda.client.entities.Friend Friend}!
  *
  * <p>Can be used to retrieve the User who changed their Game and their previous Game.
+ *
+ * <p>Identifier: {@code game}
  */
-public class UserUpdateGameEvent extends GenericUserPresenceEvent
+public class UserUpdateGameEvent extends GenericUserPresenceEvent<Game>
 {
+    public static final String IDENTIFIER = "game";
+
     private final Game oldGame;
     private final Game newGame;
 
@@ -55,6 +59,24 @@ public class UserUpdateGameEvent extends GenericUserPresenceEvent
      * @return The new {@link net.dv8tion.jda.core.entities.Game Game}
      */
     public Game getNewGame()
+    {
+        return newGame;
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return IDENTIFIER;
+    }
+
+    @Override
+    public Game getOldValue()
+    {
+        return oldGame;
+    }
+
+    @Override
+    public Game getNewValue()
     {
         return newGame;
     }

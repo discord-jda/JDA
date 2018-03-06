@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.events.user;
+package net.dv8tion.jda.core.events.user.update;
 
 import net.dv8tion.jda.client.entities.Friend;
 import net.dv8tion.jda.core.JDA;
@@ -29,7 +29,7 @@ import net.dv8tion.jda.core.entities.User;
  *
  * <p>Can be used to track the presence updates of members/friends.
  */
-public abstract class GenericUserPresenceEvent extends GenericUserEvent
+public abstract class GenericUserPresenceEvent<T> extends GenericUserUpdateEvent<T>
 {
     protected final Guild guild;
 

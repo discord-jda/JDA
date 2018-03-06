@@ -25,7 +25,7 @@ import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.entities.impl.MemberImpl;
 import net.dv8tion.jda.core.entities.impl.UserImpl;
-import net.dv8tion.jda.core.events.user.*;
+import net.dv8tion.jda.core.events.user.update.*;
 import org.json.JSONObject;
 
 import java.util.Objects;

@@ -23,17 +23,25 @@ import net.dv8tion.jda.core.entities.Role;
  * Indicates that a {@link net.dv8tion.jda.core.entities.Role Role} updated its position.
  *
  * <p>Can be used to retrieve the old position.
+ *
+ * <p>Identifier: {@code position}
  */
-public class RoleUpdatePositionEvent extends GenericRoleUpdateEvent
+public class RoleUpdatePositionEvent extends GenericRoleUpdateEvent<Integer>
 {
+    public static final String IDENTIFIER = "position";
+
     private final int oldPosition;
     private final int oldPositionRaw;
+    private final int newPosition;
+    private final int newPositionRaw;
 
     public RoleUpdatePositionEvent(JDA api, long responseNumber, Role role, int oldPosition, int oldPositionRaw)
     {
         super(api, responseNumber, role);
         this.oldPosition = oldPosition;
         this.oldPositionRaw = oldPositionRaw;
+        this.newPosition = role.getPosition();
+        this.newPositionRaw = role.getPositionRaw();
     }
 
     /**
@@ -54,5 +62,33 @@ public class RoleUpdatePositionEvent extends GenericRoleUpdateEvent
     public int getOldPositionRaw()
     {
         return oldPositionRaw;
+    }
+
+    public int getNewPosition()
+    {
+        return newPosition;
+    }
+
+    public int getNewPositionRaw()
+    {
+        return newPositionRaw;
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return IDENTIFIER;
+    }
+
+    @Override
+    public Integer getOldValue()
+    {
+        return oldPosition;
+    }
+
+    @Override
+    public Integer getNewValue()
+    {
+        return newPosition;
     }
 }

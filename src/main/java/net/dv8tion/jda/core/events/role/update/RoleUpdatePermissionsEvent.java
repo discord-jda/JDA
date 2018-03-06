@@ -27,15 +27,21 @@ import java.util.List;
  * Indicates that a {@link net.dv8tion.jda.core.entities.Role Role} updated its permissions.
  *
  * <p>Can be used to retrieve the old permissions.
+ *
+ * <p>Identifier: {@code permission}
  */
-public class RoleUpdatePermissionsEvent extends GenericRoleUpdateEvent
+public class RoleUpdatePermissionsEvent extends GenericRoleUpdateEvent<List<Permission>>
 {
+    public static final String IDENTIFIER = "permission";
+
     private final long oldPermissionsRaw;
+    private final long newPermissionsRaw;
 
     public RoleUpdatePermissionsEvent(JDA api, long responseNumber, Role role, long oldPermissionsRaw)
     {
         super(api, responseNumber, role);
         this.oldPermissionsRaw = oldPermissionsRaw;
+        this.newPermissionsRaw = role.getPermissionsRaw();
     }
 
     /**
@@ -57,5 +63,34 @@ public class RoleUpdatePermissionsEvent extends GenericRoleUpdateEvent
     public long getOldPermissionsRaw()
     {
         return oldPermissionsRaw;
+    }
+
+    public List<Permission> getNewPermissions()
+    {
+        return Collections.unmodifiableList(
+                Permission.getPermissions(newPermissionsRaw));
+    }
+
+    public long getNewPermissionsRaw()
+    {
+        return newPermissionsRaw;
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return IDENTIFIER;
+    }
+
+    @Override
+    public List<Permission> getOldValue()
+    {
+        return getOldPermissions();
+    }
+
+    @Override
+    public List<Permission> getNewValue()
+    {
+        return getNewPermissions();
     }
 }

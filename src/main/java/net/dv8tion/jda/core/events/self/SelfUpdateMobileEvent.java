@@ -22,9 +22,13 @@ import net.dv8tion.jda.core.JDA;
  * Indicates that you login to your discord account with a mobile device for the first time. (client-only)
  *
  * <p>Can be used to detect that your account was used with a mobile device.
+ *
+ * <p>Identifier: {@code mobile}
  */
-public class SelfUpdateMobileEvent extends GenericSelfUpdateEvent
+public class SelfUpdateMobileEvent extends GenericSelfUpdateEvent<Boolean>
 {
+    public static final String IDENTIFIER = "mobile";
+
     private final boolean wasMobile;
 
     public SelfUpdateMobileEvent(JDA api, long responseNumber, boolean wasMobile)
@@ -41,5 +45,23 @@ public class SelfUpdateMobileEvent extends GenericSelfUpdateEvent
     public boolean wasMobile()
     {
         return wasMobile;
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return IDENTIFIER;
+    }
+
+    @Override
+    public Boolean getOldValue()
+    {
+        return wasMobile;
+    }
+
+    @Override
+    public Boolean getNewValue()
+    {
+        return !wasMobile;
     }
 }

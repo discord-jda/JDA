@@ -22,9 +22,12 @@ import net.dv8tion.jda.core.JDA;
  * Indicates that the current user subscribed to nitro or the active nitro subscription ran out. (client-only)
  *
  * <p>Can be used to track the state of the nitro subscription.
+ *
+ * <p>Identifier: {@code nitro}
  */
-public class SelfUpdateNitroEvent extends GenericSelfUpdateEvent
+public class SelfUpdateNitroEvent extends GenericSelfUpdateEvent<Boolean>
 {
+    public static final String IDENTIFIER = "nitro";
     private final boolean wasNitro;
 
     public SelfUpdateNitroEvent(JDA api, long responseNumber, boolean wasNitro)
@@ -41,5 +44,23 @@ public class SelfUpdateNitroEvent extends GenericSelfUpdateEvent
     public boolean wasNitro()
     {
         return wasNitro;
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return IDENTIFIER;
+    }
+
+    @Override
+    public Boolean getOldValue()
+    {
+        return wasNitro;
+    }
+
+    @Override
+    public Boolean getNewValue()
+    {
+        return !wasNitro;
     }
 }

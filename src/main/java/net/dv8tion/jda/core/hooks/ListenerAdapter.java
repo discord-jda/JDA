@@ -83,6 +83,7 @@ import net.dv8tion.jda.core.events.role.RoleDeleteEvent;
 import net.dv8tion.jda.core.events.role.update.*;
 import net.dv8tion.jda.core.events.self.*;
 import net.dv8tion.jda.core.events.user.*;
+import net.dv8tion.jda.core.events.user.update.*;
 
 /**
  * An abstract implementation of {@link net.dv8tion.jda.core.hooks.EventListener EventListener} which divides {@link net.dv8tion.jda.core.events.Event Events}
@@ -112,6 +113,7 @@ import net.dv8tion.jda.core.events.user.*;
 public abstract class ListenerAdapter implements EventListener
 {
     public void onGenericEvent(Event event) {}
+    public void onGenericUpdate(UpdateEvent<?, ?> event) {}
 
     //JDA Events
     public void onReady(ReadyEvent event) {}
@@ -361,6 +363,8 @@ public abstract class ListenerAdapter implements EventListener
     public final void onEvent(Event event)
     {
         onGenericEvent(event);
+        if (event instanceof UpdateEvent)
+            onGenericUpdate((UpdateEvent<?, ?>) event);
         //JDA Events
         if (event instanceof ReadyEvent)
             onReady((ReadyEvent) event);

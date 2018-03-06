@@ -25,15 +25,21 @@ import java.awt.Color;
  * Indicates that a {@link net.dv8tion.jda.core.entities.Role Role} updated its color.
  *
  * <p>Can be used to retrieve the old color.
+ *
+ * <p>Identifier: {@code color}
  */
-public class RoleUpdateColorEvent extends GenericRoleUpdateEvent
+public class RoleUpdateColorEvent extends GenericRoleUpdateEvent<Integer>
 {
+    public static final String IDENTIFIER = "color";
+
     private final int oldColor;
+    private final int newColor;
 
     public RoleUpdateColorEvent(JDA api, long responseNumber, Role role, int oldColor)
     {
         super(api, responseNumber, role);
         this.oldColor = oldColor;
+        this.newColor = role.getColorRaw();
     }
 
     /**
@@ -49,5 +55,33 @@ public class RoleUpdateColorEvent extends GenericRoleUpdateEvent
     public int getOldColorRaw()
     {
         return oldColor;
+    }
+
+    public Color getNewColor()
+    {
+        return newColor != Role.DEFAULT_COLOR_RAW ? new Color(newColor) : null;
+    }
+
+    public int getNewColorRaw()
+    {
+        return newColor;
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return IDENTIFIER;
+    }
+
+    @Override
+    public Integer getOldValue()
+    {
+        return oldColor;
+    }
+
+    @Override
+    public Integer getNewValue()
+    {
+        return newColor;
     }
 }

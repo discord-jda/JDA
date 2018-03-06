@@ -19,6 +19,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.events.user.update.UserUpdateGameEvent;
 
 /**
  * Indicates that the {@link net.dv8tion.jda.core.entities.Game Game} of a {@link net.dv8tion.jda.core.entities.User User} changes.
@@ -26,16 +27,16 @@ import net.dv8tion.jda.core.entities.User;
  *
  * <p>Can be used to retrieve the User who changed their Game and their previous Game.
  *
- * @deprecated Use {@link net.dv8tion.jda.core.events.user.UserUpdateGameEvent UserUpdateGameEvent}
+ * @deprecated Use {@link net.dv8tion.jda.core.events.user.update.UserUpdateGameEvent UserUpdateGameEvent}
  */
 @Deprecated
-public class UserGameUpdateEvent extends GenericUserPresenceEvent
+public class UserGameUpdateEvent extends UserUpdateGameEvent
 {
     protected final Game previousGame;
 
     public UserGameUpdateEvent(JDA api, long responseNumber, User user, Guild guild, Game previousGame)
     {
-        super(api, responseNumber, user, guild);
+        super(api, responseNumber, user, guild, previousGame);
         this.previousGame = previousGame;
     }
 

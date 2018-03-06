@@ -22,15 +22,21 @@ import net.dv8tion.jda.core.JDA;
  * Indicates that the phone number associated with your account changed. (client-only)
  *
  * <p>Can be used to retrieve the old phone number.
+ *
+ * <p>Identifier: {@code phone}
  */
-public class SelfUpdatePhoneNumberEvent extends GenericSelfUpdateEvent
+public class SelfUpdatePhoneNumberEvent extends GenericSelfUpdateEvent<String>
 {
+    public static final String IDENTIFIER = "phone";
+
     private final String oldPhoneNumber;
+    private final String newPhoneNumber;
 
     public SelfUpdatePhoneNumberEvent(JDA api, long responseNumber, String oldPhoneNumber)
     {
         super(api, responseNumber);
         this.oldPhoneNumber = oldPhoneNumber;
+        this.newPhoneNumber = getSelfUser().getPhoneNumber();
     }
 
     /**
@@ -41,5 +47,33 @@ public class SelfUpdatePhoneNumberEvent extends GenericSelfUpdateEvent
     public String getOldPhoneNumber()
     {
         return oldPhoneNumber;
+    }
+
+    /**
+     * The new phone number.
+     *
+     * @return The new phone number
+     */
+    public String getNewPhoneNumber()
+    {
+        return newPhoneNumber;
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return IDENTIFIER;
+    }
+
+    @Override
+    public String getOldValue()
+    {
+        return oldPhoneNumber;
+    }
+
+    @Override
+    public String getNewValue()
+    {
+        return newPhoneNumber;
     }
 }

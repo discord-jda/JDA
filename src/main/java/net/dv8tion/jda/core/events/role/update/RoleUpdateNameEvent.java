@@ -23,15 +23,21 @@ import net.dv8tion.jda.core.entities.Role;
  * Indicates that a {@link net.dv8tion.jda.core.entities.Role Role} updated its name.
  *
  * <p>Can be used to retrieve the old name.
+ *
+ * <p>Identifier: {@code name}
  */
-public class RoleUpdateNameEvent extends GenericRoleUpdateEvent
+public class RoleUpdateNameEvent extends GenericRoleUpdateEvent<String>
 {
+    public static final String IDENTIFIER = "name";
+
     private final String oldName;
+    private final String newName;
 
     public RoleUpdateNameEvent(JDA api, long responseNumber, Role role, String oldName)
     {
         super(api, responseNumber, role);
         this.oldName = oldName;
+        this.newName = role.getName();
     }
 
     /**
@@ -42,5 +48,23 @@ public class RoleUpdateNameEvent extends GenericRoleUpdateEvent
     public String getOldName()
     {
         return oldName;
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return IDENTIFIER;
+    }
+
+    @Override
+    public String getOldValue()
+    {
+        return oldName;
+    }
+
+    @Override
+    public String getNewValue()
+    {
+        return newName;
     }
 }

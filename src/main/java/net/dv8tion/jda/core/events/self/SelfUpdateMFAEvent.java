@@ -23,9 +23,13 @@ import net.dv8tion.jda.core.JDA;
  * <br>This is relevant for elevated permissions (guild moderating/managing).
  *
  * <p>Can be used to retrieve the old mfa level.
+ *
+ * <p>Identifier: {@code mfa_enabled}
  */
-public class SelfUpdateMFAEvent extends GenericSelfUpdateEvent
+public class SelfUpdateMFAEvent extends GenericSelfUpdateEvent<Boolean>
 {
+    public static final String IDENTIFIER = "mfa_enabled";
+
     private final boolean wasMfaEnabled;
 
     public SelfUpdateMFAEvent(JDA api, long responseNumber, boolean wasMfaEnabled)
@@ -42,5 +46,23 @@ public class SelfUpdateMFAEvent extends GenericSelfUpdateEvent
     public boolean wasMfaEnabled()
     {
         return wasMfaEnabled;
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return IDENTIFIER;
+    }
+
+    @Override
+    public Boolean getOldValue()
+    {
+        return wasMfaEnabled;
+    }
+
+    @Override
+    public Boolean getNewValue()
+    {
+        return !wasMfaEnabled;
     }
 }
