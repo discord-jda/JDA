@@ -22,9 +22,13 @@ import net.dv8tion.jda.core.entities.TextChannel;
  * Indicates that a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}'s NSFW status changed.
  *
  * <p>Can be used to detect when a TextChannel NSFW status changes and get its previous value.
+ *
+ * <p>Identifier: {@code nsfw}
  */
-public class TextChannelUpdateNSFWEvent extends GenericTextChannelUpdateEvent
+public class TextChannelUpdateNSFWEvent extends GenericTextChannelUpdateEvent<Boolean>
 {
+    public static final String IDENTIFIER = "nsfw";
+
     private final boolean oldNsfw;
 
     public TextChannelUpdateNSFWEvent(JDA api, long responseNumber, TextChannel channel, boolean oldNsfw)
@@ -41,5 +45,23 @@ public class TextChannelUpdateNSFWEvent extends GenericTextChannelUpdateEvent
     public boolean getOldNSFW()
     {
         return oldNsfw;
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return IDENTIFIER;
+    }
+
+    @Override
+    public Boolean getOldValue()
+    {
+        return getOldNSFW();
+    }
+
+    @Override
+    public Boolean getNewValue()
+    {
+        return !getOldValue();
     }
 }

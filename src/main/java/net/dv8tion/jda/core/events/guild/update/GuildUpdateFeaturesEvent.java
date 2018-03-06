@@ -25,15 +25,21 @@ import java.util.Set;
  * Indicates that the features of a {@link net.dv8tion.jda.core.entities.Guild Guild} changed.
  *
  * <p>Can be used to detect when the features change and retrieve the old ones
+ *
+ * <p>Identifier: {@code features}
  */
-public class GuildUpdateFeaturesEvent extends GenericGuildUpdateEvent
+public class GuildUpdateFeaturesEvent extends GenericGuildUpdateEvent<Set<String>>
 {
+    public static final String IDENTIFIER = "features";
+
     private final Set<String> oldFeatures;
+    private final Set<String> newFeatures;
 
     public GuildUpdateFeaturesEvent(JDA api, long responseNumber, Guild guild, Set<String> oldFeatures)
     {
         super(api, responseNumber, guild);
         this.oldFeatures = oldFeatures;
+        this.newFeatures = guild.getFeatures();
     }
 
     /**
@@ -44,5 +50,33 @@ public class GuildUpdateFeaturesEvent extends GenericGuildUpdateEvent
     public Set<String> getOldFeatures()
     {
         return oldFeatures;
+    }
+
+    /**
+     * The new Set of features after the {@link net.dv8tion.jda.core.entities.Guild Guild} update.
+     *
+     * @return Never-null, unmodifiable Set of the new features
+     */
+    public Set<String> getNewFeatures()
+    {
+        return newFeatures;
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return IDENTIFIER;
+    }
+
+    @Override
+    public Set<String> getOldValue()
+    {
+        return oldFeatures;
+    }
+
+    @Override
+    public Set<String> getNewValue()
+    {
+        return newFeatures;
     }
 }

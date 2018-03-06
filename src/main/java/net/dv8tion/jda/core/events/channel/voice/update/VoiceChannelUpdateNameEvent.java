@@ -22,15 +22,21 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
  * Indicates that a {@link VoiceChannel VoiceChannel}'s name changed.
  *
  * <p>Can be used to get affected VoiceChannel, affected Guild and previous name.
+ *
+ * <p>Identifier: {@code name}
  */
-public class VoiceChannelUpdateNameEvent extends GenericVoiceChannelUpdateEvent
+public class VoiceChannelUpdateNameEvent extends GenericVoiceChannelUpdateEvent<String>
 {
+    public static final String IDENTIFIER = "name";
+
     private final String oldName;
+    private final String newName;
 
     public VoiceChannelUpdateNameEvent(JDA api, long responseNumber, VoiceChannel channel, String oldName)
     {
         super(api, responseNumber, channel);
         this.oldName = oldName;
+        this.newName = channel.getName();
     }
 
     /**
@@ -41,5 +47,33 @@ public class VoiceChannelUpdateNameEvent extends GenericVoiceChannelUpdateEvent
     public String getOldName()
     {
         return oldName;
+    }
+
+    /**
+     * The new name
+     *
+     * @return The new name
+     */
+    public String getNewName()
+    {
+        return newName;
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return IDENTIFIER;
+    }
+
+    @Override
+    public String getOldValue()
+    {
+        return oldName;
+    }
+
+    @Override
+    public String getNewValue()
+    {
+        return newName;
     }
 }

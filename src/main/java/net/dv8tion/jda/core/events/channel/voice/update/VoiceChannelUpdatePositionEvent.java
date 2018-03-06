@@ -22,15 +22,21 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
  * Indicates that a {@link VoiceChannel VoiceChannel}'s position changed.
  *
  * <p>Can be used to get affected VoiceChannel, affected Guild and previous position.
+ *
+ * <p>Identifier: {@code position}
  */
-public class VoiceChannelUpdatePositionEvent extends GenericVoiceChannelUpdateEvent
+public class VoiceChannelUpdatePositionEvent extends GenericVoiceChannelUpdateEvent<Integer>
 {
+    public static final String IDENTIFIER = "position";
+
     private final int oldPosition;
+    private final int newPosition;
 
     public VoiceChannelUpdatePositionEvent(JDA api, long responseNumber, VoiceChannel channel, int oldPosition)
     {
         super(api, responseNumber, channel);
         this.oldPosition = oldPosition;
+        this.newPosition = channel.getPositionRaw();
     }
 
     /**
@@ -41,5 +47,33 @@ public class VoiceChannelUpdatePositionEvent extends GenericVoiceChannelUpdateEv
     public int getOldPosition()
     {
         return oldPosition;
+    }
+
+    /**
+     * The new position
+     *
+     * @return The new position
+     */
+    public int getNewPosition()
+    {
+        return newPosition;
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return IDENTIFIER;
+    }
+
+    @Override
+    public Integer getOldValue()
+    {
+        return oldPosition;
+    }
+
+    @Override
+    public Integer getNewValue()
+    {
+        return newPosition;
     }
 }

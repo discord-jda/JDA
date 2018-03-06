@@ -23,15 +23,21 @@ import net.dv8tion.jda.core.entities.Guild;
  * Indicates that the {@link net.dv8tion.jda.core.entities.Guild.ExplicitContentLevel ExplicitContentLevel} of a {@link net.dv8tion.jda.core.entities.Guild Guild} changed.
  *
  * <p>Can be used to detect when an ExplicitContentLevel changes and retrieve the old one
+ *
+ * <p>Identifier: {@code explicit_content_filter}
  */
-public class GuildUpdateExplicitContentLevelEvent extends GenericGuildUpdateEvent
+public class GuildUpdateExplicitContentLevelEvent extends GenericGuildUpdateEvent<Guild.ExplicitContentLevel>
 {
-    protected final Guild.ExplicitContentLevel oldLevel;
+    public static final String IDENTIFIER = "explicit_content_filter";
+
+    private final Guild.ExplicitContentLevel oldLevel;
+    private final Guild.ExplicitContentLevel newLevel;
 
     public GuildUpdateExplicitContentLevelEvent(JDA api, long responseNumber, Guild guild, Guild.ExplicitContentLevel oldLevel)
     {
         super(api, responseNumber, guild);
         this.oldLevel = oldLevel;
+        this.newLevel = guild.getExplicitContentLevel();
     }
 
     /**
@@ -43,5 +49,34 @@ public class GuildUpdateExplicitContentLevelEvent extends GenericGuildUpdateEven
     public Guild.ExplicitContentLevel getOldLevel()
     {
         return oldLevel;
+    }
+
+    /**
+     * The new {@link net.dv8tion.jda.core.entities.Guild.ExplicitContentLevel ExplicitContentLevel} for the
+     * {@link net.dv8tion.jda.core.entities.Guild Guild} after to this event.
+     *
+     * @return The new explicit content level
+     */
+    public Guild.ExplicitContentLevel getNewLevel()
+    {
+        return newLevel;
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return IDENTIFIER;
+    }
+
+    @Override
+    public Guild.ExplicitContentLevel getOldValue()
+    {
+        return oldLevel;
+    }
+
+    @Override
+    public Guild.ExplicitContentLevel getNewValue()
+    {
+        return newLevel;
     }
 }

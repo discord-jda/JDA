@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.entities.Category;
 import net.dv8tion.jda.core.entities.IPermissionHolder;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.events.channel.category.GenericCategoryEvent;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,7 +31,7 @@ import java.util.stream.Collectors;
  *
  * <p>Can be used to retrieve the changed permissions
  */
-public class CategoryUpdatePermissionsEvent extends GenericCategoryUpdateEvent
+public class CategoryUpdatePermissionsEvent extends GenericCategoryEvent
 {
     protected final List<IPermissionHolder> changed;
 
@@ -39,6 +40,8 @@ public class CategoryUpdatePermissionsEvent extends GenericCategoryUpdateEvent
         super(api, responseNumber, category);
         this.changed = changed;
     }
+
+
 
     /**
      * List of all affected {@link net.dv8tion.jda.core.entities.IPermissionHolder IPermissionHolders}

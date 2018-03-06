@@ -20,24 +20,27 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Role;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Indicates that the role whitelist for an {@link net.dv8tion.jda.core.entities.Emote Emote} changed.
  *
  * <p>Can be used to retrieve the old role whitelist
+ *
+ * <p>Identifier: {@code roles}
  */
-public class EmoteUpdateRolesEvent extends GenericEmoteUpdateEvent
+public class EmoteUpdateRolesEvent extends GenericEmoteUpdateEvent<List<Role>>
 {
-    protected final List<Role> oldRoles;
+    public static final String IDENTIFIER = "roles";
 
-    public EmoteUpdateRolesEvent(JDA api, long responseNumber, Emote emote, Collection<Role> oldRoles)
+    private final List<Role> oldRoles;
+    private final List<Role> newRoles;
+
+    public EmoteUpdateRolesEvent(JDA api, long responseNumber, Emote emote, List<Role> oldRoles)
     {
         super(api, responseNumber, emote);
-        this.oldRoles = Collections.unmodifiableList(new LinkedList<>(oldRoles));
+        this.oldRoles = oldRoles;
+        this.newRoles = emote.getRoles();
     }
 
     /**
@@ -58,5 +61,23 @@ public class EmoteUpdateRolesEvent extends GenericEmoteUpdateEvent
     public List<Role> getNewRoles()
     {
         return emote.getRoles();
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return IDENTIFIER;
+    }
+
+    @Override
+    public List<Role> getOldValue()
+    {
+        return getOldRoles();
+    }
+
+    @Override
+    public List<Role> getNewValue()
+    {
+        return getNewRoles();
     }
 }

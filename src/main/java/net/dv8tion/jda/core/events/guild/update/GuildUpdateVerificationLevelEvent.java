@@ -23,15 +23,21 @@ import net.dv8tion.jda.core.entities.Guild;
  * Indicates that the {@link net.dv8tion.jda.core.entities.Guild.VerificationLevel VerificationLevel} of a {@link net.dv8tion.jda.core.entities.Guild Guild} changed.
  *
  * <p>Can be used to detect when a VerificationLevel changes and retrieve the old one
+ *
+ * <p>Identifier: {@code verification_level}
  */
-public class GuildUpdateVerificationLevelEvent extends GenericGuildUpdateEvent
+public class GuildUpdateVerificationLevelEvent extends GenericGuildUpdateEvent<Guild.VerificationLevel>
 {
+    public static final String IDENTIFIER = "verification_level";
+
     private final Guild.VerificationLevel oldVerificationLevel;
+    private final Guild.VerificationLevel newVerificationLevel;
 
     public GuildUpdateVerificationLevelEvent(JDA api, long responseNumber, Guild guild, Guild.VerificationLevel oldVerificationLevel)
     {
         super(api, responseNumber, guild);
         this.oldVerificationLevel = oldVerificationLevel;
+        this.newVerificationLevel = guild.getVerificationLevel();
     }
 
     /**
@@ -42,5 +48,33 @@ public class GuildUpdateVerificationLevelEvent extends GenericGuildUpdateEvent
     public Guild.VerificationLevel getOldVerificationLevel()
     {
         return oldVerificationLevel;
+    }
+
+    /**
+     * The new {@link net.dv8tion.jda.core.entities.Guild.VerificationLevel VerificationLevel}
+     *
+     * @return The new VerificationLevel
+     */
+    public Guild.VerificationLevel getNewVerificationLevel()
+    {
+        return newVerificationLevel;
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return IDENTIFIER;
+    }
+
+    @Override
+    public Guild.VerificationLevel getOldValue()
+    {
+        return oldVerificationLevel;
+    }
+
+    @Override
+    public Guild.VerificationLevel getNewValue()
+    {
+        return newVerificationLevel;
     }
 }

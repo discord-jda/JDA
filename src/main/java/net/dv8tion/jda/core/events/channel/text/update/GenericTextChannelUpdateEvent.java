@@ -17,6 +17,7 @@ package net.dv8tion.jda.core.events.channel.text.update;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.events.UpdateEvent;
 import net.dv8tion.jda.core.events.channel.text.GenericTextChannelEvent;
 
 /**
@@ -25,10 +26,22 @@ import net.dv8tion.jda.core.events.channel.text.GenericTextChannelEvent;
  *
  * <p>Can be used to detect any TextChannelUpdateEvent.
  */
-public abstract class GenericTextChannelUpdateEvent extends GenericTextChannelEvent
+public abstract class GenericTextChannelUpdateEvent<T> extends GenericTextChannelEvent implements UpdateEvent<TextChannel, T>
 {
     public GenericTextChannelUpdateEvent(JDA api, long responseNumber, TextChannel channel)
     {
         super(api, responseNumber, channel);
+    }
+
+    @Override
+    public TextChannel getEntity()
+    {
+        return getChannel();
+    }
+
+    @Override
+    public String toString()
+    {
+        return "TextChannelUpdate[" + getPropertyIdentifier() + "](" +getOldValue() + "->" + getNewValue() + ')';
     }
 }

@@ -64,11 +64,21 @@ public class RoleUpdatePositionEvent extends GenericRoleUpdateEvent<Integer>
         return oldPositionRaw;
     }
 
+    /**
+     * The new position
+     *
+     * @return The new position
+     */
     public int getNewPosition()
     {
         return newPosition;
     }
 
+    /**
+     * The new position
+     *
+     * @return The new position
+     */
     public int getNewPositionRaw()
     {
         return newPositionRaw;

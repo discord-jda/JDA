@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.entities.IPermissionHolder;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.events.channel.voice.GenericVoiceChannelEvent;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,7 +30,7 @@ import java.util.stream.Collectors;
  *
  * <p>Can be used to get affected VoiceChannel, affected Guild and affected {@link net.dv8tion.jda.core.entities.Role Roles}/{@link net.dv8tion.jda.core.entities.User Users}.
  */
-public class VoiceChannelUpdatePermissionsEvent extends GenericVoiceChannelUpdateEvent
+public class VoiceChannelUpdatePermissionsEvent extends GenericVoiceChannelEvent
 {
     private final List<IPermissionHolder> changedPermHolders;
 

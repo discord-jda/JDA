@@ -22,15 +22,21 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
  * Indicates that a {@link VoiceChannel VoiceChannel}'s user limit changed.
  *
  * <p>Can be used to get affected VoiceChannel, affected Guild and previous user limit.
+ *
+ * <p>Identifier: {@code userlimit}
  */
-public class VoiceChannelUpdateUserLimitEvent extends GenericVoiceChannelUpdateEvent
+public class VoiceChannelUpdateUserLimitEvent extends GenericVoiceChannelUpdateEvent<Integer>
 {
-    protected final int oldUserLimit;
+    public static final String IDENTIFIER = "userlimit";
+
+    private final int oldUserLimit;
+    private final int newUserLimit;
 
     public VoiceChannelUpdateUserLimitEvent(JDA api, long responseNumber, VoiceChannel channel, int oldUserLimit)
     {
         super(api, responseNumber, channel);
         this.oldUserLimit = oldUserLimit;
+        this.newUserLimit = channel.getUserLimit();
     }
 
     /**
@@ -41,5 +47,33 @@ public class VoiceChannelUpdateUserLimitEvent extends GenericVoiceChannelUpdateE
     public int getOldUserLimit()
     {
         return oldUserLimit;
+    }
+
+    /**
+     * The new userlimit
+     *
+     * @return The new userlimit
+     */
+    public int getNewUserLimit()
+    {
+        return newUserLimit;
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return IDENTIFIER;
+    }
+
+    @Override
+    public Integer getOldValue()
+    {
+        return oldUserLimit;
+    }
+
+    @Override
+    public Integer getNewValue()
+    {
+        return newUserLimit;
     }
 }

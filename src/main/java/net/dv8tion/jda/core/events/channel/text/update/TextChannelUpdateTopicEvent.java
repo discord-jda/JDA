@@ -22,15 +22,21 @@ import net.dv8tion.jda.core.entities.TextChannel;
  * Indicates that a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}'s topic changed.
  *
  * <p>Can be used to detect when a TextChannel topic changes and get its previous topic.
+ *
+ * <p>Identifier: {@code topic}
  */
-public class TextChannelUpdateTopicEvent extends GenericTextChannelUpdateEvent
+public class TextChannelUpdateTopicEvent extends GenericTextChannelUpdateEvent<String>
 {
+    public static final String IDENTIFIER = "topic";
+
     private final String oldTopic;
+    private final String newTopic;
 
     public TextChannelUpdateTopicEvent(JDA api, long responseNumber, TextChannel channel, String oldTopic)
     {
         super(api, responseNumber, channel);
         this.oldTopic = oldTopic;
+        this.newTopic = channel.getTopic();
     }
 
     /**
@@ -41,5 +47,33 @@ public class TextChannelUpdateTopicEvent extends GenericTextChannelUpdateEvent
     public String getOldTopic()
     {
         return oldTopic;
+    }
+
+    /**
+     * The new topic
+     *
+     * @return The new topic, or null
+     */
+    public String getNewTopic()
+    {
+        return newTopic;
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return IDENTIFIER;
+    }
+
+    @Override
+    public String getOldValue()
+    {
+        return oldTopic;
+    }
+
+    @Override
+    public String getNewValue()
+    {
+        return newTopic;
     }
 }

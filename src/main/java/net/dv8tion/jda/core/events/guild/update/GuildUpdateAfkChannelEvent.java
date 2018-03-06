@@ -24,24 +24,58 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
  * Indicates that the afk-channel of a {@link net.dv8tion.jda.core.entities.Guild Guild} changed.
  *
  * <p>Can be used to detect when an afk channel changes and retrieve the old one
+ *
+ * <p>Identifier: {@code afk_channel}
  */
-public class GuildUpdateAfkChannelEvent extends GenericGuildUpdateEvent
+public class GuildUpdateAfkChannelEvent extends GenericGuildUpdateEvent<VoiceChannel>
 {
+    public static final String IDENTIFIER = "afk_channel";
+
     private final VoiceChannel oldAfkChannel;
+    private final VoiceChannel newAfkChannel;
 
     public GuildUpdateAfkChannelEvent(JDA api, long responseNumber, Guild guild, VoiceChannel oldAfkChannel)
     {
         super(api, responseNumber, guild);
         this.oldAfkChannel = oldAfkChannel;
+        this.newAfkChannel = guild.getAfkChannel();
     }
 
     /**
      * The old afk channel
      *
-     * @return The old afk channel
+     * @return The old afk channel, or null
      */
     public VoiceChannel getOldAfkChannel()
     {
         return oldAfkChannel;
+    }
+
+    /**
+     * The new afk channel
+     *
+     * @return The new afk channel, or null
+     */
+    public VoiceChannel getNewAfkChannel()
+    {
+        return newAfkChannel;
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return IDENTIFIER;
+    }
+
+    @Override
+    public VoiceChannel getOldValue()
+    {
+        return oldAfkChannel;
+    }
+
+    @Override
+    public VoiceChannel getNewValue()
+    {
+        return newAfkChannel;
     }
 }

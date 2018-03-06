@@ -23,15 +23,21 @@ import net.dv8tion.jda.core.entities.Category;
  * Indicates that the name of a {@link net.dv8tion.jda.core.entities.Category Category} was updated.
  *
  * <p>Can be used to retrieve the old name
+ *
+ * <p>Identifier: {@code name}
  */
-public class CategoryUpdateNameEvent extends GenericCategoryUpdateEvent
+public class CategoryUpdateNameEvent extends GenericCategoryUpdateEvent<String>
 {
-    protected final String oldName;
+    public static final String IDENTIFIER = "name";
+
+    private final String oldName;
+    private final String newName;
 
     public CategoryUpdateNameEvent(JDA api, long responseNumber, Category category, String oldName)
     {
         super(api, responseNumber, category);
         this.oldName = oldName;
+        this.newName = category.getName();
     }
 
     /**
@@ -42,5 +48,33 @@ public class CategoryUpdateNameEvent extends GenericCategoryUpdateEvent
     public String getOldName()
     {
         return oldName;
+    }
+
+    /**
+     * The new name for this {@link net.dv8tion.jda.core.entities.Category Category}
+     *
+     * @return The new name
+     */
+    public String getNewName()
+    {
+        return newName;
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return IDENTIFIER;
+    }
+
+    @Override
+    public String getOldValue()
+    {
+        return oldName;
+    }
+
+    @Override
+    public String getNewValue()
+    {
+        return newName;
     }
 }

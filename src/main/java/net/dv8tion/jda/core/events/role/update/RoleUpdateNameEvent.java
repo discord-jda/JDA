@@ -50,6 +50,16 @@ public class RoleUpdateNameEvent extends GenericRoleUpdateEvent<String>
         return oldName;
     }
 
+    /**
+     * The new name
+     *
+     * @return The new name
+     */
+    public String getNewName()
+    {
+        return newName;
+    }
+
     @Override
     public String getPropertyIdentifier()
     {

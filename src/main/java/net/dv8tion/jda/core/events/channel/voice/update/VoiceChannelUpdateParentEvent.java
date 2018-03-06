@@ -24,15 +24,21 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
  * Indicates that a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}'s parent changed.
  *
  * <p>Can be used to get the affected voice channel, guild and old parent.
+ *
+ * <p>Identifier: {@code parent}
  */
-public class VoiceChannelUpdateParentEvent extends GenericVoiceChannelUpdateEvent
+public class VoiceChannelUpdateParentEvent extends GenericVoiceChannelUpdateEvent<Category>
 {
-    protected final Category oldParent;
+    public static final String IDENTIFIER = "parent";
+
+    private final Category oldParent;
+    private final Category newParent;
 
     public VoiceChannelUpdateParentEvent(JDA api, long responseNumber, VoiceChannel channel, Category oldParent)
     {
         super(api, responseNumber, channel);
         this.oldParent = oldParent;
+        this.newParent = channel.getParent();
     }
 
     /**
@@ -43,5 +49,33 @@ public class VoiceChannelUpdateParentEvent extends GenericVoiceChannelUpdateEven
     public Category getOldParent()
     {
         return oldParent;
+    }
+
+    /**
+     * The new parent {@link net.dv8tion.jda.core.entities.Category Category}
+     *
+     * @return The new parent, or null
+     */
+    public Category getNewParent()
+    {
+        return newParent;
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return IDENTIFIER;
+    }
+
+    @Override
+    public Category getOldValue()
+    {
+        return oldParent;
+    }
+
+    @Override
+    public Category getNewValue()
+    {
+        return newParent;
     }
 }

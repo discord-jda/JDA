@@ -22,15 +22,21 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
  * Indicates that a {@link VoiceChannel VoiceChannel}'s bitrate changed.
  *
  * <p>Can be sued to get affected VoiceChannel, affected Guild and previous bitrate.
+ *
+ * <p>Identifier: {@code bitrate}
  */
-public class VoiceChannelUpdateBitrateEvent extends GenericVoiceChannelUpdateEvent
+public class VoiceChannelUpdateBitrateEvent extends GenericVoiceChannelUpdateEvent<Integer>
 {
-    protected final int oldBitrate;
+    public static final String IDENTIFIER = "bitrate";
+
+    private final int oldBitrate;
+    private final int newBitrate;
 
     public VoiceChannelUpdateBitrateEvent(JDA api, long responseNumber, VoiceChannel channel, int oldBitrate)
     {
         super(api, responseNumber, channel);
         this.oldBitrate = oldBitrate;
+        this.newBitrate = channel.getBitrate();
     }
 
     /**
@@ -41,5 +47,33 @@ public class VoiceChannelUpdateBitrateEvent extends GenericVoiceChannelUpdateEve
     public int getOldBitrate()
     {
         return oldBitrate;
+    }
+
+    /**
+     * The new bitrate
+     *
+     * @return The new bitrate
+     */
+    public int getNewBitrate()
+    {
+        return newBitrate;
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return IDENTIFIER;
+    }
+
+    @Override
+    public Integer getOldValue()
+    {
+        return oldBitrate;
+    }
+
+    @Override
+    public Integer getNewValue()
+    {
+        return newBitrate;
     }
 }

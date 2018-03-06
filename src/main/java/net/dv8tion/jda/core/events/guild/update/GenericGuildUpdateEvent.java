@@ -17,6 +17,7 @@ package net.dv8tion.jda.core.events.guild.update;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.events.UpdateEvent;
 import net.dv8tion.jda.core.events.guild.GenericGuildEvent;
 
 /**
@@ -24,10 +25,22 @@ import net.dv8tion.jda.core.events.guild.GenericGuildEvent;
  *
  * <p>Can be used to detect when a Guild is updated.
  */
-public abstract class GenericGuildUpdateEvent extends GenericGuildEvent
+public abstract class GenericGuildUpdateEvent<T> extends GenericGuildEvent implements UpdateEvent<Guild, T>
 {
     public GenericGuildUpdateEvent(JDA api, long responseNumber, Guild guild)
     {
         super(api, responseNumber, guild);
+    }
+
+    @Override
+    public Guild getEntity()
+    {
+        return getGuild();
+    }
+
+    @Override
+    public String toString()
+    {
+        return "GuildUpdate[" + getPropertyIdentifier() + "](" + getOldValue() + "->" + getNewValue() + ')';
     }
 }

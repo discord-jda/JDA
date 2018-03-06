@@ -24,9 +24,13 @@ import net.dv8tion.jda.core.entities.Guild;
  * Indicates that the {@link net.dv8tion.jda.core.Region Region} of a {@link net.dv8tion.jda.core.entities.Guild Guild} changed.
  *
  * <p>Can be used to detect when a Region changes and retrieve the old one
+ *
+ * <p>Identifier: {@code region}
  */
-public class GuildUpdateRegionEvent extends GenericGuildUpdateEvent
+public class GuildUpdateRegionEvent extends GenericGuildUpdateEvent<Region>
 {
+    public static final String IDENTIFIER = "region";
+
     private final String oldRegion;
     private final String newRegion;
 
@@ -85,5 +89,23 @@ public class GuildUpdateRegionEvent extends GenericGuildUpdateEvent
     public String getNewRegionRaw()
     {
         return newRegion;
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return IDENTIFIER;
+    }
+
+    @Override
+    public Region getOldValue()
+    {
+        return getOldRegion();
+    }
+
+    @Override
+    public Region getNewValue()
+    {
+        return getNewRegion();
     }
 }

@@ -25,15 +25,21 @@ import net.dv8tion.jda.core.entities.TextChannel;
  * <br>This is used for welcome messages
  *
  * <p>Can be used to detect when a guild system channel changes and retrieve the old one
+ *
+ * <p>Identifier: {@code system_channel}
  */
-public class GuildUpdateSystemChannelEvent extends GenericGuildUpdateEvent
+public class GuildUpdateSystemChannelEvent extends GenericGuildUpdateEvent<TextChannel>
 {
+    public static final String IDENTIFIER = "system_channel";
+
     private final TextChannel oldSystemChannel;
+    private final TextChannel newSystemChannel;
 
     public GuildUpdateSystemChannelEvent(JDA api, long responseNumber, Guild guild, TextChannel oldSystemChannel)
     {
         super(api, responseNumber, guild);
         this.oldSystemChannel = oldSystemChannel;
+        this.newSystemChannel = guild.getSystemChannel();
     }
 
     /**
@@ -44,5 +50,33 @@ public class GuildUpdateSystemChannelEvent extends GenericGuildUpdateEvent
     public TextChannel getOldSystemChannel()
     {
         return oldSystemChannel;
+    }
+
+    /**
+     * The new system channel.
+     *
+     * @return The new system channel
+     */
+    public TextChannel getNewSystemChannel()
+    {
+        return newSystemChannel;
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return IDENTIFIER;
+    }
+
+    @Override
+    public TextChannel getOldValue()
+    {
+        return oldSystemChannel;
+    }
+
+    @Override
+    public TextChannel getNewValue()
+    {
+        return newSystemChannel;
     }
 }

@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.events.channel.category.update;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Category;
+import net.dv8tion.jda.core.events.UpdateEvent;
 import net.dv8tion.jda.core.events.channel.category.GenericCategoryEvent;
 
 /**
@@ -26,10 +27,22 @@ import net.dv8tion.jda.core.events.channel.category.GenericCategoryEvent;
  *
  * <p>Can be used to detect any category update event
  */
-public abstract class GenericCategoryUpdateEvent extends GenericCategoryEvent
+public abstract class GenericCategoryUpdateEvent<T> extends GenericCategoryEvent implements UpdateEvent<Category, T>
 {
     public GenericCategoryUpdateEvent(JDA api, long responseNumber, Category category)
     {
         super(api, responseNumber, category);
+    }
+
+    @Override
+    public Category getEntity()
+    {
+        return getCategory();
+    }
+
+    @Override
+    public String toString()
+    {
+        return "CategoryUpdate[" + getPropertyIdentifier() + "](" + getOldValue() + "->" + getNewValue() + ')';
     }
 }

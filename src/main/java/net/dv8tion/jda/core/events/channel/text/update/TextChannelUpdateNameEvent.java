@@ -22,15 +22,21 @@ import net.dv8tion.jda.core.entities.TextChannel;
  * Indicates that a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}'s name changed.
  *
  * <p>Can be used to detect when a TextChannel name changes and get its previous name.
+ *
+ * <p>Identifier: {@code name}
  */
-public class TextChannelUpdateNameEvent extends GenericTextChannelUpdateEvent
+public class TextChannelUpdateNameEvent extends GenericTextChannelUpdateEvent<String>
 {
+    public static final String IDENTIFIER = "name";
+
     private final String oldName;
+    private final String newName;
 
     public TextChannelUpdateNameEvent(JDA api, long responseNumber, TextChannel channel, String oldName)
     {
         super(api, responseNumber, channel);
         this.oldName = oldName;
+        this.newName = channel.getName();
     }
 
     /**
@@ -41,5 +47,33 @@ public class TextChannelUpdateNameEvent extends GenericTextChannelUpdateEvent
     public String getOldName()
     {
         return oldName;
+    }
+
+    /**
+     * The new name
+     *
+     * @return The new name
+     */
+    public String getNewName()
+    {
+        return newName;
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return IDENTIFIER;
+    }
+
+    @Override
+    public String getOldValue()
+    {
+        return getOldName();
+    }
+
+    @Override
+    public String getNewValue()
+    {
+        return getNewName();
     }
 }

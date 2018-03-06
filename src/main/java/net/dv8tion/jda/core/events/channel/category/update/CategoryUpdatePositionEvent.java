@@ -23,15 +23,21 @@ import net.dv8tion.jda.core.entities.Category;
  * Indicates that the position of a {@link net.dv8tion.jda.core.entities.Category Category} was updated.
  *
  * <p>Can be used to retrieve the old position
+ *
+ * <p>Identifier: {@code position}
  */
-public class CategoryUpdatePositionEvent extends GenericCategoryUpdateEvent
+public class CategoryUpdatePositionEvent extends GenericCategoryUpdateEvent<Integer>
 {
-    protected final int oldPosition;
+    public static final String IDENTIFIER = "position";
+
+    private final int oldPosition;
+    private final int newPosition;
 
     public CategoryUpdatePositionEvent(JDA api, long responseNumber, Category category, int oldPosition)
     {
         super(api, responseNumber, category);
         this.oldPosition = oldPosition;
+        this.newPosition = category.getPositionRaw();
     }
 
     /**
@@ -42,5 +48,33 @@ public class CategoryUpdatePositionEvent extends GenericCategoryUpdateEvent
     public int getOldPosition()
     {
         return oldPosition;
+    }
+
+    /**
+     * The new position of this {@link net.dv8tion.jda.core.entities.Category Category}
+     *
+     * @return The new position
+     */
+    public int getNewPosition()
+    {
+        return newPosition;
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return IDENTIFIER;
+    }
+
+    @Override
+    public Integer getOldValue()
+    {
+        return oldPosition;
+    }
+
+    @Override
+    public Integer getNewValue()
+    {
+        return newPosition;
     }
 }

@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.entities.IPermissionHolder;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.events.channel.text.GenericTextChannelEvent;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,7 +30,7 @@ import java.util.stream.Collectors;
  *
  * <p>Can be use to detect when a TextChannel's permission overrides change and get affected {@link net.dv8tion.jda.core.entities.Role Roles}/{@link net.dv8tion.jda.core.entities.User Users}.
  */
-public class TextChannelUpdatePermissionsEvent extends GenericTextChannelUpdateEvent
+public class TextChannelUpdatePermissionsEvent extends GenericTextChannelEvent
 {
     private final List<IPermissionHolder> changed;
 

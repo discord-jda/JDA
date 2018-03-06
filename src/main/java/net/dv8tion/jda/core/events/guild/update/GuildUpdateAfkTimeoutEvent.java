@@ -23,15 +23,21 @@ import net.dv8tion.jda.core.entities.Guild;
  * Indicates that the {@link net.dv8tion.jda.core.entities.Guild.Timeout AFK-Timeout} of a {@link net.dv8tion.jda.core.entities.Guild Guild} changed.
  *
  * <p>Can be used to detect when an afk timeout changes and retrieve the old one
+ *
+ * <p>Identifier: {@code afk_timeout}
  */
-public class GuildUpdateAfkTimeoutEvent extends GenericGuildUpdateEvent
+public class GuildUpdateAfkTimeoutEvent extends GenericGuildUpdateEvent<Guild.Timeout>
 {
+    public static final String IDENTIFIER = "afk_timeout";
+
     private final Guild.Timeout oldAfkTimeout;
+    private final Guild.Timeout newAfkTimeout;
 
     public GuildUpdateAfkTimeoutEvent(JDA api, long responseNumber, Guild guild, Guild.Timeout oldAfkTimeout)
     {
         super(api, responseNumber, guild);
         this.oldAfkTimeout = oldAfkTimeout;
+        this.newAfkTimeout = guild.getAfkTimeout();
     }
 
     /**
@@ -42,5 +48,33 @@ public class GuildUpdateAfkTimeoutEvent extends GenericGuildUpdateEvent
     public Guild.Timeout getOldAfkTimeout()
     {
         return oldAfkTimeout;
+    }
+
+    /**
+     * The new {@link net.dv8tion.jda.core.entities.Guild.Timeout AFK-Timeout}
+     *
+     * @return The new AFK-Timeout
+     */
+    public Guild.Timeout getNewAfkTimeout()
+    {
+        return newAfkTimeout;
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return IDENTIFIER;
+    }
+
+    @Override
+    public Guild.Timeout getOldValue()
+    {
+        return oldAfkTimeout;
+    }
+
+    @Override
+    public Guild.Timeout getNewValue()
+    {
+        return newAfkTimeout;
     }
 }

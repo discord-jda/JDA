@@ -65,12 +65,22 @@ public class RoleUpdatePermissionsEvent extends GenericRoleUpdateEvent<List<Perm
         return oldPermissionsRaw;
     }
 
+    /**
+     * The new permissions
+     *
+     * @return The new permissions
+     */
     public List<Permission> getNewPermissions()
     {
         return Collections.unmodifiableList(
                 Permission.getPermissions(newPermissionsRaw));
     }
 
+    /**
+     * The new permissions
+     *
+     * @return The new permissions
+     */
     public long getNewPermissionsRaw()
     {
         return newPermissionsRaw;
