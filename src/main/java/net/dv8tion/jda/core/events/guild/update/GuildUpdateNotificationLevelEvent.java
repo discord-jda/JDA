@@ -31,13 +31,13 @@ public class GuildUpdateNotificationLevelEvent extends GenericGuildUpdateEvent<G
     public static final String IDENTIFIER = "notification_level";
 
     private final Guild.NotificationLevel oldNotificationLevel;
-    private final Guild.NotificationLevel newNotifiactionLevel;
+    private final Guild.NotificationLevel newNotificationLevel;
 
     public GuildUpdateNotificationLevelEvent(JDA api, long responseNumber, Guild guild, Guild.NotificationLevel oldNotificationLevel)
     {
         super(api, responseNumber, guild);
         this.oldNotificationLevel = oldNotificationLevel;
-        this.newNotifiactionLevel = guild.getDefaultNotificationLevel();
+        this.newNotificationLevel = guild.getDefaultNotificationLevel();
     }
 
     /**
@@ -55,9 +55,9 @@ public class GuildUpdateNotificationLevelEvent extends GenericGuildUpdateEvent<G
      *
      * @return The new NotificationLevel
      */
-    public Guild.NotificationLevel getNewNotifiactionLevel()
+    public Guild.NotificationLevel getNewNotificationLevel()
     {
-        return newNotifiactionLevel;
+        return newNotificationLevel;
     }
 
     @Override
@@ -75,6 +75,6 @@ public class GuildUpdateNotificationLevelEvent extends GenericGuildUpdateEvent<G
     @Override
     public Guild.NotificationLevel getNewValue()
     {
-        return newNotifiactionLevel;
+        return newNotificationLevel;
     }
 }
