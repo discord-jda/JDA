@@ -52,7 +52,7 @@ public interface UpdateEvent<E, T>
      *         break;
      *     case RoleUpdatePositionEvent.IDENTIFIER:
      *         RoleUpdatePositionEvent update = (RoleUpdatePositionEvent) event;
-     *         System.out.printf("Updated position for role: %s raw(%s->%s)%n", event, update.getOldPositionRaw(), update.getNewPositionRaw());
+     *         System.out.printf("Updated position for role: %s raw(%s{@literal ->}%s)%n", event, update.getOldPositionRaw(), update.getNewPositionRaw());
      *         break;
      *     default: return;
      *     }
