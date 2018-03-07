@@ -60,7 +60,7 @@ public class EmoteUpdateRolesEvent extends GenericEmoteUpdateEvent<List<Role>>
      */
     public List<Role> getNewRoles()
     {
-        return emote.getRoles();
+        return newRoles;
     }
 
     @Override
