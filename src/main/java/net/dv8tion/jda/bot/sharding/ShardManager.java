@@ -18,7 +18,6 @@ package net.dv8tion.jda.bot.sharding;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.IntFunction;
-import java.util.function.IntPredicate;
 import java.util.stream.Collectors;
 
 import net.dv8tion.jda.bot.entities.ApplicationInfo;
@@ -96,8 +95,7 @@ public interface ShardManager
         this.getShardCache().forEach(jda ->
         {
             Object listener = eventListenerProvider.apply(jda.getShardInfo().getShardId());
-            Checks.notNull(listener, "listener");
-            jda.addEventListener(listener);
+            if (listener != null) jda.addEventListener(listener);
         });
     }
 
