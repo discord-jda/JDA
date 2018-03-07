@@ -38,13 +38,13 @@ import net.dv8tion.jda.core.handle.ReadyHandler;
 import net.dv8tion.jda.core.utils.Helpers;
 import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
-import java.awt.Color;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -60,6 +60,21 @@ public class EntityBuilder
     public static final String MISSING_CHANNEL = "MISSING_CHANNEL";
     public static final String MISSING_USER = "MISSING_USER";
     public static final String UNKNOWN_MESSAGE_TYPE = "UNKNOWN_MESSAGE_TYPE";
+    private static final Set<String> richGameFields;
+    static
+    {
+        Set<String> tmp = new HashSet<>();
+        tmp.add("application_id");
+        tmp.add("assets");
+        tmp.add("details");
+        tmp.add("flags");
+        tmp.add("party");
+        tmp.add("session_id");
+        tmp.add("state");
+        tmp.add("sync_id");
+        tmp.add("timestamps");
+        richGameFields = Collections.unmodifiableSet(tmp);
+    }
 
     protected final JDAImpl api;
     protected final TLongObjectMap<JSONObject> cachedGuildJsons = MiscUtil.newLongMap();
@@ -626,17 +641,6 @@ public class EntityBuilder
             type = Game.GameType.DEFAULT;
         }
 
-        long id;
-        try
-        {
-            id = gameJson.getLong("application_id");
-        }
-        catch (JSONException ex)
-        {
-            return new Game(name, url, type);
-        }
-        String details = gameJson.isNull("details") ? null : String.valueOf(gameJson.get("details"));
-        String state = gameJson.isNull("state") ? null : String.valueOf(gameJson.get("state"));
         RichPresence.Timestamps timestamps = null;
         if (!gameJson.isNull("timestamps"))
         {
@@ -646,6 +650,17 @@ public class EntityBuilder
             end = obj.isNull("end") ? 0 : obj.getLong("end");
             timestamps = new RichPresence.Timestamps(start, end);
         }
+
+        if (!CollectionUtils.containsAny(gameJson.keySet(), richGameFields))
+            return new Game(name, url, type, timestamps);
+
+        // data for spotify
+        long id = Helpers.optLong(gameJson, "application_id", 0);
+        String sessionId = gameJson.optString("session_id", null);
+        String syncId = gameJson.optString("sync_id", null);
+        int flags = Helpers.optInt(gameJson, "flags", 0);
+        String details = gameJson.isNull("details") ? null : String.valueOf(gameJson.get("details"));
+        String state = gameJson.isNull("state") ? null : String.valueOf(gameJson.get("state"));
 
         RichPresence.Party party = null;
         if (!gameJson.isNull("party"))
@@ -678,7 +693,10 @@ public class EntityBuilder
                 largeImageText = assets.isNull("large_text") ? null : String.valueOf(assets.get("large_text"));
             }
         }
-        return new RichPresence(type, name, url, id, party, details, state, timestamps, largeImageKey, largeImageText, smallImageKey, smallImageText);
+
+        return new RichPresence(type, name, url,
+            id, party, details, state, timestamps, syncId, sessionId, flags,
+            largeImageKey, largeImageText, smallImageKey, smallImageText);
     }
 
     public Category createCategory(JSONObject json, long guildId)
@@ -832,12 +850,13 @@ public class EntityBuilder
             role = new RoleImpl(id, guild);
             guild.getRolesMap().put(id, role);
         }
+        final int color = roleJson.getInt("color");
         return role.setName(roleJson.getString("name"))
                 .setRawPosition(roleJson.getInt("position"))
                 .setRawPermissions(roleJson.getLong("permissions"))
                 .setManaged(roleJson.getBoolean("managed"))
                 .setHoisted(roleJson.getBoolean("hoist"))
-                .setColor(roleJson.getInt("color") != 0 ? new Color(roleJson.getInt("color")) : null)
+                .setColor(color == 0 ? Role.DEFAULT_COLOR_RAW : color)
                 .setMentionable(roleJson.has("mentionable") && roleJson.getBoolean("mentionable"));
     }
 
@@ -996,7 +1015,7 @@ public class EntityBuilder
         final String title = content.optString("title", null);
         final String description = content.optString("description", null);
         final OffsetDateTime timestamp = content.isNull("timestamp") ? null : OffsetDateTime.parse(content.getString("timestamp"));
-        final Color color = content.isNull("color") ? null : new Color(content.getInt("color"));
+        final int color = content.isNull("color") ? Role.DEFAULT_COLOR_RAW : content.getInt("color");
 
         final Thumbnail thumbnail;
         if (content.isNull("thumbnail"))
@@ -1090,7 +1109,7 @@ public class EntityBuilder
     }
 
     public static MessageEmbed createMessageEmbed(String url, String title, String description, EmbedType type, OffsetDateTime timestamp,
-                                           Color color, Thumbnail thumbnail, Provider siteProvider, AuthorInfo author,
+                                           int color, Thumbnail thumbnail, Provider siteProvider, AuthorInfo author,
                                            VideoInfo videoInfo, Footer footer, ImageInfo image, List<Field> fields)
     {
         return new MessageEmbed(url, title, description, type, timestamp,

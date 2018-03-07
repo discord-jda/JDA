@@ -76,12 +76,6 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
         this.role = null;
     }
 
-    @Override
-    public PermissionOverrideAction setCheck(BooleanSupplier checks)
-    {
-        return (PermissionOverrideAction) super.setCheck(checks);
-    }
-
     /**
      * Creates a new PermissionOverrideAction instance
      *
@@ -102,6 +96,11 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
         this.role = role;
     }
 
+    @Override
+    public PermissionOverrideAction setCheck(BooleanSupplier checks)
+    {
+        return (PermissionOverrideAction) super.setCheck(checks);
+    }
 
     /**
      * The currently set of allowed permission bits.
@@ -432,10 +431,12 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
             return;
         }
 
-        JSONObject object = response.getObject();
         boolean isMember = isMember();
         long id = isMember ? member.getUser().getIdLong() : role.getIdLong();
-        PermissionOverrideImpl override = new PermissionOverrideImpl(channel, id, isMember ? member : role).setAllow(allow).setDeny(deny);
+        JSONObject object = (JSONObject) request.getRawBody();
+        PermissionOverrideImpl override = new PermissionOverrideImpl(channel, id, isMember ? member : role);
+        override.setAllow(object.getLong("allow"));
+        override.setDeny(object.getLong("deny"));
 
         ((AbstractChannelImpl<?>) channel).getOverrideMap().put(id, override);
 

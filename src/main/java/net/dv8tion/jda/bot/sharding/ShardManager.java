@@ -77,6 +77,66 @@ public interface ShardManager
     }
 
     /**
+     * Adds listeners provided by the listener provider to each shard to the event-listeners that will be used to handle events.
+     * The listener provider gets a shard id applied and is expected to return a listener.
+     *
+     * <p>Note: when using the {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventListener} (default),
+     * given listener <b>must</b> be instance of {@link net.dv8tion.jda.core.hooks.EventListener EventListener}!
+     *
+     * @param  eventListenerProvider
+     *         The provider of listener(s) which will react to events.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided listener provider or any of the listeners or provides are {@code null}.
+     */
+    default void addEventListeners(final IntFunction<Object> eventListenerProvider)
+    {
+        Checks.notNull(eventListenerProvider, "event listener provider");
+        this.getShardCache().forEach(jda ->
+        {
+            Object listener = eventListenerProvider.apply(jda.getShardInfo().getShardId());
+            if (listener != null) jda.addEventListener(listener);
+        });
+    }
+
+    /**
+     * Remove listeners from shards by their id.
+     * The provider takes shard ids, and returns a collection of listeners that shall be removed from the respective
+     * shards.
+     *
+     * @param eventListenerProvider
+     *        gets shard ids applied and is expected to return a collection of listeners that shall be removed from
+     *        the respective shards
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided event listeners provider is {@code null}.
+     */
+    default void removeEventListeners(final IntFunction<Collection<Object>> eventListenerProvider)
+    {
+        Checks.notNull(eventListenerProvider, "event listener provider");
+        this.getShardCache().forEach(jda ->
+            jda.removeEventListener(eventListenerProvider.apply(jda.getShardInfo().getShardId()))
+        );
+    }
+
+    /**
+     * Remove a listener provider. This will stop further created / restarted shards from getting a listener added by
+     * that provider.
+     *
+     * Default is a no-op for backwards compatibility, see implementations like
+     * {@link DefaultShardManager#removeEventListenerProvider(IntFunction)} for actual code
+     *
+     * @param  eventListenerProvider
+     *         The provider of listeners that shall be removed.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided listener provider is {@code null}.
+     */
+    default void removeEventListenerProvider(IntFunction<Object> eventListenerProvider)
+    {
+    }
+
+    /**
      * Returns the amount of shards queued for (re)connecting.
      *
      * @return The amount of shards queued for (re)connecting.

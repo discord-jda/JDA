@@ -49,11 +49,11 @@ public class RoleImpl implements Role
     private volatile RoleManagerUpdatable managerUpdatable;
 
     private String name;
-    private Color color;
     private boolean managed;
     private boolean hoisted;
     private boolean mentionable;
     private long rawPermissions;
+    private int color;
     private int rawPosition;
 
     public RoleImpl(long id, Guild guild)
@@ -124,6 +124,12 @@ public class RoleImpl implements Role
 
     @Override
     public Color getColor()
+    {
+        return color != Role.DEFAULT_COLOR_RAW ? new Color(color) : null;
+    }
+
+    @Override
+    public int getColorRaw()
     {
         return color;
     }
@@ -324,7 +330,7 @@ public class RoleImpl implements Role
         return this;
     }
 
-    public RoleImpl setColor(Color color)
+    public RoleImpl setColor(int color)
     {
         this.color = color;
         return this;

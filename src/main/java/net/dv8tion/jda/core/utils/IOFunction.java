@@ -14,30 +14,11 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.events.role.update;
+package net.dv8tion.jda.core.utils;
 
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Role;
+import java.io.IOException;
 
-import java.awt.Color;
-
-public class RoleUpdateColorEvent extends GenericRoleUpdateEvent
+public interface IOFunction<T, R>
 {
-    private final int oldColor;
-
-    public RoleUpdateColorEvent(JDA api, long responseNumber, Role role, int oldColor)
-    {
-        super(api, responseNumber, role);
-        this.oldColor = oldColor;
-    }
-
-    public Color getOldColor()
-    {
-        return oldColor != Role.DEFAULT_COLOR_RAW ? new Color(oldColor) : null;
-    }
-
-    public int getOldColorRaw()
-    {
-        return oldColor;
-    }
+    R apply(T t) throws IOException;
 }
