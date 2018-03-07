@@ -30,8 +30,8 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.RoleAction;
-import net.dv8tion.jda.core.utils.PermissionUtil;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.PermissionUtil;
 
 import java.awt.Color;
 import java.time.OffsetDateTime;
@@ -152,7 +152,7 @@ public class RoleImpl implements Role
     {
         Checks.notNull(permissions, "Permission Collection");
 
-        return hasPermission(permissions.toArray(new Permission[permissions.size()]));
+        return hasPermission(permissions.toArray(Permission.EMPTY_PERMISSIONS));
     }
 
     @Override
@@ -173,7 +173,7 @@ public class RoleImpl implements Role
     {
         Checks.notNull(permissions, "Permission Collection");
 
-        return hasPermission(channel, permissions.toArray(new Permission[permissions.size()]));
+        return hasPermission(channel, permissions.toArray(Permission.EMPTY_PERMISSIONS));
     }
 
     @Override
