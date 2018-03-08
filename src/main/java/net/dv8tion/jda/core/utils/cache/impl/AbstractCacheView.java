@@ -20,9 +20,10 @@ import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.cache.CacheView;
-import org.apache.commons.collections4.iterators.ArrayIterator;
+import org.apache.commons.collections4.iterators.ObjectArrayIterator;
 
 import javax.annotation.Nonnull;
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -31,11 +32,16 @@ import java.util.stream.StreamSupport;
 public abstract class AbstractCacheView<T> implements CacheView<T>
 {
     protected final TLongObjectMap<T> elements = MiscUtil.newLongMap();
+    protected final T[] emptyArray;
     protected final Function<T, String> nameMapper;
+    protected final Class<T> type;
 
-    protected AbstractCacheView(Function<T, String> nameMapper)
+    @SuppressWarnings("unchecked")
+    protected AbstractCacheView(Class<T> type, Function<T, String> nameMapper)
     {
         this.nameMapper = nameMapper;
+        this.type = type;
+        this.emptyArray = (T[]) Array.newInstance(type, 0);
     }
 
     public void clear()
@@ -85,23 +91,12 @@ public abstract class AbstractCacheView<T> implements CacheView<T>
         if (nameMapper == null) // no getName method available
             throw new UnsupportedOperationException("The contained elements are not assigned with names.");
 
-        List<T> list = new LinkedList<>();
-        for (T elem : elements.valueCollection())
+        List<T> list = new ArrayList<>();
+        for (T elem : this)
         {
             String elementName = nameMapper.apply(elem);
-            if (elementName != null)
-            {
-                if (ignoreCase)
-                {
-                    if (elementName.equalsIgnoreCase(name))
-                        list.add(elem);
-                }
-                else
-                {
-                    if (elementName.equals(name))
-                        list.add(elem);
-                }
-            }
+            if (elementName != null && equals(ignoreCase, elementName, name))
+                list.add(elem);
         }
 
         return list;
@@ -127,8 +122,15 @@ public abstract class AbstractCacheView<T> implements CacheView<T>
 
     @Nonnull
     @Override
+    @SuppressWarnings("unchecked")
     public Iterator<T> iterator()
     {
-        return new ArrayIterator<>(elements.values());
+        return new ObjectArrayIterator<>(elements.values(emptyArray));
+    }
+
+    @SuppressWarnings("StringEquality")
+    protected boolean equals(boolean ignoreCase, String first, String second)
+    {
+        return first == second || ignoreCase ? first.equalsIgnoreCase(second) : first.equals(second);
     }
 }

@@ -954,9 +954,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         long responseTotal = api.getResponseTotal();
 
         if (type.equals("GUILD_MEMBER_ADD"))
-            ((GuildMembersChunkHandler) getHandler("GUILD_MEMBERS_CHUNK")).modifyExpectedGuildMember(raw.getJSONObject("d").getLong("guild_id"), 1);
+            this.<GuildMembersChunkHandler>getHandler("GUILD_MEMBERS_CHUNK").modifyExpectedGuildMember(raw.getJSONObject("d").getLong("guild_id"), 1);
         if (type.equals("GUILD_MEMBER_REMOVE"))
-            ((GuildMembersChunkHandler) getHandler("GUILD_MEMBERS_CHUNK")).modifyExpectedGuildMember(raw.getJSONObject("d").getLong("guild_id"), -1);
+            this.<GuildMembersChunkHandler>getHandler("GUILD_MEMBERS_CHUNK").modifyExpectedGuildMember(raw.getJSONObject("d").getLong("guild_id"), -1);
 
         boolean isJSON = raw.opt("d") instanceof JSONObject;
         //If initiating, only allows READY, RESUMED, GUILD_MEMBERS_CHUNK, GUILD_SYNC, and GUILD_CREATE through.
@@ -1379,9 +1379,17 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         return handlers;
     }
 
-    public <T> T getHandler(String type)
+    @SuppressWarnings("unchecked")
+    public <T extends SocketHandler> T getHandler(String type)
     {
-        return (T) handlers.get(type);
+        try
+        {
+            return (T) handlers.get(type);
+        }
+        catch (ClassCastException e)
+        {
+            throw new IllegalStateException(e);
+        }
     }
 
     private void setupHandlers()

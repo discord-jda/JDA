@@ -131,6 +131,7 @@ public class Decoder
     }
 
     @Override
+    @Deprecated
     protected void finalize() throws Throwable
     {
         super.finalize();

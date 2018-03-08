@@ -653,6 +653,7 @@ public class AudioWebSocket extends WebSocketAdapter
     }
 
     @Override
+    @Deprecated
     protected void finalize() throws Throwable
     {
         if (!shutdown)
