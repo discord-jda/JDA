@@ -29,7 +29,6 @@ import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.GuildController;
 import net.dv8tion.jda.core.managers.GuildManager;
-import net.dv8tion.jda.core.managers.GuildManagerUpdatable;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
@@ -71,7 +70,8 @@ public class GuildImpl implements Guild
 
     private final ReentrantLock mngLock = new ReentrantLock();
     private volatile GuildManager manager;
-    private volatile GuildManagerUpdatable managerUpdatable;
+    @Deprecated
+    private volatile net.dv8tion.jda.core.managers.GuildManagerUpdatable managerUpdatable;
     private volatile GuildController controller;
 
     private Member owner;
@@ -410,15 +410,15 @@ public class GuildImpl implements Guild
 
     @Override
     @Deprecated
-    public GuildManagerUpdatable getManagerUpdatable()
+    public net.dv8tion.jda.core.managers.GuildManagerUpdatable getManagerUpdatable()
     {
-        GuildManagerUpdatable mng = managerUpdatable;
+        net.dv8tion.jda.core.managers.GuildManagerUpdatable mng = managerUpdatable;
         if (mng == null)
         {
             mng = MiscUtil.locked(mngLock, () ->
             {
                 if (managerUpdatable == null)
-                    managerUpdatable = new GuildManagerUpdatable(this);
+                    managerUpdatable = new net.dv8tion.jda.core.managers.GuildManagerUpdatable(this);
                 return managerUpdatable;
             });
         }

@@ -17,7 +17,6 @@
 package net.dv8tion.jda.core.entities.impl;
 
 import net.dv8tion.jda.client.managers.EmoteManager;
-import net.dv8tion.jda.client.managers.EmoteManagerUpdatable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Emote;
@@ -40,7 +39,6 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class EmoteImpl implements Emote
 {
-
     private final long id;
     private final GuildImpl guild;
     private final JDAImpl api;
@@ -48,7 +46,8 @@ public class EmoteImpl implements Emote
 
     private final ReentrantLock mngLock = new ReentrantLock();
     private volatile EmoteManager manager = null;
-    private volatile EmoteManagerUpdatable managerUpdatable = null;
+    @Deprecated
+    private volatile net.dv8tion.jda.client.managers.EmoteManagerUpdatable managerUpdatable = null;
 
     private boolean managed = false;
     private boolean animated = false;
@@ -132,15 +131,15 @@ public class EmoteImpl implements Emote
 
     @Override
     @Deprecated
-    public EmoteManagerUpdatable getManagerUpdatable()
+    public net.dv8tion.jda.client.managers.EmoteManagerUpdatable getManagerUpdatable()
     {
-        EmoteManagerUpdatable m = managerUpdatable;
+        net.dv8tion.jda.client.managers.EmoteManagerUpdatable m = managerUpdatable;
         if (m == null)
         {
             m = MiscUtil.locked(mngLock, () ->
             {
                 if (managerUpdatable == null)
-                    managerUpdatable = new EmoteManagerUpdatable(this);
+                    managerUpdatable = new net.dv8tion.jda.client.managers.EmoteManagerUpdatable(this);
                 return managerUpdatable;
             });
         }

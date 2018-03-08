@@ -16,9 +16,6 @@
 
 package net.dv8tion.jda.client.managers.fields;
 
-import net.dv8tion.jda.client.managers.EmoteManagerUpdatable;
-import net.dv8tion.jda.core.managers.fields.Field;
-
 import java.util.function.Supplier;
 
 /**
@@ -34,9 +31,10 @@ import java.util.function.Supplier;
  *
  * @since  3.0
  */
-public abstract class EmoteField<T> extends Field<T, EmoteManagerUpdatable>
+@Deprecated
+public abstract class EmoteField<T> extends net.dv8tion.jda.core.managers.fields.Field<T, net.dv8tion.jda.client.managers.EmoteManagerUpdatable>
 {
-    public EmoteField(EmoteManagerUpdatable manager, Supplier<T> originalValue)
+    public EmoteField(net.dv8tion.jda.client.managers.EmoteManagerUpdatable manager, Supplier<T> originalValue)
     {
         super(manager, originalValue);
     }

@@ -16,9 +16,6 @@
 
 package net.dv8tion.jda.client.managers.fields;
 
-import net.dv8tion.jda.client.managers.ApplicationManagerUpdatable;
-import net.dv8tion.jda.core.managers.fields.Field;
-
 import java.util.function.Supplier;
 
 /**
@@ -34,9 +31,10 @@ import java.util.function.Supplier;
  *
  * @since  3.0
  */
-public abstract class ApplicationField<T> extends Field<T, ApplicationManagerUpdatable>
+@Deprecated
+public abstract class ApplicationField<T> extends net.dv8tion.jda.core.managers.fields.Field<T, net.dv8tion.jda.client.managers.ApplicationManagerUpdatable>
 {
-    public ApplicationField(final ApplicationManagerUpdatable manager, final Supplier<T> originalValue)
+    public ApplicationField(final net.dv8tion.jda.client.managers.ApplicationManagerUpdatable manager, final Supplier<T> originalValue)
     {
         super(manager, originalValue);
     }

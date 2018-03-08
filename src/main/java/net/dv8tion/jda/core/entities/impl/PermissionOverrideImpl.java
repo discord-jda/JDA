@@ -21,7 +21,6 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.PermOverrideManager;
-import net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
@@ -40,7 +39,8 @@ public class PermissionOverrideImpl implements PermissionOverride
 
     protected final ReentrantLock mngLock = new ReentrantLock();
     protected volatile PermOverrideManager manager;
-    protected volatile PermOverrideManagerUpdatable managerUpdatable;
+    @Deprecated
+    protected volatile net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable managerUpdatable;
 
     private long allow;
     private long deny;
@@ -148,15 +148,15 @@ public class PermissionOverrideImpl implements PermissionOverride
 
     @Override
     @Deprecated
-    public PermOverrideManagerUpdatable getManagerUpdatable()
+    public net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable getManagerUpdatable()
     {
-        PermOverrideManagerUpdatable mng = managerUpdatable;
+        net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable mng = managerUpdatable;
         if (mng == null)
         {
             mng = MiscUtil.locked(mngLock, () ->
             {
                 if (managerUpdatable == null)
-                    managerUpdatable = new PermOverrideManagerUpdatable(this);
+                    managerUpdatable = new net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable(this);
                 return managerUpdatable;
             });
         }

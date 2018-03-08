@@ -16,8 +16,6 @@
 
 package net.dv8tion.jda.core.managers.fields;
 
-import net.dv8tion.jda.core.managers.AccountManagerUpdatable;
-
 import java.util.function.Supplier;
 
 /**
@@ -33,9 +31,10 @@ import java.util.function.Supplier;
  *
  * @since  3.0
  */
-public abstract class AccountField<T> extends Field<T, AccountManagerUpdatable>
+@Deprecated
+public abstract class AccountField<T> extends Field<T, net.dv8tion.jda.core.managers.AccountManagerUpdatable>
 {
-    public AccountField(AccountManagerUpdatable manager, Supplier<T> originalValue)
+    public AccountField(net.dv8tion.jda.core.managers.AccountManagerUpdatable manager, Supplier<T> originalValue)
     {
         super(manager, originalValue);
     }

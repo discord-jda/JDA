@@ -40,6 +40,7 @@ import java.util.function.Supplier;
  *
  * @since  3.0
  */
+@Deprecated
 public abstract class Field<T, M>
 {
     protected final M manager;

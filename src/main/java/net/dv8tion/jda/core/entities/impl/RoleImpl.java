@@ -24,7 +24,6 @@ import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.exceptions.HierarchyException;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.RoleManager;
-import net.dv8tion.jda.core.managers.RoleManagerUpdatable;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
@@ -48,7 +47,8 @@ public class RoleImpl implements Role
 
     private final ReentrantLock mngLock = new ReentrantLock();
     private volatile RoleManager manager;
-    private volatile RoleManagerUpdatable managerUpdatable;
+    @Deprecated
+    private volatile net.dv8tion.jda.core.managers.RoleManagerUpdatable managerUpdatable;
 
     private String name;
     private boolean managed;
@@ -226,15 +226,15 @@ public class RoleImpl implements Role
 
     @Override
     @Deprecated
-    public RoleManagerUpdatable getManagerUpdatable()
+    public net.dv8tion.jda.core.managers.RoleManagerUpdatable getManagerUpdatable()
     {
-        RoleManagerUpdatable mng = managerUpdatable;
+        net.dv8tion.jda.core.managers.RoleManagerUpdatable mng = managerUpdatable;
         if (mng == null)
         {
             mng = MiscUtil.locked(mngLock, () ->
             {
                 if (managerUpdatable == null)
-                    managerUpdatable = new RoleManagerUpdatable(this);
+                    managerUpdatable = new net.dv8tion.jda.core.managers.RoleManagerUpdatable(this);
                 return managerUpdatable;
             });
         }

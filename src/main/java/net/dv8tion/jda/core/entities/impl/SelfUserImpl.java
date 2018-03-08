@@ -21,7 +21,6 @@ import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.SelfUser;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.managers.AccountManager;
-import net.dv8tion.jda.core.managers.AccountManagerUpdatable;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
 
@@ -31,7 +30,8 @@ public class SelfUserImpl extends UserImpl implements SelfUser
 {
     protected final ReentrantLock mngLock = new ReentrantLock();
     protected volatile AccountManager manager;
-    protected volatile AccountManagerUpdatable managerUpdatable;
+    @Deprecated
+    protected volatile net.dv8tion.jda.core.managers.AccountManagerUpdatable managerUpdatable;
 
     private boolean verified;
     private boolean mfaEnabled;
@@ -136,15 +136,15 @@ public class SelfUserImpl extends UserImpl implements SelfUser
 
     @Override
     @Deprecated
-    public AccountManagerUpdatable getManagerUpdatable()
+    public net.dv8tion.jda.core.managers.AccountManagerUpdatable getManagerUpdatable()
     {
-        AccountManagerUpdatable mng = managerUpdatable;
+        net.dv8tion.jda.core.managers.AccountManagerUpdatable mng = managerUpdatable;
         if (mng == null)
         {
             mng = MiscUtil.locked(mngLock, () ->
             {
                 if (managerUpdatable == null)
-                    managerUpdatable = new AccountManagerUpdatable(this);
+                    managerUpdatable = new net.dv8tion.jda.core.managers.AccountManagerUpdatable(this);
                 return managerUpdatable;
             });
         }

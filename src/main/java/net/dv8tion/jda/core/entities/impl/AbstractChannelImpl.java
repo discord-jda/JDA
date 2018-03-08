@@ -50,6 +50,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
 
     protected final ReentrantLock mngLock = new ReentrantLock();
     protected volatile ChannelManager manager;
+    @Deprecated
     protected volatile ChannelManagerUpdatable managerUpdatable;
 
     protected long parentId;

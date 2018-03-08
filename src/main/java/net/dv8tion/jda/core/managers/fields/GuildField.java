@@ -16,8 +16,6 @@
 
 package net.dv8tion.jda.core.managers.fields;
 
-import net.dv8tion.jda.core.managers.GuildManagerUpdatable;
-
 import java.util.function.Supplier;
 
 /**
@@ -33,9 +31,10 @@ import java.util.function.Supplier;
  *
  * @since  3.0
  */
-public abstract class GuildField<T> extends Field<T, GuildManagerUpdatable>
+@Deprecated
+public abstract class GuildField<T> extends Field<T, net.dv8tion.jda.core.managers.GuildManagerUpdatable>
 {
-    public GuildField(GuildManagerUpdatable manager, Supplier<T> originalValue)
+    public GuildField(net.dv8tion.jda.core.managers.GuildManagerUpdatable manager, Supplier<T> originalValue)
     {
         super(manager, originalValue);
     }
