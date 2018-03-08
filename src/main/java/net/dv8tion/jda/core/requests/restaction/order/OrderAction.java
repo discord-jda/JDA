@@ -88,6 +88,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public M setCheck(BooleanSupplier checks)
     {
         return (M) super.setCheck(checks);
@@ -120,6 +121,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      * @see    #getSelectedPosition()
      * @see    #getSelectedEntity()
      */
+    @SuppressWarnings("unchecked")
     public M selectPosition(int selectedPosition)
     {
         Checks.notNegative(selectedPosition, "Provided selectedPosition");
@@ -279,6 +281,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      * @see    #moveDown(int)
      * @see    #moveUp(int)
      */
+    @SuppressWarnings("unchecked")
     public M moveTo(int position)
     {
         Checks.notNegative(position, "Provided position");
@@ -304,6 +307,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      *
      * @return The current OrderAction sub-implementation instance
      */
+    @SuppressWarnings("unchecked")
     public M swapPosition(int swapPosition)
     {
         Checks.notNegative(swapPosition, "Provided swapPosition");
@@ -336,6 +340,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      *
      * @see    #swapPosition(int)
      */
+    @SuppressWarnings("unchecked")
     public M swapPosition(T swapEntity)
     {
         Checks.notNull(swapEntity, "Provided swapEntity");
@@ -352,6 +357,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      *
      * @see    java.util.Collections#reverse(java.util.List)
      */
+    @SuppressWarnings("unchecked")
     public M reverseOrder()
     {
         Collections.reverse(this.orderList);
@@ -366,6 +372,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      *
      * @see    java.util.Collections#shuffle(java.util.List)
      */
+    @SuppressWarnings("unchecked")
     public M shuffleOrder()
     {
         Collections.shuffle(this.orderList);
@@ -387,6 +394,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      *
      * @see    java.util.ArrayList#sort(java.util.Comparator)
      */
+    @SuppressWarnings("unchecked")
     public M sortOrder(final Comparator<T> comparator)
     {
         Checks.notNull(comparator, "Provided comparator");

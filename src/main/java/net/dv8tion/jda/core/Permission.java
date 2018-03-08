@@ -68,9 +68,8 @@ public enum Permission
 
     /**
      * Empty array of Permission enum, useful for optimized use in {@link java.util.Collection#toArray(Object[])}.
-     *
-     * @apiNote This is an optimization suggested by Effective Java 3rd Edition - Item 54
      */
+    // This is an optimization suggested by Effective Java 3rd Edition - Item 54
     public static final Permission[] EMPTY_PERMISSIONS = new Permission[0];
 
     /**
