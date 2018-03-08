@@ -21,8 +21,8 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.core.utils.cache.MemberCacheView;
-import net.dv8tion.jda.core.utils.cache.UnifiedMemberCacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.core.utils.cache.UnifiedMemberCacheView;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -42,13 +42,13 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
     @Override
     public long size()
     {
-        return generator.get().distinct().mapToLong(CacheView::size).sum();
+        return distinctStream().mapToLong(CacheView::size).sum();
     }
 
     @Override
     public boolean isEmpty()
     {
-        return generator.get().allMatch(CacheView::isEmpty);
+        return distinctStream().allMatch(CacheView::isEmpty);
     }
 
     @Override
@@ -63,15 +63,14 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
     public Set<T> asSet()
     {
         Set<T> set = new HashSet<>();
-        generator.get().forEach(view -> view.forEach(set::add));
+        generator.get().flatMap(CacheView::stream).forEach(set::add);
         return Collections.unmodifiableSet(set);
     }
 
     @Override
     public List<T> getElementsByName(String name, boolean ignoreCase)
     {
-        return Collections.unmodifiableList(generator.get()
-                .distinct()
+        return Collections.unmodifiableList(distinctStream()
                 .flatMap(view -> view.getElementsByName(name, ignoreCase).stream())
                 .collect(Collectors.toList()));
     }
@@ -92,7 +91,12 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
     @Override
     public Iterator<T> iterator()
     {
-        return asList().iterator();
+        return stream().iterator();
+    }
+
+    protected Stream<E> distinctStream()
+    {
+        return generator.get().distinct();
     }
 
     public static class UnifiedSnowflakeCacheView<T extends ISnowflake>
@@ -125,8 +129,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
         @Override
         public List<Member> getElementsById(long id)
         {
-            return Collections.unmodifiableList(generator.get()
-                .distinct()
+            return Collections.unmodifiableList(distinctStream()
                 .map(view -> view.getElementById(id))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList()));
@@ -135,8 +138,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
         @Override
         public List<Member> getElementsByUsername(String name, boolean ignoreCase)
         {
-            return Collections.unmodifiableList(generator.get()
-                .distinct()
+            return Collections.unmodifiableList(distinctStream()
                 .flatMap(view -> view.getElementsByUsername(name, ignoreCase).stream())
                 .collect(Collectors.toList()));
         }
@@ -144,8 +146,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
         @Override
         public List<Member> getElementsByNickname(String name, boolean ignoreCase)
         {
-            return Collections.unmodifiableList(generator.get()
-                .distinct()
+            return Collections.unmodifiableList(distinctStream()
                 .flatMap(view -> view.getElementsByNickname(name, ignoreCase).stream())
                 .collect(Collectors.toList()));
         }
@@ -153,8 +154,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
         @Override
         public List<Member> getElementsWithRoles(Role... roles)
         {
-            return Collections.unmodifiableList(generator.get()
-                .distinct()
+            return Collections.unmodifiableList(distinctStream()
                 .flatMap(view -> view.getElementsWithRoles(roles).stream())
                 .collect(Collectors.toList()));
         }
@@ -162,8 +162,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
         @Override
         public List<Member> getElementsWithRoles(Collection<Role> roles)
         {
-            return Collections.unmodifiableList(generator.get()
-                .distinct()
+            return Collections.unmodifiableList(distinctStream()
                 .flatMap(view -> view.getElementsWithRoles(roles).stream())
                 .collect(Collectors.toList()));
         }

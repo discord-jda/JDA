@@ -326,6 +326,7 @@ public class WebhookClient implements AutoCloseable
     }
 
     @Override
+    @Deprecated
     protected void finalize() throws Throwable
     {
         if (!isShutdown)

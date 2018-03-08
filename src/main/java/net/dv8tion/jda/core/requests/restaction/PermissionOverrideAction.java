@@ -183,7 +183,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      */
     public List<Permission> getInheritedPermissions()
     {
-        return Permission.getPermissions(getInherited());
+        return Collections.unmodifiableList(Permission.getPermissions(getInherited()));
     }
 
 

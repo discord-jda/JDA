@@ -582,6 +582,7 @@ public class AudioConnection
     }
 
     @Override
+    @Deprecated
     protected void finalize() throws Throwable
     {
         shutdown();
