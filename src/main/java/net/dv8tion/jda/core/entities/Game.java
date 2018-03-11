@@ -53,7 +53,7 @@ public class Game
      * Whether this is a <a href="https://discordapp.com/developers/docs/rich-presence/best-practices" target="_blank">Rich Presence</a>
      * <br>If {@code false} the result of {@link #asRichPresence()} is {@code null}
      *
-     * @return {@code true} if this is a {@link net.dv8tion.jda.core.entities.RichPresence RichPresence}
+     * @return {@code true} if this is a {@link net.dv8tion.jda.core.entities.RichPresence RichPresence}.
      */
     public boolean isRich()
     {
@@ -64,7 +64,7 @@ public class Game
      * {@link net.dv8tion.jda.core.entities.RichPresence RichPresence} representation of
      * this Game.
      *
-     * @return RichPresence or {@code null} if {@link #isRich()} returns {@code false}
+     * @return RichPresence or {@code null} if {@link #isRich()} returns {@code false}.
      */
     public RichPresence asRichPresence()
     {
@@ -95,7 +95,7 @@ public class Game
     /**
      * The type of {@link net.dv8tion.jda.core.entities.Game Game}.
      *
-     * @return Never-null {@link net.dv8tion.jda.core.entities.Game.GameType GameType} representing the type of Game
+     * @return Never-null {@link net.dv8tion.jda.core.entities.Game.GameType GameType} representing the type of Game.
      */
     public GameType getType()
     {
@@ -142,7 +142,7 @@ public class Game
      * @throws IllegalArgumentException
      *         if the specified name is null, empty or blank
      *
-     * @return A valid Game instance with the provided name with {@link GameType#DEFAULT}
+     * @return A valid Game instance with the provided name with {@link GameType#DEFAULT}.
      */
     public static Game playing(String name)
     {
@@ -163,7 +163,7 @@ public class Game
      * @throws IllegalArgumentException
      *         If the specified name is null or empty
      *
-     * @return A valid Game instance with the provided name and url
+     * @return A valid Game instance with the provided name and url.
      *
      * @see    #isValidStreamingUrl(String)
      */
@@ -188,7 +188,7 @@ public class Game
      * @throws IllegalArgumentException
      *         if the specified name is null, empty or blank
      *
-     * @return A valid Game instance with the provided name with {@link GameType#LISTENING}
+     * @return A valid Game instance with the provided name with {@link GameType#LISTENING}.
      */
     public static Game listening(String name)
     {
@@ -206,7 +206,7 @@ public class Game
      * @throws IllegalArgumentException
      *         if the specified name is null, empty or blank
      *
-     * @return A valid Game instance with the provided name with {@link GameType#WATCHING}
+     * @return A valid Game instance with the provided name with {@link GameType#WATCHING}.
      */
     public static Game watching(String name)
     {
@@ -225,7 +225,7 @@ public class Game
      * @throws IllegalArgumentException
      *         If the specified name is null or empty
      *
-     * @return A valid Game instance with the provided name and url
+     * @return A valid Game instance with the provided name and url.
      */
     public static Game of(GameType type, String name)
     {
@@ -247,7 +247,7 @@ public class Game
      * @throws IllegalArgumentException
      *         If the specified name is null or empty
      *
-     * @return A valid Game instance with the provided name and url
+     * @return A valid Game instance with the provided name and url.
      *
      * @see    #isValidStreamingUrl(String)
      */
@@ -275,7 +275,7 @@ public class Game
      * @param  url
      *         The url to check.
      *
-     * @return True if the provided url is valid for triggering Discord's streaming status
+     * @return True if the provided url is valid for triggering Discord's streaming status.
      */
     public static boolean isValidStreamingUrl(String url)
     {
