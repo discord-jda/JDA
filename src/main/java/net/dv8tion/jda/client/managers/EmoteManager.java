@@ -17,25 +17,51 @@
 package net.dv8tion.jda.client.managers;
 
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.impl.EmoteImpl;
-import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.core.managers.impl.ManagerBase;
+import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.utils.Checks;
+import okhttp3.RequestBody;
+import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
- * Decoration for a {@link net.dv8tion.jda.client.managers.EmoteManagerUpdatable EmoteManagerUpdatable} instance.
- * <br>Simplifies managing flow for convenience.
+ * Manager providing functionality to update one or more fields for an {@link net.dv8tion.jda.core.entities.Emote Emote}.
  *
- * <p>This decoration allows to modify a single field by automatically building an update {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+ * <p><b>Example</b>
+ * <pre>{@code
+ * manager.setName("minn")
+ *        .setRoles(null)
+ *        .queue();
+ * manager.reset(EmoteManager.NAME | EmoteManager.ROLES)
+ *        .setName("dv8")
+ *        .setRoles(roles)
+ *        .queue();
+ * }</pre>
+ *
+ * @see net.dv8tion.jda.core.entities.Emote#getManager()
  */
-public class EmoteManager
+public class EmoteManager extends ManagerBase
 {
+    /** Used to reset the name field */
+    public static final long NAME = 0x1;
 
-    protected final EmoteManagerUpdatable updatable;
+    /** Used to reset the roles field */
+    public static final long ROLES = 0x2;
+
+    protected final EmoteImpl emote;
+
+    protected final List<String> roles = new ArrayList<>();
+    protected String name;
 
     /**
      * Creates a new EmoteManager instance
@@ -43,14 +69,17 @@ public class EmoteManager
      * @param  emote
      *         The target {@link net.dv8tion.jda.core.entities.impl.EmoteImpl EmoteImpl} to modify
      *
-     * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
-     *         If the currently logged in account is not from {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}
      * @throws java.lang.IllegalStateException
      *         If the specified Emote is {@link net.dv8tion.jda.core.entities.Emote#isFake() fake} or {@link net.dv8tion.jda.core.entities.Emote#isManaged() managed}.
      */
     public EmoteManager(EmoteImpl emote)
     {
-        this.updatable = new EmoteManagerUpdatable(emote);
+        super(emote.getJDA(), Route.Emotes.MODIFY_EMOTE.compile(emote.getGuild().getId(), emote.getId()));
+        if (emote.isFake())
+            throw new IllegalStateException("Cannot modify a fake emote");
+        this.emote = emote;
+        if (isPermissionChecksEnabled())
+            checkPermissions();
     }
 
     /**
@@ -60,7 +89,7 @@ public class EmoteManager
      */
     public JDA getJDA()
     {
-        return updatable.getJDA();
+        return emote.getJDA();
     }
 
     /**
@@ -72,7 +101,7 @@ public class EmoteManager
      */
     public Guild getGuild()
     {
-        return updatable.getGuild();
+        return emote.getGuild();
     }
 
     /**
@@ -83,7 +112,74 @@ public class EmoteManager
      */
     public Emote getEmote()
     {
-        return updatable.getEmote();
+        return emote;
+    }
+
+    /**
+     * Resets the fields specified by the provided bit-flag pattern.
+     * You can specify a combination by using a bitwise OR concat of the flag constants.
+     * <br>Example: {@code manager.reset(EmoteManager.NAME | EmoteManager.ROLES);}
+     *
+     * <p><b>Flag Constants:</b>
+     * <ul>
+     *     <li>{@link #NAME}</li>
+     *     <li>{@link #ROLES}</li>
+     * </ul>
+     *
+     * @param  fields
+     *         Integer value containing the flags to reset.
+     *
+     * @return EmoteManager for chaining convenience
+     */
+    @Override
+    @CheckReturnValue
+    public EmoteManager reset(long fields)
+    {
+        super.reset(fields);
+        if ((fields & ROLES) == ROLES)
+            withLock(this.roles, List::clear);
+        if ((fields & NAME) == NAME)
+            this.name = null;
+        return this;
+    }
+
+    /**
+     * Resets the fields specified by the provided bit-flag patterns.
+     * You can specify a combination by using a bitwise OR concat of the flag constants.
+     * <br>Example: {@code manager.reset(EmoteManager.NAME, EmoteManager.ROLES);}
+     *
+     * <p><b>Flag Constants:</b>
+     * <ul>
+     *     <li>{@link #NAME}</li>
+     *     <li>{@link #ROLES}</li>
+     * </ul>
+     *
+     * @param  fields
+     *         Integer values containing the flags to reset.
+     *
+     * @return EmoteManager for chaining convenience
+     */
+    @Override
+    @CheckReturnValue
+    public EmoteManager reset(long... fields)
+    {
+        super.reset(fields);
+        return this;
+    }
+
+    /**
+     * Resets all fields for this manager.
+     *
+     * @return EmoteManager for chaining convenience
+     */
+    @Override
+    @CheckReturnValue
+    protected EmoteManager reset()
+    {
+        super.reset();
+        withLock(this.roles, List::clear);
+        this.name = null;
+        return this;
     }
 
     /**
@@ -97,21 +193,19 @@ public class EmoteManager
      * @param  name
      *         The new name for the selected {@link net.dv8tion.jda.core.entities.Emote Emote}
      *
-     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES MANAGE_EMOTES}
      * @throws IllegalArgumentException
      *         If the provided name is {@code null} or not between 2-32 characters long
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link EmoteManagerUpdatable#update() #update()}
-     *
-     * @see    net.dv8tion.jda.client.managers.EmoteManagerUpdatable#getNameField()
-     * @see    net.dv8tion.jda.client.managers.EmoteManagerUpdatable#update()
+     * @return EmoteManager for chaining convenience
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setName(String name)
+    public EmoteManager setName(String name)
     {
-        return updatable.getNameField().setValue(name).update();
+        Checks.notBlank(name, "Name");
+        Checks.check(name.length() >= 2 && name.length() <= 32, "Name must be between 2-32 characters long");
+        this.name = name;
+        set |= NAME;
+        return this;
     }
 
     /**
@@ -121,23 +215,60 @@ public class EmoteManager
      * <p>An emote's restriction roles <b>must not</b> contain {@code null}!
      *
      * @param  roles
-     *         The new not-null set of {@link net.dv8tion.jda.core.entities.Role Roles} for the selected {@link net.dv8tion.jda.core.entities.Emote Emote}
-     *         to be restricted to
+     *         The new set of {@link net.dv8tion.jda.core.entities.Role Roles} for the selected {@link net.dv8tion.jda.core.entities.Emote Emote}
+     *         to be restricted to, or {@code null} to clear the roles
      *
-     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES MANAGE_EMOTES}
      * @throws IllegalArgumentException
      *         If any of the provided values is {@code null}
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link EmoteManagerUpdatable#update() #update()}
-     *
-     * @see    net.dv8tion.jda.client.managers.EmoteManagerUpdatable#getRolesField()
-     * @see    net.dv8tion.jda.client.managers.EmoteManagerUpdatable#update()
+     * @return EmoteManager for chaining convenience
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setRoles(Set<Role> roles)
+    public EmoteManager setRoles(Set<Role> roles)
     {
-        return updatable.getRolesField().setValue(roles).update();
+        if (roles == null)
+        {
+            withLock(this.roles, List::clear);
+        }
+        else
+        {
+            Checks.notNull(roles, "Roles");
+            roles.forEach((role) ->
+            {
+                Checks.notNull(role, "Roles");
+                Checks.check(role.getGuild().equals(getGuild()), "Roles must all be from the same guild");
+            });
+            withLock(this.roles, (list) ->
+            {
+                list.clear();
+                roles.stream().map(Role::getId).forEach(list::add);
+            });
+        }
+        set |= ROLES;
+        return this;
+    }
+
+    @Override
+    protected RequestBody finalizeData()
+    {
+        JSONObject object = new JSONObject();
+        if (shouldUpdate(NAME))
+            object.put("name", name);
+        withLock(this.roles, (list) ->
+        {
+            if (shouldUpdate(ROLES))
+                object.put("roles", list);
+        });
+
+        reset();
+        return getRequestBody(object);
+    }
+
+    @Override
+    protected boolean checkPermissions()
+    {
+        if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
+            throw new InsufficientPermissionException(Permission.MANAGE_EMOTES);
+        return super.checkPermissions();
     }
 }

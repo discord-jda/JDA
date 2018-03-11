@@ -23,9 +23,9 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.requests.RestAction;
 
+import javax.annotation.CheckReturnValue;
 import java.util.Collection;
 import java.util.List;
-import javax.annotation.CheckReturnValue;
 
 /** 
  * Represents a Discord Application from its owning client point of view
@@ -136,11 +136,10 @@ public interface Application extends ISnowflake
 
     /**
      * Returns the {@link net.dv8tion.jda.client.managers.ApplicationManager ApplicationManager} for this Application.
-     * In the ApplicationManager, you can modify things like the name and icon of this Application.
+     * <br>In the ApplicationManager, you can modify things like the name and icon of this Application.
+     * You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.core.requests.RestAction#queue() RestAction.queue()}.
      *
      * @return The ApplicationManager of this Channel
-     *
-     * @see    #getManagerUpdatable()
      */
     ApplicationManager getManager();
 
@@ -152,7 +151,11 @@ public interface Application extends ISnowflake
      * @return The ApplicationManagerUpdatable of this Application
      *
      * @see    #getManager()
+     *
+     * @deprecated
+     *         Use {@link #getManager()} instead
      */
+    @Deprecated
     ApplicationManagerUpdatable getManagerUpdatable();
 
     /**

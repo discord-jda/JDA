@@ -21,14 +21,17 @@ import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.SelfUser;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.managers.AccountManager;
-import net.dv8tion.jda.core.managers.AccountManagerUpdatable;
 import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.utils.MiscUtil;
+
+import java.util.concurrent.locks.ReentrantLock;
 
 public class SelfUserImpl extends UserImpl implements SelfUser
 {
-    protected final Object mngLock = new Object();
+    protected final ReentrantLock mngLock = new ReentrantLock();
     protected volatile AccountManager manager;
-    protected volatile AccountManagerUpdatable managerUpdatable;
+    @Deprecated
+    protected volatile net.dv8tion.jda.core.managers.AccountManagerUpdatable managerUpdatable;
 
     private boolean verified;
     private boolean mfaEnabled;
@@ -121,28 +124,29 @@ public class SelfUserImpl extends UserImpl implements SelfUser
         AccountManager mng = manager;
         if (mng == null)
         {
-            synchronized (mngLock)
+            mng = MiscUtil.locked(mngLock, () ->
             {
-                mng = manager;
-                if (mng == null)
-                    mng = manager = new AccountManager(this);
-            }
+                if (manager == null)
+                    manager = new AccountManager(this);
+                return manager;
+            });
         }
         return mng;
     }
 
     @Override
-    public AccountManagerUpdatable getManagerUpdatable()
+    @Deprecated
+    public net.dv8tion.jda.core.managers.AccountManagerUpdatable getManagerUpdatable()
     {
-        AccountManagerUpdatable mng = managerUpdatable;
+        net.dv8tion.jda.core.managers.AccountManagerUpdatable mng = managerUpdatable;
         if (mng == null)
         {
-            synchronized (mngLock)
+            mng = MiscUtil.locked(mngLock, () ->
             {
-                mng = managerUpdatable;
-                if (mng == null)
-                    mng = managerUpdatable = new AccountManagerUpdatable(this);
-            }
+                if (managerUpdatable == null)
+                    managerUpdatable = new net.dv8tion.jda.core.managers.AccountManagerUpdatable(this);
+                return managerUpdatable;
+            });
         }
         return mng;
     }

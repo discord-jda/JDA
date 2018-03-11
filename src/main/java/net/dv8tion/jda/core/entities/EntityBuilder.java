@@ -724,7 +724,7 @@ public class EntityBuilder
 
         return channel
                 .setName(json.getString("name"))
-                .setRawPosition(json.getInt("position"));
+                .setPosition(json.getInt("position"));
     }
 
     public TextChannel createTextChannel(JSONObject json, long guildId)
@@ -756,7 +756,7 @@ public class EntityBuilder
                 .setLastMessageId(Helpers.optLong(json, "last_message_id", 0))
                 .setName(json.getString("name"))
                 .setTopic(json.optString("topic"))
-                .setRawPosition(json.getInt("position"))
+                .setPosition(json.getInt("position"))
                 .setNSFW(Helpers.optBoolean(json, "nsfw"));
     }
 
@@ -786,7 +786,7 @@ public class EntityBuilder
         return channel
                 .setParent(Helpers.optLong(json, "parent_id", 0))
                 .setName(json.getString("name"))
-                .setRawPosition(json.getInt("position"))
+                .setPosition(json.getInt("position"))
                 .setUserLimit(json.getInt("user_limit"))
                 .setBitrate(json.getInt("bitrate"));
     }

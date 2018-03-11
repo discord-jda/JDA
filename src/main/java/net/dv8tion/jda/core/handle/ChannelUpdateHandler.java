@@ -111,7 +111,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 }
                 if (oldPosition != position)
                 {
-                    textChannel.setRawPosition(position);
+                    textChannel.setPosition(position);
                     api.getEventManager().handle(
                             new TextChannelUpdatePositionEvent(
                                     api, responseNumber,
@@ -175,7 +175,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 }
                 if (oldPosition != position)
                 {
-                    voiceChannel.setRawPosition(position);
+                    voiceChannel.setPosition(position);
                     api.getEventManager().handle(
                             new VoiceChannelUpdatePositionEvent(
                                     api, responseNumber,
@@ -232,7 +232,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 }
                 if (!Objects.equals(oldPosition, position))
                 {
-                    category.setRawPosition(position);
+                    category.setPosition(position);
                     api.getEventManager().handle(
                             new CategoryUpdatePositionEvent(
                                 api, responseNumber,

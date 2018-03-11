@@ -24,13 +24,13 @@ import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.exceptions.HierarchyException;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.RoleManager;
-import net.dv8tion.jda.core.managers.RoleManagerUpdatable;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.RoleAction;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 
 import java.awt.Color;
@@ -38,15 +38,17 @@ import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class RoleImpl implements Role
 {
     private final long id;
     private final Guild guild;
 
-    private final Object mngLock = new Object();
+    private final ReentrantLock mngLock = new ReentrantLock();
     private volatile RoleManager manager;
-    private volatile RoleManagerUpdatable managerUpdatable;
+    @Deprecated
+    private volatile net.dv8tion.jda.core.managers.RoleManagerUpdatable managerUpdatable;
 
     private String name;
     private boolean managed;
@@ -212,28 +214,29 @@ public class RoleImpl implements Role
         RoleManager mng = manager;
         if (mng == null)
         {
-            synchronized (mngLock)
+            mng = MiscUtil.locked(mngLock, () ->
             {
-                mng = manager;
-                if (mng == null)
-                    mng = manager = new RoleManager(this);
-            }
+                if (manager == null)
+                    manager = new RoleManager(this);
+                return manager;
+            });
         }
         return mng;
     }
 
     @Override
-    public RoleManagerUpdatable getManagerUpdatable()
+    @Deprecated
+    public net.dv8tion.jda.core.managers.RoleManagerUpdatable getManagerUpdatable()
     {
-        RoleManagerUpdatable mng = managerUpdatable;
+        net.dv8tion.jda.core.managers.RoleManagerUpdatable mng = managerUpdatable;
         if (mng == null)
         {
-            synchronized (mngLock)
+            mng = MiscUtil.locked(mngLock, () ->
             {
-                mng = managerUpdatable;
-                if (mng == null)
-                    mng = managerUpdatable = new RoleManagerUpdatable(this);
-            }
+                if (managerUpdatable == null)
+                    managerUpdatable = new net.dv8tion.jda.core.managers.RoleManagerUpdatable(this);
+                return managerUpdatable;
+            });
         }
         return mng;
     }

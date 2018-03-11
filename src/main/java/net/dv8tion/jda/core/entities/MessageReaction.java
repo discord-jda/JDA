@@ -37,7 +37,6 @@ import java.util.Objects;
  * built from Discord is needed to see changes.
  *
  * @since  3.0
- * @author Florian Spieß
  */
 public class MessageReaction
 {

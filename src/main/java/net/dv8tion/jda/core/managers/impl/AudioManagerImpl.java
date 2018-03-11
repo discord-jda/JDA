@@ -33,9 +33,11 @@ import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.NativeUtil;
 
 import java.io.IOException;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class AudioManagerImpl implements AudioManager
 {
@@ -45,7 +47,7 @@ public class AudioManagerImpl implements AudioManager
     public static String OPUS_LIB_NAME;
     protected static boolean initialized = false;
 
-    public final Object CONNECTION_LOCK = new Object();
+    public final ReentrantLock CONNECTION_LOCK = new ReentrantLock();
 
     protected final JDAImpl api;
     protected final ListenerProxy connectionListener = new ListenerProxy();
@@ -142,7 +144,7 @@ public class AudioManagerImpl implements AudioManager
 
     public void closeAudioConnection(ConnectionStatus reason)
     {
-        synchronized (CONNECTION_LOCK)
+        MiscUtil.locked(CONNECTION_LOCK, () ->
         {
             this.queuedAudioConnection = null;
             if (audioConnection != null)
@@ -150,7 +152,7 @@ public class AudioManagerImpl implements AudioManager
             else
                 this.api.getClient().queueAudioDisconnect(guild);
             this.audioConnection = null;
-        }
+        });
     }
 
     @Override
