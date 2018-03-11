@@ -22,7 +22,6 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.ChannelManager;
-import net.dv8tion.jda.core.managers.ChannelManagerUpdatable;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
@@ -51,7 +50,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     protected final ReentrantLock mngLock = new ReentrantLock();
     protected volatile ChannelManager manager;
     @Deprecated
-    protected volatile ChannelManagerUpdatable managerUpdatable;
+    protected volatile net.dv8tion.jda.core.managers.ChannelManagerUpdatable managerUpdatable;
 
     protected long parentId;
     protected String name;
@@ -146,15 +145,15 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
 
     @Override
     @Deprecated
-    public ChannelManagerUpdatable getManagerUpdatable()
+    public net.dv8tion.jda.core.managers.ChannelManagerUpdatable getManagerUpdatable()
     {
-        ChannelManagerUpdatable mng = managerUpdatable;
+        net.dv8tion.jda.core.managers.ChannelManagerUpdatable mng = managerUpdatable;
         if (mng == null)
         {
             mng = MiscUtil.locked(mngLock, () ->
             {
                 if (managerUpdatable == null)
-                    managerUpdatable = new ChannelManagerUpdatable(this);
+                    managerUpdatable = new net.dv8tion.jda.core.managers.ChannelManagerUpdatable(this);
                 return managerUpdatable;
             });
         }
