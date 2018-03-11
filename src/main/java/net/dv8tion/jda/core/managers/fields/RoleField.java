@@ -16,8 +16,6 @@
 
 package net.dv8tion.jda.core.managers.fields;
 
-import net.dv8tion.jda.core.managers.RoleManagerUpdatable;
-
 import java.util.function.Supplier;
 
 /**
@@ -34,9 +32,10 @@ import java.util.function.Supplier;
  *
  * @since  3.0
  */
-public abstract class RoleField<T> extends Field<T, RoleManagerUpdatable>
+@Deprecated
+public abstract class RoleField<T> extends Field<T, net.dv8tion.jda.core.managers.RoleManagerUpdatable>
 {
-    public RoleField(RoleManagerUpdatable manager, Supplier<T> originalValue)
+    public RoleField(net.dv8tion.jda.core.managers.RoleManagerUpdatable manager, Supplier<T> originalValue)
     {
         super(manager, originalValue);
     }

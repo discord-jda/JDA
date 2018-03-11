@@ -83,11 +83,12 @@ task sourcesForRelease(type: Copy) {
         ])
 }
 
+
 compileJava {
+    options.compilerArgs += ["-Xlint:deprecation", "-Xlint:unchecked"]
+    options.encoding = 'UTF-8'
     source = sourcesForRelease.destinationDir
     classpath = sourceSets.main.compileClasspath
-
-    options.encoding = 'UTF-8'
 
     dependsOn sourcesForRelease
 }

@@ -32,7 +32,6 @@ import java.util.List;
  */
 public interface Channel extends ISnowflake
 {
-
     /**
      * The {@link net.dv8tion.jda.core.entities.ChannelType ChannelType} for this Channel
      *
@@ -238,11 +237,13 @@ public interface Channel extends ISnowflake
 
     /**
      * Returns the {@link net.dv8tion.jda.core.managers.ChannelManager ChannelManager} for this Channel.
-     * In the ChannelManager, you can modify the name, topic and position of this Channel.
+     * <br>In the ChannelManager, you can modify the name, topic and position of this Channel.
+     * You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.core.requests.RestAction#queue() RestAction.queue()}.
+     *
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL Permission.MANAGE_CHANNEL}
      *
      * @return The ChannelManager of this Channel
-     *
-     * @see    #getManagerUpdatable()
      */
     ChannelManager getManager();
 
@@ -254,7 +255,11 @@ public interface Channel extends ISnowflake
      * @return The ChannelManagerUpdatable of this Channel
      *
      * @see    #getManager()
+     *
+     * @deprecated
+     *         Use {@link #getManager()} instead
      */
+    @Deprecated
     ChannelManagerUpdatable getManagerUpdatable();
 
     /**

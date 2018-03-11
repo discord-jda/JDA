@@ -37,7 +37,7 @@ public class MessageBulkDeleteHandler extends SocketHandler
 
         if (api.isBulkDeleteSplittingEnabled())
         {
-            SocketHandler handler = api.getClient().getHandler("MESSAGE_DELETE");
+            SocketHandler handler = api.getClient().getHandlers().get("MESSAGE_DELETE");
             content.getJSONArray("ids").forEach(id ->
             {
                 handler.handle(responseNumber, new JSONObject()

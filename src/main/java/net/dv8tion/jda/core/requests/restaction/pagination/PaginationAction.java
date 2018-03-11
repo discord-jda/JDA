@@ -81,7 +81,6 @@ import java.util.stream.StreamSupport;
  *         The type of entity to paginate
  *
  * @since  3.1
- * @author Florian Spieß
  */
 public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
     extends RestAction<List<T>> implements Iterable<T>
@@ -133,6 +132,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public M setCheck(BooleanSupplier checks)
     {
         return (M) super.setCheck(checks);
@@ -227,6 +227,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return The current PaginationAction implementation instance
      */
+    @SuppressWarnings("unchecked")
     public M limit(final int limit)
     {
         Checks.check(maxLimit == 0 || limit <= maxLimit, "Limit must not exceed %d!", maxLimit);
@@ -253,6 +254,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return The current PaginationAction implementation instance
      */
+    @SuppressWarnings("unchecked")
     public M cache(final boolean enableCache)
     {
         this.useCache = enableCache;

@@ -16,39 +16,83 @@
 
 package net.dv8tion.jda.core.managers;
 
-import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
-import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.core.managers.impl.ManagerBase;
+import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.utils.Checks;
+import okhttp3.RequestBody;
+import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 
 /**
- * Facade for a {@link net.dv8tion.jda.core.managers.GuildManagerUpdatable GuildManagerUpdatable} instance.
- * <br>Simplifies managing flow for convenience.
+ * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.core.entities.Guild Guild}.
  *
- * <p>This decoration allows to modify a single field by automatically building an update {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+ * <p><b>Example</b>
+ * <pre>{@code
+ * manager.setName("Official JDA Guild")
+ *        .setIcon(null)
+ *        .queue();
+ * manager.reset(GuildManager.NAME | GuildManager.ICON)
+ *        .setName("Minn's Meme Den")
+ *        .setExplicitContentLevel(Guild.ExplicitContentLevel.HIGH)
+ *        .queue();
+ * }</pre>
+ *
+ * @see net.dv8tion.jda.core.entities.Guild#getManager()
  */
-public class GuildManager
+public class GuildManager extends ManagerBase
 {
-    protected final GuildManagerUpdatable updatable;
+    /** Used to reset the name field */
+    public static final long NAME   = 0x1;
+    /** Used to reset the region field */
+    public static final long REGION = 0x2;
+    /** Used to reset the icon field */
+    public static final long ICON   = 0x4;
+    /** Used to reset the splash field */
+    public static final long SPLASH = 0x8;
+    /** Used to reset the afk channel field */
+    public static final long AFK_CHANNEL    = 0x10;
+    /** Used to reset the afk timeout field */
+    public static final long AFK_TIMEOUT    = 0x20;
+    /** Used to reset the system channel field */
+    public static final long SYSTEM_CHANNEL = 0x40;
+    /** Used to reset the mfa level field */
+    public static final long MFA_LEVEL      = 0x80;
+    /** Used to reset the default notification level field */
+    public static final long NOTIFICATION_LEVEL     = 0x100;
+    /** Used to reset the explicit content level field */
+    public static final long EXPLICIT_CONTENT_LEVEL = 0x200;
+    /** Used to reset the verification level field */
+    public static final long VERIFICATION_LEVEL     = 0x400;
+
+    protected final Guild guild;
+
+    protected String name;
+    protected String region;
+    protected Icon icon;
+    protected Icon splash;
+    protected String afkChannel;
+    protected String systemChannel;
+    protected int afkTimeout;
+    protected int mfaLevel;
+    protected int notificationLevel;
+    protected int explicitContentLevel;
+    protected int verificationLevel;
 
     public GuildManager(Guild guild)
     {
-        this.updatable = new GuildManagerUpdatable(guild);
-    }
-
-    /**
-     * The {@link net.dv8tion.jda.core.JDA JDA} instance of this Manager
-     *
-     * @return the corresponding JDA instance
-     */
-    public JDA getJDA()
-    {
-        return updatable.getJDA();
+        super(guild.getJDA(), Route.Guilds.MODIFY_GUILD.compile(guild.getId()));
+        this.guild = guild;
+        if (isPermissionChecksEnabled())
+            checkPermissions();
     }
 
     /**
@@ -59,257 +103,376 @@ public class GuildManager
      */
     public Guild getGuild()
     {
-        return updatable.getGuild();
+        return guild;
+    }
+
+    /**
+     * Resets the fields specified by the provided bit-flag pattern.
+     * You can specify a combination by using a bitwise OR concat of the flag constants.
+     * <br>Example: {@code manager.reset(GuildManager.NAME | GuildManager.ICON);}
+     *
+     * <p><b>Flag Constants:</b>
+     * <ul>
+     *     <li>{@link #NAME}</li>
+     *     <li>{@link #ICON}</li>
+     *     <li>{@link #REGION}</li>
+     *     <li>{@link #SPLASH}</li>
+     *     <li>{@link #AFK_CHANNEL}</li>
+     *     <li>{@link #AFK_TIMEOUT}</li>
+     *     <li>{@link #SYSTEM_CHANNEL}</li>
+     *     <li>{@link #MFA_LEVEL}</li>
+     *     <li>{@link #NOTIFICATION_LEVEL}</li>
+     *     <li>{@link #EXPLICIT_CONTENT_LEVEL}</li>
+     *     <li>{@link #VERIFICATION_LEVEL}</li>
+     * </ul>
+     *
+     * @param  fields
+     *         Integer value containing the flags to reset.
+     *
+     * @return GuildManager for chaining convenience
+     */
+    @Override
+    @CheckReturnValue
+    public GuildManager reset(long fields)
+    {
+        super.reset(fields);
+        if ((fields & NAME) == NAME)
+            this.name = null;
+        if ((fields & REGION) == REGION)
+            this.region = null;
+        if ((fields & ICON) == ICON)
+            this.icon = null;
+        if ((fields & SPLASH) == SPLASH)
+            this.splash = null;
+        if ((fields & AFK_CHANNEL) == AFK_CHANNEL)
+            this.afkChannel = null;
+        if ((fields & SYSTEM_CHANNEL) == SYSTEM_CHANNEL)
+            this.systemChannel = null;
+        return this;
+    }
+
+    /**
+     * Resets the fields specified by the provided bit-flag patterns.
+     * You can specify a combination by using a bitwise OR concat of the flag constants.
+     * <br>Example: {@code manager.reset(GuildManager.NAME, GuildManager.ICON);}
+     *
+     * <p><b>Flag Constants:</b>
+     * <ul>
+     *     <li>{@link #NAME}</li>
+     *     <li>{@link #ICON}</li>
+     *     <li>{@link #REGION}</li>
+     *     <li>{@link #SPLASH}</li>
+     *     <li>{@link #AFK_CHANNEL}</li>
+     *     <li>{@link #AFK_TIMEOUT}</li>
+     *     <li>{@link #SYSTEM_CHANNEL}</li>
+     *     <li>{@link #MFA_LEVEL}</li>
+     *     <li>{@link #NOTIFICATION_LEVEL}</li>
+     *     <li>{@link #EXPLICIT_CONTENT_LEVEL}</li>
+     *     <li>{@link #VERIFICATION_LEVEL}</li>
+     * </ul>
+     *
+     * @param  fields
+     *         Integer values containing the flags to reset.
+     *
+     * @return GuildManager for chaining convenience
+     */
+    @Override
+    @CheckReturnValue
+    public GuildManager reset(long... fields)
+    {
+        super.reset(fields);
+        return this;
+    }
+
+    /**
+     * Resets all fields for this manager.
+     *
+     * @return GuildManager for chaining convenience
+     */
+    @Override
+    @CheckReturnValue
+    public GuildManager reset()
+    {
+        super.reset();
+        this.name = null;
+        this.region = null;
+        this.icon = null;
+        this.splash = null;
+        this.afkChannel = null;
+        this.systemChannel = null;
+        return this;
     }
 
     /**
      * Sets the name of this {@link net.dv8tion.jda.core.entities.Guild Guild}.
-     * More information can be found {@link GuildManagerUpdatable#getNameField() here}!
-     *
-     * <p>For information on possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses}
-     * by the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} see {@link GuildManagerUpdatable#update() #update()}
      *
      * @param  name
      *         The new name for this {@link net.dv8tion.jda.core.entities.Guild Guild}
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link GuildManagerUpdatable#update() #update()}
+     * @throws IllegalArgumentException
+     *         If the provided name is {@code null} or not between 2-100 characters long
      *
-     * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#getNameField()
-     * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#update()
+     * @return GuildManager for chaining convenience
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setName(String name)
+    public GuildManager setName(String name)
     {
-        return  updatable.getNameField().setValue(name).update();
+        Checks.notNull(name, "Name");
+        Checks.check(name.length() >= 2 && name.length() <= 100, "Name must be between 2-100 characters long");
+        this.name = name;
+        set |= NAME;
+        return this;
     }
 
     /**
      * Sets the {@link net.dv8tion.jda.core.Region Region} of this {@link net.dv8tion.jda.core.entities.Guild Guild}.
-     * More information can be found {@link GuildManagerUpdatable#getRegionField() here}!
-     *
-     * <p>For information on possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses}
-     * by the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} see {@link GuildManagerUpdatable#update() #update()}
      *
      * @param  region
      *         The new region for this {@link net.dv8tion.jda.core.entities.Guild Guild}
      *
-     * @throws java.lang.IllegalArgumentException
+     * @throws IllegalArgumentException
      *         If the provided region is a {@link net.dv8tion.jda.core.Region#isVip() VIP Region} but the guild does not support VIP regions.
      *         Use {@link net.dv8tion.jda.core.entities.Guild#getFeatures() Guild#getFeatures()} to check if VIP regions are supported.
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link GuildManagerUpdatable#update() #update()}
+     * @return GuildManager for chaining convenience
      *
      * @see    net.dv8tion.jda.core.Region#isVip()
      * @see    net.dv8tion.jda.core.entities.Guild#getFeatures()
-     * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#getRegionField()
-     * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#update()
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setRegion(Region region)
+    public GuildManager setRegion(Region region)
     {
-        return updatable.getRegionField().setValue(region).update();
+        Checks.notNull(region, "Region");
+        Checks.check(region != Region.UNKNOWN, "Region must not be UNKNOWN");
+        Checks.check(!region.isVip() || guild.getFeatures().contains("VIP_REGIONS"), "Cannot set a VIP voice region on this guild");
+        this.region = region.getKey();
+        set |= REGION;
+        return this;
     }
 
     /**
      * Sets the {@link net.dv8tion.jda.core.entities.Icon Icon} of this {@link net.dv8tion.jda.core.entities.Guild Guild}.
-     * More information can be found {@link GuildManagerUpdatable#getIconField() here}!
-     *
-     * <p>For information on possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses}
-     * by the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} see {@link GuildManagerUpdatable#update() #update()}
      *
      * @param  icon
      *         The new icon for this {@link net.dv8tion.jda.core.entities.Guild Guild}
+     *         or {@code null} to reset
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link GuildManagerUpdatable#update() #update()}
-     *
-     * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#getIconField()
-     * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#update()
+     * @return GuildManager for chaining convenience
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setIcon(Icon icon)
+    public GuildManager setIcon(Icon icon)
     {
-        return updatable.getIconField().setValue(icon).update();
+        this.icon = icon;
+        set |= ICON;
+        return this;
     }
 
     /**
      * Sets the Splash {@link net.dv8tion.jda.core.entities.Icon Icon} of this {@link net.dv8tion.jda.core.entities.Guild Guild}.
-     * More information can be found {@link GuildManagerUpdatable#getSplashField() here}!
-     *
-     * <p>For information on possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses}
-     * by the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} see {@link GuildManagerUpdatable#update() #update()}
      *
      * @param  splash
      *         The new splash for this {@link net.dv8tion.jda.core.entities.Guild Guild}
+     *         or {@code null} to reset
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link GuildManagerUpdatable#update() #update()}
+     * @throws IllegalArgumentException
+     *         If the guild's {@link net.dv8tion.jda.core.entities.Guild#getFeatures() features} does not include {@code INVITE_SPLASH}
      *
-     * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#getSplashField()
-     * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#update()
+     * @return GuildManager for chaining convenience
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setSplash(Icon splash)
+    public GuildManager setSplash(Icon splash)
     {
-        return updatable.getSplashField().setValue(splash).update();
+        Checks.check(splash == null || guild.getFeatures().contains("INVITE_SPLASH"), "Cannot set a splash on this guild");
+        this.splash = splash;
+        set |= SPLASH;
+        return this;
     }
 
     /**
      * Sets the AFK {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} of this {@link net.dv8tion.jda.core.entities.Guild Guild}.
-     * More information can be found {@link GuildManagerUpdatable#getAfkChannelField() here}!
-     *
-     * <p>For information on possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses}
-     * by the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} see {@link GuildManagerUpdatable#update() #update()}
      *
      * @param  afkChannel
      *         The new afk channel for this {@link net.dv8tion.jda.core.entities.Guild Guild}
+     *         or {@code null} to reset
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link GuildManagerUpdatable#update() #update()}
+     * @throws IllegalArgumentException
+     *         If the provided channel is not from this guild
      *
-     * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#getAfkChannelField()
-     * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#update()
+     * @return GuildManager for chaining convenience
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setAfkChannel(VoiceChannel afkChannel)
+    public GuildManager setAfkChannel(VoiceChannel afkChannel)
     {
-        return updatable.getAfkChannelField().setValue(afkChannel).update();
+        Checks.check(afkChannel == null || afkChannel.getGuild().equals(guild), "Channel must be from the same guild");
+        this.afkChannel = afkChannel == null ? null : afkChannel.getId();
+        set |= AFK_CHANNEL;
+        return this;
     }
 
     /**
      * Sets the system {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} of this {@link net.dv8tion.jda.core.entities.Guild Guild}.
-     * More information can be found {@link GuildManagerUpdatable#getSystemChannelField() here}!
-     *
-     * <p>For information on possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses}
-     * by the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} see {@link GuildManagerUpdatable#update() #update()}
      *
      * @param  systemChannel
      *         The new system channel for this {@link net.dv8tion.jda.core.entities.Guild Guild}
+     *         or {@code null} to reset
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link GuildManagerUpdatable#update() #update()}
+     * @throws IllegalArgumentException
+     *         If the provided channel is not from this guild
      *
-     * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#getSystemChannelField()
-     * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#update()
+     * @return GuildManager for chaining convenience
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setSystemChannel(TextChannel systemChannel)
+    public GuildManager setSystemChannel(TextChannel systemChannel)
     {
-        return updatable.getSystemChannelField().setValue(systemChannel).update();
+        Checks.check(systemChannel == null || systemChannel.getGuild().equals(guild), "Channel must be from the same guild");
+        this.systemChannel = systemChannel == null ? null : systemChannel.getId();
+        set |= SYSTEM_CHANNEL;
+        return this;
     }
 
     /**
      * Sets the afk {@link net.dv8tion.jda.core.entities.Guild.Timeout Timeout} of this {@link net.dv8tion.jda.core.entities.Guild Guild}.
-     * More information can be found {@link GuildManagerUpdatable#getAfkTimeoutField() here}!
-     *
-     * <p>For information on possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses}
-     * by the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} see {@link GuildManagerUpdatable#update() #update()}
      *
      * @param  timeout
      *         The new afk timeout for this {@link net.dv8tion.jda.core.entities.Guild Guild}
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link GuildManagerUpdatable#update() #update()}
+     * @throws IllegalArgumentException
+     *         If the provided timeout is {@code null}
      *
-     * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#getAfkTimeoutField()
-     * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#update()
+     * @return GuildManager for chaining convenience
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setAfkTimeout(Guild.Timeout timeout)
+    public GuildManager setAfkTimeout(Guild.Timeout timeout)
     {
-        return updatable.getAfkTimeoutField().setValue(timeout).update();
+        Checks.notNull(timeout, "Timeout");
+        this.afkTimeout = timeout.getSeconds();
+        set |= AFK_TIMEOUT;
+        return this;
     }
 
     /**
      * Sets the {@link net.dv8tion.jda.core.entities.Guild.VerificationLevel Verification Level} of this {@link net.dv8tion.jda.core.entities.Guild Guild}.
-     * More information can be found {@link GuildManagerUpdatable#getVerificationLevelField() here}!
-     *
-     * <p>For information on possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses}
-     * by the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} see {@link GuildManagerUpdatable#update() #update()}
      *
      * @param  level
      *         The new Verification Level for this {@link net.dv8tion.jda.core.entities.Guild Guild}
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link GuildManagerUpdatable#update() #update()}
+     * @throws IllegalArgumentException
+     *         If the provided level is {@code null} or UNKNOWN
      *
-     * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#getVerificationLevelField()
-     * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#update()
+     * @return GuildManager for chaining convenience
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setVerificationLevel(Guild.VerificationLevel level)
+    public GuildManager setVerificationLevel(Guild.VerificationLevel level)
     {
-        return updatable.getVerificationLevelField().setValue(level).update();
+        Checks.notNull(level, "Level");
+        Checks.check(level != Guild.VerificationLevel.UNKNOWN, "Level must not be UNKNOWN");
+        this.verificationLevel = level.getKey();
+        set |= VERIFICATION_LEVEL;
+        return this;
     }
 
     /**
      * Sets the {@link net.dv8tion.jda.core.entities.Guild.NotificationLevel Notification Level} of this {@link net.dv8tion.jda.core.entities.Guild Guild}.
-     * More information can be found {@link GuildManagerUpdatable#getDefaultNotificationLevelField() here}!
-     *
-     * <p>For information on possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses}
-     * by the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} see {@link GuildManagerUpdatable#update() #update()}
      *
      * @param  level
      *         The new Notification Level for this {@link net.dv8tion.jda.core.entities.Guild Guild}
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link GuildManagerUpdatable#update() #update()}
+     * @throws IllegalArgumentException
+     *         If the provided level is {@code null} or UNKNOWN
      *
-     * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#getDefaultNotificationLevelField()
-     * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#update()
+     * @return GuildManager for chaining convenience
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setDefaultNotificationLevel(Guild.NotificationLevel level)
+    public GuildManager setDefaultNotificationLevel(Guild.NotificationLevel level)
     {
-        return updatable.getDefaultNotificationLevelField().setValue(level).update();
+        Checks.notNull(level, "Level");
+        Checks.check(level != Guild.NotificationLevel.UNKNOWN, "Level must not be UNKNOWN");
+        this.notificationLevel = level.getKey();
+        set |= NOTIFICATION_LEVEL;
+        return this;
     }
 
     /**
      * Sets the {@link net.dv8tion.jda.core.entities.Guild.MFALevel MFA Level} of this {@link net.dv8tion.jda.core.entities.Guild Guild}.
-     * More information can be found {@link GuildManagerUpdatable#getRequiredMFALevelField() here}!
-     *
-     * <p>For information on possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses}
-     * by the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} see {@link GuildManagerUpdatable#update() #update()}
      *
      * @param  level
      *         The new MFA Level for this {@link net.dv8tion.jda.core.entities.Guild Guild}
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link GuildManagerUpdatable#update() #update()}
+     * @throws IllegalArgumentException
+     *         If the provided level is {@code null} or UNKNOWN
      *
-     * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#getRequiredMFALevelField()
-     * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#update()
+     * @return GuildManager for chaining convenience
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setRequiredMFALevel(Guild.MFALevel level)
+    public GuildManager setRequiredMFALevel(Guild.MFALevel level)
     {
-        return updatable.getRequiredMFALevelField().setValue(level).update();
+        Checks.notNull(level, "Level");
+        Checks.check(level != Guild.MFALevel.UNKNOWN, "Level must not be UNKNOWN");
+        this.mfaLevel = level.getKey();
+        set |= MFA_LEVEL;
+        return this;
     }
 
     /**
      * Sets the {@link net.dv8tion.jda.core.entities.Guild.ExplicitContentLevel Explicit Content Level} of this {@link net.dv8tion.jda.core.entities.Guild Guild}.
-     * More information can be found {@link net.dv8tion.jda.core.managers.GuildManagerUpdatable#getExplicitContentLevelField() here}!
-     *
-     * <p>For information on possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses}
-     * by the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} see {@link GuildManagerUpdatable#update() #update()}
      *
      * @param  level
      *         The new MFA Level for this {@link net.dv8tion.jda.core.entities.Guild Guild}
      *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided level is {@code null} or {@link net.dv8tion.jda.core.entities.Guild.ExplicitContentLevel#UNKNOWN UNKNOWN}
+     * @throws IllegalArgumentException
+     *         If the provided level is {@code null} or UNKNOWN
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link GuildManagerUpdatable#update() #update()}
-     *
-     * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#getRequiredMFALevelField()
-     * @see    net.dv8tion.jda.core.managers.GuildManagerUpdatable#update()
+     * @return GuildManager for chaining convenience
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setExplicitContentLevel(Guild.ExplicitContentLevel level)
+    public GuildManager setExplicitContentLevel(Guild.ExplicitContentLevel level)
     {
-        return updatable.getExplicitContentLevelField().setValue(level).update();
+        Checks.notNull(level, "Level");
+        Checks.check(level != Guild.ExplicitContentLevel.UNKNOWN, "Level must not be UNKNOWN");
+        this.explicitContentLevel = level.getKey();
+        set |= EXPLICIT_CONTENT_LEVEL;
+        return this;
+    }
+
+    @Override
+    protected RequestBody finalizeData()
+    {
+        if (!guild.isAvailable())
+            throw new GuildUnavailableException();
+
+        JSONObject body = new JSONObject().put("name", guild.getName());
+        if (shouldUpdate(NAME))
+            body.put("name", name);
+        if (shouldUpdate(REGION))
+            body.put("region", region);
+        if (shouldUpdate(AFK_TIMEOUT))
+            body.put("afk_timeout", afkTimeout);
+        if (shouldUpdate(ICON))
+            body.put("icon", icon == null ? JSONObject.NULL : icon.getEncoding());
+        if (shouldUpdate(SPLASH))
+            body.put("splash", splash == null ? JSONObject.NULL : splash.getEncoding());
+        if (shouldUpdate(AFK_CHANNEL))
+            body.put("afk_channel_id", opt(AFK_CHANNEL));
+        if (shouldUpdate(SYSTEM_CHANNEL))
+            body.put("system_channel_id", opt(systemChannel));
+        if (shouldUpdate(VERIFICATION_LEVEL))
+            body.put("verification_level", verificationLevel);
+        if (shouldUpdate(NOTIFICATION_LEVEL))
+            body.put("default_message_notifications", notificationLevel);
+        if (shouldUpdate(MFA_LEVEL))
+            body.put("mfa_level", mfaLevel);
+        if (shouldUpdate(EXPLICIT_CONTENT_LEVEL))
+            body.put("explicit_content_filter", explicitContentLevel);
+
+        reset(); //now that we've built our JSON object, reset the manager back to the non-modified state
+        return getRequestBody(body);
+    }
+
+    @Override
+    protected boolean checkPermissions()
+    {
+        if (!guild.getSelfMember().hasPermission(Permission.MANAGE_SERVER))
+            throw new InsufficientPermissionException(Permission.MANAGE_SERVER);
+        return super.checkPermissions();
     }
 }

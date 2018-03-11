@@ -44,6 +44,7 @@ import javax.annotation.CheckReturnValue;
  * <p><b>Note</b>: To {@link #update() update} this manager
  * the currently logged in account requires the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_WEBHOOKS MANAGE_WEBHOOKS} in the parent TextChannel
  */
+@Deprecated
 public class WebhookManagerUpdatable
 {
     protected final Webhook webhook;

@@ -22,7 +22,6 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.ChannelManager;
-import net.dv8tion.jda.core.managers.ChannelManagerUpdatable;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
@@ -38,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> implements Channel
@@ -47,9 +47,10 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
 
     protected final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
 
-    protected final Object mngLock = new Object();
+    protected final ReentrantLock mngLock = new ReentrantLock();
     protected volatile ChannelManager manager;
-    protected volatile ChannelManagerUpdatable managerUpdatable;
+    @Deprecated
+    protected volatile net.dv8tion.jda.core.managers.ChannelManagerUpdatable managerUpdatable;
 
     protected long parentId;
     protected String name;
@@ -132,28 +133,29 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         ChannelManager mng = manager;
         if (mng == null)
         {
-            synchronized (mngLock)
+            mng = MiscUtil.locked(mngLock, () ->
             {
-                mng = manager;
-                if (mng == null)
-                    mng = manager = new ChannelManager(this);
-            }
+                if (manager == null)
+                    manager = new ChannelManager(this);
+                return manager;
+            });
         }
         return mng;
     }
 
     @Override
-    public ChannelManagerUpdatable getManagerUpdatable()
+    @Deprecated
+    public net.dv8tion.jda.core.managers.ChannelManagerUpdatable getManagerUpdatable()
     {
-        ChannelManagerUpdatable mng = managerUpdatable;
+        net.dv8tion.jda.core.managers.ChannelManagerUpdatable mng = managerUpdatable;
         if (mng == null)
         {
-            synchronized (mngLock)
+            mng = MiscUtil.locked(mngLock, () ->
             {
-                mng = managerUpdatable;
-                if (mng == null)
-                    mng = managerUpdatable = new ChannelManagerUpdatable(this);
-            }
+                if (managerUpdatable == null)
+                    managerUpdatable = new net.dv8tion.jda.core.managers.ChannelManagerUpdatable(this);
+                return managerUpdatable;
+            });
         }
         return mng;
     }
@@ -303,7 +305,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     }
 
     @SuppressWarnings("unchecked")
-    public T setRawPosition(int rawPosition)
+    public T setPosition(int rawPosition)
     {
         this.rawPosition = rawPosition;
         return (T) this;

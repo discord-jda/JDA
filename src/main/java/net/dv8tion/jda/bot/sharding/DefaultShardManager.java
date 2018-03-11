@@ -103,6 +103,11 @@ public class DefaultShardManager implements ShardManager
     protected final List<Object> listeners;
 
     /**
+     * The event listener providers for new and restarted JDA instances.
+     */
+    protected final List<IntFunction<Object>> listenerProviders;
+
+    /**
      * The maximum amount of time that JDA will back off to wait when attempting to reconnect the MainWebsocket.
      */
     protected final int maxReconnectDelay;
@@ -212,6 +217,9 @@ public class DefaultShardManager implements ShardManager
      *         The {@link net.dv8tion.jda.core.utils.SessionController SessionController}
      * @param  listeners
      *         The event listeners for new JDA instances.
+     * @param  listenerProviders
+     *         Providers of event listeners for JDA instances. Each will have the shard id applied to them upon
+     *         shard creation (including shard restarts) and must return an event listener
      * @param  token
      *         The token
      * @param  eventManager
@@ -254,6 +262,7 @@ public class DefaultShardManager implements ShardManager
      */
     protected DefaultShardManager(final int shardsTotal, final Collection<Integer> shardIds,
                                   final SessionController controller, final List<Object> listeners,
+                                  final List<IntFunction<Object>> listenerProviders,
                                   final String token, final IEventManager eventManager, final IAudioSendFactory audioSendFactory,
                                   final IntFunction<Game> gameProvider, final IntFunction<OnlineStatus> statusProvider,
                                   final OkHttpClient.Builder httpClientBuilder, final WebSocketFactory wsFactory,
@@ -266,6 +275,7 @@ public class DefaultShardManager implements ShardManager
     {
         this.shardsTotal = shardsTotal;
         this.listeners = listeners;
+        this.listenerProviders = listenerProviders;
         this.token = token;
         this.eventManager = eventManager;
         this.audioSendFactory = audioSendFactory;
@@ -318,6 +328,19 @@ public class DefaultShardManager implements ShardManager
     {
         ShardManager.super.removeEventListener(listeners);
         this.listeners.removeAll(Arrays.asList(listeners));
+    }
+
+    @Override
+    public void addEventListeners(IntFunction<Object> eventListenerProvider)
+    {
+        ShardManager.super.addEventListeners(eventListenerProvider);
+        this.listenerProviders.add(eventListenerProvider);
+    }
+
+    @Override
+    public void removeEventListenerProvider(IntFunction<Object> eventListenerProvider)
+    {
+        this.listenerProviders.remove(eventListenerProvider);
     }
 
     @Override
@@ -557,6 +580,7 @@ public class DefaultShardManager implements ShardManager
             jda.setAudioSendFactory(this.audioSendFactory);
 
         this.listeners.forEach(jda::addEventListener);
+        this.listenerProviders.forEach(provider -> jda.addEventListener(provider.apply(shardId)));
         jda.setStatus(JDA.Status.INITIALIZED); //This is already set by JDA internally, but this is to make sure the listeners catch it.
 
         // Set the presence information before connecting to have the correct information ready when sending IDENTIFY

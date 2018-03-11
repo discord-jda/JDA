@@ -56,6 +56,7 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public AuditableRestAction<T> setCheck(BooleanSupplier checks)
     {
         return (AuditableRestAction) super.setCheck(checks);

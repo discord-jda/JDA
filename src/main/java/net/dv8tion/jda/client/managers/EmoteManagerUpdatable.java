@@ -53,6 +53,7 @@ import java.util.stream.Collectors;
  * the currently logged in account requires the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES MANAGE_EMOTES} and
  * must be from {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}
  */
+@Deprecated
 public class EmoteManagerUpdatable
 {
     public static final Pattern NAME_PATTERN = Pattern.compile("^\\w+$");

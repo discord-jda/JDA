@@ -26,6 +26,7 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.utils.JDALogger;
+import net.dv8tion.jda.core.utils.MiscUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -398,13 +399,10 @@ public class AudioWebSocket extends WebSocketAdapter
         }
     }
 
-    private void locked(Consumer<AudioManagerImpl> runnable)
+    private void locked(Consumer<AudioManagerImpl> consumer)
     {
         AudioManagerImpl manager = (AudioManagerImpl) guild.getAudioManager();
-        synchronized (manager.CONNECTION_LOCK)
-        {
-            runnable.accept(manager);
-        }
+        MiscUtil.locked(manager.CONNECTION_LOCK, () -> consumer.accept(manager));
     }
 
     public void reconnect(ConnectionStatus closeStatus)
@@ -653,6 +651,7 @@ public class AudioWebSocket extends WebSocketAdapter
     }
 
     @Override
+    @Deprecated
     protected void finalize() throws Throwable
     {
         if (!shutdown)

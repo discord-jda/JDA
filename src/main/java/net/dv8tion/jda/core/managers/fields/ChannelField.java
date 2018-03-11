@@ -16,8 +16,6 @@
 
 package net.dv8tion.jda.core.managers.fields;
 
-import net.dv8tion.jda.core.managers.ChannelManagerUpdatable;
-
 import java.util.function.Supplier;
 
 /**
@@ -33,9 +31,10 @@ import java.util.function.Supplier;
  *
  * @since  3.0
  */
-public abstract class ChannelField<T> extends Field<T, ChannelManagerUpdatable>
+@Deprecated
+public abstract class ChannelField<T> extends Field<T, net.dv8tion.jda.core.managers.ChannelManagerUpdatable>
 {
-    public ChannelField(ChannelManagerUpdatable manager, Supplier<T> originalValue)
+    public ChannelField(net.dv8tion.jda.core.managers.ChannelManagerUpdatable manager, Supplier<T> originalValue)
     {
         super(manager, originalValue);
     }

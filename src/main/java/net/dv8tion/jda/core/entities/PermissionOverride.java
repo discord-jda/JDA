@@ -140,11 +140,14 @@ public interface PermissionOverride
 
     /**
      * Returns the {@link net.dv8tion.jda.core.managers.PermOverrideManager PermOverrideManager} for this PermissionOverride.
-     * In the PermOverrideManager you can modify the permissions of the override.
+     * <br>In the PermOverrideManager you can modify the permissions of the override.
+     * You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.core.requests.RestAction#queue() RestAction.queue()}.
+     *
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL Permission.MANAGE_CHANNEL}
+     *         or {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
      *
      * @return The PermOverrideManager of this override.
-     *
-     * @see    #getManagerUpdatable()
      */
     PermOverrideManager getManager();
 
@@ -156,7 +159,11 @@ public interface PermissionOverride
      * @return The PermOverrideManager of this override.
      *
      * @see    #getManager()
+     *
+     * @deprecated
+     *         Use {@link #getManager()} instead
      */
+    @Deprecated
     PermOverrideManagerUpdatable getManagerUpdatable();
 
     /**

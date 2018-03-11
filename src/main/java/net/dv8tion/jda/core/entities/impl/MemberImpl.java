@@ -159,7 +159,7 @@ public class MemberImpl implements Member
     {
         Checks.notNull(permissions, "Permission Collection");
 
-        return hasPermission(permissions.toArray(new Permission[permissions.size()]));
+        return hasPermission(permissions.toArray(Permission.EMPTY_PERMISSIONS));
     }
 
     @Override
@@ -173,7 +173,7 @@ public class MemberImpl implements Member
     {
         Checks.notNull(permissions, "Permission Collection");
 
-        return hasPermission(channel, permissions.toArray(new Permission[permissions.size()]));
+        return hasPermission(channel, permissions.toArray(Permission.EMPTY_PERMISSIONS));
     }
 
     @Override

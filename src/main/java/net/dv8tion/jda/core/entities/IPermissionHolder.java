@@ -61,6 +61,8 @@ public interface IPermissionHolder
      *         Permissions to check for.
      *
      * @return True, if all of the specified Permissions are granted to this PermissionHolder.
+     *
+     * @see    java.util.EnumSet EnumSet
      */
     boolean hasPermission(Collection<Permission> permissions);
 
@@ -73,6 +75,8 @@ public interface IPermissionHolder
      *         Permissions to check for.
      *
      * @return True, if all of the specified Permissions are granted to this PermissionHolder in the provided Channel.
+     *
+     * @see    java.util.EnumSet EnumSet
      */
     boolean hasPermission(Channel channel, Permission... permissions);
 

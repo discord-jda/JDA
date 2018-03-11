@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.requests.WebSocketClient;
+import net.dv8tion.jda.core.utils.MiscUtil;
 import org.json.JSONObject;
 
 public class VoiceServerUpdateHandler extends SocketHandler
@@ -52,33 +53,33 @@ public class VoiceServerUpdateHandler extends SocketHandler
             return null;
         }
 
-        String endpoint = content.getString("endpoint");
+        //Strip the port from the endpoint.
+        String endpoint = content.getString("endpoint").replace(":80", "");
         String token = content.getString("token");
         String sessionId = guild.getSelfMember().getVoiceState().getSessionId();
         if (sessionId == null)
             throw new IllegalArgumentException("Attempted to create audio connection without having a session ID. Did VOICE_STATE_UPDATED fail?");
 
-        //Strip the port from the endpoint.
-        endpoint = endpoint.replace(":80", "");
-
         AudioManagerImpl audioManager = (AudioManagerImpl) guild.getAudioManager();
-        synchronized (audioManager.CONNECTION_LOCK) //Synchronized to prevent attempts to close while setting up initial objects.
+        MiscUtil.locked(audioManager.CONNECTION_LOCK, () ->
         {
+            //Synchronized to prevent attempts to close while setting up initial objects.
             if (audioManager.isConnected())
                 audioManager.prepareForRegionChange();
             if (!audioManager.isAttemptingToConnect())
             {
-                WebSocketClient.LOG.debug("Received a VOICE_SERVER_UPDATE but JDA is not currently connected nor attempted to connect " +
-                        "to a VoiceChannel. Assuming that this is caused by another client running on this account. Ignoring the event.");
-                return null;
+                WebSocketClient.LOG.debug(
+                    "Received a VOICE_SERVER_UPDATE but JDA is not currently connected nor attempted to connect " +
+                    "to a VoiceChannel. Assuming that this is caused by another client running on this account. " +
+                    "Ignoring the event.");
+                return;
             }
 
             AudioWebSocket socket = new AudioWebSocket(audioManager.getListenerProxy(), endpoint, api, guild, sessionId, token, audioManager.isAutoReconnect());
             AudioConnection connection = new AudioConnection(socket, audioManager.getQueuedAudioConnection());
             audioManager.setAudioConnection(connection);
             socket.startConnection();
-
-            return null;
-        }
+        });
+        return null;
     }
 }

@@ -323,6 +323,7 @@ public abstract class RestAction<T>
      *         The failure callback that will be called if the Request
      *         encounters an exception at its execution point.
      */
+    @SuppressWarnings("unchecked")
     public void queue(Consumer<T> success, Consumer<Throwable> failure)
     {
         Route.CompiledRoute route = finalizeRoute();
@@ -388,12 +389,12 @@ public abstract class RestAction<T>
         {
             return complete(true);
         }
-        catch (RateLimitedException ignored)
+        catch (RateLimitedException e)
         {
             //This is so beyond impossible, but on the off chance that the laws of nature are rewritten
             // after the writing of this code, I'm placing this here.
             //Better safe than sorry?
-            throw new AssertionError(ignored);
+            throw new AssertionError(e);
         }
     }
 

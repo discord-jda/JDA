@@ -50,6 +50,7 @@ import java.awt.Color;
  * the currently logged in account requires the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES} and
  * must be more powerful according to Discord hierarchy rules (positional strength). [ee {@link Role#canInteract(net.dv8tion.jda.core.entities.Role) Role.canInteract(Role)}]
  */
+@Deprecated
 public class RoleManagerUpdatable
 {
     protected final Role role;

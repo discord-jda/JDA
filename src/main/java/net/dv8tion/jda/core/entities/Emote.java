@@ -31,7 +31,6 @@ import java.util.List;
  * <p><b>This does not represent unicode emojis like they are used in the official client! (:smiley: is not a custom emoji)</b>
  *
  * @since  2.2
- * @author Florian Spieß
  */
 public interface Emote extends ISnowflake, IMentionable, IFakeable
 {
@@ -110,11 +109,12 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
     /**
      * The {@link net.dv8tion.jda.client.managers.EmoteManager Manager} for this emote, used to modify
      * properties of the emote like name and role restrictions.
-     *
-     * <p>This will only work for {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}.
+     * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.core.requests.RestAction#queue() RestAction.queue()}.
      *
      * @throws IllegalStateException
      *         if this emote is fake
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}
      *
      * @return The EmoteManager for this Emote
      */
@@ -132,7 +132,11 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      *         if this emote is fake
      *
      * @return The EmoteManagerUpdatable for this Emote
+     *
+     * @deprecated
+     *         Use {@link #getManager()} instead
      */
+    @Deprecated
     EmoteManagerUpdatable getManagerUpdatable();
 
     /**
