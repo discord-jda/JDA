@@ -43,7 +43,7 @@ public interface Channel extends ISnowflake
      * The human readable name of the  Channel.
      * <br>If no name has been set, this returns null.
      *
-     * @return The name of this Channel
+     * @return The name of this Channel.
      */
     String getName();
 
@@ -60,7 +60,7 @@ public interface Channel extends ISnowflake
      * <br>Note that an {@link net.dv8tion.jda.core.entities.Category Category} will
      * always return {@code null} for this method as nested categories are not supported.
      *
-     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Category Category} for this Channel
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Category Category} for this Channel.
      */
     Category getParent();
 
