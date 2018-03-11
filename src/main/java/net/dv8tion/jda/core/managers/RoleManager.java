@@ -240,7 +240,6 @@ public class RoleManager extends ManagerBase
 
     /**
      * Sets the {@link net.dv8tion.jda.core.Permission Permissions} of the selected {@link net.dv8tion.jda.core.entities.Role Role}.
-     * <br>Wraps {@link net.dv8tion.jda.core.managers.fields.PermissionField#setPermissions(Permission...) RoleManagerUpdatable#getPermissionField().setPermissions(Permission...)}
      *
      * <p>Permissions may only include already present Permissions for the currently logged in account.
      * <br>You are unable to give permissions you don't have!
@@ -257,6 +256,7 @@ public class RoleManager extends ManagerBase
      *
      * @see    #setPermissions(Collection)
      * @see    #setPermissions(long)
+     * @see    net.dv8tion.jda.core.Permission#getRaw(net.dv8tion.jda.core.Permission...) Permission.getRaw(Permission...)
      */
     @CheckReturnValue
     public RoleManager setPermissions(Permission... permissions)
@@ -283,6 +283,8 @@ public class RoleManager extends ManagerBase
      *
      * @see    #setPermissions(Permission...)
      * @see    #setPermissions(long)
+     * @see    java.util.EnumSet EnumSet
+     * @see    net.dv8tion.jda.core.Permission#getRaw(java.util.Collection) Permission.getRaw(Collection)
      */
     @CheckReturnValue
     public RoleManager setPermissions(Collection<Permission> permissions)
@@ -373,6 +375,7 @@ public class RoleManager extends ManagerBase
      *
      * @see    #setPermissions(Collection)
      * @see    #setPermissions(Permission...)
+     * @see    net.dv8tion.jda.core.Permission#getRaw(net.dv8tion.jda.core.Permission...) Permission.getRaw(Permission...)
      */
     @CheckReturnValue
     public RoleManager givePermissions(Permission... perms)
@@ -397,6 +400,8 @@ public class RoleManager extends ManagerBase
      *
      * @see    #setPermissions(Collection)
      * @see    #setPermissions(Permission...)
+     * @see    java.util.EnumSet EnumSet
+     * @see    net.dv8tion.jda.core.Permission#getRaw(java.util.Collection) Permission.getRaw(Collection)
      */
     @CheckReturnValue
     public RoleManager givePermissions(Collection<Permission> perms)
@@ -421,6 +426,7 @@ public class RoleManager extends ManagerBase
      *
      * @see    #setPermissions(Collection)
      * @see    #setPermissions(Permission...)
+     * @see    net.dv8tion.jda.core.Permission#getRaw(net.dv8tion.jda.core.Permission...) Permission.getRaw(Permission...)
      */
     @CheckReturnValue
     public RoleManager revokePermissions(Permission... perms)
@@ -445,6 +451,8 @@ public class RoleManager extends ManagerBase
      *
      * @see    #setPermissions(Collection)
      * @see    #setPermissions(Permission...)
+     * @see    java.util.EnumSet EnumSet
+     * @see    net.dv8tion.jda.core.Permission#getRaw(java.util.Collection) Permission.getRaw(Collection)
      */
     @CheckReturnValue
     public RoleManager revokePermissions(Collection<Permission> perms)

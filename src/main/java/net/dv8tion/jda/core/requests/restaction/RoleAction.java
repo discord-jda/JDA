@@ -161,6 +161,8 @@ public class RoleAction extends AuditableRestAction<Role>
      *         If any of the provided permissions is {@code null}
      *
      * @return The current RoleAction, for chaining convenience
+     *
+     * @see    net.dv8tion.jda.core.Permission#getRaw(net.dv8tion.jda.core.Permission...) Permission.getRaw(Permission...)
      */
     @CheckReturnValue
     public RoleAction setPermissions(Permission... permissions)
@@ -192,6 +194,9 @@ public class RoleAction extends AuditableRestAction<Role>
      *         If any of the provided permissions is {@code null}
      *
      * @return The current RoleAction, for chaining convenience
+     *
+     * @see    net.dv8tion.jda.core.Permission#getRaw(java.util.Collection) Permission.getRaw(Collection)
+     * @see    java.util.EnumSet EnumSet
      */
     @CheckReturnValue
     public RoleAction setPermissions(Collection<Permission> permissions)

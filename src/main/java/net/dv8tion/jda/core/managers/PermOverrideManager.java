@@ -218,6 +218,8 @@ public class PermOverrideManager extends ManagerBase
      *         If any of the provided Permissions is {@code null}
      *
      * @return PermOverrideManager for chaining convenience
+     *
+     * @see    net.dv8tion.jda.core.Permission#getRaw(net.dv8tion.jda.core.Permission...) Permission.getRaw(Permission...)
      */
     @CheckReturnValue
     public PermOverrideManager grant(Permission... permissions)
@@ -237,6 +239,9 @@ public class PermOverrideManager extends ManagerBase
      *         If any of the provided Permissions is {@code null}
      *
      * @return PermOverrideManager for chaining convenience
+     *
+     * @see    java.util.EnumSet EnumSet
+     * @see    net.dv8tion.jda.core.Permission#getRaw(java.util.Collection) Permission.getRaw(Collection)
      */
     @CheckReturnValue
     public PermOverrideManager grant(Collection<Permission> permissions)
@@ -276,6 +281,8 @@ public class PermOverrideManager extends ManagerBase
      *         If any of the provided Permissions is {@code null}
      *
      * @return PermOverrideManager for chaining convenience
+     *
+     * @see    net.dv8tion.jda.core.Permission#getRaw(net.dv8tion.jda.core.Permission...) Permission.getRaw(Permission...)
      */
     @CheckReturnValue
     public PermOverrideManager deny(Permission... permissions)
@@ -295,6 +302,9 @@ public class PermOverrideManager extends ManagerBase
      *         If any of the provided Permissions is {@code null}
      *
      * @return PermOverrideManager for chaining convenience
+     *
+     * @see    java.util.EnumSet EnumSet
+     * @see    net.dv8tion.jda.core.Permission#getRaw(java.util.Collection) Permission.getRaw(Collection)
      */
     @CheckReturnValue
     public PermOverrideManager deny(Collection<Permission> permissions)

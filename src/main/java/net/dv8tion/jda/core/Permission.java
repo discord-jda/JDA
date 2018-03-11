@@ -286,11 +286,14 @@ public enum Permission
     /**
      * This is effectively the opposite of {@link #getPermissions(long)}, this takes a Collection of {@link net.dv8tion.jda.core.Permission Permissions}
      * and returns the raw offset {@code long} representation of the permissions.
+     * <br>Example: {@code getRaw(EnumSet.of(Permission.MESSAGE_READ, Permission.MESSAGE_WRITE))}
      *
      * @param  permissions
      *         The Collection of permissions of which to form into the raw long representation.
      *
      * @return Unsigned long representing the provided permissions.
+     *
+     * @see    java.util.EnumSet EnumSet
      */
     public static long getRaw(Collection<Permission> permissions)
     {
