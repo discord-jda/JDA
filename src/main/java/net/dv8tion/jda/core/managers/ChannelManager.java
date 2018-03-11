@@ -29,7 +29,6 @@ import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
-import java.util.regex.Pattern;
 
 /**
  * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.core.entities.Channel Guild Channel}.
@@ -65,8 +64,6 @@ public class ChannelManager extends ManagerBase
     public static final long USERLIMIT = 0x20;
     /** Used to reset the bitrate field */
     public static final long BITRATE   = 0x40;
-
-    protected static final Pattern alphanumeric = Pattern.compile("[0-9a-zA-Z_-]{2,100}");
 
     protected final Channel channel;
 

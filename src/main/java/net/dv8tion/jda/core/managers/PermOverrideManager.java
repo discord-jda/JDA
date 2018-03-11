@@ -373,6 +373,9 @@ public class PermOverrideManager extends ManagerBase
      *         If any of the provided Permissions is {@code null}
      *
      * @return PermOverrideManager for chaining convenience
+     *
+     * @see    java.util.EnumSet EnumSet
+     * @see    net.dv8tion.jda.core.Permission#getRaw(java.util.Collection) Permission.getRaw(Collection)
      */
     @CheckReturnValue
     public PermOverrideManager clear(Collection<Permission> permissions)
@@ -384,6 +387,8 @@ public class PermOverrideManager extends ManagerBase
     protected RequestBody finalizeData()
     {
         String targetId = override.isMemberOverride() ? override.getMember().getUser().getId() : override.getRole().getId();
+        // setup missing values here
+        setupValues();
         RequestBody data = getRequestBody(
             new JSONObject()
                 .put("id", targetId)
