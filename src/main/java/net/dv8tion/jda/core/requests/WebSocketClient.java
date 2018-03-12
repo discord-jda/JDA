@@ -1067,6 +1067,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     @Override
     public void onBinaryMessage(WebSocket websocket, byte[] binary) throws IOException, DataFormatException
     {
+        //reading thread
+        if (api.getContextMap() != null)
+            MDC.setContextMap(api.getContextMap());
         synchronized (readLock)
         {
             if (!onBufferMessage(binary))
