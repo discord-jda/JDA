@@ -50,6 +50,7 @@ import org.slf4j.MDC;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.RejectedExecutionException;
@@ -76,8 +77,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     public WebSocket socket;
     protected String sessionId = null;
+    protected final Object readLock = new Object();
     protected Inflater zlibContext = new Inflater();
     protected ByteArrayOutputStream readBuffer;
+    protected ByteArrayOutputStream decompressBuffer = new ByteArrayOutputStream(1024);
 
     protected volatile Thread keepAliveThread;
     protected boolean initiating;             //cache all events?
@@ -227,7 +230,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     public void handle(List<JSONObject> events)
     {
-        events.forEach(this::handleEvent);
+        events.forEach(this::onDispatch);
     }
 
     public void send(String message)
@@ -564,8 +567,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         else
         {
             //reset our zlib decompression tools
-            zlibContext = new Inflater();
-            readBuffer = null;
+            synchronized (readLock)
+            {
+                zlibContext = new Inflater();
+                decompressBuffer = new ByteArrayOutputStream(1024);
+                readBuffer = null;
+            }
             if (isInvalidate)
                 invalidate(); // 1000 means our session is dropped so we cannot resume
             api.getEventManager().handle(new DisconnectEvent(api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now()));
@@ -666,71 +673,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 reconnectTimeoutS = Math.min(reconnectTimeoutS << 1, api.getMaxReconnectDelay());
                 LOG.warn("Reconnect failed! Next attempt in {}s", reconnectTimeoutS);
             }
-        }
-    }
-
-    @Override
-    public void onTextMessage(WebSocket websocket, String message)
-    {
-        //reading thread
-        if (api.getContextMap() != null)
-            MDC.setContextMap(api.getContextMap());
-        JSONObject content = new JSONObject(message);
-        try
-        {
-            int opCode = content.getInt("op");
-
-            if (!content.isNull("s"))
-            {
-                api.setResponseTotal(content.getInt("s"));
-            }
-
-            switch (opCode)
-            {
-                case WebSocketCode.DISPATCH:
-                    handleEvent(content);
-                    break;
-                case WebSocketCode.HEARTBEAT:
-                    LOG.debug("Got Keep-Alive request (OP 1). Sending response...");
-                    sendKeepAlive();
-                    break;
-                case WebSocketCode.RECONNECT:
-                    LOG.debug("Got Reconnect request (OP 7). Closing connection now...");
-                    close(4000, "OP 7: RECONNECT");
-                    break;
-                case WebSocketCode.INVALIDATE_SESSION:
-                    LOG.debug("Got Invalidate request (OP 9). Invalidating...");
-                    sentAuthInfo = false;
-                    final boolean isResume = content.getBoolean("d");
-                    // When d: true we can wait a bit and then try to resume again
-                    //sending 4000 to not drop session
-                    int closeCode = isResume ? 4000 : 1000;
-                    if (isResume)
-                        LOG.debug("Session can be recovered... Closing and sending new RESUME request");
-                    else
-                        invalidate();
-
-                    close(closeCode, INVALIDATE_REASON);
-                    break;
-                case WebSocketCode.HELLO:
-                    LOG.debug("Got HELLO packet (OP 10). Initializing keep-alive.");
-                    final JSONObject data = content.getJSONObject("d");
-                    setupKeepAlive(data.getLong("heartbeat_interval"));
-                    if (!data.isNull("_trace"))
-                        updateTraces(data.getJSONArray("_trace"), "HELLO", WebSocketCode.HELLO);
-                    break;
-                case WebSocketCode.HEARTBEAT_ACK:
-                    LOG.trace("Got Heartbeat Ack (OP 11).");
-                    api.setPing(System.currentTimeMillis() - heartbeatStartTime);
-                    break;
-                default:
-                    LOG.debug("Got unknown op-code: {} with content: {}", opCode, message);
-            }
-        }
-        catch (Exception ex)
-        {
-            LOG.error("Encountered exception on lifecycle level\nJSON: {}", content, ex);
-            api.getEventManager().handle(new ExceptionEvent(api, ex, true));
         }
     }
 
@@ -948,7 +890,67 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         return output;
     }
 
-    protected void handleEvent(JSONObject raw)
+    private void onEvent(JSONObject content)
+    {
+        try
+        {
+            int opCode = content.getInt("op");
+
+            if (!content.isNull("s"))
+            {
+                api.setResponseTotal(content.getInt("s"));
+            }
+
+            switch (opCode)
+            {
+                case WebSocketCode.DISPATCH:
+                    onDispatch(content);
+                    break;
+                case WebSocketCode.HEARTBEAT:
+                    LOG.debug("Got Keep-Alive request (OP 1). Sending response...");
+                    sendKeepAlive();
+                    break;
+                case WebSocketCode.RECONNECT:
+                    LOG.debug("Got Reconnect request (OP 7). Closing connection now...");
+                    close(4000, "OP 7: RECONNECT");
+                    break;
+                case WebSocketCode.INVALIDATE_SESSION:
+                    LOG.debug("Got Invalidate request (OP 9). Invalidating...");
+                    sentAuthInfo = false;
+                    final boolean isResume = content.getBoolean("d");
+                    // When d: true we can wait a bit and then try to resume again
+                    //sending 4000 to not drop session
+                    int closeCode = isResume ? 4000 : 1000;
+                    if (isResume)
+                        LOG.debug("Session can be recovered... Closing and sending new RESUME request");
+                    else
+                        invalidate();
+
+                    close(closeCode, INVALIDATE_REASON);
+                    break;
+                case WebSocketCode.HELLO:
+                    LOG.debug("Got HELLO packet (OP 10). Initializing keep-alive.");
+                    final JSONObject data = content.getJSONObject("d");
+                    setupKeepAlive(data.getLong("heartbeat_interval"));
+                    if (!data.isNull("_trace"))
+                        updateTraces(data.getJSONArray("_trace"), "HELLO", WebSocketCode.HELLO);
+                    break;
+                case WebSocketCode.HEARTBEAT_ACK:
+                    LOG.trace("Got Heartbeat Ack (OP 11).");
+                    api.setPing(System.currentTimeMillis() - heartbeatStartTime);
+                    break;
+                default:
+                    LOG.debug("Got unknown op-code: {} with content: {}", opCode, content);
+            }
+        }
+        catch (Exception ex)
+        {
+            LOG.error("Encountered exception on lifecycle level\nJSON: {}", content, ex);
+            api.getEventManager().handle(new ExceptionEvent(api, ex, true));
+        }
+    }
+
+    private void onDispatch(JSONObject raw)
     {
         String type = raw.getString("t");
         long responseTotal = api.getResponseTotal();
@@ -1064,7 +1066,27 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
-    protected boolean onBufferMessage(byte[] binary) throws IOException
+    @Override
+    public void onTextMessage(WebSocket websocket, String message)
+    {
+        //reading thread
+        if (api.getContextMap() != null)
+            MDC.setContextMap(api.getContextMap());
+        onEvent(new JSONObject(message));
+    }
+
+    @Override
+    public void onBinaryMessage(WebSocket websocket, byte[] binary) throws IOException, DataFormatException
+    {
+        synchronized (readLock)
+        {
+            if (!onBufferMessage(binary))
+                return;
+            handleBinary(binary);
+        }
+    }
+
+    private boolean onBufferMessage(byte[] binary) throws IOException
     {
         if (binary.length >= 4 && getInt(binary, binary.length - 4) == ZLIB_SUFFIX)
         {
@@ -1080,32 +1102,33 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         return false;
     }
 
-    @Override
-    public void onBinaryMessage(WebSocket websocket, byte[] binary) throws IOException, DataFormatException
+    private void handleBinary(byte[] binary) throws DataFormatException, UnsupportedEncodingException
     {
-        if (!onBufferMessage(binary))
-            return;
         //Thanks to ShadowLordAlpha and Shredder121 for code and debugging.
         //Get the compressed message and inflate it
-        final int size = readBuffer != null ? readBuffer.size() : binary.length;
-        ByteArrayOutputStream out = new ByteArrayOutputStream(size * 2);
-        try (InflaterOutputStream decompressor = new InflaterOutputStream(out, zlibContext))
+        //We use the same buffer here to optimize gc use
+        try (InflaterOutputStream decompressor = new InflaterOutputStream(decompressBuffer, zlibContext))
         {
             if (readBuffer != null)
                 readBuffer.writeTo(decompressor);
             else
                 decompressor.write(binary);
-            // send the inflated message to the TextMessage method
-            onTextMessage(websocket, out.toString("UTF-8"));
         }
         catch (IOException e)
         {
+            decompressBuffer.reset();
             throw (DataFormatException) new DataFormatException("Malformed").initCause(e);
         }
-        finally
+        finally { readBuffer = null; }
+
+        // send the inflated message to the TextMessage method
+        JSONObject json;
         {
-            readBuffer = null;
-        }
+            String jsonString = decompressBuffer.toString("UTF-8");
+            decompressBuffer.reset();
+            json = new JSONObject(jsonString);
+        } //free string
+        onEvent(json);
     }
 
     private static int getInt(byte[] sink, int offset)
