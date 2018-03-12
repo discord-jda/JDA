@@ -773,4 +773,9 @@ public class JDAImpl implements JDA
     {
         return gatewayUrl;
     }
+
+    public void resetGatewayUrl()
+    {
+        this.gatewayUrl = getGateway();
+    }
 }

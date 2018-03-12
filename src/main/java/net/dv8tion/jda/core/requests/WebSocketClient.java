@@ -54,6 +54,7 @@ import java.io.UnsupportedEncodingException;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 import java.util.zip.DataFormatException;
@@ -69,48 +70,48 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     private static final String INVALIDATE_REASON = "INVALIDATE_SESSION";
 
-    protected final JDAImpl api;
-    protected final JDA.ShardInfo shardInfo;
-    protected final Map<String, SocketHandler> handlers = new HashMap<>();
-    protected final Set<String> cfRays = new HashSet<>();
-    protected final Set<String> traces = new HashSet<>();
+    private final JDAImpl api;
+    private final JDA.ShardInfo shardInfo;
+    private final Map<String, SocketHandler> handlers = new HashMap<>();
+    private final Set<String> cfRays = new HashSet<>();
+    private final Set<String> traces = new HashSet<>();
 
     public WebSocket socket;
-    protected String sessionId = null;
-    protected final Object readLock = new Object();
-    protected Inflater zlibContext = new Inflater();
-    protected ByteArrayOutputStream readBuffer;
-    protected ByteArrayOutputStream decompressBuffer = new ByteArrayOutputStream(1024);
+    private String sessionId = null;
+    private final Object readLock = new Object();
+    private Inflater zlibContext = new Inflater();
+    private ByteArrayOutputStream readBuffer;
+    private ByteArrayOutputStream decompressBuffer = new ByteArrayOutputStream(1024);
 
-    protected volatile Thread keepAliveThread;
-    protected boolean initiating;             //cache all events?
-    protected final List<JSONObject> cachedEvents = new LinkedList<>();
+    private volatile Thread keepAliveThread;
+    private boolean initiating;             //cache all events?
+    private final List<JSONObject> cachedEvents = new LinkedList<>();
 
-    protected int reconnectTimeoutS = 2;
-    protected long heartbeatStartTime;
+    private int reconnectTimeoutS = 2;
+    private long heartbeatStartTime;
 
     //GuildId, <TimeOfNextAttempt, ConnectionStage, AudioConnection>
-    protected final TLongObjectMap<ConnectionRequest> queuedAudioConnections = MiscUtil.newLongMap();
-    protected final ReentrantLock audioQueueLock = new ReentrantLock();
+    private final TLongObjectMap<ConnectionRequest> queuedAudioConnections = MiscUtil.newLongMap();
+    private final ReentrantLock audioQueueLock = new ReentrantLock();
 
-    protected final LinkedList<String> chunkSyncQueue = new LinkedList<>();
-    protected final LinkedList<String> ratelimitQueue = new LinkedList<>();
-    protected volatile Thread ratelimitThread = null;
-    protected volatile long ratelimitResetTime;
-    protected volatile int messagesSent;
+    private final LinkedList<String> chunkSyncQueue = new LinkedList<>();
+    private final LinkedList<String> ratelimitQueue = new LinkedList<>();
+    private volatile Thread ratelimitThread = null;
+    private volatile long ratelimitResetTime;
+    private final AtomicInteger messagesSent = new AtomicInteger(0);
 
-    protected volatile boolean shutdown = false;
-    protected boolean shouldReconnect = true;
-    protected boolean handleIdentifyRateLimit = false;
-    protected boolean connected = false;
+    private volatile boolean shutdown = false;
+    private boolean shouldReconnect;
+    private boolean handleIdentifyRateLimit = false;
+    private boolean connected = false;
 
-    protected volatile boolean chunkingAndSyncing = false;
-    protected volatile boolean printedRateLimitMessage = false;
-    protected boolean sentAuthInfo = false;
-    protected boolean firstInit = true;
-    protected boolean processingReady = true;
+    private volatile boolean chunkingAndSyncing = false;
+    private volatile boolean printedRateLimitMessage = false;
+    private boolean sentAuthInfo = false;
+    private boolean firstInit = true;
+    private boolean processingReady = true;
 
-    protected volatile ConnectNode connectNode = null;
+    private volatile ConnectNode connectNode;
 
     public WebSocketClient(JDAImpl api)
     {
@@ -150,7 +151,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         return traces;
     }
 
-    protected void updateTraces(JSONArray arr, String type, int opCode)
+    private void updateTraces(JSONArray arr, String type, int opCode)
     {
         WebSocketClient.LOG.debug("Received a _trace for {} (OP: {}) with {}", type, opCode, arr);
         traces.clear();
@@ -158,13 +159,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             traces.add(String.valueOf(o));
     }
 
-    protected void allocateBuffer(byte[] binary) throws IOException
+    private void allocateBuffer(byte[] binary) throws IOException
     {
         this.readBuffer = new ByteArrayOutputStream(binary.length * 2);
         this.readBuffer.write(binary);
     }
 
-    protected void extendBuffer(byte[] binary) throws IOException
+    private void extendBuffer(byte[] binary) throws IOException
     {
         if (this.readBuffer != null)
             this.readBuffer.write(binary);
@@ -252,17 +253,17 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         if (this.ratelimitResetTime <= now)
         {
-            this.messagesSent = 0;
+            this.messagesSent.set(0);
             this.ratelimitResetTime = now + 60000;//60 seconds
             this.printedRateLimitMessage = false;
         }
 
         //Allows 115 messages to be sent before limiting.
-        if (this.messagesSent <= 115 || (skipQueue && this.messagesSent <= 119))   //technically we could go to 120, but we aren't going to chance it
+        if (this.messagesSent.get() <= 115 || (skipQueue && this.messagesSent.get() <= 119))   //technically we could go to 120, but we aren't going to chance it
         {
             LOG.trace("<- {}", message);
             socket.sendText(message);
-            this.messagesSent++;
+            this.messagesSent.getAndIncrement();
             return true;
         }
         else
@@ -442,7 +443,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         ### Start Internal methods ###
      */
 
-    protected synchronized void connect()
+    private synchronized void connect()
     {
         if (api.getStatus() != JDA.Status.ATTEMPTING_TO_RECONNECT)
             api.setStatus(JDA.Status.CONNECTING_TO_WEBSOCKET);
@@ -462,21 +463,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         catch (IOException | WebSocketException e)
         {
+            api.resetGatewayUrl();
             //Completely fail here. We couldn't make the connection.
             throw new IllegalStateException(e);
-        }
-    }
-
-    protected String getGateway()
-    {
-        try
-        {
-            return api.getSessionController().getGateway(api)
-                + "?encoding=json&compress=zlib-stream&v=" + DISCORD_GATEWAY_VERSION;
-        }
-        catch (Exception ex)
-        {
-            return null;
         }
     }
 
@@ -500,7 +489,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         connected = true;
         reconnectTimeoutS = 2;
-        messagesSent = 0;
+        messagesSent.set(0);
         ratelimitResetTime = System.currentTimeMillis() + 60000;
         if (sessionId == null)
             sendIdentify();
@@ -592,7 +581,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
-    protected void queueReconnect()
+    private void queueReconnect()
     {
         if (!handleIdentifyRateLimit)
             LOG.warn("Got disconnected from WebSocket (Internet?!)... Appending session to reconnect queue");
@@ -611,7 +600,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
-    protected void reconnect() throws InterruptedException
+    private void reconnect() throws InterruptedException
     {
         reconnect(false, true);
     }
@@ -676,7 +665,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
-    protected void setupKeepAlive(long timeout)
+    private void setupKeepAlive(long timeout)
     {
         keepAliveThread = new Thread(() ->
         {
@@ -709,7 +698,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         keepAliveThread.start();
     }
 
-    protected void sendKeepAlive()
+    private void sendKeepAlive()
     {
         String keepAlivePacket =
                 new JSONObject()
@@ -722,7 +711,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         heartbeatStartTime = System.currentTimeMillis();
     }
 
-    protected void sendIdentify()
+    private void sendIdentify()
     {
         LOG.debug("Sending Identify-packet...");
         PresenceImpl presenceObj = (PresenceImpl) api.getPresence();
@@ -757,7 +746,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         api.setStatus(JDA.Status.AWAITING_LOGIN_CONFIRMATION);
     }
 
-    protected void sendResume()
+    private void sendResume()
     {
         LOG.debug("Sending Resume-packet...");
         JSONObject resume = new JSONObject()
@@ -771,7 +760,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         api.setStatus(JDA.Status.AWAITING_LOGIN_CONFIRMATION);
     }
 
-    protected void invalidate()
+    private void invalidate()
     {
         sessionId = null;
         chunkingAndSyncing = false;
@@ -802,7 +791,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
-    protected void updateAudioManagerReferences()
+    private void updateAudioManagerReferences()
     {
         final TLongObjectMap<AudioManager> managerMap = api.getAudioManagerMap();
         if (managerMap.size() > 0)
@@ -865,7 +854,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
-    protected String getToken()
+    private String getToken()
     {
         if (api.getAccountType() == AccountType.BOT)
             return api.getToken().substring("Bot ".length());
@@ -1345,7 +1334,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 //        return queuedAudioConnections;
 //    }
 
-    protected ConnectionRequest getNextAudioConnectRequest()
+    private ConnectionRequest getNextAudioConnectRequest()
     {
         //Don't try to setup audio connections before JDA has finished loading.
         if (!isReady())
@@ -1471,7 +1460,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
-    protected abstract class ConnectNode implements SessionController.SessionConnectNode
+    private abstract class ConnectNode implements SessionController.SessionConnectNode
     {
         @Override
         public JDA getJDA()
@@ -1486,7 +1475,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
-    protected class StartingNode extends ConnectNode
+    private class StartingNode extends ConnectNode
     {
         @Override
         public boolean isReconnect()
@@ -1507,7 +1496,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
-    protected class ReconnectNode extends ConnectNode
+    private class ReconnectNode extends ConnectNode
     {
         @Override
         public boolean isReconnect()
