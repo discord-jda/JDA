@@ -17,18 +17,15 @@
 package net.dv8tion.jda.core.requests.restaction.pagination;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.Procedure;
+import net.dv8tion.jda.core.utils.Promise;
 
 import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -364,7 +361,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return {@link java.util.concurrent.Future Future} that can be cancelled to stop iteration from outside!
      */
-    public Future<?> forEachAsync(final Procedure<T> action)
+    public RequestFuture<?> forEachAsync(final Procedure<T> action)
     {
         return forEachAsync(action, (throwable) ->
         {
@@ -410,12 +407,12 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return {@link java.util.concurrent.Future Future} that can be cancelled to stop iteration from outside!
      */
-    public Future<?> forEachAsync(final Procedure<T> action, final Consumer<Throwable> failure)
+    public RequestFuture<?> forEachAsync(final Procedure<T> action, final Consumer<Throwable> failure)
     {
         Checks.notNull(action, "Procedure");
         Checks.notNull(failure, "Failure Consumer");
 
-        final CompletableFuture<?> task = new CompletableFuture<>();
+        final Promise<?> task = new Promise<>();
         final Consumer<List<T>> acceptor = new ChainedConsumer(task, action, (throwable) ->
         {
             task.completeExceptionally(throwable);
@@ -468,7 +465,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return {@link java.util.concurrent.Future Future} that can be cancelled to stop iteration from outside!
      */
-    public Future<?> forEachRemainingAsync(final Procedure<T> action)
+    public RequestFuture<?> forEachRemainingAsync(final Procedure<T> action)
     {
         return forEachRemainingAsync(action, (throwable) ->
         {
@@ -514,12 +511,12 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return {@link java.util.concurrent.Future Future} that can be cancelled to stop iteration from outside!
      */
-    public Future<?> forEachRemainingAsync(final Procedure<T> action, final Consumer<Throwable> failure)
+    public RequestFuture<?> forEachRemainingAsync(final Procedure<T> action, final Consumer<Throwable> failure)
     {
         Checks.notNull(action, "Procedure");
         Checks.notNull(failure, "Failure Consumer");
 
-        final CompletableFuture<?> task = new CompletableFuture<>();
+        final Promise<?> task = new Promise<>();
         final Consumer<List<T>> acceptor = new ChainedConsumer(task, action, (throwable) ->
         {
             task.completeExceptionally(throwable);
