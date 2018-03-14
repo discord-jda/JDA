@@ -207,6 +207,11 @@ public class DefaultShardManager implements ShardManager
     protected boolean enableMDC;
 
     /**
+     * Whether to enable transport compression
+     */
+    protected boolean enableCompression;
+
+    /**
      * Creates a new DefaultShardManager instance.
      * @param  shardsTotal
      *         The total amount of shards or {@code -1} to retrieve the recommended amount from discord.
@@ -259,6 +264,8 @@ public class DefaultShardManager implements ShardManager
      *         Whether MDC should be enabled
      * @param  contextProvider
      *         The MDC context provider new JDA instances should use on startup
+     * @param  enableCompression
+     *         Whether to enable transport compression
      */
     protected DefaultShardManager(final int shardsTotal, final Collection<Integer> shardIds,
                                   final SessionController controller, final List<Object> listeners,
@@ -271,7 +278,8 @@ public class DefaultShardManager implements ShardManager
                                   final boolean enableShutdownHook, final boolean enableBulkDeleteSplitting,
                                   final boolean autoReconnect, final IntFunction<Boolean> idleProvider,
                                   final boolean retryOnTimeout, final boolean useShutdownNow,
-                                  final boolean enableMDC, final IntFunction<ConcurrentMap<String, String>> contextProvider)
+                                  final boolean enableMDC, final IntFunction<ConcurrentMap<String, String>> contextProvider,
+                                  final boolean enableCompression)
     {
         this.shardsTotal = shardsTotal;
         this.listeners = listeners;
@@ -296,6 +304,7 @@ public class DefaultShardManager implements ShardManager
         this.useShutdownNow = useShutdownNow;
         this.contextProvider = contextProvider;
         this.enableMDC = enableMDC;
+        this.enableCompression = enableCompression;
 
         synchronized (queue)
         {
@@ -626,7 +635,7 @@ public class DefaultShardManager implements ShardManager
 
         final JDA.ShardInfo shardInfo = new JDA.ShardInfo(shardId, this.shardsTotal);
 
-        final int shardTotal = jda.login(this.gatewayURL, shardInfo);
+        final int shardTotal = jda.login(this.gatewayURL, shardInfo, this.enableCompression);
         if (this.shardsTotal == -1)
             this.shardsTotal = shardTotal;
 

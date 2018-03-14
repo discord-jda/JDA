@@ -75,6 +75,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected final Map<String, SocketHandler> handlers = new HashMap<>();
     protected final Set<String> cfRays = new HashSet<>();
     protected final Set<String> traces = new HashSet<>();
+    protected final boolean compression;
 
     public WebSocket socket;
     protected String sessionId = null;
@@ -113,10 +114,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected volatile ConnectNode connectNode;
 
-    public WebSocketClient(JDAImpl api)
+    public WebSocketClient(JDAImpl api, boolean compression)
     {
         this.api = api;
         this.shardInfo = api.getShardInfo();
+        this.compression = compression;
         this.shouldReconnect = api.isAutoReconnect();
         this.connectNode = new StartingNode();
         try
@@ -451,7 +453,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             throw new RejectedExecutionException("JDA is shutdown!");
         initiating = true;
 
-        String url = api.getGatewayUrl() + "?encoding=json&compress=zlib-stream&v=" + DISCORD_GATEWAY_VERSION;
+        String url = api.getGatewayUrl() + "?encoding=json&v=" + DISCORD_GATEWAY_VERSION;
+        if (compression)
+            url += "&compress=zlib-stream";
 
         try
         {
@@ -726,10 +730,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             .put("token", getToken())
             .put("properties", connectionProperties)
             .put("v", DISCORD_GATEWAY_VERSION)
-            .put("large_threshold", 250)
+            .put("large_threshold", 250);
             //Used to make the READY event be given
             // as compressed binary data when over a certain size. TY @ShadowLordAlpha
-            .put("compress", true);
+            //.put("compress", true);
         JSONObject identify = new JSONObject()
                 .put("op", WebSocketCode.IDENTIFY)
                 .put("d", payload);
@@ -879,63 +883,68 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         return output;
     }
 
-    protected void onEvent(JSONObject content)
+    protected void handleEvent(JSONObject content)
     {
         try
         {
-            int opCode = content.getInt("op");
-
-            if (!content.isNull("s"))
-            {
-                api.setResponseTotal(content.getInt("s"));
-            }
-
-            switch (opCode)
-            {
-                case WebSocketCode.DISPATCH:
-                    onDispatch(content);
-                    break;
-                case WebSocketCode.HEARTBEAT:
-                    LOG.debug("Got Keep-Alive request (OP 1). Sending response...");
-                    sendKeepAlive();
-                    break;
-                case WebSocketCode.RECONNECT:
-                    LOG.debug("Got Reconnect request (OP 7). Closing connection now...");
-                    close(4000, "OP 7: RECONNECT");
-                    break;
-                case WebSocketCode.INVALIDATE_SESSION:
-                    LOG.debug("Got Invalidate request (OP 9). Invalidating...");
-                    sentAuthInfo = false;
-                    final boolean isResume = content.getBoolean("d");
-                    // When d: true we can wait a bit and then try to resume again
-                    //sending 4000 to not drop session
-                    int closeCode = isResume ? 4000 : 1000;
-                    if (isResume)
-                        LOG.debug("Session can be recovered... Closing and sending new RESUME request");
-                    else
-                        invalidate();
-
-                    close(closeCode, INVALIDATE_REASON);
-                    break;
-                case WebSocketCode.HELLO:
-                    LOG.debug("Got HELLO packet (OP 10). Initializing keep-alive.");
-                    final JSONObject data = content.getJSONObject("d");
-                    setupKeepAlive(data.getLong("heartbeat_interval"));
-                    if (!data.isNull("_trace"))
-                        updateTraces(data.getJSONArray("_trace"), "HELLO", WebSocketCode.HELLO);
-                    break;
-                case WebSocketCode.HEARTBEAT_ACK:
-                    LOG.trace("Got Heartbeat Ack (OP 11).");
-                    api.setPing(System.currentTimeMillis() - heartbeatStartTime);
-                    break;
-                default:
-                    LOG.debug("Got unknown op-code: {} with content: {}", opCode, content);
-            }
+            onEvent(content);
         }
         catch (Exception ex)
         {
             LOG.error("Encountered exception on lifecycle level\nJSON: {}", content, ex);
             api.getEventManager().handle(new ExceptionEvent(api, ex, true));
+        }
+    }
+
+    protected void onEvent(JSONObject content)
+    {
+        int opCode = content.getInt("op");
+
+        if (!content.isNull("s"))
+        {
+            api.setResponseTotal(content.getInt("s"));
+        }
+
+        switch (opCode)
+        {
+            case WebSocketCode.DISPATCH:
+                onDispatch(content);
+                break;
+            case WebSocketCode.HEARTBEAT:
+                LOG.debug("Got Keep-Alive request (OP 1). Sending response...");
+                sendKeepAlive();
+                break;
+            case WebSocketCode.RECONNECT:
+                LOG.debug("Got Reconnect request (OP 7). Closing connection now...");
+                close(4000, "OP 7: RECONNECT");
+                break;
+            case WebSocketCode.INVALIDATE_SESSION:
+                LOG.debug("Got Invalidate request (OP 9). Invalidating...");
+                sentAuthInfo = false;
+                final boolean isResume = content.getBoolean("d");
+                // When d: true we can wait a bit and then try to resume again
+                //sending 4000 to not drop session
+                int closeCode = isResume ? 4000 : 1000;
+                if (isResume)
+                    LOG.debug("Session can be recovered... Closing and sending new RESUME request");
+                else
+                    invalidate();
+
+                close(closeCode, INVALIDATE_REASON);
+                break;
+            case WebSocketCode.HELLO:
+                LOG.debug("Got HELLO packet (OP 10). Initializing keep-alive.");
+                final JSONObject data = content.getJSONObject("d");
+                setupKeepAlive(data.getLong("heartbeat_interval"));
+                if (!data.isNull("_trace"))
+                    updateTraces(data.getJSONArray("_trace"), "HELLO", WebSocketCode.HELLO);
+                break;
+            case WebSocketCode.HEARTBEAT_ACK:
+                LOG.trace("Got Heartbeat Ack (OP 11).");
+                api.setPing(System.currentTimeMillis() - heartbeatStartTime);
+                break;
+            default:
+                LOG.debug("Got unknown op-code: {} with content: {}", opCode, content);
         }
     }
 
@@ -1061,7 +1070,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         //reading thread
         if (api.getContextMap() != null)
             MDC.setContextMap(api.getContextMap());
-        onEvent(new JSONObject(message));
+        handleEvent(new JSONObject(message));
     }
 
     @Override
@@ -1070,12 +1079,14 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         //reading thread
         if (api.getContextMap() != null)
             MDC.setContextMap(api.getContextMap());
+        JSONObject json;
         synchronized (readLock)
         {
             if (!onBufferMessage(binary))
                 return;
-            handleBinary(binary);
+            json = handleBinary(binary);
         }
+        handleEvent(json);
     }
 
     protected boolean onBufferMessage(byte[] binary) throws IOException
@@ -1094,7 +1105,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         return false;
     }
 
-    protected void handleBinary(byte[] binary) throws DataFormatException, UnsupportedEncodingException
+    protected JSONObject handleBinary(byte[] binary) throws DataFormatException, UnsupportedEncodingException
     {
         //Thanks to ShadowLordAlpha and Shredder121 for code and debugging.
         //Get the compressed message and inflate it
@@ -1113,14 +1124,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         finally { readBuffer = null; }
 
-        // send the inflated message to the TextMessage method
-        JSONObject json;
-        {
-            String jsonString = decompressBuffer.toString("UTF-8");
-            decompressBuffer.reset();
-            json = new JSONObject(jsonString);
-        } //free string
-        onEvent(json);
+        String jsonString = decompressBuffer.toString("UTF-8");
+        decompressBuffer.reset();
+        return new JSONObject(jsonString);
     }
 
     protected static int getInt(byte[] sink, int offset)
