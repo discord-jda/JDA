@@ -346,6 +346,10 @@ public class ChannelManager extends ManagerBase
     @CheckReturnValue
     public ChannelManager removePermissionOverride(IPermissionHolder permHolder)
     {
+        Checks.notNull(permHolder, "PermissionHolder");
+        Checks.check(permHolder.getGuild().equals(getGuild()), "PermissionHolder is not from the same Guild!");
+        if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_PERMISSIONS))
+            throw new InsufficientPermissionException(Permission.MANAGE_PERMISSIONS);
         final long id = getId(permHolder);
         withLock(lock, (lock) ->
         {
