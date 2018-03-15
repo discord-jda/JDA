@@ -32,8 +32,6 @@ import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.core.entities.Channel Guild Channel}.
@@ -599,7 +597,7 @@ public class ChannelManager extends ManagerBase
         return super.checkPermissions();
     }
 
-    protected Set<PermOverrideData> getOverrides()
+    protected Collection<PermOverrideData> getOverrides()
     {
         //note: overridesAdd and overridesRem are mutually disjoint
         TLongObjectHashMap<PermOverrideData> data = new TLongObjectHashMap<>(this.overridesAdd);
@@ -613,7 +611,7 @@ public class ChannelManager extends ManagerBase
                 data.put(id, new PermOverrideData(override));
             return true;
         });
-        return new HashSet<>(data.valueCollection());
+        return data.valueCollection();
     }
 
     protected long getId(IPermissionHolder holder)
