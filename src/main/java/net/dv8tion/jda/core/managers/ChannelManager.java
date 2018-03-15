@@ -277,6 +277,9 @@ public class ChannelManager extends ManagerBase
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided permission holder is {@code null}
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
+     *         in this channel
      *
      * @return ChannelManager for chaining convenience
      *
@@ -316,6 +319,9 @@ public class ChannelManager extends ManagerBase
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided permission holder is {@code null}
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
+     *         in this channel
      *
      * @return ChannelManager for chaining convenience
      *
@@ -340,6 +346,9 @@ public class ChannelManager extends ManagerBase
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided permission holder is {@code null}
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
+     *         in this channel
      *
      * @return ChannelManager for chaining convenience
      */
