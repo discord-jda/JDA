@@ -34,6 +34,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.function.Function;
 
 /**
  * Used to create new {@link net.dv8tion.jda.core.JDA} instances. This is also useful for making sure all of
@@ -70,6 +72,7 @@ public class JDABuilder
     protected boolean autoReconnect = true;
     protected boolean idle = false;
     protected boolean requestTimeoutRetry = true;
+    protected Function<JDA, ScheduledThreadPoolExecutor> ratelimiterPool = null;
 
     /**
      * Creates a completely empty JDABuilder.
@@ -536,6 +539,26 @@ public class JDABuilder
     }
 
     /**
+     * Set an optional provider of a ratelimiter pool. The ratelimiter pool provides the threads that get used to
+     * execute RestActions in a blocking fashion. By default, JDA creates a pool of 5 threads for this task, per shard.
+     * This method allows you to plug in your own threadpool(s) for executing RestAction http requests.
+     * <p>
+     * NOTE: If you set a ratelimiter pool provider, JDA will not manage the pools' lifecycle. This is to avoid issues
+     * like shutting down a pool that is shared by several shards, when a single shard gets restarted, rendering all the
+     * shards unusable. You will have to manage the lifecycle of the pools yourself.
+     *
+     * @param ratelimiterPool
+     *         The provider of a ratelimiter pool to use for executing RestAction http requests
+     *
+     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public JDABuilder setRatelimiterPool(Function<JDA, ScheduledThreadPoolExecutor> ratelimiterPool)
+    {
+        this.ratelimiterPool = ratelimiterPool;
+        return this;
+    }
+
+    /**
      * Builds a new {@link net.dv8tion.jda.core.JDA} instance and uses the provided token to start the login process.
      * <br>The login process runs in a different thread, so while this will return immediately, {@link net.dv8tion.jda.core.JDA} has not
      * finished loading, thus many {@link net.dv8tion.jda.core.JDA} methods have the chance to return incorrect information.
@@ -564,7 +587,7 @@ public class JDABuilder
             controller = new SessionControllerAdapter();
         
         JDAImpl jda = new JDAImpl(accountType, token, controller, httpClientBuilder, wsFactory, autoReconnect, enableVoice, enableShutdownHook,
-                enableBulkDeleteSplitting, requestTimeoutRetry, enableContext, corePoolSize, maxReconnectDelay, contextMap);
+            enableBulkDeleteSplitting, requestTimeoutRetry, enableContext, corePoolSize, maxReconnectDelay, contextMap, ratelimiterPool);
 
         if (eventManager != null)
             jda.setEventManager(eventManager);

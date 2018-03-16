@@ -16,6 +16,7 @@
 package net.dv8tion.jda.bot.sharding;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
+import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Game;
@@ -31,7 +32,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
+import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 
@@ -70,6 +73,7 @@ public class DefaultShardManagerBuilder
     protected WebSocketFactory wsFactory = null;
     protected IAudioSendFactory audioSendFactory = null;
     protected ThreadFactory threadFactory = null;
+    protected Function<JDA, ScheduledThreadPoolExecutor> ratelimiterPool = null;
 
     /**
      * Creates a completely empty DefaultShardManagerBuilder.
@@ -374,7 +378,7 @@ public class DefaultShardManagerBuilder
      * @throws java.lang.IllegalArgumentException
      *         If the specified core pool size is not positive
      *
-     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return Returns the {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
      */
     public DefaultShardManagerBuilder setCorePoolSize(int size)
     {
@@ -574,7 +578,7 @@ public class DefaultShardManagerBuilder
      * @param  builder
      *         The new {@link okhttp3.OkHttpClient.Builder OkHttpClient.Builder} to use.
      *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return Returns the {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
      */
     public DefaultShardManagerBuilder setHttpClientBuilder(OkHttpClient.Builder builder)
     {
@@ -612,7 +616,7 @@ public class DefaultShardManagerBuilder
      * @param  retryOnTimeout
      *         True, if the Request should retry once on a socket timeout
      *
-     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return Returns the {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
      */
     public DefaultShardManagerBuilder setRequestTimeoutRetry(boolean retryOnTimeout)
     {
@@ -780,11 +784,31 @@ public class DefaultShardManagerBuilder
      * @param  factory
      *         The new {@link com.neovisionaries.ws.client.WebSocketFactory WebSocketFactory} to use.
      *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return Returns the {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
      */
     public DefaultShardManagerBuilder setWebsocketFactory(WebSocketFactory factory)
     {
         this.wsFactory = factory;
+        return this;
+    }
+
+    /**
+     * Set an optional provider of a ratelimiter pool. The ratelimiter pool provides the threads that get used to
+     * execute RestActions in a blocking fashion. By default, JDA creates a pool of 5 threads for this task, per shard.
+     * This method allows you to plug in your own threadpool(s) for executing RestAction http requests.
+     * <p>
+     * NOTE: If you set a ratelimiter pool provider, JDA will not manage the pools' lifecycle. This is to avoid issues
+     * like shutting down a pool that is shared by several shards, when a single shard gets restarted, rendering all the
+     * shards unusable. You will have to manage the lifecycle of the pools yourself.
+     *
+     * @param ratelimiterPool
+     *         The provider of a ratelimiter pool to use for executing RestAction http requests
+     *
+     * @return Returns the {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     */
+    public DefaultShardManagerBuilder setRatelimiterPool(Function<JDA, ScheduledThreadPoolExecutor> ratelimiterPool)
+    {
+        this.ratelimiterPool = ratelimiterPool;
         return this;
     }
 
@@ -813,7 +837,8 @@ public class DefaultShardManagerBuilder
             this.audioSendFactory, this.gameProvider, this.statusProvider,
             this.httpClientBuilder, this.wsFactory, this.threadFactory,
             this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting,
-            this.autoReconnect, this.idleProvider, this.retryOnTimeout, this.useShutdownNow, this.enableContext, this.contextProvider);
+            this.autoReconnect, this.idleProvider, this.retryOnTimeout, this.useShutdownNow, this.enableContext, this.contextProvider,
+            this.ratelimiterPool);
 
         manager.login();
 

@@ -35,15 +35,16 @@ import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class BotRateLimiter extends RateLimiter
 {
     protected volatile Long timeOffset = null;
 
-    public BotRateLimiter(Requester requester, int poolSize)
+    public BotRateLimiter(Requester requester, ScheduledThreadPoolExecutor pool, boolean managePoolLifecycle)
     {
-        super(requester, poolSize);
+        super(requester, pool, managePoolLifecycle);
     }
 
     @Override

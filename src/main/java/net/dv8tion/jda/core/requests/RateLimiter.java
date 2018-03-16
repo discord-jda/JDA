@@ -16,16 +16,13 @@
 
 package net.dv8tion.jda.core.requests;
 
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.ratelimit.IBucket;
-import org.slf4j.MDC;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class RateLimiter
 {
@@ -33,14 +30,16 @@ public abstract class RateLimiter
 
     protected final Requester requester;
     protected final ScheduledThreadPoolExecutor pool;
+    private final boolean managePoolLifecycle;
     protected volatile boolean isShutdown = false; 
     protected volatile ConcurrentHashMap<String, IBucket> buckets = new ConcurrentHashMap<>();
     protected volatile ConcurrentLinkedQueue<IBucket> submittedBuckets = new ConcurrentLinkedQueue<>();
 
-    protected RateLimiter(Requester requester, int poolSize)
+    protected RateLimiter(Requester requester, ScheduledThreadPoolExecutor pool, boolean managePoolLifecycle)
     {
         this.requester = requester;
-        this.pool = new ScheduledThreadPoolExecutor(poolSize, new RateLimitThreadFactory(requester.getJDA()));
+        this.pool = pool;
+        this.managePoolLifecycle = managePoolLifecycle;
     }
 
     protected boolean isSkipped(Iterator<Request> it, Request request)
@@ -100,37 +99,19 @@ public abstract class RateLimiter
     {
         isShutdown = true;
 
-        pool.setKeepAliveTime(time, unit);
-        pool.allowCoreThreadTimeOut(true);
+        if (managePoolLifecycle)
+        {
+            pool.setKeepAliveTime(time, unit);
+            pool.allowCoreThreadTimeOut(true);
+        }
     }
 
     public void forceShutdown()
     {
-        pool.shutdownNow();
-    }
-
-    private class RateLimitThreadFactory implements ThreadFactory
-    {
-        final String identifier;
-        final AtomicInteger threadCount = new AtomicInteger(1);
-
-        public RateLimitThreadFactory(JDAImpl api)
+        if (managePoolLifecycle)
         {
-            identifier = api.getIdentifierString() + " RateLimit-Queue Pool";
-        }
-
-        @Override
-        public Thread newThread(Runnable r)
-        {
-            Thread t = new Thread(() ->
-            {
-                if (requester.api.getContextMap() != null)
-                    MDC.setContextMap(requester.api.getContextMap());
-                r.run();
-            }, identifier + " - Thread " + threadCount.getAndIncrement());
-            t.setDaemon(true);
-
-            return t;
+            pool.shutdownNow();
         }
     }
+
 }

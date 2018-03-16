@@ -29,6 +29,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import okhttp3.internal.http.HttpMethod;
 import org.slf4j.Logger;
+import org.slf4j.MDC;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,7 +38,11 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.zip.GZIPInputStream;
 
 public class Requester
@@ -55,21 +60,32 @@ public class Requester
 
     private volatile boolean retryOnTimeout = false;
 
-    public Requester(JDA api)
+    public Requester(JDA api, Function<JDA, ScheduledThreadPoolExecutor> pool)
     {
-        this(api, api.getAccountType());
+        this(api, api.getAccountType(), pool);
     }
 
-    public Requester(JDA api, AccountType accountType)
+    public Requester(JDA api, AccountType accountType, Function<JDA, ScheduledThreadPoolExecutor> pool)
     {
         if (accountType == null)
             throw new NullPointerException("Provided accountType was null!");
 
         this.api = (JDAImpl) api;
+        ScheduledThreadPoolExecutor ratelimitPool;
+        boolean managePoolLifecycle;
+        if (pool != null)
+        {
+            ratelimitPool = pool.apply(api);
+            managePoolLifecycle = false;
+        } else
+        {
+            ratelimitPool = new ScheduledThreadPoolExecutor(5, new RateLimitThreadFactory(this.api));
+            managePoolLifecycle = true;
+        }
         if (accountType == AccountType.BOT)
-            rateLimiter = new BotRateLimiter(this, 5);
+            rateLimiter = new BotRateLimiter(this, ratelimitPool, managePoolLifecycle);
         else
-            rateLimiter = new ClientRateLimiter(this, 5);
+            rateLimiter = new ClientRateLimiter(this, ratelimitPool, managePoolLifecycle);
         
         this.httpClient = this.api.getHttpClientBuilder().build();
     }
@@ -276,5 +292,30 @@ public class Requester
         if (encoding.equals("gzip"))
             return new GZIPInputStream(response.body().byteStream());
         return response.body().byteStream();
+    }
+
+    private class RateLimitThreadFactory implements ThreadFactory
+    {
+        final String identifier;
+        final AtomicInteger threadCount = new AtomicInteger(1);
+
+        public RateLimitThreadFactory(JDAImpl api)
+        {
+            identifier = api.getIdentifierString() + " RateLimit-Queue Pool";
+        }
+
+        @Override
+        public Thread newThread(Runnable r)
+        {
+            Thread t = new Thread(() ->
+            {
+                if (api.getContextMap() != null)
+                    MDC.setContextMap(api.getContextMap());
+                r.run();
+            }, identifier + " - Thread " + threadCount.getAndIncrement());
+            t.setDaemon(true);
+
+            return t;
+        }
     }
 }

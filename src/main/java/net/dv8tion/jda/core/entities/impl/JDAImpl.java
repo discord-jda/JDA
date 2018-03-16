@@ -51,6 +51,7 @@ import org.slf4j.MDC;
 import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class JDAImpl implements JDA
@@ -89,6 +90,7 @@ public class JDAImpl implements JDA
 
     protected WebSocketClient client;
     protected Requester requester;
+    protected Function<JDA, ScheduledThreadPoolExecutor> ratelimiterPool;
     protected IEventManager eventManager = new InterfacedEventManager();
     protected IAudioSendFactory audioSendFactory = new DefaultSendFactory();
     protected ScheduledThreadPoolExecutor audioKeepAlivePool;
@@ -105,7 +107,8 @@ public class JDAImpl implements JDA
 
     public JDAImpl(AccountType accountType, String token, SessionController controller, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory,
                    boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled, boolean retryOnTimeout, boolean enableMDC,
-                   int corePoolSize, int maxReconnectDelay, ConcurrentMap<String, String> contextMap)
+                   int corePoolSize, int maxReconnectDelay, ConcurrentMap<String, String> contextMap,
+                   Function<JDA, ScheduledThreadPoolExecutor> ratelimiterPool)
     {
         this.accountType = accountType;
         this.setToken(token);
@@ -124,8 +127,9 @@ public class JDAImpl implements JDA
             this.contextMap = null;
 
         this.presence = new PresenceImpl(this);
-        this.requester = new Requester(this);
+        this.requester = new Requester(this, ratelimiterPool);
         this.requester.setRetryOnTimeout(retryOnTimeout);
+        this.ratelimiterPool = ratelimiterPool;
 
         this.jdaClient = accountType == AccountType.CLIENT ? new JDAClientImpl(this) : null;
         this.jdaBot = accountType == AccountType.BOT ? new JDABotImpl(this) : null;
@@ -258,12 +262,12 @@ public class JDAImpl implements JDA
         if (getAccountType() == AccountType.BOT)
         {
             token = token.substring("Bot ".length());
-            requester = new Requester(this, AccountType.CLIENT);
+            requester = new Requester(this, AccountType.CLIENT, ratelimiterPool);
         }
         else    //If we attempted to login as a Client, prepend the "Bot " prefix and set the Requester to be a Bot
         {
             token = "Bot " + token;
-            requester = new Requester(this, AccountType.BOT);
+            requester = new Requester(this, AccountType.BOT, ratelimiterPool);
         }
 
         userResponse = checkToken(login);
