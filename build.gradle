@@ -34,8 +34,8 @@ group = "net.dv8tion"
 archivesBaseName = "JDA"
 version = "$versionObj"
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 1.9
+targetCompatibility = 1.9
 
 repositories {
     jcenter()
