@@ -1,6 +1,12 @@
 module net.dv8tion.JDA {
     requires jsr305;
     requires java.desktop;
+    requires trove4j;
+    requires json;
+    requires slf4j.api;
+    requires okhttp;
+    requires nv.websocket.client;
+    requires commons.collections4;
     
     exports net.dv8tion.jda.bot;
     exports net.dv8tion.jda.bot.entities;
