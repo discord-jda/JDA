@@ -25,11 +25,7 @@ import net.dv8tion.jda.core.utils.SessionController;
 import okhttp3.OkHttpClient;
 
 import javax.security.auth.login.LoginException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
 import java.util.function.IntFunction;
@@ -57,6 +53,7 @@ public class DefaultShardManagerBuilder
     protected boolean autoReconnect = true;
     protected boolean retryOnTimeout = true;
     protected boolean useShutdownNow = false;
+    protected boolean enableCompression = true;
     protected int shardsTotal = -1;
     protected int maxReconnectDelay = 900;
     protected int corePoolSize = 2;
@@ -137,6 +134,28 @@ public class DefaultShardManagerBuilder
     public DefaultShardManagerBuilder setContextEnabled(boolean enable)
     {
         this.enableContext = enable;
+        return this;
+    }
+
+    /**
+     * Enable stream-compression on the gateway connection,
+     * this will decrease the amount of used bandwidth for the running bot instance
+     * for the cost of a few extra cycles for decompression.
+     * <br><b>Default: true</b>
+     *
+     * <p><b>We recommend to keep this enabled unless you have issues with the decompression</b>
+     * <br>This mode might become obligatory in a future version, do not rely on this switch to stay.
+     *
+     * @param  enable
+     *         True, if the gateway connection should use compression
+     *
+     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     *
+     * @see    <a href="https://discordapp.com/developers/docs/topics/gateway#transport-compression" target="_blank">Official Discord Documentation - Transport Compression</a>
+     */
+    public DefaultShardManagerBuilder setCompressionEnabled(boolean enable)
+    {
+        this.enableCompression = enable;
         return this;
     }
 
@@ -813,7 +832,7 @@ public class DefaultShardManagerBuilder
             this.audioSendFactory, this.gameProvider, this.statusProvider,
             this.httpClientBuilder, this.wsFactory, this.threadFactory,
             this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting,
-            this.autoReconnect, this.idleProvider, this.retryOnTimeout, this.useShutdownNow, this.enableContext, this.contextProvider);
+            this.autoReconnect, this.idleProvider, this.retryOnTimeout, this.useShutdownNow, this.enableContext, this.contextProvider, this.enableCompression);
 
         manager.login();
 

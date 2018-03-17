@@ -70,6 +70,7 @@ public class JDABuilder
     protected boolean autoReconnect = true;
     protected boolean idle = false;
     protected boolean requestTimeoutRetry = true;
+    protected boolean enableCompression = true;
 
     /**
      * Creates a completely empty JDABuilder.
@@ -131,6 +132,28 @@ public class JDABuilder
     public JDABuilder setContextEnabled(boolean enable)
     {
         this.enableContext = enable;
+        return this;
+    }
+
+    /**
+     * Enable stream-compression on the gateway connection,
+     * this will decrease the amount of used bandwidth for the running bot instance
+     * for the cost of a few extra cycles for decompression.
+     * <br><b>Default: true</b>
+     *
+     * <p><b>We recommend to keep this enabled unless you have issues with the decompression</b>
+     * <br>This mode might become obligatory in a future version, do not rely on this switch to stay.
+     *
+     * @param  enable
+     *         True, if the gateway connection should use compression
+     *
+     * @return The JDABuilder instance. Useful for chaining
+     *
+     * @see    <a href="https://discordapp.com/developers/docs/topics/gateway#transport-compression" target="_blank">Official Discord Documentation - Transport Compression</a>
+     */
+    public JDABuilder setCompressionEnabled(boolean enable)
+    {
+        this.enableCompression = enable;
         return this;
     }
 
@@ -582,7 +605,7 @@ public class JDABuilder
                 .setCacheGame(game)
                 .setCacheIdle(idle)
                 .setCacheStatus(status);
-        jda.login(gateway, shardInfo);
+        jda.login(gateway, shardInfo, enableCompression);
         return jda;
     }
 
