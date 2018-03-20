@@ -29,15 +29,42 @@ import net.dv8tion.jda.core.events.channel.category.GenericCategoryEvent;
  */
 public abstract class GenericCategoryUpdateEvent<T> extends GenericCategoryEvent implements UpdateEvent<Category, T>
 {
-    public GenericCategoryUpdateEvent(JDA api, long responseNumber, Category category)
+    protected final T previous;
+    protected final T next;
+    protected final String identifier;
+
+    public GenericCategoryUpdateEvent(
+        JDA api, long responseNumber, Category category,
+        T previous, T next, String identifier)
     {
         super(api, responseNumber, category);
+        this.previous = previous;
+        this.next = next;
+        this.identifier = identifier;
     }
 
     @Override
     public Category getEntity()
     {
         return getCategory();
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return identifier;
+    }
+
+    @Override
+    public T getOldValue()
+    {
+        return previous;
+    }
+
+    @Override
+    public T getNewValue()
+    {
+        return next;
     }
 
     @Override

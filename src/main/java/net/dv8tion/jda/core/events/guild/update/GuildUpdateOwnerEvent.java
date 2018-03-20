@@ -31,14 +31,9 @@ public class GuildUpdateOwnerEvent extends GenericGuildUpdateEvent<Member>
 {
     public static final String IDENTIFIER = "owner";
 
-    private final Member oldOwner;
-    private final Member newOwner;
-
     public GuildUpdateOwnerEvent(JDA api, long responseNumber, Guild guild, Member oldOwner)
     {
-        super(api, responseNumber, guild);
-        this.oldOwner = oldOwner;
-        this.newOwner = guild.getOwner();
+        super(api, responseNumber, guild, oldOwner, guild.getOwner(), IDENTIFIER);
     }
 
     /**
@@ -48,7 +43,7 @@ public class GuildUpdateOwnerEvent extends GenericGuildUpdateEvent<Member>
      */
     public Member getOldOwner()
     {
-        return oldOwner;
+        return getOldValue();
     }
 
     /**
@@ -58,24 +53,6 @@ public class GuildUpdateOwnerEvent extends GenericGuildUpdateEvent<Member>
      */
     public Member getNewOwner()
     {
-        return newOwner;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public Member getOldValue()
-    {
-        return oldOwner;
-    }
-
-    @Override
-    public Member getNewValue()
-    {
-        return newOwner;
+        return getNewValue();
     }
 }

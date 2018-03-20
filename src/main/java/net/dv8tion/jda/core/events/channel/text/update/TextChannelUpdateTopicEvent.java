@@ -29,14 +29,9 @@ public class TextChannelUpdateTopicEvent extends GenericTextChannelUpdateEvent<S
 {
     public static final String IDENTIFIER = "topic";
 
-    private final String oldTopic;
-    private final String newTopic;
-
     public TextChannelUpdateTopicEvent(JDA api, long responseNumber, TextChannel channel, String oldTopic)
     {
-        super(api, responseNumber, channel);
-        this.oldTopic = oldTopic;
-        this.newTopic = channel.getTopic();
+        super(api, responseNumber, channel, oldTopic, channel.getTopic(), IDENTIFIER);
     }
 
     /**
@@ -46,7 +41,7 @@ public class TextChannelUpdateTopicEvent extends GenericTextChannelUpdateEvent<S
      */
     public String getOldTopic()
     {
-        return oldTopic;
+        return getOldValue();
     }
 
     /**
@@ -56,24 +51,6 @@ public class TextChannelUpdateTopicEvent extends GenericTextChannelUpdateEvent<S
      */
     public String getNewTopic()
     {
-        return newTopic;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public String getOldValue()
-    {
-        return oldTopic;
-    }
-
-    @Override
-    public String getNewValue()
-    {
-        return newTopic;
+        return getNewValue();
     }
 }

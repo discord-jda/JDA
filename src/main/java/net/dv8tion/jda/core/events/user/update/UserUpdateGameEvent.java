@@ -33,14 +33,10 @@ public class UserUpdateGameEvent extends GenericUserPresenceEvent<Game>
 {
     public static final String IDENTIFIER = "game";
 
-    private final Game oldGame;
-    private final Game newGame;
-
     public UserUpdateGameEvent(JDA api, long responseNumber, User user, Guild guild, Game previousGame)
     {
-        super(api, responseNumber, user, guild);
-        this.oldGame = previousGame;
-        this.newGame = isRelationshipUpdate() ? getFriend().getGame() : getMember().getGame();
+        super(api, responseNumber, user, guild, previousGame,
+            guild == null ? api.asClient().getFriend(user).getGame() : guild.getMember(user).getGame(), IDENTIFIER);
     }
 
     /**
@@ -50,7 +46,7 @@ public class UserUpdateGameEvent extends GenericUserPresenceEvent<Game>
      */
     public Game getOldGame()
     {
-        return oldGame;
+        return getOldValue();
     }
 
     /**
@@ -60,24 +56,6 @@ public class UserUpdateGameEvent extends GenericUserPresenceEvent<Game>
      */
     public Game getNewGame()
     {
-        return newGame;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public Game getOldValue()
-    {
-        return oldGame;
-    }
-
-    @Override
-    public Game getNewValue()
-    {
-        return newGame;
+        return getNewValue();
     }
 }

@@ -29,14 +29,9 @@ public class SelfUpdateEmailEvent extends GenericSelfUpdateEvent<String>
 {
     public static final String IDENTIFIER = "email";
 
-    private final String oldEmail;
-    private final String newEmail;
-
     public SelfUpdateEmailEvent(JDA api, long responseNumber, String oldEmail)
     {
-        super(api, responseNumber);
-        this.oldEmail = oldEmail;
-        this.newEmail = getSelfUser().getEmail();
+        super(api, responseNumber, oldEmail, api.getSelfUser().getEmail(), IDENTIFIER);
     }
 
     /**
@@ -46,7 +41,7 @@ public class SelfUpdateEmailEvent extends GenericSelfUpdateEvent<String>
      */
     public String getOldEmail()
     {
-        return oldEmail;
+        return getOldValue();
     }
 
     /**
@@ -56,24 +51,6 @@ public class SelfUpdateEmailEvent extends GenericSelfUpdateEvent<String>
      */
     public String getNewEmail()
     {
-        return newEmail;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public String getOldValue()
-    {
-        return oldEmail;
-    }
-
-    @Override
-    public String getNewValue()
-    {
-        return newEmail;
+        return getNewValue();
     }
 }

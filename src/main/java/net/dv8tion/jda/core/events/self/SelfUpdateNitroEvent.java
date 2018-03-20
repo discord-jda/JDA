@@ -28,12 +28,10 @@ import net.dv8tion.jda.core.JDA;
 public class SelfUpdateNitroEvent extends GenericSelfUpdateEvent<Boolean>
 {
     public static final String IDENTIFIER = "nitro";
-    private final boolean wasNitro;
 
     public SelfUpdateNitroEvent(JDA api, long responseNumber, boolean wasNitro)
     {
-        super(api, responseNumber);
-        this.wasNitro = wasNitro;
+        super(api, responseNumber, wasNitro, !wasNitro, IDENTIFIER);
     }
 
     /**
@@ -43,24 +41,6 @@ public class SelfUpdateNitroEvent extends GenericSelfUpdateEvent<Boolean>
      */
     public boolean wasNitro()
     {
-        return wasNitro;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public Boolean getOldValue()
-    {
-        return wasNitro;
-    }
-
-    @Override
-    public Boolean getNewValue()
-    {
-        return !wasNitro;
+        return getOldValue();
     }
 }

@@ -18,7 +18,7 @@ package net.dv8tion.jda.core.events;
 import net.dv8tion.jda.core.JDA;
 
 /**
- * Indicates that our {@link net.dv8tion.jda.core.JDA.Status Status} changed. (Example: SHUTTING_DOWN -&gt; SHUTDOWN)
+ * Indicates that our {@link net.dv8tion.jda.core.JDA.Status Status} changed. (Example: SHUTTING_DOWN {@literal ->} SHUTDOWN)
  *
  * <br>Can be used to detect internal status changes. Possibly to log or forward on user's end.
  *

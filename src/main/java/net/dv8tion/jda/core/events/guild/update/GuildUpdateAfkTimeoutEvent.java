@@ -30,14 +30,9 @@ public class GuildUpdateAfkTimeoutEvent extends GenericGuildUpdateEvent<Guild.Ti
 {
     public static final String IDENTIFIER = "afk_timeout";
 
-    private final Guild.Timeout oldAfkTimeout;
-    private final Guild.Timeout newAfkTimeout;
-
     public GuildUpdateAfkTimeoutEvent(JDA api, long responseNumber, Guild guild, Guild.Timeout oldAfkTimeout)
     {
-        super(api, responseNumber, guild);
-        this.oldAfkTimeout = oldAfkTimeout;
-        this.newAfkTimeout = guild.getAfkTimeout();
+        super(api, responseNumber, guild, oldAfkTimeout, guild.getAfkTimeout(), IDENTIFIER);
     }
 
     /**
@@ -47,7 +42,7 @@ public class GuildUpdateAfkTimeoutEvent extends GenericGuildUpdateEvent<Guild.Ti
      */
     public Guild.Timeout getOldAfkTimeout()
     {
-        return oldAfkTimeout;
+        return getOldValue();
     }
 
     /**
@@ -57,24 +52,6 @@ public class GuildUpdateAfkTimeoutEvent extends GenericGuildUpdateEvent<Guild.Ti
      */
     public Guild.Timeout getNewAfkTimeout()
     {
-        return newAfkTimeout;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public Guild.Timeout getOldValue()
-    {
-        return oldAfkTimeout;
-    }
-
-    @Override
-    public Guild.Timeout getNewValue()
-    {
-        return newAfkTimeout;
+        return getNewValue();
     }
 }

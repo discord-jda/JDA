@@ -34,11 +34,11 @@ public class GuildUpdateRegionEvent extends GenericGuildUpdateEvent<Region>
     private final String oldRegion;
     private final String newRegion;
 
-    public GuildUpdateRegionEvent(JDA api, long responseNumber, Guild guild, String oldRegion, String newRegion)
+    public GuildUpdateRegionEvent(JDA api, long responseNumber, Guild guild, String oldRegion)
     {
-        super(api, responseNumber, guild);
+        super(api, responseNumber, guild, Region.fromKey(oldRegion), guild.getRegion(), IDENTIFIER);
         this.oldRegion = oldRegion;
-        this.newRegion = newRegion;
+        this.newRegion = guild.getRegionRaw();
     }
 
     /**
@@ -51,7 +51,7 @@ public class GuildUpdateRegionEvent extends GenericGuildUpdateEvent<Region>
      */
     public Region getOldRegion()
     {
-        return Region.fromKey(oldRegion);
+        return getOldValue();
     }
 
     /**
@@ -76,7 +76,7 @@ public class GuildUpdateRegionEvent extends GenericGuildUpdateEvent<Region>
      */
     public Region getNewRegion()
     {
-        return Region.fromKey(newRegion);
+        return getNewValue();
     }
 
     /**
@@ -89,23 +89,5 @@ public class GuildUpdateRegionEvent extends GenericGuildUpdateEvent<Region>
     public String getNewRegionRaw()
     {
         return newRegion;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public Region getOldValue()
-    {
-        return getOldRegion();
-    }
-
-    @Override
-    public Region getNewValue()
-    {
-        return getNewRegion();
     }
 }

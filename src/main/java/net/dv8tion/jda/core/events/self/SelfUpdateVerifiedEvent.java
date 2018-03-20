@@ -28,12 +28,10 @@ import net.dv8tion.jda.core.JDA;
 public class SelfUpdateVerifiedEvent extends GenericSelfUpdateEvent<Boolean>
 {
     public static final String IDENTIFIER = "verified";
-    private final boolean wasVerified;
 
     public SelfUpdateVerifiedEvent(JDA api, long responseNumber, boolean wasVerified)
     {
-        super(api, responseNumber);
-        this.wasVerified = wasVerified;
+        super(api, responseNumber, wasVerified, !wasVerified, IDENTIFIER);
     }
 
     /**
@@ -43,24 +41,6 @@ public class SelfUpdateVerifiedEvent extends GenericSelfUpdateEvent<Boolean>
      */
     public boolean wasVerified()
     {
-        return wasVerified;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public Boolean getOldValue()
-    {
-        return wasVerified;
-    }
-
-    @Override
-    public Boolean getNewValue()
-    {
-        return !wasVerified;
+        return getOldValue();
     }
 }

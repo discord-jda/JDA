@@ -32,14 +32,9 @@ public class GuildUpdateFeaturesEvent extends GenericGuildUpdateEvent<Set<String
 {
     public static final String IDENTIFIER = "features";
 
-    private final Set<String> oldFeatures;
-    private final Set<String> newFeatures;
-
     public GuildUpdateFeaturesEvent(JDA api, long responseNumber, Guild guild, Set<String> oldFeatures)
     {
-        super(api, responseNumber, guild);
-        this.oldFeatures = oldFeatures;
-        this.newFeatures = guild.getFeatures();
+        super(api, responseNumber, guild, oldFeatures, guild.getFeatures(), IDENTIFIER);
     }
 
     /**
@@ -49,7 +44,7 @@ public class GuildUpdateFeaturesEvent extends GenericGuildUpdateEvent<Set<String
      */
     public Set<String> getOldFeatures()
     {
-        return oldFeatures;
+        return getOldValue();
     }
 
     /**
@@ -59,24 +54,6 @@ public class GuildUpdateFeaturesEvent extends GenericGuildUpdateEvent<Set<String
      */
     public Set<String> getNewFeatures()
     {
-        return newFeatures;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public Set<String> getOldValue()
-    {
-        return oldFeatures;
-    }
-
-    @Override
-    public Set<String> getNewValue()
-    {
-        return newFeatures;
+        return getNewValue();
     }
 }

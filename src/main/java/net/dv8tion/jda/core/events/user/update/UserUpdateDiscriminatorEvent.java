@@ -30,14 +30,9 @@ public class UserUpdateDiscriminatorEvent extends GenericUserUpdateEvent<String>
 {
     public static final String IDENTIFIER = "discriminator";
 
-    private final String oldDiscriminator;
-    private final String newDiscriminator;
-
     public UserUpdateDiscriminatorEvent(JDA api, long responseNumber, User user, String oldDiscriminator)
     {
-        super(api, responseNumber, user);
-        this.oldDiscriminator = oldDiscriminator;
-        this.newDiscriminator = user.getDiscriminator();
+        super(api, responseNumber, user, oldDiscriminator, user.getDiscriminator(), IDENTIFIER);
     }
 
     /**
@@ -47,7 +42,7 @@ public class UserUpdateDiscriminatorEvent extends GenericUserUpdateEvent<String>
      */
     public String getOldDiscriminator()
     {
-        return oldDiscriminator;
+        return getOldValue();
     }
 
     /**
@@ -57,24 +52,6 @@ public class UserUpdateDiscriminatorEvent extends GenericUserUpdateEvent<String>
      */
     public String getNewDiscriminator()
     {
-        return newDiscriminator;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public String getOldValue()
-    {
-        return oldDiscriminator;
-    }
-
-    @Override
-    public String getNewValue()
-    {
-        return newDiscriminator;
+        return getNewValue();
     }
 }

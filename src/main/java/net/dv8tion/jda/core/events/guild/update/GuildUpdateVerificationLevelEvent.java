@@ -30,14 +30,9 @@ public class GuildUpdateVerificationLevelEvent extends GenericGuildUpdateEvent<G
 {
     public static final String IDENTIFIER = "verification_level";
 
-    private final Guild.VerificationLevel oldVerificationLevel;
-    private final Guild.VerificationLevel newVerificationLevel;
-
     public GuildUpdateVerificationLevelEvent(JDA api, long responseNumber, Guild guild, Guild.VerificationLevel oldVerificationLevel)
     {
-        super(api, responseNumber, guild);
-        this.oldVerificationLevel = oldVerificationLevel;
-        this.newVerificationLevel = guild.getVerificationLevel();
+        super(api, responseNumber, guild, oldVerificationLevel, guild.getVerificationLevel(), IDENTIFIER);
     }
 
     /**
@@ -47,7 +42,7 @@ public class GuildUpdateVerificationLevelEvent extends GenericGuildUpdateEvent<G
      */
     public Guild.VerificationLevel getOldVerificationLevel()
     {
-        return oldVerificationLevel;
+        return getOldValue();
     }
 
     /**
@@ -57,24 +52,6 @@ public class GuildUpdateVerificationLevelEvent extends GenericGuildUpdateEvent<G
      */
     public Guild.VerificationLevel getNewVerificationLevel()
     {
-        return newVerificationLevel;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public Guild.VerificationLevel getOldValue()
-    {
-        return oldVerificationLevel;
-    }
-
-    @Override
-    public Guild.VerificationLevel getNewValue()
-    {
-        return newVerificationLevel;
+        return getNewValue();
     }
 }

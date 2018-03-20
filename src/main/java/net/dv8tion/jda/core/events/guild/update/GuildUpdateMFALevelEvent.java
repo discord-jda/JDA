@@ -30,14 +30,9 @@ public class GuildUpdateMFALevelEvent extends GenericGuildUpdateEvent<Guild.MFAL
 {
     public static final String IDENTIFIER = "mfa_level";
 
-    private final Guild.MFALevel oldMFALevel;
-    private final Guild.MFALevel newMFALevel;
-
     public GuildUpdateMFALevelEvent(JDA api, long responseNumber, Guild guild, Guild.MFALevel oldMFALevel)
     {
-        super(api, responseNumber, guild);
-        this.oldMFALevel = oldMFALevel;
-        this.newMFALevel = guild.getRequiredMFALevel();
+        super(api, responseNumber, guild, oldMFALevel, guild.getRequiredMFALevel(), IDENTIFIER);
     }
 
     /**
@@ -47,7 +42,7 @@ public class GuildUpdateMFALevelEvent extends GenericGuildUpdateEvent<Guild.MFAL
      */
     public Guild.MFALevel getOldMFALevel()
     {
-        return oldMFALevel;
+        return getOldValue();
     }
 
     /**
@@ -57,24 +52,6 @@ public class GuildUpdateMFALevelEvent extends GenericGuildUpdateEvent<Guild.MFAL
      */
     public Guild.MFALevel getNewMFALevel()
     {
-        return newMFALevel;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public Guild.MFALevel getOldValue()
-    {
-        return oldMFALevel;
-    }
-
-    @Override
-    public Guild.MFALevel getNewValue()
-    {
-        return newMFALevel;
+        return getNewValue();
     }
 }

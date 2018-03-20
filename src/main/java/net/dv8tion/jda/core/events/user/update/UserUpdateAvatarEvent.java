@@ -29,15 +29,11 @@ import net.dv8tion.jda.core.entities.User;
 public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String>
 {
     public static final String IDENTIFIER = "avatar";
-
-    private final String oldAvatarId;
-    private final String newAvatarId;
+    private static final String AVATAR_URL = "https://cdn.discordapp.com/avatars/%s/%s%s";
 
     public UserUpdateAvatarEvent(JDA api, long responseNumber, User user, String oldAvatar)
     {
-        super(api, responseNumber, user);
-        this.oldAvatarId = oldAvatar;
-        this.newAvatarId = user.getAvatarId();
+        super(api, responseNumber, user, oldAvatar, user.getAvatarId(), IDENTIFIER);
     }
 
     /**
@@ -47,7 +43,7 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String>
      */
     public String getOldAvatarId()
     {
-        return oldAvatarId;
+        return getOldValue();
     }
 
     /**
@@ -57,7 +53,7 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String>
      */
     public String getOldAvatarUrl()
     {
-        return oldAvatarId == null ? null : "https://cdn.discordapp.com/avatars/" + getUser().getId() + "/" + oldAvatarId + (oldAvatarId.startsWith("a_") ? ".gif" : ".png");
+        return previous == null ? null : String.format(AVATAR_URL, getUser().getId(), previous, previous.startsWith("a_") ? ".gif" : ".png");
     }
 
     /**
@@ -67,7 +63,7 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String>
      */
     public String getNewAvatarId()
     {
-        return newAvatarId;
+        return getNewValue();
     }
 
     /**
@@ -77,24 +73,6 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String>
      */
     public String getNewAvatarUrl()
     {
-        return newAvatarId == null ? null : "https://cdn.discordapp.com/avatars/" + getUser().getId() + "/" + newAvatarId + (newAvatarId.startsWith("a_") ? ".gif" : ".png");
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public String getOldValue()
-    {
-        return getOldAvatarId();
-    }
-
-    @Override
-    public String getNewValue()
-    {
-        return getNewAvatarId();
+        return next == null ? null : String.format(AVATAR_URL, getUser().getId(), next, next.startsWith("a_") ? ".gif" : ".png");
     }
 }

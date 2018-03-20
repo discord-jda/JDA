@@ -20,7 +20,6 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Role;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -39,7 +38,7 @@ public class RoleUpdatePermissionsEvent extends GenericRoleUpdateEvent<List<Perm
 
     public RoleUpdatePermissionsEvent(JDA api, long responseNumber, Role role, long oldPermissionsRaw)
     {
-        super(api, responseNumber, role);
+        super(api, responseNumber, role, Permission.getPermissions(oldPermissionsRaw), role.getPermissions(), IDENTIFIER);
         this.oldPermissionsRaw = oldPermissionsRaw;
         this.newPermissionsRaw = role.getPermissionsRaw();
     }
@@ -51,8 +50,7 @@ public class RoleUpdatePermissionsEvent extends GenericRoleUpdateEvent<List<Perm
      */
     public List<Permission> getOldPermissions()
     {
-        return Collections.unmodifiableList(
-                Permission.getPermissions(oldPermissionsRaw));
+        return getOldValue();
     }
 
     /**
@@ -72,8 +70,7 @@ public class RoleUpdatePermissionsEvent extends GenericRoleUpdateEvent<List<Perm
      */
     public List<Permission> getNewPermissions()
     {
-        return Collections.unmodifiableList(
-                Permission.getPermissions(newPermissionsRaw));
+        return getNewValue();
     }
 
     /**
@@ -84,23 +81,5 @@ public class RoleUpdatePermissionsEvent extends GenericRoleUpdateEvent<List<Perm
     public long getNewPermissionsRaw()
     {
         return newPermissionsRaw;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public List<Permission> getOldValue()
-    {
-        return getOldPermissions();
-    }
-
-    @Override
-    public List<Permission> getNewValue()
-    {
-        return getNewPermissions();
     }
 }

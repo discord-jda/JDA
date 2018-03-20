@@ -27,15 +27,42 @@ import net.dv8tion.jda.core.events.guild.GenericGuildEvent;
  */
 public abstract class GenericGuildUpdateEvent<T> extends GenericGuildEvent implements UpdateEvent<Guild, T>
 {
-    public GenericGuildUpdateEvent(JDA api, long responseNumber, Guild guild)
+    protected final T previous;
+    protected final T next;
+    protected final String identifier;
+
+    public GenericGuildUpdateEvent(
+        JDA api, long responseNumber, Guild guild,
+        T previous, T next, String identifier)
     {
         super(api, responseNumber, guild);
+        this.previous = previous;
+        this.next = next;
+        this.identifier = identifier;
     }
 
     @Override
     public Guild getEntity()
     {
         return getGuild();
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return identifier;
+    }
+
+    @Override
+    public T getOldValue()
+    {
+        return previous;
+    }
+
+    @Override
+    public T getNewValue()
+    {
+        return next;
     }
 
     @Override

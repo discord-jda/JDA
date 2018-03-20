@@ -32,14 +32,9 @@ public class GuildUpdateSystemChannelEvent extends GenericGuildUpdateEvent<TextC
 {
     public static final String IDENTIFIER = "system_channel";
 
-    private final TextChannel oldSystemChannel;
-    private final TextChannel newSystemChannel;
-
     public GuildUpdateSystemChannelEvent(JDA api, long responseNumber, Guild guild, TextChannel oldSystemChannel)
     {
-        super(api, responseNumber, guild);
-        this.oldSystemChannel = oldSystemChannel;
-        this.newSystemChannel = guild.getSystemChannel();
+        super(api, responseNumber, guild, oldSystemChannel, guild.getSystemChannel(), IDENTIFIER);
     }
 
     /**
@@ -49,7 +44,7 @@ public class GuildUpdateSystemChannelEvent extends GenericGuildUpdateEvent<TextC
      */
     public TextChannel getOldSystemChannel()
     {
-        return oldSystemChannel;
+        return getOldValue();
     }
 
     /**
@@ -59,24 +54,6 @@ public class GuildUpdateSystemChannelEvent extends GenericGuildUpdateEvent<TextC
      */
     public TextChannel getNewSystemChannel()
     {
-        return newSystemChannel;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public TextChannel getOldValue()
-    {
-        return oldSystemChannel;
-    }
-
-    @Override
-    public TextChannel getNewValue()
-    {
-        return newSystemChannel;
+        return getNewValue();
     }
 }

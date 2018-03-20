@@ -30,12 +30,9 @@ public class RoleUpdateMentionableEvent extends GenericRoleUpdateEvent<Boolean>
 {
     public static final String IDENTIFIER = "mentionable";
 
-    private final boolean wasMentionable;
-
     public RoleUpdateMentionableEvent(JDA api, long responseNumber, Role role, boolean wasMentionable)
     {
-        super(api, responseNumber, role);
-        this.wasMentionable = wasMentionable;
+        super(api, responseNumber, role, wasMentionable, !wasMentionable, IDENTIFIER);
     }
 
     /**
@@ -45,24 +42,6 @@ public class RoleUpdateMentionableEvent extends GenericRoleUpdateEvent<Boolean>
      */
     public boolean wasMentionable()
     {
-        return wasMentionable;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public Boolean getOldValue()
-    {
-        return wasMentionable;
-    }
-
-    @Override
-    public Boolean getNewValue()
-    {
-        return !wasMentionable;
+        return getOldValue();
     }
 }

@@ -30,14 +30,9 @@ public class CategoryUpdateNameEvent extends GenericCategoryUpdateEvent<String>
 {
     public static final String IDENTIFIER = "name";
 
-    private final String oldName;
-    private final String newName;
-
     public CategoryUpdateNameEvent(JDA api, long responseNumber, Category category, String oldName)
     {
-        super(api, responseNumber, category);
-        this.oldName = oldName;
-        this.newName = category.getName();
+        super(api, responseNumber, category, oldName, category.getName(), IDENTIFIER);
     }
 
     /**
@@ -47,7 +42,7 @@ public class CategoryUpdateNameEvent extends GenericCategoryUpdateEvent<String>
      */
     public String getOldName()
     {
-        return oldName;
+        return getOldValue();
     }
 
     /**
@@ -57,24 +52,6 @@ public class CategoryUpdateNameEvent extends GenericCategoryUpdateEvent<String>
      */
     public String getNewName()
     {
-        return newName;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public String getOldValue()
-    {
-        return oldName;
-    }
-
-    @Override
-    public String getNewValue()
-    {
-        return newName;
+        return getNewValue();
     }
 }

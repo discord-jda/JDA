@@ -30,14 +30,9 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
 {
     public static final String IDENTIFIER = "splash";
 
-    private final String oldSplashId;
-    private final String newSplashId;
-
     public GuildUpdateSplashEvent(JDA api, long responseNumber, Guild guild, String oldSplashId)
     {
-        super(api, responseNumber, guild);
-        this.oldSplashId = oldSplashId;
-        this.newSplashId = guild.getSplashId();
+        super(api, responseNumber, guild, oldSplashId, guild.getSplashId(), IDENTIFIER);
     }
 
     /**
@@ -47,7 +42,7 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
      */
     public String getOldSplashId()
     {
-        return oldSplashId;
+        return getOldValue();
     }
 
     /**
@@ -57,7 +52,7 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
      */
     public String getOldSplashUrl()
     {
-        return oldSplashId == null ? null : "https://cdn.discordapp.com/splashes/" + guild.getId() + "/" + oldSplashId + ".jpg";
+        return previous == null ? null : "https://cdn.discordapp.com/splashes/" + guild.getId() + "/" + previous + ".jpg";
     }
 
     /**
@@ -67,7 +62,7 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
      */
     public String getNewSplashId()
     {
-        return newSplashId;
+        return getNewValue();
     }
 
     /**
@@ -77,24 +72,6 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
      */
     public String getNewSplashUrl()
     {
-        return newSplashId == null ? null : "https://cdn.discordapp.com/splashes/" + guild.getId() + "/" + newSplashId + ".jpg";
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public String getOldValue()
-    {
-        return oldSplashId;
-    }
-
-    @Override
-    public String getNewValue()
-    {
-        return newSplashId;
+        return next == null ? null : "https://cdn.discordapp.com/splashes/" + guild.getId() + "/" + next + ".jpg";
     }
 }

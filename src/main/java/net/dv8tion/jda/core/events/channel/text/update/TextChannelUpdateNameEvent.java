@@ -29,14 +29,9 @@ public class TextChannelUpdateNameEvent extends GenericTextChannelUpdateEvent<St
 {
     public static final String IDENTIFIER = "name";
 
-    private final String oldName;
-    private final String newName;
-
     public TextChannelUpdateNameEvent(JDA api, long responseNumber, TextChannel channel, String oldName)
     {
-        super(api, responseNumber, channel);
-        this.oldName = oldName;
-        this.newName = channel.getName();
+        super(api, responseNumber, channel, oldName, channel.getName(), IDENTIFIER);
     }
 
     /**
@@ -46,7 +41,7 @@ public class TextChannelUpdateNameEvent extends GenericTextChannelUpdateEvent<St
      */
     public String getOldName()
     {
-        return oldName;
+        return getOldValue();
     }
 
     /**
@@ -56,24 +51,6 @@ public class TextChannelUpdateNameEvent extends GenericTextChannelUpdateEvent<St
      */
     public String getNewName()
     {
-        return newName;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public String getOldValue()
-    {
-        return getOldName();
-    }
-
-    @Override
-    public String getNewValue()
-    {
-        return getNewName();
+        return getNewValue();
     }
 }

@@ -30,14 +30,9 @@ public class EmoteUpdateNameEvent extends GenericEmoteUpdateEvent<String>
 {
     public static final String IDENTIFIER = "name";
 
-    private final String oldName;
-    private final String newName;
-
     public EmoteUpdateNameEvent(JDA api, long responseNumber, Emote emote, String oldName)
     {
-        super(api, responseNumber, emote);
-        this.oldName = oldName;
-        this.newName = emote.getName();
+        super(api, responseNumber, emote, oldName, emote.getName(), IDENTIFIER);
     }
 
     /**
@@ -47,7 +42,7 @@ public class EmoteUpdateNameEvent extends GenericEmoteUpdateEvent<String>
      */
     public String getOldName()
     {
-        return oldName;
+        return getOldValue();
     }
 
     /**
@@ -57,24 +52,6 @@ public class EmoteUpdateNameEvent extends GenericEmoteUpdateEvent<String>
      */
     public String getNewName()
     {
-        return newName;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public String getOldValue()
-    {
-        return getOldName();
-    }
-
-    @Override
-    public String getNewValue()
-    {
-        return getNewName();
+        return getNewValue();
     }
 }

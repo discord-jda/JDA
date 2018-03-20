@@ -29,9 +29,18 @@ import net.dv8tion.jda.core.events.UpdateEvent;
  */
 public abstract class GenericSelfUpdateEvent<T> extends Event implements UpdateEvent<SelfUser, T>
 {
-    public GenericSelfUpdateEvent(JDA api, long responseNumber)
+    protected final T previous;
+    protected final T next;
+    protected final String identifier;
+
+    public GenericSelfUpdateEvent(
+        JDA api, long responseNumber,
+        T previous, T next, String identifier)
     {
         super(api, responseNumber);
+        this.previous = previous;
+        this.next = next;
+        this.identifier = identifier;
     }
 
     /**
@@ -48,6 +57,24 @@ public abstract class GenericSelfUpdateEvent<T> extends Event implements UpdateE
     public SelfUser getEntity()
     {
         return getSelfUser();
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return identifier;
+    }
+
+    @Override
+    public T getOldValue()
+    {
+        return previous;
+    }
+
+    @Override
+    public T getNewValue()
+    {
+        return next;
     }
 
     @Override

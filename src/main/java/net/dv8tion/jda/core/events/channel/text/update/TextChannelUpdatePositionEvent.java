@@ -29,14 +29,9 @@ public class TextChannelUpdatePositionEvent extends GenericTextChannelUpdateEven
 {
     public static final String IDENTIFIER = "position";
 
-    private final int oldPosition;
-    private final int newPosition;
-
     public TextChannelUpdatePositionEvent(JDA api, long responseNumber, TextChannel channel, int oldPosition)
     {
-        super(api, responseNumber, channel);
-        this.oldPosition = oldPosition;
-        this.newPosition = channel.getPositionRaw();
+        super(api, responseNumber, channel, oldPosition, channel.getPositionRaw(), IDENTIFIER);
     }
 
     /**
@@ -46,7 +41,7 @@ public class TextChannelUpdatePositionEvent extends GenericTextChannelUpdateEven
      */
     public int getOldPosition()
     {
-        return oldPosition;
+        return getOldValue();
     }
 
     /**
@@ -56,24 +51,6 @@ public class TextChannelUpdatePositionEvent extends GenericTextChannelUpdateEven
      */
     public int getNewPosition()
     {
-        return newPosition;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public Integer getOldValue()
-    {
-        return oldPosition;
-    }
-
-    @Override
-    public Integer getNewValue()
-    {
-        return newPosition;
+        return getNewValue();
     }
 }

@@ -29,14 +29,9 @@ public class SelfUpdatePhoneNumberEvent extends GenericSelfUpdateEvent<String>
 {
     public static final String IDENTIFIER = "phone";
 
-    private final String oldPhoneNumber;
-    private final String newPhoneNumber;
-
     public SelfUpdatePhoneNumberEvent(JDA api, long responseNumber, String oldPhoneNumber)
     {
-        super(api, responseNumber);
-        this.oldPhoneNumber = oldPhoneNumber;
-        this.newPhoneNumber = getSelfUser().getPhoneNumber();
+        super(api, responseNumber, oldPhoneNumber, api.getSelfUser().getPhoneNumber(), IDENTIFIER);
     }
 
     /**
@@ -46,7 +41,7 @@ public class SelfUpdatePhoneNumberEvent extends GenericSelfUpdateEvent<String>
      */
     public String getOldPhoneNumber()
     {
-        return oldPhoneNumber;
+        return getOldValue();
     }
 
     /**
@@ -56,24 +51,6 @@ public class SelfUpdatePhoneNumberEvent extends GenericSelfUpdateEvent<String>
      */
     public String getNewPhoneNumber()
     {
-        return newPhoneNumber;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public String getOldValue()
-    {
-        return oldPhoneNumber;
-    }
-
-    @Override
-    public String getNewValue()
-    {
-        return newPhoneNumber;
+        return getNewValue();
     }
 }

@@ -29,14 +29,9 @@ public class SelfUpdateDiscriminatorEvent extends GenericSelfUpdateEvent<String>
 {
     public static final String IDENTIFIER = "discriminator";
 
-    private final String oldDiscriminator;
-    private final String newDiscriminator;
-
     public SelfUpdateDiscriminatorEvent(JDA api, long responseNumber, String oldDiscriminator)
     {
-        super(api, responseNumber);
-        this.oldDiscriminator = oldDiscriminator;
-        this.newDiscriminator = getSelfUser().getDiscriminator();
+        super(api, responseNumber, oldDiscriminator, api.getSelfUser().getDiscriminator(), IDENTIFIER);
     }
 
     /**
@@ -46,7 +41,7 @@ public class SelfUpdateDiscriminatorEvent extends GenericSelfUpdateEvent<String>
      */
     public String getOldDiscriminator()
     {
-        return oldDiscriminator;
+        return getOldValue();
     }
 
     /**
@@ -56,24 +51,6 @@ public class SelfUpdateDiscriminatorEvent extends GenericSelfUpdateEvent<String>
      */
     public String getNewDiscriminator()
     {
-        return newDiscriminator;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public String getOldValue()
-    {
-        return oldDiscriminator;
-    }
-
-    @Override
-    public String getNewValue()
-    {
-        return newDiscriminator;
+        return getNewValue();
     }
 }

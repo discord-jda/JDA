@@ -29,12 +29,9 @@ public class TextChannelUpdateNSFWEvent extends GenericTextChannelUpdateEvent<Bo
 {
     public static final String IDENTIFIER = "nsfw";
 
-    private final boolean oldNsfw;
-
     public TextChannelUpdateNSFWEvent(JDA api, long responseNumber, TextChannel channel, boolean oldNsfw)
     {
-        super(api, responseNumber, channel);
-        this.oldNsfw = oldNsfw;
+        super(api, responseNumber, channel, oldNsfw, channel.isNSFW(), IDENTIFIER);
     }
 
     /**
@@ -44,24 +41,6 @@ public class TextChannelUpdateNSFWEvent extends GenericTextChannelUpdateEvent<Bo
      */
     public boolean getOldNSFW()
     {
-        return oldNsfw;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public Boolean getOldValue()
-    {
-        return getOldNSFW();
-    }
-
-    @Override
-    public Boolean getNewValue()
-    {
-        return !getOldValue();
+        return getOldValue();
     }
 }

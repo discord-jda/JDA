@@ -33,9 +33,11 @@ public abstract class GenericUserPresenceEvent<T> extends GenericUserUpdateEvent
 {
     protected final Guild guild;
 
-    public GenericUserPresenceEvent(JDA api, long responseNumber, User user, Guild guild)
+    public GenericUserPresenceEvent(
+        JDA api, long responseNumber, User user, Guild guild,
+        T previous, T next, String identifier)
     {
-        super(api, responseNumber, user);
+        super(api, responseNumber, user, previous, next, identifier);
         this.guild = guild;
     }
 

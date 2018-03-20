@@ -29,17 +29,12 @@ public class SelfUpdateNameEvent extends GenericSelfUpdateEvent<String>
 {
     public static final String IDENTIFIER = "name";
 
-    private final String oldName;
-    private final String newName;
-
     @Deprecated
     private final String oldDiscriminator;
 
     public SelfUpdateNameEvent(JDA api, long responseNumber, String oldName, String oldDiscriminator)
     {
-        super(api, responseNumber);
-        this.oldName = oldName;
-        this.newName = getSelfUser().getName();
+        super(api, responseNumber, oldName, api.getSelfUser().getName(), IDENTIFIER);
         this.oldDiscriminator = oldDiscriminator;
     }
 
@@ -50,7 +45,7 @@ public class SelfUpdateNameEvent extends GenericSelfUpdateEvent<String>
      */
     public String getOldName()
     {
-        return oldName;
+        return getOldValue();
     }
 
     /**
@@ -60,7 +55,7 @@ public class SelfUpdateNameEvent extends GenericSelfUpdateEvent<String>
      */
     public String getNewName()
     {
-        return newName;
+        return getNewValue();
     }
 
     /**
@@ -75,23 +70,5 @@ public class SelfUpdateNameEvent extends GenericSelfUpdateEvent<String>
     public String getOldDiscriminator()
     {
         return oldDiscriminator;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public String getOldValue()
-    {
-        return oldName;
-    }
-
-    @Override
-    public String getNewValue()
-    {
-        return newName;
     }
 }

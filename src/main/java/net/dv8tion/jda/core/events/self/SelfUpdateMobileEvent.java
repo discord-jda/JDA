@@ -29,12 +29,9 @@ public class SelfUpdateMobileEvent extends GenericSelfUpdateEvent<Boolean>
 {
     public static final String IDENTIFIER = "mobile";
 
-    private final boolean wasMobile;
-
     public SelfUpdateMobileEvent(JDA api, long responseNumber, boolean wasMobile)
     {
-        super(api, responseNumber);
-        this.wasMobile = wasMobile;
+        super(api, responseNumber, wasMobile, !wasMobile, IDENTIFIER);
     }
 
     /**
@@ -44,24 +41,6 @@ public class SelfUpdateMobileEvent extends GenericSelfUpdateEvent<Boolean>
      */
     public boolean wasMobile()
     {
-        return wasMobile;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public Boolean getOldValue()
-    {
-        return wasMobile;
-    }
-
-    @Override
-    public Boolean getNewValue()
-    {
-        return !wasMobile;
+        return getOldValue();
     }
 }

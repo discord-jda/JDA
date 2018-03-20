@@ -30,14 +30,9 @@ public class CategoryUpdatePositionEvent extends GenericCategoryUpdateEvent<Inte
 {
     public static final String IDENTIFIER = "position";
 
-    private final int oldPosition;
-    private final int newPosition;
-
     public CategoryUpdatePositionEvent(JDA api, long responseNumber, Category category, int oldPosition)
     {
-        super(api, responseNumber, category);
-        this.oldPosition = oldPosition;
-        this.newPosition = category.getPositionRaw();
+        super(api, responseNumber, category, oldPosition, category.getPositionRaw(), IDENTIFIER);
     }
 
     /**
@@ -47,7 +42,7 @@ public class CategoryUpdatePositionEvent extends GenericCategoryUpdateEvent<Inte
      */
     public int getOldPosition()
     {
-        return oldPosition;
+        return getOldValue()    ;
     }
 
     /**
@@ -57,24 +52,6 @@ public class CategoryUpdatePositionEvent extends GenericCategoryUpdateEvent<Inte
      */
     public int getNewPosition()
     {
-        return newPosition;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public Integer getOldValue()
-    {
-        return oldPosition;
-    }
-
-    @Override
-    public Integer getNewValue()
-    {
-        return newPosition;
+        return getNewValue();
     }
 }

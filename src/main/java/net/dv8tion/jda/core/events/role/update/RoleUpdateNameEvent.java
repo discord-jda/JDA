@@ -30,14 +30,9 @@ public class RoleUpdateNameEvent extends GenericRoleUpdateEvent<String>
 {
     public static final String IDENTIFIER = "name";
 
-    private final String oldName;
-    private final String newName;
-
     public RoleUpdateNameEvent(JDA api, long responseNumber, Role role, String oldName)
     {
-        super(api, responseNumber, role);
-        this.oldName = oldName;
-        this.newName = role.getName();
+        super(api, responseNumber, role, oldName, role.getName(), IDENTIFIER);
     }
 
     /**
@@ -47,7 +42,7 @@ public class RoleUpdateNameEvent extends GenericRoleUpdateEvent<String>
      */
     public String getOldName()
     {
-        return oldName;
+        return getOldValue();
     }
 
     /**
@@ -57,24 +52,6 @@ public class RoleUpdateNameEvent extends GenericRoleUpdateEvent<String>
      */
     public String getNewName()
     {
-        return newName;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public String getOldValue()
-    {
-        return oldName;
-    }
-
-    @Override
-    public String getNewValue()
-    {
-        return newName;
+        return getNewValue();
     }
 }

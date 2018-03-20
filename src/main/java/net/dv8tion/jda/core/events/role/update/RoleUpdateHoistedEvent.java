@@ -30,12 +30,9 @@ public class RoleUpdateHoistedEvent extends GenericRoleUpdateEvent<Boolean>
 {
     public static final String IDENTIFIER = "hoist";
 
-    private final boolean wasHoisted;
-
     public RoleUpdateHoistedEvent(JDA api, long responseNumber, Role role, boolean wasHoisted)
     {
-        super(api, responseNumber, role);
-        this.wasHoisted = wasHoisted;
+        super(api, responseNumber, role, wasHoisted, !wasHoisted, IDENTIFIER);
     }
 
     /**
@@ -45,24 +42,6 @@ public class RoleUpdateHoistedEvent extends GenericRoleUpdateEvent<Boolean>
      */
     public boolean wasHoisted()
     {
-        return wasHoisted;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public Boolean getOldValue()
-    {
-        return wasHoisted;
-    }
-
-    @Override
-    public Boolean getNewValue()
-    {
-        return !wasHoisted;
+        return getOldValue();
     }
 }

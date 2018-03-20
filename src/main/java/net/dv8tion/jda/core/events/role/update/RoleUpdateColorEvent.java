@@ -32,14 +32,9 @@ public class RoleUpdateColorEvent extends GenericRoleUpdateEvent<Integer>
 {
     public static final String IDENTIFIER = "color";
 
-    private final int oldColor;
-    private final int newColor;
-
     public RoleUpdateColorEvent(JDA api, long responseNumber, Role role, int oldColor)
     {
-        super(api, responseNumber, role);
-        this.oldColor = oldColor;
-        this.newColor = role.getColorRaw();
+        super(api, responseNumber, role, oldColor, role.getColorRaw(), IDENTIFIER);
     }
 
     /**
@@ -49,7 +44,7 @@ public class RoleUpdateColorEvent extends GenericRoleUpdateEvent<Integer>
      */
     public Color getOldColor()
     {
-        return oldColor != Role.DEFAULT_COLOR_RAW ? new Color(oldColor) : null;
+        return previous != Role.DEFAULT_COLOR_RAW ? new Color(previous) : null;
     }
 
     /**
@@ -59,7 +54,7 @@ public class RoleUpdateColorEvent extends GenericRoleUpdateEvent<Integer>
      */
     public int getOldColorRaw()
     {
-        return oldColor;
+        return getOldValue();
     }
 
     /**
@@ -69,7 +64,7 @@ public class RoleUpdateColorEvent extends GenericRoleUpdateEvent<Integer>
      */
     public Color getNewColor()
     {
-        return newColor != Role.DEFAULT_COLOR_RAW ? new Color(newColor) : null;
+        return next != Role.DEFAULT_COLOR_RAW ? new Color(next) : null;
     }
 
     /**
@@ -79,24 +74,6 @@ public class RoleUpdateColorEvent extends GenericRoleUpdateEvent<Integer>
      */
     public int getNewColorRaw()
     {
-        return newColor;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public Integer getOldValue()
-    {
-        return oldColor;
-    }
-
-    @Override
-    public Integer getNewValue()
-    {
-        return newColor;
+        return getNewValue();
     }
 }

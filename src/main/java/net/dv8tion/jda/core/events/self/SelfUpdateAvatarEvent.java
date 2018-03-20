@@ -28,15 +28,11 @@ import net.dv8tion.jda.core.JDA;
 public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String>
 {
     public static final String IDENTIFIER = "avatar";
-
-    private final String oldAvatarId;
-    private final String newAvatarId;
+    private static final String AVATAR_URL = "https://cdn.discordapp.com/avatars/%s/%s%s";
 
     public SelfUpdateAvatarEvent(JDA api, long responseNumber, String oldAvatarId)
     {
-        super(api, responseNumber);
-        this.oldAvatarId = oldAvatarId;
-        this.newAvatarId = getSelfUser().getAvatarId();
+        super(api, responseNumber, oldAvatarId, api.getSelfUser().getAvatarId(), IDENTIFIER);
     }
 
     /**
@@ -46,7 +42,7 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String>
      */
     public String getOldAvatarId()
     {
-        return oldAvatarId;
+        return getOldValue();
     }
 
     /**
@@ -56,7 +52,7 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String>
      */
     public String getOldAvatarUrl()
     {
-        return oldAvatarId == null ? null : "https://cdn.discordapp.com/avatars/" + getSelfUser().getId() + "/" + oldAvatarId + (oldAvatarId.startsWith("a_") ? ".gif" : ".png");
+        return previous == null ? null : String.format(AVATAR_URL, getSelfUser().getId(), previous, previous.startsWith("a_") ? ".gif" : ".png");
     }
 
     /**
@@ -66,7 +62,7 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String>
      */
     public String getNewAvatarId()
     {
-        return newAvatarId;
+        return getNewValue();
     }
 
     /**
@@ -76,24 +72,6 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String>
      */
     public String getNewAvatarUrl()
     {
-        return newAvatarId == null ? null : "https://cdn.discordapp.com/avatars/" + getSelfUser().getId() + "/" + newAvatarId + (newAvatarId.startsWith("a_") ? ".gif" : ".png");
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public String getOldValue()
-    {
-        return oldAvatarId;
-    }
-
-    @Override
-    public String getNewValue()
-    {
-        return newAvatarId;
+        return next == null ? null : String.format(AVATAR_URL, getSelfUser().getId(), next, next.startsWith("a_") ? ".gif" : ".png");
     }
 }

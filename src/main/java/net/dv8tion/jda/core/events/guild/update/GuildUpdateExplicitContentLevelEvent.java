@@ -30,14 +30,9 @@ public class GuildUpdateExplicitContentLevelEvent extends GenericGuildUpdateEven
 {
     public static final String IDENTIFIER = "explicit_content_filter";
 
-    private final Guild.ExplicitContentLevel oldLevel;
-    private final Guild.ExplicitContentLevel newLevel;
-
     public GuildUpdateExplicitContentLevelEvent(JDA api, long responseNumber, Guild guild, Guild.ExplicitContentLevel oldLevel)
     {
-        super(api, responseNumber, guild);
-        this.oldLevel = oldLevel;
-        this.newLevel = guild.getExplicitContentLevel();
+        super(api, responseNumber, guild, oldLevel, guild.getExplicitContentLevel(), IDENTIFIER);
     }
 
     /**
@@ -48,7 +43,7 @@ public class GuildUpdateExplicitContentLevelEvent extends GenericGuildUpdateEven
      */
     public Guild.ExplicitContentLevel getOldLevel()
     {
-        return oldLevel;
+        return getOldValue();
     }
 
     /**
@@ -59,24 +54,6 @@ public class GuildUpdateExplicitContentLevelEvent extends GenericGuildUpdateEven
      */
     public Guild.ExplicitContentLevel getNewLevel()
     {
-        return newLevel;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public Guild.ExplicitContentLevel getOldValue()
-    {
-        return oldLevel;
-    }
-
-    @Override
-    public Guild.ExplicitContentLevel getNewValue()
-    {
-        return newLevel;
+        return getNewValue();
     }
 }

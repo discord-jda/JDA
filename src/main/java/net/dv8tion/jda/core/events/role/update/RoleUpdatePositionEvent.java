@@ -30,17 +30,13 @@ public class RoleUpdatePositionEvent extends GenericRoleUpdateEvent<Integer>
 {
     public static final String IDENTIFIER = "position";
 
-    private final int oldPosition;
     private final int oldPositionRaw;
-    private final int newPosition;
     private final int newPositionRaw;
 
     public RoleUpdatePositionEvent(JDA api, long responseNumber, Role role, int oldPosition, int oldPositionRaw)
     {
-        super(api, responseNumber, role);
-        this.oldPosition = oldPosition;
+        super(api, responseNumber, role, oldPosition, role.getPosition(), IDENTIFIER);
         this.oldPositionRaw = oldPositionRaw;
-        this.newPosition = role.getPosition();
         this.newPositionRaw = role.getPositionRaw();
     }
 
@@ -51,7 +47,7 @@ public class RoleUpdatePositionEvent extends GenericRoleUpdateEvent<Integer>
      */
     public int getOldPosition()
     {
-        return oldPosition;
+        return getOldValue();
     }
 
     /**
@@ -71,7 +67,7 @@ public class RoleUpdatePositionEvent extends GenericRoleUpdateEvent<Integer>
      */
     public int getNewPosition()
     {
-        return newPosition;
+        return getNewValue();
     }
 
     /**
@@ -82,23 +78,5 @@ public class RoleUpdatePositionEvent extends GenericRoleUpdateEvent<Integer>
     public int getNewPositionRaw()
     {
         return newPositionRaw;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public Integer getOldValue()
-    {
-        return oldPosition;
-    }
-
-    @Override
-    public Integer getNewValue()
-    {
-        return newPosition;
     }
 }

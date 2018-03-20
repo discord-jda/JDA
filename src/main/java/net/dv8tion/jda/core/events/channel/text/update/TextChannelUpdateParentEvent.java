@@ -31,14 +31,9 @@ public class TextChannelUpdateParentEvent extends GenericTextChannelUpdateEvent<
 {
     public static final String IDENTIFIER = "parent";
 
-    private final Category oldParent;
-    private final Category newParent;
-
     public TextChannelUpdateParentEvent(JDA api, long responseNumber, TextChannel channel, Category oldParent)
     {
-        super(api, responseNumber, channel);
-        this.oldParent = oldParent;
-        this.newParent = channel.getParent();
+        super(api, responseNumber, channel, oldParent, channel.getParent(), IDENTIFIER);
     }
 
     /**
@@ -48,7 +43,7 @@ public class TextChannelUpdateParentEvent extends GenericTextChannelUpdateEvent<
      */
     public Category getOldParent()
     {
-        return oldParent;
+        return getOldValue();
     }
 
     /**
@@ -58,24 +53,6 @@ public class TextChannelUpdateParentEvent extends GenericTextChannelUpdateEvent<
      */
     public Category getNewParent()
     {
-        return newParent;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public Category getOldValue()
-    {
-        return oldParent;
-    }
-
-    @Override
-    public Category getNewValue()
-    {
-        return newParent;
+        return getNewValue();
     }
 }

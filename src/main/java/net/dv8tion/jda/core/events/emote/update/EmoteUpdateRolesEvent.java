@@ -33,14 +33,9 @@ public class EmoteUpdateRolesEvent extends GenericEmoteUpdateEvent<List<Role>>
 {
     public static final String IDENTIFIER = "roles";
 
-    private final List<Role> oldRoles;
-    private final List<Role> newRoles;
-
     public EmoteUpdateRolesEvent(JDA api, long responseNumber, Emote emote, List<Role> oldRoles)
     {
-        super(api, responseNumber, emote);
-        this.oldRoles = oldRoles;
-        this.newRoles = emote.getRoles();
+        super(api, responseNumber, emote, oldRoles, emote.getRoles(), IDENTIFIER);
     }
 
     /**
@@ -50,7 +45,7 @@ public class EmoteUpdateRolesEvent extends GenericEmoteUpdateEvent<List<Role>>
      */
     public List<Role> getOldRoles()
     {
-        return oldRoles;
+        return getOldValue();
     }
 
     /**
@@ -60,24 +55,6 @@ public class EmoteUpdateRolesEvent extends GenericEmoteUpdateEvent<List<Role>>
      */
     public List<Role> getNewRoles()
     {
-        return newRoles;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public List<Role> getOldValue()
-    {
-        return getOldRoles();
-    }
-
-    @Override
-    public List<Role> getNewValue()
-    {
-        return getNewRoles();
+        return getNewValue();
     }
 }

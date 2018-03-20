@@ -30,12 +30,9 @@ public class SelfUpdateMFAEvent extends GenericSelfUpdateEvent<Boolean>
 {
     public static final String IDENTIFIER = "mfa_enabled";
 
-    private final boolean wasMfaEnabled;
-
     public SelfUpdateMFAEvent(JDA api, long responseNumber, boolean wasMfaEnabled)
     {
-        super(api, responseNumber);
-        this.wasMfaEnabled = wasMfaEnabled;
+        super(api, responseNumber, wasMfaEnabled, !wasMfaEnabled, IDENTIFIER);
     }
 
     /**
@@ -45,24 +42,6 @@ public class SelfUpdateMFAEvent extends GenericSelfUpdateEvent<Boolean>
      */
     public boolean wasMfaEnabled()
     {
-        return wasMfaEnabled;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public Boolean getOldValue()
-    {
-        return wasMfaEnabled;
-    }
-
-    @Override
-    public Boolean getNewValue()
-    {
-        return !wasMfaEnabled;
+        return getOldValue();
     }
 }

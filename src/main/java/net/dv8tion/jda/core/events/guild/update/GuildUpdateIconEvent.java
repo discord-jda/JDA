@@ -30,14 +30,9 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String>
 {
     public static final String IDENTIFIER = "icon";
 
-    private final String oldIconId;
-    private final String newIconId;
-
     public GuildUpdateIconEvent(JDA api, long responseNumber, Guild guild, String oldIconId)
     {
-        super(api, responseNumber, guild);
-        this.oldIconId = oldIconId;
-        this.newIconId = guild.getIconId();
+        super(api, responseNumber, guild, oldIconId, guild.getIconId(), IDENTIFIER);
     }
 
     /**
@@ -47,7 +42,7 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String>
      */
     public String getOldIconId()
     {
-        return oldIconId;
+        return getOldValue();
     }
 
     /**
@@ -57,7 +52,7 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String>
      */
     public String getOldIconUrl()
     {
-        return oldIconId == null ? null : "https://cdn.discordapp.com/icons/" + guild.getId() + "/" + oldIconId + ".png";
+        return previous == null ? null : "https://cdn.discordapp.com/icons/" + guild.getId() + "/" + previous + ".png";
     }
 
     /**
@@ -67,7 +62,7 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String>
      */
     public String getNewIconId()
     {
-        return newIconId;
+        return getNewValue();
     }
 
     /**
@@ -77,24 +72,6 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String>
      */
     public String getNewIconUrl()
     {
-        return newIconId == null ? null : "https://cdn.discordapp.com/icons/" + guild.getId() + "/" + newIconId + ".png";
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public String getOldValue()
-    {
-        return oldIconId;
-    }
-
-    @Override
-    public String getNewValue()
-    {
-        return newIconId;
+        return next == null ? null : "https://cdn.discordapp.com/icons/" + guild.getId() + "/" + next + ".png";
     }
 }

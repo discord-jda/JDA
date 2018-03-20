@@ -31,14 +31,9 @@ public class GuildUpdateAfkChannelEvent extends GenericGuildUpdateEvent<VoiceCha
 {
     public static final String IDENTIFIER = "afk_channel";
 
-    private final VoiceChannel oldAfkChannel;
-    private final VoiceChannel newAfkChannel;
-
     public GuildUpdateAfkChannelEvent(JDA api, long responseNumber, Guild guild, VoiceChannel oldAfkChannel)
     {
-        super(api, responseNumber, guild);
-        this.oldAfkChannel = oldAfkChannel;
-        this.newAfkChannel = guild.getAfkChannel();
+        super(api, responseNumber, guild, oldAfkChannel, guild.getAfkChannel(), IDENTIFIER);
     }
 
     /**
@@ -48,7 +43,7 @@ public class GuildUpdateAfkChannelEvent extends GenericGuildUpdateEvent<VoiceCha
      */
     public VoiceChannel getOldAfkChannel()
     {
-        return oldAfkChannel;
+        return getOldValue();
     }
 
     /**
@@ -58,24 +53,6 @@ public class GuildUpdateAfkChannelEvent extends GenericGuildUpdateEvent<VoiceCha
      */
     public VoiceChannel getNewAfkChannel()
     {
-        return newAfkChannel;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public VoiceChannel getOldValue()
-    {
-        return oldAfkChannel;
-    }
-
-    @Override
-    public VoiceChannel getNewValue()
-    {
-        return newAfkChannel;
+        return getNewValue();
     }
 }

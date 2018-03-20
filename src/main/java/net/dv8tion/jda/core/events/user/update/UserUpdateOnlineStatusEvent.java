@@ -33,14 +33,10 @@ public class UserUpdateOnlineStatusEvent extends GenericUserPresenceEvent<Online
 {
     public static final String IDENTIFIER = "status";
 
-    private final OnlineStatus oldOnlineStatus;
-    private final OnlineStatus newOnlineStatus;
-
     public UserUpdateOnlineStatusEvent(JDA api, long responseNumber, User user, Guild guild, OnlineStatus oldOnlineStatus)
     {
-        super(api, responseNumber, user, guild);
-        this.oldOnlineStatus = oldOnlineStatus;
-        this.newOnlineStatus = isRelationshipUpdate() ? getFriend().getOnlineStatus() : getMember().getOnlineStatus();
+        super(api, responseNumber, user, guild, oldOnlineStatus,
+            guild == null ? api.asClient().getFriend(user).getOnlineStatus() : guild.getMember(user).getOnlineStatus(), IDENTIFIER);
     }
 
     /**
@@ -50,7 +46,7 @@ public class UserUpdateOnlineStatusEvent extends GenericUserPresenceEvent<Online
      */
     public OnlineStatus getOldOnlineStatus()
     {
-        return oldOnlineStatus;
+        return getOldValue();
     }
 
     /**
@@ -60,24 +56,6 @@ public class UserUpdateOnlineStatusEvent extends GenericUserPresenceEvent<Online
      */
     public OnlineStatus getNewOnlineStatus()
     {
-        return newOnlineStatus;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public OnlineStatus getOldValue()
-    {
-        return oldOnlineStatus;
-    }
-
-    @Override
-    public OnlineStatus getNewValue()
-    {
-        return newOnlineStatus;
+        return getNewValue();
     }
 }
