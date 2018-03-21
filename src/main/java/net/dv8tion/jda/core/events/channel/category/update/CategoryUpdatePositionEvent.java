@@ -42,7 +42,7 @@ public class CategoryUpdatePositionEvent extends GenericCategoryUpdateEvent<Inte
      */
     public int getOldPosition()
     {
-        return getOldValue()    ;
+        return getOldValue();
     }
 
     /**
