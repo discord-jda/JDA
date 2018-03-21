@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.audio;
 
+import com.iwebpp.crypto.TweetNaclFast;
 import com.sun.jna.ptr.PointerByReference;
 import gnu.trove.map.TIntLongMap;
 import gnu.trove.map.TIntObjectMap;
@@ -59,6 +60,8 @@ public class AudioConnection
     public static final int OPUS_FRAME_TIME_AMOUNT = 20;//This is 20 milliseconds. We are only dealing with 20ms opus packets.
     public static final int OPUS_CHANNEL_COUNT = 2;     //We want to use stereo. If the audio given is mono, the encoder promotes it
                                                         // to Left and Right mono (stereo that is the same on both sides)
+    public static final long MAX_UINT_32 = 4294967295L;
+
     private final TIntLongMap ssrcMap = new TIntLongHashMap();
     private final TIntObjectMap<Decoder> opusDecoders = new TIntObjectHashMap<>();
     private final HashMap<User, Queue<Pair<Long, short[]>>> combinedQueue = new HashMap<>();
@@ -76,6 +79,8 @@ public class AudioConnection
     private IAudioSendSystem sendSystem;
     private Thread receiveThread;
     private long queueTimeout;
+
+    private volatile long nonce = 0;
 
     private volatile boolean couldReceive = false;
     private volatile boolean speaking = false;      //Also acts as "couldProvide"
@@ -633,11 +638,11 @@ public class AudioConnection
                         {
                             rawAudio = encodeToOpus(rawAudio);
                         }
-                        AudioPacket packet = new AudioPacket(seq, timestamp, webSocket.getSSRC(), rawAudio);
+
+                        nextPacket = getDatagramPacket(rawAudio);
+
                         if (!speaking)
                             setSpeaking(true);
-
-                        nextPacket = packet.asEncryptedUdpPacket(webSocket.getAddress(), webSocket.getSecretKey());
 
                         if (seq + 1 > Character.MAX_VALUE)
                             seq = 0;
@@ -647,9 +652,7 @@ public class AudioConnection
                 }
                 else if (silenceCounter > -1)
                 {
-                    AudioPacket packet = new AudioPacket(seq, timestamp, webSocket.getSSRC(), silenceBytes);
-
-                    nextPacket = packet.asEncryptedUdpPacket(webSocket.getAddress(), webSocket.getSecretKey());
+                    nextPacket = getDatagramPacket(silenceBytes);
 
                     if (seq + 1 > Character.MAX_VALUE)
                         seq = 0;
@@ -674,6 +677,40 @@ public class AudioConnection
                 timestamp += OPUS_FRAME_SIZE;
 
             return nextPacket;
+        }
+
+        private DatagramPacket getDatagramPacket(byte[] rawAudio)
+        {
+            AudioPacket packet = new AudioPacket(seq, timestamp, webSocket.getSSRC(), rawAudio);
+            byte[] nonceData;
+            switch (webSocket.encryption)
+            {
+                case XSALSA20_POLY1305:
+                    nonceData = null;
+                    break;
+                case XSALSA20_POLY1305_LITE:
+                    nonce++;
+                    if (nonce > MAX_UINT_32)
+                        nonce = 0;
+                    nonceData = getNonceBytes();
+                    break;
+                case XSALSA20_POLY1305_SUFFIX:
+                    nonceData = TweetNaclFast.randombytes(TweetNaclFast.SecretBox.nonceLength);
+                    break;
+                default:
+                    throw new IllegalStateException("Encryption mode [" + webSocket.encryption + "] is not supported!");
+            }
+            return packet.asEncryptedUdpPacket(webSocket.getAddress(), webSocket.getSecretKey(), nonceData);
+        }
+
+        private byte[] getNonceBytes()
+        {
+            byte[] data = new byte[TweetNaclFast.SecretBox.nonceLength];
+            data[0] = (byte) ((nonce >>> 24) & 0xFF);
+            data[1] = (byte) ((nonce >>> 16) & 0xFF);
+            data[2] = (byte) ((nonce >>>  8) & 0xFF);
+            data[3] = (byte) ( nonce         & 0xFF);
+            return data;
         }
 
         @Override

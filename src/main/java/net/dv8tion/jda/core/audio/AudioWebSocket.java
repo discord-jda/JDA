@@ -47,11 +47,13 @@ public class AudioWebSocket extends WebSocketAdapter
     public static final Logger LOG = JDALogger.getLog(AudioWebSocket.class);
     public static final int DISCORD_SECRET_KEY_LENGTH = 32;
     public static final int AUDIO_GATEWAY_VERSION = 3;
+    public static final JSONArray CODECS = new JSONArray("[{name: \"opus\", type: \"audio\", priority: 1000, payload_type: 120}]");
 
     protected final ConnectionListener listener;
     protected final ScheduledThreadPoolExecutor keepAlivePool;
     protected AudioConnection audioConnection;
-    protected ConnectionStatus connectionStatus = ConnectionStatus.NOT_CONNECTED;
+    protected volatile ConnectionStatus connectionStatus = ConnectionStatus.NOT_CONNECTED;
+    protected volatile AudioEncryption encryption;
 
     private final JDAImpl api;
     private final Guild guild;
@@ -172,6 +174,10 @@ public class AudioWebSocket extends WebSocketAdapter
                 JSONObject content = contentAll.getJSONObject("d");
                 ssrc = content.getInt("ssrc");
                 int port = content.getInt("port");
+                JSONArray modes = content.getJSONArray("modes");
+                encryption = AudioEncryption.getStrongestMode(modes);
+                if (encryption == null)
+                    throw new IllegalStateException("None of the provided encryption modes are supported: " + modes);
 
                 //Find our external IP and Port using Discord
                 InetSocketAddress externalIpAndPort;
@@ -191,10 +197,11 @@ public class AudioWebSocket extends WebSocketAdapter
 
                 final JSONObject object = new JSONObject()
                         .put("protocol", "udp")
+                        .put("codecs", CODECS)
                         .put("data", new JSONObject()
                             .put("address", externalIpAndPort.getHostString())
                             .put("port", externalIpAndPort.getPort())
-                            .put("mode", "xsalsa20_poly1305"));   //Discord requires encryption
+                            .put("mode", encryption.name().toLowerCase())); //Discord requires encryption
                 send(VoiceCode.SELECT_PROTOCOL, object);
                 changeStatus(ConnectionStatus.CONNECTING_AWAITING_READY);
                 break;
@@ -264,8 +271,9 @@ public class AudioWebSocket extends WebSocketAdapter
                 break;
             }
             case 12:
+            case 14:
             {
-                LOG.trace("-> OP 12 {}", contentAll);
+                LOG.trace("-> OP {} {}", opCode, contentAll);
                 // ignore op 12 for now
                 break;
             }
