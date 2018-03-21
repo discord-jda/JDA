@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.net.*;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -46,7 +47,7 @@ public class AudioWebSocket extends WebSocketAdapter
 {
     public static final Logger LOG = JDALogger.getLog(AudioWebSocket.class);
     public static final int DISCORD_SECRET_KEY_LENGTH = 32;
-    public static final int AUDIO_GATEWAY_VERSION = 3;
+    public static final int AUDIO_GATEWAY_VERSION = 4;
     public static final JSONArray CODECS = new JSONArray("[{name: \"opus\", type: \"audio\", priority: 1000, payload_type: 120}]");
 
     protected final ConnectionListener listener;
@@ -164,8 +165,7 @@ public class AudioWebSocket extends WebSocketAdapter
                 final JSONObject payload = contentAll.getJSONObject("d");
                 final int interval = payload.getInt("heartbeat_interval");
                 stopKeepAlive();
-                setupKeepAlive(interval / 2);
-                //FIXME: discord will rollout a working interval once that is done we need to use it properly
+                setupKeepAlive(interval);
                 break;
             }
             case VoiceCode.READY:
@@ -246,7 +246,7 @@ public class AudioWebSocket extends WebSocketAdapter
             {
                 LOG.trace("-> USER_SPEAKING_UPDATE {}", contentAll);
                 final JSONObject content = contentAll.getJSONObject("d");
-                final boolean speaking = content.getBoolean("speaking");
+                final EnumSet<SpeakingMode> speaking = SpeakingMode.getModes(content.getInt("speaking"));
                 final int ssrc = content.getInt("ssrc");
                 final long userId = content.getLong("user_id");
 

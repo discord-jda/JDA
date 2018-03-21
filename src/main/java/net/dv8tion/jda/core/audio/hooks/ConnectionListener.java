@@ -16,7 +16,10 @@
 
 package net.dv8tion.jda.core.audio.hooks;
 
+import net.dv8tion.jda.core.audio.SpeakingMode;
 import net.dv8tion.jda.core.entities.User;
+
+import java.util.EnumSet;
 
 /**
  * Used to monitor an audio connection, ping, and speaking users.
@@ -61,8 +64,43 @@ public interface ConnectionListener
      *
      * @param  user
      *         Never-null {@link net.dv8tion.jda.core.entities.User User} who's talking status has changed.
+     * @param  modes
+     *         EnumSet, containing the active speaking modes
+     *
+     * @see    java.util.EnumSet EnumSet
+     * @see    net.dv8tion.jda.core.audio.SpeakingMode SpeakingMode
+     */
+    @SuppressWarnings("deprecation")
+    default void onUserSpeaking(User user, EnumSet<SpeakingMode> modes)
+    {
+        onUserSpeaking(user, !modes.contains(SpeakingMode.NONE));
+    }
+
+    /**
+     * This method is an easy way to detect if a user is talking. Discord sends us an event when a user starts or stops
+     * talking and it is parallel to the audio socket, so this event could come milliseconds before or after audio begins
+     * or stops. This method is brilliant for clients wanting to display that a user is currently talking.
+     * <p>
+     * Unlike the {@link net.dv8tion.jda.core.audio.AudioReceiveHandler#handleCombinedAudio(net.dv8tion.jda.core.audio.CombinedAudio)
+     * AudioReceiveHandler.handleCombinedAudio(CombinedAudio)} and
+     * {@link net.dv8tion.jda.core.audio.AudioReceiveHandler#handleUserAudio(net.dv8tion.jda.core.audio.UserAudio)
+     * AudioReceiveHandler.handleUserAudio(UserAudio)} methods which are
+     * fired extremely often, this method is fired as a flag for the beginning and ending of audio transmission, and as such
+     * is only fired when that changes. So while the {@link net.dv8tion.jda.core.audio.AudioReceiveHandler#handleUserAudio(net.dv8tion.jda.core.audio.UserAudio)
+     * AudioReceiveHandler.handleUserAudio(UserAudio)} method is fired every time JDA receives audio data from Discord,
+     * this is only fired when that stream starts and when it stops.
+     * <br>If the user speaks for 3 minutes straight without ever stopping, then this would fire 2 times, once at the beginning
+     * and once after 3 minutes when they stop talking even though the {@link net.dv8tion.jda.core.audio.AudioReceiveHandler#handleUserAudio(net.dv8tion.jda.core.audio.UserAudio)
+     * AudioReceiveHandler.handleUserAudio(UserAudio)} method was fired thousands of times over the course of the 3 minutes.
+     *
+     * @param  user
+     *         Never-null {@link net.dv8tion.jda.core.entities.User User} who's talking status has changed.
      * @param  speaking
      *         If true, the user has begun transmitting audio.
+     *
+     * @deprecated
+     *         Use {@link #onUserSpeaking(net.dv8tion.jda.core.entities.User, java.util.EnumSet)} instead!
      */
+    @Deprecated
     void onUserSpeaking(User user, boolean speaking);
 }

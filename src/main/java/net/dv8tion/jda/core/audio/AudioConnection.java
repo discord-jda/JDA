@@ -564,14 +564,14 @@ public class AudioConnection
         return audio;
     }
 
-    private void setSpeaking(boolean isSpeaking)
+    private void setSpeaking(int mask)
     {
-        this.speaking = isSpeaking;
+        this.speaking = (mask & SpeakingMode.VOICE.getRaw()) != 0;
         JSONObject obj = new JSONObject()
-                .put("speaking", isSpeaking)
+                .put("speaking", mask)
                 .put("delay", 0);
         webSocket.send(VoiceCode.USER_SPEAKING_UPDATE, obj);
-        if (!isSpeaking)
+        if (!speaking)
             sendSilentPackets();
     }
 
@@ -630,7 +630,7 @@ public class AudioConnection
                     if (rawAudio == null || rawAudio.length == 0)
                     {
                         if (speaking && changeTalking)
-                            setSpeaking(false);
+                            setSpeaking(0);
                     }
                     else
                     {
@@ -642,7 +642,7 @@ public class AudioConnection
                         nextPacket = getDatagramPacket(rawAudio);
 
                         if (!speaking)
-                            setSpeaking(true);
+                            setSpeaking(1);
 
                         if (seq + 1 > Character.MAX_VALUE)
                             seq = 0;
@@ -666,7 +666,7 @@ public class AudioConnection
                     }
                 }
                 else if (speaking && changeTalking)
-                    setSpeaking(false);
+                    setSpeaking(0);
             }
             catch (Exception e)
             {

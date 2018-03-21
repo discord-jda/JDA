@@ -116,24 +116,6 @@ public class AudioPacket
         this.rawPacket = buffer.array();
 
     }
-//
-//    public AudioPacket(char seq, int timestamp, int ssrc, byte[] nonce, byte[] encodedAudio)
-//    {
-//        this.seq = seq;
-//        this.ssrc = ssrc;
-//        this.timestamp = timestamp;
-//        this.encodedAudio = encodedAudio;
-//
-//        ByteBuffer buffer = ByteBuffer.allocate(RTP_HEADER_BYTE_LENGTH + nonce.length + encodedAudio.length);
-//        buffer.put(RTP_VERSION_PAD_EXTEND_INDEX, RTP_VERSION_PAD_EXTEND);   //0
-//        buffer.put(RTP_PAYLOAD_INDEX, RTP_PAYLOAD_TYPE);                    //1
-//        buffer.putChar(SEQ_INDEX, seq);                                     //2 - 3
-//        buffer.putInt(TIMESTAMP_INDEX, timestamp);                          //4 - 7
-//        buffer.putInt(SSRC_INDEX, ssrc);                                    //8 - 11
-//        System.arraycopy(nonce, 0, buffer.array(), RTP_HEADER_BYTE_LENGTH, nonce.length); //12 - n
-//        System.arraycopy(encodedAudio, 0, buffer.array(), RTP_HEADER_BYTE_LENGTH + nonce.length, encodedAudio.length); //n - m
-//        this.rawPacket = buffer.array();
-//    }
 
     public byte[] getNonce()
     {

@@ -16,7 +16,10 @@
 
 package net.dv8tion.jda.core.audio.hooks;
 
+import net.dv8tion.jda.core.audio.SpeakingMode;
 import net.dv8tion.jda.core.entities.User;
+
+import java.util.EnumSet;
 
 public class ListenerProxy implements ConnectionListener
 {
@@ -62,6 +65,26 @@ public class ListenerProxy implements ConnectionListener
     }
 
     @Override
+    public void onUserSpeaking(User user, EnumSet<SpeakingMode> modes)
+    {
+        synchronized (listenerLock)
+        {
+            if (listener == null)
+                return;
+
+            try
+            {
+                listener.onUserSpeaking(user, modes);
+            }
+            catch (Throwable t)
+            {
+                t.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    @Deprecated
     public void onUserSpeaking(User user, boolean speaking)
     {
         synchronized (listenerLock)
