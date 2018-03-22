@@ -705,7 +705,7 @@ public class AudioConnection
 
         private byte[] getNonceBytes()
         {
-            byte[] data = new byte[TweetNaclFast.SecretBox.nonceLength];
+            byte[] data = new byte[4];
             data[0] = (byte) ((nonce >>> 24) & 0xFF);
             data[1] = (byte) ((nonce >>> 16) & 0xFF);
             data[2] = (byte) ((nonce >>>  8) & 0xFF);

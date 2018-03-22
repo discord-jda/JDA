@@ -160,10 +160,12 @@ public class AudioPacket
         //Xsalsa20's Nonce is 24 bytes long, however RTP (and consequently Discord)'s nonce is
         // only 12 bytes long, so we need to create a 24 byte array, and copy the 12 byte nonce into it.
         // we will leave the extra bytes as nulls. (Java sets non-populated bytes as 0).
+        // if the provided -nonce- is not null we use that instead, the lite mode only uses 4 bytes
         byte[] extendedNonce = nonce == null ? new byte[TweetNaclFast.SecretBox.nonceLength] : nonce;
 
         //Copy the RTP nonce into our Xsalsa20 nonce array.
         // Note, it doesn't fill the Xsalsa20 nonce array completely.
+        // If nonce isn't null we already have a working array, skip this step
         if (nonce == null)
             System.arraycopy(getNonce(), 0, extendedNonce, 0, RTP_HEADER_BYTE_LENGTH);
 
@@ -173,6 +175,8 @@ public class AudioPacket
         byte[] encryptedAudio = intermediateAudio;
         if (nonce != null)
         {
+            // here we append the provided nonce which is used in _suffix and _lite encryption modes
+            // for _suffix this is the usual 24 bytes and for _lite it should be 4 bytes (unsigned int big endian)
             encryptedAudio = new byte[intermediateAudio.length + extendedNonce.length];
             System.arraycopy(intermediateAudio, 0, encryptedAudio, 0, intermediateAudio.length);
             System.arraycopy(extendedNonce, 0, encryptedAudio, intermediateAudio.length, extendedNonce.length);

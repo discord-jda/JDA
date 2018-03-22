@@ -20,11 +20,23 @@ import org.json.JSONArray;
 
 public enum AudioEncryption
 {
-    XSALSA20_POLY1305_SUFFIX,
+    // these are ordered by priority, lite > suffix > normal
+    // we prefer lite because it uses only 4 bytes for its nonce while the others use 24 bytes
     XSALSA20_POLY1305_LITE,
+    XSALSA20_POLY1305_SUFFIX,
     XSALSA20_POLY1305;
 
-    public static AudioEncryption getStrongestMode(JSONArray array)
+    private final String key;
+
+    AudioEncryption() {
+        this.key = name().toLowerCase();
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public static AudioEncryption getPreferredMode(JSONArray array)
     {
         AudioEncryption encryption = null;
         for (Object o : array)

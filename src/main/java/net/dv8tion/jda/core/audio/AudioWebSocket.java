@@ -175,9 +175,11 @@ public class AudioWebSocket extends WebSocketAdapter
                 ssrc = content.getInt("ssrc");
                 int port = content.getInt("port");
                 JSONArray modes = content.getJSONArray("modes");
-                encryption = AudioEncryption.getStrongestMode(modes);
+                encryption = AudioEncryption.getPreferredMode(modes);
                 if (encryption == null)
                     throw new IllegalStateException("None of the provided encryption modes are supported: " + modes);
+                else
+                    LOG.debug("Using encryption mode " + encryption.getKey());
 
                 //Find our external IP and Port using Discord
                 InetSocketAddress externalIpAndPort;
@@ -201,7 +203,7 @@ public class AudioWebSocket extends WebSocketAdapter
                         .put("data", new JSONObject()
                             .put("address", externalIpAndPort.getHostString())
                             .put("port", externalIpAndPort.getPort())
-                            .put("mode", encryption.name().toLowerCase())); //Discord requires encryption
+                            .put("mode", encryption.getKey())); //Discord requires encryption
                 send(VoiceCode.SELECT_PROTOCOL, object);
                 changeStatus(ConnectionStatus.CONNECTING_AWAITING_READY);
                 break;
