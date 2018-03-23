@@ -174,7 +174,7 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
             route = route.withQueryParams("action_type", String.valueOf(type.getKey()));
 
         if (userId != null)
-            route = route.withQueryParams("action_type", userId);
+            route = route.withQueryParams("user_id", userId);
 
         if (last != null)
             route = route.withQueryParams("before", last.getId());
