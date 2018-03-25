@@ -20,6 +20,11 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.MessageReaction;
 import net.dv8tion.jda.core.entities.User;
 
+/**
+ * Indicates that a {@link net.dv8tion.jda.core.entities.MessageReaction MessageReaction} was added to a Message in a Guild
+ *
+ * <p>Can be used to detect when a reaction is added in a guild
+ */
 public class GuildMessageReactionAddEvent extends GenericGuildMessageReactionEvent
 {
     public GuildMessageReactionAddEvent(JDA api, long responseNumber, User user, MessageReaction reaction)

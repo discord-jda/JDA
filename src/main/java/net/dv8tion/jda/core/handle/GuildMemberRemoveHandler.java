@@ -107,7 +107,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
         api.getEventManager().handle(
                 new GuildMemberLeaveEvent(
                         api, responseNumber,
-                        guild, member));
+                        member));
         return null;
     }
 }

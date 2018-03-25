@@ -18,12 +18,55 @@ package net.dv8tion.jda.core.events.emote.update;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Emote;
+import net.dv8tion.jda.core.events.UpdateEvent;
 import net.dv8tion.jda.core.events.emote.GenericEmoteEvent;
 
-public class GenericEmoteUpdateEvent extends GenericEmoteEvent
+/**
+ * Indicates that an {@link net.dv8tion.jda.core.entities.Emote Emote} was updated.
+ */
+public abstract class GenericEmoteUpdateEvent<T> extends GenericEmoteEvent implements UpdateEvent<Emote, T>
 {
-    public GenericEmoteUpdateEvent(JDA api, long responseNumber, Emote emote)
+    protected final T previous;
+    protected final T next;
+    protected final String identifier;
+
+    public GenericEmoteUpdateEvent(
+        JDA api, long responseNumber, Emote emote,
+        T previous, T next, String identifier)
     {
         super(api, responseNumber, emote);
+        this.previous = previous;
+        this.next = next;
+        this.identifier = identifier;
+    }
+
+    @Override
+    public Emote getEntity()
+    {
+        return getEmote();
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return identifier;
+    }
+
+    @Override
+    public T getOldValue()
+    {
+        return previous;
+    }
+
+    @Override
+    public T getNewValue()
+    {
+        return next;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "EmoteUpdate[" + getPropertyIdentifier() + "](" + getOldValue() + "->" + getNewValue() + ')';
     }
 }

@@ -30,7 +30,7 @@ import org.json.JSONObject;
 import java.util.Set;
 
 /**
- * Fired when a Rest request has been executed.
+ * Indicates that a {@link net.dv8tion.jda.core.requests.RestAction RestAction} has been executed.
  * 
  * <p>Depending on the request and its result not all values have to be populated.
  */

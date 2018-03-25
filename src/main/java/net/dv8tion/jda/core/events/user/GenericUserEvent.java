@@ -20,11 +20,10 @@ import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.Event;
 
 /**
- * <b><u>GenericUserEvent</u></b><br>
- * Fired whenever a {@link net.dv8tion.jda.core.entities.User User} changes their presence. (like avatar/game)<br>
- * Every UserEvent is an instance of this event and can be casted. (no exceptions)<br>
- * <br>
- * Use: Detect any UserEvent. <i>(No real use for the JDA user)</i>
+ * Indicates that a {@link net.dv8tion.jda.core.entities.User User} changed or started an activity.
+ * <br>Every UserEvent is derived from this event and can be casted.
+ *
+ * <p>Can be used to detect any UserEvent.
  */
 public abstract class GenericUserEvent extends Event
 {
@@ -36,6 +35,11 @@ public abstract class GenericUserEvent extends Event
         this.user = user;
     }
 
+    /**
+     * The related user instance
+     *
+     * @return The user instance related to this event
+     */
     public User getUser()
     {
         return user;

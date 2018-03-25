@@ -20,10 +20,9 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Role;
 
 /**
- * <b><u>RoleDeleteEvent</u></b><br>
- * Fired if a {@link net.dv8tion.jda.core.entities.Role Role} is deleted.<br>
- * <br>
- * Use: Retrieve deleted Role and it's Guild.
+ * Indicates that a {@link net.dv8tion.jda.core.entities.Role Role} was deleted.
+ *
+ * <p>Can be used to retrieve the deleted Role and its Guild.
  */
 public class RoleDeleteEvent extends GenericRoleEvent
 {

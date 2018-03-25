@@ -19,26 +19,38 @@ package net.dv8tion.jda.core.events.self;
 import net.dv8tion.jda.core.JDA;
 
 /**
- * <b><u>SelfUpdatePhoneNumberEvent</u></b><br>
- * Fired if you change the phone number associated with your account.<br>
+ * Indicates that the phone number associated with your account changed. (client-only)
+ *
+ * <p>Can be used to retrieve the old phone number.
+ *
+ * <p>Identifier: {@code phone}
  */
-public class SelfUpdatePhoneNumberEvent extends GenericSelfUpdateEvent
+public class SelfUpdatePhoneNumberEvent extends GenericSelfUpdateEvent<String>
 {
-    private final String oldPhoneNumber;
+    public static final String IDENTIFIER = "phone";
 
     public SelfUpdatePhoneNumberEvent(JDA api, long responseNumber, String oldPhoneNumber)
     {
-        super(api, responseNumber);
-        this.oldPhoneNumber = oldPhoneNumber;
+        super(api, responseNumber, oldPhoneNumber, api.getSelfUser().getPhoneNumber(), IDENTIFIER);
     }
 
     /**
-     * Returns the old phone number or {@code null} if no phone number was previously set.
+     * The old phone number or {@code null} if no phone number was previously set.
      *
      * @return The old phone number or {@code null}.
      */
     public String getOldPhoneNumber()
     {
-        return oldPhoneNumber;
+        return getOldValue();
+    }
+
+    /**
+     * The new phone number.
+     *
+     * @return The new phone number
+     */
+    public String getNewPhoneNumber()
+    {
+        return getNewValue();
     }
 }

@@ -22,16 +22,19 @@ import net.dv8tion.jda.core.entities.Guild;
 import java.util.Set;
 
 /**
- * This event is fired, when the Set of features of a {@link net.dv8tion.jda.core.entities.Guild Guild} changes.
+ * Indicates that the features of a {@link net.dv8tion.jda.core.entities.Guild Guild} changed.
+ *
+ * <p>Can be used to detect when the features change and retrieve the old ones
+ *
+ * <p>Identifier: {@code features}
  */
-public class GuildUpdateFeaturesEvent extends GenericGuildUpdateEvent
+public class GuildUpdateFeaturesEvent extends GenericGuildUpdateEvent<Set<String>>
 {
-    private final Set<String> oldFeatures;
+    public static final String IDENTIFIER = "features";
 
     public GuildUpdateFeaturesEvent(JDA api, long responseNumber, Guild guild, Set<String> oldFeatures)
     {
-        super(api, responseNumber, guild);
-        this.oldFeatures = oldFeatures;
+        super(api, responseNumber, guild, oldFeatures, guild.getFeatures(), IDENTIFIER);
     }
 
     /**
@@ -41,6 +44,16 @@ public class GuildUpdateFeaturesEvent extends GenericGuildUpdateEvent
      */
     public Set<String> getOldFeatures()
     {
-        return oldFeatures;
+        return getOldValue();
+    }
+
+    /**
+     * The new Set of features after the {@link net.dv8tion.jda.core.entities.Guild Guild} update.
+     *
+     * @return Never-null, unmodifiable Set of the new features
+     */
+    public Set<String> getNewFeatures()
+    {
+        return getNewValue();
     }
 }

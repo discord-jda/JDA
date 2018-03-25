@@ -21,8 +21,13 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 
 /**
- * <b><u>GuildVoiceMoveEvent</u></b>
- * <p>Fired when a {@link net.dv8tion.jda.core.entities.Member Member} for any reason is moved from one {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} to another
+ * Indicates that a {@link net.dv8tion.jda.core.entities.Member Member} moves between {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels}.
+ *
+ * <p><b>When the {@link net.dv8tion.jda.core.entities.Member Member} is leaving a {@link net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent GuildVoiceLeaveEvent} is fired instead</b>
+ *
+ * <p>Can be used to detect when a member moves from one voice channel to another in the same guild.
+ *
+ * @see net.dv8tion.jda.core.events.guild.voice.GuildVoiceUpdateEvent GuildVoiceUpdateEvent
  */
 public class GuildVoiceMoveEvent extends GuildVoiceUpdateEvent
 {

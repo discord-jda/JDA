@@ -20,6 +20,11 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.MessageReaction;
 import net.dv8tion.jda.core.entities.User;
 
+/**
+ * Indicates that a {@link net.dv8tion.jda.core.entities.MessageReaction MessageReaction} was added to a Message in a PrivateChannel.
+ *
+ * <p>Can be used to detect when a reaction is added in a private channel.
+ */
 public class PrivateMessageReactionAddEvent extends GenericPrivateMessageReactionEvent
 {
     public PrivateMessageReactionAddEvent(JDA api, long responseNumber, User user, MessageReaction reaction)

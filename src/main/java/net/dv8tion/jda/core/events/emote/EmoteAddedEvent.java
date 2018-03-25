@@ -19,6 +19,9 @@ package net.dv8tion.jda.core.events.emote;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Emote;
 
+/**
+ * Indicates that a new {@link net.dv8tion.jda.core.entities.Emote Emote} was added to a {@link net.dv8tion.jda.core.entities.Guild Guild}.
+ */
 public class EmoteAddedEvent extends GenericEmoteEvent
 {
     public EmoteAddedEvent(JDA api, long responseNumber, Emote emote)

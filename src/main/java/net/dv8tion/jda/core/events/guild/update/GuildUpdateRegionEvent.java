@@ -21,21 +21,24 @@ import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.Guild;
 
 /**
- * <b><u>GuildUpdateRegionEvent</u></b>
- * <br>Fired when the voice region of a {@link net.dv8tion.jda.core.entities.Guild Guild} has been
- * updated.
- * This can be used to retrieve the old and new region in either raw string names or resolved enum constants of {@link net.dv8tion.jda.core.Region Region}!
+ * Indicates that the {@link net.dv8tion.jda.core.Region Region} of a {@link net.dv8tion.jda.core.entities.Guild Guild} changed.
+ *
+ * <p>Can be used to detect when a Region changes and retrieve the old one
+ *
+ * <p>Identifier: {@code region}
  */
-public class GuildUpdateRegionEvent extends GenericGuildUpdateEvent
+public class GuildUpdateRegionEvent extends GenericGuildUpdateEvent<Region>
 {
+    public static final String IDENTIFIER = "region";
+
     private final String oldRegion;
     private final String newRegion;
 
-    public GuildUpdateRegionEvent(JDA api, long responseNumber, Guild guild, String oldRegion, String newRegion)
+    public GuildUpdateRegionEvent(JDA api, long responseNumber, Guild guild, String oldRegion)
     {
-        super(api, responseNumber, guild);
+        super(api, responseNumber, guild, Region.fromKey(oldRegion), guild.getRegion(), IDENTIFIER);
         this.oldRegion = oldRegion;
-        this.newRegion = newRegion;
+        this.newRegion = guild.getRegionRaw();
     }
 
     /**
@@ -48,7 +51,7 @@ public class GuildUpdateRegionEvent extends GenericGuildUpdateEvent
      */
     public Region getOldRegion()
     {
-        return Region.fromKey(oldRegion);
+        return getOldValue();
     }
 
     /**
@@ -73,7 +76,7 @@ public class GuildUpdateRegionEvent extends GenericGuildUpdateEvent
      */
     public Region getNewRegion()
     {
-        return Region.fromKey(newRegion);
+        return getNewValue();
     }
 
     /**

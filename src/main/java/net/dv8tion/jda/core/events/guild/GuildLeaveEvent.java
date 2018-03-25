@@ -19,10 +19,9 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 
 /**
- * <b><u>GuildLeaveEvent</u></b><br>
- * Fired if a you leave a {@link net.dv8tion.jda.core.entities.Guild Guild}.<br>
- * <br>
- * Use: Detect when you leave a Guild.
+ * Indicates that you left a {@link net.dv8tion.jda.core.entities.Guild Guild}.
+ *
+ * <p>Cane bse used to detect when you leave a Guild.
  */
 public class GuildLeaveEvent extends GenericGuildEvent
 {

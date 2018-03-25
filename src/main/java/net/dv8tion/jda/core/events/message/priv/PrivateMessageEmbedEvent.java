@@ -22,10 +22,9 @@ import net.dv8tion.jda.core.entities.PrivateChannel;
 import java.util.List;
 
 /**
- * <b><u>PrivateMessageEmbedEvent</u></b><br>
- * Fired if a Message contains {@link net.dv8tion.jda.core.entities.MessageEmbed Embeds} in a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}.<br>
- * <br>
- * Use: Retrieve affected PrivateChannel, the ID of the deleted Message and a list of MessageEmbeds.
+ * Indicates that a Message contains {@link net.dv8tion.jda.core.entities.MessageEmbed Embeds} in a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}.
+ * 
+ * <p>Can be used to retrieve affected PrivateChannel, the ID of the deleted Message and a list of MessageEmbeds.
  */
 public class PrivateMessageEmbedEvent extends GenericPrivateMessageEvent
 {
@@ -37,6 +36,11 @@ public class PrivateMessageEmbedEvent extends GenericPrivateMessageEvent
         this.embeds = embeds;
     }
 
+    /**
+     * The {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbeds}
+     *
+     * @return The MessageEmbeds
+     */
     public List<MessageEmbed> getMessageEmbeds()
     {
         return embeds;

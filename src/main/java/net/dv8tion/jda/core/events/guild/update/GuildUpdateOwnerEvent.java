@@ -20,18 +20,39 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 
-public class GuildUpdateOwnerEvent extends GenericGuildUpdateEvent
+/**
+ * Indicates that the owner of a {@link net.dv8tion.jda.core.entities.Guild Guild} changed.
+ *
+ * <p>Can be used to detect when an owner of a guild changes and retrieve the old one
+ *
+ * <p>Identifier: {@code owner}
+ */
+public class GuildUpdateOwnerEvent extends GenericGuildUpdateEvent<Member>
 {
-    private final Member oldOwner;
+    public static final String IDENTIFIER = "owner";
 
     public GuildUpdateOwnerEvent(JDA api, long responseNumber, Guild guild, Member oldOwner)
     {
-        super(api, responseNumber, guild);
-        this.oldOwner = oldOwner;
+        super(api, responseNumber, guild, oldOwner, guild.getOwner(), IDENTIFIER);
     }
 
+    /**
+     * The old owner
+     *
+     * @return The old owner
+     */
     public Member getOldOwner()
     {
-        return oldOwner;
+        return getOldValue();
+    }
+
+    /**
+     * The new owner
+     *
+     * @return The new owner
+     */
+    public Member getNewOwner()
+    {
+        return getNewValue();
     }
 }

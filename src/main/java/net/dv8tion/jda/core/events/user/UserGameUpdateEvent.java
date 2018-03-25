@@ -15,34 +15,46 @@
  */
 package net.dv8tion.jda.core.events.user;
 
-import net.dv8tion.jda.client.entities.Friend;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.events.user.update.UserUpdateGameEvent;
 
 /**
- * <b><u>UserGameUpdateEvent</u></b><br>
- * Fired if the {@link net.dv8tion.jda.core.entities.Game Game} of a {@link net.dv8tion.jda.core.entities.User User} changes.<br>
- * <br>
- * Use: Retrieve the User who's Game changed and their previous Game.
+ * Indicates that the {@link net.dv8tion.jda.core.entities.Game Game} of a {@link net.dv8tion.jda.core.entities.User User} changes.
+ * <br>As with any presence updates this either happened for a {@link net.dv8tion.jda.core.entities.Member Member} in a Guild or a {@link net.dv8tion.jda.client.entities.Friend Friend}!
+ *
+ * <p>Can be used to retrieve the User who changed their Game and their previous Game.
+ *
+ * @deprecated Use {@link net.dv8tion.jda.core.events.user.update.UserUpdateGameEvent UserUpdateGameEvent}
  */
-public class UserGameUpdateEvent extends GenericUserPresenceEvent
+@Deprecated
+public class UserGameUpdateEvent extends UserUpdateGameEvent
 {
     protected final Game previousGame;
 
     public UserGameUpdateEvent(JDA api, long responseNumber, User user, Guild guild, Game previousGame)
     {
-        super(api, responseNumber, user, guild);
+        super(api, responseNumber, user, guild, previousGame);
         this.previousGame = previousGame;
     }
 
+    /**
+     * The previous {@link net.dv8tion.jda.core.entities.Game Game}
+     *
+     * @return The previous {@link net.dv8tion.jda.core.entities.Game Game}
+     */
     public Game getPreviousGame()
     {
         return previousGame;
     }
 
+    /**
+     * The current {@link net.dv8tion.jda.core.entities.Game Game}
+     *
+     * @return The current {@link net.dv8tion.jda.core.entities.Game Game}
+     */
     public Game getCurrentGame()
     {
         return isRelationshipUpdate() ? getFriend().getGame() : getMember().getGame();

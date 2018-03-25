@@ -17,18 +17,57 @@ package net.dv8tion.jda.core.events.guild.update;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.events.UpdateEvent;
 import net.dv8tion.jda.core.events.guild.GenericGuildEvent;
 
 /**
- * <b><u>GuildUpdateEvent</u></b><br>
- * Fired whenever a {@link net.dv8tion.jda.core.entities.Guild Guild} updates.<br>
- * <br>
- * Use: Detect what Guild updated.
+ * Indicates that a {@link net.dv8tion.jda.core.entities.Guild Guild} was updated.
+ *
+ * <p>Can be used to detect when a Guild is updated.
  */
-public abstract class GenericGuildUpdateEvent extends GenericGuildEvent
+public abstract class GenericGuildUpdateEvent<T> extends GenericGuildEvent implements UpdateEvent<Guild, T>
 {
-    public GenericGuildUpdateEvent(JDA api, long responseNumber, Guild guild)
+    protected final T previous;
+    protected final T next;
+    protected final String identifier;
+
+    public GenericGuildUpdateEvent(
+        JDA api, long responseNumber, Guild guild,
+        T previous, T next, String identifier)
     {
         super(api, responseNumber, guild);
+        this.previous = previous;
+        this.next = next;
+        this.identifier = identifier;
+    }
+
+    @Override
+    public Guild getEntity()
+    {
+        return getGuild();
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return identifier;
+    }
+
+    @Override
+    public T getOldValue()
+    {
+        return previous;
+    }
+
+    @Override
+    public T getNewValue()
+    {
+        return next;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "GuildUpdate[" + getPropertyIdentifier() + "](" + getOldValue() + "->" + getNewValue() + ')';
     }
 }

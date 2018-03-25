@@ -15,44 +15,21 @@
  */
 package net.dv8tion.jda.core.events.message;
 
-import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.MessageChannel;
 
 /**
- * <b><u>MessageDeleteEvent</u></b><br>
- * Fired if a Message was deleted in a {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.<br>
- * <br>
- * Use: Detect when a Message is deleted. No matter if private or guild.
+ * Indicates that a Message was deleted in a {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.
+ * 
+ * <p>Can be used to detect when a Message is deleted. No matter if private or guild.
  *
  * <p><b>JDA does not have a cache for messages and is not able to provide previous information due to limitations by the
  * Discord API!</b>
  */
 public class MessageDeleteEvent extends GenericMessageEvent
 {
-
     public MessageDeleteEvent(JDA api, long responseNumber, long messageId, MessageChannel channel)
     {
         super(api, responseNumber, messageId, channel);
-    }
-
-    public PrivateChannel getPrivateChannel()
-    {
-        return isFromType(ChannelType.PRIVATE) ? (PrivateChannel) channel : null;
-    }
-
-    public Group getGroup()
-    {
-        return isFromType(ChannelType.GROUP) ? (Group) channel : null;
-    }
-
-    public TextChannel getTextChannel()
-    {
-        return isFromType(ChannelType.TEXT) ? (TextChannel) channel : null;
-    }
-
-    public Guild getGuild()
-    {
-        return isFromType(ChannelType.TEXT) ? getTextChannel().getGuild() : null;
     }
 }

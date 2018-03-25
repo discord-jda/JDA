@@ -19,18 +19,39 @@ package net.dv8tion.jda.core.events.guild.update;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 
-public class GuildUpdateMFALevelEvent extends GenericGuildUpdateEvent
+/**
+ * Indicates that the {@link net.dv8tion.jda.core.entities.Guild.MFALevel MFALevel} of a {@link net.dv8tion.jda.core.entities.Guild Guild} changed.
+ *
+ * <p>Can be used to detect when a MFALevel changes and retrieve the old one
+ *
+ * <p>Identifier: {@code mfa_level}
+ */
+public class GuildUpdateMFALevelEvent extends GenericGuildUpdateEvent<Guild.MFALevel>
 {
-    private final Guild.MFALevel oldMFALevel;
+    public static final String IDENTIFIER = "mfa_level";
 
     public GuildUpdateMFALevelEvent(JDA api, long responseNumber, Guild guild, Guild.MFALevel oldMFALevel)
     {
-        super(api, responseNumber, guild);
-        this.oldMFALevel = oldMFALevel;
+        super(api, responseNumber, guild, oldMFALevel, guild.getRequiredMFALevel(), IDENTIFIER);
     }
 
+    /**
+     * The old {@link net.dv8tion.jda.core.entities.Guild.MFALevel MFALevel}
+     *
+     * @return The old MFALevel
+     */
     public Guild.MFALevel getOldMFALevel()
     {
-        return oldMFALevel;
+        return getOldValue();
+    }
+
+    /**
+     * The new {@link net.dv8tion.jda.core.entities.Guild.MFALevel MFALevel}
+     *
+     * @return The new MFALevel
+     */
+    public Guild.MFALevel getNewMFALevel()
+    {
+        return getNewValue();
     }
 }

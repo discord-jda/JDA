@@ -21,9 +21,11 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 
 /**
- * <b><u>GuildVoiceJoinEvent</u></b>
- * <p>Fired when a {@link net.dv8tion.jda.core.entities.Member Member} connects to a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
- * <br>When the {@link net.dv8tion.jda.core.entities.Member Member} is moved a {@link net.dv8tion.jda.core.events.guild.voice.GuildVoiceMoveEvent GuildVoiceMoveEvent} is fired instead
+ * Indicates that a {@link net.dv8tion.jda.core.entities.Member Member} connected to a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}.
+ *
+ * <p><b>When the {@link net.dv8tion.jda.core.entities.Member Member} is moved a {@link net.dv8tion.jda.core.events.guild.voice.GuildVoiceMoveEvent GuildVoiceMoveEvent} is fired instead</b>
+ *
+ * <p>Can be used to detect when a member joins a voice channel for the first time.
  */
 public class GuildVoiceJoinEvent extends GenericGuildVoiceEvent
 {
@@ -38,7 +40,7 @@ public class GuildVoiceJoinEvent extends GenericGuildVoiceEvent
     /**
      * The {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} that was joined
      *
-     * @return the {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
+     * @return The {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
      */
     public VoiceChannel getChannelJoined()
     {

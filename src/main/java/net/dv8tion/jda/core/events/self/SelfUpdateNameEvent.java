@@ -18,23 +18,55 @@ package net.dv8tion.jda.core.events.self;
 
 import net.dv8tion.jda.core.JDA;
 
-public class SelfUpdateNameEvent extends GenericSelfUpdateEvent
+/**
+ * Indicates that the name of the current user changed.
+ *
+ * <p>Can be used to retrieve the old name.
+ *
+ * <p>Identifier: {@code name}
+ */
+public class SelfUpdateNameEvent extends GenericSelfUpdateEvent<String>
 {
-    private final String oldName;
+    public static final String IDENTIFIER = "name";
+
+    @Deprecated
     private final String oldDiscriminator;
 
     public SelfUpdateNameEvent(JDA api, long responseNumber, String oldName, String oldDiscriminator)
     {
-        super(api, responseNumber);
-        this.oldName = oldName;
+        super(api, responseNumber, oldName, api.getSelfUser().getName(), IDENTIFIER);
         this.oldDiscriminator = oldDiscriminator;
     }
 
+    /**
+     * The old name
+     *
+     * @return The old name
+     */
     public String getOldName()
     {
-        return oldName;
+        return getOldValue();
     }
 
+    /**
+     * The new name
+     *
+     * @return The new name
+     */
+    public String getNewName()
+    {
+        return getNewValue();
+    }
+
+    /**
+     * The old discriminator
+     *
+     * @return The old discriminator
+     *
+     * @deprecated
+     *         Use {@link net.dv8tion.jda.core.events.self.SelfUpdateDiscriminatorEvent SelfUpdateDiscriminatorEvent}
+     */
+    @Deprecated
     public String getOldDiscriminator()
     {
         return oldDiscriminator;

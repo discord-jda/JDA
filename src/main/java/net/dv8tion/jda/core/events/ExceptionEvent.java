@@ -19,8 +19,9 @@ package net.dv8tion.jda.core.events;
 import net.dv8tion.jda.core.JDA;
 
 /**
- * Fired when JDA does not have a specific handling for a Throwable.
- * <br>This includes {@link java.lang.Error Errors} and {@link com.neovisionaries.ws.client.WebSocketException WebSocketExceptions}
+ * Indicates that JDA encountered a Throwable that could not be forwarded to another end-user frontend.
+ * <br>For instance this is fired for events in internal WebSocket handling or audio threads.
+ * This includes {@link java.lang.Error Errors} and {@link com.neovisionaries.ws.client.WebSocketException WebSocketExceptions}
  *
  * <p>It is not recommended to simply use this and print each event as some throwables where already logged
  * by JDA. See {@link #isLogged()}.
@@ -32,7 +33,7 @@ public class ExceptionEvent extends Event
 
     public ExceptionEvent(JDA api, Throwable throwable, boolean logged)
     {
-        super(api, -1);
+        super(api);
         this.throwable = throwable;
         this.logged = logged;
     }

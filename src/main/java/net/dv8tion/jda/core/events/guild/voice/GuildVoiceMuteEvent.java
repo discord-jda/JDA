@@ -19,6 +19,13 @@ package net.dv8tion.jda.core.events.guild.voice;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Member;
 
+/**
+ * Indicates that a {@link net.dv8tion.jda.core.entities.Member Member} was (un-)muted.
+ * <br>Combines {@link net.dv8tion.jda.core.events.guild.voice.GuildVoiceGuildMuteEvent GuildVoiceGuildMuteEvent}
+ * and {@link net.dv8tion.jda.core.events.guild.voice.GuildVoiceSelfMuteEvent GuildVoiceSelfMuteEvent}!
+ *
+ * <p>Can be used to detect when a member is muted or un-muted.
+ */
 public class GuildVoiceMuteEvent extends GenericGuildVoiceEvent
 {
     protected final boolean muted;
@@ -29,6 +36,12 @@ public class GuildVoiceMuteEvent extends GenericGuildVoiceEvent
         this.muted = member.getVoiceState().isMuted();
     }
 
+    /**
+     * Whether the member was muted in this event.
+     *
+     * @return True, if the member was muted with this event
+     *         <br>False, if the member was un-muted in this event
+     */
     public boolean isMuted()
     {
         return muted;
