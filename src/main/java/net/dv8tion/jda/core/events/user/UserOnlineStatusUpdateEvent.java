@@ -19,28 +19,42 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.events.user.update.UserUpdateOnlineStatusEvent;
 
 /**
- * <b><u>UserOnlineStatusUpdateEvent</u></b><br>
- * Fired if the {@link OnlineStatus OnlineStatus} of a {@link net.dv8tion.jda.core.entities.User User} changes.<br>
- * <br>
- * Use: Retrieve the User who's status changed and their previous status.
+ * Indicates that the {@link OnlineStatus OnlineStatus} of a {@link net.dv8tion.jda.core.entities.User User} changed.
+ * <br>As with any presence updates this either happened for a {@link net.dv8tion.jda.core.entities.Member Member} in a Guild or a {@link net.dv8tion.jda.client.entities.Friend Friend}!
+ *
+ * <p>Can be used to retrieve the User who changed their status and their previous status.
+ *
+ * @deprecated Use {@link net.dv8tion.jda.core.events.user.update.UserUpdateOnlineStatusEvent UserUpdateOnlineStatusEvent} instead
  */
-public class UserOnlineStatusUpdateEvent extends GenericUserPresenceEvent
+@Deprecated
+public class UserOnlineStatusUpdateEvent extends UserUpdateOnlineStatusEvent
 {
     protected final OnlineStatus previousOnlineStatus;
 
     public UserOnlineStatusUpdateEvent(JDA api, long responseNumber, User user, Guild guild, OnlineStatus previousOnlineStatus)
     {
-        super(api, responseNumber, user, guild);
+        super(api, responseNumber, user, guild, previousOnlineStatus);
         this.previousOnlineStatus = previousOnlineStatus;
     }
 
+    /**
+     * The previous status
+     *
+     * @return The previous status
+     */
     public OnlineStatus getPreviousOnlineStatus()
     {
         return previousOnlineStatus;
     }
 
+    /**
+     * The current status
+     *
+     * @return The current status
+     */
     public OnlineStatus getCurrentOnlineStatus()
     {
         return isRelationshipUpdate() ? getFriend().getOnlineStatus() : getMember().getOnlineStatus();

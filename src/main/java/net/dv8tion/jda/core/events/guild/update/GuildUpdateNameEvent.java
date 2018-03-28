@@ -19,18 +19,39 @@ package net.dv8tion.jda.core.events.guild.update;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 
-public class GuildUpdateNameEvent extends GenericGuildUpdateEvent
+/**
+ * Indicates that the name of a {@link net.dv8tion.jda.core.entities.Guild Guild} changed.
+ *
+ * <p>Can be used to detect when a guild name changes and retrieve the old one
+ *
+ * <p>Identifier: {@code name}
+ */
+public class GuildUpdateNameEvent extends GenericGuildUpdateEvent<String>
 {
-    private final String oldName;
+    public static final String IDENTIFIER = "name";
 
     public GuildUpdateNameEvent(JDA api, long responseNumber, Guild guild, String oldName)
     {
-        super(api, responseNumber, guild);
-        this.oldName = oldName;
+        super(api, responseNumber, guild, oldName, guild.getName(), IDENTIFIER);
     }
 
+    /**
+     * The old name
+     *
+     * @return The old name
+     */
     public String getOldName()
     {
-        return oldName;
+        return getOldValue();
+    }
+
+    /**
+     * The new name
+     *
+     * @return The new name
+     */
+    public String getNewName()
+    {
+        return getNewValue();
     }
 }

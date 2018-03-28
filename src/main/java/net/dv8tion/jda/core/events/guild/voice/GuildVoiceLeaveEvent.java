@@ -21,16 +21,18 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 
 /**
- * <b><u>GuildVoiceLeaveEvent</u></b>
- * <p>Fired when a {@link net.dv8tion.jda.core.entities.Member Member} disconnects from a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
- * <br>When the {@link net.dv8tion.jda.core.entities.Member Member} is moved a {@link net.dv8tion.jda.core.events.guild.voice.GuildVoiceMoveEvent GuildVoiceMoveEvent} is fired instead
+ * Indicates that a {@link net.dv8tion.jda.core.entities.Member Member} disconnected from a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}.
+ *
+ * <p><b>When the {@link net.dv8tion.jda.core.entities.Member Member} is moved a {@link net.dv8tion.jda.core.events.guild.voice.GuildVoiceMoveEvent GuildVoiceMoveEvent} is fired instead</b>
+ *
+ * <p>Can be used to detect when a member leaves a voice channel completely.
+ *
+ * @see net.dv8tion.jda.core.events.guild.voice.GuildVoiceUpdateEvent GuildVoiceUpdateEvent
  */
 public class GuildVoiceLeaveEvent extends GuildVoiceUpdateEvent
 {
-
     public GuildVoiceLeaveEvent(JDA api, long responseNumber, Member member, VoiceChannel channelLeft)
     {
         super(api, responseNumber, member, channelLeft);
     }
-
 }

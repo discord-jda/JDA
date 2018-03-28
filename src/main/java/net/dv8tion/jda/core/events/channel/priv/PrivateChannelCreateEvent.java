@@ -21,10 +21,9 @@ import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.Event;
 
 /**
- * <b><u>PrivateChannelCreateEvent</u></b><br>
- * Fired if a {@link net.dv8tion.jda.core.entities.PrivateChannel Private Channel} was created.<br>
- * <br>
- * Use: Retrieve the freshly created private channel and it's {@link net.dv8tion.jda.core.entities.User User}.
+ * Indicates that a {@link net.dv8tion.jda.core.entities.PrivateChannel Private Channel} was created.
+ *
+ * <p>Can be used to retrieve the created private channel and its {@link net.dv8tion.jda.core.entities.User User}.
  */
 public class PrivateChannelCreateEvent extends Event
 {
@@ -36,11 +35,36 @@ public class PrivateChannelCreateEvent extends Event
         this.channel = channel;
     }
 
+    /**
+     * The target {@link net.dv8tion.jda.core.entities.User User}
+     * <br>Shortcut for {@code getPrivateChannel().getUser()}
+     *
+     * @return The User
+     */
     public User getUser()
     {
         return channel.getUser();
     }
 
+    /**
+     * The {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}
+     *
+     * @return The PrivateChannel
+     */
+    public PrivateChannel getChannel()
+    {
+        return channel;
+    }
+
+    /**
+     * Deprecated
+     *
+     * @return The PrivateChannel
+     *
+     * @deprecated
+     *         Use {@link #getChannel()} instead
+     */
+    @Deprecated
     public PrivateChannel getPrivateChannel()
     {
         return channel;

@@ -25,10 +25,7 @@ import net.dv8tion.jda.core.utils.SessionController;
 import okhttp3.OkHttpClient;
 
 import javax.security.auth.login.LoginException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadFactory;
 import java.util.function.IntFunction;
@@ -46,6 +43,7 @@ import java.util.stream.Collectors;
 public class DefaultShardManagerBuilder
 {
     protected final List<Object> listeners = new ArrayList<>();
+    protected final List<IntFunction<Object>> listenerProviders = new ArrayList<>();
     protected SessionController sessionController = null;
     protected IntFunction<ConcurrentMap<String, String>> contextProvider = null;
     protected boolean enableContext = true;
@@ -55,6 +53,7 @@ public class DefaultShardManagerBuilder
     protected boolean autoReconnect = true;
     protected boolean retryOnTimeout = true;
     protected boolean useShutdownNow = false;
+    protected boolean enableCompression = true;
     protected int shardsTotal = -1;
     protected int maxReconnectDelay = 900;
     protected int corePoolSize = 2;
@@ -139,6 +138,28 @@ public class DefaultShardManagerBuilder
     }
 
     /**
+     * Enable stream-compression on the gateway connection,
+     * this will decrease the amount of used bandwidth for the running bot instance
+     * for the cost of a few extra cycles for decompression.
+     * <br><b>Default: true</b>
+     *
+     * <p><b>We recommend to keep this enabled unless you have issues with the decompression</b>
+     * <br>This mode might become obligatory in a future version, do not rely on this switch to stay.
+     *
+     * @param  enable
+     *         True, if the gateway connection should use compression
+     *
+     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     *
+     * @see    <a href="https://discordapp.com/developers/docs/topics/gateway#transport-compression" target="_blank">Official Discord Documentation - Transport Compression</a>
+     */
+    public DefaultShardManagerBuilder setCompressionEnabled(boolean enable)
+    {
+        this.enableCompression = enable;
+        return this;
+    }
+
+    /**
      * Adds all provided listeners to the list of listeners that will be used to populate the {@link DefaultShardManager DefaultShardManager} object.
      * <br>This uses the {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventListener} by default.
      * <br>To switch to the {@link net.dv8tion.jda.core.hooks.AnnotatedEventManager AnnotatedEventManager},
@@ -213,6 +234,82 @@ public class DefaultShardManagerBuilder
         Checks.noneNull(listeners, "listeners");
 
         this.listeners.removeAll(listeners);
+        return this;
+    }
+
+    /**
+     * Adds the provided listener provider to the list of listener providers that will be used to create listeners.
+     * On shard creation (including shard restarts) the provider will have the shard id applied and must return a listener,
+     * which will be used, along all other listeners, to populate the listeners of the JDA object of that shard.
+     *
+     * <br>This uses the {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventListener} by default.
+     * <br>To switch to the {@link net.dv8tion.jda.core.hooks.AnnotatedEventManager AnnotatedEventManager},
+     * use {@link #setEventManager(net.dv8tion.jda.core.hooks.IEventManager) setEventManager(new AnnotatedEventManager())}.
+     *
+     * <p><b>Note:</b> When using the {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventListener} (default),
+     * given listener(s) <b>must</b> be instance of {@link net.dv8tion.jda.core.hooks.EventListener EventListener}!
+     *
+     * @param  listenerProvider
+     *         The listener provider to add to the list of listener providers.
+     *
+     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     */
+    public DefaultShardManagerBuilder addEventListenerProvider(final IntFunction<Object> listenerProvider)
+    {
+        return this.addEventListenerProviders(Collections.singleton(listenerProvider));
+    }
+
+    /**
+     * Adds the provided listener providers to the list of listener providers that will be used to create listeners.
+     * On shard creation (including shard restarts) each provider will have the shard id applied and must return a listener,
+     * which will be used, along all other listeners, to populate the listeners of the JDA object of that shard.
+     *
+     * <br>This uses the {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventListener} by default.
+     * <br>To switch to the {@link net.dv8tion.jda.core.hooks.AnnotatedEventManager AnnotatedEventManager},
+     * use {@link #setEventManager(net.dv8tion.jda.core.hooks.IEventManager) setEventManager(new AnnotatedEventManager())}.
+     *
+     * <p><b>Note:</b> When using the {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventListener} (default),
+     * given listener(s) <b>must</b> be instance of {@link net.dv8tion.jda.core.hooks.EventListener EventListener}!
+     *
+     * @param  listenerProviders
+     *         The listener provider to add to the list of listener providers.
+     *
+     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     */
+    public DefaultShardManagerBuilder addEventListenerProviders(final Collection<IntFunction<Object>> listenerProviders)
+    {
+        Checks.noneNull(listenerProviders, "listener providers");
+
+        this.listenerProviders.addAll(listenerProviders);
+        return this;
+    }
+
+    /**
+     * Removes the provided listener provider from the list of listener providers.
+     *
+     * @param  listenerProvider
+     *         The listener provider to remove from the list of listener providers.
+     *
+     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     */
+    public DefaultShardManagerBuilder removeEventListenerProvider(final IntFunction<Object> listenerProvider)
+    {
+        return this.removeEventListenerProviders(Collections.singleton(listenerProvider));
+    }
+
+    /**
+     * Removes all provided listener providers from the list of listener providers.
+     *
+     * @param  listenerProviders
+     *         The listener provider(s) to remove from the list of listener providers.
+     *
+     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     */
+    public DefaultShardManagerBuilder removeEventListenerProviders(final Collection<IntFunction<Object>> listenerProviders)
+    {
+        Checks.noneNull(listenerProviders, "listener providers");
+
+        this.listenerProviders.removeAll(listenerProviders);
         return this;
     }
 
@@ -731,11 +828,11 @@ public class DefaultShardManagerBuilder
     {
         final DefaultShardManager manager = new DefaultShardManager(
             this.shardsTotal, this.shards, this.sessionController,
-            this.listeners, this.token, this.eventManager,
+            this.listeners, this.listenerProviders, this.token, this.eventManager,
             this.audioSendFactory, this.gameProvider, this.statusProvider,
             this.httpClientBuilder, this.wsFactory, this.threadFactory,
             this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting,
-            this.autoReconnect, this.idleProvider, this.retryOnTimeout, this.useShutdownNow, this.enableContext, this.contextProvider);
+            this.autoReconnect, this.idleProvider, this.retryOnTimeout, this.useShutdownNow, this.enableContext, this.contextProvider, this.enableCompression);
 
         manager.login();
 

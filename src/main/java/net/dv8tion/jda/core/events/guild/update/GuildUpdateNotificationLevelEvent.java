@@ -19,18 +19,39 @@ package net.dv8tion.jda.core.events.guild.update;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 
-public class GuildUpdateNotificationLevelEvent extends GenericGuildUpdateEvent
+/**
+ * Indicates that the {@link net.dv8tion.jda.core.entities.Guild.NotificationLevel NotificationLevel} of a {@link net.dv8tion.jda.core.entities.Guild Guild} changed.
+ *
+ * <p>Can be used to detect when a NotificationLevel changes and retrieve the old one
+ *
+ * <p>Identifier: {@code notification_level}
+ */
+public class GuildUpdateNotificationLevelEvent extends GenericGuildUpdateEvent<Guild.NotificationLevel>
 {
-    private final Guild.NotificationLevel oldNotificationLevel;
+    public static final String IDENTIFIER = "notification_level";
 
     public GuildUpdateNotificationLevelEvent(JDA api, long responseNumber, Guild guild, Guild.NotificationLevel oldNotificationLevel)
     {
-        super(api, responseNumber, guild);
-        this.oldNotificationLevel = oldNotificationLevel;
+        super(api, responseNumber, guild, oldNotificationLevel, guild.getDefaultNotificationLevel(), IDENTIFIER);
     }
 
+    /**
+     * The old {@link net.dv8tion.jda.core.entities.Guild.NotificationLevel NotificationLevel}
+     *
+     * @return The old NotificationLevel
+     */
     public Guild.NotificationLevel getOldNotificationLevel()
     {
-        return oldNotificationLevel;
+        return getOldValue();
+    }
+
+    /**
+     * The new {@link net.dv8tion.jda.core.entities.Guild.NotificationLevel NotificationLevel}
+     *
+     * @return The new NotificationLevel
+     */
+    public Guild.NotificationLevel getNewNotificationLevel()
+    {
+        return getNewValue();
     }
 }

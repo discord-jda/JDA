@@ -18,7 +18,10 @@ package net.dv8tion.jda.core.requests.restaction;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.Channel;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.PermissionOverride;
+import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.impl.AbstractChannelImpl;
 import net.dv8tion.jda.core.entities.impl.PermissionOverrideImpl;
 import net.dv8tion.jda.core.requests.Request;
@@ -41,7 +44,6 @@ import java.util.function.BooleanSupplier;
  * This extension allows setting properties before executing the action.
  *
  * @since  3.0
- * @author Florian Spieß
  */
 public class PermissionOverrideAction extends AuditableRestAction<PermissionOverride>
 {
@@ -73,12 +75,6 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
         this.role = null;
     }
 
-    @Override
-    public PermissionOverrideAction setCheck(BooleanSupplier checks)
-    {
-        return (PermissionOverrideAction) super.setCheck(checks);
-    }
-
     /**
      * Creates a new PermissionOverrideAction instance
      *
@@ -99,6 +95,11 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
         this.role = role;
     }
 
+    @Override
+    public PermissionOverrideAction setCheck(BooleanSupplier checks)
+    {
+        return (PermissionOverrideAction) super.setCheck(checks);
+    }
 
     /**
      * The currently set of allowed permission bits.
@@ -182,7 +183,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      */
     public List<Permission> getInheritedPermissions()
     {
-        return Permission.getPermissions(getInherited());
+        return Collections.unmodifiableList(Permission.getPermissions(getInherited()));
     }
 
 
@@ -228,6 +229,9 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *         or higher than {@link net.dv8tion.jda.core.Permission#ALL_PERMISSIONS Permission.ALL_PERMISSIONS}
      *
      * @return The current PermissionOverrideAction - for chaining convenience
+     *
+     * @see    #setAllow(java.util.Collection) setAllow(Collection)
+     * @see    #setAllow(net.dv8tion.jda.core.Permission...) setAllow(Permission...)
      */
     @CheckReturnValue
     public PermissionOverrideAction setAllow(long allowBits)
@@ -243,6 +247,8 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      * using a Collection of {@link net.dv8tion.jda.core.Permission Permissions}.
      * <br><b>Note: Permissions not marked as {@link net.dv8tion.jda.core.Permission#isChannel() isChannel()} will have no affect!</b>
      *
+     * <p>Example: {@code setAllow(EnumSet.of(Permission.MESSAGE_READ))}</p>
+     *
      * @param  permissions
      *         The Collection of Permissions representing the granted
      *         permissions for the new PermissionOverride.
@@ -252,6 +258,9 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *         If the any of the specified Permissions is {@code null}
      *
      * @return The current PermissionOverrideAction - for chaining convenience
+     *
+     * @see    java.util.EnumSet EnumSet
+     * @see    #setAllow(net.dv8tion.jda.core.Permission...) setAllow(Permission...)
      */
     @CheckReturnValue
     public PermissionOverrideAction setAllow(Collection<Permission> permissions)
@@ -302,6 +311,9 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *         or higher than {@link net.dv8tion.jda.core.Permission#ALL_PERMISSIONS Permission.ALL_PERMISSIONS}
      *
      * @return The current PermissionOverrideAction - for chaining convenience
+     *
+     * @see    #setDeny(java.util.Collection) setDeny(Collection)
+     * @see    #setDeny(net.dv8tion.jda.core.Permission...) setDeny(Permission...)
      */
     @CheckReturnValue
     public PermissionOverrideAction setDeny(long denyBits)
@@ -317,6 +329,8 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      * using a Collection of {@link net.dv8tion.jda.core.Permission Permissions}.
      * <br><b>Note: Permissions not marked as {@link net.dv8tion.jda.core.Permission#isChannel() isChannel()} will have no affect!</b>
      *
+     * <p>Example: {@code setDeny(EnumSet.of(Permission.MESSAGE_WRITE, Permission.MESSAGE_EXT_EMOJI))}</p>
+     *
      * @param  permissions
      *         The Collection of Permissions representing the denied
      *         permissions for the new PermissionOverride.
@@ -326,6 +340,9 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *         If the any of the specified Permissions is {@code null}
      *
      * @return The current PermissionOverrideAction - for chaining convenience
+     *
+     * @see    java.util.EnumSet EnumSet
+     * @see    #setDeny(net.dv8tion.jda.core.Permission...) setDeny(Permission...)
      */
     @CheckReturnValue
     public PermissionOverrideAction setDeny(Collection<Permission> permissions)
@@ -376,6 +393,10 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *         or higher than {@link net.dv8tion.jda.core.Permission#ALL_PERMISSIONS Permission.ALL_PERMISSIONS}
      *
      * @return The current PermissionOverrideAction - for chaining convenience
+     *
+     * @see    #setPermissions(java.util.Collection, java.util.Collection)
+     * @see    net.dv8tion.jda.core.Permission#getRaw(net.dv8tion.jda.core.Permission...) Permission.getRaw(Permission...)
+     * @see    net.dv8tion.jda.core.Permission#getRaw(java.util.Collection)  Permission.getRaw(Collection)
      */
     @CheckReturnValue
     public PermissionOverrideAction setPermissions(long allowBits, long denyBits)
@@ -389,6 +410,8 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      * Combination of {@link #setAllow(java.util.Collection)} and {@link #setDeny(java.util.Collection)}
      * <br>If a passed collection is {@code null} it resets the represented value to {@code 0} - no permission specifics.
      *
+     * <p>Example: {@code setPermissions(EnumSet.of(Permission.MESSAGE_READ), EnumSet.of(Permission.MESSAGE_WRITE, Permission.MESSAGE_EXT_EMOJI))}
+     *
      * @param  grantPermissions
      *         A Collection of {@link net.dv8tion.jda.core.Permission Permissions}
      *         representing all explicitly granted Permissions for the PermissionOverride
@@ -400,6 +423,9 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *         If the any of the specified Permissions is {@code null}
      *
      * @return The current PermissionOverrideAction - for chaining convenience
+     *
+     * @see    java.util.EnumSet EnumSet
+     * @see    net.dv8tion.jda.core.Permission#getRaw(java.util.Collection) Permission.getRaw(Collection)
      */
     @CheckReturnValue
     public PermissionOverrideAction setPermissions(Collection<Permission> grantPermissions, Collection<Permission> denyPermissions)
@@ -429,10 +455,12 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
             return;
         }
 
-        JSONObject object = response.getObject();
         boolean isMember = isMember();
         long id = isMember ? member.getUser().getIdLong() : role.getIdLong();
-        PermissionOverrideImpl override = new PermissionOverrideImpl(channel, id, isMember ? member : role).setAllow(allow).setDeny(deny);
+        JSONObject object = (JSONObject) request.getRawBody();
+        PermissionOverrideImpl override = new PermissionOverrideImpl(channel, id, isMember ? member : role);
+        override.setAllow(object.getLong("allow"));
+        override.setDeny(object.getLong("deny"));
 
         ((AbstractChannelImpl<?>) channel).getOverrideMap().put(id, override);
 

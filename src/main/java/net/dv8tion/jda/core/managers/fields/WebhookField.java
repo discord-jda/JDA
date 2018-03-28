@@ -16,8 +16,6 @@
 
 package net.dv8tion.jda.core.managers.fields;
 
-import net.dv8tion.jda.core.managers.WebhookManagerUpdatable;
-
 import java.util.function.Supplier;
 
 /**
@@ -33,9 +31,10 @@ import java.util.function.Supplier;
  *
  * @since  3.0
  */
-public abstract class WebhookField<T> extends Field<T, WebhookManagerUpdatable>
+@Deprecated
+public abstract class WebhookField<T> extends Field<T, net.dv8tion.jda.core.managers.WebhookManagerUpdatable>
 {
-    public WebhookField(WebhookManagerUpdatable manager, Supplier<T> originalValue)
+    public WebhookField(net.dv8tion.jda.core.managers.WebhookManagerUpdatable manager, Supplier<T> originalValue)
     {
         super(manager, originalValue);
     }

@@ -59,17 +59,17 @@ public class JDAImpl implements JDA
 
     public final ScheduledThreadPoolExecutor pool;
 
-    protected final SnowflakeCacheViewImpl<User> userCache = new SnowflakeCacheViewImpl<>(User::getName);
-    protected final SnowflakeCacheViewImpl<Guild> guildCache = new SnowflakeCacheViewImpl<>(Guild::getName);
-    protected final SnowflakeCacheViewImpl<Category> categories = new SnowflakeCacheViewImpl<>(Channel::getName);
-    protected final SnowflakeCacheViewImpl<TextChannel> textChannelCache = new SnowflakeCacheViewImpl<>(Channel::getName);
-    protected final SnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SnowflakeCacheViewImpl<>(Channel::getName);
-    protected final SnowflakeCacheViewImpl<PrivateChannel> privateChannelCache = new SnowflakeCacheViewImpl<>(MessageChannel::getName);
+    protected final SnowflakeCacheViewImpl<User> userCache = new SnowflakeCacheViewImpl<>(User.class, User::getName);
+    protected final SnowflakeCacheViewImpl<Guild> guildCache = new SnowflakeCacheViewImpl<>(Guild.class, Guild::getName);
+    protected final SnowflakeCacheViewImpl<Category> categories = new SnowflakeCacheViewImpl<>(Category.class, Channel::getName);
+    protected final SnowflakeCacheViewImpl<TextChannel> textChannelCache = new SnowflakeCacheViewImpl<>(TextChannel.class, Channel::getName);
+    protected final SnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SnowflakeCacheViewImpl<>(VoiceChannel.class, Channel::getName);
+    protected final SnowflakeCacheViewImpl<PrivateChannel> privateChannelCache = new SnowflakeCacheViewImpl<>(PrivateChannel.class, MessageChannel::getName);
 
     protected final TLongObjectMap<User> fakeUsers = MiscUtil.newLongMap();
     protected final TLongObjectMap<PrivateChannel> fakePrivateChannels = MiscUtil.newLongMap();
 
-    protected final AbstractCacheView<AudioManager> audioManagers = new CacheView.SimpleCacheView<>(m -> m.getGuild().getName());
+    protected final AbstractCacheView<AudioManager> audioManagers = new CacheView.SimpleCacheView<>(AudioManager.class, m -> m.getGuild().getName());
 
     protected final ConcurrentMap<String, String> contextMap;
     protected final OkHttpClient.Builder httpClientBuilder;
@@ -136,7 +136,7 @@ public class JDAImpl implements JDA
         return sessionController;
     }
 
-    public int login(String gatewayUrl, ShardInfo shardInfo) throws LoginException
+    public int login(String gatewayUrl, ShardInfo shardInfo, boolean compression) throws LoginException
     {
         this.gatewayUrl = gatewayUrl;
         this.shardInfo = shardInfo;
@@ -161,7 +161,7 @@ public class JDAImpl implements JDA
         verifyToken();
         LOG.info("Login Successful!");
 
-        client = new WebSocketClient(this);
+        client = new WebSocketClient(this, compression);
         // remove our MDC metadata when we exit our code
         if (previousContext != null)
             previousContext.forEach(MDC::put);
@@ -772,5 +772,10 @@ public class JDAImpl implements JDA
     public String getGatewayUrl()
     {
         return gatewayUrl;
+    }
+
+    public void resetGatewayUrl()
+    {
+        this.gatewayUrl = getGateway();
     }
 }

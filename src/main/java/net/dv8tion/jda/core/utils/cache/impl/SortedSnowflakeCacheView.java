@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.utils.cache.impl;
 
 import net.dv8tion.jda.core.entities.ISnowflake;
+import org.apache.commons.collections4.iterators.ObjectArrayIterator;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -29,14 +30,14 @@ public class SortedSnowflakeCacheView<T extends ISnowflake & Comparable<T>> exte
 
     protected final Comparator<T> comparator;
 
-    public SortedSnowflakeCacheView(Comparator<T> comparator)
+    public SortedSnowflakeCacheView(Class<T> type, Comparator<T> comparator)
     {
-        this(null, comparator);
+        this(type, null, comparator);
     }
 
-    public SortedSnowflakeCacheView(Function<T, String> nameMapper, Comparator<T> comparator)
+    public SortedSnowflakeCacheView(Class<T> type, Function<T, String> nameMapper, Comparator<T> comparator)
     {
-        super(nameMapper);
+        super(type, nameMapper);
         this.comparator = comparator;
     }
 
@@ -60,7 +61,7 @@ public class SortedSnowflakeCacheView<T extends ISnowflake & Comparable<T>> exte
     @Override
     public Spliterator<T> spliterator()
     {
-        return Spliterators.spliterator(asList(), SPLIT_CHARACTERISTICS);
+        return Spliterators.spliterator(iterator(), elements.size(), SPLIT_CHARACTERISTICS);
     }
 
     @Override
@@ -77,8 +78,11 @@ public class SortedSnowflakeCacheView<T extends ISnowflake & Comparable<T>> exte
 
     @Nonnull
     @Override
+    @SuppressWarnings("unchecked")
     public Iterator<T> iterator()
     {
-        return asList().iterator();
+        T[] arr = elements.values(emptyArray);
+        Arrays.sort(arr, comparator);
+        return new ObjectArrayIterator<>(arr);
     }
 }

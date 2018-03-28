@@ -38,7 +38,7 @@ public class GroupImpl implements Group
     private final long id;
     private final JDAImpl api;
 
-    private final SnowflakeCacheViewImpl<User> userCache = new SnowflakeCacheViewImpl<>(User::getName);
+    private final SnowflakeCacheViewImpl<User> userCache = new SnowflakeCacheViewImpl<>(User.class, User::getName);
 
     private Call currentCall;
     private User owner;

@@ -22,25 +22,28 @@ import net.dv8tion.jda.bot.utils.cache.ShardCacheView;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.cache.CacheView;
+import org.apache.commons.collections4.iterators.ObjectArrayIterator;
 
 import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class ShardCacheViewImpl implements ShardCacheView
 {
+    protected static final JDA[] EMPTY_ARRAY = new JDA[0];
     protected final TIntObjectMap<JDA> elements;
 
     public ShardCacheViewImpl()
     {
-        this.elements = new TSynchronizedIntObjectMap<>(new TIntObjectHashMap<JDA>(), new Object());
+        this.elements = new TSynchronizedIntObjectMap<>(new TIntObjectHashMap<>(), new Object());
     }
 
     public ShardCacheViewImpl(int initialCapacity)
     {
-        this.elements = new TSynchronizedIntObjectMap<>(new TIntObjectHashMap<JDA>(initialCapacity), new Object());
+        this.elements = new TSynchronizedIntObjectMap<>(new TIntObjectHashMap<>(initialCapacity), new Object());
     }
 
     public void clear()
@@ -109,20 +112,21 @@ public class ShardCacheViewImpl implements ShardCacheView
     @Override
     public Stream<JDA> stream()
     {
-        return elements.valueCollection().stream();
+        return StreamSupport.stream(spliterator(), false);
     }
 
     @Override
     public Stream<JDA> parallelStream()
     {
-        return elements.valueCollection().parallelStream();
+        return StreamSupport.stream(spliterator(), true);
     }
 
     @Nonnull
     @Override
     public Iterator<JDA> iterator()
     {
-        return asList().iterator();
+        JDA[] arr = elements.values(EMPTY_ARRAY);
+        return new ObjectArrayIterator<>(arr);
     }
 
     @Override
@@ -143,7 +147,7 @@ public class ShardCacheViewImpl implements ShardCacheView
         @Override
         public long size()
         {
-            return generator.get().distinct().mapToLong(CacheView::size).sum();
+            return distinctStream().mapToLong(CacheView::size).sum();
         }
 
         @Override
@@ -164,15 +168,14 @@ public class ShardCacheViewImpl implements ShardCacheView
         public Set<JDA> asSet()
         {
             Set<JDA> set = new HashSet<>();
-            generator.get().forEach(view -> view.forEach(set::add));
+            generator.get().flatMap(CacheView::stream).forEach(set::add);
             return Collections.unmodifiableSet(set);
         }
 
         @Override
         public List<JDA> getElementsByName(String name, boolean ignoreCase)
         {
-            return Collections.unmodifiableList(generator.get()
-                .distinct()
+            return Collections.unmodifiableList(distinctStream()
                 .flatMap(view -> view.getElementsByName(name, ignoreCase).stream())
                 .collect(Collectors.toList()));
         }
@@ -202,7 +205,12 @@ public class ShardCacheViewImpl implements ShardCacheView
         @Override
         public Iterator<JDA> iterator()
         {
-            return asList().iterator();
+            return stream().iterator();
+        }
+
+        protected Stream<ShardCacheView> distinctStream()
+        {
+            return generator.get().distinct();
         }
     }
 }

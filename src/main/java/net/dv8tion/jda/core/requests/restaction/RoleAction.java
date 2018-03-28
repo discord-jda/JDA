@@ -38,7 +38,6 @@ import java.util.function.BooleanSupplier;
  * This extension allows setting properties before executing the action.
  *
  * @since  3.0
- * @author Florian Spieß
  */
 public class RoleAction extends AuditableRestAction<Role>
 {
@@ -162,6 +161,8 @@ public class RoleAction extends AuditableRestAction<Role>
      *         If any of the provided permissions is {@code null}
      *
      * @return The current RoleAction, for chaining convenience
+     *
+     * @see    net.dv8tion.jda.core.Permission#getRaw(net.dv8tion.jda.core.Permission...) Permission.getRaw(Permission...)
      */
     @CheckReturnValue
     public RoleAction setPermissions(Permission... permissions)
@@ -193,6 +194,9 @@ public class RoleAction extends AuditableRestAction<Role>
      *         If any of the provided permissions is {@code null}
      *
      * @return The current RoleAction, for chaining convenience
+     *
+     * @see    net.dv8tion.jda.core.Permission#getRaw(java.util.Collection) Permission.getRaw(Collection)
+     * @see    java.util.EnumSet EnumSet
      */
     @CheckReturnValue
     public RoleAction setPermissions(Collection<Permission> permissions)
@@ -237,7 +241,7 @@ public class RoleAction extends AuditableRestAction<Role>
         {
             Checks.notNegative(permissions, "Raw Permissions");
             Checks.check(permissions <= Permission.ALL_PERMISSIONS, "Provided permissions may not be greater than a full permission set!");
-            for (Permission p : Permission.getPermissions(permissions))
+            for (Permission p : Permission.toEnumSet(permissions))
                 checkPermission(p);
         }
         this.permissions = permissions;

@@ -20,11 +20,10 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 
 /**
- * <b><u>GuildUnavailableEvent</u></b><br>
- * Fired if a {@link net.dv8tion.jda.core.entities.Guild Guild} becomes unavailable.<br>
- * Possibly due to a downtime.<br>
- * <br>
- * Use: This indicates that a Guild stopped responding.
+ * Indicates that a {@link net.dv8tion.jda.core.entities.Guild Guild} became unavailable.
+ * <br>Possibly due to a downtime or an outage.
+ *
+ * <p>Can be used to detect that a Guild stopped responding.
  */
 public class GuildUnavailableEvent extends GenericGuildEvent
 {

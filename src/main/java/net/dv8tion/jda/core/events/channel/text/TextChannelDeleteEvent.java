@@ -19,10 +19,9 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.TextChannel;
 
 /**
- * <b><u>TextChannelDeleteEvent</u></b><br>
- * Fired if a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} has been deleted.<br>
- * <br>
- * Use: Detect when a TextChannel has been deleted.
+ * Indicates that a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} has been deleted.
+ *
+ * <p>Can be used to detect when a TextChannel has been deleted.
  */
 public class TextChannelDeleteEvent extends GenericTextChannelEvent
 {

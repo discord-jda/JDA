@@ -19,16 +19,67 @@ package net.dv8tion.jda.core.events.self;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.SelfUser;
 import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.core.events.UpdateEvent;
 
-public abstract class GenericSelfUpdateEvent extends Event
+/**
+ * Indicates that a {@link net.dv8tion.jda.core.entities.SelfUser SelfUser} changed or started an activity.
+ * <br>Every SelfUserEvent is derived from this event and can be casted.
+ *
+ * <p>Can be used to detect any SelfUserEvent.
+ */
+public abstract class GenericSelfUpdateEvent<T> extends Event implements UpdateEvent<SelfUser, T>
 {
-    public GenericSelfUpdateEvent(JDA api, long responseNumber)
+    protected final T previous;
+    protected final T next;
+    protected final String identifier;
+
+    public GenericSelfUpdateEvent(
+        JDA api, long responseNumber,
+        T previous, T next, String identifier)
     {
         super(api, responseNumber);
+        this.previous = previous;
+        this.next = next;
+        this.identifier = identifier;
     }
 
+    /**
+     * The {@link net.dv8tion.jda.core.entities.SelfUser SelfUser}
+     *
+     * @return The {@link net.dv8tion.jda.core.entities.SelfUser SelfUser}
+     */
     public SelfUser getSelfUser()
     {
         return api.getSelfUser();
+    }
+
+    @Override
+    public SelfUser getEntity()
+    {
+        return getSelfUser();
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return identifier;
+    }
+
+    @Override
+    public T getOldValue()
+    {
+        return previous;
+    }
+
+    @Override
+    public T getNewValue()
+    {
+        return next;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "SelfUserUpdate[" + getPropertyIdentifier() + "](" + getOldValue() + "->" + getNewValue() + ')';
     }
 }

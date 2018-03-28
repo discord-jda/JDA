@@ -709,6 +709,9 @@ public interface Message extends ISnowflake, Formattable
      * a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the current account has
      * {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in the channel.
      *
+     * <p><u>To delete up 100 messages at once in a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
+     * you should use {@link net.dv8tion.jda.core.entities.TextChannel#deleteMessages(java.util.Collection) TextChannel.deleteMessages(Collection)}</u>
+     *
      * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
@@ -738,6 +741,8 @@ public interface Message extends ISnowflake, Formattable
      *         {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     *
+     * @see    net.dv8tion.jda.core.entities.TextChannel#deleteMessages(java.util.Collection) TextChannel.deleteMessages(Collection)
      */
     @CheckReturnValue
     AuditableRestAction<Void> delete();
@@ -1217,7 +1222,7 @@ public interface Message extends ISnowflake, Formattable
 
         /**
          * The size of the attachment in bytes.
-         * <br>Example: if {@link #getSize() getSize()} returns 1024, then the attachment is 1024 bytes, or 1KB, in size.
+         * <br>Example: if {@code getSize()} returns 1024, then the attachment is 1024 bytes, or 1KiB, in size.
          *
          * @return Positive int containing the size of the Attachment.
          */

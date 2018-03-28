@@ -19,7 +19,6 @@ package net.dv8tion.jda.core.managers.fields;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.core.managers.RoleManagerUpdatable;
 import net.dv8tion.jda.core.utils.Checks;
 
 import java.util.*;
@@ -39,12 +38,13 @@ import java.util.function.Supplier;
  *
  * @since  3.0
  */
+@Deprecated
 public class PermissionField extends RoleField<Long>
 {
     Set<Permission> permsGiven = new HashSet<>();
     Set<Permission> permsRevoked = new HashSet<>();
 
-    public PermissionField(RoleManagerUpdatable manager, Supplier<Long> originalValue)
+    public PermissionField(net.dv8tion.jda.core.managers.RoleManagerUpdatable manager, Supplier<Long> originalValue)
     {
         super(manager, originalValue);
     }
@@ -65,7 +65,7 @@ public class PermissionField extends RoleField<Long>
      * @see    #isSet()
      */
     @Override
-    public RoleManagerUpdatable setValue(Long value)
+    public net.dv8tion.jda.core.managers.RoleManagerUpdatable setValue(Long value)
     {
         checkValue(value);
 
@@ -95,7 +95,7 @@ public class PermissionField extends RoleField<Long>
      * @return The {@link net.dv8tion.jda.core.managers.RoleManagerUpdatable RoleManagerUpdatable} instance
      *         for this PermissionField for chaining convenience
      */
-    public RoleManagerUpdatable setPermissions(Permission... permissions)
+    public net.dv8tion.jda.core.managers.RoleManagerUpdatable setPermissions(Permission... permissions)
     {
         return setPermissions(Arrays.asList(permissions));
     }
@@ -118,7 +118,7 @@ public class PermissionField extends RoleField<Long>
      * @return The {@link net.dv8tion.jda.core.managers.RoleManagerUpdatable RoleManagerUpdatable} instance
      *         for this PermissionField for chaining convenience
      */
-    public RoleManagerUpdatable setPermissions(Collection<Permission> permissions)
+    public net.dv8tion.jda.core.managers.RoleManagerUpdatable setPermissions(Collection<Permission> permissions)
     {
         Checks.notNull(permissions, "permissions Collection");
         permissions.forEach(p ->
@@ -151,7 +151,7 @@ public class PermissionField extends RoleField<Long>
      * @return The {@link net.dv8tion.jda.core.managers.RoleManagerUpdatable RoleManagerUpdatable} instance
      *         for this PermissionField for chaining convenience
      */
-    public RoleManagerUpdatable givePermissions(Permission... permissions)
+    public net.dv8tion.jda.core.managers.RoleManagerUpdatable givePermissions(Permission... permissions)
     {
         return givePermissions(Arrays.asList(permissions));
     }
@@ -170,7 +170,7 @@ public class PermissionField extends RoleField<Long>
      * @return The {@link net.dv8tion.jda.core.managers.RoleManagerUpdatable RoleManagerUpdatable} instance
      *         for this PermissionField for chaining convenience
      */
-    public RoleManagerUpdatable givePermissions(Collection<Permission> permissions)
+    public net.dv8tion.jda.core.managers.RoleManagerUpdatable givePermissions(Collection<Permission> permissions)
     {
         Checks.notNull(permissions, "Permission Collection");
         permissions.forEach(p ->
@@ -201,7 +201,7 @@ public class PermissionField extends RoleField<Long>
      * @return The {@link net.dv8tion.jda.core.managers.RoleManagerUpdatable RoleManagerUpdatable} instance
      *         for this PermissionField for chaining convenience
      */
-    public RoleManagerUpdatable revokePermissions(Permission... permissions)
+    public net.dv8tion.jda.core.managers.RoleManagerUpdatable revokePermissions(Permission... permissions)
     {
         return revokePermissions(Arrays.asList(permissions));
     }
@@ -220,7 +220,7 @@ public class PermissionField extends RoleField<Long>
      * @return The {@link net.dv8tion.jda.core.managers.RoleManagerUpdatable RoleManagerUpdatable} instance
      *         for this PermissionField for chaining convenience
      */
-    public RoleManagerUpdatable revokePermissions(Collection<Permission> permissions)
+    public net.dv8tion.jda.core.managers.RoleManagerUpdatable revokePermissions(Collection<Permission> permissions)
     {
         Checks.notNull(permissions, "Permission Collection");
         permissions.forEach(p ->
@@ -259,7 +259,7 @@ public class PermissionField extends RoleField<Long>
     }
 
     @Override
-    public RoleManagerUpdatable reset()
+    public net.dv8tion.jda.core.managers.RoleManagerUpdatable reset()
     {
         super.reset();
         this.permsGiven.clear();

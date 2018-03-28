@@ -16,24 +16,50 @@
 
 package net.dv8tion.jda.core.managers;
 
-import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.Webhook;
-import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.core.managers.impl.ManagerBase;
+import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.utils.Checks;
+import okhttp3.RequestBody;
+import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 
 /**
- * Facade for a {@link net.dv8tion.jda.core.managers.WebhookManagerUpdatable WebhookManagerUpdatable} instance.
- * <br>Simplifies managing flow for convenience.
+ * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.core.entities.Webhook Webhook}.
  *
- * <p>This decoration allows to modify a single field by automatically building an update {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+ * <p><b>Example</b>
+ * <pre>{@code
+ * manager.setName("GitHub Webhook")
+ *        .setChannel(channel)
+ *        .queue();
+ * manager.reset(WebhookManager.NAME | WebhookManager.AVATAR)
+ *        .setName("Meme Feed")
+ *        .setAvatar(null)
+ *        .queue();
+ * }</pre>
+ *
+ * @see net.dv8tion.jda.core.entities.Webhook#getManager()
  */
-public class WebhookManager
+public class WebhookManager extends ManagerBase
 {
-    protected WebhookManagerUpdatable manager;
+    /** Used to reset the name field */
+    public static final long NAME    = 0x1;
+    /** Used to reset the channel field */
+    public static final long CHANNEL = 0x2;
+    /** Used to reset the avatar field */
+    public static final long AVATAR  = 0x4;
+
+    protected final Webhook webhook;
+
+    protected String name;
+    protected String channel;
+    protected Icon avatar;
 
     /**
      * Creates a new WebhookManager instance
@@ -43,17 +69,10 @@ public class WebhookManager
      */
     public WebhookManager(Webhook webhook)
     {
-        this.manager = new WebhookManagerUpdatable(webhook);
-    }
-
-    /**
-     * The {@link net.dv8tion.jda.core.JDA JDA} instance of this Manager
-     *
-     * @return the corresponding JDA instance
-     */
-    public JDA getJDA()
-    {
-        return manager.getJDA();
+        super(webhook.getJDA(), Route.Webhooks.MODIFY_TOKEN_WEBHOOK.compile(webhook.getId(), webhook.getToken()));
+        this.webhook = webhook;
+        if (isPermissionChecksEnabled())
+            checkPermissions();
     }
 
     /**
@@ -65,7 +84,7 @@ public class WebhookManager
      */
     public Guild getGuild()
     {
-        return getWebhook().getGuild();
+        return webhook.getGuild();
     }
 
     /**
@@ -77,7 +96,7 @@ public class WebhookManager
      */
     public TextChannel getChannel()
     {
-        return getWebhook().getChannel();
+        return webhook.getChannel();
     }
 
     /**
@@ -88,61 +107,123 @@ public class WebhookManager
      */
     public Webhook getWebhook()
     {
-        return manager.getWebhook();
+        return webhook;
+    }
+
+    /**
+     * Resets the fields specified by the provided bit-flag pattern.
+     * You can specify a combination by using a bitwise OR concat of the flag constants.
+     * <br>Example: {@code manager.reset(WebhookManager.CHANNEL | WebhookManager.NAME);}
+     *
+     * <p><b>Flag Constants:</b>
+     * <ul>
+     *     <li>{@link #NAME}</li>
+     *     <li>{@link #AVATAR}</li>
+     *     <li>{@link #CHANNEL}</li>
+     * </ul>
+     *
+     * @param  fields
+     *         Integer value containing the flags to reset.
+     *
+     * @return WebhookManager for chaining convenience
+     */
+    @Override
+    @CheckReturnValue
+    public WebhookManager reset(long fields)
+    {
+        super.reset(fields);
+        if ((fields & NAME) == NAME)
+            this.name = null;
+        if ((fields & CHANNEL) == CHANNEL)
+            this.channel = null;
+        if ((fields & AVATAR) == AVATAR)
+            this.avatar = null;
+        return this;
+    }
+
+    /**
+     * Resets the fields specified by the provided bit-flag patterns.
+     * You can specify a combination by using a bitwise OR concat of the flag constants.
+     * <br>Example: {@code manager.reset(WebhookManager.CHANNEL, WebhookManager.NAME);}
+     *
+     * <p><b>Flag Constants:</b>
+     * <ul>
+     *     <li>{@link #NAME}</li>
+     *     <li>{@link #AVATAR}</li>
+     *     <li>{@link #CHANNEL}</li>
+     * </ul>
+     *
+     * @param  fields
+     *         Integer values containing the flags to reset.
+     *
+     * @return WebhookManager for chaining convenience
+     */
+    @Override
+    @CheckReturnValue
+    public WebhookManager reset(long... fields)
+    {
+        super.reset(fields);
+        return this;
+    }
+
+    /**
+     * Resets all fields for this manager.
+     *
+     * @return WebhookManager for chaining convenience
+     */
+    @Override
+    @CheckReturnValue
+    public WebhookManager reset()
+    {
+        super.reset();
+        this.name = null;
+        this.channel = null;
+        this.avatar = null;
+        return this;
     }
 
     /**
      * Sets the <b><u>default name</u></b> of the selected {@link net.dv8tion.jda.core.entities.Webhook Webhook}.
-     * <br>Wraps {@link WebhookManagerUpdatable#getNameField()}
      *
-     * <p>A webhook name <b>must not</b> be {@code null}!
+     * <p>A webhook name <b>must not</b> be {@code null} or blank!
      *
      * @param  name
      *         The new default name for the selected {@link net.dv8tion.jda.core.entities.Webhook Webhook}
      *
-     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_WEBHOOKS MANAGE_WEBHOOKS}
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null}
+     *         If the provided name is {@code null} or blank
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link WebhookManagerUpdatable#update() #update()}
-     *
-     * @see    net.dv8tion.jda.core.managers.WebhookManagerUpdatable#getNameField()
-     * @see    net.dv8tion.jda.core.managers.WebhookManagerUpdatable#update()
+     * @return WebhookManager for chaining convenience
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setName(String name)
+    public WebhookManager setName(String name)
     {
-        return manager.getNameField().setValue(name).update();
+        Checks.notBlank(name, "Name");
+        this.name = name;
+        set |= NAME;
+        return this;
     }
 
     /**
      * Sets the <b><u>default avatar</u></b> of the selected {@link net.dv8tion.jda.core.entities.Webhook Webhook}.
-     * <br>Wraps {@link net.dv8tion.jda.core.managers.WebhookManagerUpdatable#getAvatarField()}
      *
      * @param  icon
      *         The new default avatar {@link net.dv8tion.jda.core.entities.Icon Icon}
      *         for the selected {@link net.dv8tion.jda.core.entities.Webhook Webhook}
+     *         or {@code null} to reset
      *
-     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_WEBHOOKS MANAGE_WEBHOOKS}
-     *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link WebhookManagerUpdatable#update() #update()}
-     *
-     * @see    net.dv8tion.jda.core.managers.WebhookManagerUpdatable#getAvatarField()
-     * @see    net.dv8tion.jda.core.managers.WebhookManagerUpdatable#update()
+     * @return WebhookManager for chaining convenience
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setAvatar(Icon icon)
+    public WebhookManager setAvatar(Icon icon)
     {
-        return manager.getAvatarField().setValue(icon).update();
+        this.avatar = icon;
+        set |= AVATAR;
+        return this;
     }
 
     /**
      * Sets the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} of the selected {@link net.dv8tion.jda.core.entities.Webhook Webhook}.
-     * <br>Wraps {@link WebhookManagerUpdatable#getChannelField()}
      *
      * <p>A webhook channel <b>must not</b> be {@code null} and <b>must</b> be in the same {@link net.dv8tion.jda.core.entities.Guild Guild}!
      *
@@ -152,20 +233,41 @@ public class WebhookManager
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_WEBHOOKS MANAGE_WEBHOOKS}
-     *         in either the current or the specified TextChannel
+     *         in the specified TextChannel
      * @throws IllegalArgumentException
      *         If the provided channel is {@code null} or from a different Guild
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link WebhookManagerUpdatable#update() #update()}
-     *
-     * @see    net.dv8tion.jda.core.managers.WebhookManagerUpdatable#getChannelField()
-     * @see    net.dv8tion.jda.core.managers.WebhookManagerUpdatable#update()
+     * @return WebhookManager for chaining convenience
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setChannel(TextChannel channel)
+    public WebhookManager setChannel(TextChannel channel)
     {
-        return manager.getChannelField().setValue(channel).update();
+        Checks.notNull(channel, "Channel");
+        Checks.check(channel.getGuild().equals(getGuild()), "Channel is not from the same guild");
+        this.channel = channel.getId();
+        set |= CHANNEL;
+        return this;
     }
 
+    @Override
+    protected RequestBody finalizeData()
+    {
+        JSONObject data = new JSONObject();
+        if (shouldUpdate(NAME))
+            data.put("name", name);
+        if (shouldUpdate(CHANNEL))
+            data.put("channel_id", channel);
+        if (shouldUpdate(AVATAR))
+            data.put("avatar", avatar == null ? JSONObject.NULL : avatar.getEncoding());
+
+        return getRequestBody(data);
+    }
+
+    @Override
+    protected boolean checkPermissions()
+    {
+        if (!getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_WEBHOOKS))
+            throw new InsufficientPermissionException(Permission.MANAGE_WEBHOOKS);
+        return super.checkPermissions();
+    }
 }

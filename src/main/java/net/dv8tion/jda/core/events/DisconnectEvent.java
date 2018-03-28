@@ -26,10 +26,10 @@ import java.util.List;
  * Indicates that JDA has been disconnected from the remote server.
  * <br>When this event is fired JDA will try to reconnect if possible
  * unless {@link net.dv8tion.jda.core.JDABuilder#setAutoReconnect(boolean) JDABuilder.setAutoReconnect(Boolean)}
- * has been provided {@code false}!
+ * has been provided {@code false} or the disconnect was too fatal.
  *
  * <p>When reconnecting was successful either a {@link net.dv8tion.jda.core.events.ReconnectedEvent ReconnectEvent}
- * or a {@link net.dv8tion.jda.core.events.ResumedEvent ResumedEvent} is fired
+ * or a {@link net.dv8tion.jda.core.events.ResumedEvent ResumedEvent} is fired.
  */
 public class DisconnectEvent extends Event
 {
@@ -38,10 +38,12 @@ public class DisconnectEvent extends Event
     protected final boolean closedByServer;
     protected final OffsetDateTime disconnectTime;
 
-    public DisconnectEvent(JDA api, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer,
-                           OffsetDateTime disconnectTime)
+    public DisconnectEvent(
+        JDA api,
+        WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame,
+        boolean closedByServer, OffsetDateTime disconnectTime)
     {
-        super(api, -1);
+        super(api);
         this.serverCloseFrame = serverCloseFrame;
         this.clientCloseFrame = clientCloseFrame;
         this.closedByServer = closedByServer;
@@ -76,21 +78,41 @@ public class DisconnectEvent extends Event
         return api.getCloudflareRays();
     }
 
+    /**
+     * The close frame discord sent to us
+     *
+     * @return The {@link com.neovisionaries.ws.client.WebSocketFrame WebSocketFrame} discord sent as closing handshake
+     */
     public WebSocketFrame getServiceCloseFrame()
     {
         return serverCloseFrame;
     }
 
+    /**
+     * The close frame we sent to discord
+     *
+     * @return The {@link com.neovisionaries.ws.client.WebSocketFrame WebSocketFrame} we sent as closing handshake
+     */
     public WebSocketFrame getClientCloseFrame()
     {
         return clientCloseFrame;
     }
 
+    /**
+     * Whether the connection was closed by discord
+     *
+     * @return True, if discord closed our connection
+     */
     public boolean isClosedByServer()
     {
         return closedByServer;
     }
 
+    /**
+     * Time at which we noticed the disconnection
+     *
+     * @return Time of closure
+     */
     public OffsetDateTime getDisconnectTime()
     {
         return disconnectTime;

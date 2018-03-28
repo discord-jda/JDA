@@ -60,7 +60,6 @@ import java.util.List;
  * </code></pre>
  *
  * @since  3.1
- * @author Florian Spieß
  */
 public class MessagePaginationAction extends PaginationAction<Message, MessagePaginationAction>
 {

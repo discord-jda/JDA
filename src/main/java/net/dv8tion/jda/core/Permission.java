@@ -17,10 +17,7 @@ package net.dv8tion.jda.core;
 
 import net.dv8tion.jda.core.utils.Checks;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -68,6 +65,12 @@ public enum Permission
     MANAGE_EMOTES(30, true, false, "Manage Emojis"),
 
     UNKNOWN(-1, false, false, "Unknown");
+
+    /**
+     * Empty array of Permission enum, useful for optimized use in {@link java.util.Collection#toArray(Object[])}.
+     */
+    // This is an optimization suggested by Effective Java 3rd Edition - Item 54
+    public static final Permission[] EMPTY_PERMISSIONS = new Permission[0];
 
     /**
      * Represents a raw set of all permissions
@@ -188,7 +191,7 @@ public enum Permission
     }
 
     /**
-     * Gets the {@link net.dv8tion.jda.core.Permission Permission} relating to the provided offset.
+     * Gets the first {@link net.dv8tion.jda.core.Permission Permission} relating to the provided offset.
      * <br>If there is no {@link net.dv8tion.jda.core.Permission Permssions} that matches the provided
      * offset, {@link net.dv8tion.jda.core.Permission#UNKNOWN Permission.UNKNOWN} is returned.
      *
@@ -221,18 +224,42 @@ public enum Permission
      *         The raw {@code long} representation of permissions.
      *
      * @return Possibly-empty list of {@link net.dv8tion.jda.core.Permission Permissions}.
+     *
+     * @see    #toEnumSet(long)
      */
     public static List<Permission> getPermissions(long permissions)
     {
+        if (permissions == 0)
+            return Collections.emptyList();
         List<Permission> perms = new LinkedList<>();
         for (Permission perm : Permission.values())
         {
-            if (perm.equals(Permission.UNKNOWN))
-                continue;
-            if(((permissions >> perm.getOffset()) & 1) == 1)
+            if (perm != UNKNOWN && (permissions & perm.raw) == perm.raw)
                 perms.add(perm);
         }
         return perms;
+    }
+
+    /**
+     * Constructs an {@link java.util.EnumSet EnumSet} from the provided permissions bitmask.
+     * <br>If provided with {@code 0} this will fast-fail with an empty set.
+     *
+     * @param  permissions
+     *         The permission bitmask
+     *
+     * @return Possibly-empty {@link java.util.EnumSet EnumSet} containing the constants for this permission bitmask
+     */
+    public static EnumSet<Permission> toEnumSet(long permissions)
+    {
+        EnumSet<Permission> set = EnumSet.noneOf(Permission.class);
+        if (permissions == 0)
+            return set;
+        for (Permission perm : values())
+        {
+            if (perm != UNKNOWN && (permissions & perm.raw) == perm.raw)
+                set.add(perm);
+        }
+        return set;
     }
 
     /**
@@ -249,7 +276,7 @@ public enum Permission
         long raw = 0;
         for (Permission perm : permissions)
         {
-            if (perm != UNKNOWN)
+            if (perm != null && perm != UNKNOWN)
                 raw |= perm.raw;
         }
 
@@ -259,16 +286,19 @@ public enum Permission
     /**
      * This is effectively the opposite of {@link #getPermissions(long)}, this takes a Collection of {@link net.dv8tion.jda.core.Permission Permissions}
      * and returns the raw offset {@code long} representation of the permissions.
+     * <br>Example: {@code getRaw(EnumSet.of(Permission.MESSAGE_READ, Permission.MESSAGE_WRITE))}
      *
      * @param  permissions
      *         The Collection of permissions of which to form into the raw long representation.
      *
      * @return Unsigned long representing the provided permissions.
+     *
+     * @see    java.util.EnumSet EnumSet
      */
     public static long getRaw(Collection<Permission> permissions)
     {
         Checks.notNull(permissions, "Permission Collection");
 
-        return getRaw(permissions.toArray(new Permission[permissions.size()]));
+        return getRaw(permissions.toArray(EMPTY_PERMISSIONS));
     }
 }

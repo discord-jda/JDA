@@ -20,8 +20,8 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.utils.PermissionUtil;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.PermissionUtil;
 
 import javax.annotation.Nullable;
 import java.awt.Color;
@@ -113,12 +113,20 @@ public class MemberImpl implements Member
     @Override
     public Color getColor()
     {
+        final int raw = getColorRaw();
+        return raw != Role.DEFAULT_COLOR_RAW ? new Color(raw) : null;
+    }
+
+    @Override
+    public int getColorRaw()
+    {
         for (Role r : getRoles())
         {
-            if (r.getColor() != null)
-                return r.getColor();
+            final int colorRaw = r.getColorRaw();
+            if (colorRaw != Role.DEFAULT_COLOR_RAW)
+                return colorRaw;
         }
-        return null;
+        return Role.DEFAULT_COLOR_RAW;
     }
 
     @Override
@@ -151,7 +159,7 @@ public class MemberImpl implements Member
     {
         Checks.notNull(permissions, "Permission Collection");
 
-        return hasPermission(permissions.toArray(new Permission[permissions.size()]));
+        return hasPermission(permissions.toArray(Permission.EMPTY_PERMISSIONS));
     }
 
     @Override
@@ -165,7 +173,7 @@ public class MemberImpl implements Member
     {
         Checks.notNull(permissions, "Permission Collection");
 
-        return hasPermission(channel, permissions.toArray(new Permission[permissions.size()]));
+        return hasPermission(channel, permissions.toArray(Permission.EMPTY_PERMISSIONS));
     }
 
     @Override

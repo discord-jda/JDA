@@ -16,23 +16,73 @@
 
 package net.dv8tion.jda.core.managers;
 
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Category;
-import net.dv8tion.jda.core.entities.Channel;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
+import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.impl.AbstractChannelImpl;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.core.managers.impl.ManagerBase;
+import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.restaction.PermOverrideData;
+import net.dv8tion.jda.core.utils.Checks;
+import okhttp3.RequestBody;
+import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import java.util.Collection;
 
 /**
- * Facade for a {@link net.dv8tion.jda.core.managers.ChannelManagerUpdatable ChannelManagerUpdatable} instance.
- * <br>Simplifies managing flow for convenience.
+ * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.core.entities.Channel Guild Channel}.
  *
- * <p>This decoration allows to modify a single field by automatically building an update {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+ * <p><b>Example</b>
+ * <pre>{@code
+ * manager.setName("github-log")
+ *        .setTopic("logs for github commits")
+ *        .setNSFW(false)
+ *        .queue();
+ * manager.reset(ChannelManager.TOPIC | ChannelManager.NAME)
+ *        .setName("nsfw-commits")
+ *        .setTopic(null)
+ *        .setNSFW(true)
+ *        .queue();
+ * }</pre>
+ *
+ * @see net.dv8tion.jda.core.entities.Channel#getManager()
  */
-public class ChannelManager
+public class ChannelManager extends ManagerBase
 {
-    protected final ChannelManagerUpdatable updatable;
+    /** Used to reset the name field */
+    public static final long NAME      = 0x1;
+    /** Used to reset the parent field */
+    public static final long PARENT    = 0x2;
+    /** Used to reset the topic field */
+    public static final long TOPIC     = 0x4;
+    /** Used to reset the position field */
+    public static final long POSITION  = 0x8;
+    /** Used to reset the nsfw field */
+    public static final long NSFW      = 0x10;
+    /** Used to reset the userlimit field */
+    public static final long USERLIMIT = 0x20;
+    /** Used to reset the bitrate field */
+    public static final long BITRATE   = 0x40;
+    /** Used to reset the permission field */
+    public static final long PERMISSION = 0x80;
+
+    protected final Channel channel;
+
+    protected String name;
+    protected String parent;
+    protected String topic;
+    protected int position;
+    protected boolean nsfw;
+    protected int userlimit;
+    protected int bitrate;
+
+    protected final Object lock = new Object();
+    protected final TLongObjectHashMap<PermOverrideData> overridesAdd;
+    protected final TLongSet overridesRem;
 
     /**
      * Creates a new ChannelManager instance
@@ -43,17 +93,23 @@ public class ChannelManager
      */
     public ChannelManager(Channel channel)
     {
-        this.updatable = new ChannelManagerUpdatable(channel);
+        super(channel.getJDA(),
+              Route.Channels.MODIFY_CHANNEL.compile(channel.getId()));
+        this.channel = channel;
+        if (isPermissionChecksEnabled())
+            checkPermissions();
+        this.overridesAdd = new TLongObjectHashMap<>();
+        this.overridesRem = new TLongHashSet();
     }
 
     /**
-     * The {@link net.dv8tion.jda.core.JDA JDA} instance of this Manager
+     * The {@link net.dv8tion.jda.core.entities.ChannelType ChannelType}
      *
-     * @return the corresponding JDA instance
+     * @return The ChannelType
      */
-    public JDA getJDA()
+    public ChannelType getType()
     {
-        return updatable.getJDA();
+        return channel.getType();
     }
 
     /**
@@ -61,12 +117,10 @@ public class ChannelManager
      * be modified by this Manager instance
      *
      * @return The {@link net.dv8tion.jda.core.entities.Channel Channel}
-     *
-     * @see    ChannelManagerUpdatable#getChannel()
      */
     public Channel getChannel()
     {
-        return updatable.getChannel();
+        return channel;
     }
 
     /**
@@ -75,12 +129,242 @@ public class ChannelManager
      * <br>This is logically the same as calling {@code getChannel().getGuild()}
      *
      * @return The parent {@link net.dv8tion.jda.core.entities.Guild Guild}
-     *
-     * @see    ChannelManagerUpdatable#getGuild()
      */
     public Guild getGuild()
     {
-        return updatable.getGuild();
+        return channel.getGuild();
+    }
+
+    /**
+     * Resets the fields specified by the provided bit-flag pattern.
+     * You can specify a combination by using a bitwise OR concat of the flag constants.
+     * <br>Example: {@code manager.reset(ChannelManager.NAME | ChannelManager.PARENT);}
+     *
+     * <p><b>Flag Constants:</b>
+     * <ul>
+     *     <li>{@link #NAME}</li>
+     *     <li>{@link #PARENT}</li>
+     *     <li>{@link #TOPIC}</li>
+     *     <li>{@link #POSITION}</li>
+     *     <li>{@link #NSFW}</li>
+     *     <li>{@link #USERLIMIT}</li>
+     *     <li>{@link #BITRATE}</li>
+     *     <li>{@link #PERMISSION}</li>
+     * </ul>
+     *
+     * @param  fields
+     *         Integer value containing the flags to reset.
+     *
+     * @return ChannelManager for chaining convenience
+     */
+    @Override
+    @CheckReturnValue
+    public ChannelManager reset(long fields)
+    {
+        super.reset(fields);
+        if ((fields & NAME) == NAME)
+            this.name = null;
+        if ((fields & PARENT) == PARENT)
+            this.parent = null;
+        if ((fields & TOPIC) == TOPIC)
+            this.topic = null;
+        if ((fields & PERMISSION) == PERMISSION)
+        {
+            withLock(lock, (lock) ->
+            {
+                this.overridesRem.clear();
+                this.overridesAdd.clear();
+            });
+        }
+        return this;
+    }
+
+    /**
+     * Resets the fields specified by the provided bit-flag patterns.
+     * <br>Example: {@code manager.reset(ChannelManager.NAME, ChannelManager.PARENT);}
+     *
+     * <p><b>Flag Constants:</b>
+     * <ul>
+     *     <li>{@link #NAME}</li>
+     *     <li>{@link #PARENT}</li>
+     *     <li>{@link #TOPIC}</li>
+     *     <li>{@link #POSITION}</li>
+     *     <li>{@link #NSFW}</li>
+     *     <li>{@link #USERLIMIT}</li>
+     *     <li>{@link #BITRATE}</li>
+     *     <li>{@link #PERMISSION}</li>
+     * </ul>
+     *
+     * @param  fields
+     *         Integer values containing the flags to reset.
+     *
+     * @return ChannelManager for chaining convenience
+     */
+    @Override
+    @CheckReturnValue
+    public ChannelManager reset(long... fields)
+    {
+        super.reset(fields);
+        return this;
+    }
+
+    /**
+     * Resets all fields for this manager.
+     *
+     * @return ChannelManager for chaining convenience
+     */
+    @Override
+    @CheckReturnValue
+    public ChannelManager reset()
+    {
+        super.reset();
+        this.name = null;
+        this.parent = null;
+        this.topic = null;
+        withLock(lock, (lock) ->
+        {
+            this.overridesRem.clear();
+            this.overridesAdd.clear();
+        });
+        return this;
+    }
+
+    /**
+     * Clears the overrides added via {@link #putPermissionOverride(IPermissionHolder, Collection, Collection)}.
+     *
+     * @return ChannelManager for chaining convenience
+     */
+    public ChannelManager clearOverridesAdded()
+    {
+        withLock(lock, (lock) ->
+        {
+            this.overridesAdd.clear();
+            if (this.overridesRem.isEmpty())
+                set &= ~PERMISSION;
+        });
+        return this;
+    }
+
+    /**
+     * Clears the overrides removed via {@link #removePermissionOverride(IPermissionHolder)}.
+     *
+     * @return ChannelManager for chaining convenience
+     */
+    public ChannelManager clearOverridesRemoved()
+    {
+        withLock(lock, (lock) ->
+        {
+            this.overridesRem.clear();
+            if (this.overridesAdd.isEmpty())
+                set &= ~PERMISSION;
+        });
+        return this;
+    }
+
+    /**
+     * Adds an override for the specified {@link net.dv8tion.jda.core.entities.IPermissionHolder IPermissionHolder}
+     * with the provided raw bitmasks as allowed and denied permissions. If the permission holder already
+     * had an override on this channel it will be updated instead.
+     *
+     * @param  permHolder
+     *         The permission holder
+     * @param  allow
+     *         The bitmask to grant
+     * @param  deny
+     *         The bitmask to deny
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided permission holder is {@code null}
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
+     *         in this channel
+     *
+     * @return ChannelManager for chaining convenience
+     *
+     * @see    #putPermissionOverride(IPermissionHolder, Collection, Collection)
+     * @see    net.dv8tion.jda.core.Permission#getRaw(Permission...) Permission.getRaw(Permission...)
+     */
+    @CheckReturnValue
+    public ChannelManager putPermissionOverride(IPermissionHolder permHolder, long allow, long deny)
+    {
+        Checks.notNull(permHolder, "PermissionHolder");
+        Checks.check(permHolder.getGuild().equals(getGuild()), "PermissionHolder is not from the same Guild!");
+        if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_PERMISSIONS))
+            throw new InsufficientPermissionException(Permission.MANAGE_PERMISSIONS);
+        final long id = getId(permHolder);
+        final int type = permHolder instanceof Role ? PermOverrideData.ROLE_TYPE : PermOverrideData.MEMBER_TYPE;
+        withLock(lock, (lock) ->
+        {
+            this.overridesRem.remove(id);
+            this.overridesAdd.put(id, new PermOverrideData(type, id, allow, deny));
+            set |= PERMISSION;
+        });
+        return this;
+    }
+
+    /**
+     * Adds an override for the specified {@link net.dv8tion.jda.core.entities.IPermissionHolder IPermissionHolder}
+     * with the provided permission sets as allowed and denied permissions. If the permission holder already
+     * had an override on this channel it will be updated instead.
+     * <br>Example: {@code putPermissionOverride(guild.getSelfMember(), EnumSet.of(Permission.MESSAGE_WRITE, Permission.MESSAGE_READ), null)}
+     *
+     * @param  permHolder
+     *         The permission holder
+     * @param  allow
+     *         The permissions to grant, or null
+     * @param  deny
+     *         The permissions to deny, or null
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided permission holder is {@code null}
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
+     *         in this channel
+     *
+     * @return ChannelManager for chaining convenience
+     *
+     * @see    #putPermissionOverride(IPermissionHolder, long, long)
+     * @see    java.util.EnumSet EnumSet
+     */
+    @CheckReturnValue
+    public ChannelManager putPermissionOverride(IPermissionHolder permHolder, Collection<Permission> allow, Collection<Permission> deny)
+    {
+        long allowRaw = allow == null ? 0 : Permission.getRaw(allow);
+        long denyRaw  = deny  == null ? 0 : Permission.getRaw(deny);
+        return putPermissionOverride(permHolder, allowRaw, denyRaw);
+    }
+
+    /**
+     * Removes the {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} for the specified
+     * {@link net.dv8tion.jda.core.entities.IPermissionHolder IPermissionHolder}. If no override existed for this member
+     * this does nothing.
+     *
+     * @param  permHolder
+     *         The permission holder
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided permission holder is {@code null}
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
+     *         in this channel
+     *
+     * @return ChannelManager for chaining convenience
+     */
+    @CheckReturnValue
+    public ChannelManager removePermissionOverride(IPermissionHolder permHolder)
+    {
+        Checks.notNull(permHolder, "PermissionHolder");
+        Checks.check(permHolder.getGuild().equals(getGuild()), "PermissionHolder is not from the same Guild!");
+        if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_PERMISSIONS))
+            throw new InsufficientPermissionException(Permission.MANAGE_PERMISSIONS);
+        final long id = getId(permHolder);
+        withLock(lock, (lock) ->
+        {
+            this.overridesRem.add(id);
+            this.overridesAdd.remove(id);
+            set |= PERMISSION;
+        });
+        return this;
     }
 
     /**
@@ -90,26 +374,26 @@ public class ChannelManager
      * <br>TextChannel names may only be populated with alphanumeric (with underscore and dash).
      *
      * <p><b>Example</b>: {@code mod-only} or {@code generic_name}
-     * <br>Characters will automatically be lowercased by Discord!
+     * <br>Characters will automatically be lowercased by Discord for text channels!
      *
      * @param  name
      *         The new name for the selected {@link net.dv8tion.jda.core.entities.Channel Channel}
      *
-     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
      * @throws IllegalArgumentException
      *         If the provided name is {@code null} or not between 2-100 characters long
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link ChannelManagerUpdatable#update() #update()}
-     *
-     * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getNameField()
-     * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
+     * @return ChannelManager for chaining convenience
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setName(String name)
+    public ChannelManager setName(String name)
     {
-        return updatable.getNameField().setValue(name).update();
+        Checks.notBlank(name, "Name");
+        Checks.check(name.length() >= 2 && name.length() <= 100, "Name must be between 2-100 characters long");
+        if (getType() == ChannelType.TEXT)
+            Checks.noWhitespace(name, "Name");
+        this.name = name;
+        set |= NAME;
+        return this;
     }
 
     /**
@@ -120,30 +404,31 @@ public class ChannelManager
      * @param  category
      *         The new parent for the selected {@link net.dv8tion.jda.core.entities.Channel Channel}
      *
-     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
+     * @throws IllegalStateException
+     *         If the target is a category itself
      * @throws IllegalArgumentException
      *         If the provided category is not from the same Guild
-     * @throws UnsupportedOperationException
-     *         If the target is a category itself
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link ChannelManagerUpdatable#update() #update()}
+     * @return ChannelManager for chaining convenience
      *
      * @since  3.4.0
-     *
-     * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getParentField()
-     * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setParent(Category category)
+    public ChannelManager setParent(Category category)
     {
-        return updatable.getParentField().setValue(category).update();
+        if (category != null)
+        {
+            if (getType() == ChannelType.CATEGORY)
+                throw new IllegalStateException("Cannot set the parent of a category");
+            Checks.check(category.getGuild().equals(getGuild()), "Category is not from the same guild");
+        }
+        this.parent = category == null ? null : category.getId();
+        set |= PARENT;
+        return this;
     }
 
     /**
-     * Sets the <b><u>position</u></b>
-     * of the selected {@link net.dv8tion.jda.core.entities.Channel Channel}.
+     * Sets the <b><u>position</u></b> of the selected {@link net.dv8tion.jda.core.entities.Channel Channel}.
      *
      * <p><b>To modify multiple channels you should use
      * <code>Guild.{@link net.dv8tion.jda.core.managers.GuildController getController()}.{@link GuildController#modifyTextChannelPositions() modifyTextChannelPositions()}</code>
@@ -152,20 +437,14 @@ public class ChannelManager
      * @param  position
      *         The new position for the selected {@link net.dv8tion.jda.core.entities.Channel Channel}
      *
-     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have the Permission
-     *         {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} in the Guild!
-     *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link ChannelManagerUpdatable#update() #update()}
-     *
-     * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getPositionField()
-     * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
+     * @return ChannelManager for chaining convenience
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setPosition(int position)
+    public ChannelManager setPosition(int position)
     {
-        return updatable.getPositionField().setValue(position).update();
+        this.position = position;
+        set |= POSITION;
+        return this;
     }
 
     /**
@@ -178,23 +457,22 @@ public class ChannelManager
      *         The new topic for the selected {@link net.dv8tion.jda.core.entities.TextChannel TextChannel},
      *         {@code null} or empty String to reset
      *
-     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
      * @throws UnsupportedOperationException
      *         If the selected {@link net.dv8tion.jda.core.entities.Channel Channel}'s type is not {@link net.dv8tion.jda.core.entities.ChannelType#TEXT TEXT}
      * @throws IllegalArgumentException
      *         If the provided topic is greater than {@code 1024} in length
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link ChannelManagerUpdatable#update() #update()}
-     *
-     * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getTopicField()
-     * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
+     * @return ChannelManager for chaining convenience
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setTopic(String topic)
+    public ChannelManager setTopic(String topic)
     {
-        return updatable.getTopicField().setValue(topic).update();
+        if (getType() != ChannelType.TEXT)
+            throw new IllegalStateException("Can only set topic on text channels");
+        Checks.check(topic == null || topic.length() <= 1024, "Topic must be less or equal to 1024 characters in length");
+        this.topic = topic;
+        set |= TOPIC;
+        return this;
     }
 
     /**
@@ -205,18 +483,19 @@ public class ChannelManager
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
-     * @throws UnsupportedOperationException
+     * @throws IllegalStateException
      *         If the selected {@link net.dv8tion.jda.core.entities.Channel Channel}'s type is not {@link net.dv8tion.jda.core.entities.ChannelType#TEXT TEXT}
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link ChannelManagerUpdatable#update() #update()}
-     *
-     * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getNSFWField()
-     * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
+     * @return ChannelManager for chaining convenience
      */
-    public AuditableRestAction<Void> setNSFW(boolean nsfw)
+    @CheckReturnValue
+    public ChannelManager setNSFW(boolean nsfw)
     {
-        return updatable.getNSFWField().setValue(nsfw).update();
+        if (getType() != ChannelType.TEXT)
+            throw new IllegalStateException("Can only set nsfw on text channels");
+        this.nsfw = nsfw;
+        set |= NSFW;
+        return this;
     }
 
     /**
@@ -229,23 +508,23 @@ public class ChannelManager
      * @param  userLimit
      *         The new user-limit for the selected {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
      *
-     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
-     * @throws UnsupportedOperationException
+     * @throws IllegalStateException
      *         If the selected {@link net.dv8tion.jda.core.entities.Channel Channel}'s type is not {@link net.dv8tion.jda.core.entities.ChannelType#VOICE VOICE}
      * @throws IllegalArgumentException
      *         If the provided user-limit is negative or greater than {@code 99}
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link ChannelManagerUpdatable#update() #update()}
-     *
-     * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getUserLimitField()
-     * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
+     * @return ChannelManager for chaining convenience
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setUserLimit(int userLimit)
+    public ChannelManager setUserLimit(int userLimit)
     {
-        return updatable.getUserLimitField().setValue(userLimit).update();
+        if (getType() != ChannelType.VOICE)
+            throw new IllegalStateException("Can only set userlimit on voice channels");
+        Checks.notNegative(userLimit, "Userlimit");
+        Checks.check(userLimit <= 99, "Userlimit may not be greater than 99");
+        this.userlimit = userLimit;
+        set |= USERLIMIT;
+        return this;
     }
 
     /**
@@ -259,23 +538,87 @@ public class ChannelManager
      * @param  bitrate
      *         The new bitrate for the selected {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
      *
-     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
-     * @throws UnsupportedOperationException
+     * @throws IllegalStateException
      *         If the selected {@link net.dv8tion.jda.core.entities.Channel Channel}'s type is not {@link net.dv8tion.jda.core.entities.ChannelType#VOICE VOICE}
      * @throws IllegalArgumentException
      *         If the provided bitrate is not between 8000-96000 (or 128000 for VIP Guilds)
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         <br>Update RestAction from {@link ChannelManagerUpdatable#update() #update()}
+     * @return ChannelManager for chaining convenience
      *
      * @see    net.dv8tion.jda.core.entities.Guild#getFeatures()
-     * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#getBitrateField()
-     * @see    net.dv8tion.jda.core.managers.ChannelManagerUpdatable#update()
      */
     @CheckReturnValue
-    public AuditableRestAction<Void> setBitrate(int bitrate)
+    public ChannelManager setBitrate(int bitrate)
     {
-        return updatable.getBitrateField().setValue(bitrate).update();
+        if (getType() != ChannelType.VOICE)
+            throw new IllegalStateException("Can only set bitrate on voice channels");
+        final int maxBitrate = getGuild().getFeatures().contains("VIP_REGIONS") ? 128000 : 96000;
+        Checks.check(bitrate >= 8000, "Bitrate must be greater or equal to 8000");
+        Checks.check(bitrate <= maxBitrate, "Bitrate must be less or equal to %s", maxBitrate);
+        this.bitrate = bitrate;
+        set |= BITRATE;
+        return this;
+    }
+
+    @Override
+    protected RequestBody finalizeData()
+    {
+        JSONObject frame = new JSONObject().put("name", channel.getName());
+        if (shouldUpdate(NAME))
+            frame.put("name", name);
+        if (shouldUpdate(POSITION))
+            frame.put("position", position);
+        if (shouldUpdate(TOPIC))
+            frame.put("topic", opt(topic));
+        if (shouldUpdate(NSFW))
+            frame.put("nsfw", nsfw);
+        if (shouldUpdate(USERLIMIT))
+            frame.put("user_limit", userlimit);
+        if (shouldUpdate(BITRATE))
+            frame.put("bitrate", bitrate);
+        if (shouldUpdate(PARENT))
+            frame.put("parent_id", opt(parent));
+        withLock(lock, (lock) ->
+        {
+            if (shouldUpdate(PERMISSION))
+                frame.put("permission_overwrites", getOverrides());
+        });
+
+        reset();
+        return getRequestBody(frame);
+    }
+
+    @Override
+    protected boolean checkPermissions()
+    {
+        final Member selfMember = getGuild().getSelfMember();
+        if (!selfMember.hasPermission(channel, Permission.MANAGE_CHANNEL))
+            throw new InsufficientPermissionException(Permission.MANAGE_CHANNEL);
+        return super.checkPermissions();
+    }
+
+    protected Collection<PermOverrideData> getOverrides()
+    {
+        //note: overridesAdd and overridesRem are mutually disjoint
+        TLongObjectHashMap<PermOverrideData> data = new TLongObjectHashMap<>(this.overridesAdd);
+
+        AbstractChannelImpl<?> impl = (AbstractChannelImpl<?>) channel;
+        impl.getOverrideMap().forEachEntry((id, override) ->
+        {
+            //removed by not adding them here, this data set overrides the existing one
+            //we can use remove because it will be reset afterwards either way
+            if (!overridesRem.remove(id) && !data.containsKey(id))
+                data.put(id, new PermOverrideData(override));
+            return true;
+        });
+        return data.valueCollection();
+    }
+
+    protected long getId(IPermissionHolder holder)
+    {
+        if (holder instanceof Role)
+            return ((Role) holder).getIdLong();
+        else
+            return ((Member) holder).getUser().getIdLong();
     }
 }

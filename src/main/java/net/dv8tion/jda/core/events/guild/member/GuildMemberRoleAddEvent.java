@@ -16,32 +16,34 @@
 package net.dv8tion.jda.core.events.guild.member;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
- * <b><u>GuildMemberRoleAddEvent</u></b><br>
- * Fired if one or more {@link net.dv8tion.jda.core.entities.Role Roles} are assigned to a {@link net.dv8tion.jda.core.entities.Member Member}.<br>
- * <br>
- * Use: Retrieve affected member and guild. Provides a list of added roles.
+ * Indicates that one or more {@link net.dv8tion.jda.core.entities.Role Roles} were assigned to a {@link net.dv8tion.jda.core.entities.Member Member}.
+ *
+ * <p>Can be used to retrieve affected member and guild. Provides a list of added roles.
  */
 public class GuildMemberRoleAddEvent extends GenericGuildMemberEvent
 {
     private final List<Role> addedRoles;
 
-    public GuildMemberRoleAddEvent(JDA api, long responseNumber, Guild guild, Member member, List<Role> addedRoles)
+    public GuildMemberRoleAddEvent(JDA api, long responseNumber, Member member, List<Role> addedRoles)
     {
-        super(api, responseNumber, guild, member);
-        this.addedRoles = new LinkedList<>(addedRoles);
+        super(api, responseNumber, member);
+        this.addedRoles = Collections.unmodifiableList(addedRoles);
     }
 
+    /**
+     * The list of roles that were added
+     *
+     * @return The list of roles that were added
+     */
     public List<Role> getRoles()
     {
-        return Collections.unmodifiableList(addedRoles);
+        return addedRoles;
     }
 }

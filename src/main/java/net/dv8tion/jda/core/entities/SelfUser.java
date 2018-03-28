@@ -105,8 +105,8 @@ public interface SelfUser extends User
     /**
      * The {@link net.dv8tion.jda.core.managers.AccountManager AccountManager}
      * for the currently logged in account.
-     *
-     * <p>This can be used to atomically set account fields (like avatar/username)
+     * <br>This can be used to atomically set account fields (like avatar/username)
+     * You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.core.requests.RestAction#queue() RestAction.queue()}.
      *
      * @return An AccountManager instance for the current account
      */
@@ -119,6 +119,10 @@ public interface SelfUser extends User
      * <p>This can be used to bulk update account fields (like avatar/username)
      *
      * @return An AccountManagerUpdatable instance for the current account
+     *
+     * @deprecated
+     *         Use {@link #getManager()} instead
      */
+    @Deprecated
     AccountManagerUpdatable getManagerUpdatable();
 }

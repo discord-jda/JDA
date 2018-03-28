@@ -19,23 +19,59 @@ package net.dv8tion.jda.core.events.guild.update;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 
-public class GuildUpdateIconEvent extends GenericGuildUpdateEvent
+/**
+ * Indicates that the Icon of a {@link net.dv8tion.jda.core.entities.Guild Guild} changed.
+ *
+ * <p>Can be used to detect when a guild icon changes and retrieve the old one
+ *
+ * <p>Identifier: {@code icon}
+ */
+public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String>
 {
-    private final String oldIconId;
+    public static final String IDENTIFIER = "icon";
 
     public GuildUpdateIconEvent(JDA api, long responseNumber, Guild guild, String oldIconId)
     {
-        super(api, responseNumber, guild);
-        this.oldIconId = oldIconId;
+        super(api, responseNumber, guild, oldIconId, guild.getIconId(), IDENTIFIER);
     }
 
+    /**
+     * The old icon id
+     *
+     * @return The old icon id, or null
+     */
     public String getOldIconId()
     {
-        return oldIconId;
+        return getOldValue();
     }
 
+    /**
+     * The url of the old icon
+     *
+     * @return The url of the old icon, or null
+     */
     public String getOldIconUrl()
     {
-        return oldIconId == null ? null : "https://cdn.discordapp.com/icons/" + guild.getId() + "/" + oldIconId + ".jpg";
+        return previous == null ? null : "https://cdn.discordapp.com/icons/" + guild.getId() + "/" + previous + ".png";
+    }
+
+    /**
+     * The old icon id
+     *
+     * @return The old icon id, or null
+     */
+    public String getNewIconId()
+    {
+        return getNewValue();
+    }
+
+    /**
+     * The url of the new icon
+     *
+     * @return The url of the new icon, or null
+     */
+    public String getNewIconUrl()
+    {
+        return next == null ? null : "https://cdn.discordapp.com/icons/" + guild.getId() + "/" + next + ".png";
     }
 }

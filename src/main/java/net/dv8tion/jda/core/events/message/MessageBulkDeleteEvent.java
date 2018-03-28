@@ -24,10 +24,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * <b><u>MessageBulkDeleteEvent</u></b><br>
- * Fired if a bulk deletion is executed in a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.<br>
- * <br>
- * Use: This event indicates that a large chunk of Messages is deleted in a TextChannel. Providing a list of Message IDs and the specific TextChannel.
+ * Indicates that a bulk deletion is executed in a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
+ * <br>Use {@link net.dv8tion.jda.core.JDABuilder#setBulkDeleteSplittingEnabled(boolean)} to true in order to enable this event.
+ * 
+ * <p>Can be used to detect tha a large chunk of Messages is deleted in a TextChannel. Providing a list of Message IDs and the specific TextChannel.
  */
 public class MessageBulkDeleteEvent extends Event
 {
@@ -41,16 +41,31 @@ public class MessageBulkDeleteEvent extends Event
         this.messageIds = Collections.unmodifiableList(messageIds);
     }
 
+    /**
+     * The {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} where the messages have been deleted
+     *
+     * @return The TextChannel
+     */
     public TextChannel getChannel()
     {
         return channel;
     }
 
+    /**
+     * The {@link net.dv8tion.jda.core.entities.Guild Guild} where the messages were deleted.
+     *
+     * @return The Guild
+     */
     public Guild getGuild()
     {
         return channel.getGuild();
     }
-
+    
+    /**
+     * List of messages that have been deleted.
+     *
+     * @return The list of message ids
+     */
     public List<String> getMessageIds()
     {
         return messageIds;

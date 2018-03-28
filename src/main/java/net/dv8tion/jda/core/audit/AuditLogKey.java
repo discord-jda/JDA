@@ -293,7 +293,7 @@ public enum AuditLogKey
      *
      * <p>Expected type: <b>Boolean</b>
      */
-    ROLE_HOISTED("hoisted"),
+    ROLE_HOISTED("hoist"),
 
     /**
      * Change of the {@link net.dv8tion.jda.core.entities.Role#isMentionable() Role.isMentionable()} value.

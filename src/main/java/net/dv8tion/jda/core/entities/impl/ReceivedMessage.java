@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.entities.impl;
 
 import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.MessageBuilder;
@@ -181,12 +182,12 @@ public class ReceivedMessage extends AbstractMessage
                 try
                 {
                     long id = MiscUtil.parseSnowflake(matcher.group(1));
-                    if(!mentionedUsers.contains(id))
+                    if (!mentionedUsers.contains(id))
                         continue;
                     User user = getJDA().getUserById(id);
                     if (user == null)
                         user = api.getFakeUserMap().get(id);
-                    if (user != null)
+                    if (user != null && !userMentions.contains(user))
                         userMentions.add(user);
                 } catch (NumberFormatException ignored) {}
             }
@@ -209,7 +210,7 @@ public class ReceivedMessage extends AbstractMessage
                 {
                     String id = matcher.group(1);
                     TextChannel channel = getJDA().getTextChannelById(id);
-                    if (channel != null)
+                    if (channel != null && !channelMentions.contains(channel))
                         channelMentions.add(channel);
                 }
                 catch (NumberFormatException ignored) {}
@@ -232,14 +233,14 @@ public class ReceivedMessage extends AbstractMessage
                 try
                 {
                     long id = MiscUtil.parseSnowflake(matcher.group(1));
-                    if(!mentionedRoles.contains(id))
+                    if (!mentionedRoles.contains(id))
                         continue;
                     Role role = null;
                     if (isFromType(ChannelType.TEXT)) // role lookup is faster if its in the same guild (no global map)
                         role = getGuild().getRoleById(id);
                     if (role == null)
                         role = getJDA().getRoleById(id);
-                    if (role != null)
+                    if (role != null && !roleMentions.contains(role))
                         roleMentions.add(role);
                 }
                 catch (NumberFormatException ignored) {}
@@ -653,6 +654,7 @@ public class ReceivedMessage extends AbstractMessage
     {
         if (this.emoteMentions == null)
         {
+            TLongSet foundIds = new TLongHashSet();
             emoteMentions = new ArrayList<>();
             Matcher matcher = MentionType.EMOTE.getPattern().matcher(getContentRaw());
             while (matcher.find())
@@ -660,6 +662,11 @@ public class ReceivedMessage extends AbstractMessage
                 try
                 {
                     final long emoteId = MiscUtil.parseSnowflake(matcher.group(2));
+                    // ensure distinct
+                    if (foundIds.contains(emoteId))
+                        continue;
+                    else
+                        foundIds.add(emoteId);
                     final String emoteName = matcher.group(1);
                     // Check animated by verifying whether or not it starts with <a: or <:
                     final boolean animated = matcher.group(0).startsWith("<a:");

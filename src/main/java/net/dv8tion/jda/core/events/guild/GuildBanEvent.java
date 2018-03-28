@@ -20,11 +20,12 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 
 /**
- * <b><u>GuildBanEvent</u></b><br>
- * Fired if a {@link net.dv8tion.jda.core.entities.User User} is banned from a {@link net.dv8tion.jda.core.entities.Guild Guild}.<br>
- * <br>
- * Use: Retrieve the user who was banned (if available) and triggering guild.<p>
- * <b>Note</b>: This does not directly indicate that a Member is removed from the Guild!
+ * Indicates that a {@link net.dv8tion.jda.core.entities.User User} was banned from a {@link net.dv8tion.jda.core.entities.Guild Guild}.
+ *
+ * <p>Can be used to retrieve the user who was banned (if available) and triggering guild.
+ * <br><b>Note</b>: This does not directly indicate that a Member is removed from the Guild!
+ *
+ * @see net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent
  */
 public class GuildBanEvent extends GenericGuildEvent
 {
@@ -36,6 +37,12 @@ public class GuildBanEvent extends GenericGuildEvent
         this.user = user;
     }
 
+    /**
+     * The banned {@link net.dv8tion.jda.core.entities.User User}
+     * <br>Possibly fake user.
+     *
+     * @return The banned user
+     */
     public User getUser()
     {
         return user;

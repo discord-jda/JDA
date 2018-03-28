@@ -20,27 +20,66 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Role;
 
-import java.util.Collections;
 import java.util.List;
 
-public class RoleUpdatePermissionsEvent extends GenericRoleUpdateEvent
+/**
+ * Indicates that a {@link net.dv8tion.jda.core.entities.Role Role} updated its permissions.
+ *
+ * <p>Can be used to retrieve the old permissions.
+ *
+ * <p>Identifier: {@code permission}
+ */
+public class RoleUpdatePermissionsEvent extends GenericRoleUpdateEvent<List<Permission>>
 {
+    public static final String IDENTIFIER = "permission";
+
     private final long oldPermissionsRaw;
+    private final long newPermissionsRaw;
 
     public RoleUpdatePermissionsEvent(JDA api, long responseNumber, Role role, long oldPermissionsRaw)
     {
-        super(api, responseNumber, role);
+        super(api, responseNumber, role, Permission.getPermissions(oldPermissionsRaw), role.getPermissions(), IDENTIFIER);
         this.oldPermissionsRaw = oldPermissionsRaw;
+        this.newPermissionsRaw = role.getPermissionsRaw();
     }
 
+    /**
+     * The old permissions
+     *
+     * @return The old permissions
+     */
     public List<Permission> getOldPermissions()
     {
-        return Collections.unmodifiableList(
-                Permission.getPermissions(oldPermissionsRaw));
+        return getOldValue();
     }
 
+    /**
+     * The old permissions
+     *
+     * @return The old permissions
+     */
     public long getOldPermissionsRaw()
     {
         return oldPermissionsRaw;
+    }
+
+    /**
+     * The new permissions
+     *
+     * @return The new permissions
+     */
+    public List<Permission> getNewPermissions()
+    {
+        return getNewValue();
+    }
+
+    /**
+     * The new permissions
+     *
+     * @return The new permissions
+     */
+    public long getNewPermissionsRaw()
+    {
+        return newPermissionsRaw;
     }
 }

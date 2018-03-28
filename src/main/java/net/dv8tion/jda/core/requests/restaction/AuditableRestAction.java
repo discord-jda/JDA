@@ -28,7 +28,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 /**
- * Extension of RestAction to allow setting a reason, only available to accounts of {@link net.dv8tion.jda.core.AccountType#BOT AccounType.BOT}
+ * Extension of RestAction to allow setting a reason, only available to accounts of {@link net.dv8tion.jda.core.AccountType#BOT AccountType.BOT}
  *
  * @param  <T>
  *         The return type
@@ -56,6 +56,7 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public AuditableRestAction<T> setCheck(BooleanSupplier checks)
     {
         return (AuditableRestAction) super.setCheck(checks);

@@ -17,7 +17,6 @@
 package net.dv8tion.jda.core.entities.impl;
 
 import net.dv8tion.jda.client.managers.EmoteManager;
-import net.dv8tion.jda.client.managers.EmoteManagerUpdatable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Emote;
@@ -28,26 +27,27 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.core.utils.MiscUtil;
 
 import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Represents a Custom Emote. (Emoji in official Discord API terminology)
  *
  * @since  2.2
- * @author Florian Spieß
  */
 public class EmoteImpl implements Emote
 {
-
     private final long id;
     private final GuildImpl guild;
     private final JDAImpl api;
     private final Set<Role> roles;
 
-    private final Object mngLock = new Object();
+    private final ReentrantLock mngLock = new ReentrantLock();
     private volatile EmoteManager manager = null;
-    private volatile EmoteManagerUpdatable managerUpdatable = null;
+    @Deprecated
+    private volatile net.dv8tion.jda.client.managers.EmoteManagerUpdatable managerUpdatable = null;
 
     private boolean managed = false;
     private boolean animated = false;
@@ -119,28 +119,29 @@ public class EmoteImpl implements Emote
         EmoteManager m = manager;
         if (m == null)
         {
-            synchronized (mngLock)
+            m = MiscUtil.locked(mngLock, () ->
             {
-                m = manager;
-                if (m == null)
-                    m = manager = new EmoteManager(this);
-            }
+                if (manager == null)
+                    manager = new EmoteManager(this);
+                return manager;
+            });
         }
         return m;
     }
 
     @Override
-    public EmoteManagerUpdatable getManagerUpdatable()
+    @Deprecated
+    public net.dv8tion.jda.client.managers.EmoteManagerUpdatable getManagerUpdatable()
     {
-        EmoteManagerUpdatable m = managerUpdatable;
+        net.dv8tion.jda.client.managers.EmoteManagerUpdatable m = managerUpdatable;
         if (m == null)
         {
-            synchronized (mngLock)
+            m = MiscUtil.locked(mngLock, () ->
             {
-                m = managerUpdatable;
-                if (m == null)
-                    m = managerUpdatable = new EmoteManagerUpdatable(this);
-            }
+                if (managerUpdatable == null)
+                    managerUpdatable = new net.dv8tion.jda.client.managers.EmoteManagerUpdatable(this);
+                return managerUpdatable;
+            });
         }
         return m;
     }

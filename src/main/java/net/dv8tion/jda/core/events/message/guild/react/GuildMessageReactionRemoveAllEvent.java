@@ -20,6 +20,11 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
 
+/**
+ * Indicates that the reactions for a {@link net.dv8tion.jda.core.entities.Message Message} were cleared by a moderator in a guild.
+ *
+ * <p>Can be used to detect when the reaction of a message are cleared by a moderator.
+ */
 public class GuildMessageReactionRemoveAllEvent extends GenericGuildMessageEvent
 {
     public GuildMessageReactionRemoveAllEvent(JDA api, long responseNumber, long messageId, TextChannel channel)

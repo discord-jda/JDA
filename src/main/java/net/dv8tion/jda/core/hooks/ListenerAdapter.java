@@ -83,6 +83,7 @@ import net.dv8tion.jda.core.events.role.RoleDeleteEvent;
 import net.dv8tion.jda.core.events.role.update.*;
 import net.dv8tion.jda.core.events.self.*;
 import net.dv8tion.jda.core.events.user.*;
+import net.dv8tion.jda.core.events.user.update.*;
 
 /**
  * An abstract implementation of {@link net.dv8tion.jda.core.hooks.EventListener EventListener} which divides {@link net.dv8tion.jda.core.events.Event Events}
@@ -112,6 +113,7 @@ import net.dv8tion.jda.core.events.user.*;
 public abstract class ListenerAdapter implements EventListener
 {
     public void onGenericEvent(Event event) {}
+    public void onGenericUpdate(UpdateEvent<?, ?> event) {}
 
     //JDA Events
     public void onReady(ReadyEvent event) {}
@@ -123,10 +125,20 @@ public abstract class ListenerAdapter implements EventListener
     public void onException(ExceptionEvent event) {}
 
     //User Events
+    @Deprecated
     public void onUserNameUpdate(UserNameUpdateEvent event) {}
+    @Deprecated
     public void onUserAvatarUpdate(UserAvatarUpdateEvent event) {}
+    @Deprecated
     public void onUserOnlineStatusUpdate(UserOnlineStatusUpdateEvent event) {}
+    @Deprecated
     public void onUserGameUpdate(UserGameUpdateEvent event) {}
+
+    public void onUserUpdateName(UserUpdateNameEvent event) {}
+    public void onUserUpdateDiscriminator(UserUpdateDiscriminatorEvent event) {}
+    public void onUserUpdateAvatar(UserUpdateAvatarEvent event) {}
+    public void onUserUpdateOnlineStatus(UserUpdateOnlineStatusEvent event) {}
+    public void onUserUpdateGame(UserUpdateGameEvent event) {}
     public void onUserTyping(UserTypingEvent event) {}
 
     //Self Events. Fires only in relation to the currently logged in account.
@@ -351,6 +363,8 @@ public abstract class ListenerAdapter implements EventListener
     public final void onEvent(Event event)
     {
         onGenericEvent(event);
+        if (event instanceof UpdateEvent)
+            onGenericUpdate((UpdateEvent<?, ?>) event);
         //JDA Events
         if (event instanceof ReadyEvent)
             onReady((ReadyEvent) event);
@@ -417,14 +431,16 @@ public abstract class ListenerAdapter implements EventListener
             onMessageReactionRemoveAll((MessageReactionRemoveAllEvent) event);
 
         //User Events
-        else if (event instanceof UserNameUpdateEvent)
-            onUserNameUpdate((UserNameUpdateEvent) event);
-        else if (event instanceof UserAvatarUpdateEvent)
-            onUserAvatarUpdate((UserAvatarUpdateEvent) event);
-        else if (event instanceof UserGameUpdateEvent)
-            onUserGameUpdate((UserGameUpdateEvent) event);
-        else if (event instanceof UserOnlineStatusUpdateEvent)
-            onUserOnlineStatusUpdate((UserOnlineStatusUpdateEvent) event);
+        else if (event instanceof UserUpdateNameEvent)
+            onUserUpdateName((UserUpdateNameEvent) event);
+        else if (event instanceof UserUpdateDiscriminatorEvent)
+            onUserUpdateDiscriminator((UserUpdateDiscriminatorEvent) event);
+        else if (event instanceof UserUpdateAvatarEvent)
+            onUserUpdateAvatar((UserUpdateAvatarEvent) event);
+        else if (event instanceof UserUpdateGameEvent)
+            onUserUpdateGame((UserUpdateGameEvent) event);
+        else if (event instanceof UserUpdateOnlineStatusEvent)
+            onUserUpdateOnlineStatus((UserUpdateOnlineStatusEvent) event);
         else if (event instanceof UserTypingEvent)
             onUserTyping((UserTypingEvent) event);
 
