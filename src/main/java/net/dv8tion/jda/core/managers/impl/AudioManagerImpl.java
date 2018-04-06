@@ -44,7 +44,7 @@ public class AudioManagerImpl implements AudioManager
     public static final ThreadGroup AUDIO_THREADS = new ThreadGroup("jda-audio");
     //These values are set at the bottom of this file.
     public static boolean AUDIO_SUPPORTED;
-    public static String OPUS_LIB_NAME;
+//    public static String OPUS_LIB_NAME;
     protected static boolean initialized = false;
 
     public final ReentrantLock CONNECTION_LOCK = new ReentrantLock();
@@ -398,7 +398,7 @@ public class AudioManagerImpl implements AudioManager
         }
         finally
         {
-            OPUS_LIB_NAME = nativesRoot != null ? String.format(nativesRoot, "libopus") : null;
+            System.setProperty("opus.lib", nativesRoot != null ? String.format(nativesRoot, "libopus") : "");
             AUDIO_SUPPORTED = nativesRoot != null;
 
             if (AUDIO_SUPPORTED)
