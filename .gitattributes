@@ -1,5 +1,5 @@
 # Preserve gradlew's line ending
-.gitattributes text eol=crlf
+.git* text eol=crlf
 
 gradlew binary
 
