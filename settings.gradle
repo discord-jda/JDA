@@ -1,4 +1,2 @@
 rootProject.name = 'JDA'
 include 'opus-java'
-
-project(':opus-java').projectDir = file('../opus-java')
