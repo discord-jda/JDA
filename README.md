@@ -172,6 +172,20 @@ Be sure to replace the **VERSION** key below with the one of the versions shown 
 
 ```
 
+**Maven without Audio**
+```xml
+<dependency>
+    <groupId>net.dv8tion</groupId>
+    <artifactId>JDA</artifactId>
+    <version>VERSION</version>
+    <exclusions>
+        <exclusion>
+            <artifactId>opus-java</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+```
+
 **Gradle**
 ```gradle
 dependencies {
@@ -183,7 +197,17 @@ repositories {
 }
 ```
 
+**Gradle without Audio**
+```gradle
+dependencies {
+    compile ('net.dv8tion:JDA:VERSION') {
+        exclude module: 'opus-java'
+    }
+}
+```
+
 The builds are distributed using JCenter through Bintray [JDA JCenter Bintray](https://bintray.com/dv8fromtheworld/maven/JDA/)
+<br>If you are not interested in audio, we recommend excluding the `opus-java` transitive dependency to achieve a smaller artifact without audio support.
 
 ### Logging Framework - SLF4J
 JDA is using [SLF4J](https://www.slf4j.org/) to log its messages.
