@@ -378,9 +378,15 @@ public class AudioManagerImpl implements AudioManager
         catch (Throwable e)
         {
             if (e instanceof UnsupportedOperationException)
+            {
                 LOG.error("Sorry, JDA's audio system doesn't support this system.\n" +
-                        "Supported Systems: Windows(x86, x64), Mac(x86, x64) and Linux(x86, x64)\n" +
-                        "Operating system: " + Platform.RESOURCE_PREFIX);
+                          "Supported Systems: Windows(x86, x64), Mac(x86, x64) and Linux(x86, x64)\n" +
+                          "Operating system: " + Platform.RESOURCE_PREFIX);
+            }
+            else if (e instanceof NoClassDefFoundError)
+            {
+                LOG.error("Missing opus dependency, unable to initialize audio!");
+            }
             else if (e instanceof  IOException)
             {
                 LOG.error("There was an IO Exception when setting up the temp files for audio.", e);
