@@ -92,4 +92,11 @@ public class GuildMembersChunkHandler extends SocketHandler
         expectedGuildMembers.clear();
         memberChunksCache.clear();
     }
+
+    public void clearCache(long guildId)
+    {
+        expectedGuildMembers.remove(guildId);
+        if (memberChunksCache.remove(guildId) != null)
+            JDAImpl.LOG.debug("Cleared expected member chunk. GuildId: {}", guildId);
+    }
 }
