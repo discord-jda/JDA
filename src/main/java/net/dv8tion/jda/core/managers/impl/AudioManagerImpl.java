@@ -91,7 +91,7 @@ public class AudioManagerImpl implements AudioManager
             throw new GuildUnavailableException("Cannot open an Audio Connection with an unavailable guild. " +
                     "Please wait until this Guild is available to open a connection.");
         final Member self = guild.getSelfMember();
-        if (!self.hasPermission(channel, Permission.VOICE_CONNECT) && !self.hasPermission(channel, Permission.VOICE_MOVE_OTHERS))
+        if (!self.hasPermission(channel, Permission.VOICE_CONNECT))
             throw new InsufficientPermissionException(Permission.VOICE_CONNECT);
 
         if (audioConnection == null)
