@@ -169,7 +169,7 @@ public class BotRateLimiter extends RateLimiter
         String remain = headers.get("X-RateLimit-Remaining");
         if (retryAfter != null)
         {
-            bucket.resetTime = retryAfter;
+            bucket.resetTime = getNow() + retryAfter;
             bucket.routeUsageRemaining = 0;
         }
 

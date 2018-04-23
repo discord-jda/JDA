@@ -57,7 +57,7 @@ public class Route
         public static final Route GET_AUTHORIZED_APPLICATION =    new Route(GET,    "oauth2/tokens/{auth_id}");
         public static final Route DELETE_AUTHORIZED_APPLICATION = new Route(DELETE, "oauth2/tokens/{auth_id}");
     }
-    
+
     public static class Self
     {
         public static final Route GET_SELF =               new Route(GET,    "users/@me");
