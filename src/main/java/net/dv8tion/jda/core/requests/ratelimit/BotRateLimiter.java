@@ -32,6 +32,8 @@ import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.RejectedExecutionException;
@@ -126,7 +128,7 @@ public class BotRateLimiter extends RateLimiter
                 bucket = (Bucket) buckets.get(rateLimitRoute);
                 if (bucket == null)
                 {
-                    bucket = new Bucket(rateLimitRoute, route.getBaseRoute().getRatelimit());
+                    bucket = new Bucket(rateLimitRoute, route.getBaseRoute().getRatelimit(), route.getBaseRoute().isPredictableHeaders());
                     buckets.put(rateLimitRoute, bucket);
                 }
             }
@@ -164,9 +166,9 @@ public class BotRateLimiter extends RateLimiter
 
     private void updateBucket(Bucket bucket, Headers headers, Long retryAfter)
     {
-        String reset = headers.get("X-RateLimit-Reset");
-        String limit = headers.get("X-RateLimit-Limit");
-        String remain = headers.get("X-RateLimit-Remaining");
+        OptionalLong reset = parseLong(headers.get("X-RateLimit-Reset"));
+        OptionalInt limit  = parseInt(headers.get("X-RateLimit-Limit"));
+        OptionalInt remain = parseInt(headers.get("X-RateLimit-Remaining"));
         if (retryAfter != null)
         {
             bucket.resetTime = getNow() + retryAfter;
@@ -181,10 +183,10 @@ public class BotRateLimiter extends RateLimiter
         else
         {
 
-            if (reset != null)
-                bucket.resetTime = Long.parseLong(reset) * 1000; //Seconds to milliseconds
-            if (limit != null)
-                bucket.routeUsageLimit = Integer.parseInt(limit);
+            if (reset.isPresent())
+                bucket.resetTime = reset.getAsLong() * 1000; //Seconds to milliseconds
+            if (limit.isPresent())
+                bucket.routeUsageLimit = limit.getAsInt();
         }
 
         //Currently, we check the remaining amount even for hardcoded ratelimits just to further respect Discord
@@ -198,33 +200,55 @@ public class BotRateLimiter extends RateLimiter
         // header system due to their headers only supporting accuracy to the second. The custom ratelimit system
         // allows for hardcoded ratelimits that allow accuracy to the millisecond which is important for some
         // ratelimits like Reactions which is 1/0.25s, but discord reports the ratelimit as 1/1s with headers.
-        if (remain != null)
+        if (remain.isPresent())
         {
-            bucket.routeUsageRemaining = Integer.parseInt(remain);
+            bucket.routeUsageRemaining = remain.getAsInt();
         }
-        else if (
-            reset == null && limit == null
-            && !bucket.getRoute().equals("gateway")
-            && !bucket.getRoute().equals("users/@me")
-            && !bucket.getRoute().matches("channels/\\d+/messages"))
+        else if (!bucket.predictableHeaders && !reset.isPresent() && !limit.isPresent())
         {
             Requester.LOG.debug("Encountered issue with headers when updating a bucket\nRoute: {}\nHeaders: {}", bucket.getRoute(), headers);
+        }
+    }
+
+    private OptionalInt parseInt(String input)
+    {
+        try
+        {
+            return OptionalInt.of(Integer.parseInt(input));
+        }
+        catch (NumberFormatException ex)
+        {
+            return OptionalInt.empty();
+        }
+    }
+
+    private OptionalLong parseLong(String input)
+    {
+        try
+        {
+            return OptionalLong.of(Long.parseLong(input));
+        }
+        catch (NumberFormatException ex)
+        {
+            return OptionalLong.empty();
         }
     }
 
     private class Bucket implements IBucket, Runnable
     {
         final String route;
+        final boolean predictableHeaders;
         final RateLimit rateLimit;
         final ConcurrentLinkedQueue<Request> requests = new ConcurrentLinkedQueue<>();
         volatile long resetTime = 0;
         volatile int routeUsageRemaining = 1;    //These are default values to only allow 1 request until we have properly
         volatile int routeUsageLimit = 1;        // ratelimit information.
 
-        public Bucket(String route, RateLimit rateLimit)
+        public Bucket(String route, RateLimit rateLimit, boolean predictableHeaders)
         {
             this.route = route;
             this.rateLimit = rateLimit;
+            this.predictableHeaders = predictableHeaders;
             if (rateLimit != null)
             {
                 this.routeUsageRemaining = rateLimit.getUsageLimit();
