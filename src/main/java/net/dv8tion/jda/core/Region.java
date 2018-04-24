@@ -22,46 +22,48 @@ package net.dv8tion.jda.core;
  */
 public enum Region
 {
-    JAPAN("japan", "Japan", false),
-    AMSTERDAM("amsterdam", "Amsterdam", false),
-    BRAZIL("brazil", "Brazil", false),
-    EU_WEST("eu-west", "EU West", false),
-    EU_CENTRAL("eu-central", "EU Central", false),
-    FRANKFURT("frankfurt", "Frankfurt", false),
-    HONG_KONG("hongkong", "Hong Kong", false),
-    LONDON("london", "London", false),
-    RUSSIA("russia", "Russia", false),
-    SINGAPORE("singapore", "Singapore", false),
-    SYDNEY("sydney", "Sydney", false),
-    US_EAST("us-east", "US East", false),
-    US_WEST("us-west", "US West", false),
-    US_CENTRAL("us-central", "US Central", false),
-    US_SOUTH("us-south", "US South", false),
+    JAPAN("japan", "Japan", "\uD83C\uDDEF\uD83C\uDDF5", false),
+    AMSTERDAM("amsterdam", "Amsterdam", "\uD83C\uDDF3\uD83C\uDDF1", false),
+    BRAZIL("brazil", "Brazil", "\uD83C\uDDE7\uD83C\uDDF7", false),
+    EU_WEST("eu-west", "EU West", "\uD83C\uDDEA\uD83C\uDDFA", false),
+    EU_CENTRAL("eu-central", "EU Central", "\uD83C\uDDEA\uD83C\uDDFA", false),
+    FRANKFURT("frankfurt", "Frankfurt", "\uD83C\uDDE9\uD83C\uDDEA", false),
+    HONG_KONG("hongkong", "Hong Kong", "\uD83C\uDDED\uD83C\uDDF0", false),
+    LONDON("london", "London", "\uD83C\uDDEC\uD83C\uDDE7", false),
+    RUSSIA("russia", "Russia", "\uD83C\uDDF7\uD83C\uDDFA", false),
+    SINGAPORE("singapore", "Singapore", "\uD83C\uDDF8\uD83C\uDDEC", false),
+    SYDNEY("sydney", "Sydney", "\uD83C\uDDE6\uD83C\uDDFA", false),
+    US_EAST("us-east", "US East", "\uD83C\uDDFA\uD83C\uDDF8", false),
+    US_WEST("us-west", "US West", "\uD83C\uDDFA\uD83C\uDDF8", false),
+    US_CENTRAL("us-central", "US Central", "\uD83C\uDDFA\uD83C\uDDF8", false),
+    US_SOUTH("us-south", "US South", "\uD83C\uDDFA\uD83C\uDDF8", false),
 
-    VIP_JAPAN("vip-japan", "Japan (VIP)", false),
-    VIP_AMSTERDAM("vip-amsterdam", "Amsterdam (VIP)", true),
-    VIP_BRAZIL("vip-brazil", "Brazil (VIP)", true),
-    VIP_EU_WEST("vip-eu-west", "EU West (VIP)", true),
-    VIP_EU_CENTRAL("vip-eu-central", "EU Central (VIP)", true),
-    VIP_FRANKFURT("vip-frankfurt", "Frankfurt (VIP)", true),
-    VIP_LONDON("vip-london", "London (VIP)", true),
-    VIP_SINGAPORE("vip-singapore", "Singapore (VIP)", true),
-    VIP_SYDNEY("vip-sydney", "Sydney (VIP)", true),
-    VIP_US_EAST("vip-us-east", "US East (VIP)", true),
-    VIP_US_WEST("vip-us-west", "US West (VIP)", true),
-    VIP_US_CENTRAL("vip-us-central", "US Central (VIP)", true),
-    VIP_US_SOUTH("vip-us-south", "US South (VIP)", true),
+    VIP_JAPAN("vip-japan", "Japan (VIP)", "\uD83C\uDDEF\uD83C\uDDF5", true),
+    VIP_AMSTERDAM("vip-amsterdam", "Amsterdam (VIP)", "\uD83C\uDDF3\uD83C\uDDF1", true),
+    VIP_BRAZIL("vip-brazil", "Brazil (VIP)", "\uD83C\uDDE7\uD83C\uDDF7", true),
+    VIP_EU_WEST("vip-eu-west", "EU West (VIP)", "\uD83C\uDDEA\uD83C\uDDFA", true),
+    VIP_EU_CENTRAL("vip-eu-central", "EU Central (VIP)", "\uD83C\uDDEA\uD83C\uDDFA", true),
+    VIP_FRANKFURT("vip-frankfurt", "Frankfurt (VIP)", "\uD83C\uDDE9\uD83C\uDDEA", true),
+    VIP_LONDON("vip-london", "London (VIP)", "\uD83C\uDDEC\uD83C\uDDE7", true),
+    VIP_SINGAPORE("vip-singapore", "Singapore (VIP)", "\uD83C\uDDF8\uD83C\uDDEC", true),
+    VIP_SYDNEY("vip-sydney", "Sydney (VIP)", "\uD83C\uDDE6\uD83C\uDDFA", true),
+    VIP_US_EAST("vip-us-east", "US East (VIP)", "\uD83C\uDDFA\uD83C\uDDF8", true),
+    VIP_US_WEST("vip-us-west", "US West (VIP)", "\uD83C\uDDFA\uD83C\uDDF8", true),
+    VIP_US_CENTRAL("vip-us-central", "US Central (VIP)", "\uD83C\uDDFA\uD83C\uDDF8", true),
+    VIP_US_SOUTH("vip-us-south", "US South (VIP)", "\uD83C\uDDFA\uD83C\uDDF8", true),
 
-    UNKNOWN("", "Unknown Region", false);
+    UNKNOWN("", "Unknown Region", "\uD83C\uDFF3", false);
 
     private final String key;
     private final String name;
+    private final String emoji;
     private final boolean vip;
 
-    Region(String key, String name, boolean vip)
+    Region(String key, String name, String emoji, boolean vip)
     {
         this.key = key;
         this.name = name;
+        this.emoji = emoji;
         this.vip = vip;
     }
 
@@ -83,6 +85,16 @@ public enum Region
     public String getKey()
     {
         return key;
+    }
+    
+    /**
+     * The unicode flag representative of this Region.
+     * 
+     * @return The unicode for the region's flag
+     */
+    public String getEmoji()
+    {
+        return emoji;
     }
 
     /**
