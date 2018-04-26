@@ -21,7 +21,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
     id 'com.jfrog.bintray' version '1.7.3'
-    id 'java'
+    id 'java-library'
     id 'maven-publish'
     id 'signing'
     id 'com.github.ben-manes.versions' version '0.15.0'
@@ -34,8 +34,7 @@ group = "net.dv8tion"
 archivesBaseName = "JDA"
 version = "$versionObj"
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = targetCompatibility = 1.8
 
 repositories {
     jcenter()
@@ -49,27 +48,31 @@ sourceSets {
 }
 
 dependencies {
+    /* ABI dependencies */
+
     //Code safety
-    compile 'com.google.code.findbugs:jsr305:3.0.2'
+    api 'com.google.code.findbugs:jsr305:3.0.2'
 
     //Logger
-    compile 'org.slf4j:slf4j-api:1.7.25'
-
-    //General Utility
-    compile 'org.apache.commons:commons-collections4:4.1'
-    compile 'org.json:json:20160810'
-    compile 'net.sf.trove4j:trove4j:3.0.3'
-
-    //Native Library Support
-    compile 'net.java.dev.jna:jna:4.4.0'
+    api 'org.slf4j:slf4j-api:1.7.25'
 
     //Web Connection Support
-    compile 'com.neovisionaries:nv-websocket-client:2.2'
-    compile 'com.squareup.okhttp3:okhttp:3.8.1'
+    api 'com.neovisionaries:nv-websocket-client:2.2'
+    api 'com.squareup.okhttp3:okhttp:3.8.1'
+
+    /* Internal dependencies */
+
+    //General Utility
+    implementation 'org.apache.commons:commons-collections4:4.1'
+    implementation 'org.json:json:20160810'
+    implementation 'net.sf.trove4j:trove4j:3.0.3'
+
+    //Native Library Support
+    implementation 'net.java.dev.jna:jna:4.4.0'
 
     //Sets the dependencies for the examples
-    examplesCompile configurations.compile
-    examplesRuntime configurations.runtime
+    examplesCompile configurations.apiElements
+    examplesRuntime configurations.implementation
 }
 
 task sourcesForRelease(type: Copy) {
@@ -83,26 +86,26 @@ task sourcesForRelease(type: Copy) {
         ])
 }
 
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+    options.incremental = true
+    options.compilerArgs += ["-Xlint:deprecation", "-Xlint:unchecked"]
+}
 
 compileJava {
-    options.compilerArgs += ["-Xlint:deprecation", "-Xlint:unchecked"]
-    options.encoding = 'UTF-8'
     source = sourcesForRelease.destinationDir
-    classpath = sourceSets.main.compileClasspath
-
     dependsOn sourcesForRelease
 }
 
+compileTestJava.enabled = false
+processTestResources.enabled = false
+
 jar {
     baseName = project.name
-    manifest {
-        attributes 'Implementation-Version': version
-    }
+    manifest.attributes 'Implementation-Version': version
 }
 
-shadowJar {
-    classifier = "withDependencies"
-}
+shadowJar.classifier = "withDependencies"
 
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
@@ -189,11 +192,9 @@ publishing {
     }
 }
 
-String getProjectProperty(String propertyName)
-{
+String getProjectProperty(String propertyName) {
     String property = ""
-    if (hasProperty(propertyName))
-    {
+    if (hasProperty(propertyName)) {
         property = this.properties[propertyName]
     }
     return property
@@ -204,7 +205,8 @@ task wrapper(type: Wrapper) {
 }
 
 build {
-    dependsOn clean
+// clean prevents incremental compilation. should only happen on bintrayUpload
+//    dependsOn clean
     dependsOn jar
     dependsOn javadocJar
     dependsOn sourcesJar
@@ -217,7 +219,9 @@ build {
 }
 
 bintrayUpload {
+    dependsOn clean
     dependsOn build
+    build.mustRunAfter clean
 
     onlyIf { !getProjectProperty("bintrayUsername").empty }
     onlyIf { !getProjectProperty("bintrayApiKey").empty }
@@ -233,6 +237,6 @@ class Version {
     }
 
     String toString() {
-        "${major}.${minor}.${revision}_$build"
+        "$major.$minor.${revision}_$build"
     }
 }
