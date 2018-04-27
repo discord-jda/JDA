@@ -32,6 +32,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import org.jetbrains.annotations.Async;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.slf4j.Logger;
@@ -362,7 +363,8 @@ public class WebhookClient implements AutoCloseable
         final boolean wasQueued = isQueued;
         isQueued = true;
         Promise<?> callback = new Promise<>();
-        queue.add(ImmutablePair.of(body, callback));
+        ImmutablePair<RequestBody, CompletableFuture<?>> pair = ImmutablePair.of(body, callback);
+        enqueuePair(pair);
         if (!wasQueued)
             backoffQueue();
         return callback;
@@ -388,42 +390,52 @@ public class WebhookClient implements AutoCloseable
         while (!queue.isEmpty())
         {
             final Pair<RequestBody, CompletableFuture<?>> pair = queue.peek();
-            if (pair.getRight().isCancelled())
-            {
-                queue.poll();
-                continue;
-            }
-
-            final Request request = newRequest(pair.getLeft());
-            try (Response response = client.newCall(request).execute())
-            {
-                bucket.update(response);
-                if (response.code() == Bucket.RATE_LIMIT_CODE)
-                {
-                    backoffQueue();
-                    return;
-                }
-                else if (!response.isSuccessful())
-                {
-                    final HttpException exception = failure(response);
-                    LOG.error("Sending a webhook message failed with non-OK http response", exception);
-                    queue.poll().getRight().completeExceptionally(exception);
-                    continue;
-                }
-                queue.poll().getRight().complete(null);
-                if (bucket.isRateLimit())
-                {
-                    backoffQueue();
-                    return;
-                }
-            }
-            catch (IOException e)
-            {
-                LOG.error("There was some error while sending a webhook message", e);
-                queue.poll().getRight().completeExceptionally(e);
-            }
+            executePair(pair);
         }
         isQueued = false;
+    }
+
+    private boolean enqueuePair(@Async.Schedule Pair<RequestBody, CompletableFuture<?>> pair)
+    {
+        return queue.add(pair);
+    }
+
+    private void executePair(@Async.Execute Pair<RequestBody, CompletableFuture<?>> pair)
+    {
+        if (pair.getRight().isCancelled())
+        {
+            queue.poll();
+            return;
+        }
+
+        final Request request = newRequest(pair.getLeft());
+        try (Response response = client.newCall(request).execute())
+        {
+            bucket.update(response);
+            if (response.code() == Bucket.RATE_LIMIT_CODE)
+            {
+                backoffQueue();
+                return;
+            }
+            else if (!response.isSuccessful())
+            {
+                final HttpException exception = failure(response);
+                LOG.error("Sending a webhook message failed with non-OK http response", exception);
+                queue.poll().getRight().completeExceptionally(exception);
+                return;
+            }
+            queue.poll().getRight().complete(null);
+            if (bucket.isRateLimit())
+            {
+                backoffQueue();
+                return;
+            }
+        }
+        catch (IOException e)
+        {
+            LOG.error("There was some error while sending a webhook message", e);
+            queue.poll().getRight().completeExceptionally(e);
+        }
     }
 
     protected static final class Bucket
