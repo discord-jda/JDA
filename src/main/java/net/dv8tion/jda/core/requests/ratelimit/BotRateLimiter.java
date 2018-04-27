@@ -128,7 +128,8 @@ public class BotRateLimiter extends RateLimiter
                 bucket = (Bucket) buckets.get(rateLimitRoute);
                 if (bucket == null)
                 {
-                    bucket = new Bucket(rateLimitRoute, route.getBaseRoute().getRatelimit(), route.getBaseRoute().isPredictableHeaders());
+                    Route baseRoute = route.getBaseRoute();
+                    bucket = new Bucket(rateLimitRoute, baseRoute.getRatelimit(), baseRoute.isMissingHeaders());
                     buckets.put(rateLimitRoute, bucket);
                 }
             }
@@ -204,7 +205,7 @@ public class BotRateLimiter extends RateLimiter
         {
             bucket.routeUsageRemaining = remain.getAsInt();
         }
-        else if (!bucket.predictableHeaders && !reset.isPresent() && !limit.isPresent())
+        else if (!bucket.missingHeaders && !reset.isPresent() && !limit.isPresent())
         {
             Requester.LOG.debug("Encountered issue with headers when updating a bucket\nRoute: {}\nHeaders: {}", bucket.getRoute(), headers);
         }
@@ -237,18 +238,18 @@ public class BotRateLimiter extends RateLimiter
     private class Bucket implements IBucket, Runnable
     {
         final String route;
-        final boolean predictableHeaders;
+        final boolean missingHeaders;
         final RateLimit rateLimit;
         final ConcurrentLinkedQueue<Request> requests = new ConcurrentLinkedQueue<>();
         volatile long resetTime = 0;
         volatile int routeUsageRemaining = 1;    //These are default values to only allow 1 request until we have properly
         volatile int routeUsageLimit = 1;        // ratelimit information.
 
-        public Bucket(String route, RateLimit rateLimit, boolean predictableHeaders)
+        public Bucket(String route, RateLimit rateLimit, boolean missingHeaders)
         {
             this.route = route;
             this.rateLimit = rateLimit;
-            this.predictableHeaders = predictableHeaders;
+            this.missingHeaders = missingHeaders;
             if (rateLimit != null)
             {
                 this.routeUsageRemaining = rateLimit.getUsageLimit();

@@ -238,7 +238,7 @@ public class Route
     private final Method method;
     private final List<Integer> majorParamIndexes = new ArrayList<>();
     private final RateLimit ratelimit;
-    private final boolean predictableHeaders;
+    private final boolean missingHeaders;
 
     private Route(Method method, String route, String... majorParameters)
     {
@@ -250,15 +250,15 @@ public class Route
         this(method, rateLimit, false, route, majorParameters);
     }
 
-    private Route(Method method, boolean predictable, String route, String... majorParameters)
+    private Route(Method method, boolean missingHeaders, String route, String... majorParameters)
     {
-        this(method, null, predictable, route, majorParameters);
+        this(method, null, missingHeaders, route, majorParameters);
     }
 
-    private Route(Method method, RateLimit rateLimit, boolean predictable, String route, String... majorParameters)
+    private Route(Method method, RateLimit rateLimit, boolean missingHeaders, String route, String... majorParameters)
     {
         this.method = method;
-        this.predictableHeaders = predictable;
+        this.missingHeaders = missingHeaders;
         this.ratelimit = rateLimit;
         this.route = route;
         this.paramCount = Helpers.countMatches(route, '{'); //All parameters start with {
@@ -312,9 +312,9 @@ public class Route
         return route;
     }
 
-    public boolean isPredictableHeaders()
+    public boolean isMissingHeaders()
     {
-        return predictableHeaders;
+        return missingHeaders;
     }
 
     public String getRatelimitRoute()

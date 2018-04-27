@@ -34,8 +34,8 @@ public abstract class RateLimiter
     protected final Requester requester;
     protected final ScheduledThreadPoolExecutor pool;
     protected volatile boolean isShutdown = false; 
-    protected volatile ConcurrentHashMap<String, IBucket> buckets = new ConcurrentHashMap<>();
-    protected volatile ConcurrentLinkedQueue<IBucket> submittedBuckets = new ConcurrentLinkedQueue<>();
+    protected final ConcurrentHashMap<String, IBucket> buckets = new ConcurrentHashMap<>();
+    protected final ConcurrentLinkedQueue<IBucket> submittedBuckets = new ConcurrentLinkedQueue<>();
 
     protected RateLimiter(Requester requester, int poolSize)
     {
