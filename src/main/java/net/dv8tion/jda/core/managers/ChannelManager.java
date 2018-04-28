@@ -368,6 +368,82 @@ public class ChannelManager extends ManagerBase
     }
 
     /**
+     * Syncs all {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides} of this Channel with
+     * its parent ({@link net.dv8tion.jda.core.entities.Category Category}).
+     * <br/>After this operation, all {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides}
+     * will be exactly the same as the ones from the syncSource.
+     * <br/>This behaves as if calling {@link #sync(Channel)} with this Channel's {@link net.dv8tion.jda.core.entities.Channel#getParent() Parent}.
+     *
+     * @throws  java.lang.IllegalStateException
+     *          If this Channel has no parent
+     * @throws  net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *          If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
+     *          in this channel
+     *
+     * @return  ChannelManager for chaining convenience
+     */
+    @CheckReturnValue
+    public ChannelManager sync()
+    {
+        if(channel.getParent() == null)
+            throw new IllegalStateException("sync() requires a parent category");
+        return sync(channel.getParent());
+    }
+
+    /**
+     * Syncs all {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides} of this Channel with
+     * the given ({@link net.dv8tion.jda.core.entities.Channel Channel}).
+     * <br/>After this operation, all {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides}
+     * will be exactly the same as the ones from the syncSource.
+     * <br/>This will only work for Channels of the same {@link net.dv8tion.jda.core.entities.Guild Guild}.
+     *
+     * @param   syncSource
+     *          The Channel from where all PermissionOverrides should be copied from
+     *
+     * @throws  java.lang.IllegalArgumentException
+     *          If the given snySource is {@code null}, this Channel or from a different Guild.
+     * @throws  net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *          If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
+     *          in this channel
+     *
+     * @return  ChannelManager for chaining convenience
+     */
+    @CheckReturnValue
+    public ChannelManager sync(Channel syncSource)
+    {
+        Checks.notNull(syncSource, "SyncSource");
+        Checks.check(channel.getGuild().equals(syncSource.getGuild()), "Sync only works for channels of same guild");
+        Checks.check(!channel.equals(syncSource), "Cannot sync with itself");
+
+        if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_PERMISSIONS))
+            throw new InsufficientPermissionException(Permission.MANAGE_PERMISSIONS);
+
+        withLock(lock, (lock) ->
+        {
+            this.overridesRem.clear();
+            this.overridesAdd.clear();
+
+            //set all current overrides to-be-removed
+            channel.getPermissionOverrides().forEach(permO ->
+                this.overridesRem.add(getId(permO.isRoleOverride() ? permO.getRole() : permO.getMember()))
+            );
+
+            //re-add all perm-overrides of syncSource
+            syncSource.getPermissionOverrides().forEach(permO ->
+            {
+                int type = permO.isRoleOverride() ? PermOverrideData.ROLE_TYPE : PermOverrideData.MEMBER_TYPE;
+                long id = getId(permO.isRoleOverride() ? permO.getRole() : permO.getMember());
+
+                this.overridesRem.remove(id);
+                this.overridesAdd.put(id, new PermOverrideData(type, id, permO.getAllowedRaw(), permO.getDeniedRaw()));
+            });
+
+            set |= PERMISSION;
+        });
+        return this;
+    }
+
+    /**
      * Sets the <b><u>name</u></b> of the selected {@link net.dv8tion.jda.core.entities.Channel Channel}.
      *
      * <p>A channel name <b>must not</b> be {@code null} nor less than 2 characters or more than 100 characters long!
