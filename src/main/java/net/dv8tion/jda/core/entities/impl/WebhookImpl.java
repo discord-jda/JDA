@@ -155,6 +155,9 @@ public class WebhookImpl implements Webhook
     @Override
     public WebhookClientBuilder newClient()
     {
+        if (token == null)
+            throw new IllegalStateException("Webhooks without known tokens (such as those retrieved from Audit Logs) "
+                    + "cannot be used to create a WebhookClient!");
         return new WebhookClientBuilder(id, token);
     }
 
