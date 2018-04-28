@@ -20,15 +20,16 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.Webhook;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.UserImpl;
+import net.dv8tion.jda.core.entities.impl.WebhookImpl;
 import net.dv8tion.jda.core.utils.Checks;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import net.dv8tion.jda.core.entities.Webhook;
-import net.dv8tion.jda.core.entities.impl.WebhookImpl;
 
 /**
  * Single entry for an {@link net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAction

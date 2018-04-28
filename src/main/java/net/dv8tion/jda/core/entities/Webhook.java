@@ -160,6 +160,9 @@ public interface Webhook extends ISnowflake
      *
      * <p><b><u>Remember to close the WebhookClient once you don't need it anymore to free resources!</u></b>
      *
+     * @throws IllegalStateException 
+     *         if the Webhook does not have a known token, such as the Webhooks retrieved from Audit Logs
+     * 
      * @return The new WebhookClientBuilder
      */
     WebhookClientBuilder newClient();

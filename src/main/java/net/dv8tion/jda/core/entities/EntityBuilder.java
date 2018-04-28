@@ -485,9 +485,9 @@ public class EntityBuilder
         }
     }
 
-    public User createFakeUser(JSONObject user, boolean modifyCache) { return createUser(user, true, modifyCache); }
-    public User createUser(JSONObject user)     { return createUser(user, false, true); }
-    private User createUser(JSONObject user, boolean fake, boolean modifyCache)
+    public UserImpl createFakeUser(JSONObject user, boolean modifyCache) { return createUser(user, true, modifyCache); }
+    public UserImpl createUser(JSONObject user)     { return createUser(user, false, true); }
+    private UserImpl createUser(JSONObject user, boolean fake, boolean modifyCache)
     {
         final long id = user.getLong("id");
         UserImpl userObj;
@@ -1157,7 +1157,7 @@ public class EntityBuilder
         return permOverride.setAllow(allow).setDeny(deny);
     }
 
-    public Webhook createWebhook(JSONObject object)
+    public WebhookImpl createWebhook(JSONObject object)
     {
         final long id = object.getLong("id");
         final long guildId = object.getLong("guild_id");
@@ -1196,7 +1196,7 @@ public class EntityBuilder
         
         return new WebhookImpl(channel, id)
                 .setToken(token)
-                .setOwner(owner==null ? null : channel.getGuild().getMember(owner))
+                .setOwner(owner == null ? null : channel.getGuild().getMember(owner))
                 .setUser(defaultUser);
     }
 
@@ -1383,8 +1383,8 @@ public class EntityBuilder
         final JSONObject options = entryJson.isNull("options") ? null : entryJson.getJSONObject("options");
         final String reason = entryJson.optString("reason", null);
 
-        final UserImpl user = userJson == null ? null : (UserImpl) createFakeUser(userJson, false);
-        final WebhookImpl webhook = webhookJson == null ? null : (WebhookImpl) createWebhook(webhookJson);
+        final UserImpl user = userJson == null ? null : createFakeUser(userJson, false);
+        final WebhookImpl webhook = webhookJson == null ? null : createWebhook(webhookJson);
         final Set<AuditLogChange> changesList;
         final ActionType type = ActionType.from(typeKey);
 

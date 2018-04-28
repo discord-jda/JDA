@@ -29,13 +29,13 @@ import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.utils.Helpers;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.dv8tion.jda.core.utils.Helpers;
 
 /**
  * {@link net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction PaginationAction}
