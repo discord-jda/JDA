@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import net.dv8tion.jda.core.entities.Webhook;
+import net.dv8tion.jda.core.entities.impl.WebhookImpl;
 
 /**
  * Single entry for an {@link net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAction
@@ -41,20 +43,22 @@ public class AuditLogEntry implements ISnowflake
     protected final long targetId;
     protected final GuildImpl guild;
     protected final UserImpl user;
+    protected final WebhookImpl webhook;
     protected final String reason;
 
     protected final Map<String, AuditLogChange> changes;
     protected final Map<String, Object> options;
     protected final ActionType type;
 
-    public AuditLogEntry(ActionType type, long id, long targetId, GuildImpl guild, UserImpl user, String reason,
-                         Map<String, AuditLogChange> changes, Map<String, Object> options)
+    public AuditLogEntry(ActionType type, long id, long targetId, GuildImpl guild, UserImpl user, WebhookImpl webhook, 
+                        String reason, Map<String, AuditLogChange> changes, Map<String, Object> options)
     {
         this.type = type;
         this.id = id;
         this.targetId = targetId;
         this.guild = guild;
         this.user = user;
+        this.webhook = webhook;
         this.reason = reason;
         this.changes = changes != null && !changes.isEmpty()
                 ? Collections.unmodifiableMap(changes)
@@ -93,6 +97,16 @@ public class AuditLogEntry implements ISnowflake
     {
         return Long.toUnsignedString(targetId);
     }
+    
+    /**
+     * The {@link net.dv8tion.jda.core.entities.Webhook Webhook} that the target id of this audit-log entry refers to
+     * 
+     * @return Possibly-null Webhook instance
+     */
+    public Webhook getWebhook()
+    {
+        return webhook;
+    }
 
     /**
      * The {@link net.dv8tion.jda.core.entities.Guild Guild} this audit-log entry refers to
@@ -108,7 +122,7 @@ public class AuditLogEntry implements ISnowflake
      * The {@link net.dv8tion.jda.core.entities.User User} responsible
      * for this action.
      *
-     * @return The User instance
+     * @return Possibly-null User instance
      */
     public User getUser()
     {

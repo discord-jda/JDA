@@ -1179,17 +1179,25 @@ public class EntityBuilder
                     .put("avatar", avatar);
         User defaultUser = createFakeUser(fakeUser, false);
 
-        JSONObject ownerJson = object.getJSONObject("user");
-        final long userId = ownerJson.getLong("id");
-
-        User owner = api.getUserById(userId);
-        if (owner == null)
+        JSONObject ownerJson = object.optJSONObject("user");
+        User owner = null;
+        
+        if (ownerJson != null)
         {
-            ownerJson.put("id", userId);
-            owner = createFakeUser(ownerJson, false);
-        }
+            final long userId = ownerJson.getLong("id");
 
-        return new WebhookImpl(channel, id).setToken(token).setOwner(channel.getGuild().getMember(owner)).setUser(defaultUser);
+            owner = api.getUserById(userId);
+            if (owner == null)
+            {
+                ownerJson.put("id", userId);
+                owner = createFakeUser(ownerJson, false);
+            }
+        }
+        
+        return new WebhookImpl(channel, id)
+                .setToken(token)
+                .setOwner(owner==null ? null : channel.getGuild().getMember(owner))
+                .setUser(defaultUser);
     }
 
     public Relationship createRelationship(JSONObject relationshipJson)
@@ -1366,7 +1374,7 @@ public class EntityBuilder
         return new AuthorizedApplicationImpl(api, authId, description, iconId, id, name, scopes);
     }
 
-    public AuditLogEntry createAuditLogEntry(GuildImpl guild, JSONObject entryJson, JSONObject userJson)
+    public AuditLogEntry createAuditLogEntry(GuildImpl guild, JSONObject entryJson, JSONObject userJson, JSONObject webhookJson)
     {
         final long targetId = Helpers.optLong(entryJson, "target_id", 0);
         final long id = entryJson.getLong("id");
@@ -1375,7 +1383,8 @@ public class EntityBuilder
         final JSONObject options = entryJson.isNull("options") ? null : entryJson.getJSONObject("options");
         final String reason = entryJson.optString("reason", null);
 
-        final UserImpl user = (UserImpl) createFakeUser(userJson, false);
+        final UserImpl user = userJson == null ? null : (UserImpl) createFakeUser(userJson, false);
+        final WebhookImpl webhook = webhookJson == null ? null : (WebhookImpl) createWebhook(webhookJson);
         final Set<AuditLogChange> changesList;
         final ActionType type = ActionType.from(typeKey);
 
@@ -1398,7 +1407,7 @@ public class EntityBuilder
         CaseInsensitiveMap<String, Object> optionMap = options != null
                 ? new CaseInsensitiveMap<>(options.toMap()) : null;
 
-        return new AuditLogEntry(type, id, targetId, guild, user, reason, changeMap, optionMap);
+        return new AuditLogEntry(type, id, targetId, guild, user, webhook, reason, changeMap, optionMap);
     }
 
     public AuditLogChange createAuditLogChange(JSONObject change)
