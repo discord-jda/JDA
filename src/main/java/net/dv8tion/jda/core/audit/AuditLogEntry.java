@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * Single entry for an {@link net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAction
@@ -104,6 +105,7 @@ public class AuditLogEntry implements ISnowflake
      * 
      * @return Possibly-null Webhook instance
      */
+    @Nullable
     public Webhook getWebhook()
     {
         return webhook;
@@ -125,6 +127,7 @@ public class AuditLogEntry implements ISnowflake
      *
      * @return Possibly-null User instance
      */
+    @Nullable
     public User getUser()
     {
         return user;
@@ -135,6 +138,7 @@ public class AuditLogEntry implements ISnowflake
      *
      * @return Possibly-null reason String
      */
+    @Nullable
     public String getReason()
     {
         return reason;
@@ -172,6 +176,7 @@ public class AuditLogEntry implements ISnowflake
      *
      * @return Possibly-null value corresponding to the specified key
      */
+    @Nullable
     public AuditLogChange getChangeByKey(final AuditLogKey key)
     {
         return key == null ? null : getChangeByKey(key.getKey());
@@ -186,6 +191,7 @@ public class AuditLogEntry implements ISnowflake
      *
      * @return Possibly-null value corresponding to the specified key
      */
+    @Nullable
     public AuditLogChange getChangeByKey(final String key)
     {
         return changes.get(key);
@@ -246,6 +252,7 @@ public class AuditLogEntry implements ISnowflake
      *
      * @return Possibly-null value corresponding to the specified key
      */
+    @Nullable
     @SuppressWarnings("unchecked")
     public <T> T getOptionByName(String name)
     {
@@ -267,6 +274,7 @@ public class AuditLogEntry implements ISnowflake
      *
      * @return Possibly-null value corresponding to the specified option constant
      */
+    @Nullable
     public <T> T getOption(AuditLogOption option)
     {
         Checks.notNull(option, "Option");

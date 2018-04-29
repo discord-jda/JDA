@@ -99,7 +99,7 @@ public class WebhookImpl implements Webhook
     @Override
     public String getUrl()
     {
-        return Requester.DISCORD_API_PREFIX + "webhooks/" + getId() + "/" + getToken();
+        return Requester.DISCORD_API_PREFIX + "webhooks/" + getId() + (getToken() == null ? "" : "/" + getToken());
     }
 
     @Override
