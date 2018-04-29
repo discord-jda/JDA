@@ -370,9 +370,12 @@ public class ChannelManager extends ManagerBase
     /**
      * Syncs all {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides} of this Channel with
      * its parent ({@link net.dv8tion.jda.core.entities.Category Category}).
-     * <br/>After this operation, all {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides}
-     * will be exactly the same as the ones from the syncSource.
-     * <br/>This behaves as if calling {@link #sync(Channel)} with this Channel's {@link net.dv8tion.jda.core.entities.Channel#getParent() Parent}.
+     *
+     * <p>After this operation, all {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides}
+     * will be exactly the same as the ones from the parent.
+     * <br><b>That means that all current PermissionOverrides are lost!</b>
+     *
+     * <p>This behaves as if calling {@link #sync(Channel)} with this Channel's {@link net.dv8tion.jda.core.entities.Channel#getParent() Parent}.
      *
      * @throws  java.lang.IllegalStateException
      *          If this Channel has no parent
@@ -381,6 +384,8 @@ public class ChannelManager extends ManagerBase
      *          in this channel
      *
      * @return  ChannelManager for chaining convenience
+     *
+     * @see     <a href="https://discordapp.com/developers/docs/topics/permissions#permission-syncing" target="_blank">Discord Documentation - Permission Syncing</a>
      */
     @CheckReturnValue
     public ChannelManager sync()
@@ -393,9 +398,12 @@ public class ChannelManager extends ManagerBase
     /**
      * Syncs all {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides} of this Channel with
      * the given ({@link net.dv8tion.jda.core.entities.Channel Channel}).
-     * <br/>After this operation, all {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides}
+     *
+     * <p>After this operation, all {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides}
      * will be exactly the same as the ones from the syncSource.
-     * <br/>This will only work for Channels of the same {@link net.dv8tion.jda.core.entities.Guild Guild}.
+     * <br><b>That means that all current PermissionOverrides are lost!</b>
+     *
+     * <p>This will only work for Channels of the same {@link net.dv8tion.jda.core.entities.Guild Guild}!.
      *
      * @param   syncSource
      *          The Channel from where all PermissionOverrides should be copied from
@@ -407,13 +415,17 @@ public class ChannelManager extends ManagerBase
      *          in this channel
      *
      * @return  ChannelManager for chaining convenience
+     *
+     * @see     <a href="https://discordapp.com/developers/docs/topics/permissions#permission-syncing" target="_blank">Discord Documentation - Permission Syncing</a>
      */
     @CheckReturnValue
     public ChannelManager sync(Channel syncSource)
     {
         Checks.notNull(syncSource, "SyncSource");
         Checks.check(channel.getGuild().equals(syncSource.getGuild()), "Sync only works for channels of same guild");
-        Checks.check(!channel.equals(syncSource), "Cannot sync with itself");
+
+        if(syncSource.equals(channel))
+            return this;
 
         if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_PERMISSIONS))
             throw new InsufficientPermissionException(Permission.MANAGE_PERMISSIONS);
