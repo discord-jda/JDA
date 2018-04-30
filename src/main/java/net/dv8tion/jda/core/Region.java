@@ -52,7 +52,7 @@ public enum Region
     VIP_US_CENTRAL("vip-us-central", "US Central (VIP)", "\uD83C\uDDFA\uD83C\uDDF8", true),
     VIP_US_SOUTH("vip-us-south", "US South (VIP)", "\uD83C\uDDFA\uD83C\uDDF8", true),
 
-    UNKNOWN("", "Unknown Region", "\uD83C\uDFF3", false);
+    UNKNOWN("", "Unknown Region", null, false);
 
     private final String key;
     private final String name;
@@ -90,7 +90,7 @@ public enum Region
     /**
      * The unicode flag representative of this Region.
      * 
-     * @return The unicode for the region's flag
+     * @return Possibly-null unicode for the region's flag
      */
     public String getEmoji()
     {
