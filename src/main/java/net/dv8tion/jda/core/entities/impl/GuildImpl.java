@@ -487,7 +487,7 @@ public class GuildImpl implements Guild
     @Override
     public RestAction<Void> delete()
     {
-        if (api.getSelfUser().isMfaEnabled())
+        if (!api.getSelfUser().isBot() && api.getSelfUser().isMfaEnabled())
             throw new IllegalStateException("Cannot delete a guild without providing MFA code. Use Guild#delete(String)");
 
         return delete(null);
@@ -500,7 +500,7 @@ public class GuildImpl implements Guild
             throw new PermissionException("Cannot delete a guild that you do not own!");
 
         JSONObject mfaBody = null;
-        if (api.getSelfUser().isMfaEnabled())
+        if (!api.getSelfUser().isBot() && api.getSelfUser().isMfaEnabled())
         {
             Checks.notEmpty(mfaCode, "Provided MultiFactor Auth code");
             mfaBody = new JSONObject().put("code", mfaCode);
