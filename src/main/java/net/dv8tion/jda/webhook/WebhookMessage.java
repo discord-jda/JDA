@@ -27,9 +27,11 @@ import okhttp3.RequestBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.InputStream;
+import java.io.*;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A special Message that can only be sent to a {@link net.dv8tion.jda.webhook.WebhookClient WebhookClient}.
@@ -41,22 +43,21 @@ import java.util.List;
 public class WebhookMessage
 {
     protected static final MediaType OCTET = MediaType.parse("application/octet-stream");
-    protected final String username, avatarUrl, content, fileName;
+    protected final String username, avatarUrl, content;
     protected final List<MessageEmbed> embeds;
     protected final boolean isTTS;
-    protected final InputStream file;
+    protected final MessageAttachment[] attachments;
 
     protected WebhookMessage(final String username, final String avatarUrl, final String content,
                              final List<MessageEmbed> embeds, final boolean isTTS,
-                             final InputStream file, final String fileName)
+                             final MessageAttachment[] files)
     {
         this.username = username;
         this.avatarUrl = avatarUrl;
         this.content = content;
         this.embeds = embeds;
         this.isTTS = isTTS;
-        this.file = file;
-        this.fileName = fileName;
+        this.attachments = files;
     }
 
     /**
@@ -93,6 +94,44 @@ public class WebhookMessage
         return new WebhookMessageBuilder().addEmbeds(embeds).build();
     }
 
+    public static WebhookMessage of(Map<String, ?> attachments) throws FileNotFoundException
+    {
+        Checks.notNull(attachments, "Attachments");
+        Set<? extends Map.Entry<String, ?>> entries = attachments.entrySet();
+        Checks.notEmpty(entries, "Attachments");
+        int fileAmount = attachments.size();
+        Checks.check(fileAmount <= WebhookMessageBuilder.MAX_FILES, "Cannot add more than %d files to a message", WebhookMessageBuilder.MAX_FILES);
+        MessageAttachment[] files = new MessageAttachment[fileAmount];
+        int i = 0;
+        for (Map.Entry<String, ?> attachment : entries)
+        {
+            String name = attachment.getKey();
+            Checks.notEmpty(name, "Name");
+            Object data = attachment.getValue();
+            files[i++] = convertAttachment(name, data);
+        }
+        return new WebhookMessage(null, null, null, null, false, files);
+    }
+
+    public static WebhookMessage of(Object... attachments) throws FileNotFoundException
+    {
+        Checks.notNull(attachments, "Attachments");
+        Checks.notEmpty(attachments, "Attachments");
+        Checks.check(attachments.length % 2 == 0, "Must provide even number of arguments");
+        int fileAmount = attachments.length / 2;
+        Checks.check(fileAmount <= WebhookMessageBuilder.MAX_FILES, "Cannot add more than %d files to a message", WebhookMessageBuilder.MAX_FILES);
+        MessageAttachment[] files = new MessageAttachment[fileAmount];
+        for (int i = 0, j = 0; i < attachments.length; j++, i += 2)
+        {
+            Object name = attachments[i];
+            Object data = attachments[i+1];
+            if (!(name instanceof String))
+                throw new IllegalArgumentException("Provided arguments must be pairs for (String, Data)");
+            files[j] = convertAttachment((String) name, data);
+        }
+        return new WebhookMessage(null, null, null, null, false, files);
+    }
+
     /**
      * Creates a new WebhookMessage instance with the provided {@link net.dv8tion.jda.core.entities.Message Message}
      * <br><b>This does not copy the attachments of the provided message!</b>
@@ -111,7 +150,7 @@ public class WebhookMessage
         final String content = message.getContentRaw();
         final List<MessageEmbed> embeds = message.getEmbeds();
         final boolean isTTS = message.isTTS();
-        return new WebhookMessage(null, null, content, embeds, isTTS, null, null);
+        return new WebhookMessage(null, null, content, embeds, isTTS, null);
     }
 
     /**
@@ -121,7 +160,7 @@ public class WebhookMessage
      */
     public boolean isFile()
     {
-        return file != null;
+        return attachments != null;
     }
 
     protected RequestBody getBody()
@@ -144,9 +183,31 @@ public class WebhookMessage
         if (isFile())
         {
             final MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-            return builder.addFormDataPart("file", fileName, MiscUtil.createRequestBody(OCTET, file))
-                          .addFormDataPart("payload_json", payload.toString()).build();
+
+            for (int i = 0; i < attachments.length; i++)
+            {
+                final MessageAttachment attachment = attachments[i];
+                if (attachment == null)
+                    break;
+                builder.addFormDataPart("file" + i, attachment.name, MiscUtil.createRequestBody(OCTET, attachment.data));
+            }
+            return builder.addFormDataPart("payload_json", payload.toString()).build();
         }
         return RequestBody.create(Requester.MEDIA_TYPE_JSON, payload.toString());
+    }
+
+    private static MessageAttachment convertAttachment(String name, Object data) throws FileNotFoundException
+    {
+        Checks.notNull(data, "Data");
+        MessageAttachment a;
+        if (data instanceof File)
+            a = new MessageAttachment(name, new FileInputStream((File) data));
+        else if (data instanceof InputStream)
+            a = new MessageAttachment(name, (InputStream) data);
+        else if (data instanceof byte[])
+            a = new MessageAttachment(name, new ByteArrayInputStream((byte[]) data));
+        else
+            throw new IllegalArgumentException("Provided arguments must be pairs for (String, Data). Unexpected data type " + data.getClass().getName());
+        return a;
     }
 }
