@@ -32,15 +32,18 @@ import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
-import java.util.OptionalInt;
-import java.util.OptionalLong;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.function.IntConsumer;
+import java.util.function.LongConsumer;
 
 public class BotRateLimiter extends RateLimiter
 {
+    private static final String RESET_HEADER = "X-RateLimit-Reset";
+    private static final String LIMIT_HEADER = "X-RateLimit-Limit";
+    private static final String REMAINING_HEADER = "X-RateLimit-Remaining";
     protected volatile Long timeOffset = null;
 
     public BotRateLimiter(Requester requester, int poolSize)
@@ -167,9 +170,7 @@ public class BotRateLimiter extends RateLimiter
 
     private void updateBucket(Bucket bucket, Headers headers, Long retryAfter)
     {
-        OptionalLong reset = parseLong(headers.get("X-RateLimit-Reset"));
-        OptionalInt limit  = parseInt(headers.get("X-RateLimit-Limit"));
-        OptionalInt remain = parseInt(headers.get("X-RateLimit-Remaining"));
+        int count = 0;
         if (retryAfter != null)
         {
             bucket.resetTime = getNow() + retryAfter;
@@ -183,11 +184,10 @@ public class BotRateLimiter extends RateLimiter
         }
         else
         {
-
-            if (reset.isPresent())
-                bucket.resetTime = reset.getAsLong() * 1000; //Seconds to milliseconds
-            if (limit.isPresent())
-                bucket.routeUsageLimit = limit.getAsInt();
+            count += parseLong(headers.get(RESET_HEADER),
+                (time) -> bucket.resetTime = time * 1000); //Seconds to milliseconds
+            count += parseInt(headers.get(LIMIT_HEADER),
+                (limit) -> bucket.routeUsageLimit = limit);
         }
 
         //Currently, we check the remaining amount even for hardcoded ratelimits just to further respect Discord
@@ -201,38 +201,36 @@ public class BotRateLimiter extends RateLimiter
         // header system due to their headers only supporting accuracy to the second. The custom ratelimit system
         // allows for hardcoded ratelimits that allow accuracy to the millisecond which is important for some
         // ratelimits like Reactions which is 1/0.25s, but discord reports the ratelimit as 1/1s with headers.
-        if (remain.isPresent())
-        {
-            bucket.routeUsageRemaining = remain.getAsInt();
-        }
-        else if (!bucket.missingHeaders && !reset.isPresent() && !limit.isPresent())
+        count += parseInt(headers.get(REMAINING_HEADER),
+            (remaining) -> bucket.routeUsageRemaining = remaining);
+        if (!bucket.missingHeaders && count < 3)
         {
             Requester.LOG.debug("Encountered issue with headers when updating a bucket\nRoute: {}\nHeaders: {}", bucket.getRoute(), headers);
         }
     }
 
-    private OptionalInt parseInt(String input)
+    private int parseInt(String input, IntConsumer consumer)
     {
         try
         {
-            return OptionalInt.of(Integer.parseInt(input));
+            int parsed = Integer.parseInt(input);
+            consumer.accept(parsed);
+            return 1;
         }
-        catch (NumberFormatException ex)
-        {
-            return OptionalInt.empty();
-        }
+        catch (NumberFormatException ignored) {}
+        return 0;
     }
 
-    private OptionalLong parseLong(String input)
+    private int parseLong(String input, LongConsumer consumer)
     {
         try
         {
-            return OptionalLong.of(Long.parseLong(input));
+            long parsed = Long.parseLong(input);
+            consumer.accept(parsed);
+            return 1;
         }
-        catch (NumberFormatException ex)
-        {
-            return OptionalLong.empty();
-        }
+        catch (NumberFormatException ignored) {}
+        return 0;
     }
 
     private class Bucket implements IBucket, Runnable
