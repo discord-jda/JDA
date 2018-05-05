@@ -28,10 +28,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.*;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A special Message that can only be sent to a {@link net.dv8tion.jda.webhook.WebhookClient WebhookClient}.
@@ -74,7 +71,9 @@ public class WebhookMessage
      */
     public static WebhookMessage of(MessageEmbed... embeds)
     {
-        return new WebhookMessageBuilder().addEmbeds(embeds).build();
+        Checks.noneNull(embeds, "Embeds");
+        Checks.notEmpty(embeds, "Embeds");
+        return new WebhookMessage(null, null, null, Arrays.asList(embeds), false, null);
     }
 
     /**
@@ -91,7 +90,9 @@ public class WebhookMessage
      */
     public static WebhookMessage of(Collection<MessageEmbed> embeds)
     {
-        return new WebhookMessageBuilder().addEmbeds(embeds).build();
+        Checks.noneNull(embeds, "Embeds");
+        Checks.notEmpty(embeds, "Embeds");
+        return new WebhookMessage(null, null, null, new ArrayList<>(embeds), false, null);
     }
 
     public static WebhookMessage of(Map<String, ?> attachments) throws FileNotFoundException
@@ -168,7 +169,7 @@ public class WebhookMessage
         final JSONObject payload = new JSONObject();
         if (content != null)
             payload.put("content", content);
-        if (!embeds.isEmpty())
+        if (embeds != null && !embeds.isEmpty())
         {
             final JSONArray array = new JSONArray();
             for (MessageEmbed embed : embeds)
