@@ -23,7 +23,9 @@ import net.dv8tion.jda.core.managers.GuildController;
 import net.dv8tion.jda.core.managers.GuildManager;
 import net.dv8tion.jda.core.managers.GuildManagerUpdatable;
 import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.restaction.MemberAction;
 import net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAction;
+import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.cache.MemberCacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 
@@ -47,6 +49,19 @@ public interface Guild extends ISnowflake
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type {@link java.util.EnumSet EnumSet}
      */
     RestAction<EnumSet<Region>> retrieveRegions();
+
+    MemberAction addMember(String accessToken, String userId);
+
+    default MemberAction addMember(String accessToken, User user)
+    {
+        Checks.notNull(user, "User");
+        return addMember(accessToken, user.getId());
+    }
+
+    default MemberAction addMember(String accessToken, long userId)
+    {
+        return addMember(accessToken, Long.toUnsignedString(userId));
+    }
 
     /**
      * The human readable name of the {@link net.dv8tion.jda.core.entities.Guild Guild}.
