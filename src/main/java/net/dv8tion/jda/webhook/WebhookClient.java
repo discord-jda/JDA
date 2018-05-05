@@ -37,6 +37,7 @@ import org.json.JSONTokener;
 import org.slf4j.Logger;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
@@ -148,7 +149,8 @@ public class WebhookClient implements AutoCloseable
      */
     public RequestFuture<?> send(File file)
     {
-        return send(new WebhookMessageBuilder().setFile(file).build());
+        Checks.notNull(file, "File");
+        return send(file, file.getName());
     }
 
     /**
@@ -171,7 +173,14 @@ public class WebhookClient implements AutoCloseable
      */
     public RequestFuture<?> send(File file, String fileName)
     {
-        return send(new WebhookMessageBuilder().setFile(file, fileName).build());
+        try
+        {
+            return send(new WebhookMessageBuilder().addFile(fileName, file).build());
+        }
+        catch (FileNotFoundException e)
+        {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     /**
@@ -194,7 +203,7 @@ public class WebhookClient implements AutoCloseable
      */
     public RequestFuture<?> send(byte[] data, String fileName)
     {
-        return send(new WebhookMessageBuilder().setFile(data, fileName).build());
+        return send(new WebhookMessageBuilder().addFile(fileName, data).build());
     }
 
     /**
@@ -217,7 +226,7 @@ public class WebhookClient implements AutoCloseable
      */
     public RequestFuture<?> send(InputStream data, String fileName)
     {
-        return send(new WebhookMessageBuilder().setFile(data, fileName).build());
+        return send(new WebhookMessageBuilder().addFile(fileName, data).build());
     }
 
     /**
