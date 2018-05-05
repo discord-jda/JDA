@@ -79,6 +79,11 @@ public class WebhookMessageBuilder
         return content.length() == 0 && embeds.isEmpty() && fileIndex == 0;
     }
 
+    public int getFileAmount()
+    {
+        return fileIndex;
+    }
+
     /**
      * Resets this builder to default settings.
      *
