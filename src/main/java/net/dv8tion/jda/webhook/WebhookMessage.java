@@ -95,7 +95,30 @@ public class WebhookMessage
         return new WebhookMessage(null, null, null, new ArrayList<>(embeds), false, null);
     }
 
-    public static WebhookMessage of(Map<String, ?> attachments) throws FileNotFoundException
+    /**
+     * Constructs a message around pairs of (Name, Data).
+     * <br>You can add up to {@value WebhookMessageBuilder#MAX_FILES} attachments to one message.
+     * <br>The supported data types are {@link InputStream}, {@link File}, and {@code byte[]}.
+     *
+     * <h2>Example</h2>
+     * <pre><code>
+     * {@literal Map<String, Object>} map = {@literal new HashMap<>()};
+     * map.put("dog", new File("dog.png"));
+     * map.put("cat", new URL("https://random.cat/meow").openStream());
+     * map.put("bird", new byte[100]);
+     * WebhookMessage message = WebhookMessage.files(map);
+     * </code></pre>
+     *
+     * @param  attachments
+     *         Map containing pairs from file names to data streams
+     *
+     * @throws IllegalArgumentException
+     *         If one of the provided files is not readable
+     *         or the provided map is null/empty
+     *
+     * @return WebhookMessage for the provided files
+     */
+    public static WebhookMessage files(Map<String, ?> attachments)
     {
         Checks.notNull(attachments, "Attachments");
         Set<? extends Map.Entry<String, ?>> entries = attachments.entrySet();
@@ -114,15 +137,45 @@ public class WebhookMessage
         return new WebhookMessage(null, null, null, null, false, files);
     }
 
-    public static WebhookMessage of(Object... attachments) throws FileNotFoundException
+    /**
+     * Constructs a message around pairs of (Name, Data).
+     * <br>You can add up to {@value WebhookMessageBuilder#MAX_FILES} attachments to one message. This means you can have up to 20 arguments.
+     * <br>The supported data types are {@link InputStream}, {@link File}, and {@code byte[]}.
+     *
+     * <h2>Example</h2>
+     * <pre><code>
+     * WebhookMessage message = WebhookMessage.files(
+     *     "dog", new File("dog.png"),
+     *     "cat", new URL("https://random.cat/meow").openStream(),
+     *     "bird", new byte[100]
+     * );
+     * </code></pre>
+     *
+     * @param  name1
+     *         The first name argument
+     * @param  data1
+     *         The first data argument
+     * @param  attachments
+     *         Additional pairs in the form of (Name, Data)
+     *
+     * @throws IllegalArgumentException
+     *         If the provided arguments are not pairs of (Name, Data)
+     *         or if one of the provided files is not readable
+     *
+     * @return WebhookMessage for the provided files
+     */
+    // forcing first pair as we expect at least one entry (Effective Java 3rd. Edition - Item 53)
+    public static WebhookMessage files(String name1, Object data1, Object... attachments)
     {
+        Checks.notBlank(name1, "Name");
+        Checks.notNull(data1, "Data");
         Checks.notNull(attachments, "Attachments");
-        Checks.notEmpty(attachments, "Attachments");
         Checks.check(attachments.length % 2 == 0, "Must provide even number of arguments");
-        int fileAmount = attachments.length / 2;
+        int fileAmount = 1 + attachments.length / 2;
         Checks.check(fileAmount <= WebhookMessageBuilder.MAX_FILES, "Cannot add more than %d files to a message", WebhookMessageBuilder.MAX_FILES);
         MessageAttachment[] files = new MessageAttachment[fileAmount];
-        for (int i = 0, j = 0; i < attachments.length; j++, i += 2)
+        files[0] = convertAttachment(name1, data1);
+        for (int i = 0, j = 1; i < attachments.length; j++, i += 2)
         {
             Object name = attachments[i];
             Object data = attachments[i+1];
@@ -197,18 +250,25 @@ public class WebhookMessage
         return RequestBody.create(Requester.MEDIA_TYPE_JSON, payload.toString());
     }
 
-    private static MessageAttachment convertAttachment(String name, Object data) throws FileNotFoundException
+    private static MessageAttachment convertAttachment(String name, Object data)
     {
         Checks.notNull(data, "Data");
-        MessageAttachment a;
-        if (data instanceof File)
-            a = new MessageAttachment(name, new FileInputStream((File) data));
-        else if (data instanceof InputStream)
-            a = new MessageAttachment(name, (InputStream) data);
-        else if (data instanceof byte[])
-            a = new MessageAttachment(name, new ByteArrayInputStream((byte[]) data));
-        else
-            throw new IllegalArgumentException("Provided arguments must be pairs for (String, Data). Unexpected data type " + data.getClass().getName());
-        return a;
+        try
+        {
+            MessageAttachment a;
+            if (data instanceof File)
+                a = new MessageAttachment(name, new FileInputStream((File) data));
+            else if (data instanceof InputStream)
+                a = new MessageAttachment(name, (InputStream) data);
+            else if (data instanceof byte[])
+                a = new MessageAttachment(name, new ByteArrayInputStream((byte[]) data));
+            else
+                throw new IllegalArgumentException("Provided arguments must be pairs for (String, Data). Unexpected data type " + data.getClass().getName());
+            return a;
+        }
+        catch (FileNotFoundException ex)
+        {
+            throw new IllegalArgumentException(ex);
+        }
     }
 }

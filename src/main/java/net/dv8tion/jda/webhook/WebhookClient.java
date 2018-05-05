@@ -133,6 +133,7 @@ public class WebhookClient implements AutoCloseable
 
     /**
      * Sends the provided {@link java.io.File File} to this webhook.
+     * <br>Use {@link WebhookMessage#files(String, Object, Object...)} to send up to 10 files!
      *
      * @param  file
      *         The file to send
@@ -155,6 +156,7 @@ public class WebhookClient implements AutoCloseable
 
     /**
      * Sends the provided {@link java.io.File File} to this webhook.
+     * <br>Use {@link WebhookMessage#files(String, Object, Object...)} to send up to 10 files!
      *
      * @param  file
      *         The file to send
@@ -185,6 +187,7 @@ public class WebhookClient implements AutoCloseable
 
     /**
      * Sends the provided {@code byte[]} data to this webhook.
+     * <br>Use {@link WebhookMessage#files(String, Object, Object...)} to send up to 10 files!
      *
      * @param  data
      *         The file data to send
@@ -208,6 +211,7 @@ public class WebhookClient implements AutoCloseable
 
     /**
      * Sends the provided {@link java.io.InputStream InputStream} data to this webhook.
+     * <br>Use {@link WebhookMessage#files(String, Object, Object...)} to send up to 10 files!
      *
      * @param  data
      *         The file data to send

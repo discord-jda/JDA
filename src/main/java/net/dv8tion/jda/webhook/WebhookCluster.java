@@ -699,6 +699,7 @@ public class WebhookCluster implements AutoCloseable
     /**
      * Sends the provided {@link java.io.File File}
      * to all registered {@link net.dv8tion.jda.webhook.WebhookClient WebhookClients}.
+     * <br>Use {@link WebhookMessage#files(String, Object, Object...)} to send up to 10 files!
      *
      * <p><b>The provided data should not exceed 8MB in size!</b>
      *
@@ -724,6 +725,7 @@ public class WebhookCluster implements AutoCloseable
     /**
      * Sends the provided {@link java.io.File File}
      * to all registered {@link net.dv8tion.jda.webhook.WebhookClient WebhookClients}.
+     * <br>Use {@link WebhookMessage#files(String, Object, Object...)} to send up to 10 files!
      *
      * <p><b>The provided data should not exceed 8MB in size!</b>
      *
@@ -759,6 +761,7 @@ public class WebhookCluster implements AutoCloseable
     /**
      * Sends the provided {@link java.io.InputStream InputStream} as an attachment
      * to all registered {@link net.dv8tion.jda.webhook.WebhookClient WebhookClients}.
+     * <br>Use {@link WebhookMessage#files(String, Object, Object...)} to send up to 10 files!
      *
      * <p><b>The provided data should not exceed 8MB in size!</b>
      *
@@ -785,6 +788,7 @@ public class WebhookCluster implements AutoCloseable
     /**
      * Sends the provided {@code byte[]} data as an attachment
      * to all registered {@link net.dv8tion.jda.webhook.WebhookClient WebhookClients}.
+     * <br>Use {@link WebhookMessage#files(String, Object, Object...)} to send up to 10 files!
      *
      * <p><b>The provided data should not exceed 8MB in size!</b>
      *
