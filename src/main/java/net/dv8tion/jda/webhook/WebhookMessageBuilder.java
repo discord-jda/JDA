@@ -262,22 +262,22 @@ public class WebhookMessageBuilder
     public WebhookMessageBuilder addFile(File file) throws FileNotFoundException
     {
         Checks.notNull(file, "File");
-        return addFile(file, file.getName());
+        return addFile(file.getName(), file);
     }
 
-    public WebhookMessageBuilder addFile(File file, String name) throws FileNotFoundException
+    public WebhookMessageBuilder addFile(String name, File file) throws FileNotFoundException
     {
         Checks.notNull(file, "File");
         Checks.check(file.exists() && file.canRead(), "File must exist and be readable");
-        return addFile(new FileInputStream(file), name);
+        return addFile(name, new FileInputStream(file));
     }
-    public WebhookMessageBuilder addFile(byte[] data, String name)
+    public WebhookMessageBuilder addFile(String name, byte[] data)
     {
         Checks.notNull(data, "Data");
-        return addFile(new ByteArrayInputStream(data), name);
+        return addFile(name, new ByteArrayInputStream(data));
     }
 
-    public WebhookMessageBuilder addFile(InputStream data, String name)
+    public WebhookMessageBuilder addFile(String name, InputStream data)
     {
         Checks.notNull(data, "InputStream");
         Checks.notBlank(name, "Name");
@@ -306,7 +306,7 @@ public class WebhookMessageBuilder
     {
         try
         {
-            return addFile(file, file == null ? null : file.getName());
+            return addFile(file == null ? null : file.getName(), file);
         }
         catch (FileNotFoundException e)
         {
@@ -333,7 +333,7 @@ public class WebhookMessageBuilder
     {
         try
         {
-            return addFile(file, fileName);
+            return addFile(fileName, file);
         }
         catch (FileNotFoundException e)
         {
@@ -357,7 +357,7 @@ public class WebhookMessageBuilder
     @Deprecated
     public WebhookMessageBuilder setFile(byte[] data, String fileName)
     {
-        return addFile(data, fileName);
+        return addFile(fileName, data);
     }
 
     /**
@@ -373,7 +373,7 @@ public class WebhookMessageBuilder
     @Deprecated
     public WebhookMessageBuilder setFile(InputStream data, String fileName)
     {
-        return addFile(data, fileName);
+        return addFile(fileName, data);
     }
 
     /**
