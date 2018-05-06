@@ -19,14 +19,12 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 
 /**
- * <b><u>VoiceChannelCreateEvent</u></b><br>
- * Fired if a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} is created.<br>
- * <br>
- * Use: Get affected VoiceChannel.
+ * Indicates that a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} was created.
+ *
+ * <p>Can be used to get affected VoiceChannel.
  */
 public class VoiceChannelCreateEvent extends GenericVoiceChannelEvent
 {
-
     public VoiceChannelCreateEvent(JDA api, long responseNumber, VoiceChannel channel)
     {
         super(api, responseNumber, channel);

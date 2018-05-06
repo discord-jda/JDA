@@ -19,26 +19,28 @@ package net.dv8tion.jda.core.events.self;
 import net.dv8tion.jda.core.JDA;
 
 /**
- * <b><u>SelfUpdateMobileEvent</u></b><br>
- * Fired if you login to your discord account with a mobile device for the first time.<br>
+ * Indicates that you login to your discord account with a mobile device for the first time. (client-only)
+ *
+ * <p>Can be used to detect that your account was used with a mobile device.
+ *
+ * <p>Identifier: {@code mobile}
  */
-public class SelfUpdateMobileEvent extends GenericSelfUpdateEvent
+public class SelfUpdateMobileEvent extends GenericSelfUpdateEvent<Boolean>
 {
-    private final boolean wasMobile;
+    public static final String IDENTIFIER = "mobile";
 
     public SelfUpdateMobileEvent(JDA api, long responseNumber, boolean wasMobile)
     {
-        super(api, responseNumber);
-        this.wasMobile = wasMobile;
+        super(api, responseNumber, wasMobile, !wasMobile, IDENTIFIER);
     }
 
     /**
-     * Returns the old mobile status. <i>Should</i> always be {@code false}.
+     * The old mobile status. <i>Should</i> always be {@code false}.
      *
      * @return The mobile status.
      */
     public boolean wasMobile()
     {
-        return wasMobile;
+        return getOldValue();
     }
 }

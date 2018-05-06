@@ -16,20 +16,17 @@
 package net.dv8tion.jda.core.events.guild.member;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 
 /**
- * <b><u>GuildMemberJoinEvent</u></b><br>
- * Fired if a {@link net.dv8tion.jda.core.entities.Member Member} joins a {@link net.dv8tion.jda.core.entities.Guild Guild}.<br>
- * <br>
- * Use: Retrieve member who joined (if available) and affected guild.
+ * Indicates that a {@link net.dv8tion.jda.core.entities.Member Member} joined a {@link net.dv8tion.jda.core.entities.Guild Guild}.
+ *
+ * <p>Can be used to retrieve members who join a guild.
  */
 public class GuildMemberJoinEvent extends GenericGuildMemberEvent
 {
-
-    public GuildMemberJoinEvent(JDA api, long responseNumber, Guild guild, Member member)
+    public GuildMemberJoinEvent(JDA api, long responseNumber, Member member)
     {
-        super(api, responseNumber, guild, member);
+        super(api, responseNumber, member);
     }
 }

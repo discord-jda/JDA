@@ -19,23 +19,61 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 
 /**
- * <b><u>VoiceChannelUpdateUserLimitEvent</u></b><br>
- * Fired if a {@link VoiceChannel VoiceChannel}'s user limit changes.<br>
- * <br>
- * Use: Get affected VoiceChannel, affected Guild and previous user limit.
+ * Indicates that a {@link VoiceChannel VoiceChannel}'s user limit changed.
+ *
+ * <p>Can be used to get affected VoiceChannel, affected Guild and previous user limit.
+ *
+ * <p>Identifier: {@code userlimit}
  */
-public class VoiceChannelUpdateUserLimitEvent extends GenericVoiceChannelUpdateEvent
+public class VoiceChannelUpdateUserLimitEvent extends GenericVoiceChannelUpdateEvent<Integer>
 {
-    protected final int oldUserLimit;
+    public static final String IDENTIFIER = "userlimit";
+
+    private final int oldUserLimit;
+    private final int newUserLimit;
 
     public VoiceChannelUpdateUserLimitEvent(JDA api, long responseNumber, VoiceChannel channel, int oldUserLimit)
     {
         super(api, responseNumber, channel);
         this.oldUserLimit = oldUserLimit;
+        this.newUserLimit = channel.getUserLimit();
     }
 
+    /**
+     * The old userlimit
+     *
+     * @return The old userlimit
+     */
     public int getOldUserLimit()
     {
         return oldUserLimit;
+    }
+
+    /**
+     * The new userlimit
+     *
+     * @return The new userlimit
+     */
+    public int getNewUserLimit()
+    {
+        return newUserLimit;
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return IDENTIFIER;
+    }
+
+    @Override
+    public Integer getOldValue()
+    {
+        return oldUserLimit;
+    }
+
+    @Override
+    public Integer getNewValue()
+    {
+        return newUserLimit;
     }
 }

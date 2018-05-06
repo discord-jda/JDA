@@ -20,6 +20,11 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.MessageReaction;
 import net.dv8tion.jda.core.entities.User;
 
+/**
+ * Indicates that a {@link net.dv8tion.jda.core.entities.MessageReaction MessageReaction} was removed from a Message in a PrivateChannel.
+ *
+ * <p>Can be used to detect when a reaction is removed in a private channel.
+ */
 public class PrivateMessageReactionRemoveEvent extends GenericPrivateMessageReactionEvent
 {
     public PrivateMessageReactionRemoveEvent(JDA api, long responseNumber, User user, MessageReaction reaction)

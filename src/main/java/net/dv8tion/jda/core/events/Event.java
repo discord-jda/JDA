@@ -18,32 +18,47 @@ package net.dv8tion.jda.core.events;
 import net.dv8tion.jda.core.JDA;
 
 /**
- * <b><u>Event</u></b><br>
- * Fired for every event.<br>
- * All events JDA fires are based on an instance of this class.<br>
- * <br>
- * Use: Used in {@link net.dv8tion.jda.core.hooks.EventListener EventListener} implementations to distinguish what event is being fired.<br><br>
- * Example implementation: {@link net.dv8tion.jda.core.hooks.ListenerAdapter ListenerAdapter}
+ * Top-level event type
+ * <br>All events JDA fires are derived from this class.
+ *
+ * <p>Can be used to check if an Object is a JDA event in {@link net.dv8tion.jda.core.hooks.EventListener EventListener} implementations to distinguish what event is being fired.
+ * <br>Adapter implementation: {@link net.dv8tion.jda.core.hooks.ListenerAdapter ListenerAdapter}
  */
 public abstract class Event
 {
     protected final JDA api;
     protected final long responseNumber;
 
+    /**
+     * Creates a new Event from the given JDA instance
+     *
+     * @param api
+     *        Current JDA instance
+     * @param responseNumber
+     *        The sequence number for this event
+     *
+     * @see   #Event(net.dv8tion.jda.core.JDA)
+     */
     public Event(JDA api, long responseNumber)
     {
         this.api = api;
         this.responseNumber = responseNumber;
     }
 
+    /**
+     * Creates a new Event from the given JDA instance
+     * <br>Uses the current {@link net.dv8tion.jda.core.JDA#getResponseTotal()} as sequence
+     *
+     * @param api
+     *        Current JDA instance
+     */
     public Event(JDA api)
     {
-        this.api = api;
-        this.responseNumber = api.getResponseTotal();
+        this(api, api.getResponseTotal());
     }
 
     /**
-     * Returns the JDA instance corresponding to this Event
+     * The current JDA instance corresponding to this Event
      *
      * @return The corresponding JDA instance
      */
@@ -52,6 +67,12 @@ public abstract class Event
         return api;
     }
 
+    /**
+     * The current sequence for this event.
+     * <br>This can be used to keep events in order when making sequencing system.
+     *
+     * @return The current sequence number for this event
+     */
     public long getResponseNumber()
     {
         return responseNumber;

@@ -16,32 +16,34 @@
 package net.dv8tion.jda.core.events.guild.member;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
- * <b><u>GuildMemberRoleRemoveEvent</u></b><br>
- * Fired if one or more {@link net.dv8tion.jda.core.entities.Role Roles} are removed from a {@link net.dv8tion.jda.core.entities.Member Member}.<br>
- * <br>
- * Use: Retrieve affected member and guild. Provides a list of removed roles.
+ * Indicates that one or more {@link net.dv8tion.jda.core.entities.Role Roles} were removed from a {@link net.dv8tion.jda.core.entities.Member Member}.
+ *
+ * <p>Can be used to retrieve affected member and guild. Provides a list of removed roles.
  */
 public class GuildMemberRoleRemoveEvent extends GenericGuildMemberEvent
 {
     private final List<Role> removedRoles;
 
-    public GuildMemberRoleRemoveEvent(JDA api, long responseNumber, Guild guild, Member member, List<Role> removedRoles)
+    public GuildMemberRoleRemoveEvent(JDA api, long responseNumber, Member member, List<Role> removedRoles)
     {
-        super(api, responseNumber, guild, member);
-        this.removedRoles = new LinkedList<>(removedRoles);
+        super(api, responseNumber, member);
+        this.removedRoles = Collections.unmodifiableList(removedRoles);
     }
 
+    /**
+     * The removed roles
+     *
+     * @return The removed roles
+     */
     public List<Role> getRoles()
     {
-        return Collections.unmodifiableList(removedRoles);
+        return removedRoles;
     }
 }

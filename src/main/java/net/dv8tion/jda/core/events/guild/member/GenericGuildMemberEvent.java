@@ -16,33 +16,42 @@
 package net.dv8tion.jda.core.events.guild.member;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.guild.GenericGuildEvent;
 
 /**
- * <b><u>GenericGuildMemberEvent</u></b><br>
- * Fired whenever a {@link net.dv8tion.jda.core.entities.Guild Guild} member causes an event.<br>
- * Every GuildMemberEvent is an instance of this event and can be casted. (no exceptions)<br>
- * <br>
- * Use: Detect any GuildMemberEvent.
+ * Indicates that a {@link net.dv8tion.jda.core.entities.Guild Guild} member event is fired.
+ * <br>Every GuildMemberEvent is an instance of this event and can be casted.
+ *
+ * <p>Can be used to detect any GuildMemberEvent.
  */
 public abstract class GenericGuildMemberEvent extends GenericGuildEvent
 {
     private final Member member;
 
-    public GenericGuildMemberEvent(JDA api, long responseNumber, Guild guild, Member member)
+    public GenericGuildMemberEvent(JDA api, long responseNumber, Member member)
     {
-        super(api, responseNumber, guild);
+        super(api, responseNumber, member.getGuild());
         this.member = member;
     }
 
+    /**
+     * The {@link net.dv8tion.jda.core.entities.User User} instance
+     * <br>Shortcut for {@code getMember().getUser()}
+     *
+     * @return The User instance
+     */
     public User getUser()
     {
         return getMember().getUser();
     }
 
+    /**
+     * The {@link net.dv8tion.jda.core.entities.Member Member} instance
+     *
+     * @return The Member instance
+     */
     public Member getMember()
     {
         return member;

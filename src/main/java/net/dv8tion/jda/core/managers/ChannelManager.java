@@ -16,19 +16,22 @@
 
 package net.dv8tion.jda.core.managers;
 
+import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Category;
-import net.dv8tion.jda.core.entities.Channel;
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.impl.AbstractChannelImpl;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.impl.ManagerBase;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.restaction.PermOverrideData;
 import net.dv8tion.jda.core.utils.Checks;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import java.util.Collection;
 
 /**
  * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.core.entities.Channel Guild Channel}.
@@ -64,6 +67,8 @@ public class ChannelManager extends ManagerBase
     public static final long USERLIMIT = 0x20;
     /** Used to reset the bitrate field */
     public static final long BITRATE   = 0x40;
+    /** Used to reset the permission field */
+    public static final long PERMISSION = 0x80;
 
     protected final Channel channel;
 
@@ -74,6 +79,10 @@ public class ChannelManager extends ManagerBase
     protected boolean nsfw;
     protected int userlimit;
     protected int bitrate;
+
+    protected final Object lock = new Object();
+    protected final TLongObjectHashMap<PermOverrideData> overridesAdd;
+    protected final TLongSet overridesRem;
 
     /**
      * Creates a new ChannelManager instance
@@ -89,8 +98,15 @@ public class ChannelManager extends ManagerBase
         this.channel = channel;
         if (isPermissionChecksEnabled())
             checkPermissions();
+        this.overridesAdd = new TLongObjectHashMap<>();
+        this.overridesRem = new TLongHashSet();
     }
 
+    /**
+     * The {@link net.dv8tion.jda.core.entities.ChannelType ChannelType}
+     *
+     * @return The ChannelType
+     */
     public ChannelType getType()
     {
         return channel.getType();
@@ -133,6 +149,7 @@ public class ChannelManager extends ManagerBase
      *     <li>{@link #NSFW}</li>
      *     <li>{@link #USERLIMIT}</li>
      *     <li>{@link #BITRATE}</li>
+     *     <li>{@link #PERMISSION}</li>
      * </ul>
      *
      * @param  fields
@@ -151,6 +168,14 @@ public class ChannelManager extends ManagerBase
             this.parent = null;
         if ((fields & TOPIC) == TOPIC)
             this.topic = null;
+        if ((fields & PERMISSION) == PERMISSION)
+        {
+            withLock(lock, (lock) ->
+            {
+                this.overridesRem.clear();
+                this.overridesAdd.clear();
+            });
+        }
         return this;
     }
 
@@ -167,6 +192,7 @@ public class ChannelManager extends ManagerBase
      *     <li>{@link #NSFW}</li>
      *     <li>{@link #USERLIMIT}</li>
      *     <li>{@link #BITRATE}</li>
+     *     <li>{@link #PERMISSION}</li>
      * </ul>
      *
      * @param  fields
@@ -195,6 +221,237 @@ public class ChannelManager extends ManagerBase
         this.name = null;
         this.parent = null;
         this.topic = null;
+        withLock(lock, (lock) ->
+        {
+            this.overridesRem.clear();
+            this.overridesAdd.clear();
+        });
+        return this;
+    }
+
+    /**
+     * Clears the overrides added via {@link #putPermissionOverride(IPermissionHolder, Collection, Collection)}.
+     *
+     * @return ChannelManager for chaining convenience
+     */
+    public ChannelManager clearOverridesAdded()
+    {
+        withLock(lock, (lock) ->
+        {
+            this.overridesAdd.clear();
+            if (this.overridesRem.isEmpty())
+                set &= ~PERMISSION;
+        });
+        return this;
+    }
+
+    /**
+     * Clears the overrides removed via {@link #removePermissionOverride(IPermissionHolder)}.
+     *
+     * @return ChannelManager for chaining convenience
+     */
+    public ChannelManager clearOverridesRemoved()
+    {
+        withLock(lock, (lock) ->
+        {
+            this.overridesRem.clear();
+            if (this.overridesAdd.isEmpty())
+                set &= ~PERMISSION;
+        });
+        return this;
+    }
+
+    /**
+     * Adds an override for the specified {@link net.dv8tion.jda.core.entities.IPermissionHolder IPermissionHolder}
+     * with the provided raw bitmasks as allowed and denied permissions. If the permission holder already
+     * had an override on this channel it will be updated instead.
+     *
+     * @param  permHolder
+     *         The permission holder
+     * @param  allow
+     *         The bitmask to grant
+     * @param  deny
+     *         The bitmask to deny
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided permission holder is {@code null}
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
+     *         in this channel
+     *
+     * @return ChannelManager for chaining convenience
+     *
+     * @see    #putPermissionOverride(IPermissionHolder, Collection, Collection)
+     * @see    net.dv8tion.jda.core.Permission#getRaw(Permission...) Permission.getRaw(Permission...)
+     */
+    @CheckReturnValue
+    public ChannelManager putPermissionOverride(IPermissionHolder permHolder, long allow, long deny)
+    {
+        Checks.notNull(permHolder, "PermissionHolder");
+        Checks.check(permHolder.getGuild().equals(getGuild()), "PermissionHolder is not from the same Guild!");
+        if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_PERMISSIONS))
+            throw new InsufficientPermissionException(Permission.MANAGE_PERMISSIONS);
+        final long id = getId(permHolder);
+        final int type = permHolder instanceof Role ? PermOverrideData.ROLE_TYPE : PermOverrideData.MEMBER_TYPE;
+        withLock(lock, (lock) ->
+        {
+            this.overridesRem.remove(id);
+            this.overridesAdd.put(id, new PermOverrideData(type, id, allow, deny));
+            set |= PERMISSION;
+        });
+        return this;
+    }
+
+    /**
+     * Adds an override for the specified {@link net.dv8tion.jda.core.entities.IPermissionHolder IPermissionHolder}
+     * with the provided permission sets as allowed and denied permissions. If the permission holder already
+     * had an override on this channel it will be updated instead.
+     * <br>Example: {@code putPermissionOverride(guild.getSelfMember(), EnumSet.of(Permission.MESSAGE_WRITE, Permission.MESSAGE_READ), null)}
+     *
+     * @param  permHolder
+     *         The permission holder
+     * @param  allow
+     *         The permissions to grant, or null
+     * @param  deny
+     *         The permissions to deny, or null
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided permission holder is {@code null}
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
+     *         in this channel
+     *
+     * @return ChannelManager for chaining convenience
+     *
+     * @see    #putPermissionOverride(IPermissionHolder, long, long)
+     * @see    java.util.EnumSet EnumSet
+     */
+    @CheckReturnValue
+    public ChannelManager putPermissionOverride(IPermissionHolder permHolder, Collection<Permission> allow, Collection<Permission> deny)
+    {
+        long allowRaw = allow == null ? 0 : Permission.getRaw(allow);
+        long denyRaw  = deny  == null ? 0 : Permission.getRaw(deny);
+        return putPermissionOverride(permHolder, allowRaw, denyRaw);
+    }
+
+    /**
+     * Removes the {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} for the specified
+     * {@link net.dv8tion.jda.core.entities.IPermissionHolder IPermissionHolder}. If no override existed for this member
+     * this does nothing.
+     *
+     * @param  permHolder
+     *         The permission holder
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided permission holder is {@code null}
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
+     *         in this channel
+     *
+     * @return ChannelManager for chaining convenience
+     */
+    @CheckReturnValue
+    public ChannelManager removePermissionOverride(IPermissionHolder permHolder)
+    {
+        Checks.notNull(permHolder, "PermissionHolder");
+        Checks.check(permHolder.getGuild().equals(getGuild()), "PermissionHolder is not from the same Guild!");
+        if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_PERMISSIONS))
+            throw new InsufficientPermissionException(Permission.MANAGE_PERMISSIONS);
+        final long id = getId(permHolder);
+        withLock(lock, (lock) ->
+        {
+            this.overridesRem.add(id);
+            this.overridesAdd.remove(id);
+            set |= PERMISSION;
+        });
+        return this;
+    }
+
+    /**
+     * Syncs all {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides} of this Channel with
+     * its parent ({@link net.dv8tion.jda.core.entities.Category Category}).
+     *
+     * <p>After this operation, all {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides}
+     * will be exactly the same as the ones from the parent.
+     * <br><b>That means that all current PermissionOverrides are lost!</b>
+     *
+     * <p>This behaves as if calling {@link #sync(Channel)} with this Channel's {@link net.dv8tion.jda.core.entities.Channel#getParent() Parent}.
+     *
+     * @throws  java.lang.IllegalStateException
+     *          If this Channel has no parent
+     * @throws  net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *          If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
+     *          in this channel
+     *
+     * @return  ChannelManager for chaining convenience
+     *
+     * @see     <a href="https://discordapp.com/developers/docs/topics/permissions#permission-syncing" target="_blank">Discord Documentation - Permission Syncing</a>
+     */
+    @CheckReturnValue
+    public ChannelManager sync()
+    {
+        if(channel.getParent() == null)
+            throw new IllegalStateException("sync() requires a parent category");
+        return sync(channel.getParent());
+    }
+
+    /**
+     * Syncs all {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides} of this Channel with
+     * the given ({@link net.dv8tion.jda.core.entities.Channel Channel}).
+     *
+     * <p>After this operation, all {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides}
+     * will be exactly the same as the ones from the syncSource.
+     * <br><b>That means that all current PermissionOverrides are lost!</b>
+     *
+     * <p>This will only work for Channels of the same {@link net.dv8tion.jda.core.entities.Guild Guild}!.
+     *
+     * @param   syncSource
+     *          The Channel from where all PermissionOverrides should be copied from
+     *
+     * @throws  java.lang.IllegalArgumentException
+     *          If the given snySource is {@code null}, this Channel or from a different Guild.
+     * @throws  net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *          If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
+     *          in this channel
+     *
+     * @return  ChannelManager for chaining convenience
+     *
+     * @see     <a href="https://discordapp.com/developers/docs/topics/permissions#permission-syncing" target="_blank">Discord Documentation - Permission Syncing</a>
+     */
+    @CheckReturnValue
+    public ChannelManager sync(Channel syncSource)
+    {
+        Checks.notNull(syncSource, "SyncSource");
+        Checks.check(channel.getGuild().equals(syncSource.getGuild()), "Sync only works for channels of same guild");
+
+        if(syncSource.equals(channel))
+            return this;
+
+        if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_PERMISSIONS))
+            throw new InsufficientPermissionException(Permission.MANAGE_PERMISSIONS);
+
+        withLock(lock, (lock) ->
+        {
+            this.overridesRem.clear();
+            this.overridesAdd.clear();
+
+            //set all current overrides to-be-removed
+            channel.getPermissionOverrides().forEach(permO ->
+                this.overridesRem.add(getId(permO.isRoleOverride() ? permO.getRole() : permO.getMember()))
+            );
+
+            //re-add all perm-overrides of syncSource
+            syncSource.getPermissionOverrides().forEach(permO ->
+            {
+                int type = permO.isRoleOverride() ? PermOverrideData.ROLE_TYPE : PermOverrideData.MEMBER_TYPE;
+                long id = getId(permO.isRoleOverride() ? permO.getRole() : permO.getMember());
+
+                this.overridesRem.remove(id);
+                this.overridesAdd.put(id, new PermOverrideData(type, id, permO.getAllowedRaw(), permO.getDeniedRaw()));
+            });
+
+            set |= PERMISSION;
+        });
         return this;
     }
 
@@ -409,6 +666,11 @@ public class ChannelManager extends ManagerBase
             frame.put("bitrate", bitrate);
         if (shouldUpdate(PARENT))
             frame.put("parent_id", opt(parent));
+        withLock(lock, (lock) ->
+        {
+            if (shouldUpdate(PERMISSION))
+                frame.put("permission_overwrites", getOverrides());
+        });
 
         reset();
         return getRequestBody(frame);
@@ -417,8 +679,34 @@ public class ChannelManager extends ManagerBase
     @Override
     protected boolean checkPermissions()
     {
-        if (!getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_CHANNEL))
+        final Member selfMember = getGuild().getSelfMember();
+        if (!selfMember.hasPermission(channel, Permission.MANAGE_CHANNEL))
             throw new InsufficientPermissionException(Permission.MANAGE_CHANNEL);
         return super.checkPermissions();
+    }
+
+    protected Collection<PermOverrideData> getOverrides()
+    {
+        //note: overridesAdd and overridesRem are mutually disjoint
+        TLongObjectHashMap<PermOverrideData> data = new TLongObjectHashMap<>(this.overridesAdd);
+
+        AbstractChannelImpl<?> impl = (AbstractChannelImpl<?>) channel;
+        impl.getOverrideMap().forEachEntry((id, override) ->
+        {
+            //removed by not adding them here, this data set overrides the existing one
+            //we can use remove because it will be reset afterwards either way
+            if (!overridesRem.remove(id) && !data.containsKey(id))
+                data.put(id, new PermOverrideData(override));
+            return true;
+        });
+        return data.valueCollection();
+    }
+
+    protected long getId(IPermissionHolder holder)
+    {
+        if (holder instanceof Role)
+            return ((Role) holder).getIdLong();
+        else
+            return ((Member) holder).getUser().getIdLong();
     }
 }

@@ -124,7 +124,7 @@ public class GuildUpdateHandler extends SocketHandler
             api.getEventManager().handle(
                     new GuildUpdateRegionEvent(
                             api, responseNumber,
-                            guild, oldRegion, region));
+                            guild, oldRegion));
         }
         if (!Objects.equals(verificationLevel, guild.getVerificationLevel()))
         {

@@ -20,10 +20,9 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Category;
 
 /**
- * <b><u>CategoryDeleteEvent</u></b>
- * <p>Fired when a {@link net.dv8tion.jda.core.entities.Category Category} is deleted.
+ * Indicates that a {@link net.dv8tion.jda.core.entities.Category Category} was deleted.
  *
- * <p>Use: Retrieve the old Category
+ * <p>Can be used to retrieve the old Category
  */
 public class CategoryDeleteEvent extends GenericCategoryEvent
 {

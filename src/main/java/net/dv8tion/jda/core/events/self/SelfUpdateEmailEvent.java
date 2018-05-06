@@ -18,18 +18,39 @@ package net.dv8tion.jda.core.events.self;
 
 import net.dv8tion.jda.core.JDA;
 
-public class SelfUpdateEmailEvent extends GenericSelfUpdateEvent
+/**
+ * Indicates that the email of the current user changed. (client-only)
+ *
+ * <p>Can be used to retrieve the old email.
+ *
+ * <p>Identifier: {@code email}
+ */
+public class SelfUpdateEmailEvent extends GenericSelfUpdateEvent<String>
 {
-    private final String oldEmail;
+    public static final String IDENTIFIER = "email";
 
     public SelfUpdateEmailEvent(JDA api, long responseNumber, String oldEmail)
     {
-        super(api, responseNumber);
-        this.oldEmail = oldEmail;
+        super(api, responseNumber, oldEmail, api.getSelfUser().getEmail(), IDENTIFIER);
     }
 
+    /**
+     * The old email
+     *
+     * @return The old email
+     */
     public String getOldEmail()
     {
-        return oldEmail;
+        return getOldValue();
+    }
+
+    /**
+     * The new email
+     *
+     * @return The new email
+     */
+    public String getNewEmail()
+    {
+        return getNewValue();
     }
 }

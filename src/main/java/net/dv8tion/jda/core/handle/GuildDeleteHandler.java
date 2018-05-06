@@ -151,6 +151,8 @@ public class GuildDeleteHandler extends SocketHandler
             return true;
         });
 
+        GuildMembersChunkHandler chunkHandler = api.getClient().getHandler("GUILD_MEMBERS_CHUNK");
+        chunkHandler.clearCache(id);
         api.getGuildMap().remove(id);
         guild.getTextChannelCache().forEach(chan -> api.getTextChannelMap().remove(chan.getIdLong()));
         guild.getVoiceChannelCache().forEach(chan -> api.getVoiceChannelMap().remove(chan.getIdLong()));

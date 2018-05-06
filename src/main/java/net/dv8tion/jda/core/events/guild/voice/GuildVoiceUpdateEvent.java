@@ -21,13 +21,12 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 
 /**
- * <b><u>GuildVoiceUpdateEvent</u></b>
+ * Indicates that a {@link net.dv8tion.jda.core.entities.Member Member} that was previously connected
+ * to a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} left the previously connected Channel.
  * <br>Generic event that combines {@link net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent GuildVoiceLeaveEvent}
  * and {@link net.dv8tion.jda.core.events.guild.voice.GuildVoiceMoveEvent GuildVoiceMoveEvent} for convenience.
- * <br>Fires when a {@link net.dv8tion.jda.core.entities.Member Member} that was previously connected
- * to a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} leaves the previously connected Channel.
  *
- * <p>Use: See when a Member leaves a channel
+ * <p>Can be used to detect when a Member leaves a channel in any way
  */
 public class GuildVoiceUpdateEvent extends GenericGuildVoiceEvent
 {
@@ -41,7 +40,7 @@ public class GuildVoiceUpdateEvent extends GenericGuildVoiceEvent
     /**
      * The {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} that the {@link net.dv8tion.jda.core.entities.Member Member} is moved from
      *
-     * @return the {@link net.dv8tion.jda.core.entities.VoiceChannel}
+     * @return The {@link net.dv8tion.jda.core.entities.VoiceChannel}
      */
     public VoiceChannel getChannelLeft()
     {

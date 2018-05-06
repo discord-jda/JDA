@@ -21,9 +21,11 @@ import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.events.Event;
 
-public class GenericEmoteEvent extends Event
+/**
+ * Indicates that an {@link net.dv8tion.jda.core.entities.Emote Emote} was created/removed/updated.
+ */
+public abstract class GenericEmoteEvent extends Event
 {
-
     protected final Emote emote;
 
     public GenericEmoteEvent(JDA api, long responseNumber, Emote emote)
@@ -32,16 +34,31 @@ public class GenericEmoteEvent extends Event
         this.emote = emote;
     }
 
+    /**
+     * The {@link net.dv8tion.jda.core.entities.Guild Guild} where the emote came from
+     *
+     * @return The origin Guild
+     */
     public Guild getGuild()
     {
         return emote.getGuild();
     }
 
+    /**
+     * The responsible {@link net.dv8tion.jda.core.entities.Emote Emote} for this event
+     *
+     * @return The emote
+     */
     public Emote getEmote()
     {
         return emote;
     }
 
+    /**
+     * Whether this emote is managed by an integration
+     *
+     * @return True, if this emote is managed by an integration
+     */
     public boolean isManaged()
     {
         return emote.isManaged();

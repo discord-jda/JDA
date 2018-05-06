@@ -15,15 +15,14 @@
  */
 package net.dv8tion.jda.core.events.message;
 
-import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 
 /**
- * <b><u>MessageUpdateEvent</u></b><br>
- * Fired if a Message is edited in a {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.<br>
- * <br>
- * Use: This event indicates that a Message is edited in either a private or guild channel. Providing a MessageChannel and Message.
+ * Indicates that a Message was edited in a {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}.
+ * 
+ * <p>Can be used to detect a Message is edited in either a private or guild channel. Providing a MessageChannel and Message.
+ * <br>This also includes whether a message is being pinned.
  *
  * <p><b>JDA does not have a cache for messages and is not able to provide previous information due to limitations by the
  * Discord API!</b>
@@ -38,38 +37,37 @@ public class MessageUpdateEvent extends GenericMessageEvent
         this.message = message;
     }
 
+    /**
+     * The {@link net.dv8tion.jda.core.entities.Message Message} that was updated
+     * <br>Note: Messages in JDA are not updated, they are immutable and will not change their state.
+     *
+     * @return The updated Message
+     */
     public Message getMessage()
     {
         return message;
     }
 
+    /**
+     * The author of the Message.
+     *
+     * @return The message author
+     *
+     * @see    net.dv8tion.jda.core.entities.User User
+     */
     public User getAuthor()
     {
         return message.getAuthor();
     }
 
+    /**
+     * Member instance for the author of this message or {@code null} if this
+     * was not in a Guild.
+     *
+     * @return The Member instance for the author or null
+     */
     public Member getMember()
     {
         return  isFromType(ChannelType.TEXT) ? getGuild().getMember(getAuthor()) : null;
-    }
-
-    public PrivateChannel getPrivateChannel()
-    {
-        return message.getPrivateChannel();
-    }
-
-    public Group getGroup()
-    {
-        return message.getGroup();
-    }
-
-    public TextChannel getTextChannel()
-    {
-        return message.getTextChannel();
-    }
-
-    public Guild getGuild()
-    {
-        return message.getGuild();
     }
 }

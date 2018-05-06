@@ -21,11 +21,10 @@ import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.events.Event;
 
 /**
- * <b><u>GenericPrivateMessageEvent</u></b><br>
- * Fired whenever a {@link net.dv8tion.jda.core.entities.Message Message} event is fired from a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}.<br>
- * Every PrivateMessageEvent is an instance of this event and can be casted. (no exceptions)<br>
- * <br>
- * Use: Detect any PrivateMessageEvent. <i>(No real use for the JDA user)</i>
+ * Indicates that a {@link net.dv8tion.jda.core.entities.Message Message} event is fired from a {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}.
+ * <br>Every PrivateMessageEvent is an instance of this event and can be casted.
+ * 
+ * <p>Can be used to detect any PrivateMessageEvent.
  */
 public abstract class GenericPrivateMessageEvent extends Event
 {
@@ -39,16 +38,31 @@ public abstract class GenericPrivateMessageEvent extends Event
         this.channel = channel;
     }
 
+    /**
+     * The {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel} for the message
+     *
+     * @return The PrivateChannel
+     */
     public PrivateChannel getChannel()
     {
         return channel;
     }
 
+    /**
+     * The id for this message
+     *
+     * @return The id for this message
+     */
     public String getMessageId()
     {
         return Long.toUnsignedString(messageId);
     }
 
+    /**
+     * The id for this message
+     *
+     * @return The id for this message
+     */
     public long getMessageIdLong()
     {
         return messageId;

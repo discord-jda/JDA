@@ -16,24 +16,41 @@
 
 package net.dv8tion.jda.core.requests.restaction;
 
+import net.dv8tion.jda.core.entities.PermissionOverride;
 import org.json.JSONObject;
 import org.json.JSONString;
 
-class PermOverrideData implements JSONString
+public class PermOverrideData implements JSONString
 {
     public static final int ROLE_TYPE = 0;
     public static final int MEMBER_TYPE = 1;
-    protected final int type;
-    protected final long id;
-    protected final long allow;
-    protected final long deny;
+    public final int type;
+    public final long id;
+    public final long allow;
+    public final long deny;
 
-    protected PermOverrideData(int type, long id, long allow, long deny)
+    public PermOverrideData(int type, long id, long allow, long deny)
     {
         this.type = type;
         this.id = id;
         this.allow = allow;
         this.deny = deny;
+    }
+
+    public PermOverrideData(PermissionOverride override)
+    {
+        if (override.isMemberOverride())
+        {
+            this.id = override.getMember().getUser().getIdLong();
+            this.type = MEMBER_TYPE;
+        }
+        else
+        {
+            this.id = override.getRole().getIdLong();
+            this.type = ROLE_TYPE;
+        }
+        this.allow = override.getAllowedRaw();
+        this.deny = override.getDeniedRaw();
     }
 
     @Override
