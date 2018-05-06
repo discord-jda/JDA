@@ -48,16 +48,68 @@ public interface Guild extends ISnowflake
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type {@link java.util.EnumSet EnumSet}
      */
+    @CheckReturnValue
     RestAction<EnumSet<Region>> retrieveRegions();
 
+    /**
+     * Adds the user represented by the provided id to this guild.
+     * <br>This requires an <b>OAuth2 Access Token</b> with the scope {@code guilds.join}.
+     *
+     * @param  accessToken
+     *         The access token
+     * @param  userId
+     *         The user id
+     *
+     * @throws IllegalArgumentException
+     *         If the user id or access token is null
+     * @throws IllegalStateException
+     *         If the provided user is already in this guild
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.MemberAction MemberAction}
+     */
+    @CheckReturnValue
     MemberAction addMember(String accessToken, String userId);
 
+    /**
+     * Adds the provided user to this guild.
+     * <br>This requires an <b>OAuth2 Access Token</b> with the scope {@code guilds.join}.
+     *
+     * @param  accessToken
+     *         The access token
+     * @param  user
+     *         The user
+     *
+     * @throws IllegalArgumentException
+     *         If the user or access token is null
+     * @throws IllegalStateException
+     *         If the provided user is already in this guild
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.MemberAction MemberAction}
+     */
+    @CheckReturnValue
     default MemberAction addMember(String accessToken, User user)
     {
         Checks.notNull(user, "User");
         return addMember(accessToken, user.getId());
     }
 
+    /**
+     * Adds the user represented by the provided id to this guild.
+     * <br>This requires an <b>OAuth2 Access Token</b> with the scope {@code guilds.join}.
+     *
+     * @param  accessToken
+     *         The access token
+     * @param  userId
+     *         The user id
+     *
+     * @throws IllegalArgumentException
+     *         If the access token is null
+     * @throws IllegalStateException
+     *         If the provided user is already in this guild
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.MemberAction MemberAction}
+     */
+    @CheckReturnValue
     default MemberAction addMember(String accessToken, long userId)
     {
         return addMember(accessToken, Long.toUnsignedString(userId));
