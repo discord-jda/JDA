@@ -690,7 +690,7 @@ public class AudioConnection
                     nonceData = null;
                     break;
                 case XSALSA20_POLY1305_LITE:
-                    long nextNonce = nonce.updateAndGet((n) -> n > MAX_UINT_32 ? 0 : n + 1);
+                    long nextNonce = nonce.updateAndGet((n) -> n >= MAX_UINT_32 ? 0 : n + 1);
                     nonceData = getNonceBytes(nextNonce);
                     break;
                 case XSALSA20_POLY1305_SUFFIX:
