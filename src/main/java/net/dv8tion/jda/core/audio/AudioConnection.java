@@ -51,6 +51,7 @@ import java.nio.ShortBuffer;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class AudioConnection
 {
@@ -80,7 +81,7 @@ public class AudioConnection
     private Thread receiveThread;
     private long queueTimeout;
 
-    private volatile long nonce = 0;
+    private final AtomicLong nonce = new AtomicLong(0);
 
     private volatile boolean couldReceive = false;
     private volatile boolean speaking = false;      //Also acts as "couldProvide"
@@ -689,9 +690,8 @@ public class AudioConnection
                     nonceData = null;
                     break;
                 case XSALSA20_POLY1305_LITE:
-                    nonce++;
-                    if (nonce > MAX_UINT_32)
-                        nonce = 0;
+                    if (nonce.incrementAndGet() > MAX_UINT_32)
+                        nonce.set(0);
                     nonceData = getNonceBytes();
                     break;
                 case XSALSA20_POLY1305_SUFFIX:
@@ -705,11 +705,12 @@ public class AudioConnection
 
         private byte[] getNonceBytes()
         {
+            long nonceLong = nonce.get();
             byte[] data = new byte[4];
-            data[0] = (byte) ((nonce >>> 24) & 0xFF);
-            data[1] = (byte) ((nonce >>> 16) & 0xFF);
-            data[2] = (byte) ((nonce >>>  8) & 0xFF);
-            data[3] = (byte) ( nonce         & 0xFF);
+            data[0] = (byte) ((nonceLong >>> 24) & 0xFF);
+            data[1] = (byte) ((nonceLong >>> 16) & 0xFF);
+            data[2] = (byte) ((nonceLong >>>  8) & 0xFF);
+            data[3] = (byte) ( nonceLong         & 0xFF);
             return data;
         }
 

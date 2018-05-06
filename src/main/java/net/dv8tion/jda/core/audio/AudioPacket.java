@@ -161,13 +161,15 @@ public class AudioPacket
         // only 12 bytes long, so we need to create a 24 byte array, and copy the 12 byte nonce into it.
         // we will leave the extra bytes as nulls. (Java sets non-populated bytes as 0).
         // if the provided -nonce- is not null we use that instead, the lite mode only uses 4 bytes
-        byte[] extendedNonce = nonce == null ? new byte[TweetNaclFast.SecretBox.nonceLength] : nonce;
+        byte[] extendedNonce = new byte[TweetNaclFast.SecretBox.nonceLength];
 
         //Copy the RTP nonce into our Xsalsa20 nonce array.
         // Note, it doesn't fill the Xsalsa20 nonce array completely.
         // If nonce isn't null we already have a working array, skip this step
         if (nonce == null)
             System.arraycopy(getNonce(), 0, extendedNonce, 0, RTP_HEADER_BYTE_LENGTH);
+        else
+            System.arraycopy(nonce, 0, extendedNonce, 0, nonce.length);
 
         //Create our SecretBox encoder with the secretKey provided by Discord.
         TweetNaclFast.SecretBox boxer = new TweetNaclFast.SecretBox(secretKey);
@@ -177,9 +179,9 @@ public class AudioPacket
         {
             // here we append the provided nonce which is used in _suffix and _lite encryption modes
             // for _suffix this is the usual 24 bytes and for _lite it should be 4 bytes (unsigned int big endian)
-            encryptedAudio = new byte[intermediateAudio.length + extendedNonce.length];
+            encryptedAudio = new byte[intermediateAudio.length + nonce.length];
             System.arraycopy(intermediateAudio, 0, encryptedAudio, 0, intermediateAudio.length);
-            System.arraycopy(extendedNonce, 0, encryptedAudio, intermediateAudio.length, extendedNonce.length);
+            System.arraycopy(nonce, 0, encryptedAudio, intermediateAudio.length, nonce.length);
         }
 
         //Create a new temp audio packet using the encrypted audio so that we don't
