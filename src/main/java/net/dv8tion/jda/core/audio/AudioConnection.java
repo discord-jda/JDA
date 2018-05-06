@@ -690,9 +690,8 @@ public class AudioConnection
                     nonceData = null;
                     break;
                 case XSALSA20_POLY1305_LITE:
-                    if (nonce.incrementAndGet() > MAX_UINT_32)
-                        nonce.set(0);
-                    nonceData = getNonceBytes();
+                    long nextNonce = nonce.updateAndGet((n) -> n > MAX_UINT_32 ? 0 : n + 1);
+                    nonceData = getNonceBytes(nextNonce);
                     break;
                 case XSALSA20_POLY1305_SUFFIX:
                     nonceData = TweetNaclFast.randombytes(TweetNaclFast.SecretBox.nonceLength);
@@ -703,14 +702,13 @@ public class AudioConnection
             return packet.asEncryptedUdpPacket(webSocket.getAddress(), webSocket.getSecretKey(), nonceData);
         }
 
-        private byte[] getNonceBytes()
+        private byte[] getNonceBytes(long nonce)
         {
-            long nonceLong = nonce.get();
             byte[] data = new byte[4];
-            data[0] = (byte) ((nonceLong >>> 24) & 0xFF);
-            data[1] = (byte) ((nonceLong >>> 16) & 0xFF);
-            data[2] = (byte) ((nonceLong >>>  8) & 0xFF);
-            data[3] = (byte) ( nonceLong         & 0xFF);
+            data[0] = (byte) ((nonce >>> 24) & 0xFF);
+            data[1] = (byte) ((nonce >>> 16) & 0xFF);
+            data[2] = (byte) ((nonce >>>  8) & 0xFF);
+            data[3] = (byte) ( nonce         & 0xFF);
             return data;
         }
 
