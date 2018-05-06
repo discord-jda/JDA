@@ -105,11 +105,34 @@ public class WebhookMessageBuilder
         return this;
     }
 
+    /**
+     * Closes and removes all added resources.
+     * The {@link #getFileAmount()} will report {@code 0} after this happened, however the allocated array will remain.
+     * <br>Any {@link InputStream} instances provided with {@link #addFile(String, InputStream)}
+     * will be closed after this method returns.
+     *
+     * <p>You can use {@link #resetFiles(IOConsumer)} to specify the behavior at which resources should be closed
+     * or should not be closed at all.
+     *
+     * @return The current WebhookMessageBuilder for chaining convenience
+     */
     public WebhookMessageBuilder resetFiles()
     {
         return resetFiles(null);
     }
 
+    /**
+     * Removes all added resources.
+     * The {@link #getFileAmount()} will report {@code 0} after this happened, however the allocated array will remain.
+     * <br>The provided {@link net.dv8tion.jda.core.utils.IOConsumer IOConsumer} can be used to
+     * specify the close behavior of resources. {@code null} will use the default behavior and call {@code close()}
+     * on all resources before removing them.
+     *
+     * @param  finalizer
+     *         The finalizer specifying the close behavior or {@code null}
+     *
+     * @return The current WebhookMessageBuilder for chaining convenience
+     */
     public WebhookMessageBuilder resetFiles(IOConsumer<InputStream> finalizer)
     {
         for (int i = 0; i < MAX_FILES; i++)
@@ -375,7 +398,7 @@ public class WebhookMessageBuilder
     {
         Checks.notNull(data, "InputStream");
         Checks.notBlank(name, "Name");
-        if (fileIndex == MAX_FILES)
+        if (fileIndex >= MAX_FILES)
             throw new IllegalStateException("Cannot add more than " + MAX_FILES + " attachments to a message");
 
         MessageAttachment attachment = new MessageAttachment(name, data);
@@ -499,7 +522,8 @@ public class WebhookMessageBuilder
     /**
      * Builds a {@link net.dv8tion.jda.webhook.WebhookMessage WebhookMessage} instance
      * with the current state of this builder.
-     * <b>This will remove all previously added files</b>
+     *
+     * <p><b>This will remove all previously added files, they will be closed once the message was sent!</b>
      *
      * @throws java.lang.IllegalStateException
      *         If this builder is empty
