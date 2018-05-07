@@ -78,7 +78,7 @@ public class AudioConnection
     private long queueTimeout;
 
     private volatile boolean couldReceive = false;
-    private volatile boolean speaking = false;      //Also acts as "couldProvide"
+    private volatile SpeakingFlag speaking = SpeakingFlag.NONE;      //Also acts as "couldProvide"
 
     private volatile int silenceCounter = 0;
     private boolean sentSilenceOnConnect = false;
@@ -559,14 +559,14 @@ public class AudioConnection
         return audio;
     }
 
-    private void setSpeaking(boolean isSpeaking)
+    private void setSpeaking(SpeakingFlag speakingFlag)
     {
-        this.speaking = isSpeaking;
+        this.speaking = speakingFlag;
         JSONObject obj = new JSONObject()
-                .put("speaking", isSpeaking)
+                .put("speaking", speakingFlag.getKey())
                 .put("delay", 0);
         webSocket.send(VoiceCode.USER_SPEAKING_UPDATE, obj);
-        if (!isSpeaking)
+        if (speakingFlag == SpeakingFlag.NONE)
             sendSilentPackets();
     }
 
@@ -624,8 +624,8 @@ public class AudioConnection
                     byte[] rawAudio = sendHandler.provide20MsAudio();
                     if (rawAudio == null || rawAudio.length == 0)
                     {
-                        if (speaking && changeTalking)
-                            setSpeaking(false);
+                        if (speaking == SpeakingFlag.SPEAKING && changeTalking)
+                            setSpeaking(SpeakingFlag.NONE);
                     }
                     else
                     {
@@ -634,8 +634,8 @@ public class AudioConnection
                             rawAudio = encodeToOpus(rawAudio);
                         }
                         AudioPacket packet = new AudioPacket(seq, timestamp, webSocket.getSSRC(), rawAudio);
-                        if (!speaking)
-                            setSpeaking(true);
+                        if (speaking == SpeakingFlag.NONE)
+                            setSpeaking(SpeakingFlag.SPEAKING);
 
                         nextPacket = packet.asEncryptedUdpPacket(webSocket.getAddress(), webSocket.getSecretKey());
 
@@ -662,8 +662,8 @@ public class AudioConnection
                         sentSilenceOnConnect = true;
                     }
                 }
-                else if (speaking && changeTalking)
-                    setSpeaking(false);
+                else if (speaking == SpeakingFlag.SPEAKING && changeTalking)
+                    setSpeaking(SpeakingFlag.NONE);
             }
             catch (Exception e)
             {
@@ -691,6 +691,65 @@ public class AudioConnection
             LOG.warn("Cannot send audio packet because JDA cannot navigate the route to Discord.\n" +
                 "Are you sure you have internet connection? It is likely that you've lost connection.");
             webSocket.close(ConnectionStatus.ERROR_LOST_CONNECTION);
+        }
+    }
+
+    /**
+     * The speaking flag being sent, this is used to differentiate what audio is coming from the user.
+     */
+    public enum SpeakingFlag
+    {
+
+        /**
+         * The SpeakingFlag used to represent the user not transmitting any audio.
+         */
+        NONE(0),
+        /**
+         * The SpeakingFlag used to represent the user transmitting normal speaking audio.
+         */
+        SPEAKING(1),
+        /**
+         * The SpeakingFlag used to represent the user transmitting their system sound.
+         */
+        SOUNDSHARE(2);
+        
+        private int key;
+        
+        SpeakingFlag(int key)
+        {
+            this.key = key;
+        }
+
+        /**
+         * The Discord defined ID for this SpeakingFlag.
+         *
+         * @return the id key.
+         */
+        public int getKey()
+        {
+            return this.key;
+        }
+
+        /**
+         * Gets the SpeakingFlag related to the provided key.
+         * <br>If an unknown key is provided, this returns {@link #NONE}
+         *
+         * @param  key
+         *         The Discord key referencing a SpeakingFlag.
+         *
+         * @return The SpeakingFlag that has the key provided, or {@link #NONE} for unknown key.
+         */
+        public static SpeakingFlag fromKey(int key)
+        {
+            switch(key) {
+                case 0:
+                default:
+                    return NONE;
+                case 1:
+                    return SPEAKING;
+                case 2:
+                    return SOUNDSHARE;
+            }
         }
     }
 }

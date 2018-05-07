@@ -46,7 +46,7 @@ public class AudioWebSocket extends WebSocketAdapter
 {
     public static final Logger LOG = JDALogger.getLog(AudioWebSocket.class);
     public static final int DISCORD_SECRET_KEY_LENGTH = 32;
-    public static final int AUDIO_GATEWAY_VERSION = 3;
+    public static final int AUDIO_GATEWAY_VERSION = 4;
 
     protected final ConnectionListener listener;
     protected final ScheduledThreadPoolExecutor keepAlivePool;
@@ -239,7 +239,7 @@ public class AudioWebSocket extends WebSocketAdapter
             {
                 LOG.trace("-> USER_SPEAKING_UPDATE {}", contentAll);
                 final JSONObject content = contentAll.getJSONObject("d");
-                final boolean speaking = content.getBoolean("speaking");
+                final int speakingFlag = content.getInt("speaking");
                 final int ssrc = content.getInt("ssrc");
                 final long userId = content.getLong("user_id");
 
@@ -252,7 +252,7 @@ public class AudioWebSocket extends WebSocketAdapter
                 }
 
                 audioConnection.updateUserSSRC(ssrc, userId);
-                listener.onUserSpeaking(user, speaking);
+                listener.onUserSpeaking(user, AudioConnection.SpeakingFlag.fromKey(speakingFlag));
                 break;
             }
             case VoiceCode.USER_DISCONNECT:
