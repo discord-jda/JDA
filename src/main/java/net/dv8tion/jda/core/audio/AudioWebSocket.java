@@ -48,7 +48,7 @@ public class AudioWebSocket extends WebSocketAdapter
     public static final Logger LOG = JDALogger.getLog(AudioWebSocket.class);
     public static final int DISCORD_SECRET_KEY_LENGTH = 32;
     public static final int AUDIO_GATEWAY_VERSION = 4;
-    public static final JSONArray CODECS = new JSONArray("[{name: \"opus\", type: \"audio\", priority: 1000, payload_type: 120}]");
+//    public static final JSONArray CODECS = new JSONArray("[{name: \"opus\", type: \"audio\", priority: 1000, payload_type: 120}]");
 
     protected final ConnectionListener listener;
     protected final ScheduledThreadPoolExecutor keepAlivePool;
@@ -178,9 +178,15 @@ public class AudioWebSocket extends WebSocketAdapter
                 JSONArray modes = content.getJSONArray("modes");
                 encryption = AudioEncryption.getPreferredMode(modes);
                 if (encryption == null)
-                    throw new IllegalStateException("None of the provided encryption modes are supported: " + modes);
+                {
+                    close(ConnectionStatus.ERROR_UNSUPPORTED_ENCRYPTION_MODES);
+                    LOG.error("None of the provided encryption modes are supported: {}", modes);
+                    return;
+                }
                 else
+                {
                     LOG.debug("Using encryption mode " + encryption.getKey());
+                }
 
                 //Find our external IP and Port using Discord
                 InetSocketAddress externalIpAndPort;
@@ -200,7 +206,7 @@ public class AudioWebSocket extends WebSocketAdapter
 
                 final JSONObject object = new JSONObject()
                         .put("protocol", "udp")
-                        .put("codecs", CODECS)
+//                        .put("codecs", CODECS)
                         .put("data", new JSONObject()
                             .put("address", externalIpAndPort.getHostString())
                             .put("port", externalIpAndPort.getPort())
@@ -396,15 +402,9 @@ public class AudioWebSocket extends WebSocketAdapter
 
         try
         {
-            WebSocketFactory factory = api.getWebSocketFactory();
-            synchronized (factory)
-            {
-                factory.getProxySettings().setServerName(endpoint);
-                socket = factory
-                        .setServerName(endpoint)
-                        .createSocket(wssEndpoint)
-                        .addListener(this);
-            }
+            socket = api.getWebSocketFactory()
+                    .createSocket(wssEndpoint)
+                    .addListener(this);
             changeStatus(ConnectionStatus.CONNECTING_AWAITING_WEBSOCKET_CONNECT);
             socket.connectAsynchronously();
         }

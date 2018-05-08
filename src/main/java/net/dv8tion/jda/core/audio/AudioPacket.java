@@ -53,7 +53,6 @@ public class AudioPacket
     public static final int SEQ_INDEX =                     2;
     public static final int TIMESTAMP_INDEX =               4;
     public static final int SSRC_INDEX =                    8;
-    public static final int NONCE_INDEX =                  12;
 
     private final char seq;
     private final int timestamp;
@@ -157,15 +156,14 @@ public class AudioPacket
 
     public DatagramPacket asEncryptedUdpPacket(InetSocketAddress address, byte[] secretKey, byte[] nonce)
     {
-        //Xsalsa20's Nonce is 24 bytes long, however RTP (and consequently Discord)'s nonce is
-        // only 12 bytes long, so we need to create a 24 byte array, and copy the 12 byte nonce into it.
+        //Xsalsa20's Nonce is 24 bytes long, however RTP (and consequently Discord)'s nonce is a different length
+        // so we need to create a 24 byte array, and copy the nonce into it.
         // we will leave the extra bytes as nulls. (Java sets non-populated bytes as 0).
-        // if the provided -nonce- is not null we use that instead, the lite mode only uses 4 bytes
         byte[] extendedNonce = new byte[TweetNaclFast.SecretBox.nonceLength];
 
         //Copy the RTP nonce into our Xsalsa20 nonce array.
         // Note, it doesn't fill the Xsalsa20 nonce array completely.
-        // If nonce isn't null we already have a working array, skip this step
+        // If nonce is null we use the first 12 bytes from the raw discord payload
         if (nonce == null)
             System.arraycopy(getNonce(), 0, extendedNonce, 0, RTP_HEADER_BYTE_LENGTH);
         else
@@ -179,6 +177,7 @@ public class AudioPacket
         {
             // here we append the provided nonce which is used in _suffix and _lite encryption modes
             // for _suffix this is the usual 24 bytes and for _lite it should be 4 bytes (unsigned int big endian)
+            // in case no nonce was provided we use no extension and don't append any nonce to the payload
             encryptedAudio = new byte[intermediateAudio.length + nonce.length];
             System.arraycopy(intermediateAudio, 0, encryptedAudio, 0, intermediateAudio.length);
             System.arraycopy(nonce, 0, encryptedAudio, intermediateAudio.length, nonce.length);
