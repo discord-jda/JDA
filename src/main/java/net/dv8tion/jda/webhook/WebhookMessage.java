@@ -27,7 +27,9 @@ import okhttp3.RequestBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 /**
@@ -180,7 +182,7 @@ public class WebhookMessage
             Object name = attachments[i];
             Object data = attachments[i+1];
             if (!(name instanceof String))
-                throw new IllegalArgumentException("Provided arguments must be pairs for (String, Data)");
+                throw new IllegalArgumentException("Provided arguments must be pairs for (String, Data). Expected String and found " + (name == null ? null : name.getClass().getName()));
             files[j] = convertAttachment((String) name, data);
         }
         return new WebhookMessage(null, null, null, null, false, files);
@@ -243,7 +245,7 @@ public class WebhookMessage
                 final MessageAttachment attachment = attachments[i];
                 if (attachment == null)
                     break;
-                builder.addFormDataPart("file" + i, attachment.name, MiscUtil.createRequestBody(OCTET, attachment.data));
+                builder.addFormDataPart("file" + i, attachment.name, MiscUtil.createRequestBody(OCTET, attachment.getData()));
             }
             return builder.addFormDataPart("payload_json", payload.toString()).build();
         }
@@ -257,16 +259,16 @@ public class WebhookMessage
         {
             MessageAttachment a;
             if (data instanceof File)
-                a = new MessageAttachment(name, new FileInputStream((File) data));
+                a = new MessageAttachment(name, (File) data);
             else if (data instanceof InputStream)
                 a = new MessageAttachment(name, (InputStream) data);
             else if (data instanceof byte[])
-                a = new MessageAttachment(name, new ByteArrayInputStream((byte[]) data));
+                a = new MessageAttachment(name, (byte[]) data);
             else
                 throw new IllegalArgumentException("Provided arguments must be pairs for (String, Data). Unexpected data type " + data.getClass().getName());
             return a;
         }
-        catch (FileNotFoundException ex)
+        catch (IOException ex)
         {
             throw new IllegalArgumentException(ex);
         }

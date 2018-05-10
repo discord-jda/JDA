@@ -16,16 +16,38 @@
 
 package net.dv8tion.jda.webhook;
 
+import net.dv8tion.jda.core.utils.IOUtil;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 
 /* package-private */ class MessageAttachment
 {
     final String name;
-    final InputStream data;
+    final byte[] data;
 
-    MessageAttachment(String name, InputStream data)
+    MessageAttachment(String name, byte[] data)
     {
         this.name = name;
         this.data = data;
+    }
+
+    MessageAttachment(String name, InputStream stream) throws IOException
+    {
+        this.name = name;
+        this.data = IOUtil.readFully(stream);
+    }
+
+    MessageAttachment(String name, File file) throws IOException
+    {
+        this.name = name;
+        this.data = IOUtil.readFully(file);
+    }
+
+    InputStream getData()
+    {
+        return new ByteArrayInputStream(data);
     }
 }

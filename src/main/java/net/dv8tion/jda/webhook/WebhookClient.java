@@ -37,7 +37,6 @@ import org.json.JSONTokener;
 import org.slf4j.Logger;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
@@ -175,14 +174,7 @@ public class WebhookClient implements AutoCloseable
      */
     public RequestFuture<?> send(File file, String fileName)
     {
-        try
-        {
-            return send(new WebhookMessageBuilder().addFile(fileName, file).build());
-        }
-        catch (FileNotFoundException e)
-        {
-            throw new IllegalArgumentException(e);
-        }
+        return send(new WebhookMessageBuilder().addFile(fileName, file).build());
     }
 
     /**

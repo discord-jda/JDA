@@ -28,7 +28,6 @@ import org.json.JSONObject;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
@@ -582,10 +581,14 @@ public class WebhookCluster implements AutoCloseable
     public List<RequestFuture<?>> broadcast(WebhookMessage message)
     {
         Checks.notNull(message, "Message");
-        final RequestBody body = message.getBody();
+        RequestBody body = message.getBody();
         final List<RequestFuture<?>> callbacks = new ArrayList<>(webhooks.size());
         for (WebhookClient webhook : webhooks)
+        {
             callbacks.add(webhook.execute(body));
+            if (message.isFile()) // for files we have to make new data sets
+                body = message.getBody();
+        }
         return callbacks;
     }
 
@@ -748,14 +751,7 @@ public class WebhookCluster implements AutoCloseable
     {
         Checks.notNull(file, "File");
         Checks.check(file.length() <= Message.MAX_FILE_SIZE, "Provided File exceeds the maximum size of 8MB!");
-        try
-        {
-            return broadcast(new WebhookMessageBuilder().addFile(fileName, file).build());
-        }
-        catch (FileNotFoundException e)
-        {
-            throw new IllegalArgumentException(e);
-        }
+        return broadcast(new WebhookMessageBuilder().addFile(fileName, file).build());
     }
 
     /**
