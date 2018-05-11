@@ -33,7 +33,6 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -154,15 +153,15 @@ public class MemberAction extends RestAction<Void>
     @CheckReturnValue
     public MemberAction setRoles(Collection<Role> roles)
     {
-        if (roles != null)
+        if (roles == null)
         {
-            for (Role role : roles)
-            {
-                Checks.notNull(role, "Role");
-                Checks.check(role.getGuild().equals(getGuild()), "Roles must all be from the same guild");
-            }
+            this.roles = null;
+            return this;
         }
-        this.roles = roles == null ? null : new HashSet<>(roles);
+        Set<Role> newRoles = new HashSet<>(roles.size());
+        for (Role role : roles)
+            checkAndAdd(newRoles, role);
+        this.roles = newRoles;
         return this;
     }
 
@@ -181,20 +180,15 @@ public class MemberAction extends RestAction<Void>
     @CheckReturnValue
     public MemberAction setRoles(Role... roles)
     {
-        if (roles != null)
-        {
-            this.roles = new HashSet<>();
-            for (Role role : roles)
-            {
-                Checks.notNull(role, "Role");
-                Checks.check(role.getGuild().equals(getGuild()), "Roles must all be from the same guild");
-            }
-            Collections.addAll(this.roles, roles);
-        }
-        else
+        if (roles == null)
         {
             this.roles = null;
+            return this;
         }
+        Set<Role> newRoles = new HashSet<>(roles.length);
+        for (Role role : roles)
+            checkAndAdd(newRoles, role);
+        this.roles = newRoles;
         return this;
     }
 
@@ -268,5 +262,12 @@ public class MemberAction extends RestAction<Void>
             "joined_at": "2018-05-05T10:18:16.475626+00:00"
          }
         */
+    }
+
+    private void checkAndAdd(Set<Role> newRoles, Role role)
+    {
+        Checks.notNull(role, "Role");
+        Checks.check(role.getGuild().equals(getGuild()), "Roles must all be from the same guild");
+        newRoles.add(role);
     }
 }
