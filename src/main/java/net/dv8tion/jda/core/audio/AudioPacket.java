@@ -198,15 +198,45 @@ public class AudioPacket
         return new AudioPacket(buffer.array());
     }
 
-    public static AudioPacket decryptAudioPacket(DatagramPacket packet, byte[] secretKey)
+    public static AudioPacket decryptAudioPacket(AudioEncryption encryption, DatagramPacket packet, byte[] secretKey)
     {
         TweetNaclFast.SecretBox boxer = new TweetNaclFast.SecretBox(secretKey);
         AudioPacket encryptedPacket = new AudioPacket(packet);
 
+        byte[] rawPacket = encryptedPacket.getRawPacket();
         byte[] extendedNonce = new byte[TweetNaclFast.SecretBox.nonceLength];
-        System.arraycopy(encryptedPacket.getNonce(), 0, extendedNonce, 0, RTP_HEADER_BYTE_LENGTH);
+        switch (encryption)
+        {
+            case XSALSA20_POLY1305:
+                System.arraycopy(encryptedPacket.getNonce(), 0, extendedNonce, 0, RTP_HEADER_BYTE_LENGTH);
+                break;
+            case XSALSA20_POLY1305_SUFFIX:
+                System.arraycopy(rawPacket, rawPacket.length - extendedNonce.length, extendedNonce, 0, extendedNonce.length);
+                break;
+            case XSALSA20_POLY1305_LITE:
+                System.arraycopy(rawPacket, rawPacket.length - 4, extendedNonce, 0, 4);
+                break;
+            default:
+                AudioConnection.LOG.debug("Failed to decrypt audio packet, unsupported encryption mode!");
+                return null;
+        }
 
-        byte[] decryptedAudio = boxer.open(encryptedPacket.getEncodedAudio(), extendedNonce);
+
+        byte[] actualAudio;
+        byte[] encodedAudio = encryptedPacket.getEncodedAudio();
+        switch (encryption)
+        {
+            case XSALSA20_POLY1305_LITE:
+                actualAudio = new byte[encodedAudio.length - 4];
+                System.arraycopy(encodedAudio, 0, actualAudio, 0, actualAudio.length);
+                encodedAudio = actualAudio;
+                break;
+            case XSALSA20_POLY1305_SUFFIX:
+                actualAudio = new byte[encodedAudio.length - TweetNaclFast.SecretBox.nonceLength];
+                System.arraycopy(encodedAudio, 0, actualAudio, 0, actualAudio.length);
+                encodedAudio = actualAudio;
+        }
+        byte[] decryptedAudio = boxer.open(encodedAudio, extendedNonce);
         if (decryptedAudio == null)
         {
             AudioConnection.LOG.debug("Failed to decrypt audio packet");

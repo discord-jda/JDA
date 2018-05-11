@@ -346,7 +346,7 @@ public class AudioConnection
                                 couldReceive = true;
                                 sendSilentPackets();
                             }
-                            AudioPacket decryptedPacket = AudioPacket.decryptAudioPacket(receivedPacket, webSocket.getSecretKey());
+                            AudioPacket decryptedPacket = AudioPacket.decryptAudioPacket(webSocket.encryption, receivedPacket, webSocket.getSecretKey());
                             if (decryptedPacket == null)
                                 continue;
 
