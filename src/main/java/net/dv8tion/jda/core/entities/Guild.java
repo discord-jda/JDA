@@ -61,11 +61,14 @@ public interface Guild extends ISnowflake
      *         The user id
      *
      * @throws IllegalArgumentException
-     *         If the user id or access token is null
-     * @throws IllegalStateException
-     *         If the provided user is already in this guild
+     *         If the user id or access token is blank, empty, or null,
+     *         or if the provided user is already in this guild
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#CREATE_INSTANT_INVITE Permission.CREATE_INSTANT_INVITE}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.MemberAction MemberAction}
+     *
+     * @see    <a href="https://discordapp.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
      */
     @CheckReturnValue
     MemberAction addMember(String accessToken, String userId);
@@ -85,6 +88,8 @@ public interface Guild extends ISnowflake
      *         If the provided user is already in this guild
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.MemberAction MemberAction}
+     *
+     * @see    <a href="https://discordapp.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
      */
     @CheckReturnValue
     default MemberAction addMember(String accessToken, User user)
@@ -108,6 +113,8 @@ public interface Guild extends ISnowflake
      *         If the provided user is already in this guild
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.MemberAction MemberAction}
+     *
+     * @see    <a href="https://discordapp.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
      */
     @CheckReturnValue
     default MemberAction addMember(String accessToken, long userId)

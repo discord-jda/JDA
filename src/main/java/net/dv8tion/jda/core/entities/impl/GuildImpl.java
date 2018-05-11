@@ -130,9 +130,11 @@ public class GuildImpl implements Guild
     @Override
     public MemberAction addMember(String accessToken, String userId)
     {
-        Checks.notEmpty(accessToken, "Access-Token");
-        Checks.notEmpty(userId, "User ID");
+        Checks.notBlank(accessToken, "Access-Token");
+        Checks.noWhitespace(userId, "User ID");
         Checks.check(getMemberById(userId) == null, "User is already in this guild");
+        if (!getSelfMember().hasPermission(Permission.CREATE_INSTANT_INVITE))
+            throw new InsufficientPermissionException(Permission.CREATE_INSTANT_INVITE);
         return new MemberAction(api, this, userId, accessToken);
     }
 

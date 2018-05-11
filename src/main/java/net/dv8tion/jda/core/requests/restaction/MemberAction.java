@@ -30,6 +30,7 @@ import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
@@ -43,6 +44,8 @@ import java.util.stream.Collectors;
  * <br>This requires an <b>OAuth2 Access Token</b> with the scope {@code guilds.join} to work!
  *
  * @since  3.6.1
+ *
+ * @see    <a href="https://discordapp.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
  */
 public class MemberAction extends RestAction<Void>
 {
@@ -68,6 +71,7 @@ public class MemberAction extends RestAction<Void>
      *
      * @return The access token
      */
+    @Nonnull
     public String getAccessToken()
     {
         return accessToken;
@@ -78,6 +82,7 @@ public class MemberAction extends RestAction<Void>
      *
      * @return The id of the user
      */
+    @Nonnull
     public String getUserId()
     {
         return userId;
@@ -100,6 +105,7 @@ public class MemberAction extends RestAction<Void>
      *
      * @return The Guild
      */
+    @Nonnull
     public Guild getGuild()
     {
         return guild;
@@ -118,7 +124,7 @@ public class MemberAction extends RestAction<Void>
      * @return The current MemberAction for chaining
      */
     @CheckReturnValue
-    public MemberAction setNick(String nick)
+    public MemberAction setNickname(String nick)
     {
         if (nick != null)
         {
@@ -218,7 +224,7 @@ public class MemberAction extends RestAction<Void>
      * @return The current MemberAction for chaining
      */
     @CheckReturnValue
-    public MemberAction setDeaf(boolean deaf)
+    public MemberAction setDeafen(boolean deaf)
     {
         this.deaf = deaf;
         return this;
@@ -241,7 +247,12 @@ public class MemberAction extends RestAction<Void>
     @Override
     protected void handleResponse(Response response, Request<Void> request)
     {
-        /* This is not very useful but here is the response:
+        if (response.isOk())
+            request.onSuccess(null);
+        else
+            request.onFailure(response);
+        /*
+        This is not very useful but here is the response:
          {
             "nick": null,
             "user":
@@ -256,10 +267,6 @@ public class MemberAction extends RestAction<Void>
             "deaf": false,
             "joined_at": "2018-05-05T10:18:16.475626+00:00"
          }
-         */
-        if (response.isOk())
-            request.onSuccess(null);
-        else
-            request.onFailure(response);
+        */
     }
 }
