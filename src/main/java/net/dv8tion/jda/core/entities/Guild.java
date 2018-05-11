@@ -83,9 +83,10 @@ public interface Guild extends ISnowflake
      *         The user
      *
      * @throws IllegalArgumentException
-     *         If the user or access token is null
-     * @throws IllegalStateException
-     *         If the provided user is already in this guild
+     *         If the user or access token is blank, empty, or null,
+     *         or if the provided user is already in this guild
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#CREATE_INSTANT_INVITE Permission.CREATE_INSTANT_INVITE}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.MemberAction MemberAction}
      *
@@ -108,9 +109,10 @@ public interface Guild extends ISnowflake
      *         The user id
      *
      * @throws IllegalArgumentException
-     *         If the access token is null
-     * @throws IllegalStateException
-     *         If the provided user is already in this guild
+     *         If the user id or access token is blank, empty, or null,
+     *         or if the provided user is already in this guild
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#CREATE_INSTANT_INVITE Permission.CREATE_INSTANT_INVITE}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.MemberAction MemberAction}
      *
