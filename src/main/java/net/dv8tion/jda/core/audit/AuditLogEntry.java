@@ -20,13 +20,17 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.Webhook;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.UserImpl;
+import net.dv8tion.jda.core.entities.impl.WebhookImpl;
 import net.dv8tion.jda.core.utils.Checks;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * Single entry for an {@link net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAction
@@ -41,20 +45,22 @@ public class AuditLogEntry implements ISnowflake
     protected final long targetId;
     protected final GuildImpl guild;
     protected final UserImpl user;
+    protected final WebhookImpl webhook;
     protected final String reason;
 
     protected final Map<String, AuditLogChange> changes;
     protected final Map<String, Object> options;
     protected final ActionType type;
 
-    public AuditLogEntry(ActionType type, long id, long targetId, GuildImpl guild, UserImpl user, String reason,
-                         Map<String, AuditLogChange> changes, Map<String, Object> options)
+    public AuditLogEntry(ActionType type, long id, long targetId, GuildImpl guild, UserImpl user, WebhookImpl webhook, 
+                        String reason, Map<String, AuditLogChange> changes, Map<String, Object> options)
     {
         this.type = type;
         this.id = id;
         this.targetId = targetId;
         this.guild = guild;
         this.user = user;
+        this.webhook = webhook;
         this.reason = reason;
         this.changes = changes != null && !changes.isEmpty()
                 ? Collections.unmodifiableMap(changes)
@@ -93,6 +99,17 @@ public class AuditLogEntry implements ISnowflake
     {
         return Long.toUnsignedString(targetId);
     }
+    
+    /**
+     * The {@link net.dv8tion.jda.core.entities.Webhook Webhook} that the target id of this audit-log entry refers to
+     * 
+     * @return Possibly-null Webhook instance
+     */
+    @Nullable
+    public Webhook getWebhook()
+    {
+        return webhook;
+    }
 
     /**
      * The {@link net.dv8tion.jda.core.entities.Guild Guild} this audit-log entry refers to
@@ -108,8 +125,9 @@ public class AuditLogEntry implements ISnowflake
      * The {@link net.dv8tion.jda.core.entities.User User} responsible
      * for this action.
      *
-     * @return The User instance
+     * @return Possibly-null User instance
      */
+    @Nullable
     public User getUser()
     {
         return user;
@@ -120,6 +138,7 @@ public class AuditLogEntry implements ISnowflake
      *
      * @return Possibly-null reason String
      */
+    @Nullable
     public String getReason()
     {
         return reason;
@@ -157,6 +176,7 @@ public class AuditLogEntry implements ISnowflake
      *
      * @return Possibly-null value corresponding to the specified key
      */
+    @Nullable
     public AuditLogChange getChangeByKey(final AuditLogKey key)
     {
         return key == null ? null : getChangeByKey(key.getKey());
@@ -171,6 +191,7 @@ public class AuditLogEntry implements ISnowflake
      *
      * @return Possibly-null value corresponding to the specified key
      */
+    @Nullable
     public AuditLogChange getChangeByKey(final String key)
     {
         return changes.get(key);
@@ -231,6 +252,7 @@ public class AuditLogEntry implements ISnowflake
      *
      * @return Possibly-null value corresponding to the specified key
      */
+    @Nullable
     @SuppressWarnings("unchecked")
     public <T> T getOptionByName(String name)
     {
@@ -252,6 +274,7 @@ public class AuditLogEntry implements ISnowflake
      *
      * @return Possibly-null value corresponding to the specified option constant
      */
+    @Nullable
     public <T> T getOption(AuditLogOption option)
     {
         Checks.notNull(option, "Option");
