@@ -23,7 +23,9 @@ import net.dv8tion.jda.core.managers.GuildController;
 import net.dv8tion.jda.core.managers.GuildManager;
 import net.dv8tion.jda.core.managers.GuildManagerUpdatable;
 import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.restaction.MemberAction;
 import net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAction;
+import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.cache.MemberCacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 
@@ -46,7 +48,87 @@ public interface Guild extends ISnowflake
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type {@link java.util.EnumSet EnumSet}
      */
+    @CheckReturnValue
     RestAction<EnumSet<Region>> retrieveRegions();
+
+    /**
+     * Adds the user represented by the provided id to this guild.
+     * <br>This requires an <b>OAuth2 Access Token</b> with the scope {@code guilds.join}.
+     *
+     * @param  accessToken
+     *         The access token
+     * @param  userId
+     *         The user id
+     *
+     * @throws IllegalArgumentException
+     *         If the user id or access token is blank, empty, or null,
+     *         or if the provided user is already in this guild
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#CREATE_INSTANT_INVITE Permission.CREATE_INSTANT_INVITE}
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.MemberAction MemberAction}
+     *
+     * @see    <a href="https://discordapp.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
+     *
+     * @since  3.7.0
+     */
+    @CheckReturnValue
+    MemberAction addMember(String accessToken, String userId);
+
+    /**
+     * Adds the provided user to this guild.
+     * <br>This requires an <b>OAuth2 Access Token</b> with the scope {@code guilds.join}.
+     *
+     * @param  accessToken
+     *         The access token
+     * @param  user
+     *         The user
+     *
+     * @throws IllegalArgumentException
+     *         If the user or access token is blank, empty, or null,
+     *         or if the provided user is already in this guild
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#CREATE_INSTANT_INVITE Permission.CREATE_INSTANT_INVITE}
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.MemberAction MemberAction}
+     *
+     * @see    <a href="https://discordapp.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
+     *
+     * @since  3.7.0
+     */
+    @CheckReturnValue
+    default MemberAction addMember(String accessToken, User user)
+    {
+        Checks.notNull(user, "User");
+        return addMember(accessToken, user.getId());
+    }
+
+    /**
+     * Adds the user represented by the provided id to this guild.
+     * <br>This requires an <b>OAuth2 Access Token</b> with the scope {@code guilds.join}.
+     *
+     * @param  accessToken
+     *         The access token
+     * @param  userId
+     *         The user id
+     *
+     * @throws IllegalArgumentException
+     *         If the user id or access token is blank, empty, or null,
+     *         or if the provided user is already in this guild
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#CREATE_INSTANT_INVITE Permission.CREATE_INSTANT_INVITE}
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.MemberAction MemberAction}
+     *
+     * @see    <a href="https://discordapp.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
+     *
+     * @since  3.7.0
+     */
+    @CheckReturnValue
+    default MemberAction addMember(String accessToken, long userId)
+    {
+        return addMember(accessToken, Long.toUnsignedString(userId));
+    }
 
     /**
      * The human readable name of the {@link net.dv8tion.jda.core.entities.Guild Guild}.
