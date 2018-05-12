@@ -69,6 +69,8 @@ public interface Guild extends ISnowflake
      * @return {@link net.dv8tion.jda.core.requests.restaction.MemberAction MemberAction}
      *
      * @see    <a href="https://discordapp.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
+     *
+     * @since  3.7.0
      */
     @CheckReturnValue
     MemberAction addMember(String accessToken, String userId);
@@ -91,6 +93,8 @@ public interface Guild extends ISnowflake
      * @return {@link net.dv8tion.jda.core.requests.restaction.MemberAction MemberAction}
      *
      * @see    <a href="https://discordapp.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
+     *
+     * @since  3.7.0
      */
     @CheckReturnValue
     default MemberAction addMember(String accessToken, User user)
@@ -117,6 +121,8 @@ public interface Guild extends ISnowflake
      * @return {@link net.dv8tion.jda.core.requests.restaction.MemberAction MemberAction}
      *
      * @see    <a href="https://discordapp.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
+     *
+     * @since  3.7.0
      */
     @CheckReturnValue
     default MemberAction addMember(String accessToken, long userId)

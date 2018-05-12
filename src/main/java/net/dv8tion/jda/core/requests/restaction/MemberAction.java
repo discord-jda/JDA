@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
  * specifically designed to allow bots to add {@link net.dv8tion.jda.core.entities.User Users} to Guilds.
  * <br>This requires an <b>OAuth2 Access Token</b> with the scope {@code guilds.join} to work!
  *
- * @since  3.6.1
+ * @since  3.7.0
  *
  * @see    <a href="https://discordapp.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
  */
