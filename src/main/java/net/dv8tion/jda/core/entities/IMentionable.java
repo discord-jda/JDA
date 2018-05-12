@@ -52,6 +52,7 @@ public interface IMentionable extends Formattable
 {
     /**
      * Retrieve a Mention for this Entity.
+     * For the public {@link net.dv8tion.jda.core.entities.Role Role} (@everyone), this will return the literal string {@code "@everyone"}.
      *
      * @return A resolvable mention.
      */
