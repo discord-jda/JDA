@@ -131,7 +131,7 @@ public class GuildImpl implements Guild
     public MemberAction addMember(String accessToken, String userId)
     {
         Checks.notBlank(accessToken, "Access-Token");
-        Checks.noWhitespace(userId, "User ID");
+        Checks.isSnowflake(userId, "User ID");
         Checks.check(getMemberById(userId) == null, "User is already in this guild");
         if (!getSelfMember().hasPermission(Permission.CREATE_INSTANT_INVITE))
             throw new InsufficientPermissionException(Permission.CREATE_INSTANT_INVITE);
