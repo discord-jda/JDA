@@ -28,11 +28,13 @@ public enum AudioEncryption
 
     private final String key;
 
-    AudioEncryption() {
+    AudioEncryption()
+    {
         this.key = name().toLowerCase();
     }
 
-    public String getKey() {
+    public String getKey()
+    {
         return key;
     }
 
