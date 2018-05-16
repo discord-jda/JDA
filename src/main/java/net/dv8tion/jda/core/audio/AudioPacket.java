@@ -122,6 +122,14 @@ public class AudioPacket
         return Arrays.copyOf(rawPacket, RTP_HEADER_BYTE_LENGTH);
     }
 
+    public byte[] getNoncePadded()
+    {
+        byte[] nonce = new byte[TweetNaclFast.SecretBox.nonceLength];
+        //The first 12 bytes are the rawPacket are the RTP Discord Nonce.
+        System.arraycopy(rawPacket, 0, nonce, 0, RTP_HEADER_BYTE_LENGTH);
+        return nonce;
+    }
+
     public byte[] getRawPacket()
     {
         return rawPacket;
@@ -161,20 +169,14 @@ public class AudioPacket
         return new DatagramPacket(getRawPacket(), rawPacket.length, address);
     }
 
-    public DatagramPacket asEncryptedUdpPacket(InetSocketAddress address, byte[] secretKey, byte[] nonce)
+    public DatagramPacket asEncryptedUdpPacket(InetSocketAddress address, byte[] secretKey, byte[] nonce, int nlen)
     {
         //Xsalsa20's Nonce is 24 bytes long, however RTP (and consequently Discord)'s nonce is a different length
         // so we need to create a 24 byte array, and copy the nonce into it.
         // we will leave the extra bytes as nulls. (Java sets non-populated bytes as 0).
-        byte[] extendedNonce = new byte[TweetNaclFast.SecretBox.nonceLength];
-
-        //Copy the RTP nonce into our Xsalsa20 nonce array.
-        // Note, it doesn't fill the Xsalsa20 nonce array completely.
-        // If nonce is null we use the first 12 bytes from the raw discord payload
+        byte[] extendedNonce = nonce;
         if (nonce == null)
-            System.arraycopy(getNonce(), 0, extendedNonce, 0, RTP_HEADER_BYTE_LENGTH);
-        else
-            System.arraycopy(nonce, 0, extendedNonce, 0, nonce.length);
+            extendedNonce = getNoncePadded();
 
         //Create our SecretBox encoder with the secretKey provided by Discord.
         TweetNaclFast.SecretBox boxer = new TweetNaclFast.SecretBox(secretKey);
@@ -185,9 +187,9 @@ public class AudioPacket
             // here we append the provided nonce which is used in _suffix and _lite encryption modes
             // for _suffix this is the usual 24 bytes and for _lite it should be 4 bytes (unsigned int big endian)
             // in case no nonce was provided we use no extension and don't append any nonce to the payload
-            encryptedAudio = new byte[intermediateAudio.length + nonce.length];
+            encryptedAudio = new byte[intermediateAudio.length + nlen];
             System.arraycopy(intermediateAudio, 0, encryptedAudio, 0, intermediateAudio.length);
-            System.arraycopy(nonce, 0, encryptedAudio, intermediateAudio.length, nonce.length);
+            System.arraycopy(nonce, 0, encryptedAudio, intermediateAudio.length, nlen);
         }
 
         //Create a new temp audio packet using the encrypted audio so that we don't
@@ -210,24 +212,25 @@ public class AudioPacket
         TweetNaclFast.SecretBox boxer = new TweetNaclFast.SecretBox(secretKey);
         AudioPacket encryptedPacket = new AudioPacket(packet);
 
-        final byte[] rawPacket = encryptedPacket.getRawPacket();
-        final byte[] extendedNonce = new byte[TweetNaclFast.SecretBox.nonceLength];
+        byte[] extendedNonce;
+        byte[] rawPacket = encryptedPacket.getRawPacket();
         switch (encryption)
         {
             case XSALSA20_POLY1305:
-                System.arraycopy(encryptedPacket.getNonce(), 0, extendedNonce, 0, RTP_HEADER_BYTE_LENGTH);
+                extendedNonce = encryptedPacket.getNoncePadded();
                 break;
             case XSALSA20_POLY1305_SUFFIX:
+                extendedNonce = new byte[TweetNaclFast.SecretBox.nonceLength];
                 System.arraycopy(rawPacket, rawPacket.length - extendedNonce.length, extendedNonce, 0, extendedNonce.length);
                 break;
             case XSALSA20_POLY1305_LITE:
+                extendedNonce = new byte[TweetNaclFast.SecretBox.nonceLength];
                 System.arraycopy(rawPacket, rawPacket.length - 4, extendedNonce, 0, 4);
                 break;
             default:
                 AudioConnection.LOG.debug("Failed to decrypt audio packet, unsupported encryption mode!");
                 return null;
         }
-
 
         byte[] encodedAudio;
         switch (encryption)

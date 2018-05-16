@@ -684,27 +684,31 @@ public class AudioConnection
         {
             AudioPacket packet = new AudioPacket(seq, timestamp, webSocket.getSSRC(), rawAudio);
             byte[] nonceData;
+            int nlen;
             switch (webSocket.encryption)
             {
                 case XSALSA20_POLY1305:
                     nonceData = null;
+                    nlen = 0;
                     break;
                 case XSALSA20_POLY1305_LITE:
                     long nextNonce = nonce.updateAndGet((n) -> n >= MAX_UINT_32 ? 0 : n + 1);
                     nonceData = getNonceBytes(nextNonce);
+                    nlen = 4;
                     break;
                 case XSALSA20_POLY1305_SUFFIX:
                     nonceData = TweetNaclFast.randombytes(TweetNaclFast.SecretBox.nonceLength);
+                    nlen = TweetNaclFast.SecretBox.nonceLength;
                     break;
                 default:
                     throw new IllegalStateException("Encryption mode [" + webSocket.encryption + "] is not supported!");
             }
-            return packet.asEncryptedUdpPacket(webSocket.getAddress(), webSocket.getSecretKey(), nonceData);
+            return packet.asEncryptedUdpPacket(webSocket.getAddress(), webSocket.getSecretKey(), nonceData, nlen);
         }
 
         private byte[] getNonceBytes(long nonce)
         {
-            byte[] data = new byte[4];
+            byte[] data = new byte[TweetNaclFast.SecretBox.nonceLength];
             data[0] = (byte) ((nonce >>> 24) & 0xFF);
             data[1] = (byte) ((nonce >>> 16) & 0xFF);
             data[2] = (byte) ((nonce >>>  8) & 0xFF);
