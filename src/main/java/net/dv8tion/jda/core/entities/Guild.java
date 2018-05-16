@@ -45,11 +45,27 @@ public interface Guild extends ISnowflake
 {
     /**
      * Retrieves the available regions for this Guild
+     * <br>Shortcut for {@link #retrieveRegions(boolean) retrieveRegions(true)}
+     * <br>This will include deprecated voice regions by default.
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type {@link java.util.EnumSet EnumSet}
      */
     @CheckReturnValue
-    RestAction<EnumSet<Region>> retrieveRegions();
+    default RestAction<EnumSet<Region>> retrieveRegions()
+    {
+        return retrieveRegions(true);
+    }
+
+    /**
+     * Retrieves the available regions for this Guild
+     *
+     * @param  includeDeprecated
+     *         Whether to include deprecated regions
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type {@link java.util.EnumSet EnumSet}
+     */
+    @CheckReturnValue
+    RestAction<EnumSet<Region>> retrieveRegions(boolean includeDeprecated);
 
     /**
      * Adds the user represented by the provided id to this guild.
