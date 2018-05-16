@@ -37,6 +37,7 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.MemberAction;
 import net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAction;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.Helpers;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.cache.MemberCacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
@@ -99,7 +100,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public RestAction<EnumSet<Region>> retrieveRegions()
+    public RestAction<EnumSet<Region>> retrieveRegions(boolean includeDeprecated)
     {
         Route.CompiledRoute route = Route.Guilds.GET_VOICE_REGIONS.compile(getId());
         return new RestAction<EnumSet<Region>>(api, route)
@@ -117,6 +118,8 @@ public class GuildImpl implements Guild
                 for (int i = 0; arr != null && i < arr.length(); i++)
                 {
                     JSONObject obj = arr.getJSONObject(i);
+                    if (!includeDeprecated && Helpers.optBoolean(obj, "deprecated"))
+                        continue;
                     String id = obj.optString("id");
                     Region region = Region.fromKey(id);
                     if (region != Region.UNKNOWN)
