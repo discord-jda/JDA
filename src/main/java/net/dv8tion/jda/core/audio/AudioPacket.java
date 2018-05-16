@@ -124,12 +124,19 @@ public class AudioPacket
 
     public byte[] getRawPacket()
     {
-        return Arrays.copyOf(rawPacket, rawPacket.length);
+        return rawPacket;
     }
 
     public byte[] getEncodedAudio()
     {
-        return Arrays.copyOf(encodedAudio, encodedAudio.length);
+        return encodedAudio;
+    }
+
+    public byte[] getEncodedAudio(int nonceLength)
+    {
+        if (nonceLength == 0)
+            return encodedAudio;
+        return Arrays.copyOf(encodedAudio, encodedAudio.length - nonceLength);
     }
 
     public char getSequence()
@@ -203,8 +210,8 @@ public class AudioPacket
         TweetNaclFast.SecretBox boxer = new TweetNaclFast.SecretBox(secretKey);
         AudioPacket encryptedPacket = new AudioPacket(packet);
 
-        byte[] rawPacket = encryptedPacket.getRawPacket();
-        byte[] extendedNonce = new byte[TweetNaclFast.SecretBox.nonceLength];
+        final byte[] rawPacket = encryptedPacket.getRawPacket();
+        final byte[] extendedNonce = new byte[TweetNaclFast.SecretBox.nonceLength];
         switch (encryption)
         {
             case XSALSA20_POLY1305:
@@ -222,27 +229,30 @@ public class AudioPacket
         }
 
 
-        byte[] actualAudio;
-        byte[] encodedAudio = encryptedPacket.getEncodedAudio();
+        byte[] encodedAudio;
         switch (encryption)
         {
+            case XSALSA20_POLY1305:
+                encodedAudio = encryptedPacket.getEncodedAudio();
+                break;
             case XSALSA20_POLY1305_LITE:
-                actualAudio = new byte[encodedAudio.length - 4];
-                System.arraycopy(encodedAudio, 0, actualAudio, 0, actualAudio.length);
-                encodedAudio = actualAudio;
+                encodedAudio = encryptedPacket.getEncodedAudio(4);
                 break;
             case XSALSA20_POLY1305_SUFFIX:
-                actualAudio = new byte[encodedAudio.length - TweetNaclFast.SecretBox.nonceLength];
-                System.arraycopy(encodedAudio, 0, actualAudio, 0, actualAudio.length);
-                encodedAudio = actualAudio;
+                encodedAudio = encryptedPacket.getEncodedAudio(TweetNaclFast.SecretBox.nonceLength);
+                break;
+            default:
+                AudioConnection.LOG.debug("Failed to decrypt audio packet, unsupported encryption mode!");
+                return null;
         }
-        byte[] decryptedAudio = boxer.open(encodedAudio, extendedNonce);
+
+        final byte[] decryptedAudio = boxer.open(encodedAudio, extendedNonce);
         if (decryptedAudio == null)
         {
             AudioConnection.LOG.debug("Failed to decrypt audio packet");
             return null;
         }
-        byte[] decryptedRawPacket = new byte[RTP_HEADER_BYTE_LENGTH + decryptedAudio.length];
+        final byte[] decryptedRawPacket = new byte[RTP_HEADER_BYTE_LENGTH + decryptedAudio.length];
 
         System.arraycopy(encryptedPacket.getNonce(), 0, decryptedRawPacket, 0, RTP_HEADER_BYTE_LENGTH);
         System.arraycopy(decryptedAudio, 0, decryptedRawPacket, RTP_HEADER_BYTE_LENGTH, decryptedAudio.length);
