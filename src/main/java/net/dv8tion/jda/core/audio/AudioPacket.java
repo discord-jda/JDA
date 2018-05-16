@@ -198,15 +198,6 @@ public class AudioPacket
         return new AudioPacket(seq, timestamp, ssrc, encryptedAudio).asUdpPacket(address);
     }
 
-    public static AudioPacket createEchoPacket(DatagramPacket packet, int ssrc)
-    {
-        ByteBuffer buffer = ByteBuffer.wrap(Arrays.copyOf(packet.getData(), packet.getLength()));
-        buffer.put(RTP_VERSION_PAD_EXTEND_INDEX, RTP_VERSION_PAD_EXTEND);
-        buffer.put(RTP_PAYLOAD_INDEX, RTP_PAYLOAD_TYPE);
-        buffer.putInt(SSRC_INDEX, ssrc);
-        return new AudioPacket(buffer.array());
-    }
-
     public static AudioPacket decryptAudioPacket(AudioEncryption encryption, DatagramPacket packet, byte[] secretKey)
     {
         TweetNaclFast.SecretBox boxer = new TweetNaclFast.SecretBox(secretKey);
