@@ -70,12 +70,63 @@ public class WebhookMessage
      *         or exceeds the maximum total character count of {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}
      *
      * @return The resulting WebhookMessage instance
+     *
+     * @deprecated
+     *         Use {@link #embeds(MessageEmbed, MessageEmbed...)} instead.
      */
+    @Deprecated
     public static WebhookMessage of(MessageEmbed... embeds)
     {
-        Checks.noneNull(embeds, "Embeds");
         Checks.notEmpty(embeds, "Embeds");
-        return new WebhookMessage(null, null, null, Arrays.asList(embeds), false, null);
+        if (embeds.length > 1)
+            return embeds(Arrays.asList(embeds));
+        return embeds(embeds[0]);
+    }
+
+    /**
+     * Creates a new WebhookMessage instance with the provided {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbeds}
+     *
+     * @param  embeds
+     *         The embeds to use for this message
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If any of the provided embeds is {@code null}
+     *         or exceeds the maximum total character count of {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}
+     *
+     * @return The resulting WebhookMessage instance
+     *
+     * @deprecated
+     *         Use {@link #embeds(Collection)} instead.
+     */
+    @Deprecated
+    public static WebhookMessage of(Collection<MessageEmbed> embeds)
+    {
+        return embeds(embeds);
+    }
+
+    /**
+     * Creates a new WebhookMessage instance with the provided {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbeds}
+     *
+     * @param  first
+     *         The first embed to use for this message
+     * @param  embeds
+     *         The other embeds to use for this message
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If any of the provided embeds is {@code null}
+     *         or exceeds the maximum total character count of {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}
+     *
+     * @return The resulting WebhookMessage instance
+     */
+    // forcing first embed as we expect at least one entry (Effective Java 3rd. Edition - Item 53)
+    public static WebhookMessage embeds(MessageEmbed first, MessageEmbed... embeds)
+    {
+        Checks.notEmpty(embeds, "Embeds");
+        Checks.noneNull(embeds, "Embeds");
+        List<MessageEmbed> list = new ArrayList<>(1 + embeds.length);
+        list.add(first);
+        Collections.addAll(list, embeds);
+        return new WebhookMessage(null, null, null, list, false, null);
     }
 
     /**
@@ -90,10 +141,10 @@ public class WebhookMessage
      *
      * @return The resulting WebhookMessage instance
      */
-    public static WebhookMessage of(Collection<MessageEmbed> embeds)
+    public static WebhookMessage embeds(Collection<MessageEmbed> embeds)
     {
-        Checks.noneNull(embeds, "Embeds");
         Checks.notEmpty(embeds, "Embeds");
+        Checks.noneNull(embeds, "Embeds");
         return new WebhookMessage(null, null, null, new ArrayList<>(embeds), false, null);
     }
 
@@ -119,6 +170,11 @@ public class WebhookMessage
      *         or the provided map is null/empty
      *
      * @return WebhookMessage for the provided files
+     *
+     * @see    WebhookMessageBuilder#addFile(String, InputStream)
+     * @see    WebhookMessageBuilder#addFile(String, byte[])
+     * @see    WebhookMessageBuilder#addFile(String, File)
+     * @see    WebhookMessageBuilder#addFile(File)
      */
     public static WebhookMessage files(Map<String, ?> attachments)
     {
@@ -165,6 +221,11 @@ public class WebhookMessage
      *         or if one of the provided files is not readable
      *
      * @return WebhookMessage for the provided files
+     *
+     * @see    WebhookMessageBuilder#addFile(String, InputStream)
+     * @see    WebhookMessageBuilder#addFile(String, byte[])
+     * @see    WebhookMessageBuilder#addFile(String, File)
+     * @see    WebhookMessageBuilder#addFile(File)
      */
     // forcing first pair as we expect at least one entry (Effective Java 3rd. Edition - Item 53)
     public static WebhookMessage files(String name1, Object data1, Object... attachments)
@@ -190,10 +251,11 @@ public class WebhookMessage
 
     /**
      * Creates a new WebhookMessage instance with the provided {@link net.dv8tion.jda.core.entities.Message Message}
+     * as layout for copying.
      * <br><b>This does not copy the attachments of the provided message!</b>
      *
      * @param  message
-     *         The message to use for this message
+     *         The message to copy
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided message is {@code null}

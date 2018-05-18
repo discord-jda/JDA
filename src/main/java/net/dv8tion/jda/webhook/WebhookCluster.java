@@ -641,8 +641,38 @@ public class WebhookCluster implements AutoCloseable
      */
     public List<RequestFuture<?>> broadcast(MessageEmbed... embeds)
     {
-        return broadcast(WebhookMessage.of(embeds));
+        return broadcast(WebhookMessage.embeds(Arrays.asList(embeds)));
     }
+
+    /**
+     * Sends the provided {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbeds}
+     * to all registered {@link net.dv8tion.jda.webhook.WebhookClient WebhookClients}.
+     *
+     * <p><b>You can send up to 10 embeds per message! If more are sent they will not be displayed.</b>
+     *
+     * <p>Hint: Use {@link net.dv8tion.jda.core.EmbedBuilder EmbedBuilder} to
+     * create a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbeds} instance!
+     *
+     * @param  first
+     *         The first embed to send to the clients
+     * @param  embeds
+     *         The other embeds that should be sent to the clients
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If any of the provided arguments is {@code null}
+     * @throws java.util.concurrent.RejectedExecutionException
+     *         If any of the receivers has been shutdown
+     * @throws net.dv8tion.jda.core.exceptions.HttpException
+     *         If the HTTP request fails
+     *
+     * @return A list of {@link java.util.concurrent.Future Future} instances
+     *         representing all message tasks.
+     */
+    public List<RequestFuture<?>> broadcast(MessageEmbed first, MessageEmbed... embeds)
+    {
+        return broadcast(WebhookMessage.embeds(first, embeds));
+    }
+
 
     /**
      * Sends the provided {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbeds}
@@ -668,7 +698,7 @@ public class WebhookCluster implements AutoCloseable
      */
     public List<RequestFuture<?>> broadcast(Collection<MessageEmbed> embeds)
     {
-        return broadcast(WebhookMessage.of(embeds));
+        return broadcast(WebhookMessage.embeds(embeds));
     }
 
     /**

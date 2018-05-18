@@ -43,6 +43,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.*;
 
@@ -270,7 +271,36 @@ public class WebhookClient implements AutoCloseable
      */
     public RequestFuture<?> send(MessageEmbed... embeds)
     {
-        return send(WebhookMessage.of(embeds));
+        return send(WebhookMessage.embeds(Arrays.asList(embeds)));
+    }
+
+    /**
+     * Sends the provided {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbeds}
+     * to this webhook.
+     *
+     * <p><b>You can send up to 10 embeds per message! If more are sent they will not be displayed.</b>
+     *
+     * <p>Hint: Use {@link net.dv8tion.jda.core.EmbedBuilder EmbedBuilder} to
+     * create a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} instance!
+     *
+     * @param  first
+     *         The first embed
+     * @param  embeds
+     *         The other embeds to send
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If any of the provided embeds is {@code null}
+     * @throws java.util.concurrent.RejectedExecutionException
+     *         If this client was closed
+     * @throws net.dv8tion.jda.core.exceptions.HttpException
+     *         If the HTTP request fails
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
+     *         this will be completed once the message was sent.
+     */
+    public RequestFuture<?> send(MessageEmbed first, MessageEmbed... embeds)
+    {
+        return send(WebhookMessage.embeds(first, embeds));
     }
 
     /**
@@ -297,7 +327,7 @@ public class WebhookClient implements AutoCloseable
      */
     public RequestFuture<?> send(Collection<MessageEmbed> embeds)
     {
-        return send(WebhookMessage.of(embeds));
+        return send(WebhookMessage.embeds(embeds));
     }
 
     /**
