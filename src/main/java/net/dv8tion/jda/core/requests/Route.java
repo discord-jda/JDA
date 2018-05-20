@@ -32,9 +32,9 @@ public class Route
     public static class Misc
     {
         public static final Route TRACK =             new Route(POST, true, "track");
-        public static final Route GET_VOICE_REGIONS = new Route(GET, true, "voice/regions");
-        public static final Route GATEWAY =           new Route(GET, true, "gateway");
-        public static final Route GATEWAY_BOT =       new Route(GET, true, "gateway/bot");
+        public static final Route GET_VOICE_REGIONS = new Route(GET,  true, "voice/regions");
+        public static final Route GATEWAY =           new Route(GET,  true, "gateway");
+        public static final Route GATEWAY_BOT =       new Route(GET,  true, "gateway/bot");
     }
 
     public static class Applications
@@ -191,7 +191,6 @@ public class Route
     {
         public static final Route SEND_MESSAGE =          new Route(POST,   "channels/{channel_id}/messages",              "channel_id");
         public static final Route EDIT_MESSAGE =          new Route(PATCH,  "channels/{channel_id}/messages/{message_id}", "channel_id");
-        public static final Route DELETE_MESSAGE =        new Route(DELETE, "channels/{channel_id}/messages/{message_id}", "channel_id");
         public static final Route GET_PINNED_MESSAGES =   new Route(GET,    "channels/{channel_id}/pins",                  "channel_id");
         public static final Route ADD_PINNED_MESSAGE =    new Route(PUT,    "channels/{channel_id}/pins/{message_id}",     "channel_id");
         public static final Route REMOVE_PINNED_MESSAGE = new Route(DELETE, "channels/{channel_id}/pins/{message_id}",     "channel_id");
@@ -203,7 +202,8 @@ public class Route
         public static final Route REMOVE_ALL_REACTIONS =     new Route(DELETE, "channels/{channel_id}/messages/{message_id}/reactions",                           "channel_id");
         public static final Route GET_REACTION_USERS =       new Route(GET,    "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}",           "channel_id");
 
-        public static final Route GET_MESSAGE_HISTORY =        new Route(GET, true, "channels/{channel_id}/messages", "channel_id");
+        public static final Route DELETE_MESSAGE =      new Route(DELETE, true, "channels/{channel_id}/messages/{message_id}", "channel_id");
+        public static final Route GET_MESSAGE_HISTORY = new Route(GET,    true, "channels/{channel_id}/messages",              "channel_id");
 
         //Bot only
         public static final Route GET_MESSAGE =     new Route(GET, true, "channels/{channel_id}/messages/{message_id}", "channel_id");
@@ -215,11 +215,11 @@ public class Route
 
     public static class Invites
     {
-        public static final Route GET_INVITE =          new Route(GET,    "invites/{code}");
-        public static final Route DELETE_INVITE =       new Route(DELETE, "invites/{code}");
-        public static final Route GET_GUILD_INVITES =   new Route(GET,    "guilds/{guild_id}/invites",     "guild_id");
-        public static final Route GET_CHANNEL_INVITES = new Route(GET,    "channels/{channel_id}/invites", "channel_id");
-        public static final Route CREATE_INVITE =       new Route(POST,   "channels/{channel_id}/invites", "channel_id");
+        public static final Route GET_INVITE =          new Route(GET, true, "invites/{code}");
+        public static final Route GET_GUILD_INVITES =   new Route(GET, true, "guilds/{guild_id}/invites",     "guild_id");
+        public static final Route GET_CHANNEL_INVITES = new Route(GET, true, "channels/{channel_id}/invites", "channel_id");
+        public static final Route CREATE_INVITE =       new Route(POST,      "channels/{channel_id}/invites", "channel_id");
+        public static final Route DELETE_INVITE =       new Route(DELETE,    "invites/{code}");
     }
 
     public static class Custom
