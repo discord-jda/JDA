@@ -34,8 +34,10 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.restaction.MemberAction;
 import net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAction;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.Helpers;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.cache.MemberCacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
@@ -98,7 +100,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public RestAction<EnumSet<Region>> retrieveRegions()
+    public RestAction<EnumSet<Region>> retrieveRegions(boolean includeDeprecated)
     {
         Route.CompiledRoute route = Route.Guilds.GET_VOICE_REGIONS.compile(getId());
         return new RestAction<EnumSet<Region>>(api, route)
@@ -116,6 +118,8 @@ public class GuildImpl implements Guild
                 for (int i = 0; arr != null && i < arr.length(); i++)
                 {
                     JSONObject obj = arr.getJSONObject(i);
+                    if (!includeDeprecated && Helpers.optBoolean(obj, "deprecated"))
+                        continue;
                     String id = obj.optString("id");
                     Region region = Region.fromKey(id);
                     if (region != Region.UNKNOWN)
@@ -124,6 +128,17 @@ public class GuildImpl implements Guild
                 request.onSuccess(set);
             }
         };
+    }
+
+    @Override
+    public MemberAction addMember(String accessToken, String userId)
+    {
+        Checks.notBlank(accessToken, "Access-Token");
+        Checks.noWhitespace(userId, "User ID");
+        Checks.check(getMemberById(userId) == null, "User is already in this guild");
+        if (!getSelfMember().hasPermission(Permission.CREATE_INSTANT_INVITE))
+            throw new InsufficientPermissionException(Permission.CREATE_INSTANT_INVITE);
+        return new MemberAction(api, this, userId, accessToken);
     }
 
     @Override
@@ -477,7 +492,7 @@ public class GuildImpl implements Guild
     @Override
     public RestAction<Void> delete()
     {
-        if (api.getSelfUser().isMfaEnabled())
+        if (!api.getSelfUser().isBot() && api.getSelfUser().isMfaEnabled())
             throw new IllegalStateException("Cannot delete a guild without providing MFA code. Use Guild#delete(String)");
 
         return delete(null);
@@ -490,7 +505,7 @@ public class GuildImpl implements Guild
             throw new PermissionException("Cannot delete a guild that you do not own!");
 
         JSONObject mfaBody = null;
-        if (api.getSelfUser().isMfaEnabled())
+        if (!api.getSelfUser().isBot() && api.getSelfUser().isMfaEnabled())
         {
             Checks.notEmpty(mfaCode, "Provided MultiFactor Auth code");
             mfaBody = new JSONObject().put("code", mfaCode);

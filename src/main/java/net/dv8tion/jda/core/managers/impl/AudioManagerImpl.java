@@ -35,8 +35,10 @@ import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.NativeUtil;
+import net.dv8tion.jda.core.utils.PermissionUtil;
 
 import java.io.IOException;
+import java.util.EnumSet;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class AudioManagerImpl implements AudioManager
@@ -91,12 +93,12 @@ public class AudioManagerImpl implements AudioManager
             throw new GuildUnavailableException("Cannot open an Audio Connection with an unavailable guild. " +
                     "Please wait until this Guild is available to open a connection.");
         final Member self = guild.getSelfMember();
-        if (!self.hasPermission(channel, Permission.VOICE_CONNECT) && !self.hasPermission(channel, Permission.VOICE_MOVE_OTHERS))
-            throw new InsufficientPermissionException(Permission.VOICE_CONNECT);
+        //if (!self.hasPermission(channel, Permission.VOICE_CONNECT))
+        //    throw new InsufficientPermissionException(Permission.VOICE_CONNECT);
 
         if (audioConnection == null)
         {
-            checkUserlimit(channel, self);
+            checkChannel(channel, self);
             //Start establishing connection, joining provided channel
             queuedAudioConnection = channel;
             api.getClient().queueAudioConnect(channel);
@@ -109,17 +111,20 @@ public class AudioManagerImpl implements AudioManager
             if (channel.equals(audioConnection.getChannel()))
                 return;
 
-            checkUserlimit(channel, self);
+            checkChannel(channel, self);
 
             api.getClient().queueAudioConnect(channel);
             audioConnection.setChannel(channel);
         }
     }
 
-    private void checkUserlimit(VoiceChannel channel, Member self)
+    private void checkChannel(VoiceChannel channel, Member self)
     {
+        EnumSet<Permission> perms = Permission.toEnumSet(PermissionUtil.getEffectivePermission(channel, self));
+        if (!perms.contains(Permission.VOICE_CONNECT))
+            throw new InsufficientPermissionException(Permission.VOICE_CONNECT);
         final int userLimit = channel.getUserLimit(); // userLimit is 0 if no limit is set!
-        if (userLimit > 0 && !self.hasPermission(Permission.ADMINISTRATOR))
+        if (userLimit > 0 && !perms.contains(Permission.ADMINISTRATOR))
         {
             // Check if we can actually join this channel
             // - If there is a userlimit
@@ -128,7 +133,7 @@ public class AudioManagerImpl implements AudioManager
             // VOICE_MOVE_OTHERS allows access because you would be able to move people out to
             // open up a slot anyway
             if (userLimit <= channel.getMembers().size()
-                && !guild.getSelfMember().hasPermission(channel, Permission.VOICE_MOVE_OTHERS))
+                && !perms.contains(Permission.VOICE_MOVE_OTHERS))
             {
                 throw new InsufficientPermissionException(Permission.VOICE_MOVE_OTHERS,
                     "Unable to connect to VoiceChannel due to userlimit! Requires permission VOICE_MOVE_OTHERS to bypass");

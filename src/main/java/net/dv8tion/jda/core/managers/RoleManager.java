@@ -226,7 +226,11 @@ public class RoleManager extends ManagerBase
     public RoleManager setPermissions(long perms)
     {
         long selfPermissions = PermissionUtil.getEffectivePermission(getGuild().getSelfMember());
-        long missingPerms = ~selfPermissions & perms;
+        setupPermissions();
+        long missingPerms = perms;         // include permissions we want to set to
+        missingPerms &= ~selfPermissions;  // exclude permissions we have
+        missingPerms &= ~this.permissions; // exclude permissions the role has
+        // if any permissions remain, we have an issue
         if (missingPerms != 0 && isPermissionChecksEnabled())
         {
             List<Permission> permissionList = Permission.getPermissions(missingPerms);
@@ -407,6 +411,7 @@ public class RoleManager extends ManagerBase
     public RoleManager givePermissions(Collection<Permission> perms)
     {
         Checks.noneNull(perms, "Permissions");
+        setupPermissions();
         return setPermissions(this.permissions | Permission.getRaw(perms));
     }
 
@@ -458,6 +463,7 @@ public class RoleManager extends ManagerBase
     public RoleManager revokePermissions(Collection<Permission> perms)
     {
         Checks.noneNull(perms, "Permissions");
+        setupPermissions();
         return setPermissions(this.permissions & ~Permission.getRaw(perms));
     }
 
@@ -483,18 +489,28 @@ public class RoleManager extends ManagerBase
     protected boolean checkPermissions()
     {
         Member selfMember = getGuild().getSelfMember();
-        long selfPermissions = PermissionUtil.getEffectivePermission(selfMember);
-        if ((selfPermissions & Permission.MANAGE_ROLES.getRawValue()) == 0)
+        if (!selfMember.hasPermission(Permission.MANAGE_ROLES))
             throw new InsufficientPermissionException(Permission.MANAGE_ROLES);
         if (!selfMember.canInteract(role))
             throw new HierarchyException("Cannot modify a role that is higher or equal in hierarchy");
-        long missingRaw = ~selfPermissions & permissions;
+        return super.checkPermissions();
+        /*
+        //we can't reliably check the permissions of the role here
+        long missingRaw = permissions;
+        missingRaw &= ~selfPermissions; // exclude own perms
+        missingRaw &= ~role.getPermissionsRaw(); // exclude role perms
         if (missingRaw != 0)
         {
             List<Permission> missingPermissions = Permission.getPermissions(missingRaw);
             if (!missingPermissions.isEmpty())
                 throw new InsufficientPermissionException(missingPermissions.get(0));
         }
-        return super.checkPermissions();
+        */
+    }
+
+    private void setupPermissions()
+    {
+        if (!shouldUpdate(PERMISSION))
+            this.permissions = role.getPermissionsRaw();
     }
 }

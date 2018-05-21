@@ -452,7 +452,7 @@ public class GuildManager extends ManagerBase
         if (shouldUpdate(SPLASH))
             body.put("splash", splash == null ? JSONObject.NULL : splash.getEncoding());
         if (shouldUpdate(AFK_CHANNEL))
-            body.put("afk_channel_id", opt(AFK_CHANNEL));
+            body.put("afk_channel_id", opt(afkChannel));
         if (shouldUpdate(SYSTEM_CHANNEL))
             body.put("system_channel_id", opt(systemChannel));
         if (shouldUpdate(VERIFICATION_LEVEL))
