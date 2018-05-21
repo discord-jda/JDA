@@ -33,6 +33,7 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.utils.JDALogger;
+import net.dv8tion.jda.core.utils.OpusLibrary;
 import net.dv8tion.jda.core.utils.tuple.Pair;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -83,6 +84,7 @@ public class AudioConnection
     private volatile int silenceCounter = 0;
     private boolean sentSilenceOnConnect = false;
     private final byte[] silenceBytes = new byte[] {(byte)0xF8, (byte)0xFF, (byte)0xFE};
+    private static boolean printedError = false;
 
     public AudioConnection(AudioWebSocket webSocket, VoiceChannel channel)
     {
@@ -219,7 +221,7 @@ public class AudioConnection
             ssrcMap.put(ssrc, userId);
 
             //Only create a decoder if we are actively handling received audio.
-            if (receiveThread != null)
+            if (receiveThread != null && OpusLibrary.ensureOpus())
                 opusDecoders.put(ssrc, new Decoder(ssrc));
         }
     }
@@ -262,9 +264,6 @@ public class AudioConnection
     {
         if (udpSocket != null && !udpSocket.isClosed() && sendHandler != null && sendSystem == null)
         {
-            IntBuffer error = IntBuffer.allocate(4);
-            opusEncoder = Opus.INSTANCE.opus_encoder_create(OPUS_SAMPLE_RATE, OPUS_CHANNEL_COUNT, Opus.OPUS_APPLICATION_AUDIO, error);
-
             IAudioSendFactory factory = ((JDAImpl) channel.getJDA()).getAudioSendFactory();
             sendSystem = factory.createSendSystem(new PacketProvider());
             sendSystem.setContextMap(contextMap);
@@ -360,7 +359,15 @@ public class AudioConnection
                             }
                             if (decoder == null)
                             {
-                                opusDecoders.put(ssrc, decoder = new Decoder(ssrc));
+                                if (OpusLibrary.ensureOpus())
+                                {
+                                    opusDecoders.put(ssrc, decoder = new Decoder(ssrc));
+                                }
+                                else
+                                {
+                                    LOG.error("Unable to decode audio due to missing opus binaries!");
+                                    break;
+                                }
                             }
                             if (!decoder.isInOrder(decryptedPacket.getSequence()))
                             {
@@ -631,6 +638,18 @@ public class AudioConnection
                     {
                         if (!sendHandler.isOpus())
                         {
+                            if (opusEncoder == null)
+                            {
+                                if (!OpusLibrary.ensureOpus())
+                                {
+                                    if (!printedError)
+                                        LOG.error("Unable to process PCM audio without opus binaries!");
+                                    printedError = true;
+                                    return null;
+                                }
+                                IntBuffer error = IntBuffer.allocate(4);
+                                opusEncoder = Opus.INSTANCE.opus_encoder_create(OPUS_SAMPLE_RATE, OPUS_CHANNEL_COUNT, Opus.OPUS_APPLICATION_AUDIO, error);
+                            }
                             rawAudio = encodeToOpus(rawAudio);
                         }
                         AudioPacket packet = new AudioPacket(seq, timestamp, webSocket.getSSRC(), rawAudio);
