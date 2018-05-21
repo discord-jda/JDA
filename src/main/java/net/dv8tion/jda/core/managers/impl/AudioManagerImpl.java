@@ -15,8 +15,6 @@
  */
 package net.dv8tion.jda.core.managers.impl;
 
-import club.minnced.opus.util.NativeUtil;
-import com.sun.jna.Platform;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.audio.AudioConnection;
@@ -35,10 +33,8 @@ import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
-import net.dv8tion.jda.core.utils.OpusLibrary;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 
-import java.io.IOException;
 import java.util.EnumSet;
 import java.util.concurrent.locks.ReentrantLock;
 
