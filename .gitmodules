@@ -1,3 +1,0 @@
-[submodule "opus-java"]
-    path = opus-java
-    url = git@github.com:discord-java/opus-java
