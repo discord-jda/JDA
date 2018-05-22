@@ -39,9 +39,28 @@ public class OpusLibrary
         return audioSupported;
     }
 
+    public static synchronized boolean loadFrom(String absolutePath)
+    {
+        if (initialized)
+            return false;
+        initialized = true;
+        try
+        {
+            System.load(absolutePath);
+            System.setProperty("opus.lib", absolutePath);
+            LOG.info("Audio system successfully setup!");
+            return audioSupported = true;
+        }
+        catch (Throwable e)
+        {
+            handleException(e);
+        }
+        return audioSupported = false;
+    }
+
     public static synchronized boolean ensureOpus()
     {
-        if(initialized)
+        if (initialized)
             return audioSupported;
         initialized = true;
         String nativesRoot  = null;
@@ -63,29 +82,7 @@ public class OpusLibrary
         }
         catch (Throwable e)
         {
-            if (e instanceof UnsupportedOperationException)
-            {
-                LOG.error("Sorry, JDA's audio system doesn't support this system.\n" +
-                                  "Supported Systems: Windows(x86, x64), Mac(x86, x64) and Linux(x86, x64)\n" +
-                                  "Operating system: " + Platform.RESOURCE_PREFIX);
-            }
-            else if (e instanceof NoClassDefFoundError)
-            {
-                LOG.error("Missing opus dependency, unable to initialize audio!");
-            }
-            else if (e instanceof IOException)
-            {
-                LOG.error("There was an IO Exception when setting up the temp files for audio.", e);
-            }
-            else if (e instanceof UnsatisfiedLinkError)
-            {
-                LOG.error("JDA encountered a problem when attempting to load the Native libraries. Contact a DEV.", e);
-            }
-            else
-            {
-                LOG.error("An unknown error occurred while attempting to setup JDA's audio system!", e);
-            }
-
+            handleException(e);
             nativesRoot = null;
         }
         finally
@@ -98,6 +95,32 @@ public class OpusLibrary
             else
                 LOG.info("Audio System encountered problems while loading, thus, is disabled.");
             return audioSupported;
+        }
+    }
+
+    private static void handleException(Throwable e)
+    {
+        if (e instanceof UnsupportedOperationException)
+        {
+            LOG.error("Sorry, JDA's audio system doesn't support this system.\n" +
+                      "Supported Systems: Windows(x86, x64), Mac(x86, x64) and Linux(x86, x64)\n" +
+                      "Operating system: " + Platform.RESOURCE_PREFIX);
+        }
+        else if (e instanceof NoClassDefFoundError)
+        {
+            LOG.error("Missing opus dependency, unable to initialize audio!");
+        }
+        else if (e instanceof IOException)
+        {
+            LOG.error("There was an IO Exception when setting up the temp files for audio.", e);
+        }
+        else if (e instanceof UnsatisfiedLinkError)
+        {
+            LOG.error("JDA encountered a problem when attempting to load the Native libraries. Contact a DEV.", e);
+        }
+        else
+        {
+            LOG.error("An unknown error occurred while attempting to setup JDA's audio system!", e);
         }
     }
 }
