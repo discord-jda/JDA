@@ -134,7 +134,7 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
         }
 
         @Override
-        public void queue(Consumer<T> success, Consumer<Throwable> failure)
+        public void queue(Consumer<? super T> success, Consumer<? super Throwable> failure)
         {
             if (success != null)
                 success.accept(content);

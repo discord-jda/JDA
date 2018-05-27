@@ -32,8 +32,8 @@ public class Request<T>
 {
     private final JDAImpl api;
     private final RestAction<T> restAction;
-    private final Consumer<T> onSuccess;
-    private final Consumer<Throwable> onFailure;
+    private final Consumer<? super T> onSuccess;
+    private final Consumer<? super Throwable> onFailure;
     private final BooleanSupplier checks;
     private final boolean shouldQueue;
     private final Route.CompiledRoute route;
@@ -43,7 +43,7 @@ public class Request<T>
 
     private boolean isCanceled = false;
 
-    public Request(RestAction<T> restAction, Consumer<T> onSuccess, Consumer<Throwable> onFailure,
+    public Request(RestAction<T> restAction, Consumer<? super T> onSuccess, Consumer<? super Throwable> onFailure,
                    BooleanSupplier checks, boolean shouldQueue, RequestBody body, Object rawBody,
                    Route.CompiledRoute route, CaseInsensitiveMap<String, String> headers)
     {
@@ -122,12 +122,12 @@ public class Request<T>
         return restAction;
     }
 
-    public Consumer<T> getOnSuccess()
+    public Consumer<? super T> getOnSuccess()
     {
         return onSuccess;
     }
 
-    public Consumer<Throwable> getOnFailure()
+    public Consumer<? super Throwable> getOnFailure()
     {
         return onFailure;
     }
