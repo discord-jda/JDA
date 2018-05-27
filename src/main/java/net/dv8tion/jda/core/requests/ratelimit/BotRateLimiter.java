@@ -184,10 +184,10 @@ public class BotRateLimiter extends RateLimiter
         }
         else
         {
-            count += parseLong(headers.get(RESET_HEADER),
-                (time) -> bucket.resetTime = time * 1000); //Seconds to milliseconds
-            count += parseInt(headers.get(LIMIT_HEADER),
-                (limit) -> bucket.routeUsageLimit = limit);
+            count += parseLong(headers.get(RESET_HEADER), bucket,
+                (time, b) -> b.resetTime = time * 1000); //Seconds to milliseconds
+            count += parseInt(headers.get(LIMIT_HEADER), bucket,
+                (limit, b) -> b.routeUsageLimit = limit);
         }
 
         //Currently, we check the remaining amount even for hardcoded ratelimits just to further respect Discord
@@ -201,32 +201,32 @@ public class BotRateLimiter extends RateLimiter
         // header system due to their headers only supporting accuracy to the second. The custom ratelimit system
         // allows for hardcoded ratelimits that allow accuracy to the millisecond which is important for some
         // ratelimits like Reactions which is 1/0.25s, but discord reports the ratelimit as 1/1s with headers.
-        count += parseInt(headers.get(REMAINING_HEADER),
-            (remaining) -> bucket.routeUsageRemaining = remaining);
+        count += parseInt(headers.get(REMAINING_HEADER), bucket,
+            (remaining, b) -> b.routeUsageRemaining = remaining);
         if (!bucket.missingHeaders && count < 3)
         {
             Requester.LOG.debug("Encountered issue with headers when updating a bucket\nRoute: {}\nHeaders: {}", bucket.getRoute(), headers);
         }
     }
 
-    private int parseInt(String input, IntConsumer consumer)
+    private int parseInt(String input, Bucket bucket, IntObjectConsumer<? super Bucket> consumer)
     {
         try
         {
             int parsed = Integer.parseInt(input);
-            consumer.accept(parsed);
+            consumer.accept(parsed, bucket);
             return 1;
         }
         catch (NumberFormatException ignored) {}
         return 0;
     }
 
-    private int parseLong(String input, LongConsumer consumer)
+    private int parseLong(String input, Bucket bucket, LongObjectConsumer<? super Bucket> consumer)
     {
         try
         {
             long parsed = Long.parseLong(input);
-            consumer.accept(parsed);
+            consumer.accept(parsed, bucket);
             return 1;
         }
         catch (NumberFormatException ignored) {}
@@ -402,5 +402,15 @@ public class BotRateLimiter extends RateLimiter
         {
             return requests;
         }
+    }
+
+    private interface LongObjectConsumer<T>
+    {
+        void accept(long n, T t);
+    }
+
+    private interface IntObjectConsumer<T>
+    {
+        void accept(int n, T t);
     }
 }
