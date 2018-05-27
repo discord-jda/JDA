@@ -99,21 +99,21 @@ public class BotRateLimiter extends RateLimiter
                     }
                 }
                 long retryAfter = Long.parseLong(retry);
-                if (!Boolean.parseBoolean(global))  //Not global ratelimit
-                {
-                    updateBucket(bucket, headers, retryAfter);
-                }
-                else
+                if (Boolean.parseBoolean(global))  //global ratelimit
                 {
                     //If it is global, lock down the threads.
                     requester.getJDA().getSessionController().setGlobalRatelimit(getNow() + retryAfter);
+                }
+                else
+                {
+                    updateBucket(bucket, headers, retryAfter);
                 }
 
                 return retryAfter;
             }
             else
             {
-                updateBucket(bucket, headers, null);
+                updateBucket(bucket, headers, -1);
                 return null;
             }
         }
@@ -168,10 +168,10 @@ public class BotRateLimiter extends RateLimiter
         }
     }
 
-    private void updateBucket(Bucket bucket, Headers headers, Long retryAfter)
+    private void updateBucket(Bucket bucket, Headers headers, long retryAfter)
     {
         int count = 0;
-        if (retryAfter != null)
+        if (retryAfter > 0)
         {
             bucket.resetTime = getNow() + retryAfter;
             bucket.routeUsageRemaining = 0;
