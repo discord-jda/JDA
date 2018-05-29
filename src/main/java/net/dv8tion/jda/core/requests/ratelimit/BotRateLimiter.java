@@ -170,7 +170,7 @@ public class BotRateLimiter extends RateLimiter
 
     private void updateBucket(Bucket bucket, Headers headers, long retryAfter)
     {
-        int count = 0;
+        int headerCount = 0;
         if (retryAfter > 0)
         {
             bucket.resetTime = getNow() + retryAfter;
@@ -184,10 +184,8 @@ public class BotRateLimiter extends RateLimiter
         }
         else
         {
-            count += parseLong(headers.get(RESET_HEADER), bucket,
-                (time, b) -> b.resetTime = time * 1000); //Seconds to milliseconds
-            count += parseInt(headers.get(LIMIT_HEADER), bucket,
-                (limit, b) -> b.routeUsageLimit = limit);
+            headerCount += parseLong(headers.get(RESET_HEADER), bucket, (time, b)  -> b.resetTime = time * 1000); //Seconds to milliseconds
+            headerCount += parseInt(headers.get(LIMIT_HEADER),  bucket, (limit, b) -> b.routeUsageLimit = limit);
         }
 
         //Currently, we check the remaining amount even for hardcoded ratelimits just to further respect Discord
@@ -201,11 +199,12 @@ public class BotRateLimiter extends RateLimiter
         // header system due to their headers only supporting accuracy to the second. The custom ratelimit system
         // allows for hardcoded ratelimits that allow accuracy to the millisecond which is important for some
         // ratelimits like Reactions which is 1/0.25s, but discord reports the ratelimit as 1/1s with headers.
-        count += parseInt(headers.get(REMAINING_HEADER), bucket,
-            (remaining, b) -> b.routeUsageRemaining = remaining);
-        if (!bucket.missingHeaders && count < 3)
+        headerCount += parseInt(headers.get(REMAINING_HEADER), bucket, (remaining, b) -> b.routeUsageRemaining = remaining);
+        if (!bucket.missingHeaders && headerCount < 3)
         {
-            Requester.LOG.debug("Encountered issue with headers when updating a bucket\nRoute: {}\nHeaders: {}", bucket.getRoute(), headers);
+            Requester.LOG.debug("Encountered issue with headers when updating a bucket\n" +
+                                "Route: {}\nHeaders: {}",
+                                bucket.getRoute(), headers);
         }
     }
 
