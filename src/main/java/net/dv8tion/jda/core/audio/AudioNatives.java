@@ -22,11 +22,23 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public class AudioNatives
+public final class AudioNatives
 {
     private static final Logger LOG = LoggerFactory.getLogger(AudioNatives.class);
     private static boolean initialized;
     private static boolean audioSupported;
+
+    private AudioNatives() {}
+
+    public static synchronized boolean loadFrom(String absolutePath)
+    {
+        if (initialized)
+            return false;
+        initialized = true;
+        System.load(absolutePath);
+        System.setProperty("opus.lib", absolutePath);
+        return audioSupported = true;
+    }
 
     public static synchronized boolean ensureOpus()
     {
