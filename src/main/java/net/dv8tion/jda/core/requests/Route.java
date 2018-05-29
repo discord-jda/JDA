@@ -26,14 +26,15 @@ import java.util.regex.Pattern;
 
 import static net.dv8tion.jda.core.requests.Method.*;
 
+@SuppressWarnings("unused")
 public class Route
 {
     public static class Misc
     {
-        public static final Route GET_VOICE_REGIONS = new Route(GET,  "voice/regions");
-        public static final Route GATEWAY =           new Route(GET,  "gateway");
-        public static final Route GATEWAY_BOT =       new Route(GET,  "gateway/bot");
-        public static final Route TRACK =             new Route(POST, "track");
+        public static final Route TRACK =             new Route(POST, true, "track");
+        public static final Route GET_VOICE_REGIONS = new Route(GET,  true, "voice/regions");
+        public static final Route GATEWAY =           new Route(GET,  true, "gateway");
+        public static final Route GATEWAY_BOT =       new Route(GET,  true, "gateway/bot");
     }
 
     public static class Applications
@@ -57,17 +58,15 @@ public class Route
         public static final Route GET_AUTHORIZED_APPLICATION =    new Route(GET,    "oauth2/tokens/{auth_id}");
         public static final Route DELETE_AUTHORIZED_APPLICATION = new Route(DELETE, "oauth2/tokens/{auth_id}");
     }
-    
+
     public static class Self
     {
-        public static final Route GET_SELF =               new Route(GET,    "users/@me");
-        public static final Route MODIFY_SELF =            new Route(PATCH,  "users/@me");
-        public static final Route GET_GUILDS  =            new Route(GET,    "users/@me/guilds");
-        public static final Route LEAVE_GUILD =            new Route(DELETE, "users/@me/guilds/{guild_id}");
-        public static final Route GET_PRIVATE_CHANNELS =   new Route(GET,    "users/@me/channels");
-        public static final Route CREATE_PRIVATE_CHANNEL = new Route(POST,   "users/@me/channels");
-
-        public static final Route GATEWAY_BOT =            new Route(GET, "gateway/bot");
+        public static final Route GET_SELF =               new Route(GET, true, "users/@me");
+        public static final Route MODIFY_SELF =            new Route(PATCH,     "users/@me");
+        public static final Route GET_GUILDS  =            new Route(GET,       "users/@me/guilds");
+        public static final Route LEAVE_GUILD =            new Route(DELETE,    "users/@me/guilds/{guild_id}");
+        public static final Route GET_PRIVATE_CHANNELS =   new Route(GET,       "users/@me/channels");
+        public static final Route CREATE_PRIVATE_CHANNEL = new Route(POST,      "users/@me/channels");
 
         // Client only
         public static final Route USER_SETTINGS =       new Route(GET, "users/@me/settings");
@@ -115,8 +114,8 @@ public class Route
         public static final Route GET_GUILD_EMBED =    new Route(GET,    "guilds/{guild_id}/embed",             "guild_id");
         public static final Route MODIFY_GUILD_EMBED = new Route(PATCH,  "guilds/{guild_id}/embed",             "guild_id");
         public static final Route GET_GUILD_EMOTES =   new Route(GET,    "guilds/{guild_id}/emojis",            "guild_id");
-        public static final Route GET_AUDIT_LOGS =     new Route(GET,    "guilds/{guild_id}/audit-logs",        "guild_id");
-        public static final Route GET_VOICE_REGIONS =  new Route(GET,    "guilds/{guild_id}/regions",           "guild_id");
+        public static final Route GET_AUDIT_LOGS =     new Route(GET, true, "guilds/{guild_id}/audit-logs",        "guild_id");
+        public static final Route GET_VOICE_REGIONS =  new Route(GET, true, "guilds/{guild_id}/regions",           "guild_id");
 
         public static final Route GET_INTEGRATIONS =   new Route(GET,    "guilds/{guild_id}/integrations",                       "guild_id");
         public static final Route CREATE_INTEGRATION = new Route(POST,   "guilds/{guild_id}/integrations",                       "guild_id");
@@ -194,7 +193,6 @@ public class Route
     {
         public static final Route SEND_MESSAGE =          new Route(POST,   "channels/{channel_id}/messages",              "channel_id");
         public static final Route EDIT_MESSAGE =          new Route(PATCH,  "channels/{channel_id}/messages/{message_id}", "channel_id");
-        public static final Route DELETE_MESSAGE =        new Route(DELETE, "channels/{channel_id}/messages/{message_id}", "channel_id");
         public static final Route GET_PINNED_MESSAGES =   new Route(GET,    "channels/{channel_id}/pins",                  "channel_id");
         public static final Route ADD_PINNED_MESSAGE =    new Route(PUT,    "channels/{channel_id}/pins/{message_id}",     "channel_id");
         public static final Route REMOVE_PINNED_MESSAGE = new Route(DELETE, "channels/{channel_id}/pins/{message_id}",     "channel_id");
@@ -206,11 +204,12 @@ public class Route
         public static final Route REMOVE_ALL_REACTIONS =     new Route(DELETE, "channels/{channel_id}/messages/{message_id}/reactions",                           "channel_id");
         public static final Route GET_REACTION_USERS =       new Route(GET,    "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}",           "channel_id");
 
-        public static final Route GET_MESSAGE_HISTORY =        new Route(GET, "channels/{channel_id}/messages", "channel_id");
+        public static final Route DELETE_MESSAGE =      new Route(DELETE, true, "channels/{channel_id}/messages/{message_id}", "channel_id");
+        public static final Route GET_MESSAGE_HISTORY = new Route(GET,    true, "channels/{channel_id}/messages",              "channel_id");
 
         //Bot only
-        public static final Route GET_MESSAGE =     new Route(GET,  "channels/{channel_id}/messages/{message_id}", "channel_id");
-        public static final Route DELETE_MESSAGES = new Route(POST, "channels/{channel_id}/messages/bulk-delete",  "channel_id");
+        public static final Route GET_MESSAGE =     new Route(GET, true, "channels/{channel_id}/messages/{message_id}", "channel_id");
+        public static final Route DELETE_MESSAGES = new Route(POST,      "channels/{channel_id}/messages/bulk-delete",  "channel_id");
 
         //Client only
         public static final Route ACK_MESSAGE = new Route(POST, "channels/{channel_id}/messages/{message_id}/ack");
@@ -218,11 +217,11 @@ public class Route
 
     public static class Invites
     {
-        public static final Route GET_INVITE =          new Route(GET,    "invites/{code}");
-        public static final Route DELETE_INVITE =       new Route(DELETE, "invites/{code}");
-        public static final Route GET_GUILD_INVITES =   new Route(GET,    "guilds/{guild_id}/invites",     "guild_id");
-        public static final Route GET_CHANNEL_INVITES = new Route(GET,    "channels/{channel_id}/invites", "channel_id");
-        public static final Route CREATE_INVITE =       new Route(POST,   "channels/{channel_id}/invites", "channel_id");
+        public static final Route GET_INVITE =          new Route(GET, true, "invites/{code}");
+        public static final Route GET_GUILD_INVITES =   new Route(GET, true, "guilds/{guild_id}/invites",     "guild_id");
+        public static final Route GET_CHANNEL_INVITES = new Route(GET, true, "channels/{channel_id}/invites", "channel_id");
+        public static final Route CREATE_INVITE =       new Route(POST,      "channels/{channel_id}/invites", "channel_id");
+        public static final Route DELETE_INVITE =       new Route(DELETE,    "invites/{code}");
     }
 
     public static class Custom
@@ -241,15 +240,27 @@ public class Route
     private final Method method;
     private final List<Integer> majorParamIndexes = new ArrayList<>();
     private final RateLimit ratelimit;
+    private final boolean missingHeaders;
 
     private Route(Method method, String route, String... majorParameters)
     {
-        this(method, null, route, majorParameters);
+        this(method, null, false, route, majorParameters);
     }
 
     private Route(Method method, RateLimit rateLimit, String route, String... majorParameters)
     {
+        this(method, rateLimit, false, route, majorParameters);
+    }
+
+    private Route(Method method, boolean missingHeaders, String route, String... majorParameters)
+    {
+        this(method, null, missingHeaders, route, majorParameters);
+    }
+
+    private Route(Method method, RateLimit rateLimit, boolean missingHeaders, String route, String... majorParameters)
+    {
         this.method = method;
+        this.missingHeaders = missingHeaders;
         this.ratelimit = rateLimit;
         this.route = route;
         this.paramCount = Helpers.countMatches(route, '{'); //All parameters start with {
@@ -301,6 +312,11 @@ public class Route
     public String getRoute()
     {
         return route;
+    }
+
+    public boolean isMissingHeaders()
+    {
+        return missingHeaders;
     }
 
     public String getRatelimitRoute()
