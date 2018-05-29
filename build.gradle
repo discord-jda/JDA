@@ -61,7 +61,7 @@ dependencies {
     compile 'net.sf.trove4j:trove4j:3.0.3'
 
     //Native Library Support
-    compile 'club.minnced:opus-java:1.0.0'
+    compile 'club.minnced:opus-java:1.0.1'
     compile 'net.java.dev.jna:jna:4.4.0'
 
     //Web Connection Support

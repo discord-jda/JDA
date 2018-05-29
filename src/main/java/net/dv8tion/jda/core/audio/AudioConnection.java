@@ -33,7 +33,6 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.utils.JDALogger;
-import net.dv8tion.jda.core.utils.OpusLibrary;
 import net.dv8tion.jda.core.utils.tuple.Pair;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -221,7 +220,7 @@ public class AudioConnection
             ssrcMap.put(ssrc, userId);
 
             //Only create a decoder if we are actively handling received audio.
-            if (receiveThread != null && OpusLibrary.ensureOpus())
+            if (receiveThread != null && AudioNatives.ensureOpus())
                 opusDecoders.put(ssrc, new Decoder(ssrc));
         }
     }
@@ -359,7 +358,7 @@ public class AudioConnection
                             }
                             if (decoder == null)
                             {
-                                if (OpusLibrary.ensureOpus())
+                                if (AudioNatives.ensureOpus())
                                 {
                                     opusDecoders.put(ssrc, decoder = new Decoder(ssrc));
                                 }
@@ -640,7 +639,7 @@ public class AudioConnection
                         {
                             if (opusEncoder == null)
                             {
-                                if (!OpusLibrary.ensureOpus())
+                                if (!AudioNatives.ensureOpus())
                                 {
                                     if (!printedError)
                                         LOG.error("Unable to process PCM audio without opus binaries!");
