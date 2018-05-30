@@ -22,6 +22,12 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
+/**
+ * Controller used by JDA to ensure the native
+ * binaries for opus en-/decoding are available.
+ *
+ * @see <a href="https://github.com/discord-java/opus-java" target="_blank">opus-java source</a>
+ */
 public final class AudioNatives
 {
     private static final Logger LOG = LoggerFactory.getLogger(AudioNatives.class);
@@ -30,16 +36,56 @@ public final class AudioNatives
 
     private AudioNatives() {}
 
-    public static synchronized boolean loadFrom(String absolutePath)
+    /**
+     * Whether the opus library is loaded or not.
+     * <br>This is initialized by the first call to either {@link #loadFrom(String)} or {@link #ensureOpus()}.
+     *
+     * @return True, opus library is loaded.
+     */
+    public static boolean isAudioSupported()
     {
-        if (initialized)
-            return false;
-        initialized = true;
-        System.load(absolutePath);
-        System.setProperty("opus.lib", absolutePath);
-        return audioSupported = true;
+        return audioSupported;
     }
 
+    /**
+     * Whether this class was already initialized or not.
+     *
+     * @return True, if this class was already initialized.
+     *
+     * @see    #loadFrom(String)
+     * @see    #ensureOpus()
+     */
+    public static boolean isInitialized()
+    {
+        return initialized;
+    }
+
+    /**
+     * Loads opus binary from the specified absolute path.
+     *
+     * @param  absolutePath
+     *         Absolute path to load the library from
+     *
+     * @return True, if the library was loaded by this method
+     *         <br>False, if the library was already loaded before.
+     *
+     * @see    System#load(String)
+     */
+    public static synchronized boolean loadFrom(String absolutePath)
+    {
+        if (audioSupported)
+            return false;
+        System.load(absolutePath);
+        System.setProperty("opus.lib", absolutePath);
+        return initialized = audioSupported = true;
+    }
+
+    /**
+     * Checks whether the opus binary was loaded, if not it will be initialized here.
+     * <br>This is used by JDA to check at runtime whether the opus library is available or not.
+     *
+     * @return True, if the library could be loaded.
+     */
     public static synchronized boolean ensureOpus()
     {
         if (initialized)
