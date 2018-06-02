@@ -180,7 +180,7 @@ Be sure to replace the **VERSION** key below with the one of the versions shown 
     <version>VERSION</version>
     <exclusions>
         <exclusion>
-            <artifactId>opus-java</artifactId>
+            <artifactId>opus-java-natives</artifactId>
         </exclusion>
     </exclusions>
 </dependency>
@@ -201,13 +201,20 @@ repositories {
 ```gradle
 dependencies {
     compile ('net.dv8tion:JDA:VERSION') {
-        exclude module: 'opus-java'
+        exclude module: 'opus-java-natives'
     }
 }
 ```
 
 The builds are distributed using JCenter through Bintray [JDA JCenter Bintray](https://bintray.com/dv8fromtheworld/maven/JDA/)
-<br>If you are not interested in audio, we recommend excluding the `opus-java` transitive dependency to achieve a smaller artifact without audio support.
+
+If you do not need any opus de-/encoding done by JDA (voice receive/send with PCM) you can exclude `opus-java` entirely.
+This can be done if you only send audio with an `AudioSendHandler` which only sends opus (`isOpus() = true`). (See [lavaplayer](https://github.com/sedmelluq/lavaplayer))
+
+If you want to use a custom opus library you can provide the absolute path to `OpusLibrary.loadFrom(String)` before using
+the audio api of JDA. This works without `opus-java-natives` as it only requires `opus-java-api`.
+
+See [opus-java](https://github.com/discord-java/opus-java)
 
 ### Logging Framework - SLF4J
 JDA is using [SLF4J](https://www.slf4j.org/) to log its messages.
@@ -340,7 +347,7 @@ All dependencies are managed automatically by Gradle.
    * [Website](https://www.slf4j.org/)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/org.slf4j%3Aslf4j-api/view)
  * opus-java
-   * Version: **1.0.1**
+   * Version: **1.0.2**
    * [GitHub](https://github.com/discord-java/opus-java)
    * [JCenter Repository](https://bintray.com/minndevelopment/maven/opus-java)
 

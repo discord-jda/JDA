@@ -38,7 +38,7 @@ public final class AudioNatives
 
     /**
      * Whether the opus library is loaded or not.
-     * <br>This is initialized by the first call to either {@link #loadFrom(String)} or {@link #ensureOpus()}.
+     * <br>This is initialized by the first call to {@link #ensureOpus()}.
      *
      * @return True, opus library is loaded.
      */
@@ -52,32 +52,11 @@ public final class AudioNatives
      *
      * @return True, if this class was already initialized.
      *
-     * @see    #loadFrom(String)
      * @see    #ensureOpus()
      */
     public static boolean isInitialized()
     {
         return initialized;
-    }
-
-    /**
-     * Loads opus binary from the specified absolute path.
-     *
-     * @param  absolutePath
-     *         Absolute path to load the library from
-     *
-     * @return True, if the library was loaded by this method
-     *         <br>False, if the library was already loaded before.
-     *
-     * @see    System#load(String)
-     */
-    public static synchronized boolean loadFrom(String absolutePath)
-    {
-        if (audioSupported)
-            return false;
-        System.load(absolutePath);
-        System.setProperty("opus.lib", absolutePath);
-        return initialized = audioSupported = true;
     }
 
     /**
