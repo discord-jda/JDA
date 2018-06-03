@@ -15,7 +15,6 @@
  */
 package net.dv8tion.jda.core.managers.impl;
 
-import com.sun.jna.Platform;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.audio.AudioConnection;
@@ -34,20 +33,14 @@ import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
-import net.dv8tion.jda.core.utils.NativeUtil;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 
-import java.io.IOException;
 import java.util.EnumSet;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class AudioManagerImpl implements AudioManager
 {
     public static final ThreadGroup AUDIO_THREADS = new ThreadGroup("jda-audio");
-    //These values are set at the bottom of this file.
-    public static boolean AUDIO_SUPPORTED;
-    public static String OPUS_LIB_NAME;
-    protected static boolean initialized = false;
 
     public final ReentrantLock CONNECTION_LOCK = new ReentrantLock();
 
@@ -71,7 +64,6 @@ public class AudioManagerImpl implements AudioManager
     {
         this.guild = guild;
         this.api = this.guild.getJDA();
-        init(); //Just to make sure that the audio libs have been initialized.
     }
 
     public AudioConnection getAudioConnection()
@@ -84,8 +76,8 @@ public class AudioManagerImpl implements AudioManager
     {
         Checks.notNull(channel, "Provided VoiceChannel");
 
-        if (!AUDIO_SUPPORTED)
-            throw new UnsupportedOperationException("Sorry! Audio is disabled due to an internal JDA error! Contact Dev!");
+//        if (!AUDIO_SUPPORTED)
+//            throw new UnsupportedOperationException("Sorry! Audio is disabled due to an internal JDA error! Contact Dev!");
         if (!guild.equals(channel.getGuild()))
             throw new IllegalArgumentException("The provided VoiceChannel is not a part of the Guild that this AudioManager handles." +
                     "Please provide a VoiceChannel from the proper Guild");
@@ -355,63 +347,5 @@ public class AudioManagerImpl implements AudioManager
             //This is technically equivalent to an audio open/move packet.
             api.getClient().queueAudioConnect(channel);
         }
-    }
-
-    //Load the Opus library.
-    public static synchronized boolean init()
-    {
-        if(initialized)
-            return AUDIO_SUPPORTED;
-        initialized = true;
-        String nativesRoot  = null;
-        try
-        {
-            //The libraries that this is referencing are available in the src/main/resources/opus/ folder.
-            //Of course, when JDA is compiled that just becomes /opus/
-            nativesRoot = "/natives/" + Platform.RESOURCE_PREFIX + "/%s";
-            if (nativesRoot.contains("darwin")) //Mac
-                nativesRoot += ".dylib";
-            else if (nativesRoot.contains("win"))
-                nativesRoot += ".dll";
-            else if (nativesRoot.contains("linux"))
-                nativesRoot += ".so";
-            else
-                throw new UnsupportedOperationException();
-
-            NativeUtil.loadLibraryFromJar(String.format(nativesRoot, "libopus"));
-        }
-        catch (Throwable e)
-        {
-            if (e instanceof UnsupportedOperationException)
-                LOG.error("Sorry, JDA's audio system doesn't support this system.\n" +
-                        "Supported Systems: Windows(x86, x64), Mac(x86, x64) and Linux(x86, x64)\n" +
-                        "Operating system: " + Platform.RESOURCE_PREFIX);
-            else if (e instanceof  IOException)
-            {
-                LOG.error("There was an IO Exception when setting up the temp files for audio.", e);
-            }
-            else if (e instanceof UnsatisfiedLinkError)
-            {
-                LOG.error("JDA encountered a problem when attempting to load the Native libraries. Contact a DEV.", e);
-            }
-            else
-            {
-                LOG.error("An unknown error occurred while attempting to setup JDA's audio system!", e);
-            }
-
-            nativesRoot = null;
-        }
-        finally
-        {
-            OPUS_LIB_NAME = nativesRoot != null ? String.format(nativesRoot, "libopus") : null;
-            AUDIO_SUPPORTED = nativesRoot != null;
-
-            if (AUDIO_SUPPORTED)
-                LOG.info("Audio System successfully setup!");
-            else
-                LOG.info("Audio System encountered problems while loading, thus, is disabled.");
-            return AUDIO_SUPPORTED;
-        }
-
     }
 }
