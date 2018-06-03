@@ -108,7 +108,7 @@ shadowJar {
 task noOpusJar(type: ShadowJar, dependsOn: shadowJar) {
     classifier = shadowJar.classifier + '-no-opus'
 
-    configurations = [project.configurations.compile]
+    configurations = [project.configurations.runtime]
     from sourceSets.main.output
     exclude 'natives/**'     // ~2 MB
     exclude 'com/sun/jna/**' // ~1 MB
