@@ -180,7 +180,7 @@ Be sure to replace the **VERSION** key below with the one of the versions shown 
     <version>VERSION</version>
     <exclusions>
         <exclusion>
-            <artifactId>opus-java-natives</artifactId>
+            <artifactId>opus-java</artifactId>
         </exclusion>
     </exclusions>
 </dependency>
@@ -201,7 +201,7 @@ repositories {
 ```gradle
 dependencies {
     compile ('net.dv8tion:JDA:VERSION') {
-        exclude module: 'opus-java-natives'
+        exclude module: 'opus-java'
     }
 }
 ```
@@ -213,6 +213,7 @@ This can be done if you only send audio with an `AudioSendHandler` which only se
 
 If you want to use a custom opus library you can provide the absolute path to `OpusLibrary.loadFrom(String)` before using
 the audio api of JDA. This works without `opus-java-natives` as it only requires `opus-java-api`.
+<br>_For this setup you should only exclude `opus-java-natives` as `opus-java-api` is a requirement for en-/decoding._
 
 See [opus-java](https://github.com/discord-java/opus-java)
 
@@ -334,10 +335,6 @@ All dependencies are managed automatically by Gradle.
    * Version: **20160810**
    * [Github](https://github.com/douglascrockford/JSON-java)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/org.json%3Ajson/view)
- * JNA
-   * Version: **4.4.0**
-   * [Github](https://github.com/java-native-access/jna)
-   * [JCenter Repository](https://bintray.com/bintray/jcenter/net.java.dev.jna%3Ajna/view)
  * Trove4j
    * Version: **3.0.3**
    * [BitBucket](https://bitbucket.org/trove4j/trove)

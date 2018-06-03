@@ -63,7 +63,6 @@ dependencies {
 
     //Native Library Support
     compile 'club.minnced:opus-java:1.0.2'
-    compile 'net.java.dev.jna:jna:4.4.0'
 
     //Web Connection Support
     compile 'com.neovisionaries:nv-websocket-client:2.2'
@@ -108,9 +107,15 @@ shadowJar {
 
 task noOpusJar(type: ShadowJar, dependsOn: shadowJar) {
     classifier = shadowJar.classifier + '-no-opus'
+
     configurations = [project.configurations.compile]
     from sourceSets.main.output
-    exclude 'natives/**'
+    exclude 'natives/**'     // ~2 MB
+    exclude 'com/sun/jna/**' // ~1 MB
+
+    manifest {
+        inheritFrom jar.manifest
+    }
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
