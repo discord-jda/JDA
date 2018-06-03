@@ -20,8 +20,6 @@ import java.util.Collection;
 
 public class Checks
 {
-    private static final int maxSnowflakeLength = Long.toUnsignedString(-1L).length();
-
     public static void isSnowflake(final String snowflake)
     {
         isSnowflake(snowflake, snowflake);
@@ -30,7 +28,7 @@ public class Checks
     public static void isSnowflake(final String snowflake, final String message)
     {
         notNull(snowflake, message);
-        if (snowflake.length() < 1 || snowflake.length() > maxSnowflakeLength || !Helpers.isNumeric(snowflake))
+        if (snowflake.length() > 20 || !Helpers.isNumeric(snowflake))
             throw new IllegalArgumentException(message + " is not a valid snowflake value!");
     }
 
