@@ -112,6 +112,8 @@ task noOpusJar(type: ShadowJar, dependsOn: shadowJar) {
     from sourceSets.main.output
     exclude 'natives/**'     // ~2 MB
     exclude 'com/sun/jna/**' // ~1 MB
+    exclude 'club/minnced/opus/util/*'
+    exclude 'tomp2p/opuswrapper/*'
 
     manifest {
         inheritFrom jar.manifest
