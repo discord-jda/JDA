@@ -18,6 +18,7 @@
 //to build and upload everything:  "gradlew bintrayUpload"
 
 import org.apache.tools.ant.filters.ReplaceTokens
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     id 'com.jfrog.bintray' version '1.7.3'
@@ -102,7 +103,14 @@ jar {
 }
 
 shadowJar {
-    classifier = "withDependencies"
+    classifier = 'withDependencies'
+}
+
+task noOpusJar(type: ShadowJar, dependsOn: shadowJar) {
+    classifier = shadowJar.classifier + '-no-opus'
+    configurations = [project.configurations.compile]
+    from sourceSets.main.output
+    exclude 'natives/**'
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -148,13 +156,8 @@ javadoc {
             'net/dv8tion/jda/core/requests/Route.java',
             'net/dv8tion/jda/core/requests/Requester.java',
             'net/dv8tion/jda/core/requests/Response.java',
-            'net/dv8tion/jda/core/requests/ratelimit',
-            'net/dv8tion/jda/core/requests/restaction/CompletedFuture.java',
-            'net/dv8tion/jda/core/requests/restaction/RequestFuture.java')
+            'net/dv8tion/jda/core/requests/ratelimit')
     exclude('net/dv8tion/jda/core/utils/cache/impl')
-
-    //opuswrapper
-    exclude('tomp2p/opuswrapper')
 
     //voice crypto
     exclude('com/iwebpp/crypto')
@@ -208,6 +211,7 @@ build {
     dependsOn javadocJar
     dependsOn sourcesJar
     dependsOn shadowJar
+    dependsOn noOpusJar
 
     jar.mustRunAfter clean
     javadocJar.mustRunAfter jar
