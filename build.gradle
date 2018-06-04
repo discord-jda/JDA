@@ -18,6 +18,7 @@
 //to build and upload everything:  "gradlew bintrayUpload"
 
 import org.apache.tools.ant.filters.ReplaceTokens
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     id 'com.jfrog.bintray' version '1.7.3'
@@ -61,7 +62,7 @@ dependencies {
     compile 'net.sf.trove4j:trove4j:3.0.3'
 
     //Native Library Support
-    compile 'net.java.dev.jna:jna:4.4.0'
+    compile 'club.minnced:opus-java:1.0.2'
 
     //Web Connection Support
     compile 'com.neovisionaries:nv-websocket-client:2.4'
@@ -101,7 +102,22 @@ jar {
 }
 
 shadowJar {
-    classifier = "withDependencies"
+    classifier = 'withDependencies'
+}
+
+task noOpusJar(type: ShadowJar, dependsOn: shadowJar) {
+    classifier = shadowJar.classifier + '-no-opus'
+
+    configurations = [project.configurations.runtime]
+    from sourceSets.main.output
+    exclude 'natives/**'     // ~2 MB
+    exclude 'com/sun/jna/**' // ~1 MB
+    exclude 'club/minnced/opus/util/*'
+    exclude 'tomp2p/opuswrapper/*'
+
+    manifest {
+        inheritFrom jar.manifest
+    }
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -147,13 +163,8 @@ javadoc {
             'net/dv8tion/jda/core/requests/Route.java',
             'net/dv8tion/jda/core/requests/Requester.java',
             'net/dv8tion/jda/core/requests/Response.java',
-            'net/dv8tion/jda/core/requests/ratelimit',
-            'net/dv8tion/jda/core/requests/restaction/CompletedFuture.java',
-            'net/dv8tion/jda/core/requests/restaction/RequestFuture.java')
+            'net/dv8tion/jda/core/requests/ratelimit')
     exclude('net/dv8tion/jda/core/utils/cache/impl')
-
-    //opuswrapper
-    exclude('tomp2p/opuswrapper')
 
     //voice crypto
     exclude('com/iwebpp/crypto')
@@ -199,9 +210,7 @@ String getProjectProperty(String propertyName)
     return property
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.2.1'
-}
+wrapper.gradleVersion = '4.6'
 
 build {
     dependsOn clean
@@ -209,6 +218,7 @@ build {
     dependsOn javadocJar
     dependsOn sourcesJar
     dependsOn shadowJar
+    dependsOn noOpusJar
 
     jar.mustRunAfter clean
     javadocJar.mustRunAfter jar

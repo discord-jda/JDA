@@ -26,9 +26,6 @@
  *     <li>{@link net.dv8tion.jda.core.utils.MiscUtil MiscUtil}
  *     <br>Various operations that don't have specific utility classes yet, mostly internals that are accessible from JDA entities</li>
  *
- *     <li>{@link net.dv8tion.jda.core.utils.NativeUtil NativeUtil}
- *     <br>This is used by JDA to load JNI libraries for the audio/voice section of JDA</li>
- *
  *     <li>{@link net.dv8tion.jda.core.utils.PermissionUtil PermissionUtil}
  *     <br>Focused all around the {@link net.dv8tion.jda.core.Permission Permissions enum},
  *         used to check whether a certain entity has case-by-case permissions</li>

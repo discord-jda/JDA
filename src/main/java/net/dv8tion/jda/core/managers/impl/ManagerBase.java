@@ -107,7 +107,7 @@ public abstract class ManagerBase extends AuditableRestAction<Void>
 
     @Override
     @SuppressWarnings("unchecked")
-    public void queue(Consumer<Void> success, Consumer<Throwable> failure)
+    public void queue(Consumer<? super Void> success, Consumer<? super Throwable> failure)
     {
         if (shouldUpdate())
             super.queue(success, failure);
@@ -155,7 +155,7 @@ public abstract class ManagerBase extends AuditableRestAction<Void>
         return (set & bit) == bit;
     }
 
-    protected <E> void withLock(E object, Consumer<E> consumer)
+    protected <E> void withLock(E object, Consumer<? super E> consumer)
     {
         synchronized (object)
         {

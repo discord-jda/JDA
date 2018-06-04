@@ -115,6 +115,18 @@ public final class Helpers
         return out.append(input).toString();
     }
 
+    public static boolean isNumeric(final String input)
+    {
+        if (input.isEmpty())
+            return false;
+        for (char c : input.toCharArray())
+        {
+            if (!Character.isDigit(c))
+                return false;
+        }
+        return true;
+    }
+
     // ## ExceptionUtils ##
 
     //Copied from ogr.apache.commons:commons-lang3:3.5 ExceptionsUtils.java
