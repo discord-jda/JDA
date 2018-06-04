@@ -29,6 +29,7 @@ import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.Helpers;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -128,10 +129,14 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
      *         {@link net.dv8tion.jda.core.entities.User User} id used to filter,
      *         or {@code null} to remove user filtering
      *
+     * @throws IllegalArgumentException
+     *         If the provided userId is not valid
+     *
      * @return The current AuditLogPaginationAction for chaining convenience
      */
     public AuditLogPaginationAction user(String userId)
     {
+        Checks.isSnowflake(userId, "User ID");
         this.userId = userId;
         return this;
     }
