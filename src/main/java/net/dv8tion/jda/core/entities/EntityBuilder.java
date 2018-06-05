@@ -72,7 +72,6 @@ public class EntityBuilder
         tmp.add("session_id");
         tmp.add("state");
         tmp.add("sync_id");
-        tmp.add("timestamps");
         richGameFields = Collections.unmodifiableSet(tmp);
     }
 
