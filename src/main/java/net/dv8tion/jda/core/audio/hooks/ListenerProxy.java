@@ -18,25 +18,28 @@ package net.dv8tion.jda.core.audio.hooks;
 
 import net.dv8tion.jda.core.audio.SpeakingMode;
 import net.dv8tion.jda.core.entities.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.EnumSet;
 
 public class ListenerProxy implements ConnectionListener
 {
+    private static final Logger log = LoggerFactory.getLogger(ListenerProxy.class);
     private final Object listenerLock = new Object();
     private ConnectionListener listener = null;
 
     @Override
     public void onPing(long ping)
     {
+        if (listener == null)
+            return;
         synchronized (listenerLock)
         {
-            if (listener == null)
-                return;
-
             try
             {
-                listener.onPing(ping);
+                if (listener != null)
+                    listener.onPing(ping);
             }
             catch (Throwable t)
             {
@@ -48,60 +51,48 @@ public class ListenerProxy implements ConnectionListener
     @Override
     public void onStatusChange(ConnectionStatus status)
     {
+        if (listener == null)
+            return;
         synchronized (listenerLock)
         {
-            if (listener == null)
-                return;
-
             try
             {
-                listener.onStatusChange(status);
+                if (listener != null)
+                    listener.onStatusChange(status);
             }
             catch (Throwable t)
             {
-                t.printStackTrace();
+                log.error("The ConnectionListener encountered and uncaught exception", t);
             }
         }
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void onUserSpeaking(User user, EnumSet<SpeakingMode> modes)
     {
+        if (listener == null)
+            return;
         synchronized (listenerLock)
         {
-            if (listener == null)
-                return;
-
             try
             {
-                listener.onUserSpeaking(user, modes);
+                if (listener != null)
+                {
+                    listener.onUserSpeaking(user, modes);
+                    listener.onUserSpeaking(user, !modes.contains(SpeakingMode.NONE));
+                }
             }
             catch (Throwable t)
             {
-                t.printStackTrace();
+                log.error("The ConnectionListener encountered and uncaught exception", t);
             }
         }
     }
 
     @Override
-    @Deprecated
-    public void onUserSpeaking(User user, boolean speaking)
-    {
-        synchronized (listenerLock)
-        {
-            if (listener == null)
-                return;
-
-            try
-            {
-                listener.onUserSpeaking(user, speaking);
-            }
-            catch (Throwable t)
-            {
-                t.printStackTrace();
-            }
-        }
-    }
+    @Deprecated /* dead path */
+    public void onUserSpeaking(User user, boolean speaking) {}
 
     public void setListener(ConnectionListener listener)
     {
