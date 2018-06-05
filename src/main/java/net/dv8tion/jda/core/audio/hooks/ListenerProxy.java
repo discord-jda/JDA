@@ -34,17 +34,19 @@ public class ListenerProxy implements ConnectionListener
     {
         if (listener == null)
             return;
+        ConnectionListener listener;
         synchronized (listenerLock)
         {
-            try
-            {
-                if (listener != null)
-                    listener.onPing(ping);
-            }
-            catch (Throwable t)
-            {
-                t.printStackTrace();
-            }
+            listener = this.listener;
+        }
+        try
+        {
+            if (listener != null)
+                listener.onPing(ping);
+        }
+        catch (Throwable t)
+        {
+            log.error("The ConnectionListener encountered and uncaught exception", t);
         }
     }
 
@@ -53,17 +55,19 @@ public class ListenerProxy implements ConnectionListener
     {
         if (listener == null)
             return;
+        ConnectionListener listener;
         synchronized (listenerLock)
         {
-            try
-            {
-                if (listener != null)
-                    listener.onStatusChange(status);
-            }
-            catch (Throwable t)
-            {
-                log.error("The ConnectionListener encountered and uncaught exception", t);
-            }
+            listener = this.listener;
+        }
+        try
+        {
+            if (listener != null)
+                listener.onStatusChange(status);
+        }
+        catch (Throwable t)
+        {
+            log.error("The ConnectionListener encountered and uncaught exception", t);
         }
     }
 
@@ -73,20 +77,22 @@ public class ListenerProxy implements ConnectionListener
     {
         if (listener == null)
             return;
+        ConnectionListener listener;
         synchronized (listenerLock)
         {
-            try
+            listener = this.listener;
+        }
+        try
+        {
+            if (listener != null)
             {
-                if (listener != null)
-                {
-                    listener.onUserSpeaking(user, modes);
-                    listener.onUserSpeaking(user, !modes.contains(SpeakingMode.NONE));
-                }
+                listener.onUserSpeaking(user, modes);
+                listener.onUserSpeaking(user, !modes.contains(SpeakingMode.NONE));
             }
-            catch (Throwable t)
-            {
-                log.error("The ConnectionListener encountered and uncaught exception", t);
-            }
+        }
+        catch (Throwable t)
+        {
+            log.error("The ConnectionListener encountered and uncaught exception", t);
         }
     }
 
