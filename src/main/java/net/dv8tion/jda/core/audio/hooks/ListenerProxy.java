@@ -26,19 +26,14 @@ import java.util.EnumSet;
 public class ListenerProxy implements ConnectionListener
 {
     private static final Logger log = LoggerFactory.getLogger(ListenerProxy.class);
-    private final Object listenerLock = new Object();
-    private ConnectionListener listener = null;
+    private volatile ConnectionListener listener = null;
 
     @Override
     public void onPing(long ping)
     {
         if (listener == null)
             return;
-        ConnectionListener listener;
-        synchronized (listenerLock)
-        {
-            listener = this.listener;
-        }
+        ConnectionListener listener = this.listener;
         try
         {
             if (listener != null)
@@ -55,11 +50,7 @@ public class ListenerProxy implements ConnectionListener
     {
         if (listener == null)
             return;
-        ConnectionListener listener;
-        synchronized (listenerLock)
-        {
-            listener = this.listener;
-        }
+        ConnectionListener listener = this.listener;
         try
         {
             if (listener != null)
@@ -77,11 +68,7 @@ public class ListenerProxy implements ConnectionListener
     {
         if (listener == null)
             return;
-        ConnectionListener listener;
-        synchronized (listenerLock)
-        {
-            listener = this.listener;
-        }
+        ConnectionListener listener = this.listener;
         try
         {
             if (listener != null)
@@ -102,10 +89,7 @@ public class ListenerProxy implements ConnectionListener
 
     public void setListener(ConnectionListener listener)
     {
-        synchronized (listenerLock)
-        {
-            this.listener = listener;
-        }
+        this.listener = listener;
     }
 
     public ConnectionListener getListener()
