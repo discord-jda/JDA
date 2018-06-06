@@ -17,13 +17,13 @@
 package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.core.entities.impl.InviteImpl;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
 import javax.annotation.CheckReturnValue;
 import java.time.OffsetDateTime;
-import net.dv8tion.jda.core.entities.Guild.VerificationLevel;
 
 /**
  * Representation of a Discord Invite.
@@ -331,16 +331,22 @@ public interface Invite
         VerificationLevel getVerificationLevel();
         
         /**
-         * Returns the approximate count of online members in the guild.
+         * Returns the approximate count of online members in the guild. If the online member count was not included in the
+         * invite, this will return -1. Counts will usually only be returned when resolving the invite via the 
+         * {@link #resolve(net.dv8tion.jda.core.JDA, java.lang.String, boolean) Invite.resolve()} method with the 
+         * withCounts boolean set to {@code true}
          * 
-         * @return TODO
+         * @return the approximate count of online members in the guild, or -1 if not present in the invite
          */
         int getOnlineCount();
         
         /**
-         * Returns the approximate count of total members in the guild.
+         * Returns the approximate count of total members in the guild. If the total member count was not included in the
+         * invite, this will return -1. Counts will usually only be returned when resolving the invite via the 
+         * {@link #resolve(net.dv8tion.jda.core.JDA, java.lang.String, boolean) Invite.resolve()} method with the 
+         * withCounts boolean set to {@code true}
          * 
-         * @return TODO
+         * @return the approximate count of total members in the guild, or -1 if not present in the invite
          */
         int getMemberCount();
     }
