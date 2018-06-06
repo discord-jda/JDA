@@ -883,7 +883,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     default RestAction<Message> getMessageById(String messageId)
     {
         AccountTypeException.check(getJDA().getAccountType(), AccountType.BOT);
-        Checks.notEmpty(messageId, "Provided messageId");
+        Checks.isSnowflake(messageId, "Message ID");
 
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(getId(), messageId);
         return new RestAction<Message>(getJDA(), route)
@@ -991,7 +991,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     @CheckReturnValue
     default AuditableRestAction<Void> deleteMessageById(String messageId)
     {
-        Checks.notEmpty(messageId, "messageId");
+        Checks.isSnowflake(messageId, "Message ID");
 
         Route.CompiledRoute route = Route.Messages.DELETE_MESSAGE.compile(getId(), messageId);
         return new AuditableRestAction<Void>(getJDA(), route) {
@@ -1765,7 +1765,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     @CheckReturnValue
     default RestAction<Void> addReactionById(String messageId, String unicode)
     {
-        Checks.notEmpty(messageId, "MessageId");
+        Checks.isSnowflake(messageId, "Message ID");
         Checks.notEmpty(unicode, "Provided Unicode");
         Checks.noWhitespace(unicode, "Provided Unicode");
 
@@ -1910,7 +1910,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     @CheckReturnValue
     default RestAction<Void> addReactionById(String messageId, Emote emote)
     {
-        Checks.notEmpty(messageId, "MessageId");
+        Checks.isSnowflake(messageId, "Message ID");
         Checks.notNull(emote, "Emote");
 
         Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, String.format("%s:%s", emote.getName(), emote.getId()));
@@ -2046,7 +2046,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     @CheckReturnValue
     default RestAction<Void> removeReactionById(String messageId, String unicode)
     {
-        Checks.noWhitespace(messageId, "Message ID");
+        Checks.isSnowflake(messageId, "Message ID");
         Checks.noWhitespace(unicode, "Emoji");
 
         final String code = MiscUtil.encodeUTF8(unicode);
@@ -2275,7 +2275,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     @CheckReturnValue
     default RestAction<Void> pinMessageById(String messageId)
     {
-        Checks.notEmpty(messageId, "messageId");
+        Checks.isSnowflake(messageId, "Message ID");
 
         Route.CompiledRoute route = Route.Messages.ADD_PINNED_MESSAGE.compile(getId(), messageId);
         return new RestAction<Void>(getJDA(), route)
@@ -2376,7 +2376,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     @CheckReturnValue
     default RestAction<Void> unpinMessageById(String messageId)
     {
-        Checks.notEmpty(messageId, "messageId");
+        Checks.isSnowflake(messageId, "Message ID");
 
         Route.CompiledRoute route = Route.Messages.REMOVE_PINNED_MESSAGE.compile(getId(), messageId);
         return new RestAction<Void>(getJDA(), route)
@@ -2534,7 +2534,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     @CheckReturnValue
     default MessageAction editMessageById(String messageId, CharSequence newContent)
     {
-        Checks.noWhitespace(messageId, "MessageId");
+        Checks.isSnowflake(messageId, "Message ID");
         Checks.notEmpty(newContent, "Provided message content");
         Checks.check(newContent.length() <= 2000, "Provided newContent length must be 2000 or less characters.");
 
@@ -2639,7 +2639,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     @CheckReturnValue
     default MessageAction editMessageById(String messageId, Message newContent)
     {
-        Checks.noWhitespace(messageId, "messageId");
+        Checks.isSnowflake(messageId, "Message ID");
         Checks.notNull(newContent, "message");
 
         Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getId(), messageId);
@@ -2860,7 +2860,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     @CheckReturnValue
     default MessageAction editMessageById(String messageId, MessageEmbed newEmbed)
     {
-        Checks.noWhitespace(messageId, "Message ID");
+        Checks.isSnowflake(messageId, "Message ID");
         Checks.notNull(newEmbed, "MessageEmbed");
 
         Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getId(), messageId);

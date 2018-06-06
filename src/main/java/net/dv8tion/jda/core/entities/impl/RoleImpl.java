@@ -274,7 +274,7 @@ public class RoleImpl implements Role
     @Override
     public String getAsMention()
     {
-        return "<@&" + getId() + '>';
+        return isPublicRole() ? "@everyone" : "<@&" + getId() + '>';
     }
 
     @Override

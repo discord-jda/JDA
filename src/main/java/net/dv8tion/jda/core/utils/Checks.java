@@ -20,6 +20,17 @@ import java.util.Collection;
 
 public class Checks
 {
+    public static void isSnowflake(final String snowflake)
+    {
+        isSnowflake(snowflake, snowflake);
+    }
+
+    public static void isSnowflake(final String snowflake, final String message)
+    {
+        notNull(snowflake, message);
+        if (snowflake.length() > 20 || !Helpers.isNumeric(snowflake))
+            throw new IllegalArgumentException(message + " is not a valid snowflake value!");
+    }
 
     public static void check(final boolean expression, final String message)
     {

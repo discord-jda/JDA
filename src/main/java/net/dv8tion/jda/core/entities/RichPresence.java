@@ -22,6 +22,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.Instant;
 import java.time.temporal.TemporalUnit;
+import java.util.EnumSet;
 import java.util.Objects;
 
 /**
@@ -121,10 +122,26 @@ public class RichPresence extends Game
      * Flags for this presence
      *
      * @return The flags for this presence
+     *
+     * @see    ActivityFlag
+     * @see    ActivityFlag#getFlags(int)
      */
     public int getFlags()
     {
         return flags;
+    }
+
+    /**
+     * Flags for this presence in an enum set
+     *
+     * @return The flags for this presence
+     *
+     * @see    ActivityFlag
+     * @see    ActivityFlag#getFlags(int)
+     */
+    public EnumSet<ActivityFlag> getFlagSet()
+    {
+        return ActivityFlag.getFlags(getFlags());
     }
 
     /**

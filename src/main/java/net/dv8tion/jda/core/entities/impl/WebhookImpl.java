@@ -99,12 +99,15 @@ public class WebhookImpl implements Webhook
     @Override
     public String getUrl()
     {
-        return Requester.DISCORD_API_PREFIX + "webhooks/" + getId() + "/" + getToken();
+        return Requester.DISCORD_API_PREFIX + "webhooks/" + getId() + (getToken() == null ? "" : "/" + getToken());
     }
 
     @Override
     public AuditableRestAction<Void> delete()
     {
+        if (isFake())
+            throw new IllegalStateException("Fake Webhooks (such as those retrieved from Audit Logs) "
+                    + "cannot be used for deletion!");
         Route.CompiledRoute route = Route.Webhooks.DELETE_TOKEN_WEBHOOK.compile(getId(), token);
         return new AuditableRestAction<Void>(getJDA(), route)
         {
@@ -122,6 +125,9 @@ public class WebhookImpl implements Webhook
     @Override
     public WebhookManager getManager()
     {
+        if (isFake())
+            throw new IllegalStateException("Fake Webhooks (such as those retrieved from Audit Logs) "
+                    + "cannot provide a WebhookManager!");
         WebhookManager mng = manager;
         if (mng == null)
         {
@@ -155,6 +161,9 @@ public class WebhookImpl implements Webhook
     @Override
     public WebhookClientBuilder newClient()
     {
+        if (isFake())
+            throw new IllegalStateException("Fake Webhooks (such as those retrieved from Audit Logs) "
+                    + "cannot be used to create a WebhookClient!");
         return new WebhookClientBuilder(id, token);
     }
 
@@ -162,6 +171,12 @@ public class WebhookImpl implements Webhook
     public long getIdLong()
     {
         return id;
+    }
+
+    @Override
+    public boolean isFake()
+    {
+        return token == null;
     }
 
     /* -- Impl Setters -- */

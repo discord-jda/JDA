@@ -427,8 +427,6 @@ public class GuildController
     @CheckReturnValue
     public AuditableRestAction<Void> kick(String userId, String reason)
     {
-        Checks.notBlank(userId, "userId");
-
         Member member = guild.getMemberById(userId);
         Checks.check(member != null, "The provided userId does not correspond to a member in this guild! Provided userId: %s", userId);
 
@@ -696,14 +694,11 @@ public class GuildController
     public AuditableRestAction<Void> ban(String userId, int delDays, String reason)
     {
         checkAvailable();
-        Checks.notBlank(userId, "User ID");
         checkPermission(Permission.BAN_MEMBERS);
 
         User user = guild.getJDA().getUserById(userId);
         if (user != null) // If we have the user cached then we should use the additional information available to use during the ban process.
-        {
             return ban(user, delDays, reason);
-        }
 
         Route.CompiledRoute route = Route.Guilds.BAN.compile(guild.getId(), userId);
         if (reason != null && !reason.isEmpty())
@@ -940,11 +935,10 @@ public class GuildController
     public AuditableRestAction<Void> unban(String userId)
     {
         checkAvailable();
-        Checks.notBlank(userId, "User ID");
+        Checks.isSnowflake(userId, "User ID");
         checkPermission(Permission.BAN_MEMBERS);
 
         Route.CompiledRoute route = Route.Guilds.UNBAN.compile(guild.getId(), userId);
-
         return new AuditableRestAction<Void>(guild.getJDA(), route)
         {
             @Override
