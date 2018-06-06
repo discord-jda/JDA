@@ -639,7 +639,7 @@ public class WebhookCluster implements AutoCloseable
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
      */
-    public List<RequestFuture<?>> broadcast(MessageEmbed... embeds)
+    public List<RequestFuture<?>> broadcast(MessageEmbed[] embeds)
     {
         return broadcast(WebhookMessage.embeds(Arrays.asList(embeds)));
     }

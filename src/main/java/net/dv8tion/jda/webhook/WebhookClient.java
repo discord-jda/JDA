@@ -269,7 +269,7 @@ public class WebhookClient implements AutoCloseable
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      *         this will be completed once the message was sent.
      */
-    public RequestFuture<?> send(MessageEmbed... embeds)
+    public RequestFuture<?> send(MessageEmbed[] embeds)
     {
         return send(WebhookMessage.embeds(Arrays.asList(embeds)));
     }
