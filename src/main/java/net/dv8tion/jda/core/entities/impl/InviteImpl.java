@@ -19,6 +19,7 @@ package net.dv8tion.jda.core.entities.impl;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
@@ -30,7 +31,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
-import net.dv8tion.jda.core.entities.Guild.VerificationLevel;
 
 public class InviteImpl implements Invite
 {
@@ -70,7 +70,7 @@ public class InviteImpl implements Invite
 
         Route.CompiledRoute route = Route.Invites.GET_INVITE.compile(code);
         
-        if(withCounts)
+        if (withCounts)
             route = route.withQueryParams("with_counts", "true");
 
         return new RestAction<Invite>(api, route)
@@ -292,7 +292,7 @@ public class InviteImpl implements Invite
         private final VerificationLevel verificationLevel;
 
         public GuildImpl(final long id, final String iconId, final String name, final String splashId, 
-                final VerificationLevel verificationLevel, final int presenceCount, final int memberCount)
+                         final VerificationLevel verificationLevel, final int presenceCount, final int memberCount)
         {
             this.id = id;
             this.iconId = iconId;
