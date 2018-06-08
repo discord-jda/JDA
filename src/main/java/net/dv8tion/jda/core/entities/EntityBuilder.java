@@ -30,6 +30,7 @@ import net.dv8tion.jda.core.WebSocketCode;
 import net.dv8tion.jda.core.audit.ActionType;
 import net.dv8tion.jda.core.audit.AuditLogChange;
 import net.dv8tion.jda.core.audit.AuditLogEntry;
+import net.dv8tion.jda.core.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.core.entities.MessageEmbed.*;
 import net.dv8tion.jda.core.entities.impl.*;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
@@ -1297,8 +1298,11 @@ public class EntityBuilder
         final long guildId = guildObject.getLong("id");
         final String guildName = guildObject.getString("name");
         final String guildSplashId = guildObject.optString("splash", null);
+        final VerificationLevel guildVerificationLevel = VerificationLevel.fromKey(Helpers.optInt(guildObject, "verification_level", -1));
+        final int presenceCount = Helpers.optInt(object, "approximate_presence_count", -1);
+        final int memberCount = Helpers.optInt(object, "approximate_member_count", -1);
 
-        final Invite.Guild guild = new InviteImpl.GuildImpl(guildId, guildIconId, guildName, guildSplashId);
+        final Invite.Guild guild = new InviteImpl.GuildImpl(guildId, guildIconId, guildName, guildSplashId, guildVerificationLevel, presenceCount, memberCount);
 
         final int maxAge;
         final int maxUses;
@@ -1326,7 +1330,9 @@ public class EntityBuilder
             timeCreated = null;
         }
 
-        return new InviteImpl(api, code, expanded, inviter, maxAge, maxUses, temporary, timeCreated, uses, channel, guild);
+        return new InviteImpl(api, code, expanded, inviter,
+                              maxAge, maxUses, temporary,
+                              timeCreated, uses, channel, guild);
     }
 
     public void clearCache()
