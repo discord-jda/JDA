@@ -538,8 +538,6 @@ public class WebhookCluster implements AutoCloseable
      *         If any of the provided arguments is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException
      *         If any of the receivers has been shutdown
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
@@ -572,8 +570,6 @@ public class WebhookCluster implements AutoCloseable
      *         If any of the provided arguments is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException
      *         If any of the receivers has been shutdown
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
@@ -606,8 +602,6 @@ public class WebhookCluster implements AutoCloseable
      *         If the provided message is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException
      *         If any of the receivers has been shutdown
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
@@ -633,8 +627,6 @@ public class WebhookCluster implements AutoCloseable
      *         If any of the provided arguments is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException
      *         If any of the receivers has been shutdown
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
@@ -662,8 +654,6 @@ public class WebhookCluster implements AutoCloseable
      *         If any of the provided arguments is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException
      *         If any of the receivers has been shutdown
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
@@ -690,8 +680,6 @@ public class WebhookCluster implements AutoCloseable
      *         If any of the provided arguments is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException
      *         If any of the receivers has been shutdown
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
@@ -712,8 +700,6 @@ public class WebhookCluster implements AutoCloseable
      *         If the provided content is {@code null} or blank
      * @throws java.util.concurrent.RejectedExecutionException
      *         If any of the receivers has been shutdown
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
@@ -743,8 +729,6 @@ public class WebhookCluster implements AutoCloseable
      *         If the provided file is {@code null}, does not exist or ist not readable
      * @throws java.util.concurrent.RejectedExecutionException
      *         If any of the receivers has been shutdown
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
@@ -771,8 +755,6 @@ public class WebhookCluster implements AutoCloseable
      *         If the provided file is {@code null}, does not exist or ist not readable
      * @throws java.util.concurrent.RejectedExecutionException
      *         If any of the receivers has been shutdown
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
@@ -800,8 +782,6 @@ public class WebhookCluster implements AutoCloseable
      *         If the provided data is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException
      *         If any of the receivers has been shutdown
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
@@ -827,8 +807,6 @@ public class WebhookCluster implements AutoCloseable
      *         If the provided data is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException
      *         If any of the receivers has been shutdown
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.

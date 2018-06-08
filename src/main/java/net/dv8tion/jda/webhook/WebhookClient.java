@@ -119,8 +119,8 @@ public class WebhookClient implements AutoCloseable
      * @param  message
      *         The message to send
      *
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
+     * @throws IllegalArgumentException
+     *         If the provided message is null
      *
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      *         this will be completed once the message was sent.
@@ -142,8 +142,6 @@ public class WebhookClient implements AutoCloseable
      *         If the provided file is {@code null}, does not exist or is not readable
      * @throws java.util.concurrent.RejectedExecutionException
      *         If this client was closed
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      *         this will be completed once the message was sent.
@@ -167,8 +165,6 @@ public class WebhookClient implements AutoCloseable
      *         If the provided file is {@code null}, does not exist or is not readable
      * @throws java.util.concurrent.RejectedExecutionException
      *         If this client was closed
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      *         this will be completed once the message was sent.
@@ -191,8 +187,6 @@ public class WebhookClient implements AutoCloseable
      *         If the provided data is {@code null} or exceeds the limit of 8MB
      * @throws java.util.concurrent.RejectedExecutionException
      *         If this client was closed
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      *         this will be completed once the message was sent.
@@ -215,8 +209,6 @@ public class WebhookClient implements AutoCloseable
      *         If the provided data is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException
      *         If this client was closed
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      *         this will be completed once the message was sent.
@@ -236,8 +228,8 @@ public class WebhookClient implements AutoCloseable
      * @param  message
      *         The message to send
      *
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
+     * @throws IllegalArgumentException
+     *         If the provided message is null
      *
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      *         this will be completed once the message was sent.
@@ -263,8 +255,6 @@ public class WebhookClient implements AutoCloseable
      *         If any of the provided embeds is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException
      *         If this client was closed
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      *         this will be completed once the message was sent.
@@ -292,8 +282,6 @@ public class WebhookClient implements AutoCloseable
      *         If any of the provided embeds is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException
      *         If this client was closed
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      *         this will be completed once the message was sent.
@@ -319,8 +307,6 @@ public class WebhookClient implements AutoCloseable
      *         If any of the provided embeds is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException
      *         If this client was closed
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      *         this will be completed once the message was sent.
@@ -340,8 +326,6 @@ public class WebhookClient implements AutoCloseable
      *         If any of the provided message is {@code null}, blank or exceeds 2000 characters in length
      * @throws java.util.concurrent.RejectedExecutionException
      *         If this client was closed
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      *         this will be completed once the message was sent.
