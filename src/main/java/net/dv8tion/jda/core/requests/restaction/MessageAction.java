@@ -25,7 +25,6 @@ import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.Helpers;
 import net.dv8tion.jda.core.utils.MiscUtil;
-import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
@@ -588,11 +587,10 @@ public class MessageAction extends RestAction<Message> implements Appendable
     protected RequestBody asMultipart()
     {
         final MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-        final MediaType type = MediaType.parse("application/octet-stream");
         int index = 0;
         for (Map.Entry<String, InputStream> entry : files.entrySet())
         {
-            final RequestBody body = MiscUtil.createRequestBody(type, entry.getValue());
+            final RequestBody body = MiscUtil.createRequestBody(Requester.MEDIA_TYPE_OCTET, entry.getValue());
             builder.addFormDataPart("file" + index++, entry.getKey(), body);
         }
         if (!isEmpty())

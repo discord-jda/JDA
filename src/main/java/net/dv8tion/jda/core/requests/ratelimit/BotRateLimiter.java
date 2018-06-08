@@ -180,6 +180,7 @@ public class BotRateLimiter extends RateLimiter
         if (bucket.hasRatelimit()) // Check if there's a hardcoded rate limit
         {
             bucket.resetTime = getNow() + bucket.getRatelimit().getResetTime();
+            headerCount += 2;
             //routeUsageLimit provided by the ratelimit object already in the bucket.
         }
         else
