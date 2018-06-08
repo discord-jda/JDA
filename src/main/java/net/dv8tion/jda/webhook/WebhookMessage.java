@@ -21,7 +21,6 @@ import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
-import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import org.json.JSONArray;
@@ -41,7 +40,6 @@ import java.util.*;
  */
 public class WebhookMessage
 {
-    protected static final MediaType OCTET = MediaType.parse("application/octet-stream");
     protected final String username, avatarUrl, content;
     protected final List<MessageEmbed> embeds;
     protected final boolean isTTS;
@@ -121,6 +119,7 @@ public class WebhookMessage
     // forcing first embed as we expect at least one entry (Effective Java 3rd. Edition - Item 53)
     public static WebhookMessage embeds(MessageEmbed first, MessageEmbed... embeds)
     {
+        Checks.notNull(first,   "Embeds");
         Checks.notEmpty(embeds, "Embeds");
         Checks.noneNull(embeds, "Embeds");
         List<MessageEmbed> list = new ArrayList<>(1 + embeds.length);
@@ -231,9 +230,9 @@ public class WebhookMessage
     public static WebhookMessage files(String name1, Object data1, Object... attachments)
     {
         Checks.notBlank(name1, "Name");
-        Checks.notNull(data1, "Data");
+        Checks.notNull(data1,  "Data");
         Checks.notNull(attachments, "Attachments");
-        Checks.check(attachments.length % 2 == 0, "Must provide even number of arguments");
+        Checks.check(attachments.length % 2 == 0, "Must provide even number of varargs arguments");
         int fileAmount = 1 + attachments.length / 2;
         Checks.check(fileAmount <= WebhookMessageBuilder.MAX_FILES, "Cannot add more than %d files to a message", WebhookMessageBuilder.MAX_FILES);
         MessageAttachment[] files = new MessageAttachment[fileAmount];
@@ -307,7 +306,7 @@ public class WebhookMessage
                 final MessageAttachment attachment = attachments[i];
                 if (attachment == null)
                     break;
-                builder.addFormDataPart("file" + i, attachment.name, MiscUtil.createRequestBody(OCTET, attachment.getData()));
+                builder.addFormDataPart("file" + i, attachment.name, MiscUtil.createRequestBody(Requester.MEDIA_TYPE_OCTET, attachment.getData()));
             }
             return builder.addFormDataPart("payload_json", payload.toString()).build();
         }
