@@ -25,6 +25,7 @@ import net.dv8tion.jda.core.utils.Helpers;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -497,6 +498,6 @@ public class WebhookMessageBuilder
     {
         if (isEmpty())
             throw new IllegalStateException("Cannot build an empty message!");
-        return new WebhookMessage(username, avatarUrl, content.toString(), embeds, isTTS, fileIndex == 0 ? null : files);
+        return new WebhookMessage(username, avatarUrl, content.toString(), embeds, isTTS, fileIndex == 0 ? null : Arrays.copyOf(files, fileIndex));
     }
 }
