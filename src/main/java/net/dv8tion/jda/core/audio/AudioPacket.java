@@ -104,16 +104,7 @@ public class AudioPacket
         this.ssrc = ssrc;
         this.timestamp = timestamp;
         this.encodedAudio = encodedAudio;
-
-        ByteBuffer buffer = ByteBuffer.allocate(RTP_HEADER_BYTE_LENGTH + encodedAudio.length);
-        buffer.put(RTP_VERSION_PAD_EXTEND_INDEX, RTP_VERSION_PAD_EXTEND);   //0
-        buffer.put(RTP_PAYLOAD_INDEX, RTP_PAYLOAD_TYPE);                    //1
-        buffer.putChar(SEQ_INDEX, seq);                                     //2 - 3
-        buffer.putInt(TIMESTAMP_INDEX, timestamp);                          //4 - 7
-        buffer.putInt(SSRC_INDEX, ssrc);                                    //8 - 11
-        System.arraycopy(encodedAudio, 0, buffer.array(), RTP_HEADER_BYTE_LENGTH, encodedAudio.length);//12 - n
-        this.rawPacket = buffer.array();
-
+        this.rawPacket = generateRawPacket(seq, timestamp, ssrc, encodedAudio);
     }
 
     public byte[] getNonce()
@@ -164,9 +155,7 @@ public class AudioPacket
 
     public DatagramPacket asUdpPacket(InetSocketAddress address)
     {
-        //We use getRawPacket() instead of the rawPacket variable so that we get a copy of the array instead of the
-        //actual array. We want AudioPacket to be immutable.
-        return new DatagramPacket(getRawPacket(), rawPacket.length, address);
+        return new DatagramPacket(rawPacket, rawPacket.length, address);
     }
 
     public DatagramPacket asEncryptedUdpPacket(InetSocketAddress address, byte[] secretKey, byte[] nonce, int nlen)
@@ -180,22 +169,14 @@ public class AudioPacket
 
         //Create our SecretBox encoder with the secretKey provided by Discord.
         TweetNaclFast.SecretBox boxer = new TweetNaclFast.SecretBox(secretKey);
-        byte[] intermediateAudio = boxer.box(encodedAudio, extendedNonce);
-        byte[] encryptedAudio = intermediateAudio;
+        byte[] encryptedAudio = boxer.box(encodedAudio, extendedNonce);
+        ByteBuffer buffer = ByteBuffer.allocate(RTP_HEADER_BYTE_LENGTH + encryptedAudio.length + nlen);
+        populateBuffer(seq, timestamp, ssrc, encryptedAudio, buffer);
         if (nonce != null)
-        {
-            // here we append the provided nonce which is used in _suffix and _lite encryption modes
-            // for _suffix this is the usual 24 bytes and for _lite it should be 4 bytes (unsigned int big endian)
-            // in case no nonce was provided we use no extension and don't append any nonce to the payload
-            encryptedAudio = new byte[intermediateAudio.length + nlen];
-            System.arraycopy(intermediateAudio, 0, encryptedAudio, 0, intermediateAudio.length);
-            System.arraycopy(nonce, 0, encryptedAudio, intermediateAudio.length, nlen);
-        }
+            buffer.put(nonce, 0, nlen);
 
-        //Create a new temp audio packet using the encrypted audio so that we don't
-        // need to write extra code to create the rawPacket with the encryptedAudio.
-        //Use the temp packet to create a UdpPacket.
-        return new AudioPacket(seq, timestamp, ssrc, encryptedAudio).asUdpPacket(address);
+        byte[] packet = buffer.array();
+        return new DatagramPacket(packet, packet.length, address);
     }
 
     public static AudioPacket decryptAudioPacket(AudioEncryption encryption, DatagramPacket packet, byte[] secretKey)
@@ -252,5 +233,22 @@ public class AudioPacket
         System.arraycopy(decryptedAudio, 0, decryptedRawPacket, RTP_HEADER_BYTE_LENGTH, decryptedAudio.length);
 
         return new AudioPacket(decryptedRawPacket);
+    }
+
+    private static byte[] generateRawPacket(char seq, int timestamp, int ssrc, byte[] data)
+    {
+        ByteBuffer buffer = ByteBuffer.allocate(RTP_HEADER_BYTE_LENGTH + data.length);
+        populateBuffer(seq, timestamp, ssrc, data, buffer);
+        return buffer.array();
+    }
+
+    private static void populateBuffer(char seq, int timestamp, int ssrc, byte[] data, ByteBuffer buffer)
+    {
+        buffer.put(RTP_VERSION_PAD_EXTEND);
+        buffer.put(RTP_PAYLOAD_TYPE);
+        buffer.putChar(seq);
+        buffer.putInt(timestamp);
+        buffer.putInt(ssrc);
+        buffer.put(data);
     }
 }
