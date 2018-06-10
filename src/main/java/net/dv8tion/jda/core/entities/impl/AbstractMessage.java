@@ -186,6 +186,13 @@ public abstract class AbstractMessage implements Message
     }
 
     @Override
+    public String getJumpUrl()
+    {
+        unsupported();
+        return null;
+    }
+    
+    @Override
     public String getContentDisplay()
     {
         unsupported();

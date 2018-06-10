@@ -303,6 +303,17 @@ public interface Message extends ISnowflake, Formattable
     Member getMember();
 
     /**
+     * Returns the jump-to URL for the received message. Clicking this URL in the Discord client will cause the client to
+     * jump to the specified message.
+     * 
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.core.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     * 
+     * @return A String representing the jump-to URL for the message
+     */
+    String getJumpUrl();
+
+    /**
      * The textual content of this message in the format that would be shown to the Discord client. All
      * {@link net.dv8tion.jda.core.entities.IMentionable IMentionable} entities will be resolved to the format
      * shown by the Discord client instead of the {@literal <id>} format.
