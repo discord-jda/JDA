@@ -21,6 +21,8 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
 
 /**
  * Represents the connection between a {@link net.dv8tion.jda.core.audio.factory.IAudioSendSystem IAudioSendSystem} and
@@ -54,6 +56,35 @@ public interface IPacketProvider
      * @return The UDP socket connection used for audio sending.
      */
     DatagramSocket getUdpSocket();
+
+    /**
+     * The connected socket address for this audio connection. This can be useful for developers
+     * to open their own socket for datagram sending and allows to avoid using {@link #getNextPacket(boolean)}.
+     *
+     * @return {@link InetSocketAddress} of the current UDP connection
+     */
+    InetSocketAddress getSocketAddress();
+
+    /**
+     * Used to retrieve an audio packet to send to Discord. The packet provided is already converted to Opus and
+     * encrypted, and as such is completely ready to be sent to Discord. The {@code changeTalking} parameter is used
+     * to control whether or not the talking indicator should be changed if the
+     * {@link net.dv8tion.jda.core.audio.AudioSendHandler AudioSendHandler} cannot provide an audio packet.
+     *
+     * <p>Use case for this parameter would be front-loading or queuing many audio packets ahead of send time, and if the AudioSendHandler
+     * did not have enough to fill the entire queue, you would have {@code changeTalking} set to {@code false} until the queue
+     * was empty. At that point, you would switch to {@code true} when requesting a new packet due to the fact that if
+     * one was not available, the developer would not have a packet to send, thus the logged in account is no longer "talking".
+     *
+     * <p><b>Note:</b> When the AudioSendHandler cannot or does not provide a new packet to send, this method will return null.
+     *
+     * @param  changeTalking
+     *         Whether or not to change the talking indicator if the AudioSendHandler cannot provide a new audio packet.
+     *
+     * @return Possibly-null {@link ByteBuffer} containing an encoded and encrypted packet
+     *         of audio data ready to be sent to discord.
+     */
+    ByteBuffer getNextPacketRaw(boolean changeTalking);
 
     /**
      * Used to retrieve an audio packet to send to Discord. The packet provided is already converted to Opus and

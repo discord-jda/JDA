@@ -40,10 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.MDC;
 import tomp2p.opuswrapper.Opus;
 
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.SocketException;
-import java.net.SocketTimeoutException;
+import java.net.*;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -595,7 +592,7 @@ public class AudioConnection
 
     @Override
     @Deprecated
-    protected void finalize() throws Throwable
+    protected void finalize()
     {
         shutdown();
     }
@@ -604,6 +601,7 @@ public class AudioConnection
     {
         char seq = 0;           //Sequence of audio packets. Used to determine the order of the packets.
         int timestamp = 0;      //Used to sync up our packets within the same timeframe of other people talking.
+        private ByteBuffer buffer = ByteBuffer.allocate(512);
 
         @Override
         public String getIdentifier()
@@ -624,13 +622,19 @@ public class AudioConnection
         }
 
         @Override
+        public InetSocketAddress getSocketAddress()
+        {
+            return webSocket.getAddress();
+        }
+
+        @Override
         public DatagramPacket getNextPacket(boolean changeTalking)
         {
             DatagramPacket nextPacket = null;
 
             try
             {
-                if (sentSilenceOnConnect && sendHandler != null && sendHandler.canProvide())
+                cond: if (sentSilenceOnConnect && sendHandler != null && sendHandler.canProvide())
                 {
                     silenceCounter = -1;
                     byte[] rawAudio = sendHandler.provide20MsAudio();
@@ -643,23 +647,12 @@ public class AudioConnection
                     {
                         if (!sendHandler.isOpus())
                         {
-                            if (opusEncoder == null)
-                            {
-                                if (!AudioNatives.ensureOpus())
-                                {
-                                    if (!printedError)
-                                        LOG.error("Unable to process PCM audio without opus binaries!");
-                                    printedError = true;
-                                    return null;
-                                }
-                                IntBuffer error = IntBuffer.allocate(4);
-                                opusEncoder = Opus.INSTANCE.opus_encoder_create(OPUS_SAMPLE_RATE, OPUS_CHANNEL_COUNT, Opus.OPUS_APPLICATION_AUDIO, error);
-                            }
-                            rawAudio = encodeToOpus(rawAudio);
+                            rawAudio = encodeAudio(rawAudio);
+                            if (rawAudio == null)
+                                break cond;
                         }
 
                         nextPacket = getDatagramPacket(rawAudio);
-
                         if (!speaking)
                             setSpeaking(1);
 
@@ -672,7 +665,6 @@ public class AudioConnection
                 else if (silenceCounter > -1)
                 {
                     nextPacket = getDatagramPacket(silenceBytes);
-
                     if (seq + 1 > Character.MAX_VALUE)
                         seq = 0;
                     else
@@ -685,7 +677,9 @@ public class AudioConnection
                     }
                 }
                 else if (speaking && changeTalking)
+                {
                     setSpeaking(0);
+                }
             }
             catch (Exception e)
             {
@@ -698,7 +692,90 @@ public class AudioConnection
             return nextPacket;
         }
 
+        @Override
+        public ByteBuffer getNextPacketRaw(boolean changeTalking)
+        {
+            ByteBuffer nextPacket = null;
+            cond: if (sentSilenceOnConnect && sendHandler != null && sendHandler.canProvide())
+            {
+                silenceCounter = -1;
+                byte[] rawAudio = sendHandler.provide20MsAudio();
+                if (rawAudio == null || rawAudio.length == 0)
+                {
+                    if (speaking && changeTalking)
+                        setSpeaking(0);
+                }
+                else
+                {
+                    if (!sendHandler.isOpus())
+                    {
+                        rawAudio = encodeAudio(rawAudio);
+                        if (rawAudio == null)
+                            break cond;
+                    }
+
+                    nextPacket = getPacketData(rawAudio);
+                    if (!speaking)
+                        setSpeaking(1);
+
+                    if (seq + 1 > Character.MAX_VALUE)
+                        seq = 0;
+                    else
+                        seq++;
+                }
+            }
+            else if (silenceCounter > -1)
+            {
+                nextPacket = getPacketData(silenceBytes);
+                if (seq + 1 > Character.MAX_VALUE)
+                    seq = 0;
+                else
+                    seq++;
+
+                if (++silenceCounter > 10)
+                {
+                    silenceCounter = -1;
+                    sentSilenceOnConnect = true;
+                }
+            }
+            else if (speaking && changeTalking)
+            {
+                setSpeaking(0);
+            }
+
+            if (nextPacket != null)
+                timestamp += OPUS_FRAME_SIZE;
+
+            return nextPacket;
+        }
+
+        private byte[] encodeAudio(byte[] rawAudio)
+        {
+            if (opusEncoder == null)
+            {
+                if (!AudioNatives.ensureOpus())
+                {
+                    if (!printedError)
+                        LOG.error("Unable to process PCM audio without opus binaries!");
+                    printedError = true;
+                    return null;
+                }
+                IntBuffer error = IntBuffer.allocate(4);
+                opusEncoder = Opus.INSTANCE.opus_encoder_create(OPUS_SAMPLE_RATE, OPUS_CHANNEL_COUNT, Opus.OPUS_APPLICATION_AUDIO, error);
+            }
+            return encodeToOpus(rawAudio);
+        }
+
         private DatagramPacket getDatagramPacket(byte[] rawAudio)
+        {
+            ByteBuffer b = getPacketData(rawAudio);
+            byte[] data = b.array();
+            int offset = b.arrayOffset();
+            int position = b.position();
+            return new DatagramPacket(data, offset, position - offset, webSocket.getAddress());
+        }
+
+        private ByteBuffer getPacketData(byte[] rawAudio)
         {
             AudioPacket packet = new AudioPacket(seq, timestamp, webSocket.getSSRC(), rawAudio);
             byte[] nonceData;
@@ -721,7 +798,7 @@ public class AudioConnection
                 default:
                     throw new IllegalStateException("Encryption mode [" + webSocket.encryption + "] is not supported!");
             }
-            return packet.asEncryptedUdpPacket(webSocket.getAddress(), webSocket.getSecretKey(), nonceData, nlen);
+            return buffer = packet.asEncryptedPacket(buffer, webSocket.getSecretKey(), nonceData, nlen);
         }
 
         private byte[] getNonceBytes(long nonce)

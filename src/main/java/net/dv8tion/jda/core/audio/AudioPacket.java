@@ -48,8 +48,6 @@ public class AudioPacket
      */
     public static final byte RTP_PAYLOAD_TYPE = (byte) 0x78;        //Binary: 0100 1000
 
-    public static final int RTP_VERSION_PAD_EXTEND_INDEX =  0;
-    public static final int RTP_PAYLOAD_INDEX =             1;
     public static final int SEQ_INDEX =                     2;
     public static final int TIMESTAMP_INDEX =               4;
     public static final int SSRC_INDEX =                    8;
@@ -153,12 +151,7 @@ public class AudioPacket
         return timestamp;
     }
 
-    public DatagramPacket asUdpPacket(InetSocketAddress address)
-    {
-        return new DatagramPacket(rawPacket, rawPacket.length, address);
-    }
-
-    public DatagramPacket asEncryptedUdpPacket(InetSocketAddress address, byte[] secretKey, byte[] nonce, int nlen)
+    public ByteBuffer asEncryptedPacket(ByteBuffer buffer, byte[] secretKey, byte[] nonce, int nlen)
     {
         //Xsalsa20's Nonce is 24 bytes long, however RTP (and consequently Discord)'s nonce is a different length
         // so we need to create a 24 byte array, and copy the nonce into it.
@@ -170,13 +163,15 @@ public class AudioPacket
         //Create our SecretBox encoder with the secretKey provided by Discord.
         TweetNaclFast.SecretBox boxer = new TweetNaclFast.SecretBox(secretKey);
         byte[] encryptedAudio = boxer.box(encodedAudio, extendedNonce);
-        ByteBuffer buffer = ByteBuffer.allocate(RTP_HEADER_BYTE_LENGTH + encryptedAudio.length + nlen);
+        buffer.clear();
+        int capacity = RTP_HEADER_BYTE_LENGTH + encryptedAudio.length + nlen;
+        if (capacity > buffer.remaining())
+            buffer = ByteBuffer.allocate(capacity);
         populateBuffer(seq, timestamp, ssrc, encryptedAudio, buffer);
         if (nonce != null)
             buffer.put(nonce, 0, nlen);
 
-        byte[] packet = buffer.array();
-        return new DatagramPacket(packet, packet.length, address);
+        return buffer;
     }
 
     public static AudioPacket decryptAudioPacket(AudioEncryption encryption, DatagramPacket packet, byte[] secretKey)
