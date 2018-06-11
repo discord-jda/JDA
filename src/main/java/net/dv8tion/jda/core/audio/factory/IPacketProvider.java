@@ -19,6 +19,7 @@ package net.dv8tion.jda.core.audio.factory;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
@@ -28,7 +29,10 @@ import java.nio.ByteBuffer;
  * Represents the connection between a {@link net.dv8tion.jda.core.audio.factory.IAudioSendSystem IAudioSendSystem} and
  * JDA's internal audio system, providing access to audio packets built from data provided from
  * {@link net.dv8tion.jda.core.audio.AudioSendHandler AudioSendHandlers}.
+ *
+ * <p><b>Note that this provider is not thread-safe!</b>
  */
+@NotThreadSafe
 public interface IPacketProvider
 {
     /**

@@ -602,6 +602,7 @@ public class AudioConnection
         char seq = 0;           //Sequence of audio packets. Used to determine the order of the packets.
         int timestamp = 0;      //Used to sync up our packets within the same timeframe of other people talking.
         private ByteBuffer buffer = ByteBuffer.allocate(512);
+        private final byte[] nonceBuffer = new byte[TweetNaclFast.SecretBox.nonceLength];
 
         @Override
         public String getIdentifier()
@@ -778,37 +779,33 @@ public class AudioConnection
         private ByteBuffer getPacketData(byte[] rawAudio)
         {
             AudioPacket packet = new AudioPacket(seq, timestamp, webSocket.getSSRC(), rawAudio);
-            byte[] nonceData;
             int nlen;
             switch (webSocket.encryption)
             {
                 case XSALSA20_POLY1305:
-                    nonceData = null;
                     nlen = 0;
                     break;
                 case XSALSA20_POLY1305_LITE:
                     long nextNonce = nonce.updateAndGet((n) -> n >= MAX_UINT_32 ? 0 : n + 1);
-                    nonceData = getNonceBytes(nextNonce);
+                    loadNextNonce(nextNonce);
                     nlen = 4;
                     break;
                 case XSALSA20_POLY1305_SUFFIX:
-                    nonceData = TweetNaclFast.randombytes(TweetNaclFast.SecretBox.nonceLength);
+                    ThreadLocalRandom.current().nextBytes(nonceBuffer);
                     nlen = TweetNaclFast.SecretBox.nonceLength;
                     break;
                 default:
                     throw new IllegalStateException("Encryption mode [" + webSocket.encryption + "] is not supported!");
             }
-            return buffer = packet.asEncryptedPacket(buffer, webSocket.getSecretKey(), nonceData, nlen);
+            return buffer = packet.asEncryptedPacket(buffer, webSocket.getSecretKey(), nonceBuffer, nlen);
         }
 
-        private byte[] getNonceBytes(long nonce)
+        private void loadNextNonce(long nonce)
         {
-            byte[] data = new byte[TweetNaclFast.SecretBox.nonceLength];
-            data[0] = (byte) ((nonce >>> 24) & 0xFF);
-            data[1] = (byte) ((nonce >>> 16) & 0xFF);
-            data[2] = (byte) ((nonce >>>  8) & 0xFF);
-            data[3] = (byte) ( nonce         & 0xFF);
-            return data;
+            nonceBuffer[0] = (byte) ((nonce >>> 24) & 0xFF);
+            nonceBuffer[1] = (byte) ((nonce >>> 16) & 0xFF);
+            nonceBuffer[2] = (byte) ((nonce >>>  8) & 0xFF);
+            nonceBuffer[3] = (byte) ( nonce         & 0xFF);
         }
 
         @Override
