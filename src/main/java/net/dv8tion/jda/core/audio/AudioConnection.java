@@ -383,12 +383,6 @@ public class AudioConnection
                                 LOG.warn("Received audio data with a known SSRC, but the userId associate with the SSRC is unknown to JDA!");
                                 continue;
                             }
-//                              if (decoder.wasPacketLost(decryptedPacket.getSequence()))
-//                              {
-//                                  LOG.debug("Packet(s) missed. Using Opus packetloss-compensation.");
-//                                  short[] decodedAudio = decoder.decodeFromOpus(null);
-//                                  receiveHandler.handleUserAudio(new UserAudio(user, decodedAudio));
-//                              }
                             short[] decodedAudio = decoder.decodeFromOpus(decryptedPacket);
 
                             //If decodedAudio is null, then the Opus decode failed, so throw away the packet.
@@ -558,8 +552,12 @@ public class AudioConnection
         }
         ((Buffer) nonEncodedBuffer).flip();
 
-        //TODO: check for 0 / negative value for error.
         int result = Opus.INSTANCE.opus_encode(opusEncoder, nonEncodedBuffer, OPUS_FRAME_SIZE, encoded, encoded.capacity());
+        if (result <= 0)
+        {
+            LOG.error("Received error code from opus_encode(...): {}", result);
+            return null;
+        }
 
         //ENCODING STOPS HERE
 
@@ -761,8 +759,13 @@ public class AudioConnection
                     printedError = true;
                     return null;
                 }
-                IntBuffer error = IntBuffer.allocate(4);
+                IntBuffer error = IntBuffer.allocate(1);
                 opusEncoder = Opus.INSTANCE.opus_encoder_create(OPUS_SAMPLE_RATE, OPUS_CHANNEL_COUNT, Opus.OPUS_APPLICATION_AUDIO, error);
+                if (error.get() != Opus.OPUS_OK && opusEncoder == null)
+                {
+                    LOG.error("Received error status from opus_encoder_create(...): {}", error.get());
+                    return null;
+                }
             }
             return encodeToOpus(rawAudio);
         }
