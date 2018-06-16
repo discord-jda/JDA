@@ -120,7 +120,6 @@ public class WebhookMessage
     public static WebhookMessage embeds(MessageEmbed first, MessageEmbed... embeds)
     {
         Checks.notNull(first,   "Embeds");
-        Checks.notEmpty(embeds, "Embeds");
         Checks.noneNull(embeds, "Embeds");
         List<MessageEmbed> list = new ArrayList<>(1 + embeds.length);
         list.add(first);
