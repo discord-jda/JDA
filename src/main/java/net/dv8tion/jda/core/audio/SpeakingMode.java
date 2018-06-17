@@ -18,6 +18,9 @@ package net.dv8tion.jda.core.audio;
 
 import java.util.EnumSet;
 
+/**
+ * Flags representing the speaking modes used by discord users.
+ */
 public enum SpeakingMode
 {
     NONE(0), VOICE(1), SOUNDSHARE(2);
@@ -29,11 +32,24 @@ public enum SpeakingMode
         this.raw = raw;
     }
 
+    /**
+     * The raw bitmask for this mode
+     *
+     * @return bitmask
+     */
     public int getRaw()
     {
         return raw;
     }
 
+    /**
+     * Parses the active modes represented by the provided bitmask
+     *
+     * @param  mask
+     *         The bitmask containing the active speaking modes
+     *
+     * @return {@link EnumSet EnumSet} containing the speaking modes
+     */
     public static EnumSet<SpeakingMode> getModes(int mask)
     {
         if (mask == 0)
@@ -47,5 +63,24 @@ public enum SpeakingMode
                 modes.add(mode);
         }
         return modes;
+    }
+
+    /**
+     * Converts the given speaking modes into raw its bitmast.
+     * This is only useful for sending speaking updates.
+     *
+     * @param  modes
+     *         The modes
+     *
+     * @return The bitmask for the provided speaking modes
+     */
+    public static int getRaw(SpeakingMode... modes)
+    {
+        if (modes == null)
+            return 0;
+        int mask = 0;
+        for (SpeakingMode m : modes)
+            mask |= m.raw;
+        return mask;
     }
 }

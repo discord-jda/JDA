@@ -566,11 +566,11 @@ public class AudioConnection
         return audio;
     }
 
-    private void setSpeaking(int mask)
+    private void setSpeaking(boolean speaking)
     {
-        this.speaking = (mask & SpeakingMode.VOICE.getRaw()) != 0;
+        this.speaking = speaking;
         JSONObject obj = new JSONObject()
-                .put("speaking", mask)
+                .put("speaking", speaking ? 1 : 0)
                 .put("delay", 0);
         webSocket.send(VoiceCode.USER_SPEAKING_UPDATE, obj);
         if (!speaking)
@@ -629,66 +629,8 @@ public class AudioConnection
         @Override
         public DatagramPacket getNextPacket(boolean changeTalking)
         {
-            DatagramPacket nextPacket = null;
-
-            try
-            {
-                cond: if (sentSilenceOnConnect && sendHandler != null && sendHandler.canProvide())
-                {
-                    silenceCounter = -1;
-                    byte[] rawAudio = sendHandler.provide20MsAudio();
-                    if (rawAudio == null || rawAudio.length == 0)
-                    {
-                        if (speaking && changeTalking)
-                            setSpeaking(0);
-                    }
-                    else
-                    {
-                        if (!sendHandler.isOpus())
-                        {
-                            rawAudio = encodeAudio(rawAudio);
-                            if (rawAudio == null)
-                                break cond;
-                        }
-
-                        nextPacket = getDatagramPacket(rawAudio);
-                        if (!speaking)
-                            setSpeaking(1);
-
-                        if (seq + 1 > Character.MAX_VALUE)
-                            seq = 0;
-                        else
-                            seq++;
-                    }
-                }
-                else if (silenceCounter > -1)
-                {
-                    nextPacket = getDatagramPacket(silenceBytes);
-                    if (seq + 1 > Character.MAX_VALUE)
-                        seq = 0;
-                    else
-                        seq++;
-
-                    if (++silenceCounter > 10)
-                    {
-                        silenceCounter = -1;
-                        sentSilenceOnConnect = true;
-                    }
-                }
-                else if (speaking && changeTalking)
-                {
-                    setSpeaking(0);
-                }
-            }
-            catch (Exception e)
-            {
-                LOG.error("There was an error while getting next audio packet", e);
-            }
-
-            if (nextPacket != null)
-                timestamp += OPUS_FRAME_SIZE;
-
-            return nextPacket;
+            ByteBuffer buffer = getNextPacketRaw(changeTalking);
+            return buffer == null ? null : getDatagramPacket(buffer);
         }
 
         @Override
@@ -702,7 +644,7 @@ public class AudioConnection
                 if (rawAudio == null || rawAudio.length == 0)
                 {
                     if (speaking && changeTalking)
-                        setSpeaking(0);
+                        setSpeaking(false);
                 }
                 else
                 {
@@ -715,7 +657,7 @@ public class AudioConnection
 
                     nextPacket = getPacketData(rawAudio);
                     if (!speaking)
-                        setSpeaking(1);
+                        setSpeaking(true);
 
                     if (seq + 1 > Character.MAX_VALUE)
                         seq = 0;
@@ -739,7 +681,7 @@ public class AudioConnection
             }
             else if (speaking && changeTalking)
             {
-                setSpeaking(0);
+                setSpeaking(false);
             }
 
             if (nextPacket != null)
@@ -770,9 +712,8 @@ public class AudioConnection
             return encodeToOpus(rawAudio);
         }
 
-        private DatagramPacket getDatagramPacket(byte[] rawAudio)
+        private DatagramPacket getDatagramPacket(ByteBuffer b)
         {
-            ByteBuffer b = getPacketData(rawAudio);
             byte[] data = b.array();
             int offset = b.arrayOffset();
             int position = b.position();
