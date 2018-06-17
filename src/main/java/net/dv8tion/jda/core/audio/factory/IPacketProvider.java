@@ -81,7 +81,6 @@ public interface IPacketProvider
      * one was not available, the developer would not have a packet to send, thus the logged in account is no longer "talking".
      *
      * <p><b>Note:</b> When the AudioSendHandler cannot or does not provide a new packet to send, this method will return null.
-     * No exceptions thrown by the AudioSendHandler's provide method will be caught by JDA, ensure your code can handle them.
      *
      * <p><u>The buffer used here may be used again on the next call to this getter, if you plan on storing the data copy it.
      * The buffer was created using {@link ByteBuffer#allocate(int)} and is not direct.</u>
@@ -106,7 +105,6 @@ public interface IPacketProvider
      * one was not available, the developer would not have a packet to send, thus the logged in account is no longer "talking".
      *
      * <p><b>Note:</b> When the AudioSendHandler cannot or does not provide a new packet to send, this method will return null.
-     * No exceptions thrown by the AudioSendHandler's provide method will be caught by JDA, ensure your code can handle them.
      *
      * @param  changeTalking
      *         Whether or not to change the talking indicator if the AudioSendHandler cannot provide a new audio packet.

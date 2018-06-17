@@ -78,8 +78,6 @@ public class AudioConnection
     private Thread receiveThread;
     private long queueTimeout;
 
-    private final AtomicLong nonce = new AtomicLong(0);
-
     private volatile boolean couldReceive = false;
     private volatile boolean speaking = false;      //Also acts as "couldProvide"
 
@@ -599,6 +597,7 @@ public class AudioConnection
     {
         char seq = 0;           //Sequence of audio packets. Used to determine the order of the packets.
         int timestamp = 0;      //Used to sync up our packets within the same timeframe of other people talking.
+        private long nonce = 0;
         private ByteBuffer buffer = ByteBuffer.allocate(512);
         private final byte[] nonceBuffer = new byte[TweetNaclFast.SecretBox.nonceLength];
 
@@ -637,51 +636,58 @@ public class AudioConnection
         public ByteBuffer getNextPacketRaw(boolean changeTalking)
         {
             ByteBuffer nextPacket = null;
-            cond: if (sentSilenceOnConnect && sendHandler != null && sendHandler.canProvide())
+            try
             {
-                silenceCounter = -1;
-                byte[] rawAudio = sendHandler.provide20MsAudio();
-                if (rawAudio == null || rawAudio.length == 0)
+                cond: if (sentSilenceOnConnect && sendHandler != null && sendHandler.canProvide())
                 {
-                    if (speaking && changeTalking)
-                        setSpeaking(false);
-                }
-                else
-                {
-                    if (!sendHandler.isOpus())
+                    silenceCounter = -1;
+                    byte[] rawAudio = sendHandler.provide20MsAudio();
+                    if (rawAudio == null || rawAudio.length == 0)
                     {
-                        rawAudio = encodeAudio(rawAudio);
-                        if (rawAudio == null)
-                            break cond;
+                        if (speaking && changeTalking)
+                            setSpeaking(false);
                     }
+                    else
+                    {
+                        if (!sendHandler.isOpus())
+                        {
+                            rawAudio = encodeAudio(rawAudio);
+                            if (rawAudio == null)
+                                break cond;
+                        }
 
-                    nextPacket = getPacketData(rawAudio);
-                    if (!speaking)
-                        setSpeaking(true);
+                        nextPacket = getPacketData(rawAudio);
+                        if (!speaking)
+                            setSpeaking(true);
 
+                        if (seq + 1 > Character.MAX_VALUE)
+                            seq = 0;
+                        else
+                            seq++;
+                    }
+                }
+                else if (silenceCounter > -1)
+                {
+                    nextPacket = getPacketData(silenceBytes);
                     if (seq + 1 > Character.MAX_VALUE)
                         seq = 0;
                     else
                         seq++;
-                }
-            }
-            else if (silenceCounter > -1)
-            {
-                nextPacket = getPacketData(silenceBytes);
-                if (seq + 1 > Character.MAX_VALUE)
-                    seq = 0;
-                else
-                    seq++;
 
-                if (++silenceCounter > 10)
+                    if (++silenceCounter > 10)
+                    {
+                        silenceCounter = -1;
+                        sentSilenceOnConnect = true;
+                    }
+                }
+                else if (speaking && changeTalking)
                 {
-                    silenceCounter = -1;
-                    sentSilenceOnConnect = true;
+                    setSpeaking(false);
                 }
             }
-            else if (speaking && changeTalking)
+            catch (Exception e)
             {
-                setSpeaking(false);
+                LOG.error("There was an error while getting next audio packet", e);
             }
 
             if (nextPacket != null)
@@ -730,8 +736,10 @@ public class AudioConnection
                     nlen = 0;
                     break;
                 case XSALSA20_POLY1305_LITE:
-                    long nextNonce = nonce.updateAndGet((n) -> n >= MAX_UINT_32 ? 0 : n + 1);
-                    loadNextNonce(nextNonce);
+                    if (nonce >= MAX_UINT_32)
+                        loadNextNonce(nonce = 0);
+                    else
+                        loadNextNonce(++nonce);
                     nlen = 4;
                     break;
                 case XSALSA20_POLY1305_SUFFIX:
