@@ -20,12 +20,12 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
-    id 'com.jfrog.bintray' version '1.7.3'
+    id 'com.jfrog.bintray' version '1.8.1'
     id 'java-library'
     id 'maven-publish'
     id 'signing'
-    id 'com.github.ben-manes.versions' version '0.15.0'
-    id 'com.github.johnrengelman.shadow' version '2.0.1'
+    id 'com.github.ben-manes.versions' version '0.19.0'
+    id 'com.github.johnrengelman.shadow' version '2.0.4'
 }
 
 def versionObj = new Version(major: 3, minor: 6, revision: 0)
@@ -58,7 +58,7 @@ dependencies {
     api 'org.slf4j:slf4j-api:1.7.25'
 
     //Web Connection Support
-    api 'com.neovisionaries:nv-websocket-client:2.2'
+    api 'com.neovisionaries:nv-websocket-client:2.5'
     api 'com.squareup.okhttp3:okhttp:3.8.1'
 
     /* Internal dependencies */
@@ -80,11 +80,11 @@ task sourcesForRelease(type: Copy) {
     from 'src/main/java'
     into 'build/filteredSrc'
     filter(ReplaceTokens, tokens: [
-            versionMajor: versionObj.major.toString(),
-            versionMinor: versionObj.minor.toString(),
-            versionRevision: versionObj.revision.toString(),
-            versionBuild: versionObj.build.toString()
-        ])
+        versionMajor:    versionObj.major,
+        versionMinor:    versionObj.minor,
+        versionRevision: versionObj.revision,
+        versionBuild:    versionObj.build
+    ])
 }
 
 tasks.withType(JavaCompile) {
@@ -156,9 +156,6 @@ javadoc {
             'net/dv8tion/jda/core/requests/restaction/RequestFuture.java')
     exclude('net/dv8tion/jda/core/utils/cache/impl')
 
-    //opuswrapper
-    exclude('tomp2p/opuswrapper')
-
     //voice crypto
     exclude('com/iwebpp/crypto')
 }
@@ -202,7 +199,7 @@ String getProjectProperty(String propertyName) {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '4.2.1'
+    gradleVersion = '4.8'
 }
 
 build {
