@@ -657,7 +657,7 @@ public class AudioConnection
                         }
 
                         nextPacket = getPacketData(rawAudio);
-                        if (!speaking)
+                        if (!speaking && changeTalking)
                             setSpeaking(true);
 
                         if (seq + 1 > Character.MAX_VALUE)
