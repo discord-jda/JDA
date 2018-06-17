@@ -18,6 +18,7 @@
 //to build and upload everything:  "gradlew bintrayUpload"
 
 import org.apache.tools.ant.filters.ReplaceTokens
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     id 'com.jfrog.bintray' version '1.8.1'
@@ -60,6 +61,9 @@ dependencies {
     //Web Connection Support
     api 'com.neovisionaries:nv-websocket-client:2.5'
     api 'com.squareup.okhttp3:okhttp:3.8.1'
+
+    //Opus library support
+    api 'club.minnced:opus-java:1.0.2'
 
     /* Internal dependencies */
 
@@ -106,7 +110,22 @@ jar {
     manifest.attributes 'Implementation-Version': version
 }
 
-shadowJar.classifier = "withDependencies"
+shadowJar.classifier = 'withDependencies'
+
+task noOpusJar(type: ShadowJar, dependsOn: shadowJar) {
+    classifier = shadowJar.classifier + '-no-opus'
+
+    configurations = [project.configurations.runtime]
+    from sourceSets.main.output
+    exclude 'natives/**'     // ~2 MB
+    exclude 'com/sun/jna/**' // ~1 MB
+    exclude 'club/minnced/opus/util/*'
+    exclude 'tomp2p/opuswrapper/*'
+
+    manifest {
+        inheritFrom jar.manifest
+    }
+}
 
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
@@ -151,9 +170,7 @@ javadoc {
             'net/dv8tion/jda/core/requests/Route.java',
             'net/dv8tion/jda/core/requests/Requester.java',
             'net/dv8tion/jda/core/requests/Response.java',
-            'net/dv8tion/jda/core/requests/ratelimit',
-            'net/dv8tion/jda/core/requests/restaction/CompletedFuture.java',
-            'net/dv8tion/jda/core/requests/restaction/RequestFuture.java')
+            'net/dv8tion/jda/core/requests/ratelimit')
     exclude('net/dv8tion/jda/core/utils/cache/impl')
 
     //voice crypto
@@ -209,6 +226,7 @@ build {
     dependsOn javadocJar
     dependsOn sourcesJar
     dependsOn shadowJar
+    dependsOn noOpusJar
 
     jar.mustRunAfter clean
     javadocJar.mustRunAfter jar

@@ -306,7 +306,7 @@ public abstract class RestAction<T>
      *         The success callback that will be called at a convenient time
      *         for the API. (can be null)
      */
-    public void queue(Consumer<T> success)
+    public void queue(Consumer<? super T> success)
     {
         queue(success, null);
     }
@@ -324,7 +324,7 @@ public abstract class RestAction<T>
      *         encounters an exception at its execution point.
      */
     @SuppressWarnings("unchecked")
-    public void queue(Consumer<T> success, Consumer<Throwable> failure)
+    public void queue(Consumer<? super T> success, Consumer<? super Throwable> failure)
     {
         Route.CompiledRoute route = finalizeRoute();
         Checks.notNull(route, "Route");
@@ -582,7 +582,7 @@ public abstract class RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
      */
-    public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<T> success)
+    public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<? super T> success)
     {
         return queueAfter(delay, unit, success, api.pool);
     }
@@ -615,7 +615,7 @@ public abstract class RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
      */
-    public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<T> success, Consumer<Throwable> failure)
+    public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<? super T> success, Consumer<? super Throwable> failure)
     {
         return queueAfter(delay, unit, success, failure, api.pool);
     }
@@ -678,7 +678,7 @@ public abstract class RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
      */
-    public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<T> success, ScheduledExecutorService executor)
+    public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<? super T> success, ScheduledExecutorService executor)
     {
         return queueAfter(delay, unit, success, null, executor);
     }
@@ -711,7 +711,7 @@ public abstract class RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
      */
-    public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<T> success, Consumer<Throwable> failure, ScheduledExecutorService executor)
+    public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<? super T> success, Consumer<? super Throwable> failure, ScheduledExecutorService executor)
     {
         Checks.notNull(executor, "Scheduler");
         Checks.notNull(unit, "TimeUnit");
@@ -765,7 +765,7 @@ public abstract class RestAction<T>
         }
 
         @Override
-        public void queue(Consumer<T> success, Consumer<Throwable> failure)
+        public void queue(Consumer<? super T> success, Consumer<? super Throwable> failure)
         {
             if (success != null)
                 success.accept(returnObj);

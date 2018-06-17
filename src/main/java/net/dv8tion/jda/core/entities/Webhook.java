@@ -23,13 +23,14 @@ import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.webhook.WebhookClientBuilder;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
 
 /**
  * An object representing Webhooks in Discord
  *
  * @since  3.0
  */
-public interface Webhook extends ISnowflake
+public interface Webhook extends ISnowflake, IFakeable
 {
 
     /**
@@ -57,11 +58,12 @@ public interface Webhook extends ISnowflake
     TextChannel getChannel();
 
     /**
-     * The owner of this Webhook.
+     * The owner of this Webhook. This will be null for fake Webhooks, such as those retrieved from Audit Logs.
      *
-     * @return A {@link net.dv8tion.jda.core.entities.Member Member} instance
-     *         representing the owner of this Webhook
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Member Member} instance
+     *         representing the owner of this Webhook.
      */
+    @Nullable
     Member getOwner();
 
     /**
@@ -96,15 +98,19 @@ public interface Webhook extends ISnowflake
      * The execute token for this Webhook.
      * <br>This can be used to modify/delete/execute
      * this Webhook.
+     * 
+     * <p><b>Note: Fake Webhooks, such as those retrieved from Audit Logs, do not contain a token</b>
      *
      * @return The execute token for this Webhook
      */
+    @Nullable
     String getToken();
 
     /**
      * The {@code POST} route for this Webhook.
      * <br>This contains the {@link #getToken() token} and {@link #getId() id}
-     * of this Webhook.
+     * of this Webhook. Fake Webhooks without tokens (such as those retrieved from Audit Logs)
+     * will return a URL without a token.
      *
      * <p>The route returned by this method does not need permission checks
      * to be executed.
@@ -122,6 +128,9 @@ public interface Webhook extends ISnowflake
     /**
      * Deletes this Webhook.
      *
+     * @throws IllegalStateException 
+     *         if the Webhook is fake, such as the Webhooks retrieved from Audit Logs
+     * 
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>The rest action to delete this Webhook.
      */
@@ -135,6 +144,9 @@ public interface Webhook extends ISnowflake
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_WEBHOOKS Permission.MANAGE_WEBHOOKS}
      *
+     * @throws IllegalStateException 
+     *         if the Webhook is fake, such as the Webhooks retrieved from Audit Logs
+     * 
      * @return The {@link net.dv8tion.jda.core.managers.WebhookManager WebhookManager} for this Webhook
      */
     WebhookManager getManager();
@@ -160,6 +172,9 @@ public interface Webhook extends ISnowflake
      *
      * <p><b><u>Remember to close the WebhookClient once you don't need it anymore to free resources!</u></b>
      *
+     * @throws IllegalStateException 
+     *         if the Webhook is fake, such as the Webhooks retrieved from Audit Logs
+     * 
      * @return The new WebhookClientBuilder
      */
     WebhookClientBuilder newClient();

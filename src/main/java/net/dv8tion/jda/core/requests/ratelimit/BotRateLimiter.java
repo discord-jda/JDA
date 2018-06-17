@@ -36,9 +36,14 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.function.IntConsumer;
+import java.util.function.LongConsumer;
 
 public class BotRateLimiter extends RateLimiter
 {
+    private static final String RESET_HEADER = "X-RateLimit-Reset";
+    private static final String LIMIT_HEADER = "X-RateLimit-Limit";
+    private static final String REMAINING_HEADER = "X-RateLimit-Remaining";
     protected volatile Long timeOffset = null;
 
     public BotRateLimiter(Requester requester, int poolSize)
@@ -94,21 +99,21 @@ public class BotRateLimiter extends RateLimiter
                     }
                 }
                 long retryAfter = Long.parseLong(retry);
-                if (!Boolean.parseBoolean(global))  //Not global ratelimit
-                {
-                    updateBucket(bucket, headers);
-                }
-                else
+                if (Boolean.parseBoolean(global))  //global ratelimit
                 {
                     //If it is global, lock down the threads.
                     requester.getJDA().getSessionController().setGlobalRatelimit(getNow() + retryAfter);
+                }
+                else
+                {
+                    updateBucket(bucket, headers, retryAfter);
                 }
 
                 return retryAfter;
             }
             else
             {
-                updateBucket(bucket, headers);
+                updateBucket(bucket, headers, -1);
                 return null;
             }
         }
@@ -126,7 +131,8 @@ public class BotRateLimiter extends RateLimiter
                 bucket = (Bucket) buckets.get(rateLimitRoute);
                 if (bucket == null)
                 {
-                    bucket = new Bucket(rateLimitRoute, route.getBaseRoute().getRatelimit());
+                    Route baseRoute = route.getBaseRoute();
+                    bucket = new Bucket(rateLimitRoute, baseRoute.getRatelimit(), baseRoute.isMissingHeaders());
                     buckets.put(rateLimitRoute, bucket);
                 }
             }
@@ -162,59 +168,86 @@ public class BotRateLimiter extends RateLimiter
         }
     }
 
-    private void updateBucket(Bucket bucket, Headers headers)
+    private void updateBucket(Bucket bucket, Headers headers, long retryAfter)
+    {
+        int headerCount = 0;
+        if (retryAfter > 0)
+        {
+            bucket.resetTime = getNow() + retryAfter;
+            bucket.routeUsageRemaining = 0;
+        }
+
+        if (bucket.hasRatelimit()) // Check if there's a hardcoded rate limit
+        {
+            bucket.resetTime = getNow() + bucket.getRatelimit().getResetTime();
+            headerCount += 2;
+            //routeUsageLimit provided by the ratelimit object already in the bucket.
+        }
+        else
+        {
+            headerCount += parseLong(headers.get(RESET_HEADER), bucket, (time, b)  -> b.resetTime = time * 1000); //Seconds to milliseconds
+            headerCount += parseInt(headers.get(LIMIT_HEADER),  bucket, (limit, b) -> b.routeUsageLimit = limit);
+        }
+
+        //Currently, we check the remaining amount even for hardcoded ratelimits just to further respect Discord
+        // however, if there should ever be a case where Discord informs that the remaining is less than what
+        // it actually is and we add a custom ratelimit to handle that, we will need to instead move this to the
+        // above else statement and add a bucket.routeUsageRemaining-- decrement to the above if body.
+        //An example of this statement needing to be moved would be if the custom ratelimit reset time interval is
+        // equal to or greater than 1000ms, and the remaining count provided by discord is less than the ACTUAL
+        // amount that their systems allow in such a way that isn't a bug.
+        //The custom ratelimit system is primarily for ratelimits that can't be properly represented by Discord's
+        // header system due to their headers only supporting accuracy to the second. The custom ratelimit system
+        // allows for hardcoded ratelimits that allow accuracy to the millisecond which is important for some
+        // ratelimits like Reactions which is 1/0.25s, but discord reports the ratelimit as 1/1s with headers.
+        headerCount += parseInt(headers.get(REMAINING_HEADER), bucket, (remaining, b) -> b.routeUsageRemaining = remaining);
+        if (!bucket.missingHeaders && headerCount < 3)
+        {
+            Requester.LOG.debug("Encountered issue with headers when updating a bucket\n" +
+                                "Route: {}\nHeaders: {}",
+                                bucket.getRoute(), headers);
+        }
+    }
+
+    private int parseInt(String input, Bucket bucket, IntObjectConsumer<? super Bucket> consumer)
     {
         try
         {
-            if (bucket.hasRatelimit()) // Check if there's a hardcoded rate limit 
-            {
-                bucket.resetTime = getNow() + bucket.getRatelimit().getResetTime();
-                //routeUsageLimit provided by the ratelimit object already in the bucket.
-            }
-            else
-            {
-                bucket.resetTime = Long.parseLong(headers.get("X-RateLimit-Reset")) * 1000; //Seconds to milliseconds
-                bucket.routeUsageLimit = Integer.parseInt(headers.get("X-RateLimit-Limit"));
-            }
-
-            //Currently, we check the remaining amount even for hardcoded ratelimits just to further respect Discord
-            // however, if there should ever be a case where Discord informs that the remaining is less than what
-            // it actually is and we add a custom ratelimit to handle that, we will need to instead move this to the
-            // above else statement and add a bucket.routeUsageRemaining-- decrement to the above if body.
-            //An example of this statement needing to be moved would be if the custom ratelimit reset time interval is
-            // equal to or greater than 1000ms, and the remaining count provided by discord is less than the ACTUAL
-            // amount that their systems allow in such a way that isn't a bug.
-            //The custom ratelimit system is primarily for ratelimits that can't be properly represented by Discord's
-            // header system due to their headers only supporting accuracy to the second. The custom ratelimit system
-            // allows for hardcoded ratelimits that allow accuracy to the millisecond which is important for some
-            // ratelimits like Reactions which is 1/0.25s, but discord reports the ratelimit as 1/1s with headers.
-            bucket.routeUsageRemaining = Integer.parseInt(headers.get("X-RateLimit-Remaining"));
+            int parsed = Integer.parseInt(input);
+            consumer.accept(parsed, bucket);
+            return 1;
         }
-        catch (NumberFormatException ex)
+        catch (NumberFormatException ignored) {}
+        return 0;
+    }
+
+    private int parseLong(String input, Bucket bucket, LongObjectConsumer<? super Bucket> consumer)
+    {
+        try
         {
-            if (!bucket.getRoute().equals("gateway")
-                    && !bucket.getRoute().equals("users/@me"))
-            {
-                Requester.LOG.debug("Encountered issue with headers when updating a bucket\nRoute: {}\nHeaders: {}",
-                    bucket.getRoute(), headers);
-            }
-
+            long parsed = Long.parseLong(input);
+            consumer.accept(parsed, bucket);
+            return 1;
         }
+        catch (NumberFormatException ignored) {}
+        return 0;
     }
 
     private class Bucket implements IBucket, Runnable
     {
         final String route;
+        final boolean missingHeaders;
         final RateLimit rateLimit;
         final ConcurrentLinkedQueue<Request> requests = new ConcurrentLinkedQueue<>();
         volatile long resetTime = 0;
         volatile int routeUsageRemaining = 1;    //These are default values to only allow 1 request until we have properly
         volatile int routeUsageLimit = 1;        // ratelimit information.
 
-        public Bucket(String route, RateLimit rateLimit)
+        public Bucket(String route, RateLimit rateLimit, boolean missingHeaders)
         {
             this.route = route;
             this.rateLimit = rateLimit;
+            this.missingHeaders = missingHeaders;
             if (rateLimit != null)
             {
                 this.routeUsageRemaining = rateLimit.getUsageLimit();
@@ -369,5 +402,15 @@ public class BotRateLimiter extends RateLimiter
         {
             return requests;
         }
+    }
+
+    private interface LongObjectConsumer<T>
+    {
+        void accept(long n, T t);
+    }
+
+    private interface IntObjectConsumer<T>
+    {
+        void accept(int n, T t);
     }
 }

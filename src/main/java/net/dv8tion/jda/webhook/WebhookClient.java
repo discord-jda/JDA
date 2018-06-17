@@ -44,6 +44,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.*;
 
@@ -119,8 +120,8 @@ public class WebhookClient implements AutoCloseable
      * @param  message
      *         The message to send
      *
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
+     * @throws IllegalArgumentException
+     *         If the provided message is null
      *
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      *         this will be completed once the message was sent.
@@ -133,6 +134,7 @@ public class WebhookClient implements AutoCloseable
 
     /**
      * Sends the provided {@link java.io.File File} to this webhook.
+     * <br>Use {@link WebhookMessage#files(String, Object, Object...)} to send up to 10 files!
      *
      * @param  file
      *         The file to send
@@ -141,19 +143,19 @@ public class WebhookClient implements AutoCloseable
      *         If the provided file is {@code null}, does not exist or is not readable
      * @throws java.util.concurrent.RejectedExecutionException
      *         If this client was closed
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      *         this will be completed once the message was sent.
      */
     public RequestFuture<?> send(File file)
     {
-        return send(new WebhookMessageBuilder().setFile(file).build());
+        Checks.notNull(file, "File");
+        return send(file, file.getName());
     }
 
     /**
      * Sends the provided {@link java.io.File File} to this webhook.
+     * <br>Use {@link WebhookMessage#files(String, Object, Object...)} to send up to 10 files!
      *
      * @param  file
      *         The file to send
@@ -164,19 +166,18 @@ public class WebhookClient implements AutoCloseable
      *         If the provided file is {@code null}, does not exist or is not readable
      * @throws java.util.concurrent.RejectedExecutionException
      *         If this client was closed
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      *         this will be completed once the message was sent.
      */
     public RequestFuture<?> send(File file, String fileName)
     {
-        return send(new WebhookMessageBuilder().setFile(file, fileName).build());
+        return send(new WebhookMessageBuilder().addFile(fileName, file).build());
     }
 
     /**
      * Sends the provided {@code byte[]} data to this webhook.
+     * <br>Use {@link WebhookMessage#files(String, Object, Object...)} to send up to 10 files!
      *
      * @param  data
      *         The file data to send
@@ -187,19 +188,18 @@ public class WebhookClient implements AutoCloseable
      *         If the provided data is {@code null} or exceeds the limit of 8MB
      * @throws java.util.concurrent.RejectedExecutionException
      *         If this client was closed
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      *         this will be completed once the message was sent.
      */
     public RequestFuture<?> send(byte[] data, String fileName)
     {
-        return send(new WebhookMessageBuilder().setFile(data, fileName).build());
+        return send(new WebhookMessageBuilder().addFile(fileName, data).build());
     }
 
     /**
      * Sends the provided {@link java.io.InputStream InputStream} data to this webhook.
+     * <br>Use {@link WebhookMessage#files(String, Object, Object...)} to send up to 10 files!
      *
      * @param  data
      *         The file data to send
@@ -210,15 +210,13 @@ public class WebhookClient implements AutoCloseable
      *         If the provided data is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException
      *         If this client was closed
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      *         this will be completed once the message was sent.
      */
     public RequestFuture<?> send(InputStream data, String fileName)
     {
-        return send(new WebhookMessageBuilder().setFile(data, fileName).build());
+        return send(new WebhookMessageBuilder().addFile(fileName, data).build());
     }
 
     /**
@@ -231,8 +229,8 @@ public class WebhookClient implements AutoCloseable
      * @param  message
      *         The message to send
      *
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
+     * @throws IllegalArgumentException
+     *         If the provided message is null
      *
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      *         this will be completed once the message was sent.
@@ -258,15 +256,40 @@ public class WebhookClient implements AutoCloseable
      *         If any of the provided embeds is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException
      *         If this client was closed
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      *         this will be completed once the message was sent.
      */
-    public RequestFuture<?> send(MessageEmbed... embeds)
+    public RequestFuture<?> send(MessageEmbed[] embeds)
     {
-        return send(WebhookMessage.of(embeds));
+        return send(WebhookMessage.embeds(Arrays.asList(embeds)));
+    }
+
+    /**
+     * Sends the provided {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbeds}
+     * to this webhook.
+     *
+     * <p><b>You can send up to 10 embeds per message! If more are sent they will not be displayed.</b>
+     *
+     * <p>Hint: Use {@link net.dv8tion.jda.core.EmbedBuilder EmbedBuilder} to
+     * create a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbed} instance!
+     *
+     * @param  first
+     *         The first embed
+     * @param  embeds
+     *         The other embeds to send
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If any of the provided embeds is {@code null}
+     * @throws java.util.concurrent.RejectedExecutionException
+     *         If this client was closed
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
+     *         this will be completed once the message was sent.
+     */
+    public RequestFuture<?> send(MessageEmbed first, MessageEmbed... embeds)
+    {
+        return send(WebhookMessage.embeds(first, embeds));
     }
 
     /**
@@ -285,15 +308,13 @@ public class WebhookClient implements AutoCloseable
      *         If any of the provided embeds is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException
      *         If this client was closed
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      *         this will be completed once the message was sent.
      */
     public RequestFuture<?> send(Collection<MessageEmbed> embeds)
     {
-        return send(WebhookMessage.of(embeds));
+        return send(WebhookMessage.embeds(embeds));
     }
 
     /**
@@ -306,8 +327,6 @@ public class WebhookClient implements AutoCloseable
      *         If any of the provided message is {@code null}, blank or exceeds 2000 characters in length
      * @throws java.util.concurrent.RejectedExecutionException
      *         If this client was closed
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      *         this will be completed once the message was sent.

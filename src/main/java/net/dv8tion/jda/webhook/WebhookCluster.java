@@ -538,8 +538,6 @@ public class WebhookCluster implements AutoCloseable
      *         If any of the provided arguments is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException
      *         If any of the receivers has been shutdown
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
@@ -572,8 +570,6 @@ public class WebhookCluster implements AutoCloseable
      *         If any of the provided arguments is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException
      *         If any of the receivers has been shutdown
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
@@ -581,10 +577,14 @@ public class WebhookCluster implements AutoCloseable
     public List<RequestFuture<?>> broadcast(WebhookMessage message)
     {
         Checks.notNull(message, "Message");
-        final RequestBody body = message.getBody();
+        RequestBody body = message.getBody();
         final List<RequestFuture<?>> callbacks = new ArrayList<>(webhooks.size());
         for (WebhookClient webhook : webhooks)
+        {
             callbacks.add(webhook.execute(body));
+            if (message.isFile()) // for files we have to make new data sets
+                body = message.getBody();
+        }
         return callbacks;
     }
 
@@ -602,8 +602,6 @@ public class WebhookCluster implements AutoCloseable
      *         If the provided message is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException
      *         If any of the receivers has been shutdown
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
@@ -629,16 +627,42 @@ public class WebhookCluster implements AutoCloseable
      *         If any of the provided arguments is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException
      *         If any of the receivers has been shutdown
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
      */
-    public List<RequestFuture<?>> broadcast(MessageEmbed... embeds)
+    public List<RequestFuture<?>> broadcast(MessageEmbed[] embeds)
     {
-        return broadcast(WebhookMessage.of(embeds));
+        return broadcast(WebhookMessage.embeds(Arrays.asList(embeds)));
     }
+
+    /**
+     * Sends the provided {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbeds}
+     * to all registered {@link net.dv8tion.jda.webhook.WebhookClient WebhookClients}.
+     *
+     * <p><b>You can send up to 10 embeds per message! If more are sent they will not be displayed.</b>
+     *
+     * <p>Hint: Use {@link net.dv8tion.jda.core.EmbedBuilder EmbedBuilder} to
+     * create a {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbeds} instance!
+     *
+     * @param  first
+     *         The first embed to send to the clients
+     * @param  embeds
+     *         The other embeds that should be sent to the clients
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If any of the provided arguments is {@code null}
+     * @throws java.util.concurrent.RejectedExecutionException
+     *         If any of the receivers has been shutdown
+     *
+     * @return A list of {@link java.util.concurrent.Future Future} instances
+     *         representing all message tasks.
+     */
+    public List<RequestFuture<?>> broadcast(MessageEmbed first, MessageEmbed... embeds)
+    {
+        return broadcast(WebhookMessage.embeds(first, embeds));
+    }
+
 
     /**
      * Sends the provided {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbeds}
@@ -656,15 +680,13 @@ public class WebhookCluster implements AutoCloseable
      *         If any of the provided arguments is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException
      *         If any of the receivers has been shutdown
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
      */
     public List<RequestFuture<?>> broadcast(Collection<MessageEmbed> embeds)
     {
-        return broadcast(WebhookMessage.of(embeds));
+        return broadcast(WebhookMessage.embeds(embeds));
     }
 
     /**
@@ -678,8 +700,6 @@ public class WebhookCluster implements AutoCloseable
      *         If the provided content is {@code null} or blank
      * @throws java.util.concurrent.RejectedExecutionException
      *         If any of the receivers has been shutdown
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
@@ -698,6 +718,7 @@ public class WebhookCluster implements AutoCloseable
     /**
      * Sends the provided {@link java.io.File File}
      * to all registered {@link net.dv8tion.jda.webhook.WebhookClient WebhookClients}.
+     * <br>Use {@link WebhookMessage#files(String, Object, Object...)} to send up to 10 files!
      *
      * <p><b>The provided data should not exceed 8MB in size!</b>
      *
@@ -708,8 +729,6 @@ public class WebhookCluster implements AutoCloseable
      *         If the provided file is {@code null}, does not exist or ist not readable
      * @throws java.util.concurrent.RejectedExecutionException
      *         If any of the receivers has been shutdown
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
@@ -723,6 +742,7 @@ public class WebhookCluster implements AutoCloseable
     /**
      * Sends the provided {@link java.io.File File}
      * to all registered {@link net.dv8tion.jda.webhook.WebhookClient WebhookClients}.
+     * <br>Use {@link WebhookMessage#files(String, Object, Object...)} to send up to 10 files!
      *
      * <p><b>The provided data should not exceed 8MB in size!</b>
      *
@@ -735,8 +755,6 @@ public class WebhookCluster implements AutoCloseable
      *         If the provided file is {@code null}, does not exist or ist not readable
      * @throws java.util.concurrent.RejectedExecutionException
      *         If any of the receivers has been shutdown
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
@@ -745,12 +763,13 @@ public class WebhookCluster implements AutoCloseable
     {
         Checks.notNull(file, "File");
         Checks.check(file.length() <= Message.MAX_FILE_SIZE, "Provided File exceeds the maximum size of 8MB!");
-        return broadcast(new WebhookMessageBuilder().setFile(file, fileName).build());
+        return broadcast(new WebhookMessageBuilder().addFile(fileName, file).build());
     }
 
     /**
      * Sends the provided {@link java.io.InputStream InputStream} as an attachment
      * to all registered {@link net.dv8tion.jda.webhook.WebhookClient WebhookClients}.
+     * <br>Use {@link WebhookMessage#files(String, Object, Object...)} to send up to 10 files!
      *
      * <p><b>The provided data should not exceed 8MB in size!</b>
      *
@@ -763,20 +782,19 @@ public class WebhookCluster implements AutoCloseable
      *         If the provided data is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException
      *         If any of the receivers has been shutdown
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
      */
     public List<RequestFuture<?>> broadcast(InputStream data, String fileName)
     {
-        return broadcast(new WebhookMessageBuilder().setFile(data, fileName).build());
+        return broadcast(new WebhookMessageBuilder().addFile(fileName, data).build());
     }
 
     /**
      * Sends the provided {@code byte[]} data as an attachment
      * to all registered {@link net.dv8tion.jda.webhook.WebhookClient WebhookClients}.
+     * <br>Use {@link WebhookMessage#files(String, Object, Object...)} to send up to 10 files!
      *
      * <p><b>The provided data should not exceed 8MB in size!</b>
      *
@@ -789,8 +807,6 @@ public class WebhookCluster implements AutoCloseable
      *         If the provided data is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException
      *         If any of the receivers has been shutdown
-     * @throws net.dv8tion.jda.core.exceptions.HttpException
-     *         If the HTTP request fails
      *
      * @return A list of {@link java.util.concurrent.Future Future} instances
      *         representing all message tasks.
@@ -799,7 +815,7 @@ public class WebhookCluster implements AutoCloseable
     {
         Checks.notNull(data, "Data");
         Checks.check(data.length < Message.MAX_FILE_SIZE, "Provided data exceeds the maximum size of 8MB!");
-        return broadcast(new WebhookMessageBuilder().setFile(data, fileName).build());
+        return broadcast(new WebhookMessageBuilder().addFile(fileName, data).build());
     }
 
     /**
