@@ -19,7 +19,6 @@ package net.dv8tion.jda.core.audio;
 import com.iwebpp.crypto.TweetNaclFast;
 
 import java.net.DatagramPacket;
-import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
@@ -105,9 +104,10 @@ public class AudioPacket
         this.rawPacket = generateRawPacket(seq, timestamp, ssrc, encodedAudio);
     }
 
-    public byte[] getNonce()
+    @SuppressWarnings("unused")
+    public byte[] getHeader()
     {
-        //The first 12 bytes are the rawPacket are the RTP Discord Nonce.
+        //The first 12 bytes of the rawPacket are the RTP Discord Nonce.
         return Arrays.copyOf(rawPacket, RTP_HEADER_BYTE_LENGTH);
     }
 
@@ -224,7 +224,9 @@ public class AudioPacket
         }
         final byte[] decryptedRawPacket = new byte[RTP_HEADER_BYTE_LENGTH + decryptedAudio.length];
 
-        System.arraycopy(encryptedPacket.getNonce(), 0, decryptedRawPacket, 0, RTP_HEADER_BYTE_LENGTH);
+        //first 12 bytes of rawPacket are the RTP header
+        //the rest is the audio data we just decrypted
+        System.arraycopy(encryptedPacket.rawPacket, 0, decryptedRawPacket, 0, RTP_HEADER_BYTE_LENGTH);
         System.arraycopy(decryptedAudio, 0, decryptedRawPacket, RTP_HEADER_BYTE_LENGTH, decryptedAudio.length);
 
         return new AudioPacket(decryptedRawPacket);
