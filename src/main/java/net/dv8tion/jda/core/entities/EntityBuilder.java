@@ -1301,7 +1301,16 @@ public class EntityBuilder
         final VerificationLevel guildVerificationLevel = VerificationLevel.fromKey(Helpers.optInt(guildObject, "verification_level", -1));
         final int presenceCount = Helpers.optInt(object, "approximate_presence_count", -1);
         final int memberCount = Helpers.optInt(object, "approximate_member_count", -1);
-        final Set<String> guildFeatures = StreamSupport.stream(guildObject.getJSONArray("features").spliterator(), false).map(String::valueOf).collect(Collectors.toSet());
+        final Set<String> guildFeatures;
+
+        if(guildObject.has("features"))
+        {
+            guildFeatures = StreamSupport.stream(guildObject.getJSONArray("features").spliterator(), false).map(String::valueOf).collect(Collectors.toSet());
+        }
+        else
+        {
+            guildFeatures = Collections.emptySet();
+        }
 
         final Invite.Guild guild = new InviteImpl.GuildImpl(guildId, guildIconId, guildName, guildSplashId, guildVerificationLevel, presenceCount, memberCount, guildFeatures);
 

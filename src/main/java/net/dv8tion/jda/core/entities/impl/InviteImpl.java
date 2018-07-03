@@ -31,6 +31,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.Set;
 
 public class InviteImpl implements Invite
@@ -303,7 +304,7 @@ public class InviteImpl implements Invite
             this.verificationLevel = verificationLevel;
             this.presenceCount = presenceCount;
             this.memberCount = memberCount;
-            this.features = features;
+            this.features = Collections.unmodifiableSet(features);
         }
 
         @Override
