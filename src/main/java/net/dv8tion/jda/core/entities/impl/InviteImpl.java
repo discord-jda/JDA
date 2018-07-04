@@ -304,7 +304,7 @@ public class InviteImpl implements Invite
             this.verificationLevel = verificationLevel;
             this.presenceCount = presenceCount;
             this.memberCount = memberCount;
-            this.features = Collections.unmodifiableSet(features);
+            this.features = features;
         }
 
         @Override

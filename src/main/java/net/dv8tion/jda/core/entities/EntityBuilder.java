@@ -1303,13 +1303,13 @@ public class EntityBuilder
         final int memberCount = Helpers.optInt(object, "approximate_member_count", -1);
         final Set<String> guildFeatures;
 
-        if(guildObject.has("features"))
+        if (guildObject.isNull("features"))
         {
-            guildFeatures = StreamSupport.stream(guildObject.getJSONArray("features").spliterator(), false).map(String::valueOf).collect(Collectors.toSet());
+            guildFeatures = Collections.emptySet();
         }
         else
         {
-            guildFeatures = Collections.emptySet();
+            guildFeatures = Collections.unmodifiableSet(StreamSupport.stream(guildObject.getJSONArray("features").spliterator(), false).map(String::valueOf).collect(Collectors.toSet()));
         }
 
         final Invite.Guild guild = new InviteImpl.GuildImpl(guildId, guildIconId, guildName, guildSplashId, guildVerificationLevel, presenceCount, memberCount, guildFeatures);
