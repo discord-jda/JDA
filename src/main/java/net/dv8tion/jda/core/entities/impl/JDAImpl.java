@@ -30,6 +30,7 @@ import net.dv8tion.jda.core.events.StatusChangeEvent;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.handle.EventCache;
+import net.dv8tion.jda.core.handle.GuildSetupController;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.InterfacedEventManager;
 import net.dv8tion.jda.core.managers.AudioManager;
@@ -86,6 +87,7 @@ public class JDAImpl implements JDA
     protected final Object akapLock = new Object();
 
     protected final SessionController sessionController;
+    protected final GuildSetupController guildSetupController;
 
     protected WebSocketClient client;
     protected Requester requester;
@@ -129,11 +131,17 @@ public class JDAImpl implements JDA
 
         this.jdaClient = accountType == AccountType.CLIENT ? new JDAClientImpl(this) : null;
         this.jdaBot = accountType == AccountType.BOT ? new JDABotImpl(this) : null;
+        guildSetupController = new GuildSetupController(this);
     }
 
     public SessionController getSessionController()
     {
         return sessionController;
+    }
+
+    public GuildSetupController getGuildSetupController()
+    {
+        return guildSetupController;
     }
 
     public int login(String gatewayUrl, ShardInfo shardInfo, boolean compression) throws LoginException

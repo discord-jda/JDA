@@ -34,60 +34,54 @@ public class GuildCreateHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long id = content.getLong("id");
-        Guild g = api.getGuildById(id);
-        Boolean wasAvail = (g == null || g.getName() == null) ? null : g.isAvailable();
-        api.getEntityBuilder().createGuildFirstPass(content, guild ->
-        {
-            if (guild.isAvailable())
-            {
-                if (!api.getClient().isReady())
-                {
-                    getReadyHandler().guildSetupComplete(guild);
-                }
-                else
-                {
-                    if (wasAvail == null) //didn't exist
-                    {
-                        api.getEventManager().handle(
-                            new GuildJoinEvent(
-                                api, responseNumber,
-                                guild));
-                        api.getEventCache().playbackCache(EventCache.Type.GUILD, guild.getIdLong());
-                    }
-                    else if (!wasAvail) //was previously unavailable
-                    {
-                        api.getEventManager().handle(
-                            new GuildAvailableEvent(
-                                api, responseNumber,
-                                guild));
-                    }
-                    else
-                    {
-                        throw new IllegalStateException("Got a GuildCreateEvent for a guild that already existed! ID: " + id);
-                    }
-                }
-            }
-            else
-            {
-                if (!api.getClient().isReady())
-                {
-                    getReadyHandler().acknowledgeGuild(guild, false, false, false);
-                }
-                else
-                {
-                    //Proper GuildJoinedEvent is fired when guild was populated
-                    api.getEventManager().handle(
-                        new UnavailableGuildJoinedEvent(
-                            api, responseNumber,
-                            guild.getIdLong()));
-                }
-            }
-        });
+        api.getGuildSetupController().onCreate(id, content);
+//        api.getEntityBuilder().createGuildFirstPass(content, guild ->
+//        {
+//            if (guild.isAvailable())
+//            {
+//                if (!api.getClient().isReady())
+//                {
+//                    getReadyHandler().guildSetupComplete(guild);
+//                }
+//                else
+//                {
+//                    if (wasAvail == null) //didn't exist
+//                    {
+//                        api.getEventManager().handle(
+//                            new GuildJoinEvent(
+//                                api, responseNumber,
+//                                guild));
+//                        api.getEventCache().playbackCache(EventCache.Type.GUILD, guild.getIdLong());
+//                    }
+//                    else if (!wasAvail) //was previously unavailable
+//                    {
+//                        api.getEventManager().handle(
+//                            new GuildAvailableEvent(
+//                                api, responseNumber,
+//                                guild));
+//                    }
+//                    else
+//                    {
+//                        throw new IllegalStateException("Got a GuildCreateEvent for a guild that already existed! ID: " + id);
+//                    }
+//                }
+//            }
+//            else
+//            {
+//                if (!api.getClient().isReady())
+//                {
+//                    getReadyHandler().acknowledgeGuild(guild, false, false, false);
+//                }
+//                else
+//                {
+//                    //Proper GuildJoinedEvent is fired when guild was populated
+//                    api.getEventManager().handle(
+//                        new UnavailableGuildJoinedEvent(
+//                            api, responseNumber,
+//                            guild.getIdLong()));
+//                }
+//            }
+//        });
         return null;
-    }
-
-    private ReadyHandler getReadyHandler()
-    {
-        return api.getClient().getHandler("READY");
     }
 }

@@ -88,6 +88,7 @@ public class ReadyHandler extends SocketHandler
         // Specifically: incompleteGuilds.size() == acknowledgedGuilds.size() and
         //  incompleteGuilds.size() == unavailableGuilds.size() respectively.
 
+        api.getGuildSetupController().setIncompleteCount(guilds.length());
         for (int i = 0; i < guilds.length(); i++)
         {
             JSONObject guild = guilds.getJSONObject(i);
@@ -98,14 +99,15 @@ public class ReadyHandler extends SocketHandler
             // is loaded and ready to go.
             //If a Guild is unavailable it won't have the information needed, so we pass null as the secondPassCallback
             // for now and wait for the GUILD_CREATE event to give us the required information.
-            if (guild.has("unavailable") && guild.getBoolean("unavailable"))
-                builder.createGuildFirstPass(guild, null);
-            else
-                builder.createGuildFirstPass(guild, this::guildSetupComplete);
+            api.getGuildSetupController().onReady(guild.getLong("id"), guild);
+//            if (guild.has("unavailable") && guild.getBoolean("unavailable"))
+//                builder.createGuildFirstPass(guild, null);
+//            else
+//                builder.createGuildFirstPass(guild, this::guildSetupComplete);
         }
 
         if (guilds.length() == 0)
-            guildLoadComplete(content);
+            api.getGuildSetupController().ready(0);
 
         return null;
     }

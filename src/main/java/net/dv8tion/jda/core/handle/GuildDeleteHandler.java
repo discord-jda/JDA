@@ -49,6 +49,7 @@ public class GuildDeleteHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long id = content.getLong("id");
+        api.getGuildSetupController().onDelete(id, content);
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
 
         boolean unavailable = Helpers.optBoolean(content, "unavailable");
