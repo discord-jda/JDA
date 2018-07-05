@@ -57,6 +57,7 @@ public class DefaultShardManager implements ShardManager
         t.setPriority(Thread.NORM_PRIORITY + 1);
         return t;
     };
+
     /**
      * The {@link net.dv8tion.jda.core.utils.SessionController SessionController} for this manager.
      */
@@ -80,6 +81,13 @@ public class DefaultShardManager implements ShardManager
      * in various locations throughout JDA.
      */
     protected final int corePoolSize;
+
+    /**
+     * The rate-limit pool size for the JDA rate-limit handler
+     * {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} which is used
+     * to handle the completion of RestActions.
+     */
+    protected final int ratelimitPoolSize;
 
     /**
      * If enabled, JDA will separate the bulk delete event into individual delete events, but this isn't as efficient as
@@ -135,9 +143,14 @@ public class DefaultShardManager implements ShardManager
     protected int shardsTotal;
 
     /**
-     * The {@link okhttp3.OkHttpClient.Builder OkHttpClient.Builder} that will be used by JDA's requester.
+     * The {@link okhttp3.OkHttpClient.Builder OkHttpClient.Builder} that will be used by JDAs requester.
      */
     protected final OkHttpClient.Builder httpClientBuilder;
+
+    /**
+     * The {@link okhttp3.OkHttpClient OkHttpClient} that will be used by JDAs requester.
+     */
+    protected final OkHttpClient httpClient;
 
     /**
      * The {@link com.neovisionaries.ws.client.WebSocketFactory WebSocketFactory} that will be used by JDA's websocket client.
@@ -272,9 +285,10 @@ public class DefaultShardManager implements ShardManager
                                   final List<IntFunction<Object>> listenerProviders,
                                   final String token, final IEventManager eventManager, final IAudioSendFactory audioSendFactory,
                                   final IntFunction<Game> gameProvider, final IntFunction<OnlineStatus> statusProvider,
-                                  final OkHttpClient.Builder httpClientBuilder, final WebSocketFactory wsFactory,
-                                  final ThreadFactory threadFactory,
-                                  final int maxReconnectDelay, final int corePoolSize, final boolean enableVoice,
+                                  final OkHttpClient.Builder httpClientBuilder, final OkHttpClient httpClient,
+                                  final WebSocketFactory wsFactory, final ThreadFactory threadFactory,
+                                  final int maxReconnectDelay, final int corePoolSize, final int ratelimitPoolSize,
+                                  final boolean enableVoice,
                                   final boolean enableShutdownHook, final boolean enableBulkDeleteSplitting,
                                   final boolean autoReconnect, final IntFunction<Boolean> idleProvider,
                                   final boolean retryOnTimeout, final boolean useShutdownNow,
@@ -289,12 +303,17 @@ public class DefaultShardManager implements ShardManager
         this.audioSendFactory = audioSendFactory;
         this.gameProvider = gameProvider;
         this.statusProvider = statusProvider;
-        this.httpClientBuilder = httpClientBuilder == null ? new OkHttpClient.Builder() : httpClientBuilder;
+        this.httpClient = httpClient;
+        if (httpClient == null)
+            this.httpClientBuilder = httpClientBuilder == null ? new OkHttpClient.Builder() : httpClientBuilder;
+        else
+            this.httpClientBuilder = null;
         this.wsFactory = wsFactory == null ? new WebSocketFactory() : wsFactory;
         this.executor = createExecutor(threadFactory);
         this.controller = controller == null ? new SessionControllerAdapter() : controller;
         this.maxReconnectDelay = maxReconnectDelay;
         this.corePoolSize = corePoolSize;
+        this.ratelimitPoolSize = ratelimitPoolSize;
         this.enableVoice = enableVoice;
         this.shutdownHook = enableShutdownHook ? new Thread(this::shutdown, "JDA Shutdown Hook") : null;
         this.enableBulkDeleteSplitting = enableBulkDeleteSplitting;
@@ -576,9 +595,13 @@ public class DefaultShardManager implements ShardManager
 
     protected JDAImpl buildInstance(final int shardId) throws LoginException, InterruptedException
     {
-        final JDAImpl jda = new JDAImpl(AccountType.BOT, this.token, this.controller, this.httpClientBuilder, this.wsFactory,
+        OkHttpClient httpClient = this.httpClient;
+        if (httpClient == null)
+            httpClient = this.httpClientBuilder.build();
+        final JDAImpl jda = new JDAImpl(AccountType.BOT, this.token, this.controller, httpClient, this.wsFactory,
             this.autoReconnect, this.enableVoice, false, this.enableBulkDeleteSplitting, this.retryOnTimeout, this.enableMDC,
-            this.corePoolSize, this.maxReconnectDelay, this.contextProvider == null || !this.enableMDC ? null : contextProvider.apply(shardId));
+            this.corePoolSize, this.ratelimitPoolSize, this.maxReconnectDelay,
+            this.contextProvider == null || !this.enableMDC ? null : contextProvider.apply(shardId));
 
         jda.asBot().setShardManager(this);
 

@@ -56,23 +56,23 @@ public class Requester
 
     private volatile boolean retryOnTimeout = false;
 
-    public Requester(JDA api)
+    public Requester(JDA api, int ratelimitPoolSize)
     {
-        this(api, api.getAccountType());
+        this(api, api.getAccountType(), ratelimitPoolSize);
     }
 
-    public Requester(JDA api, AccountType accountType)
+    public Requester(JDA api, AccountType accountType,  int ratelimitPoolSize)
     {
         if (accountType == null)
             throw new NullPointerException("Provided accountType was null!");
 
         this.api = (JDAImpl) api;
         if (accountType == AccountType.BOT)
-            rateLimiter = new BotRateLimiter(this, 5);
+            rateLimiter = new BotRateLimiter(this, ratelimitPoolSize);
         else
-            rateLimiter = new ClientRateLimiter(this, 5);
+            rateLimiter = new ClientRateLimiter(this, ratelimitPoolSize);
         
-        this.httpClient = this.api.getHttpClientBuilder().build();
+        this.httpClient = this.api.getHttpClient();
     }
 
     public JDAImpl getJDA()

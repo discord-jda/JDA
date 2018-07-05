@@ -72,7 +72,7 @@ public class JDAImpl implements JDA
     protected final AbstractCacheView<AudioManager> audioManagers = new CacheView.SimpleCacheView<>(AudioManager.class, m -> m.getGuild().getName());
 
     protected final ConcurrentMap<String, String> contextMap;
-    protected final OkHttpClient.Builder httpClientBuilder;
+    protected final OkHttpClient httpClient;
     protected final WebSocketFactory wsFactory;
     protected final AccountType accountType;
     protected final PresenceImpl presence;
@@ -103,13 +103,13 @@ public class JDAImpl implements JDA
     protected String token;
     protected String gatewayUrl;
 
-    public JDAImpl(AccountType accountType, String token, SessionController controller, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory,
+    public JDAImpl(AccountType accountType, String token, SessionController controller, OkHttpClient httpClient, WebSocketFactory wsFactory,
                    boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled, boolean retryOnTimeout, boolean enableMDC,
-                   int corePoolSize, int maxReconnectDelay, ConcurrentMap<String, String> contextMap)
+                   int corePoolSize, int ratelimitPoolSize, int maxReconnectDelay, ConcurrentMap<String, String> contextMap)
     {
         this.accountType = accountType;
         this.setToken(token);
-        this.httpClientBuilder = httpClientBuilder;
+        this.httpClient = httpClient;
         this.wsFactory = wsFactory;
         this.autoReconnect = autoReconnect;
         this.audioEnabled = audioEnabled;
@@ -124,7 +124,7 @@ public class JDAImpl implements JDA
             this.contextMap = null;
 
         this.presence = new PresenceImpl(this);
-        this.requester = new Requester(this);
+        this.requester = new Requester(this, ratelimitPoolSize);
         this.requester.setRetryOnTimeout(retryOnTimeout);
 
         this.jdaClient = accountType == AccountType.CLIENT ? new JDAClientImpl(this) : null;
@@ -258,12 +258,12 @@ public class JDAImpl implements JDA
         if (getAccountType() == AccountType.BOT)
         {
             token = token.substring("Bot ".length());
-            requester = new Requester(this, AccountType.CLIENT);
+            requester = new Requester(this, AccountType.CLIENT, 1);
         }
         else    //If we attempted to login as a Client, prepend the "Bot " prefix and set the Requester to be a Bot
         {
             token = "Bot " + token;
-            requester = new Requester(this, AccountType.BOT);
+            requester = new Requester(this, AccountType.BOT, 1);
         }
 
         userResponse = checkToken(login);
@@ -733,9 +733,9 @@ public class JDAImpl implements JDA
         return eventCache;
     }
 
-    public OkHttpClient.Builder getHttpClientBuilder()
+    public OkHttpClient getHttpClient()
     {
-        return httpClientBuilder;
+        return httpClient;
     }
 
     private class JDAThreadFactory implements ThreadFactory

@@ -54,6 +54,7 @@ public class JDABuilder
     protected boolean enableContext = true;
     protected SessionController controller = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
+    protected OkHttpClient httpClient = null;
     protected WebSocketFactory wsFactory = null;
     protected AccountType accountType;
     protected String token = null;
@@ -64,6 +65,7 @@ public class JDABuilder
     protected OnlineStatus status = OnlineStatus.ONLINE;
     protected int maxReconnectDelay = 900;
     protected int corePoolSize = 2;
+    protected int ratelimitPoolSize = 5;
     protected boolean enableVoice = true;
     protected boolean enableShutdownHook = true;
     protected boolean enableBulkDeleteSplitting = true;
@@ -210,17 +212,32 @@ public class JDABuilder
     }
 
     /**
-     * Sets the {@link okhttp3.OkHttpClient.Builder Builder} that will be used by JDA's requester.
-     * This can be used to set things such as connection timeout and proxy. 
+     * Sets the {@link okhttp3.OkHttpClient.Builder Builder} that will be used by JDAs requester.
+     * <br>This can be used to set things such as connection timeout and proxy.
      *
      * @param  builder
-     *         The new {@link okhttp3.OkHttpClient.Builder Builder} to use.
+     *         The new {@link okhttp3.OkHttpClient.Builder Builder} to use
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
     public JDABuilder setHttpClientBuilder(OkHttpClient.Builder builder)
     {
         this.httpClientBuilder = builder;
+        return this;
+    }
+
+    /**
+     * Sets the {@link okhttp3.OkHttpClient OkHttpClient} that will be used by JDAs requester.
+     * <br>This can be used to set things such as connection timeout and proxy.
+     *
+     * @param  client
+     *         The new {@link okhttp3.OkHttpClient OkHttpClient} to use
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     */
+    public JDABuilder setHttpClient(OkHttpClient client)
+    {
+        this.httpClient = client;
         return this;
     }
 
@@ -256,6 +273,26 @@ public class JDABuilder
     {
         Checks.positive(size, "Core pool size");
         this.corePoolSize = size;
+        return this;
+    }
+
+    /**
+     * Sets the Rate-Limit pool size for the JDA Rate-Limit handler
+     * {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} which is used
+     * to schedule the completion of RestActions. (Default: 5)
+     *
+     * @param  ratelimitPoolSize
+     *         The pool size for the rate-limit executor
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the specified pool size is not positive
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     */
+    public JDABuilder setRatelimitPoolSize(int ratelimitPoolSize)
+    {
+        Checks.positive(ratelimitPoolSize, "Pool size");
+        this.ratelimitPoolSize = ratelimitPoolSize;
         return this;
     }
 
@@ -580,14 +617,21 @@ public class JDABuilder
      */
     public JDA buildAsync() throws LoginException
     {
-        OkHttpClient.Builder httpClientBuilder = this.httpClientBuilder == null ? new OkHttpClient.Builder() : this.httpClientBuilder;
+        OkHttpClient httpClient = this.httpClient;
+        if (httpClient == null)
+        {
+            if (this.httpClientBuilder == null)
+                this.httpClientBuilder = new OkHttpClient.Builder();
+            httpClient = this.httpClientBuilder.build();
+        }
+
         WebSocketFactory wsFactory = this.wsFactory == null ? new WebSocketFactory() : this.wsFactory;
 
         if (controller == null && shardInfo != null)
             controller = new SessionControllerAdapter();
         
-        JDAImpl jda = new JDAImpl(accountType, token, controller, httpClientBuilder, wsFactory, autoReconnect, enableVoice, enableShutdownHook,
-                enableBulkDeleteSplitting, requestTimeoutRetry, enableContext, corePoolSize, maxReconnectDelay, contextMap);
+        JDAImpl jda = new JDAImpl(accountType, token, controller, httpClient, wsFactory, autoReconnect, enableVoice, enableShutdownHook,
+                enableBulkDeleteSplitting, requestTimeoutRetry, enableContext, corePoolSize, ratelimitPoolSize, maxReconnectDelay, contextMap);
 
         if (eventManager != null)
             jda.setEventManager(eventManager);

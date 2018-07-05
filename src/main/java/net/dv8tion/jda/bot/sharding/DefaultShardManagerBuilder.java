@@ -57,6 +57,7 @@ public class DefaultShardManagerBuilder
     protected int shardsTotal = -1;
     protected int maxReconnectDelay = 900;
     protected int corePoolSize = 2;
+    protected int ratelimitPoolSize = 5;
     protected String token = null;
     protected IntFunction<Boolean> idleProvider = null;
     protected IntFunction<Game> gameProvider = null;
@@ -64,6 +65,7 @@ public class DefaultShardManagerBuilder
     protected Collection<Integer> shards = null;
     protected IEventManager eventManager = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
+    protected OkHttpClient httpClient = null;
     protected WebSocketFactory wsFactory = null;
     protected IAudioSendFactory audioSendFactory = null;
     protected ThreadFactory threadFactory = null;
@@ -84,7 +86,7 @@ public class DefaultShardManagerBuilder
      * @param  controller
      *         The {@link net.dv8tion.jda.core.utils.SessionController SessionController} to use
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
      * @see    net.dv8tion.jda.core.utils.SessionControllerAdapter SessionControllerAdapter
      */
@@ -106,7 +108,7 @@ public class DefaultShardManagerBuilder
      * @param  provider
      *         The provider for <b>modifiable</b> context maps to use in JDA, or {@code null} to reset
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
      * @see    <a href="https://www.slf4j.org/api/org/slf4j/MDC.html" target="_blank">MDC Javadoc</a>
      */
@@ -126,7 +128,7 @@ public class DefaultShardManagerBuilder
      * @param  enable
      *         True, if JDA should provide an MDC context map
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
      * @see    <a href="https://www.slf4j.org/api/org/slf4j/MDC.html" target="_blank">MDC Javadoc</a>
      * @see    #setContextMap(java.util.function.IntFunction)
@@ -149,7 +151,7 @@ public class DefaultShardManagerBuilder
      * @param  enable
      *         True, if the gateway connection should use compression
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
      * @see    <a href="https://discordapp.com/developers/docs/topics/gateway#transport-compression" target="_blank">Official Discord Documentation - Transport Compression</a>
      */
@@ -171,7 +173,7 @@ public class DefaultShardManagerBuilder
      * @param  listeners
      *         The listener(s) to add to the list.
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
      * @see    DefaultShardManager#addEventListener(Object...) JDA.addEventListener(Object...)
      */
@@ -192,7 +194,7 @@ public class DefaultShardManagerBuilder
      * @param  listeners
      *         The listener(s) to add to the list.
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
      * @see    DefaultShardManager#addEventListener(Object...) JDA.addEventListener(Object...)
      */
@@ -210,7 +212,7 @@ public class DefaultShardManagerBuilder
      * @param  listeners
      *         The listener(s) to remove from the list.
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
      * @see    net.dv8tion.jda.core.JDA#removeEventListener(Object...) JDA.removeEventListener(Object...)
      */
@@ -225,7 +227,7 @@ public class DefaultShardManagerBuilder
      * @param  listeners
      *         The listener(s) to remove from the list.
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
      * @see    net.dv8tion.jda.core.JDA#removeEventListener(Object...) JDA.removeEventListener(Object...)
      */
@@ -252,7 +254,7 @@ public class DefaultShardManagerBuilder
      * @param  listenerProvider
      *         The listener provider to add to the list of listener providers.
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
     public DefaultShardManagerBuilder addEventListenerProvider(final IntFunction<Object> listenerProvider)
     {
@@ -274,7 +276,7 @@ public class DefaultShardManagerBuilder
      * @param  listenerProviders
      *         The listener provider to add to the list of listener providers.
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
     public DefaultShardManagerBuilder addEventListenerProviders(final Collection<IntFunction<Object>> listenerProviders)
     {
@@ -290,7 +292,7 @@ public class DefaultShardManagerBuilder
      * @param  listenerProvider
      *         The listener provider to remove from the list of listener providers.
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
     public DefaultShardManagerBuilder removeEventListenerProvider(final IntFunction<Object> listenerProvider)
     {
@@ -303,7 +305,7 @@ public class DefaultShardManagerBuilder
      * @param  listenerProviders
      *         The listener provider(s) to remove from the list of listener providers.
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
     public DefaultShardManagerBuilder removeEventListenerProviders(final Collection<IntFunction<Object>> listenerProviders)
     {
@@ -322,7 +324,7 @@ public class DefaultShardManagerBuilder
      * @param  enabled
      *         True - enables voice support.
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
     public DefaultShardManagerBuilder setAudioEnabled(final boolean enabled)
     {
@@ -339,7 +341,7 @@ public class DefaultShardManagerBuilder
      *         The new {@link net.dv8tion.jda.core.audio.factory.IAudioSendFactory IAudioSendFactory} to be used
      *         when creating new {@link net.dv8tion.jda.core.audio.factory.IAudioSendSystem} objects.
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
     public DefaultShardManagerBuilder setAudioSendFactory(final IAudioSendFactory factory)
     {
@@ -356,7 +358,7 @@ public class DefaultShardManagerBuilder
      * @param  autoReconnect
      *         If true - enables autoReconnect
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
     public DefaultShardManagerBuilder setAutoReconnect(final boolean autoReconnect)
     {
@@ -374,7 +376,7 @@ public class DefaultShardManagerBuilder
      * @param  enabled
      *         True - The MESSAGE_DELETE_BULK will be split into multiple individual MessageDeleteEvents.
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
     public DefaultShardManagerBuilder setBulkDeleteSplittingEnabled(final boolean enabled)
     {
@@ -393,12 +395,32 @@ public class DefaultShardManagerBuilder
      * @throws java.lang.IllegalArgumentException
      *         If the specified core pool size is not positive
      *
-     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
     public DefaultShardManagerBuilder setCorePoolSize(int size)
     {
         Checks.positive(size, "Core pool size");
         this.corePoolSize = size;
+        return this;
+    }
+
+    /**
+     * Sets the Rate-Limit pool size for the JDA Rate-Limit handler
+     * {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} which is used
+     * to schedule the completion of RestActions. (Default: 5)
+     *
+     * @param  size
+     *         The pool size for the rate-limit executor
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the specified pool size is not positive
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     */
+    public DefaultShardManagerBuilder setRatelimitPoolSize(int size)
+    {
+        Checks.positive(size, "Pool size");
+        this.ratelimitPoolSize = size;
         return this;
     }
 
@@ -412,7 +434,7 @@ public class DefaultShardManagerBuilder
      * @param  enable
      *         True (default) - use shutdown hook to clean up the ShardManager and it's JDA instances if the Java program is closed.
      *
-     * @return Return the {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     * @return Return the DefaultShardManagerBuilder instance. Useful for chaining.
      */
     public DefaultShardManagerBuilder setEnableShutdownHook(final boolean enable)
     {
@@ -436,7 +458,7 @@ public class DefaultShardManagerBuilder
      * @param  manager
      *         The new {@link net.dv8tion.jda.core.hooks.IEventManager} to use.
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
     public DefaultShardManagerBuilder setEventManager(final IEventManager manager)
     {
@@ -457,7 +479,7 @@ public class DefaultShardManagerBuilder
      * @param  game
      *         An instance of {@link net.dv8tion.jda.core.entities.Game Game} (null allowed)
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
      * @see    net.dv8tion.jda.core.managers.Presence#setGame(Game)
      */
@@ -477,7 +499,7 @@ public class DefaultShardManagerBuilder
      * @param  gameProvider
      *         An instance of {@link net.dv8tion.jda.core.entities.Game Game} (null allowed)
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
      * @see    net.dv8tion.jda.core.managers.Presence#setGame(Game)
      */
@@ -495,7 +517,7 @@ public class DefaultShardManagerBuilder
      * @param  idle
      *         boolean value that will be provided with our IDENTIFY packages to mark our sessions as afk or not. <b>(default false)</b>
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
      * @see    net.dv8tion.jda.core.managers.Presence#setIdle(boolean)
      */
@@ -512,7 +534,7 @@ public class DefaultShardManagerBuilder
      * @param  idleProvider
      *         boolean value that will be provided with our IDENTIFY packages to mark our sessions as afk or not. <b>(default false)</b>
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
      * @see    net.dv8tion.jda.core.managers.Presence#setIdle(boolean)
      */
@@ -535,7 +557,7 @@ public class DefaultShardManagerBuilder
      * @throws IllegalArgumentException
      *         if the provided OnlineStatus is null or {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     * @return @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
      * @see    net.dv8tion.jda.core.managers.Presence#setStatus(OnlineStatus) Presence.setStatusProvider(OnlineStatus)
      */
@@ -560,7 +582,7 @@ public class DefaultShardManagerBuilder
      * @throws IllegalArgumentException
      *         if the provided OnlineStatus is null or {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     * @return @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
      * @see    net.dv8tion.jda.core.managers.Presence#setStatus(OnlineStatus) Presence.setStatusProvider(OnlineStatus)
      */
@@ -578,7 +600,7 @@ public class DefaultShardManagerBuilder
      * @param  threadFactory
      *         The ThreadFactory or {@code null} to reset to the default value.
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
     public DefaultShardManagerBuilder setThreadFactory(final ThreadFactory threadFactory)
     {
@@ -593,11 +615,26 @@ public class DefaultShardManagerBuilder
      * @param  builder
      *         The new {@link okhttp3.OkHttpClient.Builder OkHttpClient.Builder} to use.
      *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
     public DefaultShardManagerBuilder setHttpClientBuilder(OkHttpClient.Builder builder)
     {
         this.httpClientBuilder = builder;
+        return this;
+    }
+
+    /**
+     * Sets the {@link okhttp3.OkHttpClient OkHttpClient} that will be used by JDAs requester.
+     * <br>This can be used to set things such as connection timeout and proxy.
+     *
+     * @param  client
+     *         The new {@link okhttp3.OkHttpClient OkHttpClient} to use
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     */
+    public DefaultShardManagerBuilder setHttpClient(OkHttpClient client)
+    {
+        this.httpClient = client;
         return this;
     }
 
@@ -611,7 +648,7 @@ public class DefaultShardManagerBuilder
      * @throws java.lang.IllegalArgumentException
      *         Thrown if the provided {@code maxReconnectDelay} is less than 32.
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
     public DefaultShardManagerBuilder setMaxReconnectDelay(final int maxReconnectDelay)
     {
@@ -631,7 +668,7 @@ public class DefaultShardManagerBuilder
      * @param  retryOnTimeout
      *         True, if the Request should retry once on a socket timeout
      *
-     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
     public DefaultShardManagerBuilder setRequestTimeoutRetry(boolean retryOnTimeout)
     {
@@ -647,7 +684,7 @@ public class DefaultShardManagerBuilder
      * @param  shardIds
      *         The list of shard ids
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
     public DefaultShardManagerBuilder setShards(final int... shardIds)
     {
@@ -679,7 +716,7 @@ public class DefaultShardManagerBuilder
      *         If either minShardId is negative, maxShardId is lower than shardsTotal or
      *         minShardId is lower than or equal to maxShardId
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
     public DefaultShardManagerBuilder setShards(final int minShardId, final int maxShardId)
     {
@@ -709,7 +746,7 @@ public class DefaultShardManagerBuilder
      *         If either minShardId is negative, maxShardId is lower than shardsTotal or
      *         minShardId is lower than or equal to maxShardId
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
     public DefaultShardManagerBuilder setShards(Collection<Integer> shardIds)
     {
@@ -732,7 +769,7 @@ public class DefaultShardManagerBuilder
      * @param  shardsTotal
      *         The number of overall shards or {@code -1} if JDA should use the recommended amount from discord.
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
      * @see    #setShards(int, int)
      */
@@ -762,7 +799,7 @@ public class DefaultShardManagerBuilder
      * @throws java.lang.IllegalArgumentException
      *         If the token is either null or empty
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
     public DefaultShardManagerBuilder setToken(final String token)
     {
@@ -781,7 +818,7 @@ public class DefaultShardManagerBuilder
      * @param  useShutdownNow
      *         Whether the ShardManager should use JDA#shutdown() or not
      *
-     * @return The {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder} instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
      * @see net.dv8tion.jda.core.JDA#shutdown()
      * @see net.dv8tion.jda.core.JDA#shutdownNow()
@@ -799,7 +836,7 @@ public class DefaultShardManagerBuilder
      * @param  factory
      *         The new {@link com.neovisionaries.ws.client.WebSocketFactory WebSocketFactory} to use.
      *
-     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
     public DefaultShardManagerBuilder setWebsocketFactory(WebSocketFactory factory)
     {
@@ -830,8 +867,8 @@ public class DefaultShardManagerBuilder
             this.shardsTotal, this.shards, this.sessionController,
             this.listeners, this.listenerProviders, this.token, this.eventManager,
             this.audioSendFactory, this.gameProvider, this.statusProvider,
-            this.httpClientBuilder, this.wsFactory, this.threadFactory,
-            this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting,
+            this.httpClientBuilder, this.httpClient, this.wsFactory, this.threadFactory,
+            this.maxReconnectDelay, this.corePoolSize, this.ratelimitPoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting,
             this.autoReconnect, this.idleProvider, this.retryOnTimeout, this.useShutdownNow, this.enableContext, this.contextProvider, this.enableCompression);
 
         manager.login();
