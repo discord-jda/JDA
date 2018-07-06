@@ -59,7 +59,7 @@ public class GuildDeleteHandler extends SocketHandler
         if (guild == null)
         {
 //            api.getEventCache().cache(EventCache.Type.GUILD, id, () -> handle(responseNumber, allContent));
-            WebSocketClient.LOG.debug("Received GUILD_DELETE for a Guild that is not currently cached. ID: {} unavailable: {}", id, unavailable);
+            WebSocketClient.LOG.warn("Received GUILD_DELETE for a Guild that is not currently cached. ID: {} unavailable: {}", id, unavailable);
             return null;
         }
 
@@ -67,9 +67,6 @@ public class GuildDeleteHandler extends SocketHandler
         // ignore the event
         if (!guild.isAvailable() && unavailable)
             return null;
-
-//        if (api.getGuildSetupController().isLocked(id))
-//            return id;
 
         if (unavailable)
         {
@@ -155,8 +152,6 @@ public class GuildDeleteHandler extends SocketHandler
             return true;
         });
 
-        GuildMembersChunkHandler chunkHandler = api.getClient().getHandler("GUILD_MEMBERS_CHUNK");
-        chunkHandler.clearCache(id);
         api.getGuildMap().remove(id);
         guild.getTextChannelCache().forEach(chan -> api.getTextChannelMap().remove(chan.getIdLong()));
         guild.getVoiceChannelCache().forEach(chan -> api.getVoiceChannelMap().remove(chan.getIdLong()));

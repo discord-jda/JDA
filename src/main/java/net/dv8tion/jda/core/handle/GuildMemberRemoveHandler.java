@@ -41,7 +41,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
             return id;
 
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
-        if(guild == null)
+        if (guild == null)
         {
             //We probably just left the guild and this event is trying to remove us from the guild, therefore ignore
             return null;

@@ -24,7 +24,6 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.LinkedList;
 import java.util.List;
 
 public class GuildMembersChunkHandler extends SocketHandler
@@ -45,41 +44,4 @@ public class GuildMembersChunkHandler extends SocketHandler
         return null;
     }
 
-    public void setExpectedGuildMembers(long guildId, int count)
-    {
-        if (expectedGuildMembers.containsKey(guildId))
-            JDAImpl.LOG.warn("Set the count of expected users from GuildMembersChunk even though a value already exists! GuildId: {}", guildId);
-
-        expectedGuildMembers.put(guildId, count);
-
-        if (memberChunksCache.containsKey(guildId))
-            JDAImpl.LOG.warn("Set the memberChunks for MemberChunking for a guild that was already setup for chunking! GuildId: {}", guildId);
-
-        memberChunksCache.put(guildId, new LinkedList<>());
-    }
-
-    public void modifyExpectedGuildMember(long guildId, int changeAmount)
-    {
-        try
-        {
-            Integer i = expectedGuildMembers.get(guildId);
-            i += changeAmount;
-            expectedGuildMembers.put(guildId, i);
-        }
-        //Ignore. If one of the above things doesn't exist, causing an NPE, then we don't need to worry.
-        catch (NullPointerException ignored) {}
-    }
-
-    public void clearCache()
-    {
-        expectedGuildMembers.clear();
-        memberChunksCache.clear();
-    }
-
-    public void clearCache(long guildId)
-    {
-        expectedGuildMembers.remove(guildId);
-        if (memberChunksCache.remove(guildId) != null)
-            JDAImpl.LOG.debug("Cleared expected member chunk. GuildId: {}", guildId);
-    }
 }

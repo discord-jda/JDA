@@ -15,11 +15,11 @@
  */
 package net.dv8tion.jda.core.handle;
 
-import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.guild.GuildAvailableEvent;
-import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
-import net.dv8tion.jda.core.events.guild.UnavailableGuildJoinedEvent;
+import net.dv8tion.jda.core.events.guild.GuildUnavailableEvent;
+import net.dv8tion.jda.core.utils.Helpers;
 import org.json.JSONObject;
 
 public class GuildCreateHandler extends SocketHandler
@@ -35,6 +35,32 @@ public class GuildCreateHandler extends SocketHandler
     {
         final long id = content.getLong("id");
         api.getGuildSetupController().onCreate(id, content);
+
+        GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
+        if (guild == null)
+            return null;
+
+        boolean unavailable = Helpers.optBoolean(content, "unavailable");
+        if (guild.isAvailable() && unavailable)
+        {
+            guild.setAvailable(false);
+            api.getEventManager().handle(
+                new GuildUnavailableEvent(
+                    api, responseNumber,
+                    guild));
+        }
+        else if (!guild.isAvailable() && !unavailable)
+        {
+            guild.setAvailable(true);
+            api.getEventManager().handle(
+                new GuildAvailableEvent(
+                    api, responseNumber,
+                    guild));
+            //TODO: Check if we need to update some fields here
+            // I'm not sure if this is actually needed, but if discord sends us an updated field here
+            //  we can just use the same logic we use for GUILD_UPDATE in order to update it and fire events
+            api.getClient().<GuildUpdateHandler>getHandler("GUILD_UPDATE").handleInternally(content);
+        }
         return null;
     }
 }

@@ -72,15 +72,10 @@ public class GuildSetupController
     public void ready(long id)
     {
         setupNodes.remove(id);
-        if (--incompleteCount < 1) // TODO: Fire ReadyEvent
-        {
-            //log.debug("Finished setting up initial guilds");
+        if (--incompleteCount < 1)
             getJDA().getClient().ready();
-        }
         else
-        {
             tryChunking();
-        }
     }
 
     // - ReadyHandler
@@ -194,12 +189,12 @@ public class GuildSetupController
         log.debug("Sending chunking requests for {} guilds", arr.length());
 
         getJDA().getClient().send(
-                new JSONObject()
-                        .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
-                        .put("d", new JSONObject()
-                                .put("guild_id", arr)
-                                .put("query", "")
-                                .put("limit", 0)).toString());
+            new JSONObject()
+                .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
+                .put("d", new JSONObject()
+                    .put("guild_id", arr)
+                    .put("query", "")
+                    .put("limit", 0)).toString());
     }
 
     private void tryChunking()

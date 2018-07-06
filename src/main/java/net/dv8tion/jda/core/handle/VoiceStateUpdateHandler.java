@@ -21,7 +21,6 @@ import net.dv8tion.jda.client.entities.CallUser;
 import net.dv8tion.jda.client.entities.CallableChannel;
 import net.dv8tion.jda.client.entities.impl.CallImpl;
 import net.dv8tion.jda.client.entities.impl.CallVoiceStateImpl;
-import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.client.events.call.voice.CallVoiceJoinEvent;
 import net.dv8tion.jda.client.events.call.voice.CallVoiceLeaveEvent;
 import net.dv8tion.jda.client.events.call.voice.CallVoiceSelfDeafenEvent;

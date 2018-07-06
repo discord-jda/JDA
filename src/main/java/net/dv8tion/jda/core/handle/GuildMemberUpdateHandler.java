@@ -55,10 +55,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
         MemberImpl member = (MemberImpl) guild.getMembersMap().get(userId);
         if (member == null)
         {
-            api.getEventCache().cache(EventCache.Type.USER, userId, () ->
-            {
-                handle(responseNumber, allContent);
-            });
+            api.getEventCache().cache(EventCache.Type.USER, userId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Got GuildMember update but Member is not currently present in Guild. {}", content);
             return null;
         }

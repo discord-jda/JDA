@@ -105,6 +105,14 @@ class GuildSetupNode
     boolean handleMemberChunk(JSONArray arr)
     {
         //TODO: handle client account (guild-sync)
+        if (partialGuild == null)
+        {
+            //In this case we received a GUILD_DELETE with unavailable = true while chunking
+            // however we have to wait for the GUILD_CREATE with unavailable = false before
+            // requesting new chunks
+            GuildSetupController.log.debug("Dropping member chunk due to unavailable guild");
+            return true;
+        }
         for (Object o : arr)
         {
             JSONObject obj = (JSONObject) o;
@@ -127,6 +135,7 @@ class GuildSetupNode
 
     void cacheEvent(JSONObject event)
     {
+        GuildSetupController.log.trace("Caching {} event during init", event.getString("t"));
         cachedEvents.add(event);
     }
 
