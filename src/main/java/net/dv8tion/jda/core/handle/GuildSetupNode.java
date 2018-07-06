@@ -40,12 +40,15 @@ class GuildSetupNode
     private int expectedMemberCount = 1;
 
     final boolean join;
+    final boolean sync;
+
 
     GuildSetupNode(long id, GuildSetupController controller, boolean join)
     {
         this.id = id;
         this.controller = controller;
         this.join = join;
+        this.sync = controller.isClient();
     }
 
     private void completeSetup()
@@ -75,7 +78,17 @@ class GuildSetupNode
         cachedEvents.clear();
     }
 
-    void handleReady(JSONObject obj) {} // do we need this?
+    void handleReady(JSONObject obj)
+    {
+        if (!sync)
+            return;
+        partialGuild = obj;
+        boolean unavailable = Helpers.optBoolean(partialGuild, "unavailable");
+        if (unavailable)
+            return;
+
+        controller.addGuildForSyncing(id);
+    }
 
     void handleCreate(JSONObject obj)
     {
@@ -104,7 +117,6 @@ class GuildSetupNode
 
     boolean handleMemberChunk(JSONArray arr)
     {
-        //TODO: handle client account (guild-sync)
         if (partialGuild == null)
         {
             //In this case we received a GUILD_DELETE with unavailable = true while chunking
@@ -126,6 +138,28 @@ class GuildSetupNode
             return false;
         }
         return true;
+    }
+
+    void handleSync(JSONObject obj)
+    {
+        if (partialGuild == null)
+        {
+            //In this case we received a GUILD_DELETE with unavailable = true while syncing
+            // however we have to wait for the GUILD_CREATE with unavailable = false before
+            // requesting new chunks
+            GuildSetupController.log.debug("Dropping sync update due to unavailable guild");
+            return;
+        }
+        for (Iterator<String> it = obj.keys(); it.hasNext();)
+        {
+            String key = it.next();
+            partialGuild.put(key, obj.opt(key));
+        }
+
+        expectedMemberCount = partialGuild.getInt("member_count");
+        members = new TLongObjectHashMap<>(expectedMemberCount);
+        if (handleMemberChunk(partialGuild.getJSONArray("members")))
+            controller.addGuildForChunking(id);
     }
 
     void updateMemberChunkCount(int change)

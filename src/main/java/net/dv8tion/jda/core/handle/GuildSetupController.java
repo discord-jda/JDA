@@ -21,6 +21,7 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
+import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.WebSocketCode;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.utils.JDALogger;
@@ -30,18 +31,24 @@ import org.slf4j.Logger;
 
 import java.lang.ref.WeakReference;
 
+@SuppressWarnings("WeakerAccess")
 public class GuildSetupController
 {
     protected static final Logger log = JDALogger.getLog(GuildSetupController.class);
     private final WeakReference<JDAImpl> api;
     private final TLongObjectMap<GuildSetupNode> setupNodes = new TLongObjectHashMap<>();
     private final TLongSet chunkingGuilds = new TLongHashSet();
-    private final TLongSet syncingGuilds = new TLongHashSet(); //TODO: guild-sync
+    private final TLongSet syncingGuilds; //TODO: guild-sync
     private int incompleteCount = 0;
+    private int syncingCount = 0;
 
     public GuildSetupController(JDAImpl api)
     {
         this.api = new WeakReference<>(api);
+        if (isClient())
+            syncingGuilds = new TLongHashSet();
+        else
+            syncingGuilds = null;
     }
 
     JDAImpl getJDA()
@@ -52,12 +59,25 @@ public class GuildSetupController
         return tmp;
     }
 
+    boolean isClient()
+    {
+        return getJDA().getAccountType() == AccountType.CLIENT;
+    }
+
     void addGuildForChunking(long id)
     {
-        log.debug("Adding guild for chunking ID: {}", id);
+        log.trace("Adding guild for chunking ID: {}", id);
         chunkingGuilds.add(id);
-        //TODO: guild-sync
         tryChunking();
+    }
+
+    void addGuildForSyncing(long id)
+    {
+        if (!isClient())
+            return;
+        log.trace("Adding guild for syncing ID: {}", id);
+        syncingGuilds.add(id);
+        trySyncing();
     }
 
     void remove(long id)
@@ -83,6 +103,7 @@ public class GuildSetupController
     {
         log.debug("Setting incomplete count to {}", count);
         this.incompleteCount = count;
+        this.syncingCount = count;
     }
 
     // - ReadyHandler
@@ -91,6 +112,7 @@ public class GuildSetupController
         log.debug("Adding id to setup cache {}", id);
         GuildSetupNode node = new GuildSetupNode(id, this, false);
         setupNodes.put(id, node);
+        addGuildForSyncing(id);
         node.handleReady(obj);
     }
 
@@ -159,6 +181,13 @@ public class GuildSetupController
         node.updateMemberChunkCount(change);
     }
 
+    public void onSync(long id, JSONObject obj)
+    {
+        GuildSetupNode node = setupNodes.get(id);
+        if (node != null)
+            node.handleSync(obj);
+    }
+
     // Anywhere \\
 
     public boolean isLocked(long id)
@@ -220,6 +249,43 @@ public class GuildSetupController
             });
             chunkingGuilds.clear();
             sendChunkRequest(array);
+        }
+    }
+
+    // Syncing
+
+    private void sendSyncRequest(JSONArray arr)
+    {
+        log.debug("Sending syncing requests for {} guilds", arr.length());
+
+        getJDA().getClient().send(
+            new JSONObject()
+                .put("op", WebSocketCode.GUILD_SYNC)
+                .put("d", arr).toString());
+        syncingCount -= arr.length();
+    }
+
+    private void trySyncing()
+    {
+        if (syncingGuilds.size() >= 50)
+        {
+            // request chunks
+            final JSONArray subset = new JSONArray();
+            for (final TLongIterator it = syncingGuilds.iterator(); subset.length() < 50; )
+            {
+                subset.put(it.next());
+                it.remove();
+            }
+            sendSyncRequest(subset);
+        }
+        if (syncingGuilds.size() == syncingCount)
+        {
+            final JSONArray array = new JSONArray();
+            syncingGuilds.forEach((guild) -> {
+                array.put(guild);
+                return true;
+            });
+            sendSyncRequest(array);
         }
     }
 }
