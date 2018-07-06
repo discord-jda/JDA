@@ -204,7 +204,10 @@ public class GuildSetupController
             // request chunks
             final JSONArray subset = new JSONArray();
             for (final TLongIterator it = chunkingGuilds.iterator(); subset.length() < 50; )
+            {
                 subset.put(it.next());
+                it.remove();
+            }
             sendChunkRequest(subset);
         }
         if (chunkingGuilds.size() == incompleteCount)
