@@ -38,7 +38,7 @@ public class GuildSetupController
     private final WeakReference<JDAImpl> api;
     private final TLongObjectMap<GuildSetupNode> setupNodes = new TLongObjectHashMap<>();
     private final TLongSet chunkingGuilds = new TLongHashSet();
-    private final TLongSet syncingGuilds; //TODO: guild-sync
+    private final TLongSet syncingGuilds;
     private int incompleteCount = 0;
     private int syncingCount = 0;
 
@@ -112,7 +112,6 @@ public class GuildSetupController
         log.debug("Adding id to setup cache {}", id);
         GuildSetupNode node = new GuildSetupNode(id, this, false);
         setupNodes.put(id, node);
-        addGuildForSyncing(id);
         node.handleReady(obj);
     }
 
