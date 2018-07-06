@@ -57,7 +57,7 @@ public class TypingStartHandler extends SocketHandler
         if (channel instanceof TextChannel)
         {
             final long guildId = ((TextChannel) channel).getGuild().getIdLong();
-            if (api.getGuildLock().isLocked(guildId))
+            if (api.getGuildSetupController().isLocked(guildId))
                 return guildId;
         }
 

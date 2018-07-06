@@ -33,7 +33,8 @@ public class GuildMemberAddHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long id = content.getLong("guild_id");
-        if (api.getGuildLock().isLocked(id))
+        api.getGuildSetupController().updateMemberChunk(id, 1);
+        if (api.getGuildSetupController().isLocked(id))
             return id;
 
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
@@ -46,9 +47,9 @@ public class GuildMemberAddHandler extends SocketHandler
 
         Member member = api.getEntityBuilder().createMember(guild, content);
         api.getEventManager().handle(
-                new GuildMemberJoinEvent(
-                        api, responseNumber,
-                        member));
+            new GuildMemberJoinEvent(
+                api, responseNumber,
+                member));
         api.getEventCache().playbackCache(EventCache.Type.USER, member.getUser().getIdLong());
         return null;
     }

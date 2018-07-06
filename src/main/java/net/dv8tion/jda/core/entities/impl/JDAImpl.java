@@ -83,7 +83,6 @@ public class JDAImpl implements JDA
     protected final Thread shutdownHook;
     protected final EntityBuilder entityBuilder = new EntityBuilder(this);
     protected final EventCache eventCache = new EventCache();
-    protected final GuildLock guildLock = new GuildLock(this);
     protected final Object akapLock = new Object();
 
     protected final SessionController sessionController;
@@ -630,11 +629,6 @@ public class JDAImpl implements JDA
     public EntityBuilder getEntityBuilder()
     {
         return entityBuilder;
-    }
-
-    public GuildLock getGuildLock()
-    {
-        return this.guildLock;
     }
 
     public IAudioSendFactory getAudioSendFactory()

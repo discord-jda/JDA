@@ -86,7 +86,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected volatile Thread keepAliveThread;
     protected boolean initiating;             //cache all events?
-    protected final List<JSONObject> cachedEvents = new LinkedList<>();
 
     protected int reconnectTimeoutS = 2;
     protected long heartbeatStartTime;
@@ -220,10 +219,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             api.getEventManager().handle(new ResumedEvent(api, api.getResponseTotal()));
         }
         api.setStatus(JDA.Status.CONNECTED);
-        LOG.debug("Resending {} cached events...", cachedEvents.size());
-        handle(cachedEvents);
-        LOG.debug("Sending of cached events finished.");
-        cachedEvents.clear();
     }
 
     public boolean isReady()
@@ -779,11 +774,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         api.getPrivateChannelMap().clear();
         api.getFakeUserMap().clear();
         api.getFakePrivateChannelMap().clear();
-        api.getEntityBuilder().clearCache();
         api.getEventCache().clear();
-        api.getGuildLock().clear();
-        this.<ReadyHandler>getHandler("READY").clearCache();
-        this.<GuildMembersChunkHandler>getHandler("GUILD_MEMBERS_CHUNK").clearCache();
+        api.getGuildSetupController().clearCache();
 
         if (api.getAccountType() == AccountType.CLIENT)
         {
@@ -953,50 +945,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         String type = raw.getString("t");
         long responseTotal = api.getResponseTotal();
 
-        if (type.equals("GUILD_MEMBER_ADD"))
-            this.<GuildMembersChunkHandler>getHandler("GUILD_MEMBERS_CHUNK").modifyExpectedGuildMember(raw.getJSONObject("d").getLong("guild_id"), 1);
-        if (type.equals("GUILD_MEMBER_REMOVE"))
-            this.<GuildMembersChunkHandler>getHandler("GUILD_MEMBERS_CHUNK").modifyExpectedGuildMember(raw.getJSONObject("d").getLong("guild_id"), -1);
-
         boolean isJSON = raw.opt("d") instanceof JSONObject;
-        //If initiating, only allows READY, RESUMED, GUILD_MEMBERS_CHUNK, GUILD_SYNC, and GUILD_CREATE through.
-        // If we are currently chunking, we don't allow GUILD_CREATE through anymore.
-        if (initiating &&  !(type.equals("READY")
-                || type.equals("GUILD_MEMBERS_CHUNK")
-                || type.equals("RESUMED")
-                || type.equals("GUILD_SYNC")
-                || (!chunkingAndSyncing && type.equals("GUILD_CREATE"))))
-        {
-            if (!isJSON)
-            {
-                if (type.equals("PRESENCES_REPLACE"))
-                {
-                    List<JSONObject> converted = convertPresencesReplace(responseTotal, raw.getJSONArray("d"));
-                    LOG.debug("Caching PRESENCES_REPLACE event during init as PRESENCE_UPDATE dispatches!");
-                    cachedEvents.addAll(converted);
-                }
-                else
-                {
-                    LOG.debug("Received event with unhandled body type during init JSON: {}", raw);
-                }
-                return;
-            }
-            //If we are currently GuildStreaming, and we get a GUILD_DELETE informing us that a Guild is unavailable
-            // convert it to a GUILD_CREATE for handling.
-            JSONObject content = raw.getJSONObject("d");
-            if (!chunkingAndSyncing && type.equals("GUILD_DELETE") && content.has("unavailable") && content.getBoolean("unavailable"))
-            {
-                type = "GUILD_CREATE";
-                raw.put("t", "GUILD_CREATE")
-                   .put("jda-field","This event was originally a GUILD_DELETE but was converted to GUILD_CREATE for WS init Guild streaming");
-            }
-            else
-            {
-                LOG.debug("Caching {} event during init!", type);
-                cachedEvents.add(raw);
-                return;
-            }
-        }
 
         if (!isJSON)
         {

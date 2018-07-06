@@ -77,8 +77,6 @@ public class EntityBuilder
     }
 
     protected final JDAImpl api;
-    protected final TLongObjectMap<JSONObject> cachedGuildJsons = MiscUtil.newLongMap();
-    protected final TLongObjectMap<Consumer<Guild>> cachedGuildCallbacks = MiscUtil.newLongMap();
 
     public EntityBuilder(JDA api)
     {
@@ -122,214 +120,6 @@ public class EntityBuilder
         return new Game(name, url, type);
     }
 
-//    public void createGuildFirstPass(JSONObject guild, Consumer<Guild> secondPassCallback)
-//    {
-//        final long id = guild.getLong("id");
-//        GuildImpl guildObj = ((GuildImpl) api.getGuildMap().get(id));
-//        if (guildObj == null)
-//        {
-//            guildObj = new GuildImpl(api, id);
-//            api.getGuildMap().put(id, guildObj);
-//        }
-//        if (Helpers.optBoolean(guild, "unavailable"))
-//        {
-//            guildObj.setAvailable(false);
-//            //This is used for when GuildCreateHandler receives a guild that is currently unavailable. During normal READY
-//            // loading for bots (which unavailable is always true) the secondPassCallback parameter will always
-//            // be null.
-//            if (secondPassCallback != null)
-//                secondPassCallback.accept(guildObj);
-//            api.getGuildLock().lock(id);
-//            return;
-//        }
-//
-//        //If we make it to here, the Guild is available. This means 1 of 2 things:
-//        //Either:
-//        // 1) This is Guild provided during READY for a Client account
-//        // 2) This is a Guild received from GuildCreateHandler from a GUILD_CREATE event.
-//        //      This could be triggered by joining a guild or due to discord finally
-//        //      providing us with Guild information about a previously unavailable guild.
-//        //      Whether it was unavailable due to Bot READY unavailability or due to an
-//        //      outage within discord matters now.
-//        //
-//        // Either way, we now have enough information to fill in the general information about the Guild.
-//        // This does NOT necessarily mean that we have all information to complete the guild.
-//        // For Client accounts, we will also need to use op 12 (GUILD_SYNC) to get all presences of online users because
-//        // discord only provides Online users that we have an open PM channel with or are friends with for Client accounts.
-//        // On larger guilds we will still need to request all users using op 8 (GUILD_MEMBERS_CHUNK).
-//        //
-//        // The code below takes the information we -do- have and starts to fill in the Guild. It won't create anything
-//        // that might rely on Users that we don't have due to needing the GUILD_MEMBERS_CHUNK
-//        // This includes making VoiceStatus and PermissionOverrides
-//
-//        guildObj.setAvailable(true)
-//                .setIconId(guild.optString("icon", null))
-//                .setSplashId(guild.optString("splash", null))
-//                .setRegion(guild.getString("region"))
-//                .setName(guild.getString("name"))
-//                .setAfkTimeout(Guild.Timeout.fromKey(guild.getInt("afk_timeout")))
-//                .setVerificationLevel(Guild.VerificationLevel.fromKey(guild.getInt("verification_level")))
-//                .setDefaultNotificationLevel(Guild.NotificationLevel.fromKey(guild.getInt("default_message_notifications")))
-//                .setRequiredMFALevel(Guild.MFALevel.fromKey(guild.getInt("mfa_level")))
-//                .setExplicitContentLevel(Guild.ExplicitContentLevel.fromKey(guild.getInt("explicit_content_filter")));
-//
-//
-//        if (guild.isNull("features"))
-//            guildObj.setFeatures(Collections.emptySet());
-//        else
-//        {
-//            guildObj.setFeatures(
-//                StreamSupport.stream(guild.getJSONArray("features").spliterator(), false)
-//                    .map(String::valueOf)
-//                    .collect(Collectors.toSet())
-//            );
-//        }
-//
-//        JSONArray roles = guild.getJSONArray("roles");
-//        for (int i = 0; i < roles.length(); i++)
-//        {
-//            Role role = createRole(roles.getJSONObject(i), guildObj.getIdLong());
-//            guildObj.getRolesMap().put(role.getIdLong(), role);
-//            if (role.getIdLong() == guildObj.getIdLong())
-//                guildObj.setPublicRole(role);
-//        }
-//
-//        if (!guild.isNull("emojis"))
-//        {
-//            JSONArray array = guild.getJSONArray("emojis");
-//            createGuildEmotePass(guildObj, array);
-//        }
-//
-//        if (guild.has("members"))
-//        {
-//            JSONArray members = guild.getJSONArray("members");
-//            createGuildMemberPass(guildObj, members);
-//        }
-//
-//        //This could be null for Client accounts. Will be fixed by GUILD_SYNC
-//        Member owner = guildObj.getMemberById(guild.getLong("owner_id"));
-//        if (owner != null)
-//            guildObj.setOwner(owner);
-//
-//        if (guild.has("presences"))
-//        {
-//            JSONArray presences = guild.getJSONArray("presences");
-//            for (int i = 0; i < presences.length(); i++)
-//            {
-//                JSONObject presence = presences.getJSONObject(i);
-//                final long userId = presence.getJSONObject("user").getLong("id");
-//                MemberImpl member = (MemberImpl) guildObj.getMembersMap().get(userId);
-//
-//                if (member == null)
-//                    LOG.debug("Received a ghost presence in GuildFirstPass! UserId: {} Guild: {}", userId, guildObj);
-//                else
-//                    createPresence(member, presence);
-//            }
-//        }
-//
-//        if (guild.has("channels"))
-//        {
-//            JSONArray channels = guild.getJSONArray("channels");
-//
-//            for (int i = 0; i < channels.length(); i++)
-//            {
-//                JSONObject channel = channels.getJSONObject(i);
-//                ChannelType type = ChannelType.fromId(channel.getInt("type"));
-//                switch (type)
-//                {
-//                    case TEXT:
-//                        createTextChannel(channel, guildObj.getIdLong(), false);
-//                        break;
-//                    case VOICE:
-//                        createVoiceChannel(channel, guildObj.getIdLong(), false);
-//                        break;
-//                    case CATEGORY:
-//                        createCategory(channel, guildObj.getIdLong(), false);
-//                        break;
-//                    default:
-//                        LOG.error("Received a channel for a guild that isn't a text, voice or category channel. JSON: {}", channel);
-//                }
-//            }
-//        }
-//
-//        if (!guild.isNull("system_channel_id"))
-//            guildObj.setSystemChannel(guildObj.getTextChannelsMap().get(guild.getLong("system_channel_id")));
-//
-//        if (!guild.isNull("afk_channel_id"))
-//            guildObj.setAfkChannel(guildObj.getVoiceChannelsMap().get(guild.getLong("afk_channel_id")));
-//
-//        //If the members that we were provided with (and loaded above) were not all of the
-//        //  the members in this guild, then we need to request more users from Discord using
-//        //  op 9 (GUILD_MEMBERS_CHUNK). To do so, we will cache the guild's JSON so we can properly
-//        //  load stuff that relies on Users like Channels, PermissionOverrides and VoiceStatuses
-//        //  after we have the rest of the users. We will request the GUILD_MEMBERS_CHUNK information
-//        //  which will be sent from discord over the main Websocket and will be handled by
-//        //  GuildMemberChunkHandler. After the handler has received all users as determined by the
-//        //  value set using `setExpectedGuildMembers`, it will do one of the following:
-//        //    1) If this is a Bot account, immediately call EntityBuilder#createGuildSecondPass, thus finishing
-//        //        the Guild object creation process.
-//        //    2) If this is a Client account, it will request op 12 (GUILD_SYNC) to make sure we have all information
-//        //        about online users as GUILD_MEMBERS_CHUNK does not include presence information, and when loading the
-//        //        members from GUILD_MEMBERS_CHUNK, we assume they are offline. GUILD_SYNC makes sure that we mark them
-//        //        properly. After GUILD_SYNC is received by GuildSyncHandler, it will call EntityBuilder#createGuildSecondPass
-//        //
-//        //If we actually -did- get all of the users needed, then we don't need to Chunk. Furthermore,
-//        // we don't need to use GUILD_SYNC because we always get presences with users thus we have all information
-//        // needed to guild the Guild. We will skip
-//        if (guild.getJSONArray("members").length() != guild.getInt("member_count"))
-//        {
-//            cachedGuildJsons.put(id, guild);
-//            cachedGuildCallbacks.put(id, secondPassCallback);
-//
-//            GuildMembersChunkHandler handler = api.getClient().getHandler("GUILD_MEMBERS_CHUNK");
-//            handler.setExpectedGuildMembers(id, guild.getInt("member_count"));
-//
-//            //If we are already past READY / RESUME, then chunk at runtime. Otherwise, pass back to the ReadyHandler
-//            // and let it send a burst chunk request.
-//            if (api.getClient().isReady())
-//            {
-//                if (api.getAccountType() == AccountType.CLIENT)
-//                {
-//                    JSONObject obj = new JSONObject()
-//                            .put("op", WebSocketCode.GUILD_SYNC)
-//                            .put("guild_id", guildObj.getId());
-//                    api.getClient().chunkOrSyncRequest(obj);
-//                }
-//                JSONObject obj = new JSONObject()
-//                        .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
-//                        .put("d", new JSONObject()
-//                            .put("guild_id", id)
-//                            .put("query","")
-//                            .put("limit", 0)
-//                        );
-//                api.getClient().chunkOrSyncRequest(obj);
-//            }
-//            else
-//            {
-//                ReadyHandler readyHandler = api.getClient().getHandler("READY");
-//                readyHandler.acknowledgeGuild(guildObj, true, true, api.getAccountType() == AccountType.CLIENT);
-//            }
-//
-//            api.getGuildLock().lock(id);
-//            return;
-//        }
-//
-//        //As detailed in the comment above, if we've made it this far then we have all member information needed to
-//        // create the Guild. Thus, we fill in the remaining information, unlock the guild, and provide the guild
-//        // to the callback
-//        //This should only occur on small user count guilds.
-//
-//        JSONArray channels = guild.getJSONArray("channels");
-//        createGuildChannelPass(guildObj, channels); //Actually creates PermissionOverrides
-//
-//        JSONArray voiceStates = guild.getJSONArray("voice_states");
-//        createGuildVoiceStatePass(guildObj, voiceStates);
-//
-//        api.getGuildLock().unlock(guildObj.getIdLong());
-//        if (secondPassCallback != null)
-//            secondPassCallback.accept(guildObj);
-//    }
-
     private void createGuildEmotePass(GuildImpl guildObj, JSONArray array)
     {
         TLongObjectMap<Emote> emoteMap = guildObj.getEmoteMap();
@@ -355,41 +145,6 @@ public class EntityBuilder
                         .setManaged(Helpers.optBoolean(object, "managed")));
         }
     }
-
-//    public void createGuildSecondPass(long guildId, List<JSONArray> memberChunks)
-//    {
-//        JSONObject guildJson = cachedGuildJsons.remove(guildId);
-//        Consumer<Guild> secondPassCallback = cachedGuildCallbacks.remove(guildId);
-//        GuildImpl guildObj = (GuildImpl) api.getGuildMap().get(guildId);
-//
-//        if (guildObj == null)
-//            throw new IllegalStateException("Attempted to perform a second pass on an unknown Guild. Guild not in JDA " +
-//                    "mapping. GuildId: " + guildId);
-//        if (guildJson == null)
-//            throw new IllegalStateException("Attempted to perform a second pass on an unknown Guild. No cached Guild " +
-//                    "for second pass. GuildId: " + guildId);
-//        if (secondPassCallback == null)
-//            throw new IllegalArgumentException("No callback provided for the second pass on the Guild!");
-//
-//        for (JSONArray chunk : memberChunks)
-//            createGuildMemberPass(guildObj, chunk);
-//
-//        Member owner = guildObj.getMemberById(guildJson.getLong("owner_id"));
-//        if (owner != null)
-//            guildObj.setOwner(owner);
-//
-//        if (guildObj.getOwner() == null)
-//            LOG.error("Never set the Owner of the Guild: {} because we don't have the owner User object! How?!", guildObj.getId());
-//
-//        JSONArray channels = guildJson.getJSONArray("channels");
-//        createGuildChannelPass(guildObj, channels);
-//
-//        JSONArray voiceStates = guildJson.getJSONArray("voice_states");
-//        createGuildVoiceStatePass(guildObj, voiceStates);
-//
-//        secondPassCallback.accept(guildObj);
-//        api.getGuildLock().unlock(guildId);
-//    }
 
     public GuildImpl createGuild(long guildId, JSONObject guildJson, Set<JSONObject> members)
     {
@@ -519,40 +274,6 @@ public class EntityBuilder
             throw new IllegalArgumentException("Cannot create channel for type " + channelData.getInt("type"));
         }
     }
-
-//    private void createGuildChannelPass(GuildImpl guildObj, JSONArray channels)
-//    {
-//        for (int i = 0; i < channels.length(); i++)
-//        {
-//            JSONObject channel = channels.getJSONObject(i);
-//            ChannelType type = ChannelType.fromId(channel.getInt("type"));
-//            Channel channelObj = null;
-//            switch (type)
-//            {
-//                case TEXT:
-//                    channelObj = api.getTextChannelById(channel.getLong("id"));
-//                    break;
-//                case VOICE:
-//                    channelObj = api.getVoiceChannelById(channel.getLong("id"));
-//                    break;
-//                case CATEGORY:
-//                    channelObj = api.getCategoryMap().get(channel.getLong("id"));
-//                    break;
-//                default:
-//                    LOG.error("Received a channel for a guild that isn't a text, voice or category channel (ChannelPass). JSON: {}", channel);
-//            }
-//
-//            if (channelObj != null)
-//            {
-//                JSONArray permissionOverwrites = channel.getJSONArray("permission_overwrites");
-//                createOverridesPass((AbstractChannelImpl<?>) channelObj, permissionOverwrites);
-//            }
-//            else
-//            {
-//                LOG.error("Got permission_override for unknown channel with id: {}", channel.getString("id"));
-//            }
-//        }
-//    }
 
     public void createGuildVoiceStatePass(GuildImpl guildObj, JSONArray voiceStates)
     {
@@ -1441,12 +1162,6 @@ public class EntityBuilder
         return new InviteImpl(api, code, expanded, inviter,
                               maxAge, maxUses, temporary,
                               timeCreated, uses, channel, guild);
-    }
-
-    public void clearCache()
-    {
-        cachedGuildJsons.clear();
-        cachedGuildCallbacks.clear();
     }
 
     public ApplicationInfo createApplicationInfo(JSONObject object)

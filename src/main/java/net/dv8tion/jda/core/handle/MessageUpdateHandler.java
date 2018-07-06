@@ -109,10 +109,8 @@ public class MessageUpdateHandler extends SocketHandler
             case TEXT:
             {
                 TextChannel channel = message.getTextChannel();
-                if (api.getGuildLock().isLocked(channel.getGuild().getIdLong()))
-                {
+                if (api.getGuildSetupController().isLocked(channel.getGuild().getIdLong()))
                     return channel.getGuild().getIdLong();
-                }
                 api.getEventManager().handle(
                         new GuildMessageUpdateEvent(
                                 api, responseNumber,
@@ -178,7 +176,7 @@ public class MessageUpdateHandler extends SocketHandler
         if (channel instanceof TextChannel)
         {
             TextChannel tChannel = (TextChannel) channel;
-            if (api.getGuildLock().isLocked(tChannel.getGuild().getIdLong()))
+            if (api.getGuildSetupController().isLocked(tChannel.getGuild().getIdLong()))
                 return tChannel.getGuild().getIdLong();
             api.getEventManager().handle(
                     new GuildMessageEmbedEvent(

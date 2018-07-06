@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import java.util.LinkedList;
 import java.util.List;
 
+@Deprecated //TODO: Remove this
 public class GuildLock
 {
     public static final Logger LOG = JDALogger.getLog(GuildLock.class);

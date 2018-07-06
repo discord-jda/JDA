@@ -46,7 +46,7 @@ public class PresenceUpdateHandler extends SocketHandler
         if (!content.isNull("guild_id"))
         {
             final long guildId = content.getLong("guild_id");
-            if (api.getGuildLock().isLocked(guildId))
+            if (api.getGuildSetupController().isLocked(guildId))
                 return guildId;
             guild = (GuildImpl) api.getGuildById(guildId);
             if (guild == null)

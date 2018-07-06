@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.guild.GuildReadyEvent;
+import net.dv8tion.jda.core.utils.Helpers;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -61,13 +62,18 @@ class GuildSetupNode
         api.getClient().handle(cachedEvents);
     }
 
-    void handleReady(JSONObject obj) {} // do we need this?
+    void reset()
+    {
+        expectedMemberCount = 1;
+        partialGuild = null;
+        members.clear();
+        cachedEvents.clear();
+    }
 
-    void handleDelete(JSONObject obj) {} //TODO: Properly handle (un-)available
+    void handleReady(JSONObject obj) {} // do we need this?
 
     void handleCreate(JSONObject obj)
     {
-        //TODO: Properly handle (un-)available
         if (partialGuild == null)
         {
             partialGuild = obj;
@@ -80,6 +86,10 @@ class GuildSetupNode
                 partialGuild.put(key, obj.opt(key));
             }
         }
+        boolean unavailable = Helpers.optBoolean(partialGuild, "unavailable");
+        if (unavailable)
+            return;
+
         expectedMemberCount = partialGuild.getInt("member_count");
         members = new HashSet<>(expectedMemberCount);
 
@@ -91,6 +101,7 @@ class GuildSetupNode
 
     void handleMemberChunk(JSONArray arr)
     {
+        //TODO: handle client account (guild-sync)
         for (Object o : arr)
         {
             JSONObject obj = (JSONObject) o;

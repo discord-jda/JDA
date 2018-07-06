@@ -82,10 +82,8 @@ public class MessageCreateHandler extends SocketHandler
             case TEXT:
             {
                 TextChannelImpl channel = (TextChannelImpl) message.getTextChannel();
-                if (api.getGuildLock().isLocked(channel.getGuild().getIdLong()))
-                {
+                if (api.getGuildSetupController().isLocked(channel.getGuild().getIdLong()))
                     return channel.getGuild().getIdLong();
-                }
                 channel.setLastMessageId(message.getIdLong());
                 manager.handle(
                     new GuildMessageReceivedEvent(

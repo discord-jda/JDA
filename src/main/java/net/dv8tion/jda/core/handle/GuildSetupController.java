@@ -36,6 +36,7 @@ public class GuildSetupController
     private final WeakReference<JDAImpl> api;
     private final TLongObjectMap<GuildSetupNode> setupNodes = new TLongObjectHashMap<>();
     private final TLongSet chunkingGuilds = new TLongHashSet();
+    private final TLongSet syncingGuilds = new TLongHashSet(); //TODO: guild-sync
     private int incompleteCount = 0;
 
     public GuildSetupController(JDAImpl api)
@@ -55,6 +56,7 @@ public class GuildSetupController
     {
         log.debug("Adding guild for chunking ID: {}", id);
         chunkingGuilds.add(id);
+        //TODO: guild-sync
         tryChunking();
     }
 
@@ -115,16 +117,16 @@ public class GuildSetupController
     }
 
     // - GuildDeleteHandler
-    public void onDelete(long id, JSONObject obj)
+    public boolean onDelete(long id, JSONObject obj)
     {
         boolean available = obj.isNull("unavailable") || !obj.getBoolean("unavailable");
         log.debug("Received guild delete for id: {} available: {}", id, available);
         GuildSetupNode node = setupNodes.get(id);
         if (node == null)
-            return;
+            return false;
         if (!available)
         {
-            node.handleDelete(obj);
+            node.reset();
         }
         else
         {
@@ -134,6 +136,7 @@ public class GuildSetupController
             else
                 ready(id);
         }
+        return true;
     }
 
     // - GuildMemberChunkHandler
@@ -162,7 +165,7 @@ public class GuildSetupController
 
     // Anywhere \\
 
-    public boolean isGuildLocked(long id)
+    public boolean isLocked(long id)
     {
         return setupNodes.containsKey(id);
     }

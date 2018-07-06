@@ -66,10 +66,8 @@ public class MessageDeleteHandler extends SocketHandler
         if (channel instanceof TextChannel)
         {
             TextChannelImpl tChan = (TextChannelImpl) channel;
-            if (api.getGuildLock().isLocked(tChan.getGuild().getIdLong()))
-            {
+            if (api.getGuildSetupController().isLocked(tChan.getGuild().getIdLong()))
                 return tChan.getGuild().getIdLong();
-            }
             if (tChan.hasLatestMessage() && messageId == channel.getLatestMessageIdLong())
                 tChan.setLastMessageId(0); // Reset latest message id as it was deleted.
             api.getEventManager().handle(

@@ -57,7 +57,7 @@ public class MessageBulkDeleteHandler extends SocketHandler
                 return null;
             }
 
-            if (api.getGuildLock().isLocked(channel.getGuild().getIdLong()))
+            if (api.getGuildSetupController().isLocked(channel.getGuild().getIdLong()))
             {
                 return channel.getGuild().getIdLong();
             }
