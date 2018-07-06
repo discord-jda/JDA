@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.handle;
 
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
@@ -24,14 +26,16 @@ import net.dv8tion.jda.core.utils.Helpers;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 class GuildSetupNode
 {
     private final long id;
     private final GuildSetupController controller;
     private final List<JSONObject> cachedEvents = new LinkedList<>();
-    private Set<JSONObject> members;
+    private TLongObjectMap<JSONObject> members;
     private JSONObject partialGuild;
     private int expectedMemberCount = 1;
 
@@ -60,6 +64,7 @@ class GuildSetupNode
         }
         GuildSetupController.log.debug("Finished setup for guild {} firing cached events {}", id, cachedEvents.size());
         api.getClient().handle(cachedEvents);
+        api.getEventCache().playbackCache(EventCache.Type.GUILD, id);
     }
 
     void reset()
@@ -91,24 +96,28 @@ class GuildSetupNode
             return;
 
         expectedMemberCount = partialGuild.getInt("member_count");
-        members = new HashSet<>(expectedMemberCount);
+        members = new TLongObjectHashMap<>(expectedMemberCount);
 
-        if (isLarge())
+        if (handleMemberChunk(obj.getJSONArray("members")))
             controller.addGuildForChunking(id);
-        else
-            handleMemberChunk(obj.getJSONArray("members"));
     }
 
-    void handleMemberChunk(JSONArray arr)
+    boolean handleMemberChunk(JSONArray arr)
     {
         //TODO: handle client account (guild-sync)
         for (Object o : arr)
         {
             JSONObject obj = (JSONObject) o;
-            members.add(obj);
+            long id = obj.getJSONObject("user").getLong("id");
+            members.put(id, obj);
         }
-        if (members.size() == expectedMemberCount)
+
+        if (members.size() >= expectedMemberCount)
+        {
             completeSetup();
+            return false;
+        }
+        return true;
     }
 
     void updateMemberChunkCount(int change)
@@ -121,9 +130,10 @@ class GuildSetupNode
         cachedEvents.add(event);
     }
 
-    private boolean isLarge()
+    void cleanup()
     {
-        int memberCount = partialGuild.getJSONArray("members").length();
-        return memberCount != expectedMemberCount;
+        if (partialGuild == null)
+            return;
+        //TODO: Clear cache for channels/roles/members/...
     }
 }

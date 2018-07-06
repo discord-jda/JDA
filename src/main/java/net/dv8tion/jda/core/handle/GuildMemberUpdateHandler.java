@@ -47,10 +47,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
         if (guild == null)
         {
-            api.getEventCache().cache(EventCache.Type.GUILD, userId, () ->
-            {
-                handle(responseNumber, allContent);
-            });
+            api.getEventCache().cache(EventCache.Type.GUILD, userId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Got GuildMember update but JDA currently does not have the Guild cached. {}", content);
             return null;
         }

@@ -130,6 +130,7 @@ public class GuildSetupController
         }
         else
         {
+            node.cleanup(); // clear EventCache
             // this was actually deleted
             if (node.join)
                 remove(id);

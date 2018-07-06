@@ -90,7 +90,6 @@ public class ChannelCreateHandler extends SocketHandler
             default:
                 throw new IllegalArgumentException("Discord provided an CREATE_CHANNEL event with an unknown channel type! JSON: " + content);
         }
-        api.getEventCache().playbackCache(EventCache.Type.CHANNEL, content.getLong("id"));
         return null;
     }
 }

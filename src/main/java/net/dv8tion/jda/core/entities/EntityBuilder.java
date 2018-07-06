@@ -26,7 +26,6 @@ import net.dv8tion.jda.client.entities.impl.*;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
-import net.dv8tion.jda.core.WebSocketCode;
 import net.dv8tion.jda.core.audit.ActionType;
 import net.dv8tion.jda.core.audit.AuditLogChange;
 import net.dv8tion.jda.core.audit.AuditLogEntry;
@@ -34,11 +33,9 @@ import net.dv8tion.jda.core.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.core.entities.MessageEmbed.*;
 import net.dv8tion.jda.core.entities.impl.*;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
-import net.dv8tion.jda.core.handle.GuildMembersChunkHandler;
-import net.dv8tion.jda.core.handle.ReadyHandler;
+import net.dv8tion.jda.core.handle.EventCache;
 import net.dv8tion.jda.core.utils.Helpers;
 import net.dv8tion.jda.core.utils.JDALogger;
-import net.dv8tion.jda.core.utils.MiscUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.json.JSONArray;
@@ -49,7 +46,6 @@ import org.slf4j.Logger;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
@@ -146,7 +142,7 @@ public class EntityBuilder
         }
     }
 
-    public GuildImpl createGuild(long guildId, JSONObject guildJson, Set<JSONObject> members)
+    public GuildImpl createGuild(long guildId, JSONObject guildJson, TLongObjectMap<JSONObject> members)
     {
         final GuildImpl guildObj = new GuildImpl(api, guildId);
         final String name = guildJson.optString("name", "");
@@ -200,7 +196,7 @@ public class EntityBuilder
                 guildObj.setPublicRole(role);
         }
 
-        for (JSONObject memberJson : members)
+        for (JSONObject memberJson : members.valueCollection())
         {
             Member member = createMember(guildObj, memberJson);
             if (member.getUser().getIdLong() == ownerId)
@@ -350,11 +346,14 @@ public class EntityBuilder
             }
         }
 
-        return userObj
-                .setName(user.getString("username"))
-                .setDiscriminator(user.get("discriminator").toString())
-                .setAvatarId(user.optString("avatar", null))
-                .setBot(Helpers.optBoolean(user, "bot"));
+        userObj
+            .setName(user.getString("username"))
+            .setDiscriminator(user.get("discriminator").toString())
+            .setAvatarId(user.optString("avatar", null))
+            .setBot(Helpers.optBoolean(user, "bot"));
+        if (!fake)
+            api.getEventCache().playbackCache(EventCache.Type.USER, id);
+        return userObj;
     }
 
     public Member createMember(GuildImpl guild, JSONObject memberJson)
@@ -548,9 +547,11 @@ public class EntityBuilder
             createOverridesPass(channel, overrides);
         }
 
-        return channel
-                .setName(json.getString("name"))
-                .setPosition(json.getInt("position"));
+        channel
+            .setName(json.getString("name"))
+            .setPosition(json.getInt("position"));
+        api.getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
+        return channel;
     }
 
     public TextChannel createTextChannel(JSONObject json, long guildId)
@@ -578,13 +579,15 @@ public class EntityBuilder
             createOverridesPass(channel, overrides);
         }
 
-        return channel
-                .setParent(Helpers.optLong(json, "parent_id", 0))
-                .setLastMessageId(Helpers.optLong(json, "last_message_id", 0))
-                .setName(json.getString("name"))
-                .setTopic(json.optString("topic"))
-                .setPosition(json.getInt("position"))
-                .setNSFW(Helpers.optBoolean(json, "nsfw"));
+        channel
+            .setParent(Helpers.optLong(json, "parent_id", 0))
+            .setLastMessageId(Helpers.optLong(json, "last_message_id", 0))
+            .setName(json.getString("name"))
+            .setTopic(json.optString("topic"))
+            .setPosition(json.getInt("position"))
+            .setNSFW(Helpers.optBoolean(json, "nsfw"));
+        api.getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
+        return channel;
     }
 
     public VoiceChannel createVoiceChannel(JSONObject json, long guildId)
@@ -611,12 +614,14 @@ public class EntityBuilder
             createOverridesPass(channel, overrides);
         }
 
-        return channel
-                .setParent(Helpers.optLong(json, "parent_id", 0))
-                .setName(json.getString("name"))
-                .setPosition(json.getInt("position"))
-                .setUserLimit(json.getInt("user_limit"))
-                .setBitrate(json.getInt("bitrate"));
+        channel
+            .setParent(Helpers.optLong(json, "parent_id", 0))
+            .setName(json.getString("name"))
+            .setPosition(json.getInt("position"))
+            .setUserLimit(json.getInt("user_limit"))
+            .setBitrate(json.getInt("bitrate"));
+        api.getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
+        return channel;
     }
 
     public PrivateChannel createPrivateChannel(JSONObject privatechat)
@@ -643,7 +648,10 @@ public class EntityBuilder
             api.getFakePrivateChannelMap().put(channelId, priv);
         }
         else
+        {
             api.getPrivateChannelMap().put(channelId, priv);
+            api.getEventCache().playbackCache(EventCache.Type.CHANNEL, channelId);
+        }
         return priv;
     }
 
@@ -680,13 +688,15 @@ public class EntityBuilder
             guild.getRolesMap().put(id, role);
         }
         final int color = roleJson.getInt("color");
-        return role.setName(roleJson.getString("name"))
-                .setRawPosition(roleJson.getInt("position"))
-                .setRawPermissions(roleJson.getLong("permissions"))
-                .setManaged(roleJson.getBoolean("managed"))
-                .setHoisted(roleJson.getBoolean("hoist"))
-                .setColor(color == 0 ? Role.DEFAULT_COLOR_RAW : color)
-                .setMentionable(roleJson.has("mentionable") && roleJson.getBoolean("mentionable"));
+        role.setName(roleJson.getString("name"))
+            .setRawPosition(roleJson.getInt("position"))
+            .setRawPermissions(roleJson.getLong("permissions"))
+            .setManaged(roleJson.getBoolean("managed"))
+            .setHoisted(roleJson.getBoolean("hoist"))
+            .setColor(color == 0 ? Role.DEFAULT_COLOR_RAW : color)
+            .setMentionable(roleJson.has("mentionable") && roleJson.getBoolean("mentionable"));
+        api.getEventCache().playbackCache(EventCache.Type.ROLE, id);
+        return role;
     }
 
     public Message createMessage(JSONObject jsonObject) { return createMessage(jsonObject, false); }
@@ -1100,11 +1110,13 @@ public class EntityBuilder
             throw new IllegalArgumentException("Attempted to build a Group, but could not find user by provided owner id." +
                     "This should not be possible because the owner should be IN the group!");
 
-        return group
-                .setOwner(owner)
-                .setLastMessageId(lastMessage)
-                .setName(name)
-                .setIconId(iconId);
+        group
+            .setOwner(owner)
+            .setLastMessageId(lastMessage)
+            .setName(name)
+            .setIconId(iconId);
+        api.getEventCache().playbackCache(EventCache.Type.CHANNEL, groupId);
+        return group;
     }
 
     public Invite createInvite(JSONObject object)

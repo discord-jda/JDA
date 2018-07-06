@@ -65,9 +65,7 @@ public class EventCache
             List<Runnable> itemsCopy = new LinkedList<>(items);
             items.clear();
             for (Runnable item : itemsCopy)
-            {
                 item.run();
-            }
         }
     }
 
