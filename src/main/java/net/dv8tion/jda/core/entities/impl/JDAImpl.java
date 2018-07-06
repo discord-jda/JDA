@@ -277,7 +277,7 @@ public class JDAImpl implements JDA
         }
 
         userResponse = checkToken(login);
-        requester.shutdownNow();
+        shutdownNow();
 
         //If the response isn't null (thus it didn't 401) send it to the secondary verify method to determine
         // which account type the developer wrongly attempted to login as
@@ -514,7 +514,9 @@ public class JDAImpl implements JDA
         if (audioKeepAlivePool != null)
             audioKeepAlivePool.shutdownNow();
 
-        getClient().shutdown();
+        WebSocketClient client = getClient();
+        if (client != null)
+            client.shutdown();
 
         final long time = 5L;
         final TimeUnit unit = TimeUnit.SECONDS;
