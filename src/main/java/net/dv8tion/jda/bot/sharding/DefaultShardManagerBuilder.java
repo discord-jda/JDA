@@ -437,7 +437,7 @@ public class DefaultShardManagerBuilder
      * @param  enable
      *         True (default) - use shutdown hook to clean up the ShardManager and it's JDA instances if the Java program is closed.
      *
-     * @return Return the DefaultShardManagerBuilder instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
     public DefaultShardManagerBuilder setEnableShutdownHook(final boolean enable)
     {
@@ -560,7 +560,7 @@ public class DefaultShardManagerBuilder
      * @throws IllegalArgumentException
      *         if the provided OnlineStatus is null or {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}
      *
-     * @return @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
      * @see    net.dv8tion.jda.core.managers.Presence#setStatus(OnlineStatus) Presence.setStatusProvider(OnlineStatus)
      */
@@ -585,7 +585,7 @@ public class DefaultShardManagerBuilder
      * @throws IllegalArgumentException
      *         if the provided OnlineStatus is null or {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}
      *
-     * @return @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
      * @see    net.dv8tion.jda.core.managers.Presence#setStatus(OnlineStatus) Presence.setStatusProvider(OnlineStatus)
      */
