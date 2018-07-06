@@ -107,6 +107,13 @@ class GuildSetupNode
         boolean unavailable = Helpers.optBoolean(partialGuild, "unavailable");
         if (unavailable)
             return;
+        if (sync)
+        {
+            // We are using a client-account and joined a guild
+            //  in that case we need to sync before doing anything
+            controller.addGuildForSyncing(id);
+            return;
+        }
 
         expectedMemberCount = partialGuild.getInt("member_count");
         members = new TLongObjectHashMap<>(expectedMemberCount);
