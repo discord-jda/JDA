@@ -208,6 +208,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onPrivateChannelDelete(PrivateChannelDeleteEvent event) {}
 
     //Guild Events
+    public void onGuildReady(GuildReadyEvent event) {}
     public void onGuildJoin(GuildJoinEvent event) {}
     public void onGuildLeave(GuildLeaveEvent event) {}
     public void onGuildAvailable(GuildAvailableEvent event) {}
@@ -511,6 +512,8 @@ public abstract class ListenerAdapter implements EventListener
             onPrivateChannelDelete((PrivateChannelDeleteEvent) event);
 
         //Guild Events
+        else if (event instanceof GuildReadyEvent)
+            onGuildReady((GuildReadyEvent) event);
         else if (event instanceof GuildJoinEvent)
             onGuildJoin((GuildJoinEvent) event);
         else if (event instanceof GuildLeaveEvent)

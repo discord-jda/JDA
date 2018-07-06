@@ -16,13 +16,14 @@
 
 package net.dv8tion.jda.core.handle;
 
+import net.dv8tion.jda.core.entities.impl.GuildImpl;
+import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
+import net.dv8tion.jda.core.events.guild.GuildReadyEvent;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 class GuildSetupNode
 {
@@ -44,28 +45,41 @@ class GuildSetupNode
 
     private void completeSetup()
     {
-        //TODO: Actually create guild object and add it to cache
+        JDAImpl api = controller.getJDA();
+        GuildImpl guild = api.getEntityBuilder().createGuild(id, partialGuild, members);
         if (join)
         {
-            //TODO: Fire GuildJoinEvent
             controller.remove(id);
+            api.getEventManager().handle(new GuildJoinEvent(api, api.getResponseTotal(), guild));
         }
         else
         {
-            //TODO: Fire GuildReadyEvent
             controller.ready(id);
+            api.getEventManager().handle(new GuildReadyEvent(api, api.getResponseTotal(), guild));
         }
         GuildSetupController.log.debug("Finished setup for guild {} firing cached events {}", id, cachedEvents.size());
-        controller.getJDA().getClient().handle(cachedEvents);
+        api.getClient().handle(cachedEvents);
     }
 
-    void handleReady(JSONObject obj) {}
+    void handleReady(JSONObject obj) {} // do we need this?
 
-    void handleDelete(JSONObject obj) {}
+    void handleDelete(JSONObject obj) {} //TODO: Properly handle (un-)available
 
     void handleCreate(JSONObject obj)
     {
-        partialGuild = obj;
+        //TODO: Properly handle (un-)available
+        if (partialGuild == null)
+        {
+            partialGuild = obj;
+        }
+        else
+        {
+            for (Iterator<String> it = obj.keys(); it.hasNext();)
+            {
+                String key = it.next();
+                partialGuild.put(key, obj.opt(key));
+            }
+        }
         expectedMemberCount = partialGuild.getInt("member_count");
         members = new HashSet<>(expectedMemberCount);
 

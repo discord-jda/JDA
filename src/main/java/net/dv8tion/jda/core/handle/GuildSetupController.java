@@ -71,9 +71,14 @@ public class GuildSetupController
     {
         setupNodes.remove(id);
         if (--incompleteCount < 1) // TODO: Fire ReadyEvent
-            log.debug("Finished setting up initial guilds");
+        {
+            //log.debug("Finished setting up initial guilds");
+            getJDA().getClient().ready();
+        }
         else
+        {
             tryChunking();
+        }
     }
 
     // - ReadyHandler

@@ -19,6 +19,7 @@ package net.dv8tion.jda.core.requests.restaction;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
@@ -270,7 +271,7 @@ public class RoleAction extends AuditableRestAction<Role>
     protected void handleResponse(Response response, Request<Role> request)
     {
         if (response.isOk())
-            request.onSuccess(api.getEntityBuilder().createRole(response.getObject(), guild.getIdLong()));
+            request.onSuccess(api.getEntityBuilder().createRole((GuildImpl) guild, response.getObject(), guild.getIdLong()));
         else
             request.onFailure(response);
     }
