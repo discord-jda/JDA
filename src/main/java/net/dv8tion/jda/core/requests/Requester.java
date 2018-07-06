@@ -37,6 +37,8 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
@@ -56,21 +58,21 @@ public class Requester
 
     private volatile boolean retryOnTimeout = false;
 
-    public Requester(JDA api, int ratelimitPoolSize)
+    public Requester(JDA api, ScheduledThreadPoolExecutor ratelimitPool)
     {
-        this(api, api.getAccountType(), ratelimitPoolSize);
+        this(api, api.getAccountType(), ratelimitPool);
     }
 
-    public Requester(JDA api, AccountType accountType,  int ratelimitPoolSize)
+    public Requester(JDA api, AccountType accountType,  ScheduledThreadPoolExecutor ratelimitPool)
     {
         if (accountType == null)
             throw new NullPointerException("Provided accountType was null!");
 
         this.api = (JDAImpl) api;
         if (accountType == AccountType.BOT)
-            rateLimiter = new BotRateLimiter(this, ratelimitPoolSize);
+            rateLimiter = new BotRateLimiter(this, ratelimitPool);
         else
-            rateLimiter = new ClientRateLimiter(this, ratelimitPoolSize);
+            rateLimiter = new ClientRateLimiter(this, ratelimitPool);
         
         this.httpClient = this.api.getHttpClient();
     }

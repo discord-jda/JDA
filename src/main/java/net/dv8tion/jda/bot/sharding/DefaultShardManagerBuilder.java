@@ -27,6 +27,7 @@ import okhttp3.OkHttpClient;
 import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.function.IntFunction;
 import java.util.stream.Collectors;
@@ -45,7 +46,6 @@ public class DefaultShardManagerBuilder
     protected final List<Object> listeners = new ArrayList<>();
     protected final List<IntFunction<Object>> listenerProviders = new ArrayList<>();
     protected SessionController sessionController = null;
-    protected IntFunction<ConcurrentMap<String, String>> contextProvider = null;
     protected boolean enableContext = true;
     protected boolean enableBulkDeleteSplitting = true;
     protected boolean enableShutdownHook = true;
@@ -62,11 +62,14 @@ public class DefaultShardManagerBuilder
     protected IntFunction<Boolean> idleProvider = null;
     protected IntFunction<Game> gameProvider = null;
     protected IntFunction<OnlineStatus> statusProvider = null;
+    protected IntFunction<ConcurrentMap<String, String>> contextProvider = null;
+    protected IntFunction<ScheduledThreadPoolExecutor> rateLimitPoolProvider = null;
     protected Collection<Integer> shards = null;
     protected IEventManager eventManager = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
     protected OkHttpClient httpClient = null;
     protected WebSocketFactory wsFactory = null;
+    protected ScheduledThreadPoolExecutor rateLimitPool = null;
     protected IAudioSendFactory audioSendFactory = null;
     protected ThreadFactory threadFactory = null;
 
@@ -417,7 +420,7 @@ public class DefaultShardManagerBuilder
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
-    public DefaultShardManagerBuilder setRatelimitPoolSize(int size)
+    public DefaultShardManagerBuilder setRateLimitPoolSize(int size)
     {
         Checks.positive(size, "Pool size");
         this.ratelimitPoolSize = size;
@@ -635,6 +638,38 @@ public class DefaultShardManagerBuilder
     public DefaultShardManagerBuilder setHttpClient(OkHttpClient client)
     {
         this.httpClient = client;
+        return this;
+    }
+
+    /**
+     * Sets the {@link ScheduledThreadPoolExecutor ScheduledThreadPoolExecutor} that should be used in
+     * the JDA rate-limit handler. Changing this can drastically change the JDA behavior for RestAction execution
+     * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
+     * <br>This will override the rate-limit pool provider set from {@link #setRateLimitPoolProvider(IntFunction)}.
+     *
+     * @param  pool
+     *         The thread-pool to use for rate-limit handling
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     */
+    public DefaultShardManagerBuilder setRateLimitPool(ScheduledThreadPoolExecutor pool)
+    {
+        return setRateLimitPoolProvider(i -> pool);
+    }
+
+    /**
+     * Sets the {@link ScheduledThreadPoolExecutor ScheduledThreadPoolExecutor} provider that should be used in
+     * the JDA rate-limit handler. Changing this can drastically change the JDA behavior for RestAction execution
+     * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
+     *
+     * @param  provider
+     *         The thread-pool provider to use for rate-limit handling
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     */
+    public DefaultShardManagerBuilder setRateLimitPoolProvider(IntFunction<ScheduledThreadPoolExecutor> provider)
+    {
+        this.rateLimitPoolProvider = provider;
         return this;
     }
 
@@ -867,7 +902,7 @@ public class DefaultShardManagerBuilder
             this.shardsTotal, this.shards, this.sessionController,
             this.listeners, this.listenerProviders, this.token, this.eventManager,
             this.audioSendFactory, this.gameProvider, this.statusProvider,
-            this.httpClientBuilder, this.httpClient, this.wsFactory, this.threadFactory,
+            this.httpClientBuilder, this.httpClient, this.rateLimitPoolProvider, this.wsFactory, this.threadFactory,
             this.maxReconnectDelay, this.corePoolSize, this.ratelimitPoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting,
             this.autoReconnect, this.idleProvider, this.retryOnTimeout, this.useShutdownNow, this.enableContext, this.contextProvider, this.enableCompression);
 

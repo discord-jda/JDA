@@ -37,10 +37,11 @@ public abstract class RateLimiter
     protected final ConcurrentHashMap<String, IBucket> buckets = new ConcurrentHashMap<>();
     protected final ConcurrentLinkedQueue<IBucket> submittedBuckets = new ConcurrentLinkedQueue<>();
 
-    protected RateLimiter(Requester requester, int poolSize)
+    protected RateLimiter(Requester requester, ScheduledThreadPoolExecutor ratelimitPool)
     {
         this.requester = requester;
-        this.pool = new ScheduledThreadPoolExecutor(poolSize, new RateLimitThreadFactory(requester.getJDA()));
+        this.pool = ratelimitPool;
+        //new ScheduledThreadPoolExecutor(poolSize, new RateLimitThreadFactory(requester.getJDA()));
     }
 
     protected boolean isSkipped(Iterator<Request> it, Request request)
@@ -109,28 +110,5 @@ public abstract class RateLimiter
         pool.shutdownNow();
     }
 
-    private class RateLimitThreadFactory implements ThreadFactory
-    {
-        final String identifier;
-        final AtomicInteger threadCount = new AtomicInteger(1);
 
-        public RateLimitThreadFactory(JDAImpl api)
-        {
-            identifier = api.getIdentifierString() + " RateLimit-Queue Pool";
-        }
-
-        @Override
-        public Thread newThread(Runnable r)
-        {
-            Thread t = new Thread(() ->
-            {
-                if (requester.api.getContextMap() != null)
-                    MDC.setContextMap(requester.api.getContextMap());
-                r.run();
-            }, identifier + " - Thread " + threadCount.getAndIncrement());
-            t.setDaemon(true);
-
-            return t;
-        }
-    }
 }

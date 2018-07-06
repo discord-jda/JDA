@@ -51,6 +51,7 @@ import org.slf4j.MDC;
 import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class JDAImpl implements JDA
@@ -103,9 +104,12 @@ public class JDAImpl implements JDA
     protected String token;
     protected String gatewayUrl;
 
-    public JDAImpl(AccountType accountType, String token, SessionController controller, OkHttpClient httpClient, WebSocketFactory wsFactory,
-                   boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled, boolean retryOnTimeout, boolean enableMDC,
-                   int corePoolSize, int ratelimitPoolSize, int maxReconnectDelay, ConcurrentMap<String, String> contextMap)
+    public JDAImpl(AccountType accountType, String token, SessionController controller,
+                   OkHttpClient httpClient, WebSocketFactory wsFactory, ScheduledThreadPoolExecutor rateLimitPool,
+                   boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook,
+                   boolean bulkDeleteSplittingEnabled, boolean retryOnTimeout, boolean enableMDC,
+                   int corePoolSize, int ratelimitPoolSize, int maxReconnectDelay,
+                   ConcurrentMap<String, String> contextMap)
     {
         this.accountType = accountType;
         this.setToken(token);
@@ -116,6 +120,8 @@ public class JDAImpl implements JDA
         this.shutdownHook = useShutdownHook ? new Thread(this::shutdown, "JDA Shutdown Hook") : null;
         this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
         this.pool = new ScheduledThreadPoolExecutor(corePoolSize, new JDAThreadFactory());
+        if (rateLimitPool == null)
+            rateLimitPool = new ScheduledThreadPoolExecutor(ratelimitPoolSize, new RateLimitThreadFactory());
         this.maxReconnectDelay = maxReconnectDelay;
         this.sessionController = controller == null ? new SessionControllerAdapter() : controller;
         if (enableMDC)
@@ -124,7 +130,7 @@ public class JDAImpl implements JDA
             this.contextMap = null;
 
         this.presence = new PresenceImpl(this);
-        this.requester = new Requester(this, ratelimitPoolSize);
+        this.requester = new Requester(this, rateLimitPool);
         this.requester.setRetryOnTimeout(retryOnTimeout);
 
         this.jdaClient = accountType == AccountType.CLIENT ? new JDAClientImpl(this) : null;
@@ -136,7 +142,7 @@ public class JDAImpl implements JDA
         return sessionController;
     }
 
-    public int login(String gatewayUrl, ShardInfo shardInfo, boolean compression) throws LoginException
+    public int login(String gatewayUrl, ShardInfo shardInfo, boolean compression, boolean validateToken) throws LoginException
     {
         this.gatewayUrl = gatewayUrl;
         this.shardInfo = shardInfo;
@@ -158,8 +164,11 @@ public class JDAImpl implements JDA
             previousContext = MDC.getCopyOfContextMap();
             contextMap.forEach(MDC::put);
         }
-        verifyToken();
-        LOG.info("Login Successful!");
+        if (validateToken)
+        {
+            verifyToken();
+            LOG.info("Login Successful!");
+        }
 
         client = new WebSocketClient(this, compression);
         // remove our MDC metadata when we exit our code
@@ -255,18 +264,20 @@ public class JDAImpl implements JDA
         // or if the developer attempted to login with a token using the wrong AccountType.
 
         //If we attempted to login as a Bot, remove the "Bot " prefix and set the Requester to be a client.
+        ScheduledThreadPoolExecutor pool = new ScheduledThreadPoolExecutor(1, new RateLimitThreadFactory());
         if (getAccountType() == AccountType.BOT)
         {
             token = token.substring("Bot ".length());
-            requester = new Requester(this, AccountType.CLIENT, 1);
+            requester = new Requester(this, AccountType.CLIENT, pool);
         }
         else    //If we attempted to login as a Client, prepend the "Bot " prefix and set the Requester to be a Bot
         {
             token = "Bot " + token;
-            requester = new Requester(this, AccountType.BOT, 1);
+            requester = new Requester(this, AccountType.BOT, pool);
         }
 
         userResponse = checkToken(login);
+        requester.shutdownNow();
 
         //If the response isn't null (thus it didn't 401) send it to the secondary verify method to determine
         // which account type the developer wrongly attempted to login as
@@ -738,22 +749,6 @@ public class JDAImpl implements JDA
         return httpClient;
     }
 
-    private class JDAThreadFactory implements ThreadFactory
-    {
-        @Override
-        public Thread newThread(Runnable r)
-        {
-            final Thread thread = new Thread(() ->
-            {
-                if (contextMap != null)
-                    MDC.setContextMap(contextMap);
-                r.run();
-            }, "JDA-Thread " + getIdentifierString());
-            thread.setDaemon(true);
-            return thread;
-        }
-    }
-
     public ScheduledThreadPoolExecutor getAudioKeepAlivePool()
     {
         ScheduledThreadPoolExecutor akap = audioKeepAlivePool;
@@ -777,5 +772,46 @@ public class JDAImpl implements JDA
     public void resetGatewayUrl()
     {
         this.gatewayUrl = getGateway();
+    }
+
+    private class JDAThreadFactory implements ThreadFactory
+    {
+        @Override
+        public Thread newThread(Runnable r)
+        {
+            final Thread thread = new Thread(() ->
+            {
+                if (getContextMap() != null)
+                    MDC.setContextMap(getContextMap());
+                r.run();
+            }, "JDA-Thread " + getIdentifierString());
+            thread.setDaemon(true);
+            return thread;
+        }
+    }
+
+    private class RateLimitThreadFactory implements ThreadFactory
+    {
+        final String identifier;
+        final AtomicInteger threadCount = new AtomicInteger(1);
+
+        public RateLimitThreadFactory()
+        {
+            identifier = getIdentifierString() + " RateLimit-Queue Pool";
+        }
+
+        @Override
+        public Thread newThread(Runnable r)
+        {
+            Thread t = new Thread(() ->
+            {
+                if (getContextMap() != null)
+                    MDC.setContextMap(getContextMap());
+                r.run();
+            }, identifier + " - Thread " + threadCount.getAndIncrement());
+            t.setDaemon(true);
+
+            return t;
+        }
     }
 }

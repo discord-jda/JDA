@@ -35,6 +35,7 @@ import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.IntConsumer;
 import java.util.function.LongConsumer;
@@ -46,9 +47,9 @@ public class BotRateLimiter extends RateLimiter
     private static final String REMAINING_HEADER = "X-RateLimit-Remaining";
     protected volatile Long timeOffset = null;
 
-    public BotRateLimiter(Requester requester, int poolSize)
+    public BotRateLimiter(Requester requester, ScheduledThreadPoolExecutor pool)
     {
-        super(requester, poolSize);
+        super(requester, pool);
     }
 
     @Override

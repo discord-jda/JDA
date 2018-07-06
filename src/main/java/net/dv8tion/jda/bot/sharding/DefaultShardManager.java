@@ -153,6 +153,11 @@ public class DefaultShardManager implements ShardManager
     protected final OkHttpClient httpClient;
 
     /**
+     * The {@link ScheduledThreadPoolExecutor ScheduledThreadPoolExecutor} that will be used by JDAs rate-limit handler.
+     */
+    protected final IntFunction<ScheduledThreadPoolExecutor> rateLimitPoolProvider;
+
+    /**
      * The {@link com.neovisionaries.ws.client.WebSocketFactory WebSocketFactory} that will be used by JDA's websocket client.
      */
     protected final WebSocketFactory wsFactory;
@@ -286,6 +291,7 @@ public class DefaultShardManager implements ShardManager
                                   final String token, final IEventManager eventManager, final IAudioSendFactory audioSendFactory,
                                   final IntFunction<Game> gameProvider, final IntFunction<OnlineStatus> statusProvider,
                                   final OkHttpClient.Builder httpClientBuilder, final OkHttpClient httpClient,
+                                  final IntFunction<ScheduledThreadPoolExecutor> rateLimitPoolProvider,
                                   final WebSocketFactory wsFactory, final ThreadFactory threadFactory,
                                   final int maxReconnectDelay, final int corePoolSize, final int ratelimitPoolSize,
                                   final boolean enableVoice,
@@ -308,6 +314,7 @@ public class DefaultShardManager implements ShardManager
             this.httpClientBuilder = httpClientBuilder == null ? new OkHttpClient.Builder() : httpClientBuilder;
         else
             this.httpClientBuilder = null;
+        this.rateLimitPoolProvider = rateLimitPoolProvider;
         this.wsFactory = wsFactory == null ? new WebSocketFactory() : wsFactory;
         this.executor = createExecutor(threadFactory);
         this.controller = controller == null ? new SessionControllerAdapter() : controller;
@@ -598,9 +605,12 @@ public class DefaultShardManager implements ShardManager
         OkHttpClient httpClient = this.httpClient;
         if (httpClient == null)
             httpClient = this.httpClientBuilder.build();
+        ScheduledThreadPoolExecutor rateLimitPool = null;
+        if (rateLimitPoolProvider != null)
+            rateLimitPool = rateLimitPoolProvider.apply(shardId);
         final JDAImpl jda = new JDAImpl(AccountType.BOT, this.token, this.controller, httpClient, this.wsFactory,
-            this.autoReconnect, this.enableVoice, false, this.enableBulkDeleteSplitting, this.retryOnTimeout, this.enableMDC,
-            this.corePoolSize, this.ratelimitPoolSize, this.maxReconnectDelay,
+            rateLimitPool, this.autoReconnect, this.enableVoice, false, this.enableBulkDeleteSplitting,
+            this.retryOnTimeout, this.enableMDC, this.corePoolSize, this.ratelimitPoolSize, this.maxReconnectDelay,
             this.contextProvider == null || !this.enableMDC ? null : contextProvider.apply(shardId));
 
         jda.asBot().setShardManager(this);
@@ -630,6 +640,10 @@ public class DefaultShardManager implements ShardManager
             {
                 Pair<String, Integer> gateway = jda.getGatewayBot();
                 this.gatewayURL = gateway.getLeft();
+                if (this.gatewayURL == null)
+                    LOG.error("Acquired null gateway url from SessionController");
+                else
+                    LOG.info("Login Successful!");
 
                 if (this.shardsTotal == -1)
                 {
@@ -658,7 +672,7 @@ public class DefaultShardManager implements ShardManager
 
         final JDA.ShardInfo shardInfo = new JDA.ShardInfo(shardId, this.shardsTotal);
 
-        final int shardTotal = jda.login(this.gatewayURL, shardInfo, this.enableCompression);
+        final int shardTotal = jda.login(this.gatewayURL, shardInfo, this.enableCompression, false);
         if (this.shardsTotal == -1)
             this.shardsTotal = shardTotal;
 

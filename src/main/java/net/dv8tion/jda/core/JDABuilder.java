@@ -34,6 +34,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 /**
  * Used to create new {@link net.dv8tion.jda.core.JDA} instances. This is also useful for making sure all of
@@ -50,6 +52,7 @@ public class JDABuilder
 {
     protected final List<Object> listeners;
 
+    protected ScheduledThreadPoolExecutor rateLimitPool = null;
     protected ConcurrentMap<String, String> contextMap = null;
     protected boolean enableContext = true;
     protected SessionController controller = null;
@@ -289,10 +292,26 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    public JDABuilder setRatelimitPoolSize(int ratelimitPoolSize)
+    public JDABuilder setRateLimitPoolSize(int ratelimitPoolSize)
     {
         Checks.positive(ratelimitPoolSize, "Pool size");
         this.ratelimitPoolSize = ratelimitPoolSize;
+        return this;
+    }
+
+    /**
+     * Sets the {@link ScheduledThreadPoolExecutor ScheduledThreadPoolExecutor} that should be used in
+     * the JDA rate-limit handler. Changing this can drastically change the JDA behavior for RestAction execution
+     * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
+     *
+     * @param  pool
+     *         The thread-pool to use for rate-limit handling
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     */
+    public JDABuilder setRateLimitPool(ScheduledThreadPoolExecutor pool)
+    {
+        this.rateLimitPool = pool;
         return this;
     }
 
@@ -630,7 +649,7 @@ public class JDABuilder
         if (controller == null && shardInfo != null)
             controller = new SessionControllerAdapter();
         
-        JDAImpl jda = new JDAImpl(accountType, token, controller, httpClient, wsFactory, autoReconnect, enableVoice, enableShutdownHook,
+        JDAImpl jda = new JDAImpl(accountType, token, controller, httpClient, wsFactory, rateLimitPool, autoReconnect, enableVoice, enableShutdownHook,
                 enableBulkDeleteSplitting, requestTimeoutRetry, enableContext, corePoolSize, ratelimitPoolSize, maxReconnectDelay, contextMap);
 
         if (eventManager != null)
@@ -649,7 +668,7 @@ public class JDABuilder
                 .setCacheGame(game)
                 .setCacheIdle(idle)
                 .setCacheStatus(status);
-        jda.login(gateway, shardInfo, enableCompression);
+        jda.login(gateway, shardInfo, enableCompression, true);
         return jda;
     }
 
