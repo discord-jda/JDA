@@ -625,11 +625,11 @@ public class EntityBuilder
             privatechat.getJSONArray("recipients").getJSONObject(0) :
             privatechat.getJSONObject("recipient");
         final long userId = recipient.getLong("id");
-        UserImpl user = ((UserImpl) api.getUserMap().get(userId));
+        UserImpl user = (UserImpl) api.getUserMap().get(userId);
         if (user == null)
         {   //The API can give us private channels connected to Users that we can no longer communicate with.
             // As such, make a fake user and fake private channel.
-            user = (UserImpl) createFakeUser(recipient, true);
+            user = createFakeUser(recipient, true);
         }
 
         final long channelId = privatechat.getLong("id");

@@ -105,7 +105,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected boolean handleIdentifyRateLimit = false;
     protected boolean connected = false;
 
-    protected volatile boolean chunkingAndSyncing = false;
     protected volatile boolean printedRateLimitMessage = false;
     protected boolean sentAuthInfo = false;
     protected boolean firstInit = true;
@@ -762,7 +761,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected void invalidate()
     {
         sessionId = null;
-        chunkingAndSyncing = false;
         sentAuthInfo = false;
 
         chunkSyncQueue.clear();
@@ -1120,11 +1118,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             default:
                 thread.setName(identifier + " MainWS-" + threadType);
         }
-    }
-
-    public void setChunkingAndSyncing(boolean active)
-    {
-        chunkingAndSyncing = active;
     }
 
     protected void maybeUnlock()
