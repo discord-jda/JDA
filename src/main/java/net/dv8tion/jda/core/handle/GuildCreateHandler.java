@@ -34,11 +34,12 @@ public class GuildCreateHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long id = content.getLong("id");
-        api.getGuildSetupController().onCreate(id, content);
-
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
         if (guild == null)
+        {
+            api.getGuildSetupController().onCreate(id, content);
             return null;
+        }
 
         boolean unavailable = Helpers.optBoolean(content, "unavailable");
         if (guild.isAvailable() && unavailable)
