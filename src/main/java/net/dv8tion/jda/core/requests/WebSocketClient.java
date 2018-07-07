@@ -943,9 +943,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         String type = raw.getString("t");
         long responseTotal = api.getResponseTotal();
 
-        boolean isJSON = raw.opt("d") instanceof JSONObject;
-
-        if (!isJSON)
+        if (!(raw.opt("d") instanceof JSONObject))
         {
             // Needs special handling due to content of "d" being an array
             if (type.equals("PRESENCES_REPLACE"))
@@ -953,7 +951,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 final JSONArray payload = raw.getJSONArray("d");
                 final List<JSONObject> converted = convertPresencesReplace(responseTotal, payload);
                 final PresenceUpdateHandler handler = getHandler("PRESENCE_UPDATE");
-                LOG.trace(String.format("%s -> %s", type, payload.toString()));
+                LOG.trace("{} -> {}", type, payload);
                 for (JSONObject o : converted)
                     handler.handle(responseTotal, o);
             }
