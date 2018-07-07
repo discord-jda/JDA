@@ -66,18 +66,38 @@ public class GuildSetupController
         return getJDA().getAccountType() == AccountType.CLIENT;
     }
 
-    void addGuildForChunking(long id)
+    void addGuildForChunking(long id, boolean join)
     {
         log.trace("Adding guild for chunking ID: {}", id);
+        if (join)
+        {
+            if (incompleteCount <= 0)
+            {
+                // this happens during runtime -> chunk right away
+                sendChunkRequest(new JSONArray().put(id));
+                return;
+            }
+            incompleteCount++;
+        }
         chunkingGuilds.add(id);
         tryChunking();
     }
 
-    void addGuildForSyncing(long id)
+    void addGuildForSyncing(long id, boolean join)
     {
         if (!isClient())
             return;
         log.trace("Adding guild for syncing ID: {}", id);
+        if (join)
+        {
+            if (incompleteCount <= 0)
+            {
+                // this happens during runtime -> sync right away
+                sendSyncRequest(new JSONArray().put(id));
+                return;
+            }
+            syncingCount++;
+        }
         syncingGuilds.add(id);
         trySyncing();
     }
@@ -241,13 +261,13 @@ public class GuildSetupController
     {
         log.debug("Sending chunking requests for {} guilds", arr.length());
 
-        getJDA().getClient().send(
+        getJDA().getClient().chunkOrSyncRequest(
             new JSONObject()
                 .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
                 .put("d", new JSONObject()
                     .put("guild_id", arr)
                     .put("query", "")
-                    .put("limit", 0)).toString());
+                    .put("limit", 0)));
     }
 
     private void tryChunking()
@@ -282,11 +302,10 @@ public class GuildSetupController
     {
         log.debug("Sending syncing requests for {} guilds", arr.length());
 
-        getJDA().getClient().send(
+        getJDA().getClient().chunkOrSyncRequest(
             new JSONObject()
                 .put("op", WebSocketCode.GUILD_SYNC)
-                .put("d", arr).toString());
-        syncingCount -= arr.length();
+                .put("d", arr));
     }
 
     private void trySyncing()
@@ -301,6 +320,7 @@ public class GuildSetupController
                 it.remove();
             }
             sendSyncRequest(subset);
+            syncingCount -= subset.length();
         }
         if (syncingGuilds.size() == syncingCount)
         {
@@ -310,6 +330,7 @@ public class GuildSetupController
                 return true;
             });
             sendSyncRequest(array);
+            syncingCount -= array.length();
         }
     }
 }

@@ -110,7 +110,7 @@ class GuildSetupNode
         if (unavailable)
             return;
 
-        controller.addGuildForSyncing(id);
+        controller.addGuildForSyncing(id, join);
     }
 
     void handleCreate(JSONObject obj)
@@ -134,7 +134,7 @@ class GuildSetupNode
         {
             // We are using a client-account and joined a guild
             //  in that case we need to sync before doing anything
-            controller.addGuildForSyncing(id);
+            controller.addGuildForSyncing(id, join);
             return;
         }
 
@@ -143,7 +143,7 @@ class GuildSetupNode
         removedMembers = new TLongHashSet();
 
         if (handleMemberChunk(obj.getJSONArray("members")))
-            controller.addGuildForChunking(id);
+            controller.addGuildForChunking(id, join);
     }
 
     void handleSync(JSONObject obj)
@@ -166,7 +166,7 @@ class GuildSetupNode
         members = new TLongObjectHashMap<>(expectedMemberCount);
         removedMembers = new TLongHashSet();
         if (handleMemberChunk(partialGuild.getJSONArray("members")))
-            controller.addGuildForChunking(id);
+            controller.addGuildForChunking(id, join);
     }
 
     boolean handleMemberChunk(JSONArray arr)
