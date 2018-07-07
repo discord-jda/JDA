@@ -329,8 +329,9 @@ public class GuildSetupController
                 array.put(guild);
                 return true;
             });
+            syncingGuilds.clear();
             sendSyncRequest(array);
-            syncingCount -= array.length();
+            syncingCount = 0;
         }
     }
 }
