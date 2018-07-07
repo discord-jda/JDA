@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.handle;
 
 import gnu.trove.iterator.TLongIterator;
+import gnu.trove.iterator.TLongObjectIterator;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
@@ -29,6 +30,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
+import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 
 @SuppressWarnings("WeakerAccess")
@@ -219,6 +221,18 @@ public class GuildSetupController
         setupNodes.clear();
         chunkingGuilds.clear();
         incompleteCount = 0;
+    }
+
+    public boolean containsMember(long userId, @Nullable GuildSetupNode excludedNode)
+    {
+        for (TLongObjectIterator<GuildSetupNode> it = setupNodes.iterator(); it.hasNext();)
+        {
+            it.advance();
+            GuildSetupNode node = it.value();
+            if (node != excludedNode && node.containsMember(userId))
+                return true;
+        }
+        return false;
     }
 
     // Chunking

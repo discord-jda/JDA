@@ -58,7 +58,7 @@ public class GuildDeleteHandler extends SocketHandler
         boolean unavailable = Helpers.optBoolean(content, "unavailable");
         if (guild == null)
         {
-//            api.getEventCache().cache(EventCache.Type.GUILD, id, () -> handle(responseNumber, allContent));
+            //api.getEventCache().cache(EventCache.Type.GUILD, id, () -> handle(responseNumber, allContent));
             WebSocketClient.LOG.warn("Received GUILD_DELETE for a Guild that is not currently cached. ID: {} unavailable: {}", id, unavailable);
             return null;
         }

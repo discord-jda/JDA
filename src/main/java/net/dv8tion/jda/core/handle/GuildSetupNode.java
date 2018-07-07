@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.handle;
 
 import gnu.trove.iterator.TLongIterator;
+import gnu.trove.iterator.TLongObjectIterator;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
@@ -53,6 +54,19 @@ class GuildSetupNode
         this.controller = controller;
         this.join = join;
         this.sync = controller.isClient();
+    }
+
+    boolean containsMember(long userId)
+    {
+        if (members == null || members.isEmpty())
+            return false;
+        for (TLongObjectIterator<JSONObject> it = members.iterator(); it.hasNext();)
+        {
+            it.advance();
+            if (it.key() == userId)
+                return true;
+        }
+        return false;
     }
 
     private void completeSetup()
@@ -197,6 +211,9 @@ class GuildSetupNode
         long userId = member.getJSONObject("user").getLong("id");
         members.remove(userId);
         removedMembers.add(userId);
+        EventCache eventCache = controller.getJDA().getEventCache();
+        if (!controller.containsMember(userId, this)) // if no other setup node contains this userId we clear it here
+            eventCache.clear(EventCache.Type.USER, userId);
     }
 
     void cacheEvent(JSONObject event)
@@ -207,8 +224,42 @@ class GuildSetupNode
 
     void cleanup()
     {
+        EventCache eventCache = controller.getJDA().getEventCache();
+        eventCache.clear(EventCache.Type.ROLE, id);
         if (partialGuild == null)
             return;
-        //TODO: Clear cache for channels/roles/members/...
+
+        JSONArray channels = partialGuild.optJSONArray("channels");
+        JSONArray roles = partialGuild.optJSONArray("roles");
+        if (channels != null)
+        {
+            for (Object o : channels)
+            {
+                JSONObject json = (JSONObject) o;
+                long id = json.getLong("id");
+                eventCache.clear(EventCache.Type.CHANNEL, id);
+            }
+        }
+
+        if (roles != null)
+        {
+            for (Object o : roles)
+            {
+                JSONObject json = (JSONObject) o;
+                long id = json.getLong("id");
+                eventCache.clear(EventCache.Type.ROLE, id);
+            }
+        }
+
+        if (members != null)
+        {
+            for (TLongObjectIterator<JSONObject> it = members.iterator(); it.hasNext();)
+            {
+                it.advance();
+                long userId = it.key();
+                if (!controller.containsMember(userId, this)) // if no other setup node contains this userId we clear it here
+                    eventCache.clear(EventCache.Type.USER, userId);
+            }
+        }
     }
 }
