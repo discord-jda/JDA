@@ -77,13 +77,13 @@ class GuildSetupNode
         GuildImpl guild = api.getEntityBuilder().createGuild(id, partialGuild, members);
         if (join)
         {
-            controller.remove(id);
             api.getEventManager().handle(new GuildJoinEvent(api, api.getResponseTotal(), guild));
+            controller.remove(id);
         }
         else
         {
-            controller.ready(id);
             api.getEventManager().handle(new GuildReadyEvent(api, api.getResponseTotal(), guild));
+            controller.ready(id);
         }
         GuildSetupController.log.debug("Finished setup for guild {} firing cached events {}", id, cachedEvents.size());
         api.getClient().handle(cachedEvents);
