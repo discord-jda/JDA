@@ -20,7 +20,6 @@ import net.dv8tion.jda.client.entities.impl.GroupImpl;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.PrivateChannel;
-import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.user.UserTypingEvent;
@@ -41,6 +40,13 @@ public class TypingStartHandler extends SocketHandler
     @Override
     protected Long handleInternally(JSONObject content)
     {
+        if (!content.isNull("guild_id"))
+        {
+            long guildId = content.getLong("guild_id");
+            if (api.getGuildSetupController().isLocked(guildId))
+                return guildId;
+        }
+
         final long channelId = content.getLong("channel_id");
         MessageChannel channel = api.getTextChannelMap().get(channelId);
         if (channel == null)
@@ -54,12 +60,12 @@ public class TypingStartHandler extends SocketHandler
                             // because that happen very often and could easily fill up the EventCache if
                             // we, for some reason, never get the channel. Especially in an active channel.
 
-        if (channel instanceof TextChannel)
-        {
-            final long guildId = ((TextChannel) channel).getGuild().getIdLong();
-            if (api.getGuildSetupController().isLocked(guildId))
-                return guildId;
-        }
+//        if (channel instanceof TextChannel)
+//        {
+//            final long guildId = ((TextChannel) channel).getGuild().getIdLong();
+//            if (api.getGuildSetupController().isLocked(guildId))
+//                return guildId;
+//        }
 
         final long userId = content.getLong("user_id");
         User user;

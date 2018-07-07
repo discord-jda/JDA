@@ -48,6 +48,13 @@ public class MessageCreateHandler extends SocketHandler
             return null;
         }
 
+        if (!content.isNull("guild_id"))
+        {
+            long guildId = content.getLong("guild_id");
+            if (api.getGuildSetupController().isLocked(guildId))
+                return guildId;
+        }
+
         Message message;
         try
         {

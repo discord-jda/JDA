@@ -44,6 +44,13 @@ public class MessageUpdateHandler extends SocketHandler
     @Override
     protected Long handleInternally(JSONObject content)
     {
+        if (!content.isNull("guild_id"))
+        {
+            long guildId = content.getLong("guild_id");
+            if (api.getGuildSetupController().isLocked(guildId))
+                return guildId;
+        }
+
         if (content.has("author"))
         {
             if (content.has("type"))

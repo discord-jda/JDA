@@ -50,6 +50,13 @@ public class MessageReactionHandler extends SocketHandler
     @Override
     protected Long handleInternally(JSONObject content)
     {
+        if (!content.isNull("guild_id"))
+        {
+            long guildId = content.getLong("guild_id");
+            if (api.getGuildSetupController().isLocked(guildId))
+                return guildId;
+        }
+
         JSONObject emoji = content.getJSONObject("emoji");
 
         final long userId    = content.getLong("user_id");
