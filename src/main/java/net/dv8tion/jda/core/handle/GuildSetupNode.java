@@ -16,8 +16,11 @@
 
 package net.dv8tion.jda.core.handle;
 
+import gnu.trove.iterator.TLongIterator;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
@@ -36,6 +39,7 @@ class GuildSetupNode
     private final GuildSetupController controller;
     private final List<JSONObject> cachedEvents = new LinkedList<>();
     private TLongObjectMap<JSONObject> members;
+    private TLongSet removedMembers;
     private JSONObject partialGuild;
     private int expectedMemberCount = 1;
 
@@ -54,6 +58,8 @@ class GuildSetupNode
     private void completeSetup()
     {
         JDAImpl api = controller.getJDA();
+        for (TLongIterator it = removedMembers.iterator(); it.hasNext(); )
+            members.remove(it.next());
         GuildImpl guild = api.getEntityBuilder().createGuild(id, partialGuild, members);
         if (join)
         {
@@ -74,7 +80,10 @@ class GuildSetupNode
     {
         expectedMemberCount = 1;
         partialGuild = null;
-        members.clear();
+        if (members != null)
+            members.clear();
+        if (removedMembers != null)
+            removedMembers.clear();
         cachedEvents.clear();
     }
 
@@ -117,8 +126,31 @@ class GuildSetupNode
 
         expectedMemberCount = partialGuild.getInt("member_count");
         members = new TLongObjectHashMap<>(expectedMemberCount);
+        removedMembers = new TLongHashSet();
 
         if (handleMemberChunk(obj.getJSONArray("members")))
+            controller.addGuildForChunking(id);
+    }
+
+    void handleSync(JSONObject obj)
+    {
+        if (partialGuild == null)
+        {
+            //In this case we received a GUILD_DELETE with unavailable = true while syncing
+            // however we have to wait for the GUILD_CREATE with unavailable = false before
+            // requesting new chunks
+            GuildSetupController.log.debug("Dropping sync update due to unavailable guild");
+            return;
+        }
+        for (Iterator<String> it = obj.keys(); it.hasNext();)
+        {
+            String key = it.next();
+            partialGuild.put(key, obj.opt(key));
+        }
+
+        expectedMemberCount = partialGuild.getInt("member_count");
+        members = new TLongObjectHashMap<>(expectedMemberCount);
+        if (handleMemberChunk(partialGuild.getJSONArray("members")))
             controller.addGuildForChunking(id);
     }
 
@@ -147,31 +179,24 @@ class GuildSetupNode
         return true;
     }
 
-    void handleSync(JSONObject obj)
+    void handleAddMember(JSONObject member)
     {
-        if (partialGuild == null)
-        {
-            //In this case we received a GUILD_DELETE with unavailable = true while syncing
-            // however we have to wait for the GUILD_CREATE with unavailable = false before
-            // requesting new chunks
-            GuildSetupController.log.debug("Dropping sync update due to unavailable guild");
+        if (members == null || removedMembers == null)
             return;
-        }
-        for (Iterator<String> it = obj.keys(); it.hasNext();)
-        {
-            String key = it.next();
-            partialGuild.put(key, obj.opt(key));
-        }
-
-        expectedMemberCount = partialGuild.getInt("member_count");
-        members = new TLongObjectHashMap<>(expectedMemberCount);
-        if (handleMemberChunk(partialGuild.getJSONArray("members")))
-            controller.addGuildForChunking(id);
+        expectedMemberCount++;
+        long userId = member.getJSONObject("user").getLong("id");
+        members.put(userId, member);
+        removedMembers.remove(userId);
     }
 
-    void updateMemberChunkCount(int change)
+    void handleRemoveMember(JSONObject member)
     {
-        expectedMemberCount += change;
+        if (members == null || removedMembers == null)
+            return;
+        expectedMemberCount--;
+        long userId = member.getJSONObject("user").getLong("id");
+        members.remove(userId);
+        removedMembers.add(userId);
     }
 
     void cacheEvent(JSONObject event)

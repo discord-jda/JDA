@@ -36,9 +36,9 @@ public class GuildMemberRemoveHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long id = content.getLong("guild_id");
-        api.getGuildSetupController().updateMemberChunk(id, -1);
-        if (api.getGuildSetupController().isLocked(id))
-            return id;
+        boolean setup = api.getGuildSetupController().onRemoveMember(id, content);
+        if (setup)
+            return null;
 
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
         if (guild == null)

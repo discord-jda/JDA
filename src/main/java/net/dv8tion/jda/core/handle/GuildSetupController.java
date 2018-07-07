@@ -109,7 +109,7 @@ public class GuildSetupController
     // - ReadyHandler
     public void onReady(long id, JSONObject obj)
     {
-        log.debug("Adding id to setup cache {}", id);
+        log.trace("Adding id to setup cache {}", id);
         GuildSetupNode node = new GuildSetupNode(id, this, false);
         setupNodes.put(id, node);
         node.handleReady(obj);
@@ -120,7 +120,7 @@ public class GuildSetupController
     public void onCreate(long id, JSONObject obj)
     {
         boolean available = obj.isNull("unavailable") || !obj.getBoolean("unavailable");
-        log.debug("Received guild create for id: {} available: {}", id, available);
+        log.trace("Received guild create for id: {} available: {}", id, available);
         GuildSetupNode node = setupNodes.get(id);
         if (node == null)
         {
@@ -136,10 +136,10 @@ public class GuildSetupController
     public boolean onDelete(long id, JSONObject obj)
     {
         boolean available = obj.isNull("unavailable") || !obj.getBoolean("unavailable");
-        log.debug("Received guild delete for id: {} available: {}", id, available);
         GuildSetupNode node = setupNodes.get(id);
         if (node == null)
             return false;
+        log.debug("Received guild delete for id: {} available: {}", id, available);
         if (!available)
         {
             node.reset();
@@ -170,14 +170,25 @@ public class GuildSetupController
     }
 
     // - GuildMemberAddHandler
-    // - GuildMemberRemoveHandler
-    public void updateMemberChunk(long id, int change)
+    public boolean onAddMember(long id, JSONObject member)
     {
         GuildSetupNode node = setupNodes.get(id);
         if (node == null)
-            return;
-        log.debug("Updating member chunk count for id {} with {}", id, change);
-        node.updateMemberChunkCount(change);
+            return false;
+        log.debug("Received GUILD_MEMBER_ADD during setup, adding member to guild. GuildID: {}", id);
+        node.handleAddMember(member);
+        return true;
+    }
+
+    // - GuildMemberRemoveHandler
+    public boolean onRemoveMember(long id, JSONObject member)
+    {
+        GuildSetupNode node = setupNodes.get(id);
+        if (node == null)
+            return false;
+        log.debug("Received GUILD_MEMBER_REMOVE during setup, removing member from guild. GuildID: {}", id);
+        node.handleRemoveMember(member);
+        return true;
     }
 
     public void onSync(long id, JSONObject obj)
