@@ -164,6 +164,7 @@ class GuildSetupNode
 
         expectedMemberCount = partialGuild.getInt("member_count");
         members = new TLongObjectHashMap<>(expectedMemberCount);
+        removedMembers = new TLongHashSet();
         if (handleMemberChunk(partialGuild.getJSONArray("members")))
             controller.addGuildForChunking(id);
     }
