@@ -203,6 +203,9 @@ public class EntityBuilder
                 guildObj.setOwner(member);
         }
 
+        if (guildObj.getOwner() == null)
+            LOG.warn("Finished setup for guild with a null owner. GuildId: {} OwnerId: {}", guildId, ownerId);
+
         for (int i = 0; i < channelArray.length(); i++)
         {
             JSONObject channelJson = channelArray.getJSONObject(i);

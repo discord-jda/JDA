@@ -142,8 +142,11 @@ class GuildSetupNode
         members = new TLongObjectHashMap<>(expectedMemberCount);
         removedMembers = new TLongHashSet();
 
-        if (handleMemberChunk(obj.getJSONArray("members")))
+        JSONArray memberArray = partialGuild.getJSONArray("members");
+        if (memberArray.length() < expectedMemberCount)
             controller.addGuildForChunking(id, join);
+        else
+            handleMemberChunk(memberArray);
     }
 
     void handleSync(JSONObject obj)
@@ -165,8 +168,11 @@ class GuildSetupNode
         expectedMemberCount = partialGuild.getInt("member_count");
         members = new TLongObjectHashMap<>(expectedMemberCount);
         removedMembers = new TLongHashSet();
-        if (handleMemberChunk(partialGuild.getJSONArray("members")))
+        JSONArray memberArray = partialGuild.getJSONArray("members");
+        if (memberArray.length() < expectedMemberCount)
             controller.addGuildForChunking(id, join);
+        else
+            handleMemberChunk(memberArray);
     }
 
     boolean handleMemberChunk(JSONArray arr)
