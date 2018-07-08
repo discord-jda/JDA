@@ -219,8 +219,17 @@ class GuildSetupNode
 
     void cacheEvent(JSONObject event)
     {
-        GuildSetupController.log.trace("Caching {} event during init", event.getString("t"));
+        GuildSetupController.log.trace("Caching {} event during init. GuildId: {}", event.getString("t"), id);
         cachedEvents.add(event);
+        //Check if more than 2000 events cached - suspicious
+        // Print warning every 1000 events
+        int cacheSize = cachedEvents.size();
+        if (cacheSize >= 2000 && cacheSize % 1000 == 0)
+        {
+            GuildSetupController.log.warn(
+                "Accumulating suspicious amounts of cached events during guild setup, " +
+                "something might be wrong. Cached: {} GuildId: {}", cacheSize, id);
+        }
     }
 
     void cleanup()
