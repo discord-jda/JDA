@@ -57,7 +57,6 @@ public class GuildCreateHandler extends SocketHandler
                 new GuildAvailableEvent(
                     api, responseNumber,
                     guild));
-            //TODO: Check if we need to update some fields here
             // I'm not sure if this is actually needed, but if discord sends us an updated field here
             //  we can just use the same logic we use for GUILD_UPDATE in order to update it and fire events
             api.getClient().<GuildUpdateHandler>getHandler("GUILD_UPDATE").handleInternally(content);

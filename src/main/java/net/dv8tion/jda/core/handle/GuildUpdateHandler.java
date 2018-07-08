@@ -46,6 +46,10 @@ public class GuildUpdateHandler extends SocketHandler
         if (api.getGuildSetupController().isLocked(id))
             return id;
 
+        //////////////
+        //  WARNING //
+        //Do not rely on allContent past this point, this method is also called from GuildCreateHandler!
+        //////////////
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
         Member owner = guild.getMembersMap().get(content.getLong("owner_id"));
         String name = content.getString("name");
