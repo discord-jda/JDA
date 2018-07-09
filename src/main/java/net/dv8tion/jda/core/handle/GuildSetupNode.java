@@ -69,27 +69,6 @@ class GuildSetupNode
         return false;
     }
 
-    private void completeSetup()
-    {
-        JDAImpl api = controller.getJDA();
-        for (TLongIterator it = removedMembers.iterator(); it.hasNext(); )
-            members.remove(it.next());
-        GuildImpl guild = api.getEntityBuilder().createGuild(id, partialGuild, members);
-        if (join)
-        {
-            api.getEventManager().handle(new GuildJoinEvent(api, api.getResponseTotal(), guild));
-            controller.remove(id);
-        }
-        else
-        {
-            api.getEventManager().handle(new GuildReadyEvent(api, api.getResponseTotal(), guild));
-            controller.ready(id);
-        }
-        GuildSetupController.log.debug("Finished setup for guild {} firing cached events {}", id, cachedEvents.size());
-        api.getClient().handle(cachedEvents);
-        api.getEventCache().playbackCache(EventCache.Type.GUILD, id);
-    }
-
     void reset()
     {
         expectedMemberCount = 1;
@@ -138,15 +117,7 @@ class GuildSetupNode
             return;
         }
 
-        expectedMemberCount = partialGuild.getInt("member_count");
-        members = new TLongObjectHashMap<>(expectedMemberCount);
-        removedMembers = new TLongHashSet();
-
-        JSONArray memberArray = partialGuild.getJSONArray("members");
-        if (memberArray.length() < expectedMemberCount)
-            controller.addGuildForChunking(id, join);
-        else
-            handleMemberChunk(memberArray);
+        ensureMembers();
     }
 
     void handleSync(JSONObject obj)
@@ -165,14 +136,7 @@ class GuildSetupNode
             partialGuild.put(key, obj.opt(key));
         }
 
-        expectedMemberCount = partialGuild.getInt("member_count");
-        members = new TLongObjectHashMap<>(expectedMemberCount);
-        removedMembers = new TLongHashSet();
-        JSONArray memberArray = partialGuild.getJSONArray("members");
-        if (memberArray.length() < expectedMemberCount)
-            controller.addGuildForChunking(id, join);
-        else
-            handleMemberChunk(memberArray);
+        ensureMembers();
     }
 
     boolean handleMemberChunk(JSONArray arr)
@@ -276,6 +240,52 @@ class GuildSetupNode
                 if (!controller.containsMember(userId, this)) // if no other setup node contains this userId we clear it here
                     eventCache.clear(EventCache.Type.USER, userId);
             }
+        }
+    }
+
+    private void completeSetup()
+    {
+        JDAImpl api = controller.getJDA();
+        for (TLongIterator it = removedMembers.iterator(); it.hasNext(); )
+            members.remove(it.next());
+        GuildImpl guild = api.getEntityBuilder().createGuild(id, partialGuild, members);
+        if (join)
+        {
+            api.getEventManager().handle(new GuildJoinEvent(api, api.getResponseTotal(), guild));
+            controller.remove(id);
+        }
+        else
+        {
+            api.getEventManager().handle(new GuildReadyEvent(api, api.getResponseTotal(), guild));
+            controller.ready(id);
+        }
+        GuildSetupController.log.debug("Finished setup for guild {} firing cached events {}", id, cachedEvents.size());
+        api.getClient().handle(cachedEvents);
+        api.getEventCache().playbackCache(EventCache.Type.GUILD, id);
+    }
+
+    private void ensureMembers()
+    {
+        expectedMemberCount = partialGuild.getInt("member_count");
+        members = new TLongObjectHashMap<>(expectedMemberCount);
+        removedMembers = new TLongHashSet();
+        JSONArray memberArray = partialGuild.getJSONArray("members");
+        if (memberArray.length() < expectedMemberCount)
+        {
+            controller.addGuildForChunking(id, join);
+        }
+        else if (handleMemberChunk(memberArray))
+        {
+            // Discord sent us enough members to satisfy the member_count
+            //  but we found duplicates and still didn't reach enough to satisfy the count
+            //  in this case we try to do chunking instead
+            // This is an extreme edge case
+            GuildSetupController.log.warn(
+                "Received suspicious members with a guild payload. Attempting to chunk. " +
+                "member_count: {} members: {} actual_members: {}",
+                expectedMemberCount, memberArray.length(), members.size());
+            members.clear();
+            controller.addGuildForChunking(id, join);
         }
     }
 }
