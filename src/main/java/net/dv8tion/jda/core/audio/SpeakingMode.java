@@ -23,7 +23,7 @@ import java.util.EnumSet;
  */
 public enum SpeakingMode
 {
-    NONE(0), VOICE(1), SOUNDSHARE(2);
+    VOICE(1), SOUNDSHARE(2);
 
     private final int raw;
 
@@ -52,13 +52,12 @@ public enum SpeakingMode
      */
     public static EnumSet<SpeakingMode> getModes(int mask)
     {
-        if (mask == 0)
-            return EnumSet.of(SpeakingMode.NONE);
         final EnumSet<SpeakingMode> modes = EnumSet.noneOf(SpeakingMode.class);
+        if (mask == 0)
+            return modes;
         final SpeakingMode[] values = SpeakingMode.values();
-        for (int i = 1; i < values.length; i++)
+        for (SpeakingMode mode : values)
         {
-            SpeakingMode mode = values[i];
             if ((mode.raw & mask) == mode.raw)
                 modes.add(mode);
         }
@@ -76,7 +75,7 @@ public enum SpeakingMode
      */
     public static int getRaw(SpeakingMode... modes)
     {
-        if (modes == null)
+        if (modes == null || modes.length == 0)
             return 0;
         int mask = 0;
         for (SpeakingMode m : modes)

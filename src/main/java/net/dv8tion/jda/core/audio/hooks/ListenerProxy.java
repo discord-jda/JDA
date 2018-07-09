@@ -63,7 +63,6 @@ public class ListenerProxy implements ConnectionListener
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public void onUserSpeaking(User user, EnumSet<SpeakingMode> modes)
     {
         if (listener == null)
@@ -74,7 +73,8 @@ public class ListenerProxy implements ConnectionListener
             if (listener != null)
             {
                 listener.onUserSpeaking(user, modes);
-                listener.onUserSpeaking(user, !modes.contains(SpeakingMode.NONE));
+                listener.onUserSpeaking(user, modes.contains(SpeakingMode.VOICE));
+                listener.onUserSpeaking(user, modes.contains(SpeakingMode.VOICE), modes.contains(SpeakingMode.SOUNDSHARE));
             }
         }
         catch (Throwable t)
@@ -84,7 +84,6 @@ public class ListenerProxy implements ConnectionListener
     }
 
     @Override
-    @Deprecated /* dead path */
     public void onUserSpeaking(User user, boolean speaking) {}
 
     public void setListener(ConnectionListener listener)
