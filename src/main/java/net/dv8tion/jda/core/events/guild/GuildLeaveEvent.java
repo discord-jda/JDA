@@ -21,7 +21,7 @@ import net.dv8tion.jda.core.entities.Guild;
 /**
  * Indicates that you left a {@link net.dv8tion.jda.core.entities.Guild Guild}.
  *
- * <p>Cane bse used to detect when you leave a Guild.
+ * <p>Can be used to detect when you leave a Guild.
  */
 public class GuildLeaveEvent extends GenericGuildEvent
 {

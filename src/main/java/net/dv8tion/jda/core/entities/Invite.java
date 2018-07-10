@@ -25,6 +25,7 @@ import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import javax.annotation.CheckReturnValue;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Representation of a Discord Invite.
@@ -372,6 +373,22 @@ public interface Invite
          * @return the approximate count of total members in the guild, or -1 if not present in the invite
          */
         int getMemberCount();
+
+        /**
+         * The Features of the {@link net.dv8tion.jda.core.entities.Invite.Guild Guild}.
+         * <p>
+         * <b>Possible known features:</b>
+         * <ul>
+         *     <li>VIP_REGIONS - Guild has VIP voice regions</li>
+         *     <li>VANITY_URL - Guild a vanity URL (custom invite link)</li>
+         *     <li>INVITE_SPLASH - Guild has custom invite splash. See {@link #getSplashId()} and {@link #getSplashUrl()}</li>
+         *     <li>VERIFIED - Guild is "verified"</li>
+         *     <li>MORE_EMOJI - Guild is able to use more than 50 emoji</li>
+         * </ul>
+         *
+         * @return Never-null, unmodifiable Set containing all of the Guild's features.
+         */
+        Set<String> getFeatures();
     }
 
     /**

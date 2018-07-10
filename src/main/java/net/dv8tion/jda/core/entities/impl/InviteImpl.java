@@ -32,6 +32,7 @@ import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Set;
 
 public class InviteImpl implements Invite
 {
@@ -310,9 +311,10 @@ public class InviteImpl implements Invite
         private final int presenceCount, memberCount;
         private final long id;
         private final VerificationLevel verificationLevel;
+        private final Set<String> features;
 
         public GuildImpl(final long id, final String iconId, final String name, final String splashId, 
-                         final VerificationLevel verificationLevel, final int presenceCount, final int memberCount)
+                         final VerificationLevel verificationLevel, final int presenceCount, final int memberCount, final Set<String> features)
         {
             this.id = id;
             this.iconId = iconId;
@@ -321,6 +323,7 @@ public class InviteImpl implements Invite
             this.verificationLevel = verificationLevel;
             this.presenceCount = presenceCount;
             this.memberCount = memberCount;
+            this.features = features;
         }
 
         @Override
@@ -377,6 +380,12 @@ public class InviteImpl implements Invite
         public int getMemberCount()
         {
             return memberCount;
+        }
+
+        @Override
+        public Set<String> getFeatures()
+        {
+            return features;
         }
     }
 

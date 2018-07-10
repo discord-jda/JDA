@@ -1303,18 +1303,10 @@ public class EntityBuilder
 
             final JSONArray usernameArray = channelObject.optJSONArray("recipients");
             final List<String> usernames;
-            if (usernameArray != null)
-            {
-                usernames = new ArrayList<>(usernameArray.length());
-                for (int i = 0; i < usernameArray.length(); i++)
-                {
-                    usernames.add(usernameArray.getJSONObject(i).getString("username"));
-                }
-            }
-            else
-            {
+            if (usernameArray == null)
                 usernames = null;
-            }
+            else
+                usernames = Collections.unmodifiableList(StreamSupport.stream(usernameArray.spliterator(), false).map(String::valueOf).collect(Collectors.toList()));
 
             group = new InviteImpl.GroupImpl(groupIconId, groupName, groupId, usernames);
         }
@@ -1332,7 +1324,13 @@ public class EntityBuilder
             final int presenceCount = Helpers.optInt(object, "approximate_presence_count", -1);
             final int memberCount = Helpers.optInt(object, "approximate_member_count", -1);
 
-            guild = new InviteImpl.GuildImpl(guildId, guildIconId, guildName, guildSplashId, guildVerificationLevel, presenceCount, memberCount);
+            final Set<String> guildFeatures;
+            if (guildObject.isNull("features"))
+                guildFeatures = Collections.emptySet();
+            else
+                guildFeatures = Collections.unmodifiableSet(StreamSupport.stream(guildObject.getJSONArray("features").spliterator(), false).map(String::valueOf).collect(Collectors.toSet()));
+
+            guild = new InviteImpl.GuildImpl(guildId, guildIconId, guildName, guildSplashId, guildVerificationLevel, presenceCount, memberCount, guildFeatures);
 
             final String channelName = channelObject.getString("name");
             final long channelId = channelObject.getLong("id");
