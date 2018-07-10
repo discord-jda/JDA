@@ -48,7 +48,6 @@ import java.nio.ShortBuffer;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class AudioConnection
 {
@@ -564,14 +563,14 @@ public class AudioConnection
         return audio;
     }
 
-    private void setSpeaking(boolean speaking)
+    private void setSpeaking(boolean isSpeaking)
     {
-        this.speaking = speaking;
+        this.speaking = isSpeaking;
         JSONObject obj = new JSONObject()
-                .put("speaking", speaking ? 1 : 0)
+                .put("speaking", isSpeaking ? 1 : 0)
                 .put("delay", 0);
         webSocket.send(VoiceCode.USER_SPEAKING_UPDATE, obj);
-        if (!speaking)
+        if (!isSpeaking)
             sendSilentPackets();
     }
 
