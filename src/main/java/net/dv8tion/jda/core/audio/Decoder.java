@@ -38,10 +38,10 @@ public class Decoder
         this.lastSeq = (char) -1;
         this.lastTimestamp = -1;
 
-        IntBuffer error = IntBuffer.allocate(4);
-        opusDecoder = Opus.INSTANCE.opus_decoder_create(AudioConnection.OPUS_SAMPLE_RATE,
-                AudioConnection.OPUS_CHANNEL_COUNT, error);
-        //TODO: check `error` for an error flag.
+        IntBuffer error = IntBuffer.allocate(1);
+        opusDecoder = Opus.INSTANCE.opus_decoder_create(AudioConnection.OPUS_SAMPLE_RATE, AudioConnection.OPUS_CHANNEL_COUNT, error);
+        if (error.get() != Opus.OPUS_OK && opusDecoder == null)
+            throw new IllegalStateException("Received error code from opus_decoder_create(...): " + error.get());
     }
 
     protected boolean isInOrder(char newSeq)
@@ -67,8 +67,7 @@ public class Decoder
         }
         else
         {
-            char seq = decryptedPacket.getSequence();
-            this.lastSeq = seq;
+            this.lastSeq = decryptedPacket.getSequence();
             this.lastTimestamp = decryptedPacket.getTimestamp();
 
             byte[] encodedAudio = decryptedPacket.getEncodedAudio();
@@ -78,7 +77,7 @@ public class Decoder
         }
 
         //If we get a result that is less than 0, then there was an error. Return null as a signifier.
-        if (result < Opus.OPUS_OK)
+        if (result < 0)
         {
             handleDecodeError(result);
             return null;

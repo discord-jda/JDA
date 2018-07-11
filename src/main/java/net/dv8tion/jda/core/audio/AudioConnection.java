@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.audio;
 
+import com.iwebpp.crypto.TweetNaclFast;
 import com.sun.jna.ptr.PointerByReference;
 import gnu.trove.map.TIntLongMap;
 import gnu.trove.map.TIntObjectMap;
@@ -39,10 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.MDC;
 import tomp2p.opuswrapper.Opus;
 
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.SocketException;
-import java.net.SocketTimeoutException;
+import java.net.*;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -59,6 +57,8 @@ public class AudioConnection
     public static final int OPUS_FRAME_TIME_AMOUNT = 20;//This is 20 milliseconds. We are only dealing with 20ms opus packets.
     public static final int OPUS_CHANNEL_COUNT = 2;     //We want to use stereo. If the audio given is mono, the encoder promotes it
                                                         // to Left and Right mono (stereo that is the same on both sides)
+    public static final long MAX_UINT_32 = 4294967295L;
+
     private final TIntLongMap ssrcMap = new TIntLongHashMap();
     private final TIntObjectMap<Decoder> opusDecoders = new TIntObjectHashMap<>();
     private final HashMap<User, Queue<Pair<Long, short[]>>> combinedQueue = new HashMap<>();
@@ -338,7 +338,7 @@ public class AudioConnection
                                 couldReceive = true;
                                 sendSilentPackets();
                             }
-                            AudioPacket decryptedPacket = AudioPacket.decryptAudioPacket(receivedPacket, webSocket.getSecretKey());
+                            AudioPacket decryptedPacket = AudioPacket.decryptAudioPacket(webSocket.encryption, receivedPacket, webSocket.getSecretKey());
                             if (decryptedPacket == null)
                                 continue;
 
@@ -380,12 +380,6 @@ public class AudioConnection
                                 LOG.warn("Received audio data with a known SSRC, but the userId associate with the SSRC is unknown to JDA!");
                                 continue;
                             }
-//                              if (decoder.wasPacketLost(decryptedPacket.getSequence()))
-//                              {
-//                                  LOG.debug("Packet(s) missed. Using Opus packetloss-compensation.");
-//                                  short[] decodedAudio = decoder.decodeFromOpus(null);
-//                                  receiveHandler.handleUserAudio(new UserAudio(user, decodedAudio));
-//                              }
                             short[] decodedAudio = decoder.decodeFromOpus(decryptedPacket);
 
                             //If decodedAudio is null, then the Opus decode failed, so throw away the packet.
@@ -555,8 +549,12 @@ public class AudioConnection
         }
         ((Buffer) nonEncodedBuffer).flip();
 
-        //TODO: check for 0 / negative value for error.
         int result = Opus.INSTANCE.opus_encode(opusEncoder, nonEncodedBuffer, OPUS_FRAME_SIZE, encoded, encoded.capacity());
+        if (result <= 0)
+        {
+            LOG.error("Received error code from opus_encode(...): {}", result);
+            return null;
+        }
 
         //ENCODING STOPS HERE
 
@@ -569,7 +567,7 @@ public class AudioConnection
     {
         this.speaking = isSpeaking;
         JSONObject obj = new JSONObject()
-                .put("speaking", isSpeaking)
+                .put("speaking", isSpeaking ? 1 : 0)
                 .put("delay", 0);
         webSocket.send(VoiceCode.USER_SPEAKING_UPDATE, obj);
         if (!isSpeaking)
@@ -589,7 +587,7 @@ public class AudioConnection
 
     @Override
     @Deprecated
-    protected void finalize() throws Throwable
+    protected void finalize()
     {
         shutdown();
     }
@@ -598,6 +596,9 @@ public class AudioConnection
     {
         char seq = 0;           //Sequence of audio packets. Used to determine the order of the packets.
         int timestamp = 0;      //Used to sync up our packets within the same timeframe of other people talking.
+        private long nonce = 0;
+        private ByteBuffer buffer = ByteBuffer.allocate(512);
+        private final byte[] nonceBuffer = new byte[TweetNaclFast.SecretBox.nonceLength];
 
         @Override
         public String getIdentifier()
@@ -618,13 +619,25 @@ public class AudioConnection
         }
 
         @Override
+        public InetSocketAddress getSocketAddress()
+        {
+            return webSocket.getAddress();
+        }
+
+        @Override
         public DatagramPacket getNextPacket(boolean changeTalking)
         {
-            DatagramPacket nextPacket = null;
+            ByteBuffer buffer = getNextPacketRaw(changeTalking);
+            return buffer == null ? null : getDatagramPacket(buffer);
+        }
 
+        @Override
+        public ByteBuffer getNextPacketRaw(boolean changeTalking)
+        {
+            ByteBuffer nextPacket = null;
             try
             {
-                if (sentSilenceOnConnect && sendHandler != null && sendHandler.canProvide())
+                cond: if (sentSilenceOnConnect && sendHandler != null && sendHandler.canProvide())
                 {
                     silenceCounter = -1;
                     byte[] rawAudio = sendHandler.provide20MsAudio();
@@ -637,25 +650,14 @@ public class AudioConnection
                     {
                         if (!sendHandler.isOpus())
                         {
-                            if (opusEncoder == null)
-                            {
-                                if (!AudioNatives.ensureOpus())
-                                {
-                                    if (!printedError)
-                                        LOG.error("Unable to process PCM audio without opus binaries!");
-                                    printedError = true;
-                                    return null;
-                                }
-                                IntBuffer error = IntBuffer.allocate(4);
-                                opusEncoder = Opus.INSTANCE.opus_encoder_create(OPUS_SAMPLE_RATE, OPUS_CHANNEL_COUNT, Opus.OPUS_APPLICATION_AUDIO, error);
-                            }
-                            rawAudio = encodeToOpus(rawAudio);
+                            rawAudio = encodeAudio(rawAudio);
+                            if (rawAudio == null)
+                                break cond;
                         }
-                        AudioPacket packet = new AudioPacket(seq, timestamp, webSocket.getSSRC(), rawAudio);
-                        if (!speaking)
-                            setSpeaking(true);
 
-                        nextPacket = packet.asEncryptedUdpPacket(webSocket.getAddress(), webSocket.getSecretKey());
+                        nextPacket = getPacketData(rawAudio);
+                        if (!speaking && changeTalking)
+                            setSpeaking(true);
 
                         if (seq + 1 > Character.MAX_VALUE)
                             seq = 0;
@@ -665,10 +667,7 @@ public class AudioConnection
                 }
                 else if (silenceCounter > -1)
                 {
-                    AudioPacket packet = new AudioPacket(seq, timestamp, webSocket.getSSRC(), silenceBytes);
-
-                    nextPacket = packet.asEncryptedUdpPacket(webSocket.getAddress(), webSocket.getSecretKey());
-
+                    nextPacket = getPacketData(silenceBytes);
                     if (seq + 1 > Character.MAX_VALUE)
                         seq = 0;
                     else
@@ -681,7 +680,9 @@ public class AudioConnection
                     }
                 }
                 else if (speaking && changeTalking)
+                {
                     setSpeaking(false);
+                }
             }
             catch (Exception e)
             {
@@ -692,6 +693,70 @@ public class AudioConnection
                 timestamp += OPUS_FRAME_SIZE;
 
             return nextPacket;
+        }
+
+        private byte[] encodeAudio(byte[] rawAudio)
+        {
+            if (opusEncoder == null)
+            {
+                if (!AudioNatives.ensureOpus())
+                {
+                    if (!printedError)
+                        LOG.error("Unable to process PCM audio without opus binaries!");
+                    printedError = true;
+                    return null;
+                }
+                IntBuffer error = IntBuffer.allocate(1);
+                opusEncoder = Opus.INSTANCE.opus_encoder_create(OPUS_SAMPLE_RATE, OPUS_CHANNEL_COUNT, Opus.OPUS_APPLICATION_AUDIO, error);
+                if (error.get() != Opus.OPUS_OK && opusEncoder == null)
+                {
+                    LOG.error("Received error status from opus_encoder_create(...): {}", error.get());
+                    return null;
+                }
+            }
+            return encodeToOpus(rawAudio);
+        }
+
+        private DatagramPacket getDatagramPacket(ByteBuffer b)
+        {
+            byte[] data = b.array();
+            int offset = b.arrayOffset();
+            int position = b.position();
+            return new DatagramPacket(data, offset, position - offset, webSocket.getAddress());
+        }
+
+        private ByteBuffer getPacketData(byte[] rawAudio)
+        {
+            AudioPacket packet = new AudioPacket(seq, timestamp, webSocket.getSSRC(), rawAudio);
+            int nlen;
+            switch (webSocket.encryption)
+            {
+                case XSALSA20_POLY1305:
+                    nlen = 0;
+                    break;
+                case XSALSA20_POLY1305_LITE:
+                    if (nonce >= MAX_UINT_32)
+                        loadNextNonce(nonce = 0);
+                    else
+                        loadNextNonce(++nonce);
+                    nlen = 4;
+                    break;
+                case XSALSA20_POLY1305_SUFFIX:
+                    ThreadLocalRandom.current().nextBytes(nonceBuffer);
+                    nlen = TweetNaclFast.SecretBox.nonceLength;
+                    break;
+                default:
+                    throw new IllegalStateException("Encryption mode [" + webSocket.encryption + "] is not supported!");
+            }
+            return buffer = packet.asEncryptedPacket(buffer, webSocket.getSecretKey(), nonceBuffer, nlen);
+        }
+
+        private void loadNextNonce(long nonce)
+        {
+            nonceBuffer[0] = (byte) ((nonce >>> 24) & 0xFF);
+            nonceBuffer[1] = (byte) ((nonce >>> 16) & 0xFF);
+            nonceBuffer[2] = (byte) ((nonce >>>  8) & 0xFF);
+            nonceBuffer[3] = (byte) ( nonce         & 0xFF);
         }
 
         @Override
