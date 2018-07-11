@@ -355,4 +355,4 @@ All dependencies are managed automatically by Gradle.
 - [discord.py](https://github.com/Rapptz/discord.py)
 - [serenity](https://github.com/zeyla/serenity)
 
-**See also:** https://discordapp.com/developers/docs/topics/libraries
+**See also:** https://discordapp.com/developers/docs/topics/community-resources#libraries
