@@ -19,6 +19,7 @@ package net.dv8tion.jda.core.audio;
 import com.iwebpp.crypto.TweetNaclFast;
 
 import java.net.DatagramPacket;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
@@ -163,7 +164,7 @@ public class AudioPacket
         //Create our SecretBox encoder with the secretKey provided by Discord.
         TweetNaclFast.SecretBox boxer = new TweetNaclFast.SecretBox(secretKey);
         byte[] encryptedAudio = boxer.box(encodedAudio, extendedNonce);
-        buffer.clear();
+        ((Buffer) buffer).clear();
         int capacity = RTP_HEADER_BYTE_LENGTH + encryptedAudio.length + nlen;
         if (capacity > buffer.remaining())
             buffer = ByteBuffer.allocate(capacity);
