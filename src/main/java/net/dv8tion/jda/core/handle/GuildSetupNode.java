@@ -43,11 +43,11 @@ class GuildSetupNode
     private TLongSet removedMembers;
     private JSONObject partialGuild;
     private int expectedMemberCount = 1;
+    private boolean requestedSync;
+    private boolean requestedChunk;
 
     final boolean join;
     final boolean sync;
-    boolean requestedSync;
-    boolean requestedChunk;
 
 
     GuildSetupNode(long id, GuildSetupController controller, boolean join)
