@@ -61,15 +61,14 @@ public class ReadyHandler extends SocketHandler
                 ((PresenceImpl) api.getPresence()).setCacheStatus(userSettingsObj.getStatus());
         }
 
-        api.getGuildSetupController().setIncompleteCount(guilds.length());
-        for (int i = 0; i < guilds.length(); i++)
+        if (api.getGuildSetupController().setIncompleteCount(guilds.length()))
         {
-            JSONObject guild = guilds.getJSONObject(i);
-            api.getGuildSetupController().onReady(guild.getLong("id"), guild);
+            for (int i = 0; i < guilds.length(); i++)
+            {
+                JSONObject guild = guilds.getJSONObject(i);
+                api.getGuildSetupController().onReady(guild.getLong("id"), guild);
+            }
         }
-
-        if (guilds.length() == 0)
-            api.getGuildSetupController().ready(0);
 
         handleReady(content);
         return null;

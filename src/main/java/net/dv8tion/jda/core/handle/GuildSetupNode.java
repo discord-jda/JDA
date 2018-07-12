@@ -46,6 +46,8 @@ class GuildSetupNode
 
     final boolean join;
     final boolean sync;
+    boolean requestedSync;
+    boolean requestedChunk;
 
 
     GuildSetupNode(long id, GuildSetupController controller, boolean join)
@@ -73,6 +75,8 @@ class GuildSetupNode
     {
         expectedMemberCount = 1;
         partialGuild = null;
+        requestedChunk = false;
+        requestedSync = false;
         if (members != null)
             members.clear();
         if (removedMembers != null)
@@ -90,6 +94,7 @@ class GuildSetupNode
             return;
 
         controller.addGuildForSyncing(id, join);
+        requestedSync = true;
     }
 
     void handleCreate(JSONObject obj)
@@ -109,7 +114,7 @@ class GuildSetupNode
         boolean unavailable = Helpers.optBoolean(partialGuild, "unavailable");
         if (unavailable)
             return;
-        if (sync)
+        if (sync && !requestedSync)
         {
             // We are using a client-account and joined a guild
             //  in that case we need to sync before doing anything
@@ -270,11 +275,12 @@ class GuildSetupNode
         members = new TLongObjectHashMap<>(expectedMemberCount);
         removedMembers = new TLongHashSet();
         JSONArray memberArray = partialGuild.getJSONArray("members");
-        if (memberArray.length() < expectedMemberCount)
+        if (memberArray.length() < expectedMemberCount && !requestedChunk)
         {
             controller.addGuildForChunking(id, join);
+            requestedChunk = true;
         }
-        else if (handleMemberChunk(memberArray))
+        else if (handleMemberChunk(memberArray) && !requestedChunk)
         {
             // Discord sent us enough members to satisfy the member_count
             //  but we found duplicates and still didn't reach enough to satisfy the count
@@ -286,6 +292,7 @@ class GuildSetupNode
                 expectedMemberCount, memberArray.length(), members.size());
             members.clear();
             controller.addGuildForChunking(id, join);
+            requestedChunk = true;
         }
     }
 }

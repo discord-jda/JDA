@@ -121,11 +121,15 @@ public class GuildSetupController
     }
 
     // - ReadyHandler
-    public void setIncompleteCount(int count)
+    public boolean setIncompleteCount(int count)
     {
         log.debug("Setting incomplete count to {}", count);
         this.incompleteCount = count;
         this.syncingCount = count;
+        boolean ready = count == 0;
+        if (ready)
+            getJDA().getClient().ready();
+        return !ready;
     }
 
     // - ReadyHandler
