@@ -204,7 +204,7 @@ public class EntityBuilder
         }
 
         if (guildObj.getOwner() == null)
-            LOG.warn("Finished setup for guild with a null owner. GuildId: {} OwnerId: {}", guildId, ownerId);
+            LOG.warn("Finished setup for guild with a null owner. GuildId: {} OwnerId: {}", guildId, guildJson.opt("owner_id"));
 
         for (int i = 0; i < channelArray.length(); i++)
         {
@@ -232,27 +232,6 @@ public class EntityBuilder
 
         api.getGuildMap().put(guildId, guildObj);
         return guildObj;
-    }
-
-    public void handleGuildSync(GuildImpl guild, JSONArray members, JSONArray presences)
-    {
-        for (int i = 0; i < members.length(); i++)
-        {
-            JSONObject memberJson = members.getJSONObject(i);
-            createMember(guild, memberJson);
-        }
-
-        for (int i = 0; i < presences.length(); i++)
-        {
-            JSONObject presenceJson = presences.getJSONObject(i);
-            final long userId = presenceJson.getJSONObject("user").getLong("id");
-
-            MemberImpl member = (MemberImpl) guild.getMembersMap().get(userId);
-            if (member == null)
-                LOG.error("Received a Presence for a non-existent Member when dealing with GuildSync!");
-            else
-                this.createPresence(member, presenceJson);
-        }
     }
 
     private void createGuildChannel(GuildImpl guildObj, JSONObject channelData)

@@ -76,7 +76,6 @@ public class ReadyHandler extends SocketHandler
 
     public void handleReady(JSONObject content)
     {
-//        api.getClient().setChunkingAndSyncing(false);
         EntityBuilder builder = api.getEntityBuilder();
         JSONArray privateChannels = content.getJSONArray("private_channels");
 
@@ -90,7 +89,7 @@ public class ReadyHandler extends SocketHandler
                 JSONObject relationship = relationships.getJSONObject(i);
                 Relationship r = builder.createRelationship(relationship);
                 if (r == null)
-                    JDAImpl.LOG.error("Provided relationship in READY with an unknown type! JSON: {}", relationship);
+                    JDAImpl.LOG.warn("Provided relationship in READY with an unknown type! JSON: {}", relationship);
             }
 
             for (int i = 0; i < presences.length(); i++)
@@ -99,7 +98,7 @@ public class ReadyHandler extends SocketHandler
                 long userId = presence.getJSONObject("user").getLong("id");
                 FriendImpl friend = (FriendImpl) api.asClient().getFriendById(userId);
                 if (friend == null)
-                    WebSocketClient.LOG.warn("Received a presence in the Presences array in READY that did not correspond to a cached Friend! JSON: {}", presence);
+                    WebSocketClient.LOG.debug("Received a presence in the Presences array in READY that did not correspond to a cached Friend! JSON: {}", presence);
                 else
                     builder.createPresence(friend, presence);
             }
@@ -122,128 +121,5 @@ public class ReadyHandler extends SocketHandler
                     WebSocketClient.LOG.warn("Received a Channel in the private_channels array in READY of an unknown type! JSON: {}", type);
             }
         }
-
-//        api.getClient().ready();
     }
-//
-//    public void acknowledgeGuild(Guild guild, boolean available, boolean requiresChunking, boolean requiresSync)
-//    {
-//        acknowledgedGuilds.add(guild.getIdLong());
-//        if (available)
-//        {
-//            //We remove from unavailable guilds because it is possible that we were told it was unavailable, but
-//            // during a long READY load it could have become available and was sent to us.
-//            unavailableGuilds.remove(guild.getIdLong());
-//            if (requiresChunking)
-//                guildsRequiringChunking.add(guild.getIdLong());
-//            if (requiresSync)
-//                guildsRequiringSyncing.add(guild.getIdLong());
-//        }
-//        else
-//            unavailableGuilds.add(guild.getIdLong());
-//
-//        checkIfReadyToSendRequests();
-//    }
-//
-//    public void guildSetupComplete(Guild guild)
-//    {
-//        if (!incompleteGuilds.remove(guild.getIdLong()))
-//            WebSocketClient.LOG.error("Completed the setup for Guild: {} without matching id in ReadyHandler cache", guild);
-//        if (incompleteGuilds.size() == unavailableGuilds.size())
-//            guildLoadComplete(allContent.getJSONObject("d"));
-//        else
-//            checkIfReadyToSendRequests();
-//    }
-//
-//
-//    public void clearCache()
-//    {
-//        incompleteGuilds.clear();
-//        acknowledgedGuilds.clear();
-//        unavailableGuilds.clear();
-//        guildsRequiringChunking.clear();
-//        guildsRequiringSyncing.clear();
-//    }
-//
-//    private void checkIfReadyToSendRequests()
-//    {
-//        if (acknowledgedGuilds.size() == incompleteGuilds.size())
-//        {
-//            api.getClient().setChunkingAndSyncing(true);
-//            if (api.getAccountType() == AccountType.CLIENT)
-//                sendGuildSyncRequests();
-//            sendMemberChunkRequests();
-//        }
-//    }
-//
-//    private void sendGuildSyncRequests()
-//    {
-//        if (guildsRequiringSyncing.isEmpty())
-//            return;
-//
-//        JSONArray guildIds = new JSONArray();
-//
-//        for (TLongIterator it = guildsRequiringSyncing.iterator(); it.hasNext(); )
-//        {
-//            guildIds.put(it.next());
-//
-//            //We can only request 50 guilds in a single request, so after we've reached 50, send them
-//            // and reset the
-//            if (guildIds.length() == 50)
-//            {
-//                api.getClient().chunkOrSyncRequest(new JSONObject()
-//                        .put("op", WebSocketCode.GUILD_SYNC)
-//                        .put("d", guildIds));
-//                guildIds = new JSONArray();
-//            }
-//        }
-//
-//        //Send the remaining guilds that need to be sent
-//        if (guildIds.length() > 0)
-//        {
-//            api.getClient().chunkOrSyncRequest(new JSONObject()
-//                    .put("op", WebSocketCode.GUILD_SYNC)
-//                    .put("d", guildIds));
-//        }
-//        guildsRequiringSyncing.clear();
-//    }
-//
-//    private void sendMemberChunkRequests()
-//    {
-//        if (guildsRequiringChunking.isEmpty())
-//            return;
-//
-//        JSONArray guildIds = new JSONArray();
-//        for (TLongIterator it = guildsRequiringChunking.iterator(); it.hasNext(); )
-//        {
-//            guildIds.put(it.next());
-//
-//            //We can only request 50 guilds in a single request, so after we've reached 50, send them
-//            // and reset the
-//            if (guildIds.length() == 50)
-//            {
-//                api.getClient().chunkOrSyncRequest(new JSONObject()
-//                    .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
-//                    .put("d", new JSONObject()
-//                        .put("guild_id", guildIds)
-//                        .put("query", "")
-//                        .put("limit", 0)
-//                    ));
-//                guildIds = new JSONArray();
-//            }
-//        }
-//
-//        //Send the remaining guilds that need to be sent
-//        if (guildIds.length() > 0)
-//        {
-//            api.getClient().chunkOrSyncRequest(new JSONObject()
-//                .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
-//                .put("d", new JSONObject()
-//                        .put("guild_id", guildIds)
-//                        .put("query", "")
-//                        .put("limit", 0)
-//                ));
-//        }
-//        guildsRequiringChunking.clear();
-//    }
 }
