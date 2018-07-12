@@ -59,20 +59,6 @@ public class UserTypingEvent extends GenericUserEvent
     }
 
     /**
-     * Whether this was in a private channel
-     *
-     * @return True, if this was in a private channel
-     *
-     * @deprecated
-     *         Use {@link #isFromType(net.dv8tion.jda.core.entities.ChannelType)} instead
-     */
-    @Deprecated
-    public boolean isPrivate()
-    {
-        return isFromType(ChannelType.PRIVATE);
-    }
-
-    /**
      * Whether the user started typing in a channel of the specified type.
      *
      * @param  type

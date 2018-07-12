@@ -18,7 +18,6 @@ package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.managers.WebhookManager;
-import net.dv8tion.jda.core.managers.WebhookManagerUpdatable;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.webhook.WebhookClientBuilder;
 
@@ -150,21 +149,6 @@ public interface Webhook extends ISnowflake, IFakeable
      * @return The {@link net.dv8tion.jda.core.managers.WebhookManager WebhookManager} for this Webhook
      */
     WebhookManager getManager();
-
-    /**
-     * The {@link net.dv8tion.jda.core.managers.WebhookManager Manager}
-     * for this Webhook.
-     * <br>This Manager <b>does</b> require to update, it provides get methods
-     * to retrieve {@link net.dv8tion.jda.core.managers.fields.WebhookField fields} of this Webhook which can be modified and updated.
-     *
-     * @return An instance of {@link net.dv8tion.jda.core.managers.WebhookManagerUpdatable WebhookManagerUpdatable}
-     *         for this Webhook
-     *
-     * @deprecated
-     *         Use {@link #getManager()} instead
-     */
-    @Deprecated
-    WebhookManagerUpdatable getManagerUpdatable();
 
     /**
      * Creates a new {@link net.dv8tion.jda.webhook.WebhookClientBuilder WebhookClientBuilder} instance

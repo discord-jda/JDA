@@ -42,20 +42,6 @@ public class StatusChangeEvent extends Event implements UpdateEvent<JDA, JDA.Sta
      * The status that we changed to
      *
      * @return The new status
-     *
-     * @deprecated
-     *         Use {@link #getNewStatus()} instead
-     */
-    @Deprecated
-    public JDA.Status getStatus()
-    {
-        return newStatus;
-    }
-
-    /**
-     * The status that we changed to
-     *
-     * @return The new status
      */
     public JDA.Status getNewStatus()
     {

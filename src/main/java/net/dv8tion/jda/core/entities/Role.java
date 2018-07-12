@@ -17,7 +17,6 @@ package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.managers.RoleManager;
-import net.dv8tion.jda.core.managers.RoleManagerUpdatable;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.RoleAction;
 
@@ -228,21 +227,6 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      * @return The RoleManager of this Role
      */
     RoleManager getManager();
-
-    /**
-     * The {@link net.dv8tion.jda.core.managers.RoleManagerUpdatable RoleManagerUpdatable} for this Role.
-     * In the Manager, you can modify all its values.
-     *
-     * <p>This can be used to bulk update role properties.
-     * It requires to call an {@code update()} method.
-     *
-     * @return The {@link net.dv8tion.jda.core.managers.RoleManagerUpdatable RoleManagerUpdatable} for this Role
-     *
-     * @deprecated
-     *         Use {@link #getManager()} instead
-     */
-    @Deprecated
-    RoleManagerUpdatable getManagerUpdatable();
 
     /**
      * Deletes this Role.

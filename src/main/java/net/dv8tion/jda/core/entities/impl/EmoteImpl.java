@@ -46,8 +46,6 @@ public class EmoteImpl implements Emote
 
     private final ReentrantLock mngLock = new ReentrantLock();
     private volatile EmoteManager manager = null;
-    @Deprecated
-    private volatile net.dv8tion.jda.client.managers.EmoteManagerUpdatable managerUpdatable = null;
 
     private boolean managed = false;
     private boolean animated = false;
@@ -124,23 +122,6 @@ public class EmoteImpl implements Emote
                 if (manager == null)
                     manager = new EmoteManager(this);
                 return manager;
-            });
-        }
-        return m;
-    }
-
-    @Override
-    @Deprecated
-    public net.dv8tion.jda.client.managers.EmoteManagerUpdatable getManagerUpdatable()
-    {
-        net.dv8tion.jda.client.managers.EmoteManagerUpdatable m = managerUpdatable;
-        if (m == null)
-        {
-            m = MiscUtil.locked(mngLock, () ->
-            {
-                if (managerUpdatable == null)
-                    managerUpdatable = new net.dv8tion.jda.client.managers.EmoteManagerUpdatable(this);
-                return managerUpdatable;
             });
         }
         return m;

@@ -47,8 +47,6 @@ public class RoleImpl implements Role
 
     private final ReentrantLock mngLock = new ReentrantLock();
     private volatile RoleManager manager;
-    @Deprecated
-    private volatile net.dv8tion.jda.core.managers.RoleManagerUpdatable managerUpdatable;
 
     private String name;
     private boolean managed;
@@ -219,23 +217,6 @@ public class RoleImpl implements Role
                 if (manager == null)
                     manager = new RoleManager(this);
                 return manager;
-            });
-        }
-        return mng;
-    }
-
-    @Override
-    @Deprecated
-    public net.dv8tion.jda.core.managers.RoleManagerUpdatable getManagerUpdatable()
-    {
-        net.dv8tion.jda.core.managers.RoleManagerUpdatable mng = managerUpdatable;
-        if (mng == null)
-        {
-            mng = MiscUtil.locked(mngLock, () ->
-            {
-                if (managerUpdatable == null)
-                    managerUpdatable = new net.dv8tion.jda.core.managers.RoleManagerUpdatable(this);
-                return managerUpdatable;
             });
         }
         return mng;

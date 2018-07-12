@@ -51,13 +51,11 @@ public class UserUpdateHandler extends SocketHandler
         if (!Objects.equals(name, self.getName()) || !Objects.equals(discriminator, self.getDiscriminator()))
         {
             String oldName = self.getName();
-            String oldDiscriminator = self.getDiscriminator();
             self.setName(name);
-            self.setDiscriminator(discriminator);
             api.getEventManager().handle(
                 new SelfUpdateNameEvent(
                     api, responseNumber,
-                    oldName, oldDiscriminator));
+                    oldName));
         }
 
         if (!Objects.equals(avatarId, self.getAvatarId()))

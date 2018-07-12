@@ -49,8 +49,6 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
 
     protected final ReentrantLock mngLock = new ReentrantLock();
     protected volatile ChannelManager manager;
-    @Deprecated
-    protected volatile net.dv8tion.jda.core.managers.ChannelManagerUpdatable managerUpdatable;
 
     protected long parentId;
     protected String name;
@@ -138,23 +136,6 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
                 if (manager == null)
                     manager = new ChannelManager(this);
                 return manager;
-            });
-        }
-        return mng;
-    }
-
-    @Override
-    @Deprecated
-    public net.dv8tion.jda.core.managers.ChannelManagerUpdatable getManagerUpdatable()
-    {
-        net.dv8tion.jda.core.managers.ChannelManagerUpdatable mng = managerUpdatable;
-        if (mng == null)
-        {
-            mng = MiscUtil.locked(mngLock, () ->
-            {
-                if (managerUpdatable == null)
-                    managerUpdatable = new net.dv8tion.jda.core.managers.ChannelManagerUpdatable(this);
-                return managerUpdatable;
             });
         }
         return mng;

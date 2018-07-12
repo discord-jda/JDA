@@ -72,8 +72,6 @@ public class GuildImpl implements Guild
 
     private final ReentrantLock mngLock = new ReentrantLock();
     private volatile GuildManager manager;
-    @Deprecated
-    private volatile net.dv8tion.jda.core.managers.GuildManagerUpdatable managerUpdatable;
     private volatile GuildController controller;
 
     private Member owner;
@@ -418,23 +416,6 @@ public class GuildImpl implements Guild
                 if (manager == null)
                     manager = new GuildManager(this);
                 return manager;
-            });
-        }
-        return mng;
-    }
-
-    @Override
-    @Deprecated
-    public net.dv8tion.jda.core.managers.GuildManagerUpdatable getManagerUpdatable()
-    {
-        net.dv8tion.jda.core.managers.GuildManagerUpdatable mng = managerUpdatable;
-        if (mng == null)
-        {
-            mng = MiscUtil.locked(mngLock, () ->
-            {
-                if (managerUpdatable == null)
-                    managerUpdatable = new net.dv8tion.jda.core.managers.GuildManagerUpdatable(this);
-                return managerUpdatable;
             });
         }
         return mng;

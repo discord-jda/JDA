@@ -18,7 +18,6 @@ package net.dv8tion.jda.core.entities;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.managers.PermOverrideManager;
-import net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
 import javax.annotation.CheckReturnValue;
@@ -150,21 +149,6 @@ public interface PermissionOverride
      * @return The PermOverrideManager of this override.
      */
     PermOverrideManager getManager();
-
-    /**
-     *  Returns the {@link net.dv8tion.jda.core.managers.PermOverrideManager PermOverrideManager} for this PermissionOverride.
-     * In the PermOverrideManager you can modify the permissions of the override.
-     * <br>This can be used to bulk update channel settings.
-     *
-     * @return The PermOverrideManager of this override.
-     *
-     * @see    #getManager()
-     *
-     * @deprecated
-     *         Use {@link #getManager()} instead
-     */
-    @Deprecated
-    PermOverrideManagerUpdatable getManagerUpdatable();
 
     /**
      * Deletes this PermissionOverride.

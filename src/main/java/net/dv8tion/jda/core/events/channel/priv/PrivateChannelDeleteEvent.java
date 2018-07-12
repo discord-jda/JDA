@@ -55,18 +55,4 @@ public class PrivateChannelDeleteEvent extends Event
     {
         return channel;
     }
-
-    /**
-     * Deprecated
-     *
-     * @return The PrivateChannel
-     *
-     * @deprecated
-     *         Use {@link #getChannel()} instead
-     */
-    @Deprecated
-    public PrivateChannel getPrivateChannel()
-    {
-        return channel;
-    }
 }
