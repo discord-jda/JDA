@@ -25,6 +25,7 @@ import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.WebSocketCode;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.requests.WebSocketClient;
 import net.dv8tion.jda.core.utils.JDALogger;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -114,8 +115,9 @@ public class GuildSetupController
     public void ready(long id)
     {
         setupNodes.remove(id);
-        if (--incompleteCount < 1)
-            getJDA().getClient().ready();
+        WebSocketClient client = getJDA().getClient();
+        if (--incompleteCount < 1 && !client.isReady())
+            client.ready();
         else
             tryChunking();
     }

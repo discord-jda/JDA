@@ -257,7 +257,10 @@ class GuildSetupNode
         if (join)
         {
             api.getEventManager().handle(new GuildJoinEvent(api, api.getResponseTotal(), guild));
-            controller.remove(id);
+            if (requestedChunk)
+                controller.ready(id);
+            else
+                controller.remove(id);
         }
         else
         {
