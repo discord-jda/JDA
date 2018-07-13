@@ -169,6 +169,7 @@ public class EntityBuilder
                 .setIconId(iconId)
                 .setSplashId(splashId)
                 .setRegion(region)
+                .setOwnerId(ownerId)
                 .setAfkTimeout(Guild.Timeout.fromKey(afkTimeout))
                 .setVerificationLevel(VerificationLevel.fromKey(verificationLevel))
                 .setDefaultNotificationLevel(Guild.NotificationLevel.fromKey(notificationLevel))

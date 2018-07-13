@@ -271,13 +271,38 @@ public interface Guild extends ISnowflake
     TextChannel getSystemChannel();
 
     /**
-     * The {@link net.dv8tion.jda.core.entities.Member Member} object of the owner of this {@link net.dv8tion.jda.core.entities.Guild Guild}.
-     * <p>
-     * Ownership can be transferred using {@link GuildController#transferOwnership(Member)}.
+     * The {@link net.dv8tion.jda.core.entities.Member Member} object for the owner of this Guild.
      *
-     * @return Never-null Member object containing the Guild owner.
+     * <p>Ownership can be transferred using {@link GuildController#transferOwnership(Member)}.
+     *
+     * @return Member object for the Guild owner.
+     *
+     * @see    #getOwnerIdLong()
      */
     Member getOwner();
+
+    /**
+     * The ID for the current owner of this guild.
+     * <br>This is useful for debugging purposes or as a shortcut.
+     *
+     * @return The ID for the current owner
+     *
+     * @see    #getOwner()
+     */
+    long getOwnerIdLong();
+
+    /**
+     * The ID for the current owner of this guild.
+     * <br>This is useful for debugging purposes or as a shortcut.
+     *
+     * @return The ID for the current owner
+     *
+     * @see    #getOwner()
+     */
+    default String getOwnerId()
+    {
+        return Long.toUnsignedString(getOwnerIdLong());
+    }
 
     /**
      * The {@link net.dv8tion.jda.core.entities.Guild.Timeout Timeout} set for this Guild representing the amount of time

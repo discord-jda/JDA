@@ -81,6 +81,7 @@ public class GuildImpl implements Guild
     private String iconId;
     private String splashId;
     private String region;
+    private long ownerId;
     private Set<String> features;
     private VoiceChannel afkChannel;
     private TextChannel systemChannel;
@@ -261,6 +262,12 @@ public class GuildImpl implements Guild
     public Member getOwner()
     {
         return owner;
+    }
+
+    @Override
+    public long getOwnerIdLong()
+    {
+        return ownerId;
     }
 
     @Override
@@ -721,6 +728,12 @@ public class GuildImpl implements Guild
     public GuildImpl setAfkTimeout(Timeout afkTimeout)
     {
         this.afkTimeout = afkTimeout;
+        return this;
+    }
+
+    public GuildImpl setOwnerId(long ownerId)
+    {
+        this.ownerId = ownerId;
         return this;
     }
 
