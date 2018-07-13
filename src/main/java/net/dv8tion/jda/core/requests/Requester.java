@@ -192,6 +192,8 @@ public class Requester
             if (firstSuccess.code() >= 500)
             {
                 //Epic failure from other end. Attempted 4 times.
+                Response response = new Response(firstSuccess, -1, rays);
+                apiRequest.handleResponse(response);
                 return null;
             }
 
