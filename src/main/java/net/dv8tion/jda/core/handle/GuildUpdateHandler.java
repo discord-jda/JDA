@@ -51,7 +51,7 @@ public class GuildUpdateHandler extends SocketHandler
         //Do not rely on allContent past this point, this method is also called from GuildCreateHandler!
         //////////////
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
-        Member owner = guild.getMembersMap().get(content.getLong("owner_id"));
+        long ownerId = content.getLong("owner_id");
         String name = content.getString("name");
         String iconId = content.optString("icon", null);
         String splashId = content.optString("splash", null);
@@ -76,10 +76,12 @@ public class GuildUpdateHandler extends SocketHandler
             features = Collections.emptySet();
         }
 
-        if (!Objects.equals(owner, guild.getOwner()))
+        if (ownerId != guild.getOwnerIdLong())
         {
             Member oldOwner = guild.getOwner();
-            guild.setOwner(owner);
+            Member newOwner = guild.getMembersMap().get(ownerId);
+            guild.setOwner(newOwner);
+            guild.setOwnerId(ownerId);
             api.getEventManager().handle(
                     new GuildUpdateOwnerEvent(
                         api, responseNumber,
