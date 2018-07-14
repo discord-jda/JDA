@@ -78,17 +78,4 @@ public class VoiceChannelUpdatePermissionsEvent extends GenericVoiceChannelEvent
                 .map(Member.class::cast)
                 .collect(Collectors.toList());
     }
-
-    /**
-     * Deprecated.
-     *
-     * @return List of affected members
-     *
-     * @deprecated
-     *         Use {@link #getChangedMembers()} instead
-     */
-    public List<Member> getMemberWithPermissionChanges()
-    {
-        return getChangedMembers();
-    }
 }

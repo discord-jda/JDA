@@ -78,18 +78,4 @@ public class CategoryUpdatePermissionsEvent extends GenericCategoryEvent
             .map(Member.class::cast)
             .collect(Collectors.toList());
     }
-
-    /**
-     * Deprecated.
-     *
-     * @return List of affected members
-     *
-     * @deprecated
-     *         Use {@link #getChangedMembers()} instead
-     */
-    @Deprecated
-    public List<Member> getMembersWithPermissionChanges()
-    {
-        return getChangedMembers();
-    }
 }

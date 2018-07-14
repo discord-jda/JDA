@@ -36,8 +36,6 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class WebhookImpl implements Webhook
 {
-    @Deprecated
-    protected volatile net.dv8tion.jda.core.managers.WebhookManagerUpdatable managerUpdatable = null;
     protected volatile WebhookManager manager = null;
 
     private final ReentrantLock mngLock = new ReentrantLock();
@@ -136,23 +134,6 @@ public class WebhookImpl implements Webhook
                 if (manager == null)
                     manager = new WebhookManager(this);
                 return manager;
-            });
-        }
-        return mng;
-    }
-
-    @Override
-    @Deprecated
-    public net.dv8tion.jda.core.managers.WebhookManagerUpdatable getManagerUpdatable()
-    {
-        net.dv8tion.jda.core.managers.WebhookManagerUpdatable mng = managerUpdatable;
-        if (mng == null)
-        {
-            mng = MiscUtil.locked(mngLock, () ->
-            {
-                if (managerUpdatable == null)
-                    managerUpdatable = new net.dv8tion.jda.core.managers.WebhookManagerUpdatable(this);
-                return managerUpdatable;
             });
         }
         return mng;

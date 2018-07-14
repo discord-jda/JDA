@@ -21,7 +21,6 @@ import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.GuildController;
 import net.dv8tion.jda.core.managers.GuildManager;
-import net.dv8tion.jda.core.managers.GuildManagerUpdatable;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.MemberAction;
 import net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAction;
@@ -980,24 +979,6 @@ public interface Guild extends ISnowflake
      * @return The Manager of this Guild
      */
     GuildManager getManager();
-
-    /**
-     * Returns the {@link net.dv8tion.jda.core.managers.GuildManagerUpdatable Updatable GuildManager} for this Guild, used to modify
-     * all properties and settings of the Guild.
-     * <br>This manager type is the Updatable type. This means that multiple changes can be made before a REST request is
-     * sent to Discord. This manager type is great for clients which wish to display all modifiable fields and update
-     * the entity using an "apply" button or something similar.
-     *
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         if the guild is temporarily unavailable ({@link #isAvailable()})
-     *
-     * @return The Updatable Manager of this Guild
-     *
-     * @deprecated
-     *         Use {@link #getManager()} instead
-     */
-    @Deprecated
-    GuildManagerUpdatable getManagerUpdatable();
 
     /**
      * Returns the {@link net.dv8tion.jda.core.managers.GuildController GuildController} for this Guild. The controller

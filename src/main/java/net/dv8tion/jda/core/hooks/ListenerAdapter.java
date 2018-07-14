@@ -82,7 +82,8 @@ import net.dv8tion.jda.core.events.role.RoleCreateEvent;
 import net.dv8tion.jda.core.events.role.RoleDeleteEvent;
 import net.dv8tion.jda.core.events.role.update.*;
 import net.dv8tion.jda.core.events.self.*;
-import net.dv8tion.jda.core.events.user.*;
+import net.dv8tion.jda.core.events.user.GenericUserEvent;
+import net.dv8tion.jda.core.events.user.UserTypingEvent;
 import net.dv8tion.jda.core.events.user.update.*;
 
 /**
@@ -125,15 +126,6 @@ public abstract class ListenerAdapter implements EventListener
     public void onException(ExceptionEvent event) {}
 
     //User Events
-    @Deprecated
-    public void onUserNameUpdate(UserNameUpdateEvent event) {}
-    @Deprecated
-    public void onUserAvatarUpdate(UserAvatarUpdateEvent event) {}
-    @Deprecated
-    public void onUserOnlineStatusUpdate(UserOnlineStatusUpdateEvent event) {}
-    @Deprecated
-    public void onUserGameUpdate(UserGameUpdateEvent event) {}
-
     public void onUserUpdateName(UserUpdateNameEvent event) {}
     public void onUserUpdateDiscriminator(UserUpdateDiscriminatorEvent event) {}
     public void onUserUpdateAvatar(UserUpdateAvatarEvent event) {}
