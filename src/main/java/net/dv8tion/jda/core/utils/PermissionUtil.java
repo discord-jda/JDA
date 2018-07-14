@@ -643,6 +643,6 @@ public class PermissionUtil
     private static void checkGuild(Guild o1, Guild o2, String name)
     {
         Checks.check(o1.equals(o2),
-            "Specified %s is not in the same guild! (%s / %s)", name, o1.toString(), o2.toString());
+            "Specified %s is not in the same guild! (%s / %s)", name, o1, o2);
     }
 }

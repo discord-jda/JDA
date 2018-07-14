@@ -19,6 +19,7 @@ package net.dv8tion.jda.core.entities.impl;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
@@ -30,6 +31,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
+import java.util.Collections;
+import java.util.Set;
 
 public class InviteImpl implements Invite
 {
@@ -62,12 +65,15 @@ public class InviteImpl implements Invite
         this.guild = guild;
     }
 
-    public static RestAction<Invite> resolve(final JDA api, final String code)
+    public static RestAction<Invite> resolve(final JDA api, final String code, final boolean withCounts)
     {
         Checks.notNull(code, "code");
         Checks.notNull(api, "api");
 
-        final Route.CompiledRoute route = Route.Invites.GET_INVITE.compile(code);
+        Route.CompiledRoute route = Route.Invites.GET_INVITE.compile(code);
+        
+        if (withCounts)
+            route = route.withQueryParams("with_counts", "true");
 
         return new RestAction<Invite>(api, route)
         {
@@ -282,16 +288,23 @@ public class InviteImpl implements Invite
 
     public static class GuildImpl implements Guild
     {
-
         private final String iconId, name, splashId;
+        private final int presenceCount, memberCount;
         private final long id;
+        private final VerificationLevel verificationLevel;
+        private final Set<String> features;
 
-        public GuildImpl(final long id, final String iconId, final String name, final String splashId)
+        public GuildImpl(final long id, final String iconId, final String name, final String splashId, 
+                         final VerificationLevel verificationLevel, final int presenceCount, final int memberCount, final Set<String> features)
         {
             this.id = id;
             this.iconId = iconId;
             this.name = name;
             this.splashId = splashId;
+            this.verificationLevel = verificationLevel;
+            this.presenceCount = presenceCount;
+            this.memberCount = memberCount;
+            this.features = features;
         }
 
         @Override
@@ -332,6 +345,29 @@ public class InviteImpl implements Invite
                     : "https://cdn.discordapp.com/splashes/" + this.id + "/" + this.splashId + ".jpg";
         }
 
+        @Override
+        public VerificationLevel getVerificationLevel()
+        {
+            return verificationLevel;
+        }
+        
+        @Override
+        public int getOnlineCount()
+        {
+            return presenceCount;
+        }
+        
+        @Override
+        public int getMemberCount()
+        {
+            return memberCount;
+        }
+
+        @Override
+        public Set<String> getFeatures()
+        {
+            return features;
+        }
     }
 
 }

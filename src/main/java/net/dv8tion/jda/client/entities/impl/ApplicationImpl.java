@@ -34,8 +34,6 @@ public class ApplicationImpl implements Application
     private final JDA api;
     private final Object mngLock = new Object();
     private ApplicationManager manager;
-    @Deprecated
-    private net.dv8tion.jda.client.managers.ApplicationManagerUpdatable managerUpdatable;
 
     private BotImpl bot;
     private String description;
@@ -162,23 +160,6 @@ public class ApplicationImpl implements Application
         return mng;
     }
 
-    @Override
-    @Deprecated
-    public net.dv8tion.jda.client.managers.ApplicationManagerUpdatable getManagerUpdatable()
-    {
-        net.dv8tion.jda.client.managers.ApplicationManagerUpdatable mng = managerUpdatable;
-        if (mng == null)
-        {
-            synchronized (mngLock)
-            {
-                mng = managerUpdatable;
-                if (mng == null)
-                    mng = managerUpdatable = new net.dv8tion.jda.client.managers.ApplicationManagerUpdatable(this);
-            }
-        }
-        return mng;
-    }
-    
     @Override
     public String getName()
     {

@@ -129,7 +129,6 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         long twoWeeksAgo = ((System.currentTimeMillis() - (14 * 24 * 60 * 60 * 1000)) - MiscUtil.DISCORD_EPOCH) << MiscUtil.TIMESTAMP_OFFSET;
         for (String id : messageIds)
         {
-            Checks.notEmpty(id, "Message id in messageIds");
             Checks.check(MiscUtil.parseSnowflake(id) > twoWeeksAgo, "Message Id provided was older than 2 weeks. Id: " + id);
         }
 
@@ -151,7 +150,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     @Override
     public AuditableRestAction<Void> deleteWebhookById(String id)
     {
-        Checks.notEmpty(id, "webhook id");
+        Checks.isSnowflake(id, "Webhook ID");
 
         if (!guild.getSelfMember().hasPermission(this, Permission.MANAGE_WEBHOOKS))
             throw new InsufficientPermissionException(Permission.MANAGE_WEBHOOKS);
@@ -320,7 +319,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     @Override
     public AuditableRestAction<Void> deleteMessageById(String messageId)
     {
-        Checks.notEmpty(messageId, "messageId");
+        Checks.isSnowflake(messageId, "Message ID");
         checkPermission(Permission.MESSAGE_READ);
 
         //Call MessageChannel's default method
@@ -377,7 +376,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     @Override
     public RestAction<Void> clearReactionsById(String messageId)
     {
-        Checks.notEmpty(messageId, "Message ID");
+        Checks.isSnowflake(messageId, "Message ID");
 
         checkPermission(Permission.MESSAGE_MANAGE);
         final Route.CompiledRoute route = Route.Messages.REMOVE_ALL_REACTIONS.compile(getId(), messageId);
@@ -397,7 +396,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     @Override
     public RestAction<Void> removeReactionById(String messageId, String unicode, User user)
     {
-        Checks.noWhitespace(messageId, "Message ID");
+        Checks.isSnowflake(messageId, "Message ID");
         Checks.noWhitespace(unicode, "Unicode emoji");
         Checks.notNull(user, "User");
         if (!getJDA().getSelfUser().equals(user))

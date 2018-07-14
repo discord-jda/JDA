@@ -47,7 +47,7 @@ public class ContextException extends Exception
      * @return Wrapper of the provided consumer that will append a context with the current stack-trace
      */
     @Nonnull
-    public static Consumer<Throwable> here(@Nonnull Consumer<Throwable> acceptor)
+    public static Consumer<Throwable> here(@Nonnull Consumer<? super Throwable> acceptor)
     {
         ContextException context = new ContextException();
         return (ex) ->

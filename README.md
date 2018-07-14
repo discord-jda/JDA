@@ -172,6 +172,20 @@ Be sure to replace the **VERSION** key below with the one of the versions shown 
 
 ```
 
+**Maven without Audio**
+```xml
+<dependency>
+    <groupId>net.dv8tion</groupId>
+    <artifactId>JDA</artifactId>
+    <version>VERSION</version>
+    <exclusions>
+        <exclusion>
+            <artifactId>opus-java</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+```
+
 **Gradle**
 ```gradle
 dependencies {
@@ -183,7 +197,25 @@ repositories {
 }
 ```
 
+**Gradle without Audio**
+```gradle
+dependencies {
+    compile ('net.dv8tion:JDA:VERSION') {
+        exclude module: 'opus-java'
+    }
+}
+```
+
 The builds are distributed using JCenter through Bintray [JDA JCenter Bintray](https://bintray.com/dv8fromtheworld/maven/JDA/)
+
+If you do not need any opus de-/encoding done by JDA (voice receive/send with PCM) you can exclude `opus-java` entirely.
+This can be done if you only send audio with an `AudioSendHandler` which only sends opus (`isOpus() = true`). (See [lavaplayer](https://github.com/sedmelluq/lavaplayer))
+
+If you want to use a custom opus library you can provide the absolute path to `OpusLibrary.loadFrom(String)` before using
+the audio api of JDA. This works without `opus-java-natives` as it only requires `opus-java-api`.
+<br>_For this setup you should only exclude `opus-java-natives` as `opus-java-api` is a requirement for en-/decoding._
+
+See [opus-java](https://github.com/discord-java/opus-java)
 
 ### Logging Framework - SLF4J
 JDA is using [SLF4J](https://www.slf4j.org/) to log its messages.
@@ -303,10 +335,6 @@ All dependencies are managed automatically by Gradle.
    * Version: **20160810**
    * [Github](https://github.com/douglascrockford/JSON-java)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/org.json%3Ajson/view)
- * JNA
-   * Version: **4.4.0**
-   * [Github](https://github.com/java-native-access/jna)
-   * [JCenter Repository](https://bintray.com/bintray/jcenter/net.java.dev.jna%3Ajna/view)
  * Trove4j
    * Version: **3.0.3**
    * [BitBucket](https://bitbucket.org/trove4j/trove)
@@ -315,6 +343,10 @@ All dependencies are managed automatically by Gradle.
    * Version: **1.7.25**
    * [Website](https://www.slf4j.org/)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/org.slf4j%3Aslf4j-api/view)
+ * opus-java
+   * Version: **1.0.2**
+   * [GitHub](https://github.com/discord-java/opus-java)
+   * [JCenter Repository](https://bintray.com/minndevelopment/maven/opus-java)
 
 ## Related Projects
 
@@ -323,4 +355,4 @@ All dependencies are managed automatically by Gradle.
 - [discord.py](https://github.com/Rapptz/discord.py)
 - [serenity](https://github.com/zeyla/serenity)
 
-**See also:** https://discordapp.com/developers/docs/topics/libraries
+**See also:** https://discordapp.com/developers/docs/topics/community-resources#libraries

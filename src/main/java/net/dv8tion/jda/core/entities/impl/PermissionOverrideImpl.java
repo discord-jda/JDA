@@ -39,8 +39,6 @@ public class PermissionOverrideImpl implements PermissionOverride
 
     protected final ReentrantLock mngLock = new ReentrantLock();
     protected volatile PermOverrideManager manager;
-    @Deprecated
-    protected volatile net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable managerUpdatable;
 
     private long allow;
     private long deny;
@@ -141,23 +139,6 @@ public class PermissionOverrideImpl implements PermissionOverride
                 if (manager == null)
                     manager = new PermOverrideManager(this);
                 return manager;
-            });
-        }
-        return mng;
-    }
-
-    @Override
-    @Deprecated
-    public net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable getManagerUpdatable()
-    {
-        net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable mng = managerUpdatable;
-        if (mng == null)
-        {
-            mng = MiscUtil.locked(mngLock, () ->
-            {
-                if (managerUpdatable == null)
-                    managerUpdatable = new net.dv8tion.jda.core.managers.PermOverrideManagerUpdatable(this);
-                return managerUpdatable;
             });
         }
         return mng;

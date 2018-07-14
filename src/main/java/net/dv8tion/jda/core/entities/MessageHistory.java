@@ -465,7 +465,7 @@ public class MessageHistory
 
     private static void checkArguments(MessageChannel channel, String messageId)
     {
-        Checks.noWhitespace(messageId, "Message ID");
+        Checks.isSnowflake(messageId, "Message ID");
         Checks.notNull(channel, "Channel");
         if (channel.getType() == ChannelType.TEXT)
         {

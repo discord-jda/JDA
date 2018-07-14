@@ -22,7 +22,10 @@ import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.Helpers;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,11 +35,15 @@ import java.util.List;
  */
 public class WebhookMessageBuilder
 {
+    /** The maximum amount of files that can be added to a message ({@value MAX_FILES})*/
+    public static final int MAX_FILES = 10;
+
     protected final StringBuilder content = new StringBuilder();
     protected final List<MessageEmbed> embeds = new LinkedList<>();
-    protected String username, avatarUrl, fileName;
-    protected InputStream file;
+    protected final MessageAttachment[] files = new MessageAttachment[MAX_FILES];
+    protected String username, avatarUrl;
     protected boolean isTTS;
+    private int fileIndex = 0;
 
     /**
      * Creates a new WebhookMessageBuilder and applies
@@ -71,7 +78,17 @@ public class WebhookMessageBuilder
      */
     public boolean isEmpty()
     {
-        return content.length() == 0 && embeds.isEmpty() && file == null;
+        return content.length() == 0 && embeds.isEmpty() && fileIndex == 0;
+    }
+
+    /**
+     * The amount of files added to this WebhookMessageBuilder instance
+     *
+     * @return Amount of added files
+     */
+    public int getFileAmount()
+    {
+        return fileIndex;
     }
 
     /**
@@ -83,11 +100,24 @@ public class WebhookMessageBuilder
     {
         content.setLength(0);
         embeds.clear();
+        resetFiles();
         username = null;
         avatarUrl = null;
-        fileName = null;
-        file = null;
         isTTS = false;
+        return this;
+    }
+
+    /**
+     * Removes all added resources.
+     * The {@link #getFileAmount()} will report {@code 0} after this happened, however the allocated array will remain.
+     *
+     * @return The current WebhookMessageBuilder for chaining convenience
+     */
+    public WebhookMessageBuilder resetFiles()
+    {
+        for (int i = 0; i < MAX_FILES; i++)
+            files[i] = null;
+        fileIndex = 0;
         return this;
     }
 
@@ -233,6 +263,130 @@ public class WebhookMessageBuilder
     }
 
     /**
+     * Adds the provided file to the resulting message.
+     * <br>Shortcut for {@link #addFile(String, File)}.
+     *
+     * @param  file
+     *         The file to add
+     *
+     * @throws IllegalArgumentException
+     *         If the provided file is null, does not exist, or is not readable
+     * @throws IllegalStateException
+     *         If the file limit has already been reached
+     *
+     * @return The current WebhookMessageBuilder for chaining convenience
+     *
+     * @see    #resetFiles()
+     */
+    public WebhookMessageBuilder addFile(File file)
+    {
+        Checks.notNull(file, "File");
+        return addFile(file.getName(), file);
+    }
+
+    /**
+     * Adds the provided file to the resulting message.
+     *
+     * @param  name
+     *         The name to use for this file
+     * @param  file
+     *         The file to add
+     *
+     * @throws IllegalArgumentException
+     *         If the provided file is null, does not exist, or is not readable
+     * @throws IllegalStateException
+     *         If the file limit has already been reached
+     *
+     * @return The current WebhookMessageBuilder for chaining convenience
+     *
+     * @see    #resetFiles()
+     */
+    public WebhookMessageBuilder addFile(String name, File file)
+    {
+        Checks.notNull(file, "File");
+        Checks.notBlank(name, "Name");
+        Checks.check(file.exists() && file.canRead(), "File must exist and be readable");
+        if (fileIndex >= MAX_FILES)
+            throw new IllegalStateException("Cannot add more than " + MAX_FILES + " attachments to a message");
+
+        try
+        {
+            MessageAttachment attachment = new MessageAttachment(name, file);
+            files[fileIndex++] = attachment;
+            return this;
+        }
+        catch (IOException ex)
+        {
+            throw new IllegalArgumentException(ex);
+        }
+    }
+
+    /**
+     * Adds the provided file to the resulting message.
+     *
+     * @param  name
+     *         The name to use for this file
+     * @param  data
+     *         The file data to add
+     *
+     * @throws IllegalArgumentException
+     *         If the provided name data is null
+     * @throws IllegalStateException
+     *         If the file limit has already been reached
+     *
+     * @return The current WebhookMessageBuilder for chaining convenience
+     *
+     * @see    #resetFiles()
+     */
+    public WebhookMessageBuilder addFile(String name, byte[] data)
+    {
+        Checks.notNull(data, "Data");
+        Checks.notBlank(name, "Name");
+        if (fileIndex >= MAX_FILES)
+            throw new IllegalStateException("Cannot add more than " + MAX_FILES + " attachments to a message");
+
+        MessageAttachment attachment = new MessageAttachment(name, data);
+        files[fileIndex++] = attachment;
+        return this;
+    }
+
+    /**
+     * Adds the provided file to the resulting message.
+     *
+     * @param  name
+     *         The name to use for this file
+     * @param  data
+     *         The file data to add
+     *
+     * @throws IllegalArgumentException
+     *         If the provided name or data is null
+     * @throws IllegalStateException
+     *         If the file limit has already been reached
+     *
+     * @return The current WebhookMessageBuilder for chaining convenience
+     *
+     * @see    #resetFiles()
+     */
+    public WebhookMessageBuilder addFile(String name, InputStream data)
+    {
+        Checks.notNull(data, "InputStream");
+        Checks.notBlank(name, "Name");
+        if (fileIndex >= MAX_FILES)
+            throw new IllegalStateException("Cannot add more than " + MAX_FILES + " attachments to a message");
+
+        try
+        {
+            MessageAttachment attachment = new MessageAttachment(name, data);
+            files[fileIndex++] = attachment;
+            return this;
+        }
+        catch (IOException ex)
+        {
+            throw new IllegalArgumentException(ex);
+        }
+    }
+
+    /**
      * Sets the attached file for the resulting message.
      *
      * @param  file
@@ -243,10 +397,14 @@ public class WebhookMessageBuilder
      *         or exceeds the maximum size of 8MB
      *
      * @return The current WebhookMessageBuilder for chaining convenience
+     *
+     * @deprecated
+     *         Use {@link #addFile(File)} instead
      */
+    @Deprecated
     public WebhookMessageBuilder setFile(File file)
     {
-        return setFile(file, file == null ? null : file.getName());
+        return addFile(file == null ? null : file.getName(), file);
     }
 
     /**
@@ -262,28 +420,14 @@ public class WebhookMessageBuilder
      *         or exceeds the maximum size of 8MB
      *
      * @return The current WebhookMessageBuilder for chaining convenience
+     *
+     * @deprecated
+     *         Use {@link #addFile(String, File)} instead
      */
+    @Deprecated
     public WebhookMessageBuilder setFile(File file, String fileName)
     {
-        if (file == null)
-        {
-            this.file = null;
-            this.fileName = null;
-            return this;
-        }
-        Checks.check(file.canRead() && file.exists(), "File must exist and be readable!");
-        Checks.notBlank(fileName, "File name");
-        Checks.check(file.length() <= Message.MAX_FILE_SIZE, "Provided data exceeds the maximum size of 8MB!");
-        try
-        {
-            this.file = new FileInputStream(file);
-            this.fileName = fileName;
-        }
-        catch (FileNotFoundException ex)
-        {
-            throw new IllegalArgumentException(ex);
-        }
-        return this;
+        return addFile(fileName, file);
     }
 
     /**
@@ -298,20 +442,14 @@ public class WebhookMessageBuilder
      *         If the provided data exceeds the maximum size of 8MB
      *
      * @return The current WebhookMessageBuilder for chaining convenience
+     *
+     * @deprecated
+     *         Use {@link #addFile(String, byte[])} instead
      */
+    @Deprecated
     public WebhookMessageBuilder setFile(byte[] data, String fileName)
     {
-        if (data == null)
-        {
-            this.fileName = null;
-            this.file = null;
-            return this;
-        }
-        Checks.notBlank(fileName, "File name");
-        Checks.check(data.length <= Message.MAX_FILE_SIZE, "Provided data exceeds the maximum size of 8MB!");
-        this.file = new ByteArrayInputStream(data);
-        this.fileName = fileName;
-        return this;
+        return addFile(fileName, data);
     }
 
     /**
@@ -323,14 +461,14 @@ public class WebhookMessageBuilder
      *         The name that should be used for this attachment
      *
      * @return The current WebhookMessageBuilder for chaining convenience
+     *
+     * @deprecated
+     *         Use {@link #addFile(String, InputStream)} instead
      */
+    @Deprecated
     public WebhookMessageBuilder setFile(InputStream data, String fileName)
     {
-        Checks.check(data == null || !Helpers.isBlank(fileName),
-            "The provided file name must not be null, empty or blank!");
-        this.file = data;
-        this.fileName = fileName;
-        return this;
+        return addFile(fileName, data);
     }
 
     /**
@@ -360,6 +498,6 @@ public class WebhookMessageBuilder
     {
         if (isEmpty())
             throw new IllegalStateException("Cannot build an empty message!");
-        return new WebhookMessage(username, avatarUrl, content.toString(), embeds, isTTS, file, fileName);
+        return new WebhookMessage(username, avatarUrl, content.toString(), embeds, isTTS, fileIndex == 0 ? null : Arrays.copyOf(files, fileIndex));
     }
 }

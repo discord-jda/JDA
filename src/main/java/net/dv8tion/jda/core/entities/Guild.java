@@ -21,9 +21,10 @@ import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.GuildController;
 import net.dv8tion.jda.core.managers.GuildManager;
-import net.dv8tion.jda.core.managers.GuildManagerUpdatable;
 import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.restaction.MemberAction;
 import net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAction;
+import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.cache.MemberCacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 
@@ -43,10 +44,106 @@ public interface Guild extends ISnowflake
 {
     /**
      * Retrieves the available regions for this Guild
+     * <br>Shortcut for {@link #retrieveRegions(boolean) retrieveRegions(true)}
+     * <br>This will include deprecated voice regions by default.
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type {@link java.util.EnumSet EnumSet}
      */
-    RestAction<EnumSet<Region>> retrieveRegions();
+    @CheckReturnValue
+    default RestAction<EnumSet<Region>> retrieveRegions()
+    {
+        return retrieveRegions(true);
+    }
+
+    /**
+     * Retrieves the available regions for this Guild
+     *
+     * @param  includeDeprecated
+     *         Whether to include deprecated regions
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type {@link java.util.EnumSet EnumSet}
+     */
+    @CheckReturnValue
+    RestAction<EnumSet<Region>> retrieveRegions(boolean includeDeprecated);
+
+    /**
+     * Adds the user represented by the provided id to this guild.
+     * <br>This requires an <b>OAuth2 Access Token</b> with the scope {@code guilds.join}.
+     *
+     * @param  accessToken
+     *         The access token
+     * @param  userId
+     *         The user id
+     *
+     * @throws IllegalArgumentException
+     *         If the user id or access token is blank, empty, or null,
+     *         or if the provided user is already in this guild
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#CREATE_INSTANT_INVITE Permission.CREATE_INSTANT_INVITE}
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.MemberAction MemberAction}
+     *
+     * @see    <a href="https://discordapp.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
+     *
+     * @since  3.7.0
+     */
+    @CheckReturnValue
+    MemberAction addMember(String accessToken, String userId);
+
+    /**
+     * Adds the provided user to this guild.
+     * <br>This requires an <b>OAuth2 Access Token</b> with the scope {@code guilds.join}.
+     *
+     * @param  accessToken
+     *         The access token
+     * @param  user
+     *         The user
+     *
+     * @throws IllegalArgumentException
+     *         If the user or access token is blank, empty, or null,
+     *         or if the provided user is already in this guild
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#CREATE_INSTANT_INVITE Permission.CREATE_INSTANT_INVITE}
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.MemberAction MemberAction}
+     *
+     * @see    <a href="https://discordapp.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
+     *
+     * @since  3.7.0
+     */
+    @CheckReturnValue
+    default MemberAction addMember(String accessToken, User user)
+    {
+        Checks.notNull(user, "User");
+        return addMember(accessToken, user.getId());
+    }
+
+    /**
+     * Adds the user represented by the provided id to this guild.
+     * <br>This requires an <b>OAuth2 Access Token</b> with the scope {@code guilds.join}.
+     *
+     * @param  accessToken
+     *         The access token
+     * @param  userId
+     *         The user id
+     *
+     * @throws IllegalArgumentException
+     *         If the user id or access token is blank, empty, or null,
+     *         or if the provided user is already in this guild
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#CREATE_INSTANT_INVITE Permission.CREATE_INSTANT_INVITE}
+     *
+     * @return {@link net.dv8tion.jda.core.requests.restaction.MemberAction MemberAction}
+     *
+     * @see    <a href="https://discordapp.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
+     *
+     * @since  3.7.0
+     */
+    @CheckReturnValue
+    default MemberAction addMember(String accessToken, long userId)
+    {
+        return addMember(accessToken, Long.toUnsignedString(userId));
+    }
 
     /**
      * The human readable name of the {@link net.dv8tion.jda.core.entities.Guild Guild}.
@@ -857,24 +954,6 @@ public interface Guild extends ISnowflake
      * @return The Manager of this Guild
      */
     GuildManager getManager();
-
-    /**
-     * Returns the {@link net.dv8tion.jda.core.managers.GuildManagerUpdatable Updatable GuildManager} for this Guild, used to modify
-     * all properties and settings of the Guild.
-     * <br>This manager type is the Updatable type. This means that multiple changes can be made before a REST request is
-     * sent to Discord. This manager type is great for clients which wish to display all modifiable fields and update
-     * the entity using an "apply" button or something similar.
-     *
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         if the guild is temporarily unavailable ({@link #isAvailable()})
-     *
-     * @return The Updatable Manager of this Guild
-     *
-     * @deprecated
-     *         Use {@link #getManager()} instead
-     */
-    @Deprecated
-    GuildManagerUpdatable getManagerUpdatable();
 
     /**
      * Returns the {@link net.dv8tion.jda.core.managers.GuildController GuildController} for this Guild. The controller

@@ -130,7 +130,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @see #getInvites() getInvites()
      */
-    Pattern INVITE_PATTERN = Pattern.compile("(?:https?://)?discord(?:app\\.com/invite|\\.gg)/(\\S+)", Pattern.CASE_INSENSITIVE);
+    Pattern INVITE_PATTERN = Pattern.compile("(?:https?://)?discord(?:app\\.com/invite|\\.gg)/([a-z0-9-]+)", Pattern.CASE_INSENSITIVE);
 
     /**
      * An immutable list of all mentioned {@link net.dv8tion.jda.core.entities.User Users}.
