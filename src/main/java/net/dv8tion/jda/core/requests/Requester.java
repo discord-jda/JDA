@@ -158,7 +158,7 @@ public class Requester
         okhttp3.Response[] responses = new okhttp3.Response[4];
         // we have an array of all responses to later close them all at once
         //the response below this comment is used as the first successful response from the server
-        okhttp3.Response firstSuccess = null;
+        okhttp3.Response lastResponse = null;
         try
         {
             int attempt = 0;
@@ -168,43 +168,43 @@ public class Requester
                 //if (apiRequest.isCanceled())
                 //    return null;
                 Call call = httpClient.newCall(request);
-                firstSuccess = call.execute();
-                responses[attempt] = firstSuccess;
-                String cfRay = firstSuccess.header("CF-RAY");
+                lastResponse = call.execute();
+                responses[attempt] = lastResponse;
+                String cfRay = lastResponse.header("CF-RAY");
                 if (cfRay != null)
                     rays.add(cfRay);
 
-                if (firstSuccess.code() < 500)
+                if (lastResponse.code() < 500)
                     break; // break loop, got a successful response!
 
                 attempt++;
                 LOG.debug("Requesting {} -> {} returned status {}... retrying (attempt {})",
                         apiRequest.getRoute().getMethod(),
-                        url, firstSuccess.code(), attempt);
+                        url, lastResponse.code(), attempt);
                 try
                 {
                     Thread.sleep(50 * attempt);
                 }
                 catch (InterruptedException ignored) {}
             }
-            while (attempt < 3 && firstSuccess.code() >= 500);
+            while (attempt < 3 && lastResponse.code() >= 500);
 
-            if (firstSuccess.code() >= 500)
+            if (lastResponse.code() >= 500)
             {
                 //Epic failure from other end. Attempted 4 times.
-                Response response = new Response(firstSuccess, -1, rays);
+                Response response = new Response(lastResponse, -1, rays);
                 apiRequest.handleResponse(response);
                 return null;
             }
 
-            retryAfter = rateLimiter.handleResponse(route, firstSuccess);
+            retryAfter = rateLimiter.handleResponse(route, lastResponse);
             if (!rays.isEmpty())
                 LOG.debug("Received response with following cf-rays: {}", rays);
 
             if (retryAfter == null)
-                apiRequest.handleResponse(new Response(firstSuccess, -1, rays));
+                apiRequest.handleResponse(new Response(lastResponse, -1, rays));
             else if (handleOnRatelimit)
-                apiRequest.handleResponse(new Response(firstSuccess, retryAfter, rays));
+                apiRequest.handleResponse(new Response(lastResponse, retryAfter, rays));
 
             return retryAfter;
         }
@@ -213,13 +213,13 @@ public class Requester
             if (retryOnTimeout && !retried)
                 return execute(apiRequest, true, handleOnRatelimit);
             LOG.error("Requester timed out while executing a request", e);
-            apiRequest.handleResponse(new Response(firstSuccess, e, rays));
+            apiRequest.handleResponse(new Response(lastResponse, e, rays));
             return null;
         }
         catch (Exception e)
         {
             LOG.error("There was an exception while executing a REST request", e); //This originally only printed on DEBUG in 2.x
-            apiRequest.handleResponse(new Response(firstSuccess, e, rays));
+            apiRequest.handleResponse(new Response(lastResponse, e, rays));
             return null;
         }
         finally
