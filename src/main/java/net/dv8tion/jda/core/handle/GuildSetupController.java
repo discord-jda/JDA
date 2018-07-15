@@ -289,7 +289,7 @@ public class GuildSetupController
             }
             sendChunkRequest(subset);
         }
-        if (chunkingGuilds.size() == incompleteCount)
+        if (incompleteCount > 0 && chunkingGuilds.size() == incompleteCount)
         {
             // request last chunks
             final JSONArray array = new JSONArray();
@@ -328,7 +328,7 @@ public class GuildSetupController
             sendSyncRequest(subset);
             syncingCount -= subset.length();
         }
-        if (syncingGuilds.size() == syncingCount)
+        if (syncingCount > 0 && syncingGuilds.size() == syncingCount)
         {
             final JSONArray array = new JSONArray();
             syncingGuilds.forEach((guild) -> {
