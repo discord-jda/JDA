@@ -53,6 +53,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
@@ -73,8 +75,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected final JDAImpl api;
     protected final JDA.ShardInfo shardInfo;
     protected final Map<String, SocketHandler> handlers = new HashMap<>();
-    protected final Set<String> cfRays = new HashSet<>();
-    protected final Set<String> traces = new HashSet<>();
+    protected final Set<String> cfRays = ConcurrentHashMap.newKeySet();
+    protected final Set<String> traces = ConcurrentHashMap.newKeySet();
     protected final boolean compression;
 
     public WebSocket socket;
@@ -94,8 +96,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected final TLongObjectMap<ConnectionRequest> queuedAudioConnections = MiscUtil.newLongMap();
     protected final ReentrantLock audioQueueLock = new ReentrantLock();
 
-    protected final LinkedList<String> chunkSyncQueue = new LinkedList<>();
-    protected final LinkedList<String> ratelimitQueue = new LinkedList<>();
+    protected final Queue<String> chunkSyncQueue = new ConcurrentLinkedQueue<>();
+    protected final Queue<String> ratelimitQueue = new ConcurrentLinkedQueue<>();
     protected volatile Thread ratelimitThread = null;
     protected volatile long ratelimitResetTime;
     protected final AtomicInteger messagesSent = new AtomicInteger(0);
@@ -119,6 +121,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         this.compression = compression;
         this.shouldReconnect = api.isAutoReconnect();
         this.connectNode = new StartingNode();
+        setupHandlers();
         try
         {
             api.getSessionController().appendSession(connectNode);
@@ -232,12 +235,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     public void send(String message)
     {
-        ratelimitQueue.addLast(message);
+        ratelimitQueue.add(message);
     }
 
     public void chunkOrSyncRequest(JSONObject request)
     {
-        chunkSyncQueue.addLast(request.toString());
+        chunkSyncQueue.add(request.toString());
     }
 
     protected boolean send(String message, boolean skipQueue)
@@ -296,7 +299,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     audioQueueLock.lockInterruptibly();
 
                     ConnectionRequest audioRequest = getNextAudioConnectRequest();
-                    String chunkOrSyncRequest = chunkSyncQueue.peekFirst();
+                    String chunkOrSyncRequest = chunkSyncQueue.peek();
 
                     //if lock isn't needed we already unlock here
                     if (audioRequest == null || chunkOrSyncRequest != null)
@@ -305,7 +308,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     {
                         needRatelimit = !send(chunkOrSyncRequest, false);
                         if (!needRatelimit)
-                            chunkSyncQueue.removeFirst();
+                            chunkSyncQueue.remove();
 
                         attemptedToSend = true;
                     }
@@ -352,12 +355,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     }
                     else
                     {
-                        String message = ratelimitQueue.peekFirst();
+                        String message = ratelimitQueue.peek();
                         if (message != null)
                         {
                             needRatelimit = !send(message, false);
                             if (!needRatelimit)
-                                ratelimitQueue.removeFirst();
+                                ratelimitQueue.remove();
                             attemptedToSend = true;
                         }
                     }
@@ -705,7 +708,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 ).toString();
 
         if (!send(keepAlivePacket, true))
-            ratelimitQueue.addLast(keepAlivePacket);
+            ratelimitQueue.add(keepAlivePacket);
         heartbeatStartTime = System.currentTimeMillis();
     }
 
@@ -1437,7 +1440,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             if (shutdown)
                 return;
-            setupHandlers();
             setupSendingThread();
             connect();
             while (!isLast && api.getStatus().ordinal() < JDA.Status.AWAITING_LOGIN_CONFIRMATION.ordinal())
