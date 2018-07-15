@@ -32,7 +32,7 @@ public class EventCache
     public static final Logger LOG = JDALogger.getLog(EventCache.class);
     private final Map<Type, TLongObjectMap<List<CacheNode>>> eventCache = new HashMap<>();
 
-    public void cache(Type type, long triggerId, long responseTotal, JSONObject event, CacheConsumer handler)
+    public synchronized void cache(Type type, long triggerId, long responseTotal, JSONObject event, CacheConsumer handler)
     {
         TLongObjectMap<List<CacheNode>> triggerCache =
                 eventCache.computeIfAbsent(type, k -> new TLongObjectHashMap<>());
@@ -47,12 +47,12 @@ public class EventCache
         items.add(new CacheNode(responseTotal, event, handler));
     }
 
-    public void playbackCache(Type type, long triggerId)
+    public synchronized void playbackCache(Type type, long triggerId)
     {
         List<CacheNode> items;
         try
         {
-            items = eventCache.get(type).get(triggerId);
+            items = eventCache.get(type).remove(triggerId);
         }
         catch (NullPointerException e)
         {
@@ -71,7 +71,7 @@ public class EventCache
         }
     }
 
-    public int size()
+    public synchronized int size()
     {
         return (int) eventCache.values().stream()
                 .mapToLong(typeMap ->
@@ -79,12 +79,12 @@ public class EventCache
                 .sum();
     }
 
-    public void clear()
+    public synchronized void clear()
     {
         eventCache.clear();
     }
 
-    public void clear(Type type, long id)
+    public synchronized void clear(Type type, long id)
     {
         try
         {
