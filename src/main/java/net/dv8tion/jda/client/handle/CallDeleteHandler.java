@@ -20,7 +20,6 @@ import net.dv8tion.jda.client.entities.CallableChannel;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.client.entities.impl.CallImpl;
 import net.dv8tion.jda.client.entities.impl.GroupImpl;
-import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.client.events.call.CallDeleteEvent;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.entities.impl.PrivateChannelImpl;
@@ -44,7 +43,7 @@ public class CallDeleteHandler extends SocketHandler
             channel = api.getPrivateChannelMap().get(channelId);
         if (channel == null)
         {
-            api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+            api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Received CALL_DELETE for a Group/PrivateChannel that is not yet cached. JSON: {}", content);
             return null;
         }
@@ -52,7 +51,7 @@ public class CallDeleteHandler extends SocketHandler
         CallImpl call = (CallImpl) channel.getCurrentCall();
         if (call == null)
         {
-            api.getEventCache().cache(EventCache.Type.CALL, channelId, () -> handle(responseNumber, allContent));
+            api.getEventCache().cache(EventCache.Type.CALL, channelId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Received a CALL_DELETE for a Call that is not yet cached. JSON: {}", content);
             return null;
         }

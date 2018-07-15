@@ -334,7 +334,7 @@ public class EntityBuilder
             .setDiscriminator(user.get("discriminator").toString())
             .setAvatarId(user.optString("avatar", null))
             .setBot(Helpers.optBoolean(user, "bot"));
-        if (!fake)
+        if (!fake && modifyCache)
             api.getEventCache().playbackCache(EventCache.Type.USER, id);
         return userObj;
     }

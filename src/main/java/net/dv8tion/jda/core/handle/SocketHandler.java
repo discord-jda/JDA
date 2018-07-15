@@ -29,14 +29,14 @@ public abstract class SocketHandler
         this.api = api;
     }
 
-
-    public final void handle(long responseTotal, JSONObject o)
+    public final synchronized void handle(long responseTotal, JSONObject o)
     {
         this.allContent = o;
         this.responseNumber = responseTotal;
         final Long guildId = handleInternally(o.getJSONObject("d"));
         if (guildId != null)
             api.getGuildSetupController().cacheEvent(guildId, o);
+        this.allContent = null;
     }
 
     /**

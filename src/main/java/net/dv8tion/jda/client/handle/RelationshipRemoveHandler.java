@@ -19,7 +19,6 @@ package net.dv8tion.jda.client.handle;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.client.entities.Relationship;
 import net.dv8tion.jda.client.entities.RelationshipType;
-import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.client.events.relationship.FriendRemovedEvent;
 import net.dv8tion.jda.client.events.relationship.FriendRequestCanceledEvent;
 import net.dv8tion.jda.client.events.relationship.FriendRequestIgnoredEvent;
@@ -57,7 +56,7 @@ public class RelationshipRemoveHandler extends SocketHandler
         Relationship relationship = api.asClient().getRelationshipById(userId, type);
         if (relationship == null)
         {
-            api.getEventCache().cache(EventCache.Type.RELATIONSHIP, userId, () -> handle(responseNumber, allContent));
+            api.getEventCache().cache(EventCache.Type.RELATIONSHIP, userId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Received a RELATIONSHIP_REMOVE for a relationship that was not yet cached! JSON: {}", content);
             return null;
         }

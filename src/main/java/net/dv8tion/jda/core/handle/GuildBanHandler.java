@@ -44,7 +44,7 @@ public class GuildBanHandler extends SocketHandler
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
         if (guild == null)
         {
-            api.getEventCache().cache(EventCache.Type.GUILD, id, () -> handle(responseNumber, allContent));
+            api.getEventCache().cache(EventCache.Type.GUILD, id, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Received Guild Member {} event for a Guild not yet cached.", JDALogger.getLazyString(() -> banned ? "Ban" : "Unban"));
             return null;
         }

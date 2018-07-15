@@ -20,7 +20,10 @@ import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.client.entities.CallUser;
 import net.dv8tion.jda.client.entities.CallableChannel;
 import net.dv8tion.jda.client.entities.Group;
-import net.dv8tion.jda.client.entities.impl.*;
+import net.dv8tion.jda.client.entities.impl.CallImpl;
+import net.dv8tion.jda.client.entities.impl.CallUserImpl;
+import net.dv8tion.jda.client.entities.impl.CallVoiceStateImpl;
+import net.dv8tion.jda.client.entities.impl.GroupImpl;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.entities.impl.PrivateChannelImpl;
@@ -51,7 +54,7 @@ public class CallCreateHandler extends SocketHandler
             channel = api.getPrivateChannelMap().get(channelId);
         if (channel == null)
         {
-            api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+            api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Received a CALL_CREATE for a Group/PrivateChannel that is not yet cached. JSON: {}", content);
             return null;
         }

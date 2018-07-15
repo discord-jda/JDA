@@ -95,14 +95,14 @@ public class MessageUpdateHandler extends SocketHandler
                 case EntityBuilder.MISSING_CHANNEL:
                 {
                     final long channelId = content.getLong("channel_id");
-                    api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+                    api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
                     EventCache.LOG.debug("Received a message update for a channel that JDA does not currently have cached");
                     return null;
                 }
                 case EntityBuilder.MISSING_USER:
                 {
                     final long authorId = content.getJSONObject("author").getLong("id");
-                    api.getEventCache().cache(EventCache.Type.USER, authorId, () -> handle(responseNumber, allContent));
+                    api.getEventCache().cache(EventCache.Type.USER, authorId, responseNumber, allContent, this::handle);
                     EventCache.LOG.debug("Received a message update for a user that JDA does not currently have cached");
                     return null;
                 }
@@ -169,7 +169,7 @@ public class MessageUpdateHandler extends SocketHandler
             channel = api.asClient().getGroupById(channelId);
         if (channel == null)
         {
-            api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+            api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Received message update for embeds for a channel/group that JDA does not have cached yet.");
             return null;
         }

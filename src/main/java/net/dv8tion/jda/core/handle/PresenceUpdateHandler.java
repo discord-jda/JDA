@@ -51,7 +51,7 @@ public class PresenceUpdateHandler extends SocketHandler
             guild = (GuildImpl) api.getGuildById(guildId);
             if (guild == null)
             {
-                api.getEventCache().cache(EventCache.Type.GUILD, guildId, () -> handle(responseNumber, allContent));
+                api.getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
                 EventCache.LOG.debug("Received a PRESENCE_UPDATE for a guild that is not yet cached! " +
                     "GuildId: " + guildId + " UserId: " + content.getJSONObject("user").get("id"));
                 return null;

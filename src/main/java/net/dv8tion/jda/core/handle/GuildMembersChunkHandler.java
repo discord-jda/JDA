@@ -16,21 +16,11 @@
 
 package net.dv8tion.jda.core.handle;
 
-import gnu.trove.map.TLongIntMap;
-import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongIntHashMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.util.List;
 
 public class GuildMembersChunkHandler extends SocketHandler
 {
-    private final TLongIntMap expectedGuildMembers = new TLongIntHashMap();
-    private final TLongObjectMap<List<JSONArray>> memberChunksCache = new TLongObjectHashMap<>();
-
     public GuildMembersChunkHandler(JDAImpl api)
     {
         super(api);
