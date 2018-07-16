@@ -22,7 +22,6 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
-import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.impl.ManagerBase;
 import net.dv8tion.jda.core.requests.Route;
@@ -437,9 +436,6 @@ public class GuildManager extends ManagerBase
     @Override
     protected RequestBody finalizeData()
     {
-        if (!guild.isAvailable())
-            throw new GuildUnavailableException();
-
         JSONObject body = new JSONObject().put("name", guild.getName());
         if (shouldUpdate(NAME))
             body.put("name", name);

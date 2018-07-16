@@ -27,7 +27,6 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
@@ -199,8 +198,6 @@ public class JDAClientImpl implements JDAClient
     public MentionPaginationAction getRecentMentions(Guild guild)
     {
         Checks.notNull(guild, "Guild");
-        if (!guild.isAvailable())
-            throw new GuildUnavailableException("Cannot retrieve recent mentions for this Guild due to it being temporarily unavailable!");
         return new MentionPaginationAction(guild);
     }
 

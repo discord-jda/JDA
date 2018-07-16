@@ -235,8 +235,6 @@ public interface Guild extends ISnowflake
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER MANAGE_SERVER} permission.
      * @throws java.lang.IllegalStateException
      *         If the guild doesn't have the VANITY_URL feature
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link #isAvailable() available}
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: String
      *         <br>The vanity url of this server
@@ -901,8 +899,6 @@ public interface Guild extends ISnowflake
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link #isAvailable() available}
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@literal List<}{@link net.dv8tion.jda.core.entities.Guild.Ban Ban}{@literal >}
      *         <br>An unmodifiable list of all users currently banned from this Guild
@@ -930,8 +926,6 @@ public interface Guild extends ISnowflake
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the account doesn't have {@link net.dv8tion.jda.core.Permission#KICK_MEMBERS KICK_MEMBER} Permission.
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link #isAvailable() available}
      * @throws IllegalArgumentException
      *         If the provided days are less than {@code 1}
      *
@@ -971,8 +965,6 @@ public interface Guild extends ISnowflake
      * all properties and settings of the Guild.
      * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.core.requests.RestAction#queue() RestAction.queue()}.
      *
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         if the guild is temporarily unavailable ({@link #isAvailable()})
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER Permission.MANAGE_SERVER}
      *
@@ -999,8 +991,6 @@ public interface Guild extends ISnowflake
      *
      * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
      *         If the currently logged in account is not from {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If this Guild is not currently {@link #isAvailable() available}
      *
      * @return {@link net.dv8tion.jda.client.requests.restaction.pagination.MentionPaginationAction MentionPaginationAction}
      *

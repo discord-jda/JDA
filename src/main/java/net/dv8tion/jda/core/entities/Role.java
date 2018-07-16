@@ -167,8 +167,6 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      *
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES} Permission and every Permission the provided Role has
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      * @throws java.lang.IllegalArgumentException
      *         If the specified guild is {@code null}
      *
@@ -202,8 +200,6 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      *
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES} Permission and every Permission the provided Role has
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.RoleAction RoleAction}
      *         <br>RoleAction with already copied values from the specified {@link net.dv8tion.jda.core.entities.Role Role}

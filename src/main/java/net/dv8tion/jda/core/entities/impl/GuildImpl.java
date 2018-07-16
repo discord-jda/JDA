@@ -23,7 +23,6 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
-import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.managers.AudioManager;
@@ -179,8 +178,6 @@ public class GuildImpl implements Guild
     @Override
     public RestAction<String> getVanityUrl()
     {
-        if (!isAvailable())
-            throw new GuildUnavailableException();
         if (!getSelfMember().hasPermission(Permission.MANAGE_SERVER))
             throw new InsufficientPermissionException(Permission.MANAGE_SERVER);
         if (!getFeatures().contains("VANITY_URL"))
@@ -338,8 +335,6 @@ public class GuildImpl implements Guild
     @Override
     public RestAction<List<Ban>> getBanList()
     {
-        if (!isAvailable())
-            throw new GuildUnavailableException();
         if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS))
             throw new InsufficientPermissionException(Permission.BAN_MEMBERS);
 
@@ -373,8 +368,6 @@ public class GuildImpl implements Guild
     @Override
     public RestAction<Integer> getPrunableMemberCount(int days)
     {
-        if (!isAvailable())
-            throw new GuildUnavailableException();
         if (!getSelfMember().hasPermission(Permission.KICK_MEMBERS))
             throw new InsufficientPermissionException(Permission.KICK_MEMBERS);
 
