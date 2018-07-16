@@ -384,9 +384,9 @@ public interface ShardManager
      *
      * @return Possibly-empty list of all the {@link net.dv8tion.jda.core.entities.Guild Guilds} that all have the same name as the provided name.
      */
-    default List<Guild> getGuildsByName(String name, boolean ignoreCase)
+    default List<Guild> getGuildsByName(final String name, final boolean ignoreCase)
     {
-        return getGuildCache().getElementsByName(name, ignoreCase);
+        return this.getGuildCache().getElementsByName(name, ignoreCase);
     }
 
     /**
