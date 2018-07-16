@@ -374,6 +374,22 @@ public interface ShardManager
     }
 
     /**
+     * An unmodifiable list of all {@link net.dv8tion.jda.core.entities.Guild Guilds} that have the same name as the one provided.
+     * <br>If there are no {@link net.dv8tion.jda.core.entities.Guild Guilds} with the provided name, then this returns an empty list.
+     *
+     * @param  name
+     *         The name of the requested {@link net.dv8tion.jda.core.entities.Guild Guilds}.
+     * @param  ignoreCase
+     *         Whether to ignore case or not when comparing the provided name to each {@link net.dv8tion.jda.core.entities.Guild#getName()}.
+     *
+     * @return Possibly-empty list of all the {@link net.dv8tion.jda.core.entities.Guild Guilds} that all have the same name as the provided name.
+     */
+    default List<Guild> getGuildsByName(String name, boolean ignoreCase)
+    {
+        return getGuildCache().getElementsByName(name, ignoreCase);
+    }
+
+    /**
      * {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
      * all cached {@link net.dv8tion.jda.core.entities.Guild Guilds} visible to this ShardManager instance.
      *
