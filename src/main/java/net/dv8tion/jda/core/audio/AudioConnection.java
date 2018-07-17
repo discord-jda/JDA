@@ -568,6 +568,7 @@ public class AudioConnection
         this.speaking = isSpeaking;
         JSONObject obj = new JSONObject()
                 .put("speaking", isSpeaking ? 1 : 0)
+                .put("ssrc", webSocket.getSSRC())
                 .put("delay", 0);
         webSocket.send(VoiceCode.USER_SPEAKING_UPDATE, obj);
         if (!isSpeaking)
