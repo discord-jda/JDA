@@ -171,8 +171,16 @@ public class ChannelAction extends AuditableRestAction<Channel>
     }
 
     /**
-     * Adds a new Role-{@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
+     * Adds a new Role or Member {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
      * for the new Channel.
+     *
+     * <p>Example:
+     * <pre>{@code
+     * Role role = guild.getPublicRole();
+     * EnumSet<Permission> allow = EnumSet.of(Permission.MESSAGE_READ);
+     * EnumSet<Permission> deny = EnumSet.of(Permission.MESSAGE_WRITE);
+     * channelAction.addPermissionOverride(role, allow, deny);
+     * }</pre>
      *
      * @param  target
      *         The not-null {@link net.dv8tion.jda.core.entities.Role Role} or {@link net.dv8tion.jda.core.entities.Member Member} for the override
@@ -182,10 +190,11 @@ public class ChannelAction extends AuditableRestAction<Channel>
      *         The denied {@link net.dv8tion.jda.core.Permission Permissions} for the override or null
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the specified {@link net.dv8tion.jda.core.entities.Role Role} is null
-     *         or not within the same guild.
+     *         If the specified target is null or not within the same guild.
      *
      * @return The current ChannelAction, for chaining convenience
+     *
+     * @see    java.util.EnumSet
      */
     @CheckReturnValue
     public ChannelAction addPermissionOverride(IPermissionHolder target, Collection<Permission> allow, Collection<Permission> deny)
@@ -199,11 +208,19 @@ public class ChannelAction extends AuditableRestAction<Channel>
     }
 
     /**
-     * Adds a new Role-{@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
+     * Adds a new Role or Member {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
      * for the new Channel.
      *
+     * <p>Example:
+     * <pre>{@code
+     * Role role = guild.getPublicRole();
+     * long allow = Permission.MESSAGE_READ.getRawValue();
+     * long deny = Permission.MESSAGE_WRITE.getRawValue() | Permission.MESSAGE_ADD_REACTION.getRawValue();
+     * channelAction.addPermissionOverride(role, allow, deny);
+     * }</pre>
+     *
      * @param  target
-     *         The not-null {@link net.dv8tion.jda.core.entities.Role Role} for the override
+     *         The not-null {@link net.dv8tion.jda.core.entities.Role Role} or {@link net.dv8tion.jda.core.entities.Member Member} for the override
      * @param  allow
      *         The granted {@link net.dv8tion.jda.core.Permission Permissions} for the override
      *         Use {@link net.dv8tion.jda.core.Permission#getRawValue()} to retrieve these Permissions.
@@ -213,7 +230,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
-     *             <li>If the specified {@link net.dv8tion.jda.core.entities.Role Role} is null
+     *             <li>If the specified target is null
      *                 or not within the same guild.</li>
      *             <li>If one of the provided Permission values is invalid</li>
      *         </ul>
@@ -360,14 +377,6 @@ public class ChannelAction extends AuditableRestAction<Channel>
                 return;
         }
         request.onSuccess(channel);
-    }
-
-    protected void checkPermissions(Permission... permissions)
-    {
-        if (permissions == null)
-            return;
-        for (Permission p : permissions)
-            Checks.notNull(p, "Permissions");
     }
 
     protected void checkPermissions(Collection<Permission> permissions)
