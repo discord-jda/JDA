@@ -26,6 +26,7 @@ import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.guild.GuildReadyEvent;
+import net.dv8tion.jda.core.requests.WebSocketClient;
 import net.dv8tion.jda.core.utils.Helpers;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -288,11 +289,21 @@ class GuildSetupNode
             // Discord sent us enough members to satisfy the member_count
             //  but we found duplicates and still didn't reach enough to satisfy the count
             //  in this case we try to do chunking instead
-            // This is an extreme edge case
-            GuildSetupController.log.warn(
-                "Received suspicious members with a guild payload. Attempting to chunk. " +
-                "member_count: {} members: {} actual_members: {}",
-                expectedMemberCount, memberArray.length(), members.size());
+            if (WebSocketClient.LOG.isTraceEnabled())
+            {
+                // Don't log guild payload, if we already do it in WebSocketClient
+                GuildSetupController.log.debug(
+                    "Received suspicious members with a guild payload. Attempting to chunk. " +
+                    "member_count: {} members: {} actual_members: {} guild_id: {}",
+                    expectedMemberCount, memberArray.length(), members.size(), id);
+            }
+            else
+            {
+                GuildSetupController.log.debug(
+                    "Received suspicious members with a guild payload. Attempting to chunk. " +
+                    "member_count: {} members: {} actual_members: {} guild_id: {} array: {}",
+                    expectedMemberCount, memberArray.length(), members.size(), id, memberArray);
+            }
             members.clear();
             controller.addGuildForChunking(id, join);
             requestedChunk = true;
