@@ -51,6 +51,7 @@ import org.slf4j.MDC;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.ref.SoftReference;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -84,10 +85,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected final Object readLock = new Object();
     protected Inflater zlibContext = new Inflater();
     protected ByteArrayOutputStream readBuffer;
-    protected ByteArrayOutputStream decompressBuffer = new ByteArrayOutputStream(1024);
+    //this is a SoftReference in order to allow this resource to be freed to prevent resources starvation
+    protected SoftReference<ByteArrayOutputStream> decompressBuffer = new SoftReference<>(new ByteArrayOutputStream(1024));
 
     protected volatile Thread keepAliveThread;
-    protected boolean initiating;             //cache all events?
+    protected boolean initiating;
 
     protected int reconnectTimeoutS = 2;
     protected long heartbeatStartTime;
@@ -560,7 +562,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             synchronized (readLock)
             {
                 zlibContext = new Inflater();
-                decompressBuffer = new ByteArrayOutputStream(1024);
+                decompressBuffer = new SoftReference<>(new ByteArrayOutputStream(1024));
                 readBuffer = null;
             }
             if (isInvalidate)
@@ -1058,6 +1060,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         //Thanks to ShadowLordAlpha and Shredder121 for code and debugging.
         //Get the compressed message and inflate it
         //We use the same buffer here to optimize gc use
+        ByteArrayOutputStream decompressBuffer = getDecompressBuffer();
         try (InflaterOutputStream decompressor = new InflaterOutputStream(decompressBuffer, zlibContext))
         {
             if (readBuffer != null)
@@ -1075,6 +1078,14 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         String jsonString = decompressBuffer.toString("UTF-8");
         decompressBuffer.reset();
         return new JSONObject(jsonString);
+    }
+
+    protected ByteArrayOutputStream getDecompressBuffer()
+    {
+        ByteArrayOutputStream buffer = decompressBuffer.get();
+        if (buffer == null)
+            decompressBuffer = new SoftReference<>(buffer = new ByteArrayOutputStream(1024));
+        return buffer;
     }
 
     protected static int getInt(byte[] sink, int offset)
