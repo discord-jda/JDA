@@ -36,8 +36,6 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.function.IntConsumer;
-import java.util.function.LongConsumer;
 
 public class BotRateLimiter extends RateLimiter
 {
@@ -327,6 +325,8 @@ public class BotRateLimiter extends RateLimiter
         @Override
         public void run()
         {
+            if (!isContextSet.get())
+                isContextSet.set(requester.setContext());
             try
             {
                 synchronized (requests)

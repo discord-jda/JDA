@@ -193,6 +193,8 @@ public class ClientRateLimiter extends RateLimiter
         @Override
         public void run()
         {
+            if (!isContextSet.get())
+                isContextSet.set(requester.setContext());
             try
             {
                 synchronized (requests)

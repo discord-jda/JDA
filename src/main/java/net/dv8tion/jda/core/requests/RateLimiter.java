@@ -18,7 +18,6 @@ package net.dv8tion.jda.core.requests;
 
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.ratelimit.IBucket;
-import org.slf4j.MDC;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,6 +35,9 @@ public abstract class RateLimiter
     protected volatile boolean isShutdown = false; 
     protected final ConcurrentHashMap<String, IBucket> buckets = new ConcurrentHashMap<>();
     protected final ConcurrentLinkedQueue<IBucket> submittedBuckets = new ConcurrentLinkedQueue<>();
+    // whether we already set an MDC context in this thread, this is done because we only want to set
+    //  context when JDA added the shard info
+    protected ThreadLocal<Boolean> isContextSet = ThreadLocal.withInitial(() -> false);
 
     protected RateLimiter(Requester requester, int poolSize)
     {
@@ -122,12 +124,7 @@ public abstract class RateLimiter
         @Override
         public Thread newThread(Runnable r)
         {
-            Thread t = new Thread(() ->
-            {
-                if (requester.api.getContextMap() != null)
-                    MDC.setContextMap(requester.api.getContextMap());
-                r.run();
-            }, identifier + " - Thread " + threadCount.getAndIncrement());
+            Thread t = new Thread(r, identifier + " - Thread " + threadCount.getAndIncrement());
             t.setDaemon(true);
 
             return t;

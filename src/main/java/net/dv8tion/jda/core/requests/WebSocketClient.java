@@ -53,6 +53,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
@@ -283,8 +284,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         ratelimitThread = new Thread(() ->
         {
-            if (api.getContextMap() != null)
-                MDC.setContextMap(api.getContextMap());
+            api.setContext();
             boolean needRatelimit;
             boolean attemptedToSend;
             while (!Thread.currentThread().isInterrupted())
@@ -474,11 +474,14 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     }
 
     @Override
+    public void onThreadStarted(WebSocket websocket, ThreadType threadType, Thread thread) throws Exception
+    {
+        api.setContext();
+    }
+
+    @Override
     public void onConnected(WebSocket websocket, Map<String, List<String>> headers)
     {
-        //writing thread
-        if (api.getContextMap() != null)
-            MDC.setContextMap(api.getContextMap());
         api.setStatus(JDA.Status.IDENTIFYING_SESSION);
         LOG.info("Connected to WebSocket");
         if (headers.containsKey("cf-ray"))
@@ -620,8 +623,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
      */
     public void reconnect(boolean callFromQueue, boolean shouldHandleIdentify) throws InterruptedException
     {
-        if (callFromQueue && api.getContextMap() != null)
-            api.getContextMap().forEach(MDC::put);
+        {
+            ConcurrentMap<String, String> contextMap = api.getContextMap();
+            if (callFromQueue && contextMap != null)
+                contextMap.forEach(MDC::put);
+        }
         if (shutdown)
         {
             api.setStatus(JDA.Status.SHUTDOWN);
@@ -673,8 +679,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         keepAliveThread = new Thread(() ->
         {
-            if (api.getContextMap() != null)
-                MDC.setContextMap(api.getContextMap());
+            api.setContext();
             while (connected)
             {
                 try
@@ -1067,18 +1072,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     @Override
     public void onTextMessage(WebSocket websocket, String message)
     {
-        //reading thread
-        if (api.getContextMap() != null)
-            MDC.setContextMap(api.getContextMap());
         handleEvent(new JSONObject(message));
     }
 
     @Override
     public void onBinaryMessage(WebSocket websocket, byte[] binary) throws IOException, DataFormatException
     {
-        //reading thread
-        if (api.getContextMap() != null)
-            MDC.setContextMap(api.getContextMap());
         JSONObject json;
         synchronized (readLock)
         {

@@ -54,6 +54,9 @@ public class Requester
 
     private final OkHttpClient httpClient;
 
+    //when we actually set the shard info we can also set the mdc context map, before it makes no sense
+    private boolean isContextReady = false;
+
     private volatile boolean retryOnTimeout = false;
 
     public Requester(JDA api)
@@ -73,6 +76,18 @@ public class Requester
             rateLimiter = new ClientRateLimiter(this, 5);
         
         this.httpClient = this.api.getHttpClientBuilder().build();
+    }
+
+    public void setContextReady(boolean ready)
+    {
+        this.isContextReady = ready;
+    }
+
+    public boolean setContext()
+    {
+        if (isContextReady)
+            api.setContext();
+        return isContextReady;
     }
 
     public JDAImpl getJDA()
