@@ -29,6 +29,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import okhttp3.internal.http.HttpMethod;
 import org.slf4j.Logger;
+import org.slf4j.MDC;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,6 +38,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
@@ -56,6 +58,7 @@ public class Requester
 
     //when we actually set the shard info we can also set the mdc context map, before it makes no sense
     private boolean isContextReady = false;
+    private ConcurrentMap<String, String> contextMap = null;
 
     private volatile boolean retryOnTimeout = false;
 
@@ -83,11 +86,13 @@ public class Requester
         this.isContextReady = ready;
     }
 
-    public boolean setContext()
+    public void setContext()
     {
-        if (isContextReady)
-            api.setContext();
-        return isContextReady;
+        if (!isContextReady)
+            return;
+        if (contextMap == null)
+            contextMap = api.getContextMap();
+        contextMap.forEach(MDC::put);
     }
 
     public JDAImpl getJDA()

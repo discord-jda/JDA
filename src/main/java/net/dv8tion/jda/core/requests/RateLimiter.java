@@ -35,9 +35,6 @@ public abstract class RateLimiter
     protected volatile boolean isShutdown = false; 
     protected final ConcurrentHashMap<String, IBucket> buckets = new ConcurrentHashMap<>();
     protected final ConcurrentLinkedQueue<IBucket> submittedBuckets = new ConcurrentLinkedQueue<>();
-    // whether we already set an MDC context in this thread, this is done because we only want to set
-    //  context when JDA added the shard info
-    protected ThreadLocal<Boolean> isContextSet = ThreadLocal.withInitial(() -> false);
 
     protected RateLimiter(Requester requester, int poolSize)
     {
