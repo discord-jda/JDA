@@ -58,6 +58,7 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterOutputStream;
@@ -623,10 +624,17 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
      */
     public void reconnect(boolean callFromQueue, boolean shouldHandleIdentify) throws InterruptedException
     {
+        Set<MDC.MDCCloseable> contextEntries = null;
+        Map<String, String> previousContext = null;
         {
             ConcurrentMap<String, String> contextMap = api.getContextMap();
             if (callFromQueue && contextMap != null)
-                contextMap.forEach(MDC::put);
+            {
+                previousContext = MDC.getCopyOfContextMap();
+                contextEntries = contextMap.entrySet().stream()
+                          .map((entry) -> MDC.putCloseable(entry.getKey(), entry.getValue()))
+                          .collect(Collectors.toSet());
+            }
         }
         if (shutdown)
         {
@@ -673,6 +681,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 LOG.warn("Reconnect failed! Next attempt in {}s", reconnectTimeoutS);
             }
         }
+        if (contextEntries != null)
+            contextEntries.forEach(MDC.MDCCloseable::close);
+        if (previousContext != null)
+            previousContext.forEach(MDC::put);
     }
 
     protected void setupKeepAlive(long timeout)
