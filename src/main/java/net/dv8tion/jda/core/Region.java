@@ -37,6 +37,7 @@ public enum Region
     US_WEST("us-west", "US West", "\uD83C\uDDFA\uD83C\uDDF8", false),
     US_CENTRAL("us-central", "US Central", "\uD83C\uDDFA\uD83C\uDDF8", false),
     US_SOUTH("us-south", "US South", "\uD83C\uDDFA\uD83C\uDDF8", false),
+    SOUTH_AFRICA("southafrica", "South Africa", "\uD83C\uDDFF\uD83C\uDDE6", false),
 
     VIP_JAPAN("vip-japan", "Japan (VIP)", "\uD83C\uDDEF\uD83C\uDDF5", true),
     VIP_AMSTERDAM("vip-amsterdam", "Amsterdam (VIP)", "\uD83C\uDDF3\uD83C\uDDF1", true),
@@ -51,6 +52,7 @@ public enum Region
     VIP_US_WEST("vip-us-west", "US West (VIP)", "\uD83C\uDDFA\uD83C\uDDF8", true),
     VIP_US_CENTRAL("vip-us-central", "US Central (VIP)", "\uD83C\uDDFA\uD83C\uDDF8", true),
     VIP_US_SOUTH("vip-us-south", "US South (VIP)", "\uD83C\uDDFA\uD83C\uDDF8", true),
+    VIP_SOUTH_AFRICA("vip-southafrica", "South Africa (VIP)", "\uD83C\uDDFF\uD83C\uDDE6", true),
 
     UNKNOWN("", "Unknown Region", null, false);
 
