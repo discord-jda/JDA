@@ -442,23 +442,19 @@ public class AudioConnection
         {
             combinedAudioExecutor = Executors.newSingleThreadScheduledExecutor((task) ->
             {
-                Runnable r = () ->
-                {
-                    getJDA().setContext();
-                    task.run();
-                };
-                final Thread t = new Thread(AudioManagerImpl.AUDIO_THREADS, r, threadIdentifier + " Combined Thread");
+                final Thread t = new Thread(AudioManagerImpl.AUDIO_THREADS, task, threadIdentifier + " Combined Thread");
                 t.setDaemon(true);
                 t.setUncaughtExceptionHandler((thread, throwable) ->
                 {
                     LOG.error("I have no idea how, but there was an uncaught exception in the combinedAudioExecutor", throwable);
-                    JDAImpl api = (JDAImpl) getJDA();
+                    JDAImpl api = getJDA();
                     api.getEventManager().handle(new ExceptionEvent(api, throwable, true));
                 });
                 return t;
             });
             combinedAudioExecutor.scheduleAtFixedRate(() ->
             {
+                getJDA().setContext();
                 try
                 {
                     List<User> users = new LinkedList<>();

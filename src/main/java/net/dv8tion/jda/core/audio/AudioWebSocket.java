@@ -666,7 +666,7 @@ public class AudioWebSocket extends WebSocketAdapter
     }
 
     @Override
-    @Deprecated
+    @SuppressWarnings("deprecation")
     protected void finalize()
     {
         if (!shutdown)
@@ -694,7 +694,7 @@ public class AudioWebSocket extends WebSocketAdapter
             Runnable r2 = () ->
             {
                 if (contextMap != null)
-                    MDC.setContextMap(new ConcurrentHashMap<>(contextMap));
+                    contextMap.forEach(MDC::put);
                 r.run();
             };
             final Thread t = new Thread(AudioManagerImpl.AUDIO_THREADS, r2, identifier + " - Thread " + threadCount.getAndIncrement());

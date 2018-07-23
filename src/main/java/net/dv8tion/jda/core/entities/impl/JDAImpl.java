@@ -192,9 +192,8 @@ public class JDAImpl implements JDA
 
     public void setContext()
     {
-        ConcurrentMap<String, String> contextMap = getContextMap();
         if (contextMap != null)
-            MDC.setContextMap(contextMap);
+            contextMap.forEach(MDC::put);
     }
 
     public void setStatus(Status status)
