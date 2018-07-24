@@ -210,7 +210,7 @@ class GuildSetupNode
     void cleanup()
     {
         EventCache eventCache = controller.getJDA().getEventCache();
-        eventCache.clear(EventCache.Type.ROLE, id);
+        eventCache.clear(EventCache.Type.GUILD, id);
         if (partialGuild == null)
             return;
 
