@@ -44,7 +44,7 @@ class GuildSetupNode
     private JSONObject partialGuild;
     private int expectedMemberCount = 1;
     private boolean requestedSync;
-    private boolean requestedChunk;
+    boolean requestedChunk;
 
     final boolean join;
     final boolean sync;

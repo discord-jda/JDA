@@ -116,7 +116,7 @@ public class GuildSetupController
     {
         setupNodes.remove(id);
         WebSocketClient client = getJDA().getClient();
-        if (--incompleteCount < 1 && !client.isReady())
+        if (!client.isReady() && --incompleteCount < 1)
             client.ready();
         else
             tryChunking();
@@ -176,7 +176,7 @@ public class GuildSetupController
         {
             node.cleanup(); // clear EventCache
             // this was actually deleted
-            if (node.join)
+            if (node.join && !node.requestedChunk)
                 remove(id);
             else
                 ready(id);
