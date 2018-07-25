@@ -86,7 +86,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected Inflater zlibContext = new Inflater();
     protected ByteArrayOutputStream readBuffer;
     //this is a SoftReference in order to allow this resource to be freed to prevent resources starvation
-    protected SoftReference<ByteArrayOutputStream> decompressBuffer = new SoftReference<>(new ByteArrayOutputStream(1024));
+    protected SoftReference<ByteArrayOutputStream> decompressBuffer;
 
     protected volatile Thread keepAliveThread;
     protected boolean initiating;
@@ -454,7 +454,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         String url = api.getGatewayUrl() + "?encoding=json&v=" + DISCORD_GATEWAY_VERSION;
         if (compression)
+        {
             url += "&compress=zlib-stream";
+            decompressBuffer = newDecompressBuffer();
+        }
 
         try
         {
@@ -562,7 +565,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             synchronized (readLock)
             {
                 zlibContext = new Inflater();
-                decompressBuffer = new SoftReference<>(new ByteArrayOutputStream(1024));
+                if (decompressBuffer != null)
+                    decompressBuffer.clear();
                 readBuffer = null;
             }
             if (isInvalidate)
@@ -583,6 +587,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             }
         }
     }
+
 
     protected void queueReconnect()
     {
@@ -1082,6 +1087,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected ByteArrayOutputStream getDecompressBuffer()
     {
+        if (decompressBuffer == null)
+            decompressBuffer = newDecompressBuffer();
         ByteArrayOutputStream buffer = decompressBuffer.get();
         if (buffer == null)
             decompressBuffer = new SoftReference<>(buffer = new ByteArrayOutputStream(1024));
@@ -1296,6 +1303,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 //    {
 //        return queuedAudioConnections;
 //    }
+
+    private SoftReference<ByteArrayOutputStream> newDecompressBuffer()
+    {
+        return new SoftReference<>(new ByteArrayOutputStream(1024));
+    }
 
     protected ConnectionRequest getNextAudioConnectRequest()
     {
