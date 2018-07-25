@@ -27,23 +27,24 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 
+import java.lang.ref.WeakReference;
 import java.util.Collection;
 
 public class JDABotImpl implements JDABot
 {
-    protected final JDAImpl api;
+    protected final WeakReference<JDAImpl> api;
     protected String clientId = null;
     protected ShardManager shardManager = null;
 
     public JDABotImpl(JDAImpl api)
     {
-        this.api = api;
+        this.api = new WeakReference<>(api);
     }
 
     @Override
     public JDA getJDA()
     {
-        return api;
+        return api.get();
     }
 
     @Override
@@ -61,7 +62,7 @@ public class JDABotImpl implements JDABot
                     return;
                 }
 
-                ApplicationInfo info = api.getEntityBuilder().createApplicationInfo(response.getObject());
+                ApplicationInfo info = api.get().getEntityBuilder().createApplicationInfo(response.getObject());
                 JDABotImpl.this.clientId = info.getId();
                 request.onSuccess(info);
             }

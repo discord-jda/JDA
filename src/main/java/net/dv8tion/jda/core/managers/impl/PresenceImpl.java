@@ -25,6 +25,8 @@ import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.utils.Checks;
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
+
 /**
  * The Presence associated with the provided JDA instance
  * <br><b>Note that this does not automatically handle the 5/60 second rate limit!</b>
@@ -34,7 +36,7 @@ import org.json.JSONObject;
 public class PresenceImpl implements Presence
 {
 
-    private final JDAImpl api;
+    private final WeakReference<JDAImpl> api;
     private boolean idle = false;
     private Game game = null;
     private OnlineStatus status = OnlineStatus.ONLINE;
@@ -47,7 +49,7 @@ public class PresenceImpl implements Presence
      */
     public PresenceImpl(JDAImpl jda)
     {
-        this.api = jda;
+        this.api = new WeakReference<>(jda);
     }
 
 
@@ -57,7 +59,7 @@ public class PresenceImpl implements Presence
     @Override
     public JDA getJDA()
     {
-        return api;
+        return api.get();
     }
 
     @Override
@@ -202,7 +204,7 @@ public class PresenceImpl implements Presence
 
     protected void update(JSONObject data)
     {
-        api.getClient().send(new JSONObject()
+        api.get().getClient().send(new JSONObject()
             .put("d", data)
             .put("op", WebSocketCode.PRESENCE).toString());
     }

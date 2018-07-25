@@ -16,12 +16,17 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.AudioChannel;
+import net.dv8tion.jda.core.entities.GuildVoiceState;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.VoiceChannel;
+
+import java.lang.ref.WeakReference;
 
 public class GuildVoiceStateImpl implements GuildVoiceState
 {
-    private final GuildImpl guild;
-    private final Member member;
+    private final WeakReference<GuildImpl> guild;
+    private final WeakReference<Member> member;
 
     private VoiceChannel connectedChannel;
     private String sessionId;
@@ -33,8 +38,8 @@ public class GuildVoiceStateImpl implements GuildVoiceState
 
     public GuildVoiceStateImpl(GuildImpl guild, Member member)
     {
-        this.guild = guild;
-        this.member = member;
+        this.guild = new WeakReference<>(guild);
+        this.member = new WeakReference<>(member);
     }
 
     @Override
@@ -52,7 +57,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     @Override
     public JDAImpl getJDA()
     {
-        return guild.getJDA();
+        return getGuild().getJDA();
     }
 
     @Override
@@ -104,15 +109,15 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     }
 
     @Override
-    public Guild getGuild()
+    public GuildImpl getGuild()
     {
-        return guild;
+        return guild.get();
     }
 
     @Override
     public Member getMember()
     {
-        return member;
+        return member.get();
     }
 
     @Override
@@ -141,7 +146,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     @Override
     public String toString()
     {
-        return "VS:" + guild.getName() + ':' + member.getEffectiveName();
+        return "VS:" + getGuild().getName() + ':' + getMember().getEffectiveName();
     }
 
     // -- Setters --

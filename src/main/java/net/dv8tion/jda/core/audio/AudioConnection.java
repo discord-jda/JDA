@@ -40,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.MDC;
 import tomp2p.opuswrapper.Opus;
 
+import java.lang.ref.WeakReference;
 import java.net.*;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -67,7 +68,7 @@ public class AudioConnection
     private final AudioWebSocket webSocket;
     private final ConcurrentMap<String, String> contextMap;
     private DatagramSocket udpSocket;
-    private VoiceChannel channel;
+    private WeakReference<VoiceChannel> channel;
     private volatile AudioSendHandler sendHandler = null;
     private volatile AudioReceiveHandler receiveHandler = null;
     private PointerByReference opusEncoder;
@@ -87,9 +88,9 @@ public class AudioConnection
 
     public AudioConnection(AudioWebSocket webSocket, VoiceChannel channel)
     {
-        this.channel = channel;
+        this.channel = new WeakReference<>(channel);
         this.webSocket = webSocket;
-        this.webSocket.audioConnection = this;
+        this.webSocket.audioConnection = new WeakReference<>(this);
 
         final JDAImpl api = (JDAImpl) channel.getJDA();
         this.threadIdentifier = api.getIdentifierString() + " AudioConnection Guild: " + channel.getGuild().getId();
@@ -166,22 +167,22 @@ public class AudioConnection
 
     public VoiceChannel getChannel()
     {
-        return channel;
+        return channel.get();
     }
 
     public void setChannel(VoiceChannel channel)
     {
-        this.channel = channel;
+        this.channel = channel == null ? null : new WeakReference<>(channel);
     }
 
     public JDA getJDA()
     {
-        return channel.getJDA();
+        return channel.get().getJDA();
     }
 
     public Guild getGuild()
     {
-        return channel.getGuild();
+        return channel.get().getGuild();
     }
 
     public void removeUserSSRC(long userId)
@@ -212,7 +213,7 @@ public class AudioConnection
                 //Different User already existed with this ssrc. What should we do? Just replace? Probably should nuke the old opusDecoder.
                 //Log for now and see if any user report the error.
                 LOG.error("Yeah.. So.. JDA received a UserSSRC update for an ssrc that already had a User set. Inform DV8FromTheWorld.\nChannelId: {} SSRC: {} oldId: {} newId: {}",
-                    channel.getId(), ssrc, previousId, userId);
+                      channel.get().getId(), ssrc, previousId, userId);
             }
         }
         else
@@ -263,7 +264,7 @@ public class AudioConnection
     {
         if (udpSocket != null && !udpSocket.isClosed() && sendHandler != null && sendSystem == null)
         {
-            IAudioSendFactory factory = ((JDAImpl) channel.getJDA()).getAudioSendFactory();
+            IAudioSendFactory factory = ((JDAImpl) channel.get().getJDA()).getAudioSendFactory();
             sendSystem = factory.createSendSystem(new PacketProvider());
             sendSystem.setContextMap(contextMap);
             sendSystem.start();
@@ -610,7 +611,7 @@ public class AudioConnection
         @Override
         public VoiceChannel getConnectedChannel()
         {
-            return AudioConnection.this.channel;
+            return AudioConnection.this.channel.get();
         }
 
         @Override

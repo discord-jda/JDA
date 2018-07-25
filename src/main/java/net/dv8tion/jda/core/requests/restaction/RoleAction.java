@@ -270,7 +270,7 @@ public class RoleAction extends AuditableRestAction<Role>
     protected void handleResponse(Response response, Request<Role> request)
     {
         if (response.isOk())
-            request.onSuccess(api.getEntityBuilder().createRole(response.getObject(), guild.getIdLong()));
+            request.onSuccess(api.get().getEntityBuilder().createRole(response.getObject(), guild.getIdLong()));
         else
             request.onFailure(response);
     }

@@ -893,7 +893,7 @@ public interface MessageChannel extends ISnowflake, Formattable
             {
                 if (response.isOk())
                 {
-                    Message m = api.getEntityBuilder().createMessage(response.getObject(), MessageChannel.this, false);
+                    Message m = api.get().getEntityBuilder().createMessage(response.getObject(), MessageChannel.this, false);
                     request.onSuccess(m);
                 }
                 else
@@ -2471,7 +2471,7 @@ public interface MessageChannel extends ISnowflake, Formattable
                 if (response.isOk())
                 {
                     LinkedList<Message> pinnedMessages = new LinkedList<>();
-                    EntityBuilder builder = api.getEntityBuilder();
+                    EntityBuilder builder = api.get().getEntityBuilder();
                     JSONArray pins = response.getArray();
 
                     for (int i = 0; i < pins.length(); i++)

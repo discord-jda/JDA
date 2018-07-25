@@ -67,32 +67,32 @@ public class MessageReactionHandler extends SocketHandler
             return null;
         }
 
-        User user = api.getUserById(userId);
+        User user = getJDA().getUserById(userId);
         if (user == null)
-            user = api.getFakeUserMap().get(userId);
+            user = getJDA().getFakeUserMap().get(userId);
         if (user == null)
         {
-            api.getEventCache().cache(EventCache.Type.USER, userId, () -> handle(responseNumber, allContent));
+            getJDA().getEventCache().cache(EventCache.Type.USER, userId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Received a reaction for a user that JDA does not currently have cached");
             return null;
         }
 
-        MessageChannel channel = api.getTextChannelById(channelId);
+        MessageChannel channel = getJDA().getTextChannelById(channelId);
         if (channel == null)
         {
-            channel = api.getPrivateChannelById(channelId);
+            channel = getJDA().getPrivateChannelById(channelId);
         }
         if (channel == null)
         {
-            channel = api.getFakePrivateChannelMap().get(channelId);
+            channel = getJDA().getFakePrivateChannelMap().get(channelId);
         }
-        if (channel == null && api.getAccountType() == AccountType.CLIENT)
+        if (channel == null && getJDA().getAccountType() == AccountType.CLIENT)
         {
-            channel = api.asClient().getGroupById(channelId);
+            channel = getJDA().asClient().getGroupById(channelId);
         }
         if (channel == null)
         {
-            api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+            getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Received a reaction for a channel that JDA does not currently have cached");
             return null;
         }
@@ -100,12 +100,12 @@ public class MessageReactionHandler extends SocketHandler
         MessageReaction.ReactionEmote rEmote;
         if (emojiId != null)
         {
-            Emote emote = api.getEmoteById(emojiId);
+            Emote emote = getJDA().getEmoteById(emojiId);
             if (emote == null)
             {
                 if (emojiName != null)
                 {
-                    emote = new EmoteImpl(emojiId, api).setAnimated(emojiAnimated).setName(emojiName);
+                    emote = new EmoteImpl(emojiId, getJDA()).setAnimated(emojiAnimated).setName(emojiName);
                 }
                 else
                 {
@@ -118,9 +118,9 @@ public class MessageReactionHandler extends SocketHandler
         }
         else
         {
-            rEmote = new MessageReaction.ReactionEmote(emojiName, null, api);
+            rEmote = new MessageReaction.ReactionEmote(emojiName, null, getJDA());
         }
-        MessageReaction reaction = new MessageReaction(channel, rEmote, messageId, user.equals(api.getSelfUser()), -1);
+        MessageReaction reaction = new MessageReaction(channel, rEmote, messageId, user.equals(getJDA().getSelfUser()), -1);
 
         if (add)
             onAdd(reaction, user);
@@ -131,61 +131,61 @@ public class MessageReactionHandler extends SocketHandler
 
     private void onAdd(MessageReaction reaction, User user)
     {
-        IEventManager manager = api.getEventManager();
+        IEventManager manager = getJDA().getEventManager();
         switch (reaction.getChannelType())
         {
             case TEXT:
                 manager.handle(
                     new GuildMessageReactionAddEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             user, reaction));
                 break;
             case GROUP:
                 manager.handle(
                     new GroupMessageReactionAddEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             user, reaction));
                 break;
             case PRIVATE:
                 manager.handle(
                     new PrivateMessageReactionAddEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             user, reaction));
         }
 
         manager.handle(
             new MessageReactionAddEvent(
-                    api, responseNumber,
+                    getJDA(), responseNumber,
                     user, reaction));
     }
 
     private void onRemove(MessageReaction reaction, User user)
     {
-        IEventManager manager = api.getEventManager();
+        IEventManager manager = getJDA().getEventManager();
         switch (reaction.getChannelType())
         {
             case TEXT:
                 manager.handle(
                     new GuildMessageReactionRemoveEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             user, reaction));
                 break;
             case GROUP:
                 manager.handle(
                     new GroupMessageReactionRemoveEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             user, reaction));
                 break;
             case PRIVATE:
                 manager.handle(
                     new PrivateMessageReactionRemoveEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             user, reaction));
         }
 
         manager.handle(
             new MessageReactionRemoveEvent(
-                    api, responseNumber,
+                    getJDA(), responseNumber,
                     user, reaction));
     }
 }

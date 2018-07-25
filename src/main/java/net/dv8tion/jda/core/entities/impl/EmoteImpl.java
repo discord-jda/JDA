@@ -17,10 +17,8 @@
 package net.dv8tion.jda.core.entities.impl;
 
 import net.dv8tion.jda.client.managers.EmoteManager;
-import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Emote;
-import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.Request;
@@ -29,6 +27,7 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
 
+import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -40,8 +39,8 @@ import java.util.concurrent.locks.ReentrantLock;
 public class EmoteImpl implements Emote
 {
     private final long id;
-    private final GuildImpl guild;
-    private final JDAImpl api;
+    private final WeakReference<GuildImpl> guild;
+    private final WeakReference<JDAImpl> api;
     private final Set<Role> roles;
 
     private final ReentrantLock mngLock = new ReentrantLock();
@@ -54,23 +53,23 @@ public class EmoteImpl implements Emote
     public EmoteImpl(long id, GuildImpl guild)
     {
         this.id = id;
-        this.guild = guild;
-        this.api = guild.getJDA();
+        this.guild = new WeakReference<>(guild);
+        this.api = new WeakReference<>(guild.getJDA());
         this.roles = Collections.synchronizedSet(new HashSet<>());
     }
 
     public EmoteImpl(long id, JDAImpl api)
     {
         this.id = id;
-        this.api = api;
+        this.api = new WeakReference<>(api);
         this.guild = null;
         this.roles = null;
     }
 
     @Override
-    public Guild getGuild()
+    public GuildImpl getGuild()
     {
-        return guild;
+        return guild.get();
     }
 
     @Override
@@ -106,9 +105,9 @@ public class EmoteImpl implements Emote
     }
 
     @Override
-    public JDA getJDA()
+    public JDAImpl getJDA()
     {
-        return api;
+        return api.get();
     }
 
     @Override
@@ -140,7 +139,7 @@ public class EmoteImpl implements Emote
             throw new IllegalStateException("The emote you are trying to delete is not an actual emote we have access to (it is fake)!");
         if (managed)
             throw new UnsupportedOperationException("You cannot delete a managed emote!");
-        if (!guild.getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
+        if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
             throw new InsufficientPermissionException(Permission.MANAGE_EMOTES);
 
         Route.CompiledRoute route = Route.Emotes.DELETE_EMOTE.compile(getGuild().getId(), getId());
@@ -213,7 +212,7 @@ public class EmoteImpl implements Emote
     public EmoteImpl clone()
     {
         if (isFake()) return null;
-        EmoteImpl copy = new EmoteImpl(id, guild).setManaged(managed).setAnimated(animated).setName(name);
+        EmoteImpl copy = new EmoteImpl(id, getGuild()).setManaged(managed).setAnimated(animated).setName(name);
         copy.roles.addAll(roles);
         return copy;
 

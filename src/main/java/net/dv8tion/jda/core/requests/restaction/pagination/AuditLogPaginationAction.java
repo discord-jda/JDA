@@ -203,7 +203,7 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
         JSONArray entries = obj.getJSONArray("audit_log_entries");
 
         List<AuditLogEntry> list = new ArrayList<>(entries.length());
-        EntityBuilder builder = api.getEntityBuilder();
+        EntityBuilder builder = api.get().getEntityBuilder();
 
         TLongObjectMap<JSONObject> userMap = new TLongObjectHashMap<>();
         for (int i = 0; i < users.length(); i++)

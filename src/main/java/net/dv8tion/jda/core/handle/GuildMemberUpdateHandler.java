@@ -39,15 +39,15 @@ public class GuildMemberUpdateHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long id = content.getLong("guild_id");
-        if (api.getGuildLock().isLocked(id))
+        if (getJDA().getGuildLock().isLocked(id))
             return id;
 
         JSONObject userJson = content.getJSONObject("user");
         final long userId = userJson.getLong("id");
-        GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
+        GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(id);
         if (guild == null)
         {
-            api.getEventCache().cache(EventCache.Type.GUILD, userId, () ->
+            getJDA().getEventCache().cache(EventCache.Type.GUILD, userId, () ->
             {
                 handle(responseNumber, allContent);
             });
@@ -58,7 +58,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
         MemberImpl member = (MemberImpl) guild.getMembersMap().get(userId);
         if (member == null)
         {
-            api.getEventCache().cache(EventCache.Type.USER, userId, () ->
+            getJDA().getEventCache().cache(EventCache.Type.USER, userId, () ->
             {
                 handle(responseNumber, allContent);
             });
@@ -96,16 +96,16 @@ public class GuildMemberUpdateHandler extends SocketHandler
 
         if (removedRoles.size() > 0)
         {
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                     new GuildMemberRoleRemoveEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             member, removedRoles));
         }
         if (newRoles.size() > 0)
         {
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                     new GuildMemberRoleAddEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             member, newRoles));
         }
         if (content.has("nick"))
@@ -115,9 +115,9 @@ public class GuildMemberUpdateHandler extends SocketHandler
             if (!Objects.equals(prevNick, newNick))
             {
                 member.setNickname(newNick);
-                api.getEventManager().handle(
+                getJDA().getEventManager().handle(
                         new GuildMemberNickChangeEvent(
-                                api, responseNumber,
+                                getJDA(), responseNumber,
                                 member, prevNick, newNick));
             }
         }
@@ -137,7 +137,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
             }
             else
             {
-                api.getEventCache().cache(EventCache.Type.ROLE, id, () ->
+                getJDA().getEventCache().cache(EventCache.Type.ROLE, id, () ->
                 {
                     handle(responseNumber, allContent);
                 });

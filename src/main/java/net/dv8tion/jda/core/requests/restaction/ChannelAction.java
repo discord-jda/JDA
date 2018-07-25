@@ -359,7 +359,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
             return;
         }
 
-        EntityBuilder builder = api.getEntityBuilder();;
+        EntityBuilder builder = api.get().getEntityBuilder();
         Channel channel;
         switch (type)
         {

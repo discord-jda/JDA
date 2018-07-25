@@ -50,6 +50,7 @@ import org.json.JSONObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.lang.ref.WeakReference;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -59,7 +60,7 @@ import java.util.stream.Collectors;
 public class GuildImpl implements Guild
 {
     private final long id;
-    private final JDAImpl api;
+    private final WeakReference<JDAImpl> api;
 
     private final SortedSnowflakeCacheView<Category> categoryCache = new SortedSnowflakeCacheView<>(Category.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheView<VoiceChannel> voiceChannelCache = new SortedSnowflakeCacheView<>(VoiceChannel.class, Channel::getName, Comparator.naturalOrder());
@@ -94,14 +95,14 @@ public class GuildImpl implements Guild
     public GuildImpl(JDAImpl api, long id)
     {
         this.id = id;
-        this.api = api;
+        this.api = new WeakReference<>(api);
     }
 
     @Override
     public RestAction<EnumSet<Region>> retrieveRegions(boolean includeDeprecated)
     {
         Route.CompiledRoute route = Route.Guilds.GET_VOICE_REGIONS.compile(getId());
-        return new RestAction<EnumSet<Region>>(api, route)
+        return new RestAction<EnumSet<Region>>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<EnumSet<Region>> request)
@@ -136,7 +137,7 @@ public class GuildImpl implements Guild
         Checks.check(getMemberById(userId) == null, "User is already in this guild");
         if (!getSelfMember().hasPermission(Permission.CREATE_INSTANT_INVITE))
             throw new InsufficientPermissionException(Permission.CREATE_INSTANT_INVITE);
-        return new MemberAction(api, this, userId, accessToken);
+        return new MemberAction(getJDA(), this, userId, accessToken);
     }
 
     @Override
@@ -187,7 +188,7 @@ public class GuildImpl implements Guild
 
         Route.CompiledRoute route = Route.Guilds.GET_VANITY_URL.compile(getId());
 
-        return new RestAction<String>(api, route)
+        return new RestAction<String>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<String> request)
@@ -223,7 +224,7 @@ public class GuildImpl implements Guild
 
         Route.CompiledRoute route = Route.Guilds.GET_WEBHOOKS.compile(getId());
 
-        return new RestAction<List<Webhook>>(api, route)
+        return new RestAction<List<Webhook>>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<List<Webhook>> request)
@@ -236,7 +237,7 @@ public class GuildImpl implements Guild
 
                 JSONArray array = response.getArray();
                 List<Webhook> webhooks = new ArrayList<>(array.length());
-                EntityBuilder builder = api.getEntityBuilder();
+                EntityBuilder builder = api.get().getEntityBuilder();
 
                 for (Object object : array)
                 {
@@ -348,7 +349,7 @@ public class GuildImpl implements Guild
                     return;
                 }
 
-                EntityBuilder builder = api.getEntityBuilder();
+                EntityBuilder builder = api.get().getEntityBuilder();
                 List<Ban> bans = new LinkedList<>();
                 JSONArray bannedArr = response.getArray();
 
@@ -457,7 +458,7 @@ public class GuildImpl implements Guild
             throw new IllegalStateException("Cannot leave a guild that you are the owner of! Transfer guild ownership first!");
 
         Route.CompiledRoute route = Route.Self.LEAVE_GUILD.compile(getId());
-        return new RestAction<Void>(api, route)
+        return new RestAction<Void>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -473,7 +474,7 @@ public class GuildImpl implements Guild
     @Override
     public RestAction<Void> delete()
     {
-        if (!api.getSelfUser().isBot() && api.getSelfUser().isMfaEnabled())
+        if (!getJDA().getSelfUser().isBot() && getJDA().getSelfUser().isMfaEnabled())
             throw new IllegalStateException("Cannot delete a guild without providing MFA code. Use Guild#delete(String)");
 
         return delete(null);
@@ -486,14 +487,14 @@ public class GuildImpl implements Guild
             throw new PermissionException("Cannot delete a guild that you do not own!");
 
         JSONObject mfaBody = null;
-        if (!api.getSelfUser().isBot() && api.getSelfUser().isMfaEnabled())
+        if (!getJDA().getSelfUser().isBot() && getJDA().getSelfUser().isMfaEnabled())
         {
             Checks.notEmpty(mfaCode, "Provided MultiFactor Auth code");
             mfaBody = new JSONObject().put("code", mfaCode);
         }
 
         Route.CompiledRoute route = Route.Guilds.DELETE_GUILD.compile(getId());
-        return new RestAction<Void>(api, route, mfaBody)
+        return new RestAction<Void>(getJDA(), route, mfaBody)
         {
             @Override
             protected void handleResponse(Response response, Request<Void> request)
@@ -509,10 +510,10 @@ public class GuildImpl implements Guild
     @Override
     public AudioManager getAudioManager()
     {
-        if (!api.isAudioEnabled())
+        if (!getJDA().isAudioEnabled())
             throw new IllegalStateException("Audio is disabled. Cannot retrieve an AudioManager while audio is disabled.");
 
-        final TLongObjectMap<AudioManager> managerMap = api.getAudioManagerMap();
+        final TLongObjectMap<AudioManager> managerMap = getJDA().getAudioManagerMap();
         AudioManager mng = managerMap.get(id);
         if (mng == null)
         {
@@ -533,7 +534,7 @@ public class GuildImpl implements Guild
     @Override
     public JDAImpl getJDA()
     {
-        return api;
+        return api.get();
     }
 
     @Override
@@ -570,12 +571,12 @@ public class GuildImpl implements Guild
     @Override
     public boolean checkVerification()
     {
-        if (api.getAccountType() == AccountType.BOT)
+        if (getJDA().getAccountType() == AccountType.BOT)
             return true;
         if(canSendVerification)
             return true;
 
-        if (api.getSelfUser().getPhoneNumber() != null)
+        if (getJDA().getSelfUser().getPhoneNumber() != null)
             return canSendVerification = true;
 
         switch (verificationLevel)
@@ -586,10 +587,10 @@ public class GuildImpl implements Guild
                 if (ChronoUnit.MINUTES.between(getSelfMember().getJoinDate(), OffsetDateTime.now()) < 10)
                     break;
             case MEDIUM:
-                if (ChronoUnit.MINUTES.between(MiscUtil.getCreationTime(api.getSelfUser()), OffsetDateTime.now()) < 5)
+                if (ChronoUnit.MINUTES.between(MiscUtil.getCreationTime(getJDA().getSelfUser()), OffsetDateTime.now()) < 5)
                     break;
             case LOW:
-                if (!api.getSelfUser().isVerified())
+                if (!getJDA().getSelfUser().isVerified())
                     break;
             case NONE:
                 canSendVerification = true;
@@ -774,14 +775,14 @@ public class GuildImpl implements Guild
 
         final Route.CompiledRoute route = Route.Invites.GET_GUILD_INVITES.compile(getId());
 
-        return new RestAction<List<Invite>>(api, route)
+        return new RestAction<List<Invite>>(getJDA(), route)
         {
             @Override
             protected void handleResponse(final Response response, final Request<List<Invite>> request)
             {
                 if (response.isOk())
                 {
-                    EntityBuilder entityBuilder = this.api.getEntityBuilder();
+                    EntityBuilder entityBuilder = api.get().getEntityBuilder();
                     JSONArray array = response.getArray();
                     List<Invite> invites = new ArrayList<>(array.length());
                     for (int i = 0; i < array.length(); i++)

@@ -77,7 +77,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
 
                 JSONArray array = response.getArray();
                 List<Webhook> webhooks = new ArrayList<>(array.length());
-                EntityBuilder builder = api.getEntityBuilder();
+                EntityBuilder builder = api.get().getEntityBuilder();
 
                 for (Object object : array)
                 {
@@ -152,7 +152,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     {
         Checks.isSnowflake(id, "Webhook ID");
 
-        if (!guild.getSelfMember().hasPermission(this, Permission.MANAGE_WEBHOOKS))
+        if (!getGuild().getSelfMember().hasPermission(this, Permission.MANAGE_WEBHOOKS))
             throw new InsufficientPermissionException(Permission.MANAGE_WEBHOOKS);
 
         Route.CompiledRoute route = Route.Webhooks.DELETE_WEBHOOK.compile(id);
@@ -172,7 +172,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     @Override
     public boolean canTalk()
     {
-        return canTalk(guild.getSelfMember());
+        return canTalk(getGuild().getSelfMember());
     }
 
     @Override
@@ -219,7 +219,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     @Override
     public List<Member> getMembers()
     {
-        return Collections.unmodifiableList(guild.getMembersMap().valueCollection().stream()
+        return Collections.unmodifiableList(getGuild().getMembersMap().valueCollection().stream()
                 .filter(m -> m.hasPermission(this, Permission.MESSAGE_READ))
                 .collect(Collectors.toList()));
     }
@@ -229,7 +229,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     {
         //We call getTextChannels instead of directly accessing the GuildImpl.getTextChannelMap because
         // getTextChannels does the sorting logic.
-        List<TextChannel> channels = guild.getTextChannels();
+        List<TextChannel> channels = getGuild().getTextChannels();
         for (int i = 0; i < channels.size(); i++)
         {
             if (channels.get(i) == this)
@@ -494,7 +494,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
 
     private void checkVerification()
     {
-        if (!guild.checkVerification())
-            throw new VerificationLevelException(guild.getVerificationLevel());
+        if (!getGuild().checkVerification())
+            throw new VerificationLevelException(getGuild().getVerificationLevel());
     }
 }

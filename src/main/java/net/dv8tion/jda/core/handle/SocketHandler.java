@@ -18,15 +18,17 @@ package net.dv8tion.jda.core.handle;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
+
 public abstract class SocketHandler
 {
-    protected final JDAImpl api;
+    protected final WeakReference<JDAImpl> api;
     protected long responseNumber;
     protected JSONObject allContent;
 
     public SocketHandler(JDAImpl api)
     {
-        this.api = api;
+        this.api = new WeakReference<>(api);
     }
 
 
@@ -36,7 +38,12 @@ public abstract class SocketHandler
         this.responseNumber = responseTotal;
         final Long guildId = handleInternally(o.getJSONObject("d"));
         if (guildId != null)
-            api.getGuildLock().queue(guildId, o);
+            getJDA().getGuildLock().queue(guildId, o);
+    }
+
+    protected JDAImpl getJDA()
+    {
+        return api.get();
     }
 
     /**

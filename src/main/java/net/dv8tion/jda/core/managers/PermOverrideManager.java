@@ -28,6 +28,7 @@ import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import java.lang.ref.WeakReference;
 import java.util.Collection;
 
 /**
@@ -55,7 +56,7 @@ public class PermOverrideManager extends ManagerBase
     /** Used to reset <b>all</b> permissions to their original value */
     public static final long PERMISSIONS = 0x3;
 
-    protected final PermissionOverride override;
+    protected final WeakReference<PermissionOverride> override;
 
     protected long allowed;
     protected long denied;
@@ -73,7 +74,7 @@ public class PermOverrideManager extends ManagerBase
                   override.getChannel().getId(),
                   override.isMemberOverride() ? override.getMember().getUser().getId()
                                               : override.getRole().getId()));
-        this.override = override;
+        this.override = new WeakReference<>(override);
         this.allowed = override.getAllowedRaw();
         this.denied = override.getDeniedRaw();
         if (isPermissionChecksEnabled())
@@ -83,9 +84,9 @@ public class PermOverrideManager extends ManagerBase
     private void setupValues()
     {
         if (!shouldUpdate(ALLOWED))
-            this.allowed = override.getAllowedRaw();
+            this.allowed = getPermissionOverride().getAllowedRaw();
         if (!shouldUpdate(DENIED))
-            this.denied = override.getDeniedRaw();
+            this.denied = getPermissionOverride().getDeniedRaw();
     }
 
     /**
@@ -97,7 +98,7 @@ public class PermOverrideManager extends ManagerBase
      */
     public Guild getGuild()
     {
-        return override.getGuild();
+        return getPermissionOverride().getGuild();
     }
 
     /**
@@ -109,7 +110,7 @@ public class PermOverrideManager extends ManagerBase
      */
     public Channel getChannel()
     {
-        return override.getChannel();
+        return getPermissionOverride().getChannel();
     }
 
     /**
@@ -120,7 +121,7 @@ public class PermOverrideManager extends ManagerBase
      */
     public PermissionOverride getPermissionOverride()
     {
-        return override;
+        return override.get();
     }
 
     /**
@@ -386,13 +387,13 @@ public class PermOverrideManager extends ManagerBase
     @Override
     protected RequestBody finalizeData()
     {
-        String targetId = override.isMemberOverride() ? override.getMember().getUser().getId() : override.getRole().getId();
+        String targetId = getPermissionOverride().isMemberOverride() ? getPermissionOverride().getMember().getUser().getId() : getPermissionOverride().getRole().getId();
         // setup missing values here
         setupValues();
         RequestBody data = getRequestBody(
             new JSONObject()
                 .put("id", targetId)
-                .put("type", override.isMemberOverride() ? "member" : "role")
+                .put("type", getPermissionOverride().isMemberOverride() ? "member" : "role")
                 .put("allow", this.allowed)
                 .put("deny",  this.denied));
         reset();

@@ -29,6 +29,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
+import java.lang.ref.WeakReference;
 import java.util.concurrent.*;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -167,7 +168,7 @@ public abstract class RestAction<T>
 
     protected static boolean passContext = false;
 
-    protected final JDAImpl api;
+    protected final WeakReference<JDAImpl> api;
 
     private final Route.CompiledRoute route;
     private final RequestBody data;
@@ -234,7 +235,7 @@ public abstract class RestAction<T>
     {
         Checks.notNull(api, "api");
 
-        this.api = (JDAImpl) api;
+        this.api = new WeakReference<>((JDAImpl) api);
         this.route = route;
         this.data = data;
     }
@@ -264,7 +265,7 @@ public abstract class RestAction<T>
      */
     public JDA getJDA()
     {
-        return api;
+        return api.get();
     }
 
     /**
@@ -335,7 +336,7 @@ public abstract class RestAction<T>
             success = DEFAULT_SUCCESS == null ? FALLBACK_CONSUMER : DEFAULT_SUCCESS;
         if (failure == null)
             failure = DEFAULT_FAILURE == null ? FALLBACK_CONSUMER : DEFAULT_FAILURE;
-        api.getRequester().request(new Request<>(this, success, failure, finisher, true, data, rawData, route, headers));
+        api.get().getRequester().request(new Request<>(this, success, failure, finisher, true, data, rawData, route, headers));
     }
 
     /**
@@ -460,7 +461,7 @@ public abstract class RestAction<T>
      */
     public ScheduledFuture<T> submitAfter(long delay, TimeUnit unit)
     {
-        return submitAfter(delay, unit, api.pool);
+        return submitAfter(delay, unit, api.get().pool);
     }
 
     /**
@@ -552,7 +553,7 @@ public abstract class RestAction<T>
      */
     public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit)
     {
-        return queueAfter(delay, unit, api.pool);
+        return queueAfter(delay, unit, api.get().pool);
     }
 
     /**
@@ -584,7 +585,7 @@ public abstract class RestAction<T>
      */
     public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<? super T> success)
     {
-        return queueAfter(delay, unit, success, api.pool);
+        return queueAfter(delay, unit, success, api.get().pool);
     }
 
     /**
@@ -617,7 +618,7 @@ public abstract class RestAction<T>
      */
     public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<? super T> success, Consumer<? super Throwable> failure)
     {
-        return queueAfter(delay, unit, success, failure, api.pool);
+        return queueAfter(delay, unit, success, failure, api.get().pool);
     }
 
     /**

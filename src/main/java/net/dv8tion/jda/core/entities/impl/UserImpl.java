@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
-import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.User;
@@ -27,6 +26,7 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
 import java.util.FormattableFlags;
 import java.util.Formatter;
 import java.util.List;
@@ -34,7 +34,7 @@ import java.util.List;
 public class UserImpl implements User
 {
     protected final long id;
-    protected final JDAImpl api;
+    protected final WeakReference<JDAImpl> api;
 
     protected short discriminator;
     protected String name;
@@ -46,7 +46,7 @@ public class UserImpl implements User
     public UserImpl(long id, JDAImpl api)
     {
         this.id = id;
-        this.api = api;
+        this.api = new WeakReference<>(api);
     }
 
     @Override
@@ -110,14 +110,14 @@ public class UserImpl implements User
 
         Route.CompiledRoute route = Route.Self.CREATE_PRIVATE_CHANNEL.compile();
         JSONObject body = new JSONObject().put("recipient_id", getId());
-        return new RestAction<PrivateChannel>(api, route, body)
+        return new RestAction<PrivateChannel>(getJDA(), route, body)
         {
             @Override
             protected void handleResponse(Response response, Request<PrivateChannel> request)
             {
                 if (response.isOk())
                 {
-                    PrivateChannel priv = api.getEntityBuilder().createPrivateChannel(response.getObject());
+                    PrivateChannel priv = api.get().getEntityBuilder().createPrivateChannel(response.getObject());
                     UserImpl.this.privateChannel = priv;
                     request.onSuccess(priv);
                 }
@@ -150,9 +150,9 @@ public class UserImpl implements User
     }
 
     @Override
-    public JDA getJDA()
+    public JDAImpl getJDA()
     {
-        return api;
+        return api.get();
     }
 
     @Override

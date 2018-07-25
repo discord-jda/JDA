@@ -34,13 +34,13 @@ public class GuildCreateHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long id = content.getLong("id");
-        Guild g = api.getGuildById(id);
+        Guild g = getJDA().getGuildById(id);
         Boolean wasAvail = (g == null || g.getName() == null) ? null : g.isAvailable();
-        api.getEntityBuilder().createGuildFirstPass(content, guild ->
+        getJDA().getEntityBuilder().createGuildFirstPass(content, guild ->
         {
             if (guild.isAvailable())
             {
-                if (!api.getClient().isReady())
+                if (!getJDA().getClient().isReady())
                 {
                     getReadyHandler().guildSetupComplete(guild);
                 }
@@ -48,17 +48,17 @@ public class GuildCreateHandler extends SocketHandler
                 {
                     if (wasAvail == null) //didn't exist
                     {
-                        api.getEventManager().handle(
+                        getJDA().getEventManager().handle(
                             new GuildJoinEvent(
-                                api, responseNumber,
+                                getJDA(), responseNumber,
                                 guild));
-                        api.getEventCache().playbackCache(EventCache.Type.GUILD, guild.getIdLong());
+                        getJDA().getEventCache().playbackCache(EventCache.Type.GUILD, guild.getIdLong());
                     }
                     else if (!wasAvail) //was previously unavailable
                     {
-                        api.getEventManager().handle(
+                        getJDA().getEventManager().handle(
                             new GuildAvailableEvent(
-                                api, responseNumber,
+                                getJDA(), responseNumber,
                                 guild));
                     }
                     else
@@ -69,16 +69,16 @@ public class GuildCreateHandler extends SocketHandler
             }
             else
             {
-                if (!api.getClient().isReady())
+                if (!getJDA().getClient().isReady())
                 {
                     getReadyHandler().acknowledgeGuild(guild, false, false, false);
                 }
                 else
                 {
                     //Proper GuildJoinedEvent is fired when guild was populated
-                    api.getEventManager().handle(
+                    getJDA().getEventManager().handle(
                         new UnavailableGuildJoinedEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             guild.getIdLong()));
                 }
             }
@@ -88,6 +88,6 @@ public class GuildCreateHandler extends SocketHandler
 
     private ReadyHandler getReadyHandler()
     {
-        return api.getClient().getHandler("READY");
+        return getJDA().getClient().getHandler("READY");
     }
 }

@@ -28,6 +28,7 @@ import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import java.lang.ref.WeakReference;
 
 /**
  * Manager providing functionality to update one or more fields for the logged in account.
@@ -57,7 +58,7 @@ public class AccountManager extends ManagerBase
     /** Used to reset the password field */
     public static final long PASSWORD = 0x8;
 
-    protected final SelfUser selfUser;
+    protected final WeakReference<SelfUser> selfUser;
 
     protected String currentPassword;
 
@@ -75,7 +76,7 @@ public class AccountManager extends ManagerBase
     public AccountManager(SelfUser selfUser)
     {
         super(selfUser.getJDA(), Route.Self.MODIFY_SELF.compile());
-        this.selfUser = selfUser;
+        this.selfUser = new WeakReference<>(selfUser);
     }
 
     /**
@@ -87,7 +88,7 @@ public class AccountManager extends ManagerBase
      */
     public SelfUser getSelfUser()
     {
-        return selfUser;
+        return selfUser.get();
     }
 
     /**
@@ -314,15 +315,15 @@ public class AccountManager extends ManagerBase
     @Override
     protected RequestBody finalizeData()
     {
-        boolean isClient = api.getAccountType() == AccountType.CLIENT;
+        boolean isClient = getJDA().getAccountType() == AccountType.CLIENT;
         Checks.check(!isClient || (currentPassword != null && !currentPassword.isEmpty()),
             "Provided client account password to be used in auth is null or empty!");
 
         JSONObject body = new JSONObject();
 
         //Required fields. Populate with current values..
-        body.put("username", selfUser.getName());
-        body.put("avatar", opt(selfUser.getAvatarId()));
+        body.put("username", getSelfUser().getName());
+        body.put("avatar", opt(getSelfUser().getAvatarId()));
 
         if (shouldUpdate(NAME))
             body.put("username", name);
@@ -355,7 +356,7 @@ public class AccountManager extends ManagerBase
         }
 
         String newToken = response.getObject().getString("token").replace("Bot ", "");
-        api.setToken(newToken);
+        api.get().setToken(newToken);
         request.onSuccess(null);
     }
 }

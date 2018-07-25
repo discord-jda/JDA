@@ -49,6 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.MDC;
 
 import javax.security.auth.login.LoginException;
+import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -87,7 +88,7 @@ public class JDAImpl implements JDA
 
     protected final SessionController sessionController;
 
-    protected WebSocketClient client;
+    protected WeakReference<WebSocketClient> client;
     protected Requester requester;
     protected IEventManager eventManager = new InterfacedEventManager();
     protected IAudioSendFactory audioSendFactory = new DefaultSendFactory();
@@ -161,7 +162,7 @@ public class JDAImpl implements JDA
         verifyToken();
         LOG.info("Login Successful!");
 
-        client = new WebSocketClient(this, compression);
+        client = new WeakReference<>(new WebSocketClient(this, compression));
         // remove our MDC metadata when we exit our code
         if (previousContext != null)
             previousContext.forEach(MDC::put);
@@ -332,7 +333,7 @@ public class JDAImpl implements JDA
     {
         this.autoReconnect = autoReconnect;
         if (client != null)
-            client.setAutoReconnect(autoReconnect);
+            client.get().setAutoReconnect(autoReconnect);
     }
 
     @Override
@@ -362,13 +363,13 @@ public class JDAImpl implements JDA
     @Override
     public List<String> getCloudflareRays()
     {
-        return Collections.unmodifiableList(new LinkedList<>(client.getCfRays()));
+        return Collections.unmodifiableList(new LinkedList<>(client.get().getCfRays()));
     }
 
     @Override
     public List<String> getWebSocketTrace()
     {
-        return Collections.unmodifiableList(new LinkedList<>(client.getTraces()));
+        return Collections.unmodifiableList(new LinkedList<>(client.get().getTraces()));
     }
 
     @Override
@@ -662,7 +663,7 @@ public class JDAImpl implements JDA
 
     public WebSocketClient getClient()
     {
-        return client;
+        return client.get();
     }
 
     public TLongObjectMap<User> getUserMap()

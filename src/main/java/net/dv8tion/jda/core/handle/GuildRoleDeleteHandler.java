@@ -36,13 +36,13 @@ public class GuildRoleDeleteHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long guildId = content.getLong("guild_id");
-        if (api.getGuildLock().isLocked(guildId))
+        if (getJDA().getGuildLock().isLocked(guildId))
             return guildId;
 
-        GuildImpl guild = (GuildImpl) api.getGuildMap().get(guildId);
+        GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(guildId);
         if (guild == null)
         {
-            api.getEventCache().cache(EventCache.Type.GUILD, guildId, () -> handle(responseNumber, allContent));
+            getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("GUILD_ROLE_DELETE was received for a Guild that is not yet cached: {}", content);
             return null;
         }
@@ -51,7 +51,7 @@ public class GuildRoleDeleteHandler extends SocketHandler
         Role removedRole = guild.getRolesMap().remove(roleId);
         if (removedRole == null)
         {
-//            api.getEventCache().cache(EventCache.Type.ROLE, roleId, () -> handle(responseNumber, allContent));
+//            getJDA().getEventCache().cache(EventCache.Type.ROLE, roleId, () -> handle(responseNumber, allContent));
             WebSocketClient.LOG.debug("GUILD_ROLE_DELETE was received for a Role that is not yet cached: {}", content);
             return null;
         }
@@ -62,11 +62,11 @@ public class GuildRoleDeleteHandler extends SocketHandler
             MemberImpl member = (MemberImpl) m;
             member.getRoleSet().remove(removedRole);
         }
-        api.getEventManager().handle(
+        getJDA().getEventManager().handle(
             new RoleDeleteEvent(
-                api, responseNumber,
+                getJDA(), responseNumber,
                 removedRole));
-        api.getEventCache().clear(EventCache.Type.ROLE, roleId);
+        getJDA().getEventCache().clear(EventCache.Type.ROLE, roleId);
         return null;
     }
 }

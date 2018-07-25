@@ -31,6 +31,7 @@ import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import java.lang.ref.WeakReference;
 import java.util.Collection;
 
 /**
@@ -70,7 +71,7 @@ public class ChannelManager extends ManagerBase
     /** Used to reset the permission field */
     public static final long PERMISSION = 0x80;
 
-    protected final Channel channel;
+    protected final WeakReference<Channel> channel;
 
     protected String name;
     protected String parent;
@@ -95,7 +96,7 @@ public class ChannelManager extends ManagerBase
     {
         super(channel.getJDA(),
               Route.Channels.MODIFY_CHANNEL.compile(channel.getId()));
-        this.channel = channel;
+        this.channel = new WeakReference<>(channel);
         if (isPermissionChecksEnabled())
             checkPermissions();
         this.overridesAdd = new TLongObjectHashMap<>();
@@ -109,7 +110,7 @@ public class ChannelManager extends ManagerBase
      */
     public ChannelType getType()
     {
-        return channel.getType();
+        return getChannel().getType();
     }
 
     /**
@@ -120,7 +121,7 @@ public class ChannelManager extends ManagerBase
      */
     public Channel getChannel()
     {
-        return channel;
+        return channel.get();
     }
 
     /**
@@ -132,7 +133,7 @@ public class ChannelManager extends ManagerBase
      */
     public Guild getGuild()
     {
-        return channel.getGuild();
+        return getChannel().getGuild();
     }
 
     /**
@@ -289,7 +290,7 @@ public class ChannelManager extends ManagerBase
     {
         Checks.notNull(permHolder, "PermissionHolder");
         Checks.check(permHolder.getGuild().equals(getGuild()), "PermissionHolder is not from the same Guild!");
-        if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_PERMISSIONS))
+        if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
             throw new InsufficientPermissionException(Permission.MANAGE_PERMISSIONS);
         final long id = getId(permHolder);
         final int type = permHolder instanceof Role ? PermOverrideData.ROLE_TYPE : PermOverrideData.MEMBER_TYPE;
@@ -355,7 +356,7 @@ public class ChannelManager extends ManagerBase
     {
         Checks.notNull(permHolder, "PermissionHolder");
         Checks.check(permHolder.getGuild().equals(getGuild()), "PermissionHolder is not from the same Guild!");
-        if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_PERMISSIONS))
+        if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
             throw new InsufficientPermissionException(Permission.MANAGE_PERMISSIONS);
         final long id = getId(permHolder);
         withLock(lock, (lock) ->
@@ -390,9 +391,9 @@ public class ChannelManager extends ManagerBase
     @CheckReturnValue
     public ChannelManager sync()
     {
-        if(channel.getParent() == null)
+        if(getChannel().getParent() == null)
             throw new IllegalStateException("sync() requires a parent category");
-        return sync(channel.getParent());
+        return sync(getChannel().getParent());
     }
 
     /**
@@ -422,12 +423,12 @@ public class ChannelManager extends ManagerBase
     public ChannelManager sync(Channel syncSource)
     {
         Checks.notNull(syncSource, "SyncSource");
-        Checks.check(channel.getGuild().equals(syncSource.getGuild()), "Sync only works for channels of same guild");
+        Checks.check(getGuild().equals(syncSource.getGuild()), "Sync only works for channels of same guild");
 
-        if(syncSource.equals(channel))
+        if(syncSource.equals(getChannel()))
             return this;
 
-        if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_PERMISSIONS))
+        if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
             throw new InsufficientPermissionException(Permission.MANAGE_PERMISSIONS);
 
         withLock(lock, (lock) ->
@@ -436,7 +437,7 @@ public class ChannelManager extends ManagerBase
             this.overridesAdd.clear();
 
             //set all current overrides to-be-removed
-            channel.getPermissionOverrides().forEach(permO ->
+            getChannel().getPermissionOverrides().forEach(permO ->
                 this.overridesRem.add(getId(permO.isRoleOverride() ? permO.getRole() : permO.getMember()))
             );
 
@@ -651,7 +652,7 @@ public class ChannelManager extends ManagerBase
     @Override
     protected RequestBody finalizeData()
     {
-        JSONObject frame = new JSONObject().put("name", channel.getName());
+        JSONObject frame = new JSONObject().put("name", getChannel().getName());
         if (shouldUpdate(NAME))
             frame.put("name", name);
         if (shouldUpdate(POSITION))
@@ -680,7 +681,7 @@ public class ChannelManager extends ManagerBase
     protected boolean checkPermissions()
     {
         final Member selfMember = getGuild().getSelfMember();
-        if (!selfMember.hasPermission(channel, Permission.MANAGE_CHANNEL))
+        if (!selfMember.hasPermission(getChannel(), Permission.MANAGE_CHANNEL))
             throw new InsufficientPermissionException(Permission.MANAGE_CHANNEL);
         return super.checkPermissions();
     }
@@ -690,7 +691,7 @@ public class ChannelManager extends ManagerBase
         //note: overridesAdd and overridesRem are mutually disjoint
         TLongObjectHashMap<PermOverrideData> data = new TLongObjectHashMap<>(this.overridesAdd);
 
-        AbstractChannelImpl<?> impl = (AbstractChannelImpl<?>) channel;
+        AbstractChannelImpl<?> impl = (AbstractChannelImpl<?>) getChannel();
         impl.getOverrideMap().forEachEntry((id, override) ->
         {
             //removed by not adding them here, this data set overrides the existing one

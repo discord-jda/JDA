@@ -29,6 +29,7 @@ import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import java.lang.ref.WeakReference;
 
 /**
  * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.core.entities.Webhook Webhook}.
@@ -55,7 +56,7 @@ public class WebhookManager extends ManagerBase
     /** Used to reset the avatar field */
     public static final long AVATAR  = 0x4;
 
-    protected final Webhook webhook;
+    protected final WeakReference<Webhook> webhook;
 
     protected String name;
     protected String channel;
@@ -70,7 +71,7 @@ public class WebhookManager extends ManagerBase
     public WebhookManager(Webhook webhook)
     {
         super(webhook.getJDA(), Route.Webhooks.MODIFY_WEBHOOK.compile(webhook.getId()));
-        this.webhook = webhook;
+        this.webhook = new WeakReference<>(webhook);
         if (isPermissionChecksEnabled())
             checkPermissions();
     }
@@ -84,7 +85,7 @@ public class WebhookManager extends ManagerBase
      */
     public Guild getGuild()
     {
-        return webhook.getGuild();
+        return getWebhook().getGuild();
     }
 
     /**
@@ -96,7 +97,7 @@ public class WebhookManager extends ManagerBase
      */
     public TextChannel getChannel()
     {
-        return webhook.getChannel();
+        return getWebhook().getChannel();
     }
 
     /**
@@ -107,7 +108,7 @@ public class WebhookManager extends ManagerBase
      */
     public Webhook getWebhook()
     {
-        return webhook;
+        return webhook.get();
     }
 
     /**

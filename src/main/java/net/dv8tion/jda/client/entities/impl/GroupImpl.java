@@ -29,6 +29,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.core.utils.cache.impl.SnowflakeCacheViewImpl;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,7 +37,7 @@ import java.util.List;
 public class GroupImpl implements Group
 {
     private final long id;
-    private final JDAImpl api;
+    private final WeakReference<JDAImpl> api;
 
     private final SnowflakeCacheViewImpl<User> userCache = new SnowflakeCacheViewImpl<>(User.class, User::getName);
 
@@ -49,7 +50,7 @@ public class GroupImpl implements Group
     public GroupImpl(long id, JDAImpl api)
     {
         this.id = id;
-        this.api = api;
+        this.api = new WeakReference<>(api);
     }
 
     @Override
@@ -113,7 +114,7 @@ public class GroupImpl implements Group
     public List<User> getNonFriendUsers()
     {
         List<User> nonFriends = new ArrayList<>();
-        TLongObjectMap<Relationship> map = api.asClient().getRelationshipMap();
+        TLongObjectMap<Relationship> map = api.get().asClient().getRelationshipMap();
         userCache.forEach((user) ->
         {
             Relationship relationship = map.get(user.getIdLong());
@@ -128,7 +129,7 @@ public class GroupImpl implements Group
     public List<Friend> getFriends()
     {
         List<Friend> friends = new ArrayList<>();
-        TLongObjectMap<Relationship> map = api.asClient().getRelationshipMap();
+        TLongObjectMap<Relationship> map = api.get().asClient().getRelationshipMap();
         userCache.forEach(user ->
         {
             Relationship relationship = map.get(user.getIdLong());
@@ -160,7 +161,7 @@ public class GroupImpl implements Group
     @Override
     public JDA getJDA()
     {
-        return api;
+        return api.get();
     }
 
     @Override

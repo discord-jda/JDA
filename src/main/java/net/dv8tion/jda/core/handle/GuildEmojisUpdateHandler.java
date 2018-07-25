@@ -43,13 +43,13 @@ public class GuildEmojisUpdateHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long guildId = content.getLong("guild_id");
-        if (api.getGuildLock().isLocked(guildId))
+        if (getJDA().getGuildLock().isLocked(guildId))
             return guildId;
 
-        GuildImpl guild = (GuildImpl) api.getGuildMap().get(guildId);
+        GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(guildId);
         if (guild == null)
         {
-            api.getEventCache().cache(EventCache.Type.GUILD, guildId, () ->
+            getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, () ->
                     handle(responseNumber, allContent));
             return null;
         }
@@ -107,17 +107,17 @@ public class GuildEmojisUpdateHandler extends SocketHandler
         for (Emote e : oldEmotes)
         {
             emoteMap.remove(e.getIdLong());
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                 new EmoteRemovedEvent(
-                    api, responseNumber,
+                    getJDA(), responseNumber,
                     e));
         }
 
         for (Emote e : newEmotes)
         {
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                 new EmoteAddedEvent(
-                    api, responseNumber,
+                    getJDA(), responseNumber,
                     e));
         }
 
@@ -130,17 +130,17 @@ public class GuildEmojisUpdateHandler extends SocketHandler
 
         if (!Objects.equals(oldEmote.getName(), newEmote.getName()))
         {
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                 new EmoteUpdateNameEvent(
-                    api, responseNumber,
+                    getJDA(), responseNumber,
                     newEmote, oldEmote.getName()));
         }
 
         if (!CollectionUtils.isEqualCollection(oldEmote.getRoles(), newEmote.getRoles()))
         {
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                 new EmoteUpdateRolesEvent(
-                    api, responseNumber,
+                    getJDA(), responseNumber,
                     newEmote, oldEmote.getRoles()));
         }
 
