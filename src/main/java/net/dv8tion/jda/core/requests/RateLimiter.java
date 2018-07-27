@@ -16,32 +16,28 @@
 
 package net.dv8tion.jda.core.requests;
 
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.ratelimit.IBucket;
-import org.slf4j.MDC;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public abstract class RateLimiter
 {
     //Implementations of this class exist in the net.dv8tion.jda.core.requests.ratelimit package.
 
     protected final Requester requester;
-    protected final ScheduledThreadPoolExecutor pool;
-    protected volatile boolean isShutdown = false; 
+    protected volatile boolean isShutdown = false;
     protected final ConcurrentHashMap<String, IBucket> buckets = new ConcurrentHashMap<>();
     protected final ConcurrentLinkedQueue<IBucket> submittedBuckets = new ConcurrentLinkedQueue<>();
 
-    protected RateLimiter(Requester requester, ScheduledThreadPoolExecutor ratelimitPool)
+    protected RateLimiter(Requester requester)
     {
         this.requester = requester;
-        this.pool = ratelimitPool;
-        //new ScheduledThreadPoolExecutor(poolSize, new RateLimitThreadFactory(requester.getJDA()));
     }
 
     protected boolean isSkipped(Iterator<Request> it, Request request)
@@ -97,18 +93,11 @@ public abstract class RateLimiter
         }
     }
 
-    protected void shutdown(long time, TimeUnit unit)
+    protected void shutdown()
     {
         isShutdown = true;
 
-        pool.setKeepAliveTime(time, unit);
-        pool.allowCoreThreadTimeOut(true);
+//        pool.setKeepAliveTime(time, unit);
+//        pool.allowCoreThreadTimeOut(true);
     }
-
-    public void forceShutdown()
-    {
-        pool.shutdownNow();
-    }
-
-
 }

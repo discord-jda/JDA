@@ -32,16 +32,15 @@ import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class ClientRateLimiter extends RateLimiter
 {
     volatile Long globalCooldown = null;
 
-    public ClientRateLimiter(Requester requester, ScheduledThreadPoolExecutor pool)
+    public ClientRateLimiter(Requester requester)
     {
-        super(requester, pool);
+        super(requester);
     }
 
     @Override
@@ -146,7 +145,7 @@ public class ClientRateLimiter extends RateLimiter
                     if (delay == null)
                         delay = 0L;
 
-                    pool.schedule(this, delay, TimeUnit.MILLISECONDS);
+                    requester.getJDA().pool.schedule(this, delay, TimeUnit.MILLISECONDS);
                     submittedBuckets.add(this);
                 }
             }

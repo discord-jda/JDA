@@ -83,13 +83,6 @@ public class DefaultShardManager implements ShardManager
     protected final int corePoolSize;
 
     /**
-     * The rate-limit pool size for the JDA rate-limit handler
-     * {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} which is used
-     * to handle the completion of RestActions.
-     */
-    protected final int ratelimitPoolSize;
-
-    /**
      * If enabled, JDA will separate the bulk delete event into individual delete events, but this isn't as efficient as
      * handling a single event would be.
      */
@@ -225,6 +218,11 @@ public class DefaultShardManager implements ShardManager
     protected boolean enableMDC;
 
     /**
+     * Whether {@link JDA#shutdown()} should also shutdown pools
+     */
+    protected boolean shutdownPools;
+
+    /**
      * Whether to enable transport compression
      */
     protected boolean enableCompression;
@@ -293,8 +291,8 @@ public class DefaultShardManager implements ShardManager
                                   final OkHttpClient.Builder httpClientBuilder, final OkHttpClient httpClient,
                                   final IntFunction<ScheduledThreadPoolExecutor> rateLimitPoolProvider,
                                   final WebSocketFactory wsFactory, final ThreadFactory threadFactory,
-                                  final int maxReconnectDelay, final int corePoolSize, final int ratelimitPoolSize,
-                                  final boolean enableVoice,
+                                  final int maxReconnectDelay, final int corePoolSize,
+                                  final boolean enableVoice, final boolean shutdownPools,
                                   final boolean enableShutdownHook, final boolean enableBulkDeleteSplitting,
                                   final boolean autoReconnect, final IntFunction<Boolean> idleProvider,
                                   final boolean retryOnTimeout, final boolean useShutdownNow,
@@ -315,12 +313,12 @@ public class DefaultShardManager implements ShardManager
         else
             this.httpClientBuilder = null;
         this.rateLimitPoolProvider = rateLimitPoolProvider;
+        this.shutdownPools = shutdownPools;
         this.wsFactory = wsFactory == null ? new WebSocketFactory() : wsFactory;
         this.executor = createExecutor(threadFactory);
         this.controller = controller == null ? new SessionControllerAdapter() : controller;
         this.maxReconnectDelay = maxReconnectDelay;
         this.corePoolSize = corePoolSize;
-        this.ratelimitPoolSize = ratelimitPoolSize;
         this.enableVoice = enableVoice;
         this.shutdownHook = enableShutdownHook ? new Thread(this::shutdown, "JDA Shutdown Hook") : null;
         this.enableBulkDeleteSplitting = enableBulkDeleteSplitting;
@@ -610,7 +608,7 @@ public class DefaultShardManager implements ShardManager
             rateLimitPool = rateLimitPoolProvider.apply(shardId);
         final JDAImpl jda = new JDAImpl(AccountType.BOT, this.token, this.controller, httpClient, this.wsFactory,
             rateLimitPool, this.autoReconnect, this.enableVoice, false, this.enableBulkDeleteSplitting,
-            this.retryOnTimeout, this.enableMDC, this.corePoolSize, this.ratelimitPoolSize, this.maxReconnectDelay,
+            this.retryOnTimeout, this.enableMDC, this.shutdownPools, this.corePoolSize, this.maxReconnectDelay,
             this.contextProvider == null || !this.enableMDC ? null : contextProvider.apply(shardId));
 
         jda.asBot().setShardManager(this);

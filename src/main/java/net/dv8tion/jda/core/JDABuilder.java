@@ -34,7 +34,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 /**
@@ -67,8 +66,7 @@ public class JDABuilder
     protected Game game = null;
     protected OnlineStatus status = OnlineStatus.ONLINE;
     protected int maxReconnectDelay = 900;
-    protected int corePoolSize = 2;
-    protected int ratelimitPoolSize = 5;
+    protected int corePoolSize = 7;
     protected boolean enableVoice = true;
     protected boolean enableShutdownHook = true;
     protected boolean enableBulkDeleteSplitting = true;
@@ -76,6 +74,7 @@ public class JDABuilder
     protected boolean idle = false;
     protected boolean requestTimeoutRetry = true;
     protected boolean enableCompression = true;
+    protected boolean shutdownPools = true;
 
     /**
      * Creates a completely empty JDABuilder.
@@ -96,6 +95,21 @@ public class JDABuilder
 
         this.accountType = accountType;
         this.listeners = new LinkedList<>();
+    }
+
+    /**
+     * Whether or not JDA should shutdown its thread-pools when {@link JDA#shutdown()} is called.
+     * <br>This is automatically disabled if a custom pool is set through {@link #setThreadPool(ScheduledThreadPoolExecutor)}.
+     *
+     * @param  shutdown
+     *         True, if {@link JDA#shutdown()} should also shutdown the thread-pool
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     */
+    public JDABuilder setShutdownPools(boolean shutdown)
+    {
+        this.shutdownPools = shutdown;
+        return this;
     }
 
     /**
@@ -262,7 +276,8 @@ public class JDABuilder
     /**
      * Sets the core pool size for the global JDA
      * {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} which is used
-     * in various locations throughout the JDA instance created by this builder. (Default: 2)
+     * in various locations throughout the JDA instance created by this builder. (Default: 7)
+     * <br>Note: This has no effect if you set a pool using {@link #setThreadPool(ScheduledThreadPoolExecutor)}.
      *
      * @param  size
      *         The core pool size for the global JDA executor
@@ -280,38 +295,21 @@ public class JDABuilder
     }
 
     /**
-     * Sets the Rate-Limit pool size for the JDA Rate-Limit handler
-     * {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} which is used
-     * to schedule the completion of RestActions. (Default: 5)
-     *
-     * @param  ratelimitPoolSize
-     *         The pool size for the rate-limit executor
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the specified pool size is not positive
-     *
-     * @return The JDABuilder instance. Useful for chaining.
-     */
-    public JDABuilder setRateLimitPoolSize(int ratelimitPoolSize)
-    {
-        Checks.positive(ratelimitPoolSize, "Pool size");
-        this.ratelimitPoolSize = ratelimitPoolSize;
-        return this;
-    }
-
-    /**
      * Sets the {@link ScheduledThreadPoolExecutor ScheduledThreadPoolExecutor} that should be used in
      * the JDA rate-limit handler. Changing this can drastically change the JDA behavior for RestAction execution
      * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
+     * <br><b>This automatically disables the automatic shutdown of the JDA pools, you can enable
+     * it using {@link #setShutdownPools(boolean)}</b>
      *
      * @param  pool
      *         The thread-pool to use for rate-limit handling
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    public JDABuilder setRateLimitPool(ScheduledThreadPoolExecutor pool)
+    public JDABuilder setThreadPool(ScheduledThreadPoolExecutor pool)
     {
         this.rateLimitPool = pool;
+        this.shutdownPools = pool == null;
         return this;
     }
 
@@ -650,7 +648,7 @@ public class JDABuilder
             controller = new SessionControllerAdapter();
         
         JDAImpl jda = new JDAImpl(accountType, token, controller, httpClient, wsFactory, rateLimitPool, autoReconnect, enableVoice, enableShutdownHook,
-                enableBulkDeleteSplitting, requestTimeoutRetry, enableContext, corePoolSize, ratelimitPoolSize, maxReconnectDelay, contextMap);
+                enableBulkDeleteSplitting, requestTimeoutRetry, enableContext, shutdownPools, corePoolSize, maxReconnectDelay, contextMap);
 
         if (eventManager != null)
             jda.setEventManager(eventManager);

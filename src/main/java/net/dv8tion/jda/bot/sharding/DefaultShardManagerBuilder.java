@@ -16,6 +16,7 @@
 package net.dv8tion.jda.bot.sharding;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
+import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Game;
@@ -56,8 +57,7 @@ public class DefaultShardManagerBuilder
     protected boolean enableCompression = true;
     protected int shardsTotal = -1;
     protected int maxReconnectDelay = 900;
-    protected int corePoolSize = 2;
-    protected int ratelimitPoolSize = 5;
+    protected int corePoolSize = 7;
     protected String token = null;
     protected IntFunction<Boolean> idleProvider = null;
     protected IntFunction<Game> gameProvider = null;
@@ -69,7 +69,8 @@ public class DefaultShardManagerBuilder
     protected OkHttpClient.Builder httpClientBuilder = null;
     protected OkHttpClient httpClient = null;
     protected WebSocketFactory wsFactory = null;
-    protected ScheduledThreadPoolExecutor rateLimitPool = null;
+    protected ScheduledThreadPoolExecutor threadPool = null;
+    protected boolean shutdownPools = true;
     protected IAudioSendFactory audioSendFactory = null;
     protected ThreadFactory threadFactory = null;
 
@@ -390,7 +391,9 @@ public class DefaultShardManagerBuilder
     /**
      * Sets the core pool size for the global JDA
      * {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} which is used
-     * in various locations throughout the JDA instance created by this ShardManager. (Default: 2)
+     * in various locations throughout the JDA instance created by this ShardManager. (Default: 7)
+     * <br>Note: This has no effect if you set a pool using
+     * {@link #setThreadPool(ScheduledThreadPoolExecutor)} or {@link #setThreadPoolProvider(IntFunction)}.
      *
      * @param  size
      *         The core pool size for the global JDA executor
@@ -404,26 +407,6 @@ public class DefaultShardManagerBuilder
     {
         Checks.positive(size, "Core pool size");
         this.corePoolSize = size;
-        return this;
-    }
-
-    /**
-     * Sets the Rate-Limit pool size for the JDA Rate-Limit handler
-     * {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} which is used
-     * to schedule the completion of RestActions. (Default: 5)
-     *
-     * @param  size
-     *         The pool size for the rate-limit executor
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the specified pool size is not positive
-     *
-     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
-     */
-    public DefaultShardManagerBuilder setRateLimitPoolSize(int size)
-    {
-        Checks.positive(size, "Pool size");
-        this.ratelimitPoolSize = size;
         return this;
     }
 
@@ -642,34 +625,55 @@ public class DefaultShardManagerBuilder
     }
 
     /**
+     * Whether or not JDA should shutdown its thread-pools when {@link JDA#shutdown()} is called.
+     * <br>This is automatically disabled if a custom pool is set through
+     * {@link #setThreadPool(ScheduledThreadPoolExecutor)} or {@link #setThreadPoolProvider(IntFunction)}.
+     *
+     * @param  shutdown
+     *         True, if {@link JDA#shutdown()} should also shutdown the thread-pool
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     */
+    public DefaultShardManagerBuilder setShutdownPools(boolean shutdown)
+    {
+        this.shutdownPools = shutdown;
+        return this;
+    }
+
+    /**
      * Sets the {@link ScheduledThreadPoolExecutor ScheduledThreadPoolExecutor} that should be used in
      * the JDA rate-limit handler. Changing this can drastically change the JDA behavior for RestAction execution
      * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
-     * <br>This will override the rate-limit pool provider set from {@link #setRateLimitPoolProvider(IntFunction)}.
+     * <br>This will override the rate-limit pool provider set from {@link #setThreadPoolProvider(IntFunction)}.
+     * <br><b>This automatically disables the automatic shutdown of the JDA pools, you can enable
+     * it using {@link #setShutdownPools(boolean)}</b>
      *
      * @param  pool
      *         The thread-pool to use for rate-limit handling
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
-    public DefaultShardManagerBuilder setRateLimitPool(ScheduledThreadPoolExecutor pool)
+    public DefaultShardManagerBuilder setThreadPool(ScheduledThreadPoolExecutor pool)
     {
-        return setRateLimitPoolProvider(i -> pool);
+        return setThreadPoolProvider(i -> pool);
     }
 
     /**
      * Sets the {@link ScheduledThreadPoolExecutor ScheduledThreadPoolExecutor} provider that should be used in
      * the JDA rate-limit handler. Changing this can drastically change the JDA behavior for RestAction execution
      * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
+     * <br><b>This automatically disables the automatic shutdown of the JDA pools, you can enable
+     * it using {@link #setShutdownPools(boolean)}</b>
      *
      * @param  provider
      *         The thread-pool provider to use for rate-limit handling
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
-    public DefaultShardManagerBuilder setRateLimitPoolProvider(IntFunction<ScheduledThreadPoolExecutor> provider)
+    public DefaultShardManagerBuilder setThreadPoolProvider(IntFunction<ScheduledThreadPoolExecutor> provider)
     {
         this.rateLimitPoolProvider = provider;
+        this.shutdownPools = provider == null;
         return this;
     }
 
@@ -903,7 +907,7 @@ public class DefaultShardManagerBuilder
             this.listeners, this.listenerProviders, this.token, this.eventManager,
             this.audioSendFactory, this.gameProvider, this.statusProvider,
             this.httpClientBuilder, this.httpClient, this.rateLimitPoolProvider, this.wsFactory, this.threadFactory,
-            this.maxReconnectDelay, this.corePoolSize, this.ratelimitPoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting,
+            this.maxReconnectDelay, this.corePoolSize, this.shutdownPools, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting,
             this.autoReconnect, this.idleProvider, this.retryOnTimeout, this.useShutdownNow, this.enableContext, this.contextProvider, this.enableCompression);
 
         manager.login();

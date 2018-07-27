@@ -99,6 +99,7 @@ public class JDAImpl implements JDA
     protected boolean audioEnabled;
     protected boolean bulkDeleteSplittingEnabled;
     protected boolean autoReconnect;
+    protected boolean shutdownPool;
     protected long responseTotal;
     protected long ping = -1;
     protected String token;
@@ -107,8 +108,8 @@ public class JDAImpl implements JDA
     public JDAImpl(AccountType accountType, String token, SessionController controller,
                    OkHttpClient httpClient, WebSocketFactory wsFactory, ScheduledThreadPoolExecutor rateLimitPool,
                    boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook,
-                   boolean bulkDeleteSplittingEnabled, boolean retryOnTimeout, boolean enableMDC,
-                   int corePoolSize, int ratelimitPoolSize, int maxReconnectDelay,
+                   boolean bulkDeleteSplittingEnabled, boolean retryOnTimeout, boolean enableMDC, boolean shutdownPool,
+                   int poolSize, int maxReconnectDelay,
                    ConcurrentMap<String, String> contextMap)
     {
         this.accountType = accountType;
@@ -119,9 +120,11 @@ public class JDAImpl implements JDA
         this.audioEnabled = audioEnabled;
         this.shutdownHook = useShutdownHook ? new Thread(this::shutdown, "JDA Shutdown Hook") : null;
         this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
-        this.pool = new ScheduledThreadPoolExecutor(corePoolSize, new JDAThreadFactory());
         if (rateLimitPool == null)
-            rateLimitPool = new ScheduledThreadPoolExecutor(ratelimitPoolSize, new RateLimitThreadFactory());
+            this.pool = new ScheduledThreadPoolExecutor(poolSize, new RateLimitThreadFactory());
+        else
+            this.pool = rateLimitPool;
+        this.shutdownPool = shutdownPool;
         this.maxReconnectDelay = maxReconnectDelay;
         this.sessionController = controller == null ? new SessionControllerAdapter() : controller;
         if (enableMDC)
@@ -130,7 +133,7 @@ public class JDAImpl implements JDA
             this.contextMap = null;
 
         this.presence = new PresenceImpl(this);
-        this.requester = new Requester(this, rateLimitPool);
+        this.requester = new Requester(this);
         this.requester.setRetryOnTimeout(retryOnTimeout);
 
         this.jdaClient = accountType == AccountType.CLIENT ? new JDAClientImpl(this) : null;
@@ -264,16 +267,15 @@ public class JDAImpl implements JDA
         // or if the developer attempted to login with a token using the wrong AccountType.
 
         //If we attempted to login as a Bot, remove the "Bot " prefix and set the Requester to be a client.
-        ScheduledThreadPoolExecutor pool = new ScheduledThreadPoolExecutor(1, new RateLimitThreadFactory());
         if (getAccountType() == AccountType.BOT)
         {
             token = token.substring("Bot ".length());
-            requester = new Requester(this, AccountType.CLIENT, pool);
+            requester = new Requester(this, AccountType.CLIENT);
         }
         else    //If we attempted to login as a Client, prepend the "Bot " prefix and set the Requester to be a Bot
         {
             token = "Bot " + token;
-            requester = new Requester(this, AccountType.BOT, pool);
+            requester = new Requester(this, AccountType.BOT);
         }
 
         userResponse = checkToken(login);
@@ -496,9 +498,8 @@ public class JDAImpl implements JDA
     public void shutdownNow()
     {
         shutdown();
-
-        pool.shutdownNow();
-        getRequester().shutdownNow();
+        if (shutdownPool)
+            pool.shutdownNow();
     }
 
     @Override
@@ -520,9 +521,12 @@ public class JDAImpl implements JDA
 
         final long time = 5L;
         final TimeUnit unit = TimeUnit.SECONDS;
-        getRequester().shutdown(time, unit);
-        pool.setKeepAliveTime(time, unit);
-        pool.allowCoreThreadTimeOut(true);
+        getRequester().shutdown();
+        if (shutdownPool)
+        {
+            pool.setKeepAliveTime(time, unit);
+            pool.allowCoreThreadTimeOut(true);
+        }
 
         if (shutdownHook != null)
         {
@@ -776,22 +780,6 @@ public class JDAImpl implements JDA
         this.gatewayUrl = getGateway();
     }
 
-    private class JDAThreadFactory implements ThreadFactory
-    {
-        @Override
-        public Thread newThread(Runnable r)
-        {
-            final Thread thread = new Thread(() ->
-            {
-                if (getContextMap() != null)
-                    MDC.setContextMap(getContextMap());
-                r.run();
-            }, "JDA-Thread " + getIdentifierString());
-            thread.setDaemon(true);
-            return thread;
-        }
-    }
-
     private class RateLimitThreadFactory implements ThreadFactory
     {
         final String identifier;
@@ -805,12 +793,7 @@ public class JDAImpl implements JDA
         @Override
         public Thread newThread(Runnable r)
         {
-            Thread t = new Thread(() ->
-            {
-                if (getContextMap() != null)
-                    MDC.setContextMap(getContextMap());
-                r.run();
-            }, identifier + " - Thread " + threadCount.getAndIncrement());
+            Thread t = new Thread(r, identifier + " - Thread " + threadCount.getAndIncrement());
             t.setDaemon(true);
 
             return t;
