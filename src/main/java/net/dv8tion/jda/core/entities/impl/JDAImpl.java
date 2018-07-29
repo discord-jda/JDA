@@ -383,7 +383,7 @@ public class JDAImpl implements JDA
                 || getStatus().ordinal() < status.ordinal()) // Wait until status is bypassed
         {
             if (getStatus() == Status.SHUTDOWN)
-                throw new IllegalStateException("JDA was unable to finish starting up!");
+                throw new IllegalStateException("Was shutdown trying to await status");
             Thread.sleep(50);
         }
         return this;
