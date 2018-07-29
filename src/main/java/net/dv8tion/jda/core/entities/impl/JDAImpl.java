@@ -373,6 +373,23 @@ public class JDAImpl implements JDA
     }
 
     @Override
+    public JDA awaitStatus(Status status) throws InterruptedException
+    {
+        Checks.notNull(status, "Status");
+        Checks.check(status.isInit(), "Cannot await the status %s as it is not part of the login cycle!", status);
+        if (getStatus() == Status.CONNECTED)
+            return this;
+        while (!getStatus().isInit()                         // JDA might disconnect while starting
+                || getStatus().ordinal() < status.ordinal()) // Wait until status is bypassed
+        {
+            if (getStatus() == Status.SHUTDOWN)
+                throw new IllegalStateException("JDA was unable to finish starting up!");
+            Thread.sleep(50);
+        }
+        return this;
+    }
+
+    @Override
     public List<String> getCloudflareRays()
     {
         return Collections.unmodifiableList(new LinkedList<>(client.getCfRays()));

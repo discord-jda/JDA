@@ -631,43 +631,14 @@ public class JDABuilder
      *
      * @return A {@link net.dv8tion.jda.core.JDA} instance that has started the login process. It is unknown as
      *         to whether or not loading has finished when this returns.
+     *
+     * @deprecated
+     *         Use {@link #build()} instead
      */
+    @Deprecated
     public JDA buildAsync() throws LoginException
     {
-        OkHttpClient httpClient = this.httpClient;
-        if (httpClient == null)
-        {
-            if (this.httpClientBuilder == null)
-                this.httpClientBuilder = new OkHttpClient.Builder();
-            httpClient = this.httpClientBuilder.build();
-        }
-
-        WebSocketFactory wsFactory = this.wsFactory == null ? new WebSocketFactory() : this.wsFactory;
-
-        if (controller == null && shardInfo != null)
-            controller = new SessionControllerAdapter();
-        
-        JDAImpl jda = new JDAImpl(accountType, token, controller, httpClient, wsFactory, rateLimitPool, autoReconnect, enableVoice, enableShutdownHook,
-                enableBulkDeleteSplitting, requestTimeoutRetry, enableContext, shutdownPools, corePoolSize, maxReconnectDelay, contextMap);
-
-        if (eventManager != null)
-            jda.setEventManager(eventManager);
-
-        if (audioSendFactory != null)
-            jda.setAudioSendFactory(audioSendFactory);
-
-        listeners.forEach(jda::addEventListener);
-        jda.setStatus(JDA.Status.INITIALIZED);  //This is already set by JDA internally, but this is to make sure the listeners catch it.
-
-        String gateway = jda.getGateway();
-
-        // Set the presence information before connecting to have the correct information ready when sending IDENTIFY
-        ((PresenceImpl) jda.getPresence())
-                .setCacheGame(game)
-                .setCacheIdle(idle)
-                .setCacheStatus(status);
-        jda.login(gateway, shardInfo, enableCompression, true);
-        return jda;
+        return build();
     }
 
     /**
@@ -700,20 +671,17 @@ public class JDABuilder
      *         This would most likely be caused by a JVM shutdown request.
      *
      * @return A {@link net.dv8tion.jda.core.JDA} Object that is <b>guaranteed</b> to be logged in and finished loading.
+     *
+     * @deprecated
+     *         Use {@link #build()} and {@link JDA#awaitStatus(Status)} instead
      */
+    @Deprecated
     public JDA buildBlocking(JDA.Status status) throws LoginException, InterruptedException
     {
         Checks.notNull(status, "Status");
         Checks.check(status.isInit(), "Cannot await the status %s as it is not part of the login cycle!", status);
         JDA jda = buildAsync();
-        while (!jda.getStatus().isInit()                      // JDA might disconnect while starting
-             || jda.getStatus().ordinal() < status.ordinal()) // Wait until status is bypassed
-        {
-            if (jda.getStatus() == Status.SHUTDOWN)
-                throw new IllegalStateException("JDA was unable to finish starting up!");
-            Thread.sleep(50);
-        }
-
+        jda.awaitStatus(status);
         return jda;
     }
 
@@ -731,9 +699,71 @@ public class JDABuilder
      *         This would most likely be caused by a JVM shutdown request.
      *
      * @return A {@link net.dv8tion.jda.core.JDA} Object that is <b>guaranteed</b> to be logged in and finished loading.
+     *
+     * @deprecated
+     *         Use {@link #build()} and {@link JDA#awaitReady()} instead
      */
+    @Deprecated
     public JDA buildBlocking() throws LoginException, InterruptedException
     {
         return buildBlocking(Status.CONNECTED);
+    }
+
+    /**
+     * Builds a new {@link net.dv8tion.jda.core.JDA} instance and uses the provided token to start the login process.
+     * <br>The login process runs in a different thread, so while this will return immediately, {@link net.dv8tion.jda.core.JDA} has not
+     * finished loading, thus many {@link net.dv8tion.jda.core.JDA} methods have the chance to return incorrect information.
+     * <br>The main use of this method is to start the JDA connect process and do other things in parallel while startup is
+     * being performed like database connection or local resource loading.
+     *
+     * <p>If you wish to be sure that the {@link net.dv8tion.jda.core.JDA} information is correct, please use
+     * {@link net.dv8tion.jda.core.JDA#awaitReady() JDA.awaitReady()} or register an
+     * {@link net.dv8tion.jda.core.hooks.EventListener EventListener} to listen for the
+     * {@link net.dv8tion.jda.core.events.ReadyEvent ReadyEvent}.
+     *
+     * @throws LoginException
+     *         If the provided token is invalid.
+     * @throws IllegalArgumentException
+     *         If the provided token is empty or null.
+     *
+     * @return A {@link net.dv8tion.jda.core.JDA} instance that has started the login process. It is unknown as
+     *         to whether or not loading has finished when this returns.
+     */
+    public JDA build() throws LoginException
+    {
+        OkHttpClient httpClient = this.httpClient;
+        if (httpClient == null)
+        {
+            if (this.httpClientBuilder == null)
+                this.httpClientBuilder = new OkHttpClient.Builder();
+            httpClient = this.httpClientBuilder.build();
+        }
+
+        WebSocketFactory wsFactory = this.wsFactory == null ? new WebSocketFactory() : this.wsFactory;
+
+        if (controller == null && shardInfo != null)
+            controller = new SessionControllerAdapter();
+
+        JDAImpl jda = new JDAImpl(accountType, token, controller, httpClient, wsFactory, rateLimitPool, autoReconnect, enableVoice, enableShutdownHook,
+                                  enableBulkDeleteSplitting, requestTimeoutRetry, enableContext, shutdownPools, corePoolSize, maxReconnectDelay, contextMap);
+
+        if (eventManager != null)
+            jda.setEventManager(eventManager);
+
+        if (audioSendFactory != null)
+            jda.setAudioSendFactory(audioSendFactory);
+
+        listeners.forEach(jda::addEventListener);
+        jda.setStatus(JDA.Status.INITIALIZED);  //This is already set by JDA internally, but this is to make sure the listeners catch it.
+
+        String gateway = jda.getGateway();
+
+        // Set the presence information before connecting to have the correct information ready when sending IDENTIFY
+        ((PresenceImpl) jda.getPresence())
+                .setCacheGame(game)
+                .setCacheIdle(idle)
+                .setCacheStatus(status);
+        jda.login(gateway, shardInfo, enableCompression, true);
+        return jda;
     }
 }

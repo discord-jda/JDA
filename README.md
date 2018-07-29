@@ -26,12 +26,15 @@ Please do not continue using it, and instead switch to the promoted 3.x version 
 ## Creating the JDA Object
 Creating the JDA Object is done via the JDABuilder class by providing an AccountType (Bot/Client).
 After setting the token via setter,
-the JDA Object is then created by calling the `.buildBlocking()` or the `.buildAsync()` (non-blocking login) method.
+the JDA Object is then created by calling the `.build()` (non-blocking login) method.
+When `build()` returns JDA might not have finished starting up, however you can use `awaitReady()`
+on the JDA object to ensure that the entire cache is loaded before proceeding, note that this method is
+blocking and will cause the thread to sleep until startup has completed.
 
 **Example**:
 
 ```java
-JDA jda = new JDABuilder(AccountType.BOT).setToken("token").buildBlocking();
+JDA jda = new JDABuilder(AccountType.BOT).setToken("token").build();
 ```
 
 **Note**: It is important to set the correct AccountType because Bot-accounts require a token prefix to login.
@@ -49,7 +52,7 @@ public class ReadyListener implements EventListener
         JDA jda = new JDABuilder(AccountType.BOT)
             .setToken("token")
             .addEventListener(new ReadyListener())
-            .buildBlocking();
+            .build();
     }
 
     @Override
@@ -67,7 +70,7 @@ public class MessageListener extends ListenerAdapter
     public static void main(String[] args)
             throws LoginException, RateLimitedException, InterruptedException
     {
-        JDA jda = new JDABuilder(AccountType.BOT).setToken("token").buildBlocking();
+        JDA jda = new JDABuilder(AccountType.BOT).setToken("token").build();
         jda.addEventListener(new MessageListener());
     }
 
@@ -120,7 +123,7 @@ public static void main(String[] args) throws Exception
     for (int i = 0; i < 10; i++)
     {
         shardBuilder.useSharding(i, 10)
-                    .buildAsync();
+                    .build();
     }
 }
 ```

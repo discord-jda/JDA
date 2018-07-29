@@ -1500,8 +1500,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             setupHandlers();
             setupSendingThread();
             connect();
-            while (!isLast && api.getStatus().ordinal() < JDA.Status.AWAITING_LOGIN_CONFIRMATION.ordinal())
-                Thread.sleep(50);
+            if (isLast)
+                return;
+            api.awaitStatus(JDA.Status.AWAITING_LOGIN_CONFIRMATION);
         }
     }
 
@@ -1519,8 +1520,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             if (shutdown)
                 return;
             reconnect(true, !isLast);
-            while (!isLast && api.getStatus().ordinal() < JDA.Status.AWAITING_LOGIN_CONFIRMATION.ordinal())
-                Thread.sleep(50);
+            if (isLast)
+                return;
+            api.awaitStatus(JDA.Status.AWAITING_LOGIN_CONFIRMATION);
         }
     }
 }
