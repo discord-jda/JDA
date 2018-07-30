@@ -59,6 +59,7 @@ public class JDAImpl implements JDA
     public static final Logger LOG = JDALogger.getLog(JDA.class);
 
     public final ScheduledThreadPoolExecutor pool;
+    public final ExecutorService callbackPool;
 
     protected final SnowflakeCacheViewImpl<User> userCache = new SnowflakeCacheViewImpl<>(User.class, User::getName);
     protected final SnowflakeCacheViewImpl<Guild> guildCache = new SnowflakeCacheViewImpl<>(Guild.class, Guild::getName);
@@ -106,7 +107,8 @@ public class JDAImpl implements JDA
     protected String gatewayUrl;
 
     public JDAImpl(AccountType accountType, String token, SessionController controller,
-                   OkHttpClient httpClient, WebSocketFactory wsFactory, ScheduledThreadPoolExecutor rateLimitPool,
+                   OkHttpClient httpClient, WebSocketFactory wsFactory,
+                   ScheduledThreadPoolExecutor rateLimitPool, ExecutorService callbackPool,
                    boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook,
                    boolean bulkDeleteSplittingEnabled, boolean retryOnTimeout, boolean enableMDC, boolean shutdownPool,
                    int poolSize, int maxReconnectDelay,
@@ -124,6 +126,10 @@ public class JDAImpl implements JDA
             this.pool = new ScheduledThreadPoolExecutor(poolSize, new RateLimitThreadFactory());
         else
             this.pool = rateLimitPool;
+        if (callbackPool == null)
+            this.callbackPool = ForkJoinPool.commonPool();
+        else
+            this.callbackPool = callbackPool;
         this.shutdownPool = shutdownPool;
         this.maxReconnectDelay = maxReconnectDelay;
         this.sessionController = controller == null ? new SessionControllerAdapter() : controller;
@@ -516,7 +522,10 @@ public class JDAImpl implements JDA
     {
         shutdown();
         if (shutdownPool)
+        {
             pool.shutdownNow();
+            callbackPool.shutdownNow();
+        }
     }
 
     @Override
@@ -543,6 +552,7 @@ public class JDAImpl implements JDA
         {
             pool.setKeepAliveTime(time, unit);
             pool.allowCoreThreadTimeOut(true);
+            callbackPool.shutdown();
         }
 
         if (shutdownHook != null)

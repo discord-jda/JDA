@@ -34,6 +34,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 /**
@@ -52,6 +54,7 @@ public class JDABuilder
     protected final List<Object> listeners;
 
     protected ScheduledThreadPoolExecutor rateLimitPool = null;
+    protected ExecutorService callbackPool = null;
     protected ConcurrentMap<String, String> contextMap = null;
     protected boolean enableContext = true;
     protected SessionController controller = null;
@@ -66,7 +69,7 @@ public class JDABuilder
     protected Game game = null;
     protected OnlineStatus status = OnlineStatus.ONLINE;
     protected int maxReconnectDelay = 900;
-    protected int corePoolSize = 7;
+    protected int corePoolSize = 5;
     protected boolean enableVoice = true;
     protected boolean enableShutdownHook = true;
     protected boolean enableBulkDeleteSplitting = true;
@@ -276,7 +279,7 @@ public class JDABuilder
     /**
      * Sets the core pool size for the global JDA
      * {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} which is used
-     * in various locations throughout the JDA instance created by this builder. (Default: 7)
+     * in various locations throughout the JDA instance created by this builder. (Default: 5)
      * <br>Note: This has no effect if you set a pool using {@link #setThreadPool(ScheduledThreadPoolExecutor)}.
      *
      * @param  size
@@ -310,6 +313,26 @@ public class JDABuilder
     {
         this.rateLimitPool = pool;
         this.shutdownPools = pool == null;
+        return this;
+    }
+
+    /**
+     * Sets the {@link ExecutorService ExecutorService} that should be used in
+     * the JDA callback handler which mostly consists of {@link net.dv8tion.jda.core.requests.RestAction RestAction} callbacks.
+     * By default JDA will use {@link ForkJoinPool#commonPool()}
+     * <br><b>Only change this pool if you know what you're doing.
+     * <br>This automatically disables the automatic shutdown of the JDA pools, you can enable
+     * it using {@link #setShutdownPools(boolean)}</b>
+     *
+     * @param  executor
+     *         The thread-pool to use for callback handling
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     */
+    public JDABuilder setCallbackPool(ExecutorService executor)
+    {
+        this.callbackPool = executor;
+        this.shutdownPools = executor == null;
         return this;
     }
 
@@ -744,8 +767,9 @@ public class JDABuilder
         if (controller == null && shardInfo != null)
             controller = new SessionControllerAdapter();
 
-        JDAImpl jda = new JDAImpl(accountType, token, controller, httpClient, wsFactory, rateLimitPool, autoReconnect, enableVoice, enableShutdownHook,
-                                  enableBulkDeleteSplitting, requestTimeoutRetry, enableContext, shutdownPools, corePoolSize, maxReconnectDelay, contextMap);
+        JDAImpl jda = new JDAImpl(accountType, token, controller, httpClient, wsFactory, rateLimitPool, callbackPool,
+                                  autoReconnect, enableVoice, enableShutdownHook, enableBulkDeleteSplitting,
+                                  requestTimeoutRetry, enableContext, shutdownPools, corePoolSize, maxReconnectDelay, contextMap);
 
         if (eventManager != null)
             jda.setEventManager(eventManager);

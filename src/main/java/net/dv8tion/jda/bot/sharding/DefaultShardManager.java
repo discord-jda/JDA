@@ -151,6 +151,11 @@ public class DefaultShardManager implements ShardManager
     protected final IntFunction<ScheduledThreadPoolExecutor> rateLimitPoolProvider;
 
     /**
+     * The {@link ExecutorService ExecutorService} that will be used by JDAs callback handler.
+     */
+    protected final IntFunction<ExecutorService> callbackPoolProvider;
+
+    /**
      * The {@link com.neovisionaries.ws.client.WebSocketFactory WebSocketFactory} that will be used by JDA's websocket client.
      */
     protected final WebSocketFactory wsFactory;
@@ -290,6 +295,7 @@ public class DefaultShardManager implements ShardManager
                                   final IntFunction<Game> gameProvider, final IntFunction<OnlineStatus> statusProvider,
                                   final OkHttpClient.Builder httpClientBuilder, final OkHttpClient httpClient,
                                   final IntFunction<ScheduledThreadPoolExecutor> rateLimitPoolProvider,
+                                  final IntFunction<ExecutorService> callbackPoolProvider,
                                   final WebSocketFactory wsFactory, final ThreadFactory threadFactory,
                                   final int maxReconnectDelay, final int corePoolSize,
                                   final boolean enableVoice, final boolean shutdownPools,
@@ -313,6 +319,7 @@ public class DefaultShardManager implements ShardManager
         else
             this.httpClientBuilder = null;
         this.rateLimitPoolProvider = rateLimitPoolProvider;
+        this.callbackPoolProvider = callbackPoolProvider;
         this.shutdownPools = shutdownPools;
         this.wsFactory = wsFactory == null ? new WebSocketFactory() : wsFactory;
         this.executor = createExecutor(threadFactory);
@@ -606,8 +613,11 @@ public class DefaultShardManager implements ShardManager
         ScheduledThreadPoolExecutor rateLimitPool = null;
         if (rateLimitPoolProvider != null)
             rateLimitPool = rateLimitPoolProvider.apply(shardId);
+        ExecutorService callbackPool = null;
+        if (callbackPoolProvider != null)
+            callbackPool = callbackPoolProvider.apply(shardId);
         final JDAImpl jda = new JDAImpl(AccountType.BOT, this.token, this.controller, httpClient, this.wsFactory,
-            rateLimitPool, this.autoReconnect, this.enableVoice, false, this.enableBulkDeleteSplitting,
+            rateLimitPool, callbackPool, this.autoReconnect, this.enableVoice, false, this.enableBulkDeleteSplitting,
             this.retryOnTimeout, this.enableMDC, this.shutdownPools, this.corePoolSize, this.maxReconnectDelay,
             this.contextProvider == null || !this.enableMDC ? null : contextProvider.apply(shardId));
 

@@ -27,9 +27,7 @@ import okhttp3.OkHttpClient;
 
 import javax.security.auth.login.LoginException;
 import java.util.*;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.*;
 import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 
@@ -57,19 +55,19 @@ public class DefaultShardManagerBuilder
     protected boolean enableCompression = true;
     protected int shardsTotal = -1;
     protected int maxReconnectDelay = 900;
-    protected int corePoolSize = 7;
+    protected int corePoolSize = 5;
     protected String token = null;
     protected IntFunction<Boolean> idleProvider = null;
     protected IntFunction<Game> gameProvider = null;
     protected IntFunction<OnlineStatus> statusProvider = null;
     protected IntFunction<ConcurrentMap<String, String>> contextProvider = null;
     protected IntFunction<ScheduledThreadPoolExecutor> rateLimitPoolProvider = null;
+    protected IntFunction<ExecutorService> callbackPoolProvider = null;
     protected Collection<Integer> shards = null;
     protected IEventManager eventManager = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
     protected OkHttpClient httpClient = null;
     protected WebSocketFactory wsFactory = null;
-    protected ScheduledThreadPoolExecutor threadPool = null;
     protected boolean shutdownPools = true;
     protected IAudioSendFactory audioSendFactory = null;
     protected ThreadFactory threadFactory = null;
@@ -391,7 +389,7 @@ public class DefaultShardManagerBuilder
     /**
      * Sets the core pool size for the global JDA
      * {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} which is used
-     * in various locations throughout the JDA instance created by this ShardManager. (Default: 7)
+     * in various locations throughout the JDA instance created by this ShardManager. (Default: 5)
      * <br>Note: This has no effect if you set a pool using
      * {@link #setThreadPool(ScheduledThreadPoolExecutor)} or {@link #setThreadPoolProvider(IntFunction)}.
      *
@@ -655,7 +653,7 @@ public class DefaultShardManagerBuilder
      */
     public DefaultShardManagerBuilder setThreadPool(ScheduledThreadPoolExecutor pool)
     {
-        return setThreadPoolProvider(i -> pool);
+        return setThreadPoolProvider(pool == null ? null : (id) -> pool);
     }
 
     /**
@@ -673,6 +671,44 @@ public class DefaultShardManagerBuilder
     public DefaultShardManagerBuilder setThreadPoolProvider(IntFunction<ScheduledThreadPoolExecutor> provider)
     {
         this.rateLimitPoolProvider = provider;
+        this.shutdownPools = provider == null;
+        return this;
+    }
+
+    /**
+     * Sets the {@link ExecutorService ExecutorService} that should be used in
+     * the JDA callback handler which mostly consists of {@link net.dv8tion.jda.core.requests.RestAction RestAction} callbacks.
+     * By default JDA will use {@link ForkJoinPool#commonPool()}
+     * <br><b>Only change this pool if you know what you're doing.
+     * <br>This automatically disables the automatic shutdown of the JDA pools, you can enable
+     * it using {@link #setShutdownPools(boolean)}</b>
+     *
+     * @param  executor
+     *         The thread-pool to use for callback handling
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     */
+    public DefaultShardManagerBuilder setCallbackPool(ExecutorService executor)
+    {
+        return setCallbackPoolProvider(executor == null ? null : (id) -> executor);
+    }
+
+    /**
+     * Sets the {@link ExecutorService ExecutorService} that should be used in
+     * the JDA callback handler which mostly consists of {@link net.dv8tion.jda.core.requests.RestAction RestAction} callbacks.
+     * By default JDA will use {@link ForkJoinPool#commonPool()}
+     * <br><b>Only change this pool if you know what you're doing.
+     * <br>This automatically disables the automatic shutdown of the JDA pools, you can enable
+     * it using {@link #setShutdownPools(boolean)}</b>
+     *
+     * @param  provider
+     *         The thread-pool provider to use for callback handling
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     */
+    public DefaultShardManagerBuilder setCallbackPoolProvider(IntFunction<ExecutorService> provider)
+    {
+        this.callbackPoolProvider = provider;
         this.shutdownPools = provider == null;
         return this;
     }
@@ -906,7 +942,7 @@ public class DefaultShardManagerBuilder
             this.shardsTotal, this.shards, this.sessionController,
             this.listeners, this.listenerProviders, this.token, this.eventManager,
             this.audioSendFactory, this.gameProvider, this.statusProvider,
-            this.httpClientBuilder, this.httpClient, this.rateLimitPoolProvider, this.wsFactory, this.threadFactory,
+            this.httpClientBuilder, this.httpClient, this.rateLimitPoolProvider, this.callbackPoolProvider, this.wsFactory, this.threadFactory,
             this.maxReconnectDelay, this.corePoolSize, this.shutdownPools, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting,
             this.autoReconnect, this.idleProvider, this.retryOnTimeout, this.useShutdownNow, this.enableContext, this.contextProvider, this.enableCompression);
 
