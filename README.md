@@ -326,7 +326,7 @@ All dependencies are managed automatically by Gradle.
  * OkHttp
    * Version: **3.8.1**
    * [Github](https://github.com/square/okhttp)
-   * [JCenter Repository](https://bintray.com/bintray/jcenter/com.squareup.okhttp:okhttp)
+   * [JCenter Repository](https://bintray.com/bintray/jcenter/com.squareup.okhttp3:okhttp)
  * Apache Commons Collections4
    * Version: **4.1**
    * [Website](https://commons.apache.org/proper/commons-collections/)
