@@ -705,7 +705,7 @@ public class DefaultShardManagerBuilder
      * Sets the {@link ExecutorService ExecutorService} that should be used in
      * the JDA callback handler which mostly consists of {@link net.dv8tion.jda.core.requests.RestAction RestAction} callbacks.
      * By default JDA will use {@link ForkJoinPool#commonPool()}
-     * <br><b>Only change this pool if you know what you're doing.
+     * <br><b>Only change this pool if you know what you're doing.</b>
      *
      * @param  executor
      *         The thread-pool to use for callback handling
@@ -735,7 +735,7 @@ public class DefaultShardManagerBuilder
      * Sets the {@link ExecutorService ExecutorService} that should be used in
      * the JDA callback handler which mostly consists of {@link net.dv8tion.jda.core.requests.RestAction RestAction} callbacks.
      * By default JDA will use {@link ForkJoinPool#commonPool()}
-     * <br><b>Only change this pool if you know what you're doing.
+     * <br><b>Only change this pool if you know what you're doing.</b>
      *
      * @param  provider
      *         The thread-pool provider to use for callback handling

@@ -304,8 +304,6 @@ public class JDABuilder
      * Sets the {@link ScheduledThreadPoolExecutor ScheduledThreadPoolExecutor} that should be used in
      * the JDA rate-limit handler. Changing this can drastically change the JDA behavior for RestAction execution
      * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
-     * <br><b>This automatically disables the automatic shutdown of the JDA pools, you can enable
-     * it using {@link #setRateLimitPool(ScheduledThreadPoolExecutor, boolean) setRateLimitPool(executor, true)}</b>
      *
      * @param  pool
      *         The thread-pool to use for rate-limit handling
@@ -343,7 +341,7 @@ public class JDABuilder
      * Sets the {@link ExecutorService ExecutorService} that should be used in
      * the JDA callback handler which mostly consists of {@link net.dv8tion.jda.core.requests.RestAction RestAction} callbacks.
      * By default JDA will use {@link ForkJoinPool#commonPool()}
-     * <br><b>Only change this pool if you know what you're doing.
+     * <br><b>Only change this pool if you know what you're doing.</b>
      *
      * @param  executor
      *         The thread-pool to use for callback handling
