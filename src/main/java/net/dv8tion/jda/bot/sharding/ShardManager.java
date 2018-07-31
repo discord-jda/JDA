@@ -15,11 +15,6 @@
  */
 package net.dv8tion.jda.bot.sharding;
 
-import java.util.*;
-import java.util.function.Function;
-import java.util.function.IntFunction;
-import java.util.stream.Collectors;
-
 import net.dv8tion.jda.bot.entities.ApplicationInfo;
 import net.dv8tion.jda.bot.utils.cache.ShardCacheView;
 import net.dv8tion.jda.core.JDA;
@@ -28,8 +23,14 @@ import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.function.IntFunction;
+import java.util.stream.Collectors;
 
 /**
  * This class acts as a manager for multiple shards.
@@ -356,7 +357,9 @@ public interface ShardManager
      */
     default Guild getGuildById(final long id)
     {
-        return this.getGuildCache().getElementById(id);
+        int shardId = MiscUtil.getShardForGuild(id, getShardsTotal());
+        JDA shard = this.getShardById(shardId);
+        return shard == null ? null : shard.getGuildById(id);
     }
 
     /**
@@ -370,7 +373,7 @@ public interface ShardManager
      */
     default Guild getGuildById(final String id)
     {
-        return this.getGuildCache().getElementById(id);
+        return getGuildById(MiscUtil.parseSnowflake(id));
     }
 
     /**
@@ -850,7 +853,7 @@ public interface ShardManager
      * @see    net.dv8tion.jda.core.entities.Game#playing(String)
      * @see    net.dv8tion.jda.core.entities.Game#streaming(String, String)
      */
-    default void setGameProvider(final IntFunction<Game> gameProvider)
+    default void setGameProvider(final IntFunction<? extends Game> gameProvider)
     {
         this.getShardCache().forEach(jda -> jda.getPresence().setGame(gameProvider.apply(jda.getShardInfo().getShardId())));
     }

@@ -689,7 +689,7 @@ public class DefaultShardManager implements ShardManager
     }
 
     @Override
-    public void setGameProvider(IntFunction<Game> gameProvider)
+    public void setGameProvider(IntFunction<? extends Game> gameProvider)
     {
         ShardManager.super.setGameProvider(gameProvider);
 
