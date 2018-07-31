@@ -54,9 +54,9 @@ public class JDABuilder
     protected final List<Object> listeners;
 
     protected ScheduledThreadPoolExecutor rateLimitPool = null;
-    protected boolean shutdownRateLimitPool = false;
+    protected boolean shutdownRateLimitPool = true;
     protected ExecutorService callbackPool = null;
-    protected boolean shutdownCallbackPool = false;
+    protected boolean shutdownCallbackPool = true;
     protected ConcurrentMap<String, String> contextMap = null;
     protected SessionController controller = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
