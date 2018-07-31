@@ -148,12 +148,12 @@ public class DefaultShardManager implements ShardManager
     /**
      * The {@link ScheduledThreadPoolExecutor ScheduledThreadPoolExecutor} that will be used by JDAs rate-limit handler.
      */
-    protected final IntFunction<ScheduledThreadPoolExecutor> rateLimitPoolProvider;
+    protected final ThreadPoolProvider<? extends ScheduledThreadPoolExecutor> rateLimitPoolProvider;
 
     /**
      * The {@link ExecutorService ExecutorService} that will be used by JDAs callback handler.
      */
-    protected final IntFunction<ExecutorService> callbackPoolProvider;
+    protected final ThreadPoolProvider<? extends ExecutorService> callbackPoolProvider;
 
     /**
      * The {@link com.neovisionaries.ws.client.WebSocketFactory WebSocketFactory} that will be used by JDA's websocket client.
@@ -200,7 +200,7 @@ public class DefaultShardManager implements ShardManager
     /**
      * The gameProvider new JDA instances should have on startup.
      */
-    protected IntFunction<Game> gameProvider;
+    protected IntFunction<? extends Game> gameProvider;
 
     /**
      * Whether or not new JDA instances should be marked as afk on startup.
@@ -215,17 +215,12 @@ public class DefaultShardManager implements ShardManager
     /**
      * The MDC context provider new JDA instances should use on startup.
      */
-    protected IntFunction<ConcurrentMap<String, String>> contextProvider;
+    protected IntFunction<? extends ConcurrentMap<String, String>> contextProvider;
 
     /**
      * Whether to use the MDC context provider.
      */
     protected boolean enableMDC;
-
-    /**
-     * Whether {@link JDA#shutdown()} should also shutdown pools
-     */
-    protected boolean shutdownPools;
 
     /**
      * Whether to enable transport compression
@@ -292,17 +287,16 @@ public class DefaultShardManager implements ShardManager
                                   final SessionController controller, final List<Object> listeners,
                                   final List<IntFunction<Object>> listenerProviders,
                                   final String token, final IEventManager eventManager, final IAudioSendFactory audioSendFactory,
-                                  final IntFunction<Game> gameProvider, final IntFunction<OnlineStatus> statusProvider,
+                                  final IntFunction<? extends Game> gameProvider, final IntFunction<OnlineStatus> statusProvider,
                                   final OkHttpClient.Builder httpClientBuilder, final OkHttpClient httpClient,
-                                  final IntFunction<ScheduledThreadPoolExecutor> rateLimitPoolProvider,
-                                  final IntFunction<ExecutorService> callbackPoolProvider,
+                                  final ThreadPoolProvider<? extends ScheduledThreadPoolExecutor> rateLimitPoolProvider,
+                                  final ThreadPoolProvider<? extends ExecutorService> callbackPoolProvider,
                                   final WebSocketFactory wsFactory, final ThreadFactory threadFactory,
-                                  final int maxReconnectDelay, final int corePoolSize,
-                                  final boolean enableVoice, final boolean shutdownPools,
+                                  final int maxReconnectDelay, final int corePoolSize, final boolean enableVoice,
                                   final boolean enableShutdownHook, final boolean enableBulkDeleteSplitting,
                                   final boolean autoReconnect, final IntFunction<Boolean> idleProvider,
                                   final boolean retryOnTimeout, final boolean useShutdownNow,
-                                  final boolean enableMDC, final IntFunction<ConcurrentMap<String, String>> contextProvider,
+                                  final boolean enableMDC, final IntFunction<? extends ConcurrentMap<String, String>> contextProvider,
                                   final boolean enableCompression)
     {
         this.shardsTotal = shardsTotal;
@@ -320,7 +314,6 @@ public class DefaultShardManager implements ShardManager
             this.httpClientBuilder = null;
         this.rateLimitPoolProvider = rateLimitPoolProvider;
         this.callbackPoolProvider = callbackPoolProvider;
-        this.shutdownPools = shutdownPools;
         this.wsFactory = wsFactory == null ? new WebSocketFactory() : wsFactory;
         this.executor = createExecutor(threadFactory);
         this.controller = controller == null ? new SessionControllerAdapter() : controller;
@@ -611,14 +604,22 @@ public class DefaultShardManager implements ShardManager
         if (httpClient == null)
             httpClient = this.httpClientBuilder.build();
         ScheduledThreadPoolExecutor rateLimitPool = null;
+        boolean shutdownRateLimitPool = true;
         if (rateLimitPoolProvider != null)
-            rateLimitPool = rateLimitPoolProvider.apply(shardId);
+        {
+            rateLimitPool = rateLimitPoolProvider.provide(shardId);
+            shutdownRateLimitPool = rateLimitPoolProvider.isAutomaticShutdown(shardId);
+        }
         ExecutorService callbackPool = null;
+        boolean shutdownCallbackPool = true;
         if (callbackPoolProvider != null)
-            callbackPool = callbackPoolProvider.apply(shardId);
+        {
+            callbackPool = callbackPoolProvider.provide(shardId);
+            shutdownCallbackPool = callbackPoolProvider.isAutomaticShutdown(shardId);
+        }
         final JDAImpl jda = new JDAImpl(AccountType.BOT, this.token, this.controller, httpClient, this.wsFactory,
             rateLimitPool, callbackPool, this.autoReconnect, this.enableVoice, false, this.enableBulkDeleteSplitting,
-            this.retryOnTimeout, this.enableMDC, this.shutdownPools, this.corePoolSize, this.maxReconnectDelay,
+            this.retryOnTimeout, this.enableMDC, shutdownRateLimitPool, shutdownCallbackPool, this.corePoolSize, this.maxReconnectDelay,
             this.contextProvider == null || !this.enableMDC ? null : contextProvider.apply(shardId));
 
         jda.asBot().setShardManager(this);

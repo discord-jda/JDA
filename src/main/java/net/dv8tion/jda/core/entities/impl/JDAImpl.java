@@ -58,8 +58,10 @@ public class JDAImpl implements JDA
 {
     public static final Logger LOG = JDALogger.getLog(JDA.class);
 
-    public final ScheduledThreadPoolExecutor pool;
-    public final ExecutorService callbackPool;
+    protected final ScheduledThreadPoolExecutor rateLimitPool;
+    protected final ExecutorService callbackPool;
+    protected final boolean shutdownRateLimitPool;
+    protected final boolean shutdownCallbackPool;
 
     protected final SnowflakeCacheViewImpl<User> userCache = new SnowflakeCacheViewImpl<>(User.class, User::getName);
     protected final SnowflakeCacheViewImpl<Guild> guildCache = new SnowflakeCacheViewImpl<>(Guild.class, Guild::getName);
@@ -100,7 +102,6 @@ public class JDAImpl implements JDA
     protected boolean audioEnabled;
     protected boolean bulkDeleteSplittingEnabled;
     protected boolean autoReconnect;
-    protected boolean shutdownPool;
     protected long responseTotal;
     protected long ping = -1;
     protected String token;
@@ -110,7 +111,8 @@ public class JDAImpl implements JDA
                    OkHttpClient httpClient, WebSocketFactory wsFactory,
                    ScheduledThreadPoolExecutor rateLimitPool, ExecutorService callbackPool,
                    boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook,
-                   boolean bulkDeleteSplittingEnabled, boolean retryOnTimeout, boolean enableMDC, boolean shutdownPool,
+                   boolean bulkDeleteSplittingEnabled, boolean retryOnTimeout, boolean enableMDC,
+                   boolean shutdownRateLimitPool, boolean shutdownCallbackPool,
                    int poolSize, int maxReconnectDelay,
                    ConcurrentMap<String, String> contextMap)
     {
@@ -122,15 +124,10 @@ public class JDAImpl implements JDA
         this.audioEnabled = audioEnabled;
         this.shutdownHook = useShutdownHook ? new Thread(this::shutdown, "JDA Shutdown Hook") : null;
         this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
-        if (rateLimitPool == null)
-            this.pool = new ScheduledThreadPoolExecutor(poolSize, new RateLimitThreadFactory());
-        else
-            this.pool = rateLimitPool;
-        if (callbackPool == null)
-            this.callbackPool = ForkJoinPool.commonPool();
-        else
-            this.callbackPool = callbackPool;
-        this.shutdownPool = shutdownPool;
+        this.rateLimitPool = rateLimitPool == null ? new ScheduledThreadPoolExecutor(poolSize, new RateLimitThreadFactory()) : rateLimitPool;
+        this.callbackPool = callbackPool == null ? ForkJoinPool.commonPool() : callbackPool;
+        this.shutdownRateLimitPool = shutdownRateLimitPool;
+        this.shutdownCallbackPool = shutdownCallbackPool;
         this.maxReconnectDelay = maxReconnectDelay;
         this.sessionController = controller == null ? new SessionControllerAdapter() : controller;
         if (enableMDC)
@@ -521,11 +518,10 @@ public class JDAImpl implements JDA
     public void shutdownNow()
     {
         shutdown();
-        if (shutdownPool)
-        {
-            pool.shutdownNow();
-            callbackPool.shutdownNow();
-        }
+        if (shutdownRateLimitPool)
+            getRateLimitPool().shutdownNow();
+        if (shutdownCallbackPool)
+            getCallbackPool().shutdownNow();
     }
 
     @Override
@@ -548,12 +544,13 @@ public class JDAImpl implements JDA
         final long time = 5L;
         final TimeUnit unit = TimeUnit.SECONDS;
         getRequester().shutdown();
-        if (shutdownPool)
+        if (shutdownRateLimitPool)
         {
-            pool.setKeepAliveTime(time, unit);
-            pool.allowCoreThreadTimeOut(true);
-            callbackPool.shutdown();
+            getRateLimitPool().setKeepAliveTime(time, unit);
+            getRateLimitPool().allowCoreThreadTimeOut(true);
         }
+        if (shutdownCallbackPool)
+            getCallbackPool().shutdown();
 
         if (shutdownHook != null)
         {
@@ -805,6 +802,16 @@ public class JDAImpl implements JDA
     public void resetGatewayUrl()
     {
         this.gatewayUrl = getGateway();
+    }
+
+    public ScheduledThreadPoolExecutor getRateLimitPool()
+    {
+        return rateLimitPool;
+    }
+
+    public ExecutorService getCallbackPool()
+    {
+        return callbackPool;
     }
 
     private class RateLimitThreadFactory implements ThreadFactory

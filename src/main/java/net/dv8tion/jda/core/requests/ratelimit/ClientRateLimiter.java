@@ -145,7 +145,7 @@ public class ClientRateLimiter extends RateLimiter
                     if (delay == null)
                         delay = 0L;
 
-                    requester.getJDA().pool.schedule(this, delay, TimeUnit.MILLISECONDS);
+                    requester.getJDA().getRateLimitPool().schedule(this, delay, TimeUnit.MILLISECONDS);
                     submittedBuckets.add(this);
                 }
             }
