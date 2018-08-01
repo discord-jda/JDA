@@ -149,7 +149,7 @@ public class PresenceUpdateHandler extends SocketHandler
                 else
                 {
                     //The member is already cached, so modify the presence values and fire events as needed.
-                    if (api.isCacheFlagSet(CacheFlag.ONLINE_STATUS) && !member.getOnlineStatus().equals(status))
+                    if (!member.getOnlineStatus().equals(status))
                     {
                         OnlineStatus oldStatus = member.getOnlineStatus();
                         member.setOnlineStatus(status);
@@ -179,7 +179,7 @@ public class PresenceUpdateHandler extends SocketHandler
 
                 if (friend != null)
                 {
-                    if (api.isCacheFlagSet(CacheFlag.ONLINE_STATUS) && !friend.getOnlineStatus().equals(status))
+                    if (!friend.getOnlineStatus().equals(status))
                     {
                         OnlineStatus oldStatus = friend.getOnlineStatus();
                         friend.setOnlineStatus(status);

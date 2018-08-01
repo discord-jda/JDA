@@ -389,13 +389,10 @@ public class EntityBuilder
     {
         if (memberOrFriend == null)
             throw new NullPointerException("Provided memberOrFriend was null!");
-        boolean cacheStatus = api.isCacheFlagSet(CacheFlag.ONLINE_STATUS);
         boolean cacheGame = api.isCacheFlagSet(CacheFlag.GAME);
-        if (!cacheGame && !cacheStatus)
-            return;
 
         JSONObject gameJson = !cacheGame || presenceJson.isNull("game") ? null : presenceJson.getJSONObject("game");
-        OnlineStatus onlineStatus = cacheStatus ? OnlineStatus.fromKey(presenceJson.getString("status")) : null;
+        OnlineStatus onlineStatus = OnlineStatus.fromKey(presenceJson.getString("status"));
         Game game = null;
         boolean parsedGame = false;
 
@@ -424,16 +421,14 @@ public class EntityBuilder
         if (memberOrFriend instanceof Member)
         {
             MemberImpl member = (MemberImpl) memberOrFriend;
-            if (cacheStatus)
-                member.setOnlineStatus(onlineStatus);
+            member.setOnlineStatus(onlineStatus);
             if (cacheGame && parsedGame)
                 member.setGame(game);
         }
         else if (memberOrFriend instanceof Friend)
         {
             FriendImpl friend = (FriendImpl) memberOrFriend;
-            if (cacheStatus)
-                friend.setOnlineStatus(onlineStatus);
+            friend.setOnlineStatus(onlineStatus);
             if (cacheGame && parsedGame)
                 friend.setGame(game);
 

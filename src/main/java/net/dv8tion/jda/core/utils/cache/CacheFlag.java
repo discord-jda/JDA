@@ -28,10 +28,6 @@ public enum CacheFlag
      */
     GAME,
     /**
-     * Enables cache for {@link Member#getOnlineStatus()}
-     */
-    ONLINE_STATUS,
-    /**
      * Enables cache for {@link Member#getVoiceState()}
      * <br>This will always be cached for self member.
      */

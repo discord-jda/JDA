@@ -42,7 +42,7 @@ public class MemberImpl implements Member
     private String nickname;
     private long joinDate;
     private Game game;
-    private OnlineStatus onlineStatus;
+    private OnlineStatus onlineStatus = OnlineStatus.OFFLINE;
 
     public MemberImpl(GuildImpl guild, User user)
     {
@@ -50,10 +50,7 @@ public class MemberImpl implements Member
         this.user = user;
         JDAImpl jda = (JDAImpl) getJDA();
         boolean cacheState = jda.isCacheFlagSet(CacheFlag.VOICE_STATE) || user.equals(jda.getSelfUser());
-        boolean cacheOnlineStatus = jda.isCacheFlagSet(CacheFlag.ONLINE_STATUS);
         this.voiceState = cacheState ? new GuildVoiceStateImpl(guild, this) : null;
-        if (cacheOnlineStatus)
-            onlineStatus = OnlineStatus.OFFLINE;
     }
 
     @Override
