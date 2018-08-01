@@ -26,13 +26,11 @@ import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.SessionController;
 import net.dv8tion.jda.core.utils.SessionControllerAdapter;
+import net.dv8tion.jda.core.utils.cache.CacheFlag;
 import okhttp3.OkHttpClient;
 
 import javax.security.auth.login.LoginException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 
 /**
@@ -50,6 +48,7 @@ public class JDABuilder
 {
     protected final List<Object> listeners;
 
+    protected EnumSet<CacheFlag> cacheFlags = EnumSet.allOf(CacheFlag.class);
     protected ConcurrentMap<String, String> contextMap = null;
     protected boolean enableContext = true;
     protected SessionController controller = null;
@@ -91,6 +90,20 @@ public class JDABuilder
 
         this.accountType = accountType;
         this.listeners = new LinkedList<>();
+    }
+
+    /**
+     * Flags used to en-/disable parts of the JDA cache to reduce the runtime memory footprint.
+     *
+     * @param  flags
+     *         EnumSet containing the flags for cache services that should be <b>enabled</b>
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     */
+    public JDABuilder setCacheFlags(EnumSet<CacheFlag> flags)
+    {
+        this.cacheFlags = flags == null ? EnumSet.noneOf(CacheFlag.class) : EnumSet.copyOf(flags);
+        return this;
     }
 
     /**
@@ -587,7 +600,7 @@ public class JDABuilder
             controller = new SessionControllerAdapter();
         
         JDAImpl jda = new JDAImpl(accountType, token, controller, httpClientBuilder, wsFactory, autoReconnect, enableVoice, enableShutdownHook,
-                enableBulkDeleteSplitting, requestTimeoutRetry, enableContext, corePoolSize, maxReconnectDelay, contextMap);
+                enableBulkDeleteSplitting, requestTimeoutRetry, enableContext, corePoolSize, maxReconnectDelay, contextMap, cacheFlags);
 
         if (eventManager != null)
             jda.setEventManager(eventManager);

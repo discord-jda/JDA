@@ -39,6 +39,7 @@ import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.requests.restaction.GuildAction;
 import net.dv8tion.jda.core.utils.*;
+import net.dv8tion.jda.core.utils.cache.CacheFlag;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.core.utils.cache.impl.AbstractCacheView;
@@ -84,6 +85,7 @@ public class JDAImpl implements JDA
     protected final EntityBuilder entityBuilder = new EntityBuilder(this);
     protected final EventCache eventCache = new EventCache();
     protected final Object akapLock = new Object();
+    protected final EnumSet<CacheFlag> cacheFlags;
 
     protected final SessionController sessionController;
     protected final GuildSetupController guildSetupController;
@@ -106,7 +108,7 @@ public class JDAImpl implements JDA
 
     public JDAImpl(AccountType accountType, String token, SessionController controller, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory,
                    boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled, boolean retryOnTimeout, boolean enableMDC,
-                   int corePoolSize, int maxReconnectDelay, ConcurrentMap<String, String> contextMap)
+                   int corePoolSize, int maxReconnectDelay, ConcurrentMap<String, String> contextMap, EnumSet<CacheFlag> cacheFlags)
     {
         this.accountType = accountType;
         this.setToken(token);
@@ -130,7 +132,13 @@ public class JDAImpl implements JDA
 
         this.jdaClient = accountType == AccountType.CLIENT ? new JDAClientImpl(this) : null;
         this.jdaBot = accountType == AccountType.BOT ? new JDABotImpl(this) : null;
-        guildSetupController = new GuildSetupController(this);
+        this.guildSetupController = new GuildSetupController(this);
+        this.cacheFlags = cacheFlags;
+    }
+
+    public boolean isCacheFlagSet(CacheFlag flag)
+    {
+        return cacheFlags.contains(flag);
     }
 
     public SessionController getSessionController()

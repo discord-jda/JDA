@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.SessionController;
+import net.dv8tion.jda.core.utils.cache.CacheFlag;
 import okhttp3.OkHttpClient;
 
 import javax.security.auth.login.LoginException;
@@ -45,6 +46,7 @@ public class DefaultShardManagerBuilder
     protected final List<Object> listeners = new ArrayList<>();
     protected final List<IntFunction<Object>> listenerProviders = new ArrayList<>();
     protected SessionController sessionController = null;
+    protected EnumSet<CacheFlag> cacheFlags = EnumSet.allOf(CacheFlag.class);
     protected IntFunction<ConcurrentMap<String, String>> contextProvider = null;
     protected boolean enableContext = true;
     protected boolean enableBulkDeleteSplitting = true;
@@ -75,6 +77,20 @@ public class DefaultShardManagerBuilder
      * before calling {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder#build() build()}.
      */
     public DefaultShardManagerBuilder() {}
+
+    /**
+     * Flags used to en-/disable parts of the JDA cache to reduce the runtime memory footprint.
+     *
+     * @param  flags
+     *         EnumSet containing the flags for cache services that should be <b>enabled</b>
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     */
+    public DefaultShardManagerBuilder setCacheFlags(EnumSet<CacheFlag> flags)
+    {
+        this.cacheFlags = flags == null ? EnumSet.noneOf(CacheFlag.class) : EnumSet.copyOf(flags);
+        return this;
+    }
 
     /**
      * Sets the {@link net.dv8tion.jda.core.utils.SessionController SessionController}
@@ -832,7 +848,8 @@ public class DefaultShardManagerBuilder
             this.audioSendFactory, this.gameProvider, this.statusProvider,
             this.httpClientBuilder, this.wsFactory, this.threadFactory,
             this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting,
-            this.autoReconnect, this.idleProvider, this.retryOnTimeout, this.useShutdownNow, this.enableContext, this.contextProvider, this.enableCompression);
+            this.autoReconnect, this.idleProvider, this.retryOnTimeout, this.useShutdownNow, this.enableContext,
+            this.contextProvider, this.cacheFlags, this.enableCompression);
 
         manager.login();
 

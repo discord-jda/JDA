@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.PermissionUtil;
+import net.dv8tion.jda.core.utils.cache.CacheFlag;
 
 import javax.annotation.Nullable;
 import java.awt.Color;
@@ -41,13 +42,18 @@ public class MemberImpl implements Member
     private String nickname;
     private long joinDate;
     private Game game;
-    private OnlineStatus onlineStatus = OnlineStatus.OFFLINE;
+    private OnlineStatus onlineStatus;
 
     public MemberImpl(GuildImpl guild, User user)
     {
         this.guild = guild;
         this.user = user;
-        this.voiceState = new GuildVoiceStateImpl(guild, this);
+        JDAImpl jda = (JDAImpl) getJDA();
+        boolean cacheState = jda.isCacheFlagSet(CacheFlag.VOICE_STATE) || user.equals(jda.getSelfUser());
+        boolean cacheOnlineStatus = jda.isCacheFlagSet(CacheFlag.ONLINE_STATUS);
+        this.voiceState = cacheState ? new GuildVoiceStateImpl(guild, this) : null;
+        if (cacheOnlineStatus)
+            onlineStatus = OnlineStatus.OFFLINE;
     }
 
     @Override

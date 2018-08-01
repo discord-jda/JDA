@@ -105,6 +105,8 @@ public class VoiceStateUpdateHandler extends SocketHandler
         }
 
         GuildVoiceStateImpl vState = (GuildVoiceStateImpl) member.getVoiceState();
+        if (vState == null)
+            return;
         vState.setSessionId(sessionId); //Cant really see a reason for an event for this
 
         if (!Objects.equals(channel, vState.getChannel()))

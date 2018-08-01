@@ -31,6 +31,7 @@ import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.SessionController;
 import net.dv8tion.jda.core.utils.SessionControllerAdapter;
+import net.dv8tion.jda.core.utils.cache.CacheFlag;
 import net.dv8tion.jda.core.utils.tuple.Pair;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
@@ -212,6 +213,11 @@ public class DefaultShardManager implements ShardManager
     protected boolean enableCompression;
 
     /**
+     * Cache flags
+     */
+    protected final EnumSet<CacheFlag> cacheFlags;
+
+    /**
      * Creates a new DefaultShardManager instance.
      * @param  shardsTotal
      *         The total amount of shards or {@code -1} to retrieve the recommended amount from discord.
@@ -279,7 +285,7 @@ public class DefaultShardManager implements ShardManager
                                   final boolean autoReconnect, final IntFunction<Boolean> idleProvider,
                                   final boolean retryOnTimeout, final boolean useShutdownNow,
                                   final boolean enableMDC, final IntFunction<ConcurrentMap<String, String>> contextProvider,
-                                  final boolean enableCompression)
+                                  final EnumSet<CacheFlag> cacheFlags, final boolean enableCompression)
     {
         this.shardsTotal = shardsTotal;
         this.listeners = listeners;
@@ -305,6 +311,7 @@ public class DefaultShardManager implements ShardManager
         this.contextProvider = contextProvider;
         this.enableMDC = enableMDC;
         this.enableCompression = enableCompression;
+        this.cacheFlags = cacheFlags;
 
         synchronized (queue)
         {
@@ -578,7 +585,7 @@ public class DefaultShardManager implements ShardManager
     {
         final JDAImpl jda = new JDAImpl(AccountType.BOT, this.token, this.controller, this.httpClientBuilder, this.wsFactory,
             this.autoReconnect, this.enableVoice, false, this.enableBulkDeleteSplitting, this.retryOnTimeout, this.enableMDC,
-            this.corePoolSize, this.maxReconnectDelay, this.contextProvider == null || !this.enableMDC ? null : contextProvider.apply(shardId));
+            this.corePoolSize, this.maxReconnectDelay, this.contextProvider == null || !this.enableMDC ? null : contextProvider.apply(shardId), this.cacheFlags);
 
         jda.asBot().setShardManager(this);
 

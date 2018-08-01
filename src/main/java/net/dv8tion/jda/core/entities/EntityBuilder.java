@@ -36,6 +36,7 @@ import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.handle.EventCache;
 import net.dv8tion.jda.core.utils.Helpers;
 import net.dv8tion.jda.core.utils.JDALogger;
+import net.dv8tion.jda.core.utils.cache.CacheFlag;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.json.JSONArray;
@@ -270,6 +271,9 @@ public class EntityBuilder
                 continue;
             }
 
+            GuildVoiceStateImpl voiceState = (GuildVoiceStateImpl) member.getVoiceState();
+            if (voiceState == null)
+                continue;
             final long channelId = voiceStateJson.getLong("channel_id");
             VoiceChannelImpl voiceChannel =
                     (VoiceChannelImpl) guildObj.getVoiceChannelsMap().get(channelId);
@@ -280,7 +284,6 @@ public class EntityBuilder
                     channelId, guildObj.getId(), userId);
 
             // VoiceState is considered volatile so we don't expect anything to actually exist
-            GuildVoiceStateImpl voiceState = (GuildVoiceStateImpl) member.getVoiceState();
             voiceState.setSelfMuted(Helpers.optBoolean(voiceStateJson, "self_mute"))
                       .setSelfDeafened(Helpers.optBoolean(voiceStateJson, "self_deaf"))
                       .setGuildMuted(Helpers.optBoolean(voiceStateJson, "mute"))
@@ -351,9 +354,12 @@ public class EntityBuilder
             guild.getMembersMap().put(user.getIdLong(), member);
         }
 
-        ((GuildVoiceStateImpl) member.getVoiceState())
-            .setGuildMuted(memberJson.getBoolean("mute"))
-            .setGuildDeafened(memberJson.getBoolean("deaf"));
+        GuildVoiceStateImpl state = (GuildVoiceStateImpl) member.getVoiceState();
+        if (state != null)
+        {
+            state.setGuildMuted(memberJson.getBoolean("mute"))
+                 .setGuildDeafened(memberJson.getBoolean("deaf"));
+        }
 
         TemporalAccessor joinedAt = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(memberJson.getString("joined_at"));
         member.setJoinDate(Instant.from(joinedAt).toEpochMilli())
@@ -383,13 +389,17 @@ public class EntityBuilder
     {
         if (memberOrFriend == null)
             throw new NullPointerException("Provided memberOrFriend was null!");
+        boolean cacheStatus = api.isCacheFlagSet(CacheFlag.ONLINE_STATUS);
+        boolean cacheGame = api.isCacheFlagSet(CacheFlag.GAME);
+        if (!cacheGame && !cacheStatus)
+            return;
 
-        JSONObject gameJson = presenceJson.isNull("game") ? null : presenceJson.getJSONObject("game");
-        OnlineStatus onlineStatus = OnlineStatus.fromKey(presenceJson.getString("status"));
+        JSONObject gameJson = !cacheGame || presenceJson.isNull("game") ? null : presenceJson.getJSONObject("game");
+        OnlineStatus onlineStatus = cacheStatus ? OnlineStatus.fromKey(presenceJson.getString("status")) : null;
         Game game = null;
         boolean parsedGame = false;
 
-        if (gameJson != null && !gameJson.isNull("name"))
+        if (cacheGame && gameJson != null && !gameJson.isNull("name"))
         {
             try
             {
@@ -414,15 +424,17 @@ public class EntityBuilder
         if (memberOrFriend instanceof Member)
         {
             MemberImpl member = (MemberImpl) memberOrFriend;
-            member.setOnlineStatus(onlineStatus);
-            if (parsedGame)
+            if (cacheStatus)
+                member.setOnlineStatus(onlineStatus);
+            if (cacheGame && parsedGame)
                 member.setGame(game);
         }
         else if (memberOrFriend instanceof Friend)
         {
             FriendImpl friend = (FriendImpl) memberOrFriend;
-            friend.setOnlineStatus(onlineStatus);
-            if (parsedGame)
+            if (cacheStatus)
+                friend.setOnlineStatus(onlineStatus);
+            if (cacheGame && parsedGame)
                 friend.setGame(game);
 
             OffsetDateTime lastModified = OffsetDateTime.ofInstant(

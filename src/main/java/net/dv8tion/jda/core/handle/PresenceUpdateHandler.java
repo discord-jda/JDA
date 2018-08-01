@@ -26,6 +26,7 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.entities.impl.MemberImpl;
 import net.dv8tion.jda.core.entities.impl.UserImpl;
 import net.dv8tion.jda.core.events.user.update.*;
+import net.dv8tion.jda.core.utils.cache.CacheFlag;
 import org.json.JSONObject;
 
 import java.util.Objects;
@@ -107,7 +108,7 @@ public class PresenceUpdateHandler extends SocketHandler
 
             //Now that we've update the User's info, lets see if we need to set the specific Presence information.
             // This is stored in the Member or Relation objects.
-            final JSONObject game = content.isNull("game") ? null : content.optJSONObject("game");
+            final JSONObject game = !api.isCacheFlagSet(CacheFlag.GAME) || content.isNull("game") ? null : content.optJSONObject("game");
             Game nextGame = null;
             boolean parsedGame = false;
             try
@@ -148,7 +149,7 @@ public class PresenceUpdateHandler extends SocketHandler
                 else
                 {
                     //The member is already cached, so modify the presence values and fire events as needed.
-                    if (!member.getOnlineStatus().equals(status))
+                    if (api.isCacheFlagSet(CacheFlag.ONLINE_STATUS) && !member.getOnlineStatus().equals(status))
                     {
                         OnlineStatus oldStatus = member.getOnlineStatus();
                         member.setOnlineStatus(status);
@@ -178,7 +179,7 @@ public class PresenceUpdateHandler extends SocketHandler
 
                 if (friend != null)
                 {
-                    if (!friend.getOnlineStatus().equals(status))
+                    if (api.isCacheFlagSet(CacheFlag.ONLINE_STATUS) && !friend.getOnlineStatus().equals(status))
                     {
                         OnlineStatus oldStatus = friend.getOnlineStatus();
                         friend.setOnlineStatus(status);
