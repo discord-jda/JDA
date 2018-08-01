@@ -652,19 +652,7 @@ public class DefaultShardManagerBuilder
      */
     public DefaultShardManagerBuilder setRateLimitPool(ScheduledThreadPoolExecutor pool, boolean automaticShutdown)
     {
-        return setRateLimitPoolProvider(pool == null ? null : new ThreadPoolProvider<ScheduledThreadPoolExecutor>() {
-            @Override
-            public ScheduledThreadPoolExecutor provide(int shardId)
-            {
-                return pool;
-            }
-
-            @Override
-            public boolean isAutomaticShutdown(int shardId)
-            {
-                return automaticShutdown;
-            }
-        });
+        return setRateLimitPoolProvider(pool == null ? null : new ThreadPoolProviderImpl<>(pool, automaticShutdown));
     }
 
     /**
@@ -716,19 +704,7 @@ public class DefaultShardManagerBuilder
      */
     public DefaultShardManagerBuilder setCallbackPool(ExecutorService executor, boolean automaticShutdown)
     {
-        return setCallbackPoolProvider(executor == null ? null : new ThreadPoolProvider<ExecutorService>() {
-            @Override
-            public ExecutorService provide(int shardId)
-            {
-                return executor;
-            }
-
-            @Override
-            public boolean isAutomaticShutdown(int shardId)
-            {
-                return automaticShutdown;
-            }
-        });
+        return setCallbackPoolProvider(executor == null ? null : new ThreadPoolProviderImpl<>(executor, automaticShutdown));
     }
 
     /**
@@ -984,5 +960,30 @@ public class DefaultShardManagerBuilder
         manager.login();
 
         return manager;
+    }
+
+    //Avoid having multiple anonymous classes
+    private static class ThreadPoolProviderImpl<T extends ExecutorService> implements ThreadPoolProvider<T>
+    {
+        private final boolean autoShutdown;
+        private final T pool;
+
+        public ThreadPoolProviderImpl(T pool, boolean autoShutdown)
+        {
+            this.autoShutdown = autoShutdown;
+            this.pool = pool;
+        }
+
+        @Override
+        public T provide(int shardId)
+        {
+            return pool;
+        }
+
+        @Override
+        public boolean isAutomaticShutdown(int shardId)
+        {
+            return autoShutdown;
+        }
     }
 }
