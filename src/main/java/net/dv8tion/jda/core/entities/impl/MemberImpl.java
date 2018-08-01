@@ -25,18 +25,21 @@ import net.dv8tion.jda.core.utils.PermissionUtil;
 
 import javax.annotation.Nullable;
 import java.awt.Color;
+import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 
 public class MemberImpl implements Member
 {
+    private static final ZoneOffset OFFSET = ZoneOffset.of("+00:00");
     private final GuildImpl guild;
     private final User user;
     private final HashSet<Role> roles = new HashSet<>();
     private final GuildVoiceState voiceState;
 
     private String nickname;
-    private OffsetDateTime joinDate;
+    private long joinDate;
     private Game game;
     private OnlineStatus onlineStatus = OnlineStatus.OFFLINE;
 
@@ -68,7 +71,7 @@ public class MemberImpl implements Member
     @Override
     public OffsetDateTime getJoinDate()
     {
-        return joinDate;
+        return OffsetDateTime.ofInstant(Instant.ofEpochMilli(joinDate), OFFSET);
     }
 
     @Override
@@ -205,7 +208,7 @@ public class MemberImpl implements Member
         return this;
     }
 
-    public MemberImpl setJoinDate(OffsetDateTime joinDate)
+    public MemberImpl setJoinDate(long joinDate)
     {
         this.joinDate = joinDate;
         return this;

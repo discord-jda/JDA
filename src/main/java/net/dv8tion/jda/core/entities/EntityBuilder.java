@@ -45,6 +45,8 @@ import org.slf4j.Logger;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -353,7 +355,8 @@ public class EntityBuilder
             .setGuildMuted(memberJson.getBoolean("mute"))
             .setGuildDeafened(memberJson.getBoolean("deaf"));
 
-        member.setJoinDate(OffsetDateTime.parse(memberJson.getString("joined_at")))
+        TemporalAccessor joinedAt = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(memberJson.getString("joined_at"));
+        member.setJoinDate(Instant.from(joinedAt).toEpochMilli())
               .setNickname(memberJson.optString("nick", null));
 
         JSONArray rolesJson = memberJson.getJSONArray("roles");
