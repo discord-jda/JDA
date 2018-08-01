@@ -93,17 +93,31 @@ public class JDABuilder
     }
 
     /**
-     * Flags used to en-/disable parts of the JDA cache to reduce the runtime memory footprint.
+     * Flags used to enable selective parts of the JDA cache to reduce the runtime memory footprint.
      *
      * @param  flags
      *         EnumSet containing the flags for cache services that should be <b>enabled</b>
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    public JDABuilder setCacheFlags(EnumSet<CacheFlag> flags)
+    public JDABuilder setEnabledCacheFlags(EnumSet<CacheFlag> flags)
     {
         this.cacheFlags = flags == null ? EnumSet.noneOf(CacheFlag.class) : EnumSet.copyOf(flags);
         return this;
+    }
+
+    /**
+     * Flags used to disable parts of the JDA cache to reduce the runtime memory footprint.
+     * <br>Shortcut for {@code setEnabledCacheFlags(EnumSet.complementOf(flags))}
+     *
+     * @param  flags
+     *         EnumSet containing the flags for cache services that should be <b>disabled</b>
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     */
+    public JDABuilder setDisabledCacheFlags(EnumSet<CacheFlag> flags)
+    {
+        return setEnabledCacheFlags(EnumSet.complementOf(flags));
     }
 
     /**

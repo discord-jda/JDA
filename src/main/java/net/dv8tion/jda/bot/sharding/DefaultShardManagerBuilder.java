@@ -79,17 +79,31 @@ public class DefaultShardManagerBuilder
     public DefaultShardManagerBuilder() {}
 
     /**
-     * Flags used to en-/disable parts of the JDA cache to reduce the runtime memory footprint.
+     * Flags used to enable parts of the JDA cache to reduce the runtime memory footprint.
      *
      * @param  flags
      *         EnumSet containing the flags for cache services that should be <b>enabled</b>
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
-    public DefaultShardManagerBuilder setCacheFlags(EnumSet<CacheFlag> flags)
+    public DefaultShardManagerBuilder setEnabledCacheFlags(EnumSet<CacheFlag> flags)
     {
         this.cacheFlags = flags == null ? EnumSet.noneOf(CacheFlag.class) : EnumSet.copyOf(flags);
         return this;
+    }
+
+    /**
+     * Flags used to disable parts of the JDA cache to reduce the runtime memory footprint.
+     * <br>Shortcut for {@code setEnabledCacheFlags(EnumSet.complementOf(flags))}
+     *
+     * @param  flags
+     *         EnumSet containing the flags for cache services that should be <b>disabled</b>
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     */
+    public DefaultShardManagerBuilder setDisabledCacheFlags(EnumSet<CacheFlag> flags)
+    {
+        return setEnabledCacheFlags(EnumSet.complementOf(flags));
     }
 
     /**
