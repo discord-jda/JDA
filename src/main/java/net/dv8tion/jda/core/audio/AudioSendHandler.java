@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.audio;
 
 import javax.sound.sampled.AudioFormat;
+import java.util.EnumSet;
 
 /**
  * Interface used to send audio to Discord through JDA.
@@ -28,6 +29,9 @@ public interface AudioSendHandler
      */
     AudioFormat INPUT_FORMAT = new AudioFormat(48000f, 16, 2, true, true);
 
+    /** The default speaking modes used by AudioSendHandler */
+    EnumSet<SpeakingMode> DEFAULT_SPEAKING_MODES = EnumSet.of(SpeakingMode.VOICE);
+
     /**
      * If this method returns true JDA will attempt to retrieve audio data from this handler by calling
      * {@link #provide20MsAudio()}. The return value is checked each time JDA attempts send audio, so if
@@ -37,6 +41,16 @@ public interface AudioSendHandler
      * @return If true, JDA will attempt to retrieve audio data from {@link #provide20MsAudio()}
      */
     boolean canProvide();
+
+    /**
+     * EnumSet containing the speaking modes that should be used to send the next package
+     *
+     * @return EnumSet containing the speaking modes
+     */
+    default EnumSet<SpeakingMode> provideSpeakingModes()
+    {
+        return DEFAULT_SPEAKING_MODES;
+    }
 
     /**
      * If {@link #canProvide()} returns true JDA will call this method in an attempt to retrieve audio data from the

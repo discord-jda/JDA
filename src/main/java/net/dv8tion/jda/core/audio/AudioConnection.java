@@ -563,15 +563,15 @@ public class AudioConnection
         return audio;
     }
 
-    private void setSpeaking(boolean isSpeaking)
+    private void setSpeaking(int raw)
     {
-        this.speaking = isSpeaking;
+        this.speaking = raw != 0;
         JSONObject obj = new JSONObject()
-                .put("speaking", isSpeaking ? 1 : 0)
+                .put("speaking", raw)
                 .put("ssrc", webSocket.getSSRC())
                 .put("delay", 0);
         webSocket.send(VoiceCode.USER_SPEAKING_UPDATE, obj);
-        if (!isSpeaking)
+        if (raw == 0)
             sendSilentPackets();
     }
 
@@ -641,11 +641,13 @@ public class AudioConnection
                 cond: if (sentSilenceOnConnect && sendHandler != null && sendHandler.canProvide())
                 {
                     silenceCounter = -1;
+                    EnumSet<SpeakingMode> speakingModes = sendHandler.provideSpeakingModes();
+                    int flags = SpeakingMode.getRaw(speakingModes);
                     byte[] rawAudio = sendHandler.provide20MsAudio();
                     if (rawAudio == null || rawAudio.length == 0)
                     {
                         if (speaking && changeTalking)
-                            setSpeaking(false);
+                            setSpeaking(0);
                     }
                     else
                     {
@@ -658,7 +660,7 @@ public class AudioConnection
 
                         nextPacket = getPacketData(rawAudio);
                         if (!speaking)
-                            setSpeaking(true);
+                            setSpeaking(flags);
 
                         if (seq + 1 > Character.MAX_VALUE)
                             seq = 0;
@@ -682,7 +684,7 @@ public class AudioConnection
                 }
                 else if (speaking && changeTalking)
                 {
-                    setSpeaking(false);
+                    setSpeaking(0);
                 }
             }
             catch (Exception e)

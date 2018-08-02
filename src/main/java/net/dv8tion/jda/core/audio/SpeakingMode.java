@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.audio;
 
+import java.util.Collection;
 import java.util.EnumSet;
 
 /**
@@ -23,7 +24,7 @@ import java.util.EnumSet;
  */
 public enum SpeakingMode
 {
-    VOICE(1), SOUNDSHARE(2);
+    VOICE(1), SOUNDSHARE(2), PRIORITY(4);
 
     private final int raw;
 
@@ -81,5 +82,15 @@ public enum SpeakingMode
         for (SpeakingMode m : modes)
             mask |= m.raw;
         return mask;
+    }
+
+    public static int getRaw(Collection<SpeakingMode> set)
+    {
+        if (set == null)
+            return 0;
+        int raw = 0;
+        for (SpeakingMode mode : set)
+            raw |= mode.getRaw();
+        return raw;
     }
 }
