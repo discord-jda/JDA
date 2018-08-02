@@ -44,8 +44,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
  * before {@link net.dv8tion.jda.core.JDA} attempts to log in.
  *
  * <p>A single JDABuilder can be reused multiple times. Each call to
- * {@link net.dv8tion.jda.core.JDABuilder#buildAsync() buildAsync()} or
- * {@link net.dv8tion.jda.core.JDABuilder#buildBlocking() buildBlocking()}
+ * {@link net.dv8tion.jda.core.JDABuilder#build() build()}
  * creates a new {@link net.dv8tion.jda.core.JDA} instance using the same information.
  * This means that you can have listeners easily registered to multiple {@link net.dv8tion.jda.core.JDA} instances.
  */
@@ -82,10 +81,9 @@ public class JDABuilder
 
     /**
      * Creates a completely empty JDABuilder.
-     * <br>If you use this, you need to set the  token using
+     * <br>If you use this, you need to set the token using
      * {@link net.dv8tion.jda.core.JDABuilder#setToken(String) setToken(String)}
-     * before calling {@link net.dv8tion.jda.core.JDABuilder#buildAsync() buildAsync()}
-     * or {@link net.dv8tion.jda.core.JDABuilder#buildBlocking() buildBlocking()}
+     * before calling {@link net.dv8tion.jda.core.JDABuilder#build() build()}
      *
      * @param  accountType
      *         The {@link net.dv8tion.jda.core.AccountType AccountType}.
@@ -185,9 +183,7 @@ public class JDABuilder
 
     /**
      * Sets the token that will be used by the {@link net.dv8tion.jda.core.JDA} instance to log in when
-     * {@link net.dv8tion.jda.core.JDABuilder#buildAsync() buildAsync()}
-     * or {@link net.dv8tion.jda.core.JDABuilder#buildBlocking() buildBlocking()}
-     * is called.
+     * {@link net.dv8tion.jda.core.JDABuilder#build() build()} is called.
      *
      * <h2>For {@link net.dv8tion.jda.core.AccountType#BOT}</h2>
      * <ol>
