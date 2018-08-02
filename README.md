@@ -23,6 +23,15 @@ _Please see the [Discord docs](https://discordapp.com/developers/docs/reference)
 This officially makes [JDA-Client](https://github.com/DV8FromTheWorld/JDA-Client) deprecated.
 Please do not continue using it, and instead switch to the promoted 3.x version listed further below.
 
+## UserBots and SelfBots
+
+Discord is currently not too fond of people creating and using automated client accounts (AccountType.CLIENT).
+We however still have support to login with these accounts due to legacy support. That does not mean it is allowed or
+welcome to use.
+If you need a bot, use a bot account from the [Application Dashboard](https://discordapp.com/developers/applications).
+
+[Read More](https://support.discordapp.com/hc/en-us/articles/115002192352-Automated-user-accounts-self-bots-)
+
 ## Creating the JDA Object
 Creating the JDA Object is done via the JDABuilder class by providing an AccountType (Bot/Client).
 After setting the token via setter,
