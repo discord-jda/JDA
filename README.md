@@ -33,11 +33,12 @@ If you need a bot, use a bot account from the [Application Dashboard](https://di
 [Read More](https://support.discordapp.com/hc/en-us/articles/115002192352-Automated-user-accounts-self-bots-)
 
 ## Creating the JDA Object
+
 Creating the JDA Object is done via the JDABuilder class by providing an AccountType (Bot/Client).
 After setting the token via setter,
-the JDA Object is then created by calling the `.build()` (non-blocking login) method.
-When `build()` returns JDA might not have finished starting up. However you can use `awaitReady()`
-on the JDA object to ensure that the entire cache is loaded before proceeding, note that this method is
+the JDA Object is then created by calling the `.build()` method.
+When `build()` returns, JDA might not have finished starting up. However you can use `awaitReady()`
+on the JDA object to ensure that the entire cache is loaded before proceeding. Note that this method is
 blocking and will cause the thread to sleep until startup has completed.
 
 **Example**:
@@ -51,6 +52,7 @@ JDA jda = new JDABuilder(AccountType.BOT).setToken("token").build();
 #### Examples:
 
 **Using EventListener**:
+
 ```java
 public class ReadyListener implements EventListener
 {
@@ -75,7 +77,9 @@ public class ReadyListener implements EventListener
     }
 }
 ```
+
 **Using ListenerAdapter**:
+
 ```java
 public class MessageListener extends ListenerAdapter
 {
