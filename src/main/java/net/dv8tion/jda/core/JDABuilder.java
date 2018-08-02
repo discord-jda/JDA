@@ -724,7 +724,7 @@ public class JDABuilder
     {
         Checks.notNull(status, "Status");
         Checks.check(status.isInit(), "Cannot await the status %s as it is not part of the login cycle!", status);
-        JDA jda = buildAsync();
+        JDA jda = build();
         jda.awaitStatus(status);
         return jda;
     }

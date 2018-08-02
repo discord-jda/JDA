@@ -608,14 +608,14 @@ public class DefaultShardManager implements ShardManager
         if (rateLimitPoolProvider != null)
         {
             rateLimitPool = rateLimitPoolProvider.provide(shardId);
-            shutdownRateLimitPool = rateLimitPoolProvider.isAutomaticShutdown(shardId);
+            shutdownRateLimitPool = rateLimitPoolProvider.shouldShutdownAutomatically(shardId);
         }
         ExecutorService callbackPool = null;
         boolean shutdownCallbackPool = true;
         if (callbackPoolProvider != null)
         {
             callbackPool = callbackPoolProvider.provide(shardId);
-            shutdownCallbackPool = callbackPoolProvider.isAutomaticShutdown(shardId);
+            shutdownCallbackPool = callbackPoolProvider.shouldShutdownAutomatically(shardId);
         }
         final JDAImpl jda = new JDAImpl(AccountType.BOT, this.token, this.controller, httpClient, this.wsFactory,
             rateLimitPool, callbackPool, this.autoReconnect, this.enableVoice, false, this.enableBulkDeleteSplitting,

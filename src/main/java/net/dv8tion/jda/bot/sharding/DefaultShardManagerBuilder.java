@@ -981,7 +981,7 @@ public class DefaultShardManagerBuilder
         }
 
         @Override
-        public boolean isAutomaticShutdown(int shardId)
+        public boolean shouldShutdownAutomatically(int shardId)
         {
             return autoShutdown;
         }

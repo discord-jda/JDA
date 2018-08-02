@@ -36,7 +36,7 @@ If you need a bot, use a bot account from the [Application Dashboard](https://di
 Creating the JDA Object is done via the JDABuilder class by providing an AccountType (Bot/Client).
 After setting the token via setter,
 the JDA Object is then created by calling the `.build()` (non-blocking login) method.
-When `build()` returns JDA might not have finished starting up, however you can use `awaitReady()`
+When `build()` returns JDA might not have finished starting up. However you can use `awaitReady()`
 on the JDA object to ensure that the entire cache is loaded before proceeding, note that this method is
 blocking and will cause the thread to sleep until startup has completed.
 
@@ -55,13 +55,16 @@ JDA jda = new JDABuilder(AccountType.BOT).setToken("token").build();
 public class ReadyListener implements EventListener
 {
     public static void main(String[] args)
-            throws LoginException, RateLimitedException, InterruptedException
+            throws LoginException, InterruptedException
     {
         // Note: It is important to register your ReadyListener before building
         JDA jda = new JDABuilder(AccountType.BOT)
             .setToken("token")
             .addEventListener(new ReadyListener())
             .build();
+        
+        // optionally block until JDA is ready
+        jda.awaitReady();
     }
 
     @Override
@@ -77,7 +80,7 @@ public class ReadyListener implements EventListener
 public class MessageListener extends ListenerAdapter
 {
     public static void main(String[] args)
-            throws LoginException, RateLimitedException, InterruptedException
+            throws LoginException
     {
         JDA jda = new JDABuilder(AccountType.BOT).setToken("token").build();
         jda.addEventListener(new MessageListener());

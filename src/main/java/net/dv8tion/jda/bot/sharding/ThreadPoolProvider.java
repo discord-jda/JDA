@@ -18,11 +18,35 @@ package net.dv8tion.jda.bot.sharding;
 
 import java.util.concurrent.ExecutorService;
 
+/**
+ * Called by {@link DefaultShardManager} when building a JDA instance.
+ * <br>Every time a JDA instance is built, the manager will first call {@link #provide(int)} followed by
+ * a call to {@link #shouldShutdownAutomatically(int)}.
+ *
+ * @param <T>
+ *        The type of executor
+ */
 public interface ThreadPoolProvider<T extends ExecutorService>
 {
+    /**
+     * Provides an instance of the specified executor, or null
+     *
+     * @param  shardId
+     *         The current shard id
+     *
+     * @return The Executor Service
+     */
     T provide(int shardId);
 
-    default boolean isAutomaticShutdown(int shardId)
+    /**
+     * Whether the previously provided executor should be shutdown by {@link net.dv8tion.jda.core.JDA#shutdown()}.
+     *
+     * @param  shardId
+     *         The current shard id
+     *
+     * @return True, if the executor should be shutdown by JDA
+     */
+    default boolean shouldShutdownAutomatically(int shardId)
     {
         return false;
     }
