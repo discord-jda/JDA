@@ -273,8 +273,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             if (!printedRateLimitMessage)
             {
                 LOG.warn("Hit the WebSocket RateLimit! This can be caused by too many presence or voice status updates (connect/disconnect/mute/deaf). " +
-                         "Queue Size, Normal: {} Voice: {} Chunking: {}",
-                         ratelimitQueue.size(), queuedAudioConnections.size(), chunkSyncQueue.size());
+                         "Regular: {} Voice: {} Chunking: {}", ratelimitQueue.size(), queuedAudioConnections.size(), chunkSyncQueue.size());
                 printedRateLimitMessage = true;
             }
             return false;
