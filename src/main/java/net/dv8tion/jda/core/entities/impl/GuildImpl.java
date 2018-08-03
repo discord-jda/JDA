@@ -365,14 +365,14 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<Ban> getSingleBan(long userId)
+    public RestAction<Ban> getBanById(long userId)
     {
-        return getSingleBan(Long.toUnsignedString(userId));
+        return getBanById(Long.toUnsignedString(userId));
     }
 
     @Nonnull
     @Override
-    public RestAction<Ban> getSingleBan(String userId)
+    public RestAction<Ban> getBanById(String userId)
     {
         if (!isAvailable())
             throw new GuildUnavailableException();
@@ -404,10 +404,10 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<Ban> getSingleBan(User bannedUser)
+    public RestAction<Ban> getBan(User bannedUser)
     {
         Checks.notNull(bannedUser, "bannedUser");
-        return getSingleBan(bannedUser.getId());
+        return getBanById(bannedUser.getId());
     }
 
     @Override
