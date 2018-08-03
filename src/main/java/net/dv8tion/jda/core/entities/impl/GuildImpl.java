@@ -406,6 +406,7 @@ public class GuildImpl implements Guild
     @Override
     public RestAction<Ban> getSingleBan(User bannedUser)
     {
+        Checks.notNull(bannedUser, "bannedUser");
         return getSingleBan(bannedUser.getId());
     }
 
