@@ -641,8 +641,7 @@ public class AudioConnection
                 cond: if (sentSilenceOnConnect && sendHandler != null && sendHandler.canProvide())
                 {
                     silenceCounter = -1;
-                    EnumSet<SpeakingMode> speakingModes = sendHandler.provideSpeakingModes();
-                    int flags = SpeakingMode.getRaw(speakingModes);
+                    int flags = SpeakingMode.getRaw(sendHandler.provideSpeakingModes());
                     byte[] rawAudio = sendHandler.provide20MsAudio();
                     if (rawAudio == null || rawAudio.length == 0)
                     {

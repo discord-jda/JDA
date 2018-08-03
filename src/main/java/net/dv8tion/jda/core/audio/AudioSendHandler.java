@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.audio;
 
 import javax.sound.sampled.AudioFormat;
+import java.util.Collection;
 import java.util.EnumSet;
 
 /**
@@ -43,11 +44,13 @@ public interface AudioSendHandler
     boolean canProvide();
 
     /**
-     * EnumSet containing the speaking modes that should be used to send the next package
+     * Collection containing the speaking modes that should be used to send the next package.
+     * This is called directly before {@link #provide20MsAudio()}.
+     * <br>We recommend using a (constant) EnumSet for this.
      *
-     * @return EnumSet containing the speaking modes
+     * @return Collection containing the speaking modes
      */
-    default EnumSet<SpeakingMode> provideSpeakingModes()
+    default Collection<SpeakingMode> provideSpeakingModes()
     {
         return DEFAULT_SPEAKING_MODES;
     }

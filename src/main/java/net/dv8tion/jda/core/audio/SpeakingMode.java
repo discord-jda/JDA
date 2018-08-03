@@ -84,12 +84,21 @@ public enum SpeakingMode
         return mask;
     }
 
-    public static int getRaw(Collection<SpeakingMode> set)
+    /**
+     * Converts the given speaking modes into raw its bitmast.
+     * This is only useful for sending speaking updates.
+     *
+     * @param  modes
+     *         The modes
+     *
+     * @return The bitmask for the provided speaking modes
+     */
+    public static int getRaw(Collection<SpeakingMode> modes)
     {
-        if (set == null)
+        if (modes == null)
             return 0;
         int raw = 0;
-        for (SpeakingMode mode : set)
+        for (SpeakingMode mode : modes)
             raw |= mode.getRaw();
         return raw;
     }
