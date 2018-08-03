@@ -33,6 +33,7 @@ public enum Permission
     MANAGE_SERVER(5, true, false, "Manage Server"),
     MESSAGE_ADD_REACTION(6, true, true, "Add Reactions"),
     VIEW_AUDIT_LOGS(7, true, false, "View Audit Logs"),
+    PRIORITY_SPEAKER(8, true, true, "Priority Speaker"),
 
     // Applicable to all channel types
     VIEW_CHANNEL(10, true, true, "Read Text Channels & See Voice Channels"),
@@ -187,7 +188,7 @@ public enum Permission
      */
     public boolean isVoice()
     {
-        return offset == 10 || offset > 19 && offset < 26;
+        return offset == 10 || offset == 8 || offset > 19 && offset < 26;
     }
 
     /**

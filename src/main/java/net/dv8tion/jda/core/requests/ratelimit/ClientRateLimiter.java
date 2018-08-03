@@ -38,9 +38,9 @@ public class ClientRateLimiter extends RateLimiter
 {
     volatile Long globalCooldown = null;
 
-    public ClientRateLimiter(Requester requester, int poolSize)
+    public ClientRateLimiter(Requester requester)
     {
-        super(requester, poolSize);
+        super(requester);
     }
 
     @Override
@@ -145,7 +145,7 @@ public class ClientRateLimiter extends RateLimiter
                     if (delay == null)
                         delay = 0L;
 
-                    pool.schedule(this, delay, TimeUnit.MILLISECONDS);
+                    requester.getJDA().getRateLimitPool().schedule(this, delay, TimeUnit.MILLISECONDS);
                     submittedBuckets.add(this);
                 }
             }

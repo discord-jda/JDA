@@ -274,7 +274,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             if (!printedRateLimitMessage)
             {
-                LOG.warn("Hit the WebSocket RateLimit! If you see this message a lot then you might need to talk to DV8FromTheWorld.");
+                LOG.warn("Hit the WebSocket RateLimit! This can be caused by too many presence or voice status updates (connect/disconnect/mute/deaf). " +
+                         "Regular: {} Voice: {} Chunking: {}", ratelimitQueue.size(), queuedAudioConnections.size(), chunkSyncQueue.size());
                 printedRateLimitMessage = true;
             }
             return false;
@@ -1511,8 +1512,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             setupHandlers();
             setupSendingThread();
             connect();
-            while (!isLast && api.getStatus().ordinal() < JDA.Status.AWAITING_LOGIN_CONFIRMATION.ordinal())
-                Thread.sleep(50);
+            if (isLast)
+                return;
+            api.awaitStatus(JDA.Status.AWAITING_LOGIN_CONFIRMATION);
         }
     }
 
@@ -1530,8 +1532,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             if (shutdown)
                 return;
             reconnect(true, !isLast);
-            while (!isLast && api.getStatus().ordinal() < JDA.Status.AWAITING_LOGIN_CONFIRMATION.ordinal())
-                Thread.sleep(50);
+            if (isLast)
+                return;
+            api.awaitStatus(JDA.Status.AWAITING_LOGIN_CONFIRMATION);
         }
     }
 }

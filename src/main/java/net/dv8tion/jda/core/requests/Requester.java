@@ -39,7 +39,6 @@ import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
 public class Requester
@@ -74,11 +73,11 @@ public class Requester
 
         this.api = (JDAImpl) api;
         if (accountType == AccountType.BOT)
-            rateLimiter = new BotRateLimiter(this, 5);
+            rateLimiter = new BotRateLimiter(this);
         else
-            rateLimiter = new ClientRateLimiter(this, 5);
+            rateLimiter = new ClientRateLimiter(this);
         
-        this.httpClient = this.api.getHttpClientBuilder().build();
+        this.httpClient = this.api.getHttpClient();
     }
 
     public void setContextReady(boolean ready)
@@ -268,14 +267,9 @@ public class Requester
         this.retryOnTimeout = retryOnTimeout;
     }
 
-    public void shutdown(long time, TimeUnit unit)
+    public void shutdown()
     {
-        rateLimiter.shutdown(time, unit);
-    }
-
-    public void shutdownNow()
-    {
-        rateLimiter.forceShutdown();
+        rateLimiter.shutdown();
     }
 
     /**

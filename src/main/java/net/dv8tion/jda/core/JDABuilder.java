@@ -34,6 +34,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 /**
  * Used to create new {@link net.dv8tion.jda.core.JDA} instances. This is also useful for making sure all of
@@ -41,8 +44,7 @@ import java.util.concurrent.ConcurrentMap;
  * before {@link net.dv8tion.jda.core.JDA} attempts to log in.
  *
  * <p>A single JDABuilder can be reused multiple times. Each call to
- * {@link net.dv8tion.jda.core.JDABuilder#buildAsync() buildAsync()} or
- * {@link net.dv8tion.jda.core.JDABuilder#buildBlocking() buildBlocking()}
+ * {@link net.dv8tion.jda.core.JDABuilder#build() build()}
  * creates a new {@link net.dv8tion.jda.core.JDA} instance using the same information.
  * This means that you can have listeners easily registered to multiple {@link net.dv8tion.jda.core.JDA} instances.
  */
@@ -50,10 +52,14 @@ public class JDABuilder
 {
     protected final List<Object> listeners;
 
+    protected ScheduledThreadPoolExecutor rateLimitPool = null;
+    protected boolean shutdownRateLimitPool = true;
+    protected ExecutorService callbackPool = null;
+    protected boolean shutdownCallbackPool = true;
     protected ConcurrentMap<String, String> contextMap = null;
-    protected boolean enableContext = true;
     protected SessionController controller = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
+    protected OkHttpClient httpClient = null;
     protected WebSocketFactory wsFactory = null;
     protected AccountType accountType;
     protected String token = null;
@@ -63,7 +69,8 @@ public class JDABuilder
     protected Game game = null;
     protected OnlineStatus status = OnlineStatus.ONLINE;
     protected int maxReconnectDelay = 900;
-    protected int corePoolSize = 2;
+    protected int corePoolSize = 5;
+    protected boolean enableContext = true;
     protected boolean enableVoice = true;
     protected boolean enableShutdownHook = true;
     protected boolean enableBulkDeleteSplitting = true;
@@ -74,10 +81,9 @@ public class JDABuilder
 
     /**
      * Creates a completely empty JDABuilder.
-     * <br>If you use this, you need to set the  token using
+     * <br>If you use this, you need to set the token using
      * {@link net.dv8tion.jda.core.JDABuilder#setToken(String) setToken(String)}
-     * before calling {@link net.dv8tion.jda.core.JDABuilder#buildAsync() buildAsync()}
-     * or {@link net.dv8tion.jda.core.JDABuilder#buildBlocking() buildBlocking()}
+     * before calling {@link net.dv8tion.jda.core.JDABuilder#build() build()}
      *
      * @param  accountType
      *         The {@link net.dv8tion.jda.core.AccountType AccountType}.
@@ -177,9 +183,7 @@ public class JDABuilder
 
     /**
      * Sets the token that will be used by the {@link net.dv8tion.jda.core.JDA} instance to log in when
-     * {@link net.dv8tion.jda.core.JDABuilder#buildAsync() buildAsync()}
-     * or {@link net.dv8tion.jda.core.JDABuilder#buildBlocking() buildBlocking()}
-     * is called.
+     * {@link net.dv8tion.jda.core.JDABuilder#build() build()} is called.
      *
      * <h2>For {@link net.dv8tion.jda.core.AccountType#BOT}</h2>
      * <ol>
@@ -210,17 +214,32 @@ public class JDABuilder
     }
 
     /**
-     * Sets the {@link okhttp3.OkHttpClient.Builder Builder} that will be used by JDA's requester.
-     * This can be used to set things such as connection timeout and proxy. 
+     * Sets the {@link okhttp3.OkHttpClient.Builder Builder} that will be used by JDAs requester.
+     * <br>This can be used to set things such as connection timeout and proxy.
      *
      * @param  builder
-     *         The new {@link okhttp3.OkHttpClient.Builder Builder} to use.
+     *         The new {@link okhttp3.OkHttpClient.Builder Builder} to use
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
     public JDABuilder setHttpClientBuilder(OkHttpClient.Builder builder)
     {
         this.httpClientBuilder = builder;
+        return this;
+    }
+
+    /**
+     * Sets the {@link okhttp3.OkHttpClient OkHttpClient} that will be used by JDAs requester.
+     * <br>This can be used to set things such as connection timeout and proxy.
+     *
+     * @param  client
+     *         The new {@link okhttp3.OkHttpClient OkHttpClient} to use
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     */
+    public JDABuilder setHttpClient(OkHttpClient client)
+    {
+        this.httpClient = client;
         return this;
     }
 
@@ -242,7 +261,8 @@ public class JDABuilder
     /**
      * Sets the core pool size for the global JDA
      * {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} which is used
-     * in various locations throughout the JDA instance created by this builder. (Default: 2)
+     * in various locations throughout the JDA instance created by this builder. (Default: 5)
+     * <br>Note: This has no effect if you set a pool using {@link #setRateLimitPool(ScheduledThreadPoolExecutor)}.
      *
      * @param  size
      *         The core pool size for the global JDA executor
@@ -256,6 +276,80 @@ public class JDABuilder
     {
         Checks.positive(size, "Core pool size");
         this.corePoolSize = size;
+        return this;
+    }
+
+    /**
+     * Sets the {@link ScheduledThreadPoolExecutor ScheduledThreadPoolExecutor} that should be used in
+     * the JDA rate-limit handler. Changing this can drastically change the JDA behavior for RestAction execution
+     * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
+     * <br><b>This automatically disables the automatic shutdown of the JDA pools, you can enable
+     * it using {@link #setRateLimitPool(ScheduledThreadPoolExecutor, boolean) setRateLimitPool(executor, true)}</b>
+     *
+     * @param  pool
+     *         The thread-pool to use for rate-limit handling
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     */
+    public JDABuilder setRateLimitPool(ScheduledThreadPoolExecutor pool)
+    {
+        return setRateLimitPool(pool, pool == null);
+    }
+
+    /**
+     * Sets the {@link ScheduledThreadPoolExecutor ScheduledThreadPoolExecutor} that should be used in
+     * the JDA rate-limit handler. Changing this can drastically change the JDA behavior for RestAction execution
+     * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
+     *
+     * @param  pool
+     *         The thread-pool to use for rate-limit handling
+     * @param  automaticShutdown
+     *         Whether {@link JDA#shutdown()} should shutdown this pool
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     */
+    public JDABuilder setRateLimitPool(ScheduledThreadPoolExecutor pool, boolean automaticShutdown)
+    {
+        this.rateLimitPool = pool;
+        this.shutdownRateLimitPool = automaticShutdown;
+        return this;
+    }
+
+    /**
+     * Sets the {@link ExecutorService ExecutorService} that should be used in
+     * the JDA callback handler which mostly consists of {@link net.dv8tion.jda.core.requests.RestAction RestAction} callbacks.
+     * By default JDA will use {@link ForkJoinPool#commonPool()}
+     * <br><b>Only change this pool if you know what you're doing.
+     * <br>This automatically disables the automatic shutdown of the JDA pools, you can enable
+     * it using {@link #setCallbackPool(ExecutorService, boolean) setCallbackPool(executor, true)}</b>
+     *
+     * @param  executor
+     *         The thread-pool to use for callback handling
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     */
+    public JDABuilder setCallbackPool(ExecutorService executor)
+    {
+        return setCallbackPool(executor, executor == null);
+    }
+
+    /**
+     * Sets the {@link ExecutorService ExecutorService} that should be used in
+     * the JDA callback handler which mostly consists of {@link net.dv8tion.jda.core.requests.RestAction RestAction} callbacks.
+     * By default JDA will use {@link ForkJoinPool#commonPool()}
+     * <br><b>Only change this pool if you know what you're doing.</b>
+     *
+     * @param  executor
+     *         The thread-pool to use for callback handling
+     * @param  automaticShutdown
+     *         Whether {@link JDA#shutdown()} should shutdown this executor
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     */
+    public JDABuilder setCallbackPool(ExecutorService executor, boolean automaticShutdown)
+    {
+        this.callbackPool = executor;
+        this.shutdownCallbackPool = automaticShutdown;
         return this;
     }
 
@@ -577,36 +671,14 @@ public class JDABuilder
      *
      * @return A {@link net.dv8tion.jda.core.JDA} instance that has started the login process. It is unknown as
      *         to whether or not loading has finished when this returns.
+     *
+     * @deprecated
+     *         Use {@link #build()} instead
      */
+    @Deprecated
     public JDA buildAsync() throws LoginException
     {
-        OkHttpClient.Builder httpClientBuilder = this.httpClientBuilder == null ? new OkHttpClient.Builder() : this.httpClientBuilder;
-        WebSocketFactory wsFactory = this.wsFactory == null ? new WebSocketFactory() : this.wsFactory;
-
-        if (controller == null && shardInfo != null)
-            controller = new SessionControllerAdapter();
-        
-        JDAImpl jda = new JDAImpl(accountType, token, controller, httpClientBuilder, wsFactory, autoReconnect, enableVoice, enableShutdownHook,
-                enableBulkDeleteSplitting, requestTimeoutRetry, enableContext, corePoolSize, maxReconnectDelay, contextMap);
-
-        if (eventManager != null)
-            jda.setEventManager(eventManager);
-
-        if (audioSendFactory != null)
-            jda.setAudioSendFactory(audioSendFactory);
-
-        listeners.forEach(jda::addEventListener);
-        jda.setStatus(JDA.Status.INITIALIZED);  //This is already set by JDA internally, but this is to make sure the listeners catch it.
-
-        String gateway = jda.getGateway();
-
-        // Set the presence information before connecting to have the correct information ready when sending IDENTIFY
-        ((PresenceImpl) jda.getPresence())
-                .setCacheGame(game)
-                .setCacheIdle(idle)
-                .setCacheStatus(status);
-        jda.login(gateway, shardInfo, enableCompression);
-        return jda;
+        return build();
     }
 
     /**
@@ -639,20 +711,17 @@ public class JDABuilder
      *         This would most likely be caused by a JVM shutdown request.
      *
      * @return A {@link net.dv8tion.jda.core.JDA} Object that is <b>guaranteed</b> to be logged in and finished loading.
+     *
+     * @deprecated
+     *         Use {@link #build()} and {@link JDA#awaitStatus(Status)} instead
      */
+    @Deprecated
     public JDA buildBlocking(JDA.Status status) throws LoginException, InterruptedException
     {
         Checks.notNull(status, "Status");
         Checks.check(status.isInit(), "Cannot await the status %s as it is not part of the login cycle!", status);
-        JDA jda = buildAsync();
-        while (!jda.getStatus().isInit()                      // JDA might disconnect while starting
-             || jda.getStatus().ordinal() < status.ordinal()) // Wait until status is bypassed
-        {
-            if (jda.getStatus() == Status.SHUTDOWN)
-                throw new IllegalStateException("JDA was unable to finish starting up!");
-            Thread.sleep(50);
-        }
-
+        JDA jda = build();
+        jda.awaitStatus(status);
         return jda;
     }
 
@@ -670,9 +739,73 @@ public class JDABuilder
      *         This would most likely be caused by a JVM shutdown request.
      *
      * @return A {@link net.dv8tion.jda.core.JDA} Object that is <b>guaranteed</b> to be logged in and finished loading.
+     *
+     * @deprecated
+     *         Use {@link #build()} and {@link JDA#awaitReady()} instead
      */
+    @Deprecated
     public JDA buildBlocking() throws LoginException, InterruptedException
     {
         return buildBlocking(Status.CONNECTED);
+    }
+
+    /**
+     * Builds a new {@link net.dv8tion.jda.core.JDA} instance and uses the provided token to start the login process.
+     * <br>The login process runs in a different thread, so while this will return immediately, {@link net.dv8tion.jda.core.JDA} has not
+     * finished loading, thus many {@link net.dv8tion.jda.core.JDA} methods have the chance to return incorrect information.
+     * <br>The main use of this method is to start the JDA connect process and do other things in parallel while startup is
+     * being performed like database connection or local resource loading.
+     *
+     * <p>If you wish to be sure that the {@link net.dv8tion.jda.core.JDA} information is correct, please use
+     * {@link net.dv8tion.jda.core.JDA#awaitReady() JDA.awaitReady()} or register an
+     * {@link net.dv8tion.jda.core.hooks.EventListener EventListener} to listen for the
+     * {@link net.dv8tion.jda.core.events.ReadyEvent ReadyEvent}.
+     *
+     * @throws LoginException
+     *         If the provided token is invalid.
+     * @throws IllegalArgumentException
+     *         If the provided token is empty or null.
+     *
+     * @return A {@link net.dv8tion.jda.core.JDA} instance that has started the login process. It is unknown as
+     *         to whether or not loading has finished when this returns.
+     */
+    public JDA build() throws LoginException
+    {
+        OkHttpClient httpClient = this.httpClient;
+        if (httpClient == null)
+        {
+            if (this.httpClientBuilder == null)
+                this.httpClientBuilder = new OkHttpClient.Builder();
+            httpClient = this.httpClientBuilder.build();
+        }
+
+        WebSocketFactory wsFactory = this.wsFactory == null ? new WebSocketFactory() : this.wsFactory;
+
+        if (controller == null && shardInfo != null)
+            controller = new SessionControllerAdapter();
+
+        JDAImpl jda = new JDAImpl(accountType, token, controller, httpClient, wsFactory, rateLimitPool, callbackPool,
+                                  autoReconnect, enableVoice, enableShutdownHook, enableBulkDeleteSplitting,
+                                  requestTimeoutRetry, enableContext, shutdownRateLimitPool, shutdownCallbackPool,
+                                  corePoolSize, maxReconnectDelay, contextMap);
+
+        if (eventManager != null)
+            jda.setEventManager(eventManager);
+
+        if (audioSendFactory != null)
+            jda.setAudioSendFactory(audioSendFactory);
+
+        listeners.forEach(jda::addEventListener);
+        jda.setStatus(JDA.Status.INITIALIZED);  //This is already set by JDA internally, but this is to make sure the listeners catch it.
+
+        String gateway = jda.getGateway();
+
+        // Set the presence information before connecting to have the correct information ready when sending IDENTIFY
+        ((PresenceImpl) jda.getPresence())
+                .setCacheGame(game)
+                .setCacheIdle(idle)
+                .setCacheStatus(status);
+        jda.login(gateway, shardInfo, enableCompression, true);
+        return jda;
     }
 }
