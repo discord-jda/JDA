@@ -41,9 +41,11 @@ public class MessageListenerExample extends ListenerAdapter
         try
         {
             JDA jda = new JDABuilder(AccountType.BOT)
-                    .setToken("Your-Token-Goes-Here")           //The token of the account that is logging in.
-                    .addEventListener(new MessageListenerExample())  //An instance of a class that will handle events.
-                    .buildBlocking();  //There are 2 ways to login, blocking vs async. Blocking guarantees that JDA will be completely loaded.
+                    .setToken("Your-Token-Goes-Here")                // The token of the account that is logging in.
+                    .addEventListener(new MessageListenerExample())  // An instance of a class that will handle events.
+                    .build();
+            jda.awaitReady(); // Blocking guarantees that JDA will be completely loaded.
+            System.out.println("Finished Building JDA!");
         }
         catch (LoginException e)
         {
@@ -52,10 +54,10 @@ public class MessageListenerExample extends ListenerAdapter
         }
         catch (InterruptedException e)
         {
-            //Due to the fact that buildBlocking is a blocking method, one which waits until JDA is fully loaded,
+            //Due to the fact that awaitReady is a blocking method, one which waits until JDA is fully loaded,
             // the waiting can be interrupted. This is the exception that would fire in that situation.
             //As a note: in this extremely simplified example this will never occur. In fact, this will never occur unless
-            // you use buildBlocking in a thread that has the possibility of being interrupted (async thread usage and interrupts)
+            // you use awaitReady in a thread that has the possibility of being interrupted (async thread usage and interrupts)
             e.printStackTrace();
         }
     }

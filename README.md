@@ -23,15 +23,28 @@ _Please see the [Discord docs](https://discordapp.com/developers/docs/reference)
 This officially makes [JDA-Client](https://github.com/DV8FromTheWorld/JDA-Client) deprecated.
 Please do not continue using it, and instead switch to the promoted 3.x version listed further below.
 
+## UserBots and SelfBots
+
+Discord is currently not too fond of people creating and using automated client accounts (AccountType.CLIENT).
+We however still have support to login with these accounts due to legacy support. That does not mean it is allowed or
+welcome to use.
+If you need a bot, use a bot account from the [Application Dashboard](https://discordapp.com/developers/applications).
+
+[Read More](https://support.discordapp.com/hc/en-us/articles/115002192352-Automated-user-accounts-self-bots-)
+
 ## Creating the JDA Object
+
 Creating the JDA Object is done via the JDABuilder class by providing an AccountType (Bot/Client).
-After setting the token via setter,
-the JDA Object is then created by calling the `.buildBlocking()` or the `.buildAsync()` (non-blocking login) method.
+After setting the token and other options via setters,
+the JDA Object is then created by calling the `build()` method. When `build()` returns,
+JDA might not have finished starting up. However, you can use `awaitReady()`
+on the JDA object to ensure that the entire cache is loaded before proceeding.
+Note that this method is blocking and will cause the thread to sleep until startup has completed.
 
 **Example**:
 
 ```java
-JDA jda = new JDABuilder(AccountType.BOT).setToken("token").buildBlocking();
+JDA jda = new JDABuilder(AccountType.BOT).setToken("token").build();
 ```
 
 **Note**: It is important to set the correct AccountType because Bot-accounts require a token prefix to login.
@@ -39,17 +52,21 @@ JDA jda = new JDABuilder(AccountType.BOT).setToken("token").buildBlocking();
 #### Examples:
 
 **Using EventListener**:
+
 ```java
 public class ReadyListener implements EventListener
 {
     public static void main(String[] args)
-            throws LoginException, RateLimitedException, InterruptedException
+            throws LoginException, InterruptedException
     {
         // Note: It is important to register your ReadyListener before building
         JDA jda = new JDABuilder(AccountType.BOT)
             .setToken("token")
             .addEventListener(new ReadyListener())
-            .buildBlocking();
+            .build();
+        
+        // optionally block until JDA is ready
+        jda.awaitReady();
     }
 
     @Override
@@ -60,14 +77,16 @@ public class ReadyListener implements EventListener
     }
 }
 ```
+
 **Using ListenerAdapter**:
+
 ```java
 public class MessageListener extends ListenerAdapter
 {
     public static void main(String[] args)
-            throws LoginException, RateLimitedException, InterruptedException
+            throws LoginException
     {
-        JDA jda = new JDABuilder(AccountType.BOT).setToken("token").buildBlocking();
+        JDA jda = new JDABuilder(AccountType.BOT).setToken("token").build();
         jda.addEventListener(new MessageListener());
     }
 
@@ -120,7 +139,7 @@ public static void main(String[] args) throws Exception
     for (int i = 0; i < 10; i++)
     {
         shardBuilder.useSharding(i, 10)
-                    .buildAsync();
+                    .build();
     }
 }
 ```
