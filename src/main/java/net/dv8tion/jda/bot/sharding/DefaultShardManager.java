@@ -57,6 +57,7 @@ public class DefaultShardManager implements ShardManager
         t.setPriority(Thread.NORM_PRIORITY + 1);
         return t;
     };
+
     /**
      * The {@link net.dv8tion.jda.core.utils.SessionController SessionController} for this manager.
      */
@@ -135,9 +136,24 @@ public class DefaultShardManager implements ShardManager
     protected int shardsTotal;
 
     /**
-     * The {@link okhttp3.OkHttpClient.Builder OkHttpClient.Builder} that will be used by JDA's requester.
+     * The {@link okhttp3.OkHttpClient.Builder OkHttpClient.Builder} that will be used by JDAs requester.
      */
     protected final OkHttpClient.Builder httpClientBuilder;
+
+    /**
+     * The {@link okhttp3.OkHttpClient OkHttpClient} that will be used by JDAs requester.
+     */
+    protected final OkHttpClient httpClient;
+
+    /**
+     * The {@link ScheduledThreadPoolExecutor ScheduledThreadPoolExecutor} that will be used by JDAs rate-limit handler.
+     */
+    protected final ThreadPoolProvider<? extends ScheduledThreadPoolExecutor> rateLimitPoolProvider;
+
+    /**
+     * The {@link ExecutorService ExecutorService} that will be used by JDAs callback handler.
+     */
+    protected final ThreadPoolProvider<? extends ExecutorService> callbackPoolProvider;
 
     /**
      * The {@link com.neovisionaries.ws.client.WebSocketFactory WebSocketFactory} that will be used by JDA's websocket client.
@@ -184,7 +200,7 @@ public class DefaultShardManager implements ShardManager
     /**
      * The gameProvider new JDA instances should have on startup.
      */
-    protected IntFunction<Game> gameProvider;
+    protected IntFunction<? extends Game> gameProvider;
 
     /**
      * Whether or not new JDA instances should be marked as afk on startup.
@@ -199,7 +215,7 @@ public class DefaultShardManager implements ShardManager
     /**
      * The MDC context provider new JDA instances should use on startup.
      */
-    protected IntFunction<ConcurrentMap<String, String>> contextProvider;
+    protected IntFunction<? extends ConcurrentMap<String, String>> contextProvider;
 
     /**
      * Whether to use the MDC context provider.
@@ -271,14 +287,16 @@ public class DefaultShardManager implements ShardManager
                                   final SessionController controller, final List<Object> listeners,
                                   final List<IntFunction<Object>> listenerProviders,
                                   final String token, final IEventManager eventManager, final IAudioSendFactory audioSendFactory,
-                                  final IntFunction<Game> gameProvider, final IntFunction<OnlineStatus> statusProvider,
-                                  final OkHttpClient.Builder httpClientBuilder, final WebSocketFactory wsFactory,
-                                  final ThreadFactory threadFactory,
+                                  final IntFunction<? extends Game> gameProvider, final IntFunction<OnlineStatus> statusProvider,
+                                  final OkHttpClient.Builder httpClientBuilder, final OkHttpClient httpClient,
+                                  final ThreadPoolProvider<? extends ScheduledThreadPoolExecutor> rateLimitPoolProvider,
+                                  final ThreadPoolProvider<? extends ExecutorService> callbackPoolProvider,
+                                  final WebSocketFactory wsFactory, final ThreadFactory threadFactory,
                                   final int maxReconnectDelay, final int corePoolSize, final boolean enableVoice,
                                   final boolean enableShutdownHook, final boolean enableBulkDeleteSplitting,
                                   final boolean autoReconnect, final IntFunction<Boolean> idleProvider,
                                   final boolean retryOnTimeout, final boolean useShutdownNow,
-                                  final boolean enableMDC, final IntFunction<ConcurrentMap<String, String>> contextProvider,
+                                  final boolean enableMDC, final IntFunction<? extends ConcurrentMap<String, String>> contextProvider,
                                   final boolean enableCompression)
     {
         this.shardsTotal = shardsTotal;
@@ -289,7 +307,13 @@ public class DefaultShardManager implements ShardManager
         this.audioSendFactory = audioSendFactory;
         this.gameProvider = gameProvider;
         this.statusProvider = statusProvider;
-        this.httpClientBuilder = httpClientBuilder == null ? new OkHttpClient.Builder() : httpClientBuilder;
+        this.httpClient = httpClient;
+        if (httpClient == null)
+            this.httpClientBuilder = httpClientBuilder == null ? new OkHttpClient.Builder() : httpClientBuilder;
+        else
+            this.httpClientBuilder = null;
+        this.rateLimitPoolProvider = rateLimitPoolProvider;
+        this.callbackPoolProvider = callbackPoolProvider;
         this.wsFactory = wsFactory == null ? new WebSocketFactory() : wsFactory;
         this.executor = createExecutor(threadFactory);
         this.controller = controller == null ? new SessionControllerAdapter() : controller;
@@ -576,9 +600,27 @@ public class DefaultShardManager implements ShardManager
 
     protected JDAImpl buildInstance(final int shardId) throws LoginException, InterruptedException
     {
-        final JDAImpl jda = new JDAImpl(AccountType.BOT, this.token, this.controller, this.httpClientBuilder, this.wsFactory,
-            this.autoReconnect, this.enableVoice, false, this.enableBulkDeleteSplitting, this.retryOnTimeout, this.enableMDC,
-            this.corePoolSize, this.maxReconnectDelay, this.contextProvider == null || !this.enableMDC ? null : contextProvider.apply(shardId));
+        OkHttpClient httpClient = this.httpClient;
+        if (httpClient == null)
+            httpClient = this.httpClientBuilder.build();
+        ScheduledThreadPoolExecutor rateLimitPool = null;
+        boolean shutdownRateLimitPool = true;
+        if (rateLimitPoolProvider != null)
+        {
+            rateLimitPool = rateLimitPoolProvider.provide(shardId);
+            shutdownRateLimitPool = rateLimitPoolProvider.shouldShutdownAutomatically(shardId);
+        }
+        ExecutorService callbackPool = null;
+        boolean shutdownCallbackPool = true;
+        if (callbackPoolProvider != null)
+        {
+            callbackPool = callbackPoolProvider.provide(shardId);
+            shutdownCallbackPool = callbackPoolProvider.shouldShutdownAutomatically(shardId);
+        }
+        final JDAImpl jda = new JDAImpl(AccountType.BOT, this.token, this.controller, httpClient, this.wsFactory,
+            rateLimitPool, callbackPool, this.autoReconnect, this.enableVoice, false, this.enableBulkDeleteSplitting,
+            this.retryOnTimeout, this.enableMDC, shutdownRateLimitPool, shutdownCallbackPool, this.corePoolSize, this.maxReconnectDelay,
+            this.contextProvider == null || !this.enableMDC ? null : contextProvider.apply(shardId));
 
         jda.asBot().setShardManager(this);
 
@@ -607,6 +649,10 @@ public class DefaultShardManager implements ShardManager
             {
                 Pair<String, Integer> gateway = jda.getGatewayBot();
                 this.gatewayURL = gateway.getLeft();
+                if (this.gatewayURL == null)
+                    LOG.error("Acquired null gateway url from SessionController");
+                else
+                    LOG.info("Login Successful!");
 
                 if (this.shardsTotal == -1)
                 {
@@ -635,7 +681,7 @@ public class DefaultShardManager implements ShardManager
 
         final JDA.ShardInfo shardInfo = new JDA.ShardInfo(shardId, this.shardsTotal);
 
-        final int shardTotal = jda.login(this.gatewayURL, shardInfo, this.enableCompression);
+        final int shardTotal = jda.login(this.gatewayURL, shardInfo, this.enableCompression, false);
         if (this.shardsTotal == -1)
             this.shardsTotal = shardTotal;
 
@@ -643,7 +689,7 @@ public class DefaultShardManager implements ShardManager
     }
 
     @Override
-    public void setGameProvider(IntFunction<Game> gameProvider)
+    public void setGameProvider(IntFunction<? extends Game> gameProvider)
     {
         ShardManager.super.setGameProvider(gameProvider);
 
