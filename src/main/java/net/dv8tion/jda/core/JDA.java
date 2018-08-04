@@ -1137,4 +1137,55 @@ public interface JDA
      * @return The {@link net.dv8tion.jda.bot.JDABot} registry for this instance of JDA.
      */
     JDABot asBot();
+
+    /**
+     * Retrieves a {@link net.dv8tion.jda.core.entities.Webhook Webhook} by its id.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>We do not have the required permissions</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>A webhook with this id does not exist</li>
+     * </ul>
+     *
+     * @param   webhookId
+     *          The webhook id
+     *
+     * @return  {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Webhook Webhook}
+     *          <br>The webhook object.
+     *
+     * @see     Guild#getWebhooks()
+     * @see     TextChannel#getWebhooks()
+     */
+    RestAction<Webhook> getWebhookById(String webhookId);
+
+    /**
+     * Retrieves a {@link net.dv8tion.jda.core.entities.Webhook Webhook} by its id.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>We do not have the required permissions</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>A webhook with this id does not exist</li>
+     * </ul>
+     *
+     * @param   webhookId
+     *          The webhook id
+     *
+     * @return  {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Webhook Webhook}
+     *          <br>The webhook object.
+     *
+     * @see     Guild#getWebhooks()
+     * @see     TextChannel#getWebhooks()
+     */
+    default RestAction<Webhook> getWebhookById(long webhookId)
+    {
+        return getWebhookById(Long.toUnsignedString(webhookId));
+    }
 }

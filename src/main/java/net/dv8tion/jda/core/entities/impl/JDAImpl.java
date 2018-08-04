@@ -660,6 +660,30 @@ public class JDAImpl implements JDA
         return new GuildAction(this, name);
     }
 
+    @Override
+    public RestAction<Webhook> getWebhookById(String webhookId){
+        Route.CompiledRoute route = Route.Webhooks.GET_WEBHOOK.compile(webhookId);
+
+        return new RestAction<Webhook>(this, route)
+        {
+            @Override
+            protected void handleResponse(Response response, Request<Webhook> request)
+            {
+                if (!response.isOk())
+                {
+                    request.onFailure(response);
+                    return;
+                }
+
+                JSONObject object = response.getObject();
+                EntityBuilder builder = api.getEntityBuilder();
+                Webhook webhook = builder.createWebhook(object);
+
+                request.onSuccess(webhook);
+            }
+        };
+    }
+
     public EntityBuilder getEntityBuilder()
     {
         return entityBuilder;
