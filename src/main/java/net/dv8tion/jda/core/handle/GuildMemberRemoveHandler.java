@@ -61,11 +61,11 @@ public class GuildMemberRemoveHandler extends SocketHandler
             return null;
         }
 
-        if (member.getVoiceState().inVoiceChannel())//If this user was in a VoiceChannel, fire VoiceLeaveEvent.
+        GuildVoiceStateImpl voiceState = (GuildVoiceStateImpl) member.getVoiceState();
+        if (voiceState != null && voiceState.inVoiceChannel())//If this user was in a VoiceChannel, fire VoiceLeaveEvent.
         {
-            GuildVoiceStateImpl vState = (GuildVoiceStateImpl) member.getVoiceState();
-            VoiceChannel channel = vState.getChannel();
-            vState.setConnectedChannel(null);
+            VoiceChannel channel = voiceState.getChannel();
+            voiceState.setConnectedChannel(null);
             ((VoiceChannelImpl) channel).getConnectedMembersMap().remove(member.getUser().getIdLong());
             api.getEventManager().handle(
                     new GuildVoiceLeaveEvent(

@@ -119,7 +119,7 @@ public class GuildController
      *         moved to.
      *
      * @throws IllegalStateException
-     *         If the Member isn't currently in a VoiceChannel in this Guild.
+     *         If the Member isn't currently in a VoiceChannel in this Guild, or {@link net.dv8tion.jda.core.utils.cache.CacheFlag#VOICE_STATE} is disabled.
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If any of the provided arguments is {@code null}</li>
@@ -145,6 +145,8 @@ public class GuildController
         checkGuild(voiceChannel.getGuild(), "VoiceChannel");
 
         GuildVoiceState vState = member.getVoiceState();
+        if (vState == null)
+            throw new IllegalStateException("Cannot move a Member with disabled CacheFlag.VOICE_STATE");
         if (!vState.inVoiceChannel())
             throw new IllegalStateException("You cannot move a Member who isn't in a VoiceChannel!");
 
@@ -959,7 +961,8 @@ public class GuildController
         if (guild.getOwner().equals(member))
             throw new HierarchyException("Cannot modify Guild Deafen status the Owner of the Guild");
 
-        if (member.getVoiceState().isGuildDeafened() == deafen)
+        GuildVoiceState voiceState = member.getVoiceState();
+        if (voiceState != null && voiceState.isGuildDeafened() == deafen)
             return new AuditableRestAction.EmptyRestAction<>(getJDA(), null);
 
         JSONObject body = new JSONObject().put("deaf", deafen);
@@ -1023,7 +1026,8 @@ public class GuildController
         if (guild.getOwner().equals(member))
             throw new HierarchyException("Cannot modify Guild Mute status the Owner of the Guild");
 
-        if (member.getVoiceState().isGuildMuted() == mute)
+        GuildVoiceState voiceState = member.getVoiceState();
+        if (voiceState != null && voiceState.isGuildMuted() == mute)
             return new AuditableRestAction.EmptyRestAction<>(getJDA(), null);
 
         JSONObject body = new JSONObject().put("mute", mute);
