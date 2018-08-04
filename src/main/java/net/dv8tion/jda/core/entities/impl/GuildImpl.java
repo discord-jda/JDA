@@ -372,10 +372,8 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<Ban> getBanById(String userId)
+    public RestAction<Ban> getBanById(@Nonnull String userId)
     {
-        if (!isAvailable())
-            throw new GuildUnavailableException();
         if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS))
             throw new InsufficientPermissionException(Permission.BAN_MEMBERS);
 
@@ -404,7 +402,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<Ban> getBan(User bannedUser)
+    public RestAction<Ban> getBan(@Nonnull User bannedUser)
     {
         Checks.notNull(bannedUser, "bannedUser");
         return getBanById(bannedUser.getId());

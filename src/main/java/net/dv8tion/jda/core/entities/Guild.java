@@ -860,8 +860,8 @@ public interface Guild extends ISnowflake
     SnowflakeCacheView<Emote> getEmoteCache();
 
     /**
-     * Gets an unmodifiable list of the currently banned {@link net.dv8tion.jda.core.entities.User Users}.
-     * <br>If you wish to ban or unban a user, please {@link GuildController#ban(User, int) GuildController.ban(User, int)} or
+     * Retrieves an unmodifiable list of the currently banned {@link net.dv8tion.jda.core.entities.User Users}.
+     * <br>If you wish to ban or unban a user, either please use {@link GuildController#ban(User, int) GuildController.ban(User, int)} or
      * {@link GuildController#unban(User) GuildController.unban(User)}.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
@@ -887,8 +887,8 @@ public interface Guild extends ISnowflake
     RestAction<List<Ban>> getBanList();
 
     /**
-     * Gets a {@link net.dv8tion.jda.core.entities.Guild.Ban Ban} of the provided ID
-     * <br>If you wish to ban or unban a user, please {@link GuildController#ban(User, int) GuildController.ban(User, int)} or
+     * Retrieves a {@link net.dv8tion.jda.core.entities.Guild.Ban Ban} of the provided ID
+     * <br>If you wish to ban or unban a user, either please use {@link GuildController#ban(User, int) GuildController.ban(User, int)} or
      * {@link GuildController#unban(User) GuildController.unban(User)}.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
@@ -901,15 +901,14 @@ public interface Guild extends ISnowflake
      *     <br>We were removed from the Guild before finishing the task</li>
      *
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_BAN UNKNOWN_BAN}
-     *     <br>The ban does not exist during the task</li>
+     *     <br>Either the ban was removed before finishing the task or it did not exist in the first place</li>
      * </ul>
      *
-     * @param userId the id of the banned user
+     * @param  userId
+     *         the id of the banned user
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link #isAvailable() available}
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Guild.Ban Ban}
      *         <br>An unmodifiable ban object for the user banned from this guild
@@ -919,8 +918,8 @@ public interface Guild extends ISnowflake
     RestAction<Ban> getBanById(long userId);
 
     /**
-     * Gets a {@link net.dv8tion.jda.core.entities.Guild.Ban Ban} of the provided ID
-     * <br>If you wish to ban or unban a user, please {@link GuildController#ban(User, int) GuildController.ban(User, int)} or
+     * Retrieves a {@link net.dv8tion.jda.core.entities.Guild.Ban Ban} of the provided ID
+     * <br>If you wish to ban or unban a user, either please use {@link GuildController#ban(User, int) GuildController.ban(User, int)} or
      * {@link GuildController#unban(User) GuildController.unban(User)}.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
@@ -933,26 +932,25 @@ public interface Guild extends ISnowflake
      *     <br>We were removed from the Guild before finishing the task</li>
      *
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_BAN UNKNOWN_BAN}
-     *     <br>The ban does not exist during the task</li>
+     *     <br>Either the ban was removed before finishing the task or it did not exist in the first place</li>
      * </ul>
      *
-     * @param userId the id of the banned user
+     * @param  userId
+     *         the id of the banned user
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link #isAvailable() available}
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Guild.Ban Ban}
      *         <br>An unmodifiable ban object for the user banned from this guild
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Ban> getBanById(String userId);
+    RestAction<Ban> getBanById(@Nonnull String userId);
 
     /**
-     * Gets a {@link net.dv8tion.jda.core.entities.Guild.Ban Ban} of the provided {@link net.dv8tion.jda.core.entities.User User}
-     * <br>If you wish to ban or unban a user, please {@link GuildController#ban(User, int) GuildController.ban(User, int)} or
+     * Retrieves a {@link net.dv8tion.jda.core.entities.Guild.Ban Ban} of the provided {@link net.dv8tion.jda.core.entities.User User}
+     * <br>If you wish to ban or unban a user, either please use {@link GuildController#ban(User, int) GuildController.ban(User, int)} or
      * {@link GuildController#unban(User) GuildController.unban(User)}.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
@@ -965,22 +963,21 @@ public interface Guild extends ISnowflake
      *     <br>We were removed from the Guild before finishing the task</li>
      *
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_BAN UNKNOWN_BAN}
-     *     <br>The ban does not exist during the task</li>
+     *     <br>Either the ban was removed before finishing the task or it did not exist in the first place</li>
      * </ul>
      *
-     * @param bannedUser the banned user
+     * @param  bannedUser
+     *         the banned user
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link #isAvailable() available}
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Guild.Ban Ban}
      *         <br>An unmodifiable ban object for the user banned from this guild
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Ban> getBan(User bannedUser);
+    RestAction<Ban> getBan(@Nonnull User bannedUser);
 
     /**
      * The method calculates the amount of Members that would be pruned if {@link GuildController#prune(int)} was executed.
