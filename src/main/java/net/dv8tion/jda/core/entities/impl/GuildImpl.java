@@ -365,13 +365,6 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<Ban> getBanById(long userId)
-    {
-        return getBanById(Long.toUnsignedString(userId));
-    }
-
-    @Nonnull
-    @Override
     public RestAction<Ban> getBanById(@Nonnull String userId)
     {
         if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS))
@@ -398,14 +391,6 @@ public class GuildImpl implements Guild
                 request.onSuccess(ban);
             }
         };
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<Ban> getBan(@Nonnull User bannedUser)
-    {
-        Checks.notNull(bannedUser, "bannedUser");
-        return getBanById(bannedUser.getId());
     }
 
     @Override

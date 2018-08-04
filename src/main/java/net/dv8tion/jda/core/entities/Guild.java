@@ -915,7 +915,10 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Ban> getBanById(long userId);
+    default RestAction<Ban> getBanById(long userId)
+    {
+        return getBanById(Long.toUnsignedString(userId));
+    }
 
     /**
      * Retrieves a {@link net.dv8tion.jda.core.entities.Guild.Ban Ban} of the provided ID
@@ -977,7 +980,11 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Ban> getBan(@Nonnull User bannedUser);
+    default RestAction<Ban> getBan(@Nonnull User bannedUser)
+    {
+        Checks.notNull(bannedUser, "bannedUser");
+        return getBanById(bannedUser.getId());
+    }
 
     /**
      * The method calculates the amount of Members that would be pruned if {@link GuildController#prune(int)} was executed.
