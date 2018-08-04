@@ -346,12 +346,13 @@ public class EntityBuilder
 
     public Member createMember(GuildImpl guild, JSONObject memberJson)
     {
+        boolean playbackCache = false;
         User user = createUser(memberJson.getJSONObject("user"));
         MemberImpl member = (MemberImpl) guild.getMember(user);
         if (member == null)
         {
             member = new MemberImpl(guild, user);
-            guild.getMembersMap().put(user.getIdLong(), member);
+            playbackCache = guild.getMembersMap().put(user.getIdLong(), member) == null;
         }
 
         GuildVoiceStateImpl state = (GuildVoiceStateImpl) member.getVoiceState();
@@ -381,6 +382,11 @@ public class EntityBuilder
             }
         }
 
+        if (playbackCache)
+        {
+            long hashId = guild.getIdLong() ^ user.getIdLong();
+            api.getEventCache().playbackCache(EventCache.Type.MEMBER, hashId);
+        }
         return member;
     }
 
@@ -523,6 +529,7 @@ public class EntityBuilder
 
     public Category createCategory(GuildImpl guild, JSONObject json, long guildId)
     {
+        boolean playbackCache = false;
         final long id = json.getLong("id");
         CategoryImpl channel = (CategoryImpl) api.getCategoryMap().get(id);
         if (channel == null)
@@ -531,7 +538,7 @@ public class EntityBuilder
                 guild = (GuildImpl) api.getGuildMap().get(guildId);
             channel = new CategoryImpl(id, guild);
             guild.getCategoriesMap().put(id, channel);
-            api.getCategoryMap().put(id, channel);
+            playbackCache = api.getCategoryMap().put(id, channel) == null;
         }
 
         if (!json.isNull("permission_overwrites"))
@@ -543,7 +550,8 @@ public class EntityBuilder
         channel
             .setName(json.getString("name"))
             .setPosition(json.getInt("position"));
-        api.getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
+        if (playbackCache)
+            api.getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
         return channel;
     }
 
@@ -555,6 +563,7 @@ public class EntityBuilder
 
     public TextChannel createTextChannel(GuildImpl guildObj, JSONObject json, long guildId)
     {
+        boolean playbackCache = false;
         final long id = json.getLong("id");
         TextChannelImpl channel = (TextChannelImpl) api.getTextChannelMap().get(id);
         if (channel == null)
@@ -563,7 +572,7 @@ public class EntityBuilder
                 guildObj = (GuildImpl) api.getGuildMap().get(guildId);
             channel = new TextChannelImpl(id, guildObj);
             guildObj.getTextChannelsMap().put(id, channel);
-            api.getTextChannelMap().put(id, channel);
+            playbackCache = api.getTextChannelMap().put(id, channel) == null;
         }
 
         if (!json.isNull("permission_overwrites"))
@@ -579,7 +588,8 @@ public class EntityBuilder
             .setTopic(json.optString("topic"))
             .setPosition(json.getInt("position"))
             .setNSFW(Helpers.optBoolean(json, "nsfw"));
-        api.getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
+        if (playbackCache)
+            api.getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
         return channel;
     }
 
@@ -590,6 +600,7 @@ public class EntityBuilder
 
     public VoiceChannel createVoiceChannel(GuildImpl guild, JSONObject json, long guildId)
     {
+        boolean playbackCache = false;
         final long id = json.getLong("id");
         VoiceChannelImpl channel = ((VoiceChannelImpl) api.getVoiceChannelMap().get(id));
         if (channel == null)
@@ -598,7 +609,7 @@ public class EntityBuilder
                 guild = (GuildImpl) api.getGuildMap().get(guildId);
             channel = new VoiceChannelImpl(id, guild);
             guild.getVoiceChannelsMap().put(id, channel);
-            api.getVoiceChannelMap().put(id, channel);
+            playbackCache = api.getVoiceChannelMap().put(id, channel) == null;
         }
 
         if (!json.isNull("permission_overwrites"))
@@ -613,7 +624,8 @@ public class EntityBuilder
             .setPosition(json.getInt("position"))
             .setUserLimit(json.getInt("user_limit"))
             .setBitrate(json.getInt("bitrate"));
-        api.getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
+        if (playbackCache)
+            api.getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
         return channel;
     }
 
@@ -671,6 +683,7 @@ public class EntityBuilder
 
     public Role createRole(GuildImpl guild, JSONObject roleJson, long guildId)
     {
+        boolean playbackCache = false;
         final long id = roleJson.getLong("id");
         if (guild == null)
             guild = (GuildImpl) api.getGuildMap().get(guildId);
@@ -678,7 +691,7 @@ public class EntityBuilder
         if (role == null)
         {
             role = new RoleImpl(id, guild);
-            guild.getRolesMap().put(id, role);
+            playbackCache = guild.getRolesMap().put(id, role) == null;
         }
         final int color = roleJson.getInt("color");
         role.setName(roleJson.getString("name"))
@@ -688,7 +701,8 @@ public class EntityBuilder
             .setHoisted(roleJson.getBoolean("hoist"))
             .setColor(color == 0 ? Role.DEFAULT_COLOR_RAW : color)
             .setMentionable(roleJson.has("mentionable") && roleJson.getBoolean("mentionable"));
-        api.getEventCache().playbackCache(EventCache.Type.ROLE, id);
+        if (playbackCache)
+            api.getEventCache().playbackCache(EventCache.Type.ROLE, id);
         return role;
     }
 
@@ -1074,6 +1088,7 @@ public class EntityBuilder
         if (api.getAccountType() != AccountType.CLIENT)
             throw new AccountTypeException(AccountType.CLIENT, "Attempted to create a Group but the logged in account is not a CLIENT!");
 
+        boolean playbackCache = false;
         final long groupId = groupJson.getLong("id");
         JSONArray recipients = groupJson.getJSONArray("recipients");
         final long ownerId = groupJson.getLong("owner_id");
@@ -1085,7 +1100,7 @@ public class EntityBuilder
         if (group == null)
         {
             group = new GroupImpl(groupId, api);
-            api.asClient().getGroupMap().put(groupId, group);
+            playbackCache = api.asClient().getGroupMap().put(groupId, group) == null;
         }
 
         TLongObjectMap<User> groupUsers = group.getUserMap();
@@ -1108,7 +1123,8 @@ public class EntityBuilder
             .setLastMessageId(lastMessage)
             .setName(name)
             .setIconId(iconId);
-        api.getEventCache().playbackCache(EventCache.Type.CHANNEL, groupId);
+        if (playbackCache)
+            api.getEventCache().playbackCache(EventCache.Type.CHANNEL, groupId);
         return group;
     }
 

@@ -47,7 +47,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
     @Override
     protected Long handleInternally(JSONObject content)
     {
-        final Long guildId = content.has("guild_id") ? content.getLong("guild_id") : null;
+        final Long guildId = content.isNull("guild_id") ? null : content.getLong("guild_id");
         if (guildId != null && api.getGuildSetupController().isLocked(guildId))
             return guildId;
 
@@ -99,8 +99,9 @@ public class VoiceStateUpdateHandler extends SocketHandler
             // in fact the issue was that the VOICE_STATE_UPDATE was sent after they had left, however, by caching
             // it we will preserve the integrity of the cache in the event that it was actually a mis-ordering of
             // GUILD_MEMBER_ADD and VOICE_STATE_UPDATE. I'll take some bad-data events over an invalid cache.
-            api.getEventCache().cache(EventCache.Type.USER, userId, responseNumber, allContent, this::handle);
-            EventCache.LOG.debug("Received VOICE_STATE_UPDATE for a Member that has yet to be cached. JSON: {}", content);
+            long idHash = guildId ^ userId;
+            api.getEventCache().cache(EventCache.Type.MEMBER, idHash, responseNumber, allContent, this::handle);
+            EventCache.LOG.debug("Received VOICE_STATE_UPDATE for a Member that has yet to be cached. HASH_ID: {} JSON: {}", idHash, content);
             return;
         }
 

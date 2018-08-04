@@ -47,16 +47,18 @@ public class GuildMemberUpdateHandler extends SocketHandler
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
         if (guild == null)
         {
-            api.getEventCache().cache(EventCache.Type.GUILD, userId, responseNumber, allContent, this::handle);
-            EventCache.LOG.debug("Got GuildMember update but JDA currently does not have the Guild cached. {}", content);
+            //Do not cache this here, it will be outdated once we receive the GUILD_CREATE and could cause invalid cache
+            //api.getEventCache().cache(EventCache.Type.GUILD, userId, responseNumber, allContent, this::handle);
+            EventCache.LOG.debug("Got GuildMember update but JDA currently does not have the Guild cached. Ignoring. {}", content);
             return null;
         }
 
         MemberImpl member = (MemberImpl) guild.getMembersMap().get(userId);
         if (member == null)
         {
-            api.getEventCache().cache(EventCache.Type.USER, userId, responseNumber, allContent, this::handle);
-            EventCache.LOG.debug("Got GuildMember update but Member is not currently present in Guild. {}", content);
+            long hashId = id ^ userId;
+            api.getEventCache().cache(EventCache.Type.MEMBER, hashId, responseNumber, allContent, this::handle);
+            EventCache.LOG.debug("Got GuildMember update but Member is not currently present in Guild. HASH_ID: {} JSON: {}", hashId, content);
             return null;
         }
 

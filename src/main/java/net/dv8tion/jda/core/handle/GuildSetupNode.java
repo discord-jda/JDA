@@ -30,6 +30,7 @@ import net.dv8tion.jda.core.utils.Helpers;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,7 +38,7 @@ import java.util.List;
 class GuildSetupNode
 {
     private final long id;
-    private final GuildSetupController controller;
+    private final WeakReference<GuildSetupController> controller;
     private final List<JSONObject> cachedEvents = new LinkedList<>();
     private TLongObjectMap<JSONObject> members;
     private TLongSet removedMembers;
@@ -53,9 +54,14 @@ class GuildSetupNode
     GuildSetupNode(long id, GuildSetupController controller, boolean join)
     {
         this.id = id;
-        this.controller = controller;
+        this.controller = new WeakReference<>(controller);
         this.join = join;
         this.sync = controller.isClient();
+    }
+
+    private GuildSetupController getController()
+    {
+        return controller.get();
     }
 
     boolean containsMember(long userId)
@@ -93,7 +99,7 @@ class GuildSetupNode
         if (unavailable)
             return;
 
-        controller.addGuildForSyncing(id, join);
+        getController().addGuildForSyncing(id, join);
         requestedSync = true;
     }
 
@@ -118,7 +124,7 @@ class GuildSetupNode
         {
             // We are using a client-account and joined a guild
             //  in that case we need to sync before doing anything
-            controller.addGuildForSyncing(id, join);
+            getController().addGuildForSyncing(id, join);
             return;
         }
 
@@ -187,8 +193,8 @@ class GuildSetupNode
         long userId = member.getJSONObject("user").getLong("id");
         members.remove(userId);
         removedMembers.add(userId);
-        EventCache eventCache = controller.getJDA().getEventCache();
-        if (!controller.containsMember(userId, this)) // if no other setup node contains this userId we clear it here
+        EventCache eventCache = getController().getJDA().getEventCache();
+        if (!getController().containsMember(userId, this)) // if no other setup node contains this userId we clear it here
             eventCache.clear(EventCache.Type.USER, userId);
     }
 
@@ -209,7 +215,7 @@ class GuildSetupNode
 
     void cleanup()
     {
-        EventCache eventCache = controller.getJDA().getEventCache();
+        EventCache eventCache = getController().getJDA().getEventCache();
         eventCache.clear(EventCache.Type.GUILD, id);
         if (partialGuild == null)
             return;
@@ -242,7 +248,7 @@ class GuildSetupNode
             {
                 it.advance();
                 long userId = it.key();
-                if (!controller.containsMember(userId, this)) // if no other setup node contains this userId we clear it here
+                if (!getController().containsMember(userId, this)) // if no other setup node contains this userId we clear it here
                     eventCache.clear(EventCache.Type.USER, userId);
             }
         }
@@ -250,22 +256,23 @@ class GuildSetupNode
 
     private void completeSetup()
     {
-        JDAImpl api = controller.getJDA();
+        JDAImpl api = getController().getJDA();
         for (TLongIterator it = removedMembers.iterator(); it.hasNext(); )
             members.remove(it.next());
+        removedMembers.clear();
         GuildImpl guild = api.getEntityBuilder().createGuild(id, partialGuild, members);
         if (join)
         {
             api.getEventManager().handle(new GuildJoinEvent(api, api.getResponseTotal(), guild));
             if (requestedChunk)
-                controller.ready(id);
+                getController().ready(id);
             else
-                controller.remove(id);
+                getController().remove(id);
         }
         else
         {
             api.getEventManager().handle(new GuildReadyEvent(api, api.getResponseTotal(), guild));
-            controller.ready(id);
+            getController().ready(id);
         }
         GuildSetupController.log.debug("Finished setup for guild {} firing cached events {}", id, cachedEvents.size());
         api.getClient().handle(cachedEvents);
@@ -280,7 +287,7 @@ class GuildSetupNode
         JSONArray memberArray = partialGuild.getJSONArray("members");
         if (memberArray.length() < expectedMemberCount && !requestedChunk)
         {
-            controller.addGuildForChunking(id, join);
+            getController().addGuildForChunking(id, join);
             requestedChunk = true;
         }
         else if (handleMemberChunk(memberArray) && !requestedChunk)
@@ -294,7 +301,7 @@ class GuildSetupNode
                 "member_count: {} members: {} actual_members: {} guild_id: {}",
                 expectedMemberCount, memberArray.length(), members.size(), id);
             members.clear();
-            controller.addGuildForChunking(id, join);
+            getController().addGuildForChunking(id, join);
             requestedChunk = true;
         }
     }
