@@ -1151,14 +1151,14 @@ public interface JDA
      *     <br>A webhook with this id does not exist</li>
      * </ul>
      *
-     * @param   webhookId
-     *          The webhook id
+     * @param  webhookId
+     *         The webhook id
      *
-     * @return  {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Webhook Webhook}
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Webhook Webhook}
      *          <br>The webhook object.
      *
-     * @see     Guild#getWebhooks()
-     * @see     TextChannel#getWebhooks()
+     * @see    Guild#getWebhooks()
+     * @see    TextChannel#getWebhooks()
      */
     RestAction<Webhook> getWebhookById(String webhookId);
 
@@ -1175,14 +1175,14 @@ public interface JDA
      *     <br>A webhook with this id does not exist</li>
      * </ul>
      *
-     * @param   webhookId
-     *          The webhook id
+     * @param  webhookId
+     *         The webhook id
      *
-     * @return  {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Webhook Webhook}
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Webhook Webhook}
      *          <br>The webhook object.
      *
-     * @see     Guild#getWebhooks()
-     * @see     TextChannel#getWebhooks()
+     * @see    Guild#getWebhooks()
+     * @see    TextChannel#getWebhooks()
      */
     default RestAction<Webhook> getWebhookById(long webhookId)
     {
