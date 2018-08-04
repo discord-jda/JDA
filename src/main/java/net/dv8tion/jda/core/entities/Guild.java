@@ -888,8 +888,8 @@ public interface Guild extends ISnowflake
 
     /**
      * Retrieves a {@link net.dv8tion.jda.core.entities.Guild.Ban Ban} of the provided ID
-     * <br>If you wish to ban or unban a user, either please use {@link GuildController#ban(User, int) GuildController.ban(User, int)} or
-     * {@link GuildController#unban(User) GuildController.unban(User)}.
+     * <br>If you wish to ban or unban a user, please use either {@link GuildController#ban(String, int)}  GuildController.ban(id, int)} or
+     * {@link GuildController#unban(String)}  GuildController.unban(id)}.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
@@ -919,8 +919,8 @@ public interface Guild extends ISnowflake
 
     /**
      * Retrieves a {@link net.dv8tion.jda.core.entities.Guild.Ban Ban} of the provided ID
-     * <br>If you wish to ban or unban a user, either please use {@link GuildController#ban(User, int) GuildController.ban(User, int)} or
-     * {@link GuildController#unban(User) GuildController.unban(User)}.
+     * <br>If you wish to ban or unban a user, please use either {@link GuildController#ban(String, int) GuildController.ban(id, int)} or
+     * {@link GuildController#unban(String) GuildController.unban(id)}.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
@@ -950,7 +950,7 @@ public interface Guild extends ISnowflake
 
     /**
      * Retrieves a {@link net.dv8tion.jda.core.entities.Guild.Ban Ban} of the provided {@link net.dv8tion.jda.core.entities.User User}
-     * <br>If you wish to ban or unban a user, either please use {@link GuildController#ban(User, int) GuildController.ban(User, int)} or
+     * <br>If you wish to ban or unban a user, please use either {@link GuildController#ban(User, int) GuildController.ban(User, int)} or
      * {@link GuildController#unban(User) GuildController.unban(User)}.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
