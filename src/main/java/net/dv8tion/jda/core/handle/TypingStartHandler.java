@@ -77,7 +77,7 @@ public class TypingStartHandler extends SocketHandler
             user = api.getUserMap().get(userId);
 
         if (user == null)
-            return null;    //Just like in the comment above, if for some reason we don't have the user for some reason
+            return null;    //Just like in the comment above, if for some reason we don't have the user
                             // then we will just throw the event away.
 
         OffsetDateTime timestamp = Instant.ofEpochSecond(content.getInt("timestamp")).atOffset(ZoneOffset.UTC);

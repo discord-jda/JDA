@@ -79,8 +79,14 @@ public class MessageReactionHandler extends SocketHandler
             user = api.getFakeUserMap().get(userId);
         if (user == null)
         {
+            if (!add)
+            {
+                //This can be caused by a ban, we should just drop it in that case
+                return null;
+            }
             api.getEventCache().cache(EventCache.Type.USER, userId, responseNumber, allContent, this::handle);
-            EventCache.LOG.debug("Received a reaction for a user that JDA does not currently have cached");
+            EventCache.LOG.debug("Received a reaction for a user that JDA does not currently have cached. " +
+                                 "UserID: {} ChannelId: {} MessageId: {}", userId, channelId, messageId);
             return null;
         }
 
