@@ -169,6 +169,7 @@ public class JDAImpl implements JDA
             // set MDC metadata for build thread
             previousContext = MDC.getCopyOfContextMap();
             contextMap.forEach(MDC::put);
+            requester.setContextReady(true);
         }
         if (validateToken)
         {
@@ -201,7 +202,13 @@ public class JDAImpl implements JDA
 
     public ConcurrentMap<String, String> getContextMap()
     {
-        return contextMap;
+        return contextMap == null ? null : new ConcurrentHashMap<>(contextMap);
+    }
+
+    public void setContext()
+    {
+        if (contextMap != null)
+            contextMap.forEach(MDC::put);
     }
 
     public void setStatus(Status status)
