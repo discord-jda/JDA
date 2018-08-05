@@ -22,7 +22,6 @@ import gnu.trove.map.TIntLongMap;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntLongHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
-import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.audio.factory.IAudioSendSystem;
 import net.dv8tion.jda.core.audio.factory.IPacketProvider;
@@ -37,7 +36,6 @@ import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.tuple.Pair;
 import org.json.JSONObject;
 import org.slf4j.Logger;
-import org.slf4j.MDC;
 import tomp2p.opuswrapper.Opus;
 
 import java.lang.ref.WeakReference;
@@ -66,7 +64,6 @@ public class AudioConnection
 
     private final String threadIdentifier;
     private final AudioWebSocket webSocket;
-    private final ConcurrentMap<String, String> contextMap;
     private DatagramSocket udpSocket;
     private WeakReference<VoiceChannel> channel;
     private volatile AudioSendHandler sendHandler = null;
@@ -94,15 +91,13 @@ public class AudioConnection
 
         final JDAImpl api = (JDAImpl) channel.getJDA();
         this.threadIdentifier = api.getIdentifierString() + " AudioConnection Guild: " + channel.getGuild().getId();
-        this.contextMap = api.getContextMap();
     }
 
     public void ready()
     {
         Thread readyThread = new Thread(AudioManagerImpl.AUDIO_THREADS, () ->
         {
-            if (contextMap != null)
-                MDC.setContextMap(contextMap);
+            getJDA().setContext();
             final long timeout = getGuild().getAudioManager().getConnectTimeout();
 
             final long started = System.currentTimeMillis();
@@ -175,9 +170,9 @@ public class AudioConnection
         this.channel = channel == null ? null : new WeakReference<>(channel);
     }
 
-    public JDA getJDA()
+    public JDAImpl getJDA()
     {
-        return channel.get().getJDA();
+        return (JDAImpl) channel.get().getJDA();
     }
 
     public Guild getGuild()
@@ -266,7 +261,7 @@ public class AudioConnection
         {
             IAudioSendFactory factory = ((JDAImpl) channel.get().getJDA()).getAudioSendFactory();
             sendSystem = factory.createSendSystem(new PacketProvider());
-            sendSystem.setContextMap(contextMap);
+            sendSystem.setContextMap(getJDA().getContextMap());
             sendSystem.start();
         }
         else if (sendHandler == null && sendSystem != null)
@@ -315,8 +310,7 @@ public class AudioConnection
         {
             receiveThread = new Thread(AudioManagerImpl.AUDIO_THREADS, () ->
             {
-                if (contextMap != null)
-                    MDC.setContextMap(contextMap);
+                getJDA().setContext();
                 try
                 {
                     udpSocket.setSoTimeout(1000);
@@ -449,24 +443,19 @@ public class AudioConnection
         {
             combinedAudioExecutor = Executors.newSingleThreadScheduledExecutor((task) ->
             {
-                Runnable r = () ->
-                {
-                    if (contextMap != null)
-                        MDC.setContextMap(contextMap);
-                    task.run();
-                };
-                final Thread t = new Thread(AudioManagerImpl.AUDIO_THREADS, r, threadIdentifier + " Combined Thread");
+                final Thread t = new Thread(AudioManagerImpl.AUDIO_THREADS, task, threadIdentifier + " Combined Thread");
                 t.setDaemon(true);
                 t.setUncaughtExceptionHandler((thread, throwable) ->
                 {
                     LOG.error("I have no idea how, but there was an uncaught exception in the combinedAudioExecutor", throwable);
-                    JDAImpl api = (JDAImpl) getJDA();
+                    JDAImpl api = getJDA();
                     api.getEventManager().handle(new ExceptionEvent(api, throwable, true));
                 });
                 return t;
             });
             combinedAudioExecutor.scheduleAtFixedRate(() ->
             {
+                getJDA().setContext();
                 try
                 {
                     List<User> users = new LinkedList<>();

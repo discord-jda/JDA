@@ -114,11 +114,14 @@ public class AudioWebSocket extends WebSocketAdapter
     }
 
     @Override
+    public void onThreadStarted(WebSocket websocket, ThreadType threadType, Thread thread) throws Exception
+    {
+        api.get().setContext();
+    }
+
+    @Override
     public void onConnected(WebSocket websocket, Map<String, List<String>> headers)
     {
-        //writing thread
-        if (api.get().getContextMap() != null)
-            MDC.setContextMap(api.get().getContextMap());
         if (shutdown)
         {
             //Somehow this AudioWebSocket was shutdown before we finished connecting....
@@ -141,11 +144,8 @@ public class AudioWebSocket extends WebSocketAdapter
     @Override
     public void onTextMessage(WebSocket websocket, String message)
     {
-        //reading thread
         try
         {
-            if (api.get().getContextMap() != null)
-                MDC.setContextMap(api.get().getContextMap());
             handleEvent(new JSONObject(message));
         }
         catch (Exception ex)
@@ -338,7 +338,6 @@ public class AudioWebSocket extends WebSocketAdapter
     @Override
     public void handleCallbackError(WebSocket websocket, Throwable cause)
     {
-        MDC.setContextMap(api.get().getContextMap());
         LOG.error("There was some audio websocket error", cause);
         api.get().getEventManager().handle(new ExceptionEvent(api.get(), cause, true));
     }
@@ -370,7 +369,6 @@ public class AudioWebSocket extends WebSocketAdapter
     @Override
     public void onConnectError(WebSocket webSocket, WebSocketException e)
     {
-        MDC.setContextMap(api.get().getContextMap());
         LOG.warn("Failed to establish websocket connection: {} - {}\nClosing connection and attempting to reconnect.",
             e.getError(), e.getMessage());
         this.close(ConnectionStatus.ERROR_WEBSOCKET_UNABLE_TO_CONNECT);
@@ -669,8 +667,8 @@ public class AudioWebSocket extends WebSocketAdapter
     }
 
     @Override
-    @Deprecated
-    protected void finalize() throws Throwable
+    @SuppressWarnings("deprecation")
+    protected void finalize()
     {
         if (!shutdown)
         {
@@ -697,7 +695,7 @@ public class AudioWebSocket extends WebSocketAdapter
             Runnable r2 = () ->
             {
                 if (contextMap != null)
-                    MDC.setContextMap(contextMap);
+                    contextMap.forEach(MDC::put);
                 r.run();
             };
             final Thread t = new Thread(AudioManagerImpl.AUDIO_THREADS, r2, identifier + " - Thread " + threadCount.getAndIncrement());

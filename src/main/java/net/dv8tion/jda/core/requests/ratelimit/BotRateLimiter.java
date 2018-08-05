@@ -325,6 +325,7 @@ public class BotRateLimiter extends RateLimiter
         @Override
         public void run()
         {
+            requester.setContext();
             try
             {
                 synchronized (requests)
