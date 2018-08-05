@@ -1181,9 +1181,6 @@ public interface JDA
      * @param  webhookId
      *         The webhook id
      *
-     * @throws IllegalArgumentException
-     *         If the {@code webhookId} is null or empty
-     *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Webhook Webhook}
      *          <br>The webhook object.
      *
