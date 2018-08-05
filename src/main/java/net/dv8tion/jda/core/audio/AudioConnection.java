@@ -631,6 +631,8 @@ public class AudioConnection
                 {
                     silenceCounter = -1;
                     int flags = SpeakingMode.getRaw(sendHandler.provideSpeakingModes());
+                    if ((flags & SpeakingMode.MASK) == 0) // we have to set a speaking mode, 0 is not acceptable here
+                        flags = SpeakingMode.VOICE.getRaw();
                     byte[] rawAudio = sendHandler.provide20MsAudio();
                     if (rawAudio == null || rawAudio.length == 0)
                     {
