@@ -51,13 +51,17 @@ import org.slf4j.MDC;
 import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class JDAImpl implements JDA
 {
     public static final Logger LOG = JDALogger.getLog(JDA.class);
 
-    public final ScheduledThreadPoolExecutor pool;
+    protected final ScheduledThreadPoolExecutor rateLimitPool;
+    protected final ExecutorService callbackPool;
+    protected final boolean shutdownRateLimitPool;
+    protected final boolean shutdownCallbackPool;
 
     protected final SnowflakeCacheViewImpl<User> userCache = new SnowflakeCacheViewImpl<>(User.class, User::getName);
     protected final SnowflakeCacheViewImpl<Guild> guildCache = new SnowflakeCacheViewImpl<>(Guild.class, Guild::getName);
@@ -72,7 +76,7 @@ public class JDAImpl implements JDA
     protected final AbstractCacheView<AudioManager> audioManagers = new CacheView.SimpleCacheView<>(AudioManager.class, m -> m.getGuild().getName());
 
     protected final ConcurrentMap<String, String> contextMap;
-    protected final OkHttpClient.Builder httpClientBuilder;
+    protected final OkHttpClient httpClient;
     protected final WebSocketFactory wsFactory;
     protected final AccountType accountType;
     protected final PresenceImpl presence;
@@ -103,19 +107,27 @@ public class JDAImpl implements JDA
     protected String token;
     protected String gatewayUrl;
 
-    public JDAImpl(AccountType accountType, String token, SessionController controller, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory,
-                   boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled, boolean retryOnTimeout, boolean enableMDC,
-                   int corePoolSize, int maxReconnectDelay, ConcurrentMap<String, String> contextMap)
+    public JDAImpl(AccountType accountType, String token, SessionController controller,
+                   OkHttpClient httpClient, WebSocketFactory wsFactory,
+                   ScheduledThreadPoolExecutor rateLimitPool, ExecutorService callbackPool,
+                   boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook,
+                   boolean bulkDeleteSplittingEnabled, boolean retryOnTimeout, boolean enableMDC,
+                   boolean shutdownRateLimitPool, boolean shutdownCallbackPool,
+                   int poolSize, int maxReconnectDelay,
+                   ConcurrentMap<String, String> contextMap)
     {
         this.accountType = accountType;
         this.setToken(token);
-        this.httpClientBuilder = httpClientBuilder;
+        this.httpClient = httpClient;
         this.wsFactory = wsFactory;
         this.autoReconnect = autoReconnect;
         this.audioEnabled = audioEnabled;
         this.shutdownHook = useShutdownHook ? new Thread(this::shutdown, "JDA Shutdown Hook") : null;
         this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
-        this.pool = new ScheduledThreadPoolExecutor(corePoolSize, new JDAThreadFactory());
+        this.rateLimitPool = rateLimitPool == null ? new ScheduledThreadPoolExecutor(poolSize, new RateLimitThreadFactory()) : rateLimitPool;
+        this.callbackPool = callbackPool == null ? ForkJoinPool.commonPool() : callbackPool;
+        this.shutdownRateLimitPool = shutdownRateLimitPool;
+        this.shutdownCallbackPool = shutdownCallbackPool;
         this.maxReconnectDelay = maxReconnectDelay;
         this.sessionController = controller == null ? new SessionControllerAdapter() : controller;
         if (enableMDC)
@@ -136,7 +148,7 @@ public class JDAImpl implements JDA
         return sessionController;
     }
 
-    public int login(String gatewayUrl, ShardInfo shardInfo, boolean compression) throws LoginException
+    public int login(String gatewayUrl, ShardInfo shardInfo, boolean compression, boolean validateToken) throws LoginException
     {
         this.gatewayUrl = gatewayUrl;
         this.shardInfo = shardInfo;
@@ -157,9 +169,13 @@ public class JDAImpl implements JDA
             // set MDC metadata for build thread
             previousContext = MDC.getCopyOfContextMap();
             contextMap.forEach(MDC::put);
+            requester.setContextReady(true);
         }
-        verifyToken();
-        LOG.info("Login Successful!");
+        if (validateToken)
+        {
+            verifyToken();
+            LOG.info("Login Successful!");
+        }
 
         client = new WebSocketClient(this, compression);
         // remove our MDC metadata when we exit our code
@@ -186,7 +202,13 @@ public class JDAImpl implements JDA
 
     public ConcurrentMap<String, String> getContextMap()
     {
-        return contextMap;
+        return contextMap == null ? null : new ConcurrentHashMap<>(contextMap);
+    }
+
+    public void setContext()
+    {
+        if (contextMap != null)
+            contextMap.forEach(MDC::put);
     }
 
     public void setStatus(Status status)
@@ -267,6 +289,7 @@ public class JDAImpl implements JDA
         }
 
         userResponse = checkToken(login);
+        shutdownNow();
 
         //If the response isn't null (thus it didn't 401) send it to the secondary verify method to determine
         // which account type the developer wrongly attempted to login as
@@ -357,6 +380,23 @@ public class JDAImpl implements JDA
     public long getPing()
     {
         return ping;
+    }
+
+    @Override
+    public JDA awaitStatus(Status status) throws InterruptedException
+    {
+        Checks.notNull(status, "Status");
+        Checks.check(status.isInit(), "Cannot await the status %s as it is not part of the login cycle!", status);
+        if (getStatus() == Status.CONNECTED)
+            return this;
+        while (!getStatus().isInit()                         // JDA might disconnect while starting
+                || getStatus().ordinal() < status.ordinal()) // Wait until status is bypassed
+        {
+            if (getStatus() == Status.SHUTDOWN)
+                throw new IllegalStateException("Was shutdown trying to await status");
+            Thread.sleep(50);
+        }
+        return this;
     }
 
     @Override
@@ -485,9 +525,10 @@ public class JDAImpl implements JDA
     public void shutdownNow()
     {
         shutdown();
-
-        pool.shutdownNow();
-        getRequester().shutdownNow();
+        if (shutdownRateLimitPool)
+            getRateLimitPool().shutdownNow();
+        if (shutdownCallbackPool)
+            getCallbackPool().shutdownNow();
     }
 
     @Override
@@ -503,13 +544,20 @@ public class JDAImpl implements JDA
         if (audioKeepAlivePool != null)
             audioKeepAlivePool.shutdownNow();
 
-        getClient().shutdown();
+        WebSocketClient client = getClient();
+        if (client != null)
+            client.shutdown();
 
         final long time = 5L;
         final TimeUnit unit = TimeUnit.SECONDS;
-        getRequester().shutdown(time, unit);
-        pool.setKeepAliveTime(time, unit);
-        pool.allowCoreThreadTimeOut(true);
+        getRequester().shutdown();
+        if (shutdownRateLimitPool)
+        {
+            getRateLimitPool().setKeepAliveTime(time, unit);
+            getRateLimitPool().allowCoreThreadTimeOut(true);
+        }
+        if (shutdownCallbackPool)
+            getCallbackPool().shutdown();
 
         if (shutdownHook != null)
         {
@@ -733,25 +781,9 @@ public class JDAImpl implements JDA
         return eventCache;
     }
 
-    public OkHttpClient.Builder getHttpClientBuilder()
+    public OkHttpClient getHttpClient()
     {
-        return httpClientBuilder;
-    }
-
-    private class JDAThreadFactory implements ThreadFactory
-    {
-        @Override
-        public Thread newThread(Runnable r)
-        {
-            final Thread thread = new Thread(() ->
-            {
-                if (contextMap != null)
-                    MDC.setContextMap(contextMap);
-                r.run();
-            }, "JDA-Thread " + getIdentifierString());
-            thread.setDaemon(true);
-            return thread;
-        }
+        return httpClient;
     }
 
     public ScheduledThreadPoolExecutor getAudioKeepAlivePool()
@@ -777,5 +809,35 @@ public class JDAImpl implements JDA
     public void resetGatewayUrl()
     {
         this.gatewayUrl = getGateway();
+    }
+
+    public ScheduledThreadPoolExecutor getRateLimitPool()
+    {
+        return rateLimitPool;
+    }
+
+    public ExecutorService getCallbackPool()
+    {
+        return callbackPool;
+    }
+
+    private class RateLimitThreadFactory implements ThreadFactory
+    {
+        final String identifier;
+        final AtomicInteger threadCount = new AtomicInteger(1);
+
+        public RateLimitThreadFactory()
+        {
+            identifier = getIdentifierString() + " RateLimit-Queue Pool";
+        }
+
+        @Override
+        public Thread newThread(Runnable r)
+        {
+            Thread t = new Thread(r, identifier + " - Thread " + threadCount.getAndIncrement());
+            t.setDaemon(true);
+
+            return t;
+        }
     }
 }

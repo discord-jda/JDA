@@ -460,7 +460,7 @@ public abstract class RestAction<T>
      */
     public ScheduledFuture<T> submitAfter(long delay, TimeUnit unit)
     {
-        return submitAfter(delay, unit, api.pool);
+        return submitAfter(delay, unit, api.getRateLimitPool());
     }
 
     /**
@@ -552,7 +552,7 @@ public abstract class RestAction<T>
      */
     public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit)
     {
-        return queueAfter(delay, unit, api.pool);
+        return queueAfter(delay, unit, api.getRateLimitPool());
     }
 
     /**
@@ -584,7 +584,7 @@ public abstract class RestAction<T>
      */
     public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<? super T> success)
     {
-        return queueAfter(delay, unit, success, api.pool);
+        return queueAfter(delay, unit, success, api.getRateLimitPool());
     }
 
     /**
@@ -617,7 +617,7 @@ public abstract class RestAction<T>
      */
     public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<? super T> success, Consumer<? super Throwable> failure)
     {
-        return queueAfter(delay, unit, success, failure, api.pool);
+        return queueAfter(delay, unit, success, failure, api.getRateLimitPool());
     }
 
     /**

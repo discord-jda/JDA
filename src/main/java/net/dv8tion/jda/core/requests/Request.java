@@ -65,7 +65,7 @@ public class Request<T>
 
     public void onSuccess(T successObj)
     {
-        api.pool.execute(() ->
+        api.getCallbackPool().execute(() ->
         {
             try
             {
@@ -95,7 +95,7 @@ public class Request<T>
 
     public void onFailure(Throwable failException)
     {
-        api.pool.execute(() ->
+        api.getCallbackPool().execute(() ->
         {
             try
             {
