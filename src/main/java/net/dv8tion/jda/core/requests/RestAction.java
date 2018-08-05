@@ -23,13 +23,13 @@ import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.JDALogger;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
-import java.lang.ref.WeakReference;
 import java.util.concurrent.*;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -168,7 +168,7 @@ public abstract class RestAction<T>
 
     protected static boolean passContext = false;
 
-    protected final WeakReference<JDAImpl> api;
+    protected final UpstreamReference<JDAImpl> api;
 
     private final Route.CompiledRoute route;
     private final RequestBody data;
@@ -235,7 +235,7 @@ public abstract class RestAction<T>
     {
         Checks.notNull(api, "api");
 
-        this.api = new WeakReference<>((JDAImpl) api);
+        this.api = new UpstreamReference<>((JDAImpl) api);
         this.route = route;
         this.data = data;
     }

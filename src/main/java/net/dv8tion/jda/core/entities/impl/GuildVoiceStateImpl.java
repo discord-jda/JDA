@@ -20,13 +20,12 @@ import net.dv8tion.jda.core.entities.AudioChannel;
 import net.dv8tion.jda.core.entities.GuildVoiceState;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.VoiceChannel;
-
-import java.lang.ref.WeakReference;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 
 public class GuildVoiceStateImpl implements GuildVoiceState
 {
-    private final WeakReference<GuildImpl> guild;
-    private final WeakReference<Member> member;
+    private final UpstreamReference<GuildImpl> guild;
+    private final UpstreamReference<Member> member;
 
     private VoiceChannel connectedChannel;
     private String sessionId;
@@ -38,8 +37,8 @@ public class GuildVoiceStateImpl implements GuildVoiceState
 
     public GuildVoiceStateImpl(GuildImpl guild, Member member)
     {
-        this.guild = new WeakReference<>(guild);
-        this.member = new WeakReference<>(member);
+        this.guild = new UpstreamReference<>(guild);
+        this.member = new UpstreamReference<>(member);
     }
 
     @Override

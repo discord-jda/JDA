@@ -27,9 +27,9 @@ import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import net.dv8tion.jda.core.utils.cache.impl.SnowflakeCacheViewImpl;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -37,7 +37,7 @@ import java.util.List;
 public class GroupImpl implements Group
 {
     private final long id;
-    private final WeakReference<JDAImpl> api;
+    private final UpstreamReference<JDAImpl> api;
 
     private final SnowflakeCacheViewImpl<User> userCache = new SnowflakeCacheViewImpl<>(User.class, User::getName);
 
@@ -50,7 +50,7 @@ public class GroupImpl implements Group
     public GroupImpl(long id, JDAImpl api)
     {
         this.id = id;
-        this.api = new WeakReference<>(api);
+        this.api = new UpstreamReference<>(api);
     }
 
     @Override

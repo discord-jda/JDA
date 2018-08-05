@@ -39,6 +39,7 @@ import net.dv8tion.jda.core.handle.ReadyHandler;
 import net.dv8tion.jda.core.utils.Helpers;
 import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.json.JSONArray;
@@ -46,7 +47,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
-import java.lang.ref.WeakReference;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -77,13 +77,13 @@ public class EntityBuilder
         richGameFields = Collections.unmodifiableSet(tmp);
     }
 
-    protected final WeakReference<JDAImpl> api;
+    protected final UpstreamReference<JDAImpl> api;
     protected final TLongObjectMap<JSONObject> cachedGuildJsons = MiscUtil.newLongMap();
     protected final TLongObjectMap<Consumer<Guild>> cachedGuildCallbacks = MiscUtil.newLongMap();
 
     public EntityBuilder(JDA api)
     {
-        this.api = new WeakReference<>((JDAImpl) api);
+        this.api = new UpstreamReference<>((JDAImpl) api);
     }
 
     public JDAImpl getJDA()

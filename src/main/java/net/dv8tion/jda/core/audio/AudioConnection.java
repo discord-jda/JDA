@@ -33,12 +33,12 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.utils.JDALogger;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import net.dv8tion.jda.core.utils.tuple.Pair;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import tomp2p.opuswrapper.Opus;
 
-import java.lang.ref.WeakReference;
 import java.net.*;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -65,7 +65,7 @@ public class AudioConnection
     private final String threadIdentifier;
     private final AudioWebSocket webSocket;
     private DatagramSocket udpSocket;
-    private WeakReference<VoiceChannel> channel;
+    private UpstreamReference<VoiceChannel> channel;
     private volatile AudioSendHandler sendHandler = null;
     private volatile AudioReceiveHandler receiveHandler = null;
     private PointerByReference opusEncoder;
@@ -85,9 +85,9 @@ public class AudioConnection
 
     public AudioConnection(AudioWebSocket webSocket, VoiceChannel channel)
     {
-        this.channel = new WeakReference<>(channel);
+        this.channel = new UpstreamReference<>(channel);
         this.webSocket = webSocket;
-        this.webSocket.audioConnection = new WeakReference<>(this);
+        this.webSocket.audioConnection = new UpstreamReference<>(this);
 
         final JDAImpl api = (JDAImpl) channel.getJDA();
         this.threadIdentifier = api.getIdentifierString() + " AudioConnection Guild: " + channel.getGuild().getId();
@@ -167,7 +167,7 @@ public class AudioConnection
 
     public void setChannel(VoiceChannel channel)
     {
-        this.channel = channel == null ? null : new WeakReference<>(channel);
+        this.channel = channel == null ? null : new UpstreamReference<>(channel);
     }
 
     public JDAImpl getJDA()

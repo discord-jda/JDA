@@ -25,14 +25,14 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.MessageAction;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 
 import java.io.InputStream;
-import java.lang.ref.WeakReference;
 
 public class PrivateChannelImpl implements PrivateChannel
 {
     private final long id;
-    private final WeakReference<User> user;
+    private final UpstreamReference<User> user;
 
     private long lastMessageId;
     private Call currentCall = null;
@@ -41,7 +41,7 @@ public class PrivateChannelImpl implements PrivateChannel
     public PrivateChannelImpl(long id, User user)
     {
         this.id = id;
-        this.user = new WeakReference<>(user);
+        this.user = new UpstreamReference<>(user);
     }
 
     @Override

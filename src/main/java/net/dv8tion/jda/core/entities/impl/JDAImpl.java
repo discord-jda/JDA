@@ -40,6 +40,7 @@ import net.dv8tion.jda.core.requests.restaction.GuildAction;
 import net.dv8tion.jda.core.utils.*;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import net.dv8tion.jda.core.utils.cache.impl.AbstractCacheView;
 import net.dv8tion.jda.core.utils.cache.impl.SnowflakeCacheViewImpl;
 import net.dv8tion.jda.core.utils.tuple.Pair;
@@ -49,7 +50,6 @@ import org.slf4j.Logger;
 import org.slf4j.MDC;
 
 import javax.security.auth.login.LoginException;
-import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -92,7 +92,7 @@ public class JDAImpl implements JDA
 
     protected final SessionController sessionController;
 
-    protected WeakReference<WebSocketClient> client;
+    protected UpstreamReference<WebSocketClient> client;
     protected Requester requester;
     protected IEventManager eventManager = new InterfacedEventManager();
     protected IAudioSendFactory audioSendFactory = new DefaultSendFactory();
@@ -178,7 +178,7 @@ public class JDAImpl implements JDA
             LOG.info("Login Successful!");
         }
 
-        client = new WeakReference<>(new WebSocketClient(this, compression));
+        client = new UpstreamReference<>(new WebSocketClient(this, compression));
         // remove our MDC metadata when we exit our code
         if (previousContext != null)
             previousContext.forEach(MDC::put);

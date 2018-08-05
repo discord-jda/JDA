@@ -22,16 +22,16 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.PermissionUtil;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 
 import javax.annotation.Nullable;
 import java.awt.Color;
-import java.lang.ref.WeakReference;
 import java.time.OffsetDateTime;
 import java.util.*;
 
 public class MemberImpl implements Member
 {
-    private final WeakReference<GuildImpl> guild;
+    private final UpstreamReference<GuildImpl> guild;
     private final User user;
     private final Set<Role> roles = new HashSet<>();
     private final GuildVoiceState voiceState;
@@ -43,7 +43,7 @@ public class MemberImpl implements Member
 
     public MemberImpl(GuildImpl guild, User user)
     {
-        this.guild = new WeakReference<>(guild);
+        this.guild = new UpstreamReference<>(guild);
         this.user = user;
         this.voiceState = new GuildVoiceStateImpl(guild, this);
     }

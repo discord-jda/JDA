@@ -27,11 +27,11 @@ import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.impl.ManagerBase;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
-import java.lang.ref.WeakReference;
 
 /**
  * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.core.entities.Guild Guild}.
@@ -74,7 +74,7 @@ public class GuildManager extends ManagerBase
     /** Used to reset the verification level field */
     public static final long VERIFICATION_LEVEL     = 0x400;
 
-    protected final WeakReference<Guild> guild;
+    protected final UpstreamReference<Guild> guild;
 
     protected String name;
     protected String region;
@@ -91,7 +91,7 @@ public class GuildManager extends ManagerBase
     public GuildManager(Guild guild)
     {
         super(guild.getJDA(), Route.Guilds.MODIFY_GUILD.compile(guild.getId()));
-        this.guild = new WeakReference<>(guild);
+        this.guild = new UpstreamReference<>(guild);
         if (isPermissionChecksEnabled())
             checkPermissions();
     }

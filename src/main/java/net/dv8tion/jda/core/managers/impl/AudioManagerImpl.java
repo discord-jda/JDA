@@ -34,8 +34,8 @@ import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.PermissionUtil;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 
-import java.lang.ref.WeakReference;
 import java.util.EnumSet;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -45,11 +45,11 @@ public class AudioManagerImpl implements AudioManager
 
     public final ReentrantLock CONNECTION_LOCK = new ReentrantLock();
 
-    protected final WeakReference<JDAImpl> api;
     protected final ListenerProxy connectionListener = new ListenerProxy();
-    protected final WeakReference<GuildImpl> guild;
+    protected final UpstreamReference<JDAImpl> api;
+    protected final UpstreamReference<GuildImpl> guild;
+    protected UpstreamReference<VoiceChannel> queuedAudioConnection = null;
     protected AudioConnection audioConnection = null;
-    protected WeakReference<VoiceChannel> queuedAudioConnection = null;
 
     protected AudioSendHandler sendHandler;
     protected AudioReceiveHandler receiveHandler;
@@ -63,8 +63,8 @@ public class AudioManagerImpl implements AudioManager
 
     public AudioManagerImpl(GuildImpl guild)
     {
-        this.guild = new WeakReference<>(guild);
-        this.api = new WeakReference<>(guild.getJDA());
+        this.guild = new UpstreamReference<>(guild);
+        this.api = new UpstreamReference<>(guild.getJDA());
     }
 
     public AudioConnection getAudioConnection()
@@ -93,7 +93,7 @@ public class AudioManagerImpl implements AudioManager
         {
             checkChannel(channel, self);
             //Start establishing connection, joining provided channel
-            queuedAudioConnection = new WeakReference<>(channel);
+            queuedAudioConnection = new UpstreamReference<>(channel);
             api.get().getClient().queueAudioConnect(channel);
         }
         else
@@ -318,12 +318,12 @@ public class AudioManagerImpl implements AudioManager
     {
         VoiceChannel queuedChannel = audioConnection.getChannel();
         closeAudioConnection(ConnectionStatus.AUDIO_REGION_CHANGE);
-        this.queuedAudioConnection = new WeakReference<>(queuedChannel);
+        this.queuedAudioConnection = new UpstreamReference<>(queuedChannel);
     }
 
     public void setQueuedAudioConnection(VoiceChannel channel)
     {
-        queuedAudioConnection = channel == null ? null : new WeakReference<>(channel);
+        queuedAudioConnection = channel == null ? null : new UpstreamReference<>(channel);
     }
 
     public void setConnectedChannel(VoiceChannel channel)

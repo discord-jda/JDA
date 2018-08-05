@@ -16,19 +16,18 @@
 package net.dv8tion.jda.core.handle;
 
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import org.json.JSONObject;
-
-import java.lang.ref.WeakReference;
 
 public abstract class SocketHandler
 {
-    protected final WeakReference<JDAImpl> api;
+    protected final UpstreamReference<JDAImpl> api;
     protected long responseNumber;
     protected JSONObject allContent;
 
     public SocketHandler(JDAImpl api)
     {
-        this.api = new WeakReference<>(api);
+        this.api = new UpstreamReference<>(api);
     }
 
 

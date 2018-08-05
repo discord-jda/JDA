@@ -27,11 +27,11 @@ import net.dv8tion.jda.core.managers.impl.ManagerBase;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.PermOverrideData;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
-import java.lang.ref.WeakReference;
 import java.util.Collection;
 
 /**
@@ -71,7 +71,7 @@ public class ChannelManager extends ManagerBase
     /** Used to reset the permission field */
     public static final long PERMISSION = 0x80;
 
-    protected final WeakReference<Channel> channel;
+    protected final UpstreamReference<Channel> channel;
 
     protected String name;
     protected String parent;
@@ -96,7 +96,7 @@ public class ChannelManager extends ManagerBase
     {
         super(channel.getJDA(),
               Route.Channels.MODIFY_CHANNEL.compile(channel.getId()));
-        this.channel = new WeakReference<>(channel);
+        this.channel = new UpstreamReference<>(channel);
         if (isPermissionChecksEnabled())
             checkPermissions();
         this.overridesAdd = new TLongObjectHashMap<>();

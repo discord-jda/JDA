@@ -26,8 +26,8 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 
-import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -39,8 +39,8 @@ import java.util.concurrent.locks.ReentrantLock;
 public class EmoteImpl implements Emote
 {
     private final long id;
-    private final WeakReference<GuildImpl> guild;
-    private final WeakReference<JDAImpl> api;
+    private final UpstreamReference<GuildImpl> guild;
+    private final UpstreamReference<JDAImpl> api;
     private final Set<Role> roles;
 
     private final ReentrantLock mngLock = new ReentrantLock();
@@ -53,15 +53,15 @@ public class EmoteImpl implements Emote
     public EmoteImpl(long id, GuildImpl guild)
     {
         this.id = id;
-        this.guild = new WeakReference<>(guild);
-        this.api = new WeakReference<>(guild.getJDA());
+        this.guild = new UpstreamReference<>(guild);
+        this.api = new UpstreamReference<>(guild.getJDA());
         this.roles = Collections.synchronizedSet(new HashSet<>());
     }
 
     public EmoteImpl(long id, JDAImpl api)
     {
         this.id = id;
-        this.api = new WeakReference<>(api);
+        this.api = new UpstreamReference<>(api);
         this.guild = null;
         this.roles = null;
     }

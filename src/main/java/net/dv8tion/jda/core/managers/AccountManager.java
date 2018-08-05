@@ -24,11 +24,11 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
-import java.lang.ref.WeakReference;
 
 /**
  * Manager providing functionality to update one or more fields for the logged in account.
@@ -58,7 +58,7 @@ public class AccountManager extends ManagerBase
     /** Used to reset the password field */
     public static final long PASSWORD = 0x8;
 
-    protected final WeakReference<SelfUser> selfUser;
+    protected final UpstreamReference<SelfUser> selfUser;
 
     protected String currentPassword;
 
@@ -76,7 +76,7 @@ public class AccountManager extends ManagerBase
     public AccountManager(SelfUser selfUser)
     {
         super(selfUser.getJDA(), Route.Self.MODIFY_SELF.compile());
-        this.selfUser = new WeakReference<>(selfUser);
+        this.selfUser = new UpstreamReference<>(selfUser);
     }
 
     /**

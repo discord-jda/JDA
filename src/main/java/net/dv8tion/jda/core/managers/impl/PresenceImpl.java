@@ -23,9 +23,8 @@ import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import org.json.JSONObject;
-
-import java.lang.ref.WeakReference;
 
 /**
  * The Presence associated with the provided JDA instance
@@ -36,7 +35,7 @@ import java.lang.ref.WeakReference;
 public class PresenceImpl implements Presence
 {
 
-    private final WeakReference<JDAImpl> api;
+    private final UpstreamReference<JDAImpl> api;
     private boolean idle = false;
     private Game game = null;
     private OnlineStatus status = OnlineStatus.ONLINE;
@@ -49,7 +48,7 @@ public class PresenceImpl implements Presence
      */
     public PresenceImpl(JDAImpl jda)
     {
-        this.api = new WeakReference<>(jda);
+        this.api = new UpstreamReference<>(jda);
     }
 
 

@@ -32,9 +32,9 @@ import net.dv8tion.jda.core.requests.restaction.RoleAction;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.PermissionUtil;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 
 import java.awt.Color;
-import java.lang.ref.WeakReference;
 import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.Collections;
@@ -44,7 +44,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class RoleImpl implements Role
 {
     private final long id;
-    private final WeakReference<Guild> guild;
+    private final UpstreamReference<Guild> guild;
 
     private final ReentrantLock mngLock = new ReentrantLock();
     private volatile RoleManager manager;
@@ -60,7 +60,7 @@ public class RoleImpl implements Role
     public RoleImpl(long id, Guild guild)
     {
         this.id = id;
-        this.guild = new WeakReference<>(guild);
+        this.guild = new UpstreamReference<>(guild);
     }
 
     @Override

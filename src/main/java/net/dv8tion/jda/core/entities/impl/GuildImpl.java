@@ -41,6 +41,7 @@ import net.dv8tion.jda.core.utils.Helpers;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.cache.MemberCacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import net.dv8tion.jda.core.utils.cache.impl.MemberCacheViewImpl;
 import net.dv8tion.jda.core.utils.cache.impl.SnowflakeCacheViewImpl;
 import net.dv8tion.jda.core.utils.cache.impl.SortedSnowflakeCacheView;
@@ -50,7 +51,6 @@ import org.json.JSONObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.lang.ref.WeakReference;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -60,7 +60,7 @@ import java.util.stream.Collectors;
 public class GuildImpl implements Guild
 {
     private final long id;
-    private final WeakReference<JDAImpl> api;
+    private final UpstreamReference<JDAImpl> api;
 
     private final SortedSnowflakeCacheView<Category> categoryCache = new SortedSnowflakeCacheView<>(Category.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheView<VoiceChannel> voiceChannelCache = new SortedSnowflakeCacheView<>(VoiceChannel.class, Channel::getName, Comparator.naturalOrder());
@@ -95,7 +95,7 @@ public class GuildImpl implements Guild
     public GuildImpl(JDAImpl api, long id)
     {
         this.id = id;
-        this.api = new WeakReference<>(api);
+        this.api = new UpstreamReference<>(api);
     }
 
     @Override

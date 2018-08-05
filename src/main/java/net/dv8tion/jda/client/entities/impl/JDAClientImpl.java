@@ -35,10 +35,10 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import net.dv8tion.jda.core.utils.cache.impl.SnowflakeCacheViewImpl;
 import org.json.JSONArray;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
 
 public class JDAClientImpl implements JDAClient
 {
-    protected final WeakReference<JDAImpl> api;
+    protected final UpstreamReference<JDAImpl> api;
     protected final SnowflakeCacheViewImpl<Group> groups = new SnowflakeCacheViewImpl<>(Group.class, Group::getName);
     protected final TLongObjectMap<Relationship> relationships = MiscUtil.newLongMap();
     protected final TLongObjectMap<CallUser> callUsers = MiscUtil.newLongMap();
@@ -54,7 +54,7 @@ public class JDAClientImpl implements JDAClient
 
     public JDAClientImpl(JDAImpl api)
     {
-        this.api = new WeakReference<>(api);
+        this.api = new UpstreamReference<>(api);
         this.userSettings = new UserSettingsImpl(api);
     }
 

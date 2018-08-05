@@ -31,9 +31,9 @@ import net.dv8tion.jda.core.requests.restaction.InviteAction;
 import net.dv8tion.jda.core.requests.restaction.PermissionOverrideAction;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import org.json.JSONArray;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> implements Channel
 {
     protected final long id;
-    protected final WeakReference<GuildImpl> guild;
+    protected final UpstreamReference<GuildImpl> guild;
 
     protected final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
 
@@ -58,7 +58,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     public AbstractChannelImpl(long id, GuildImpl guild)
     {
         this.id = id;
-        this.guild = new WeakReference<>(guild);
+        this.guild = new UpstreamReference<>(guild);
     }
 
     @Override

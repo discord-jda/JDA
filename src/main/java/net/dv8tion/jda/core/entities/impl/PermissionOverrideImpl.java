@@ -26,8 +26,8 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 
-import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
@@ -35,7 +35,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class PermissionOverrideImpl implements PermissionOverride
 {
     private final long id;
-    private final WeakReference<Channel> channel;
+    private final UpstreamReference<Channel> channel;
     private final IPermissionHolder permissionHolder;
 
     protected final ReentrantLock mngLock = new ReentrantLock();
@@ -46,7 +46,7 @@ public class PermissionOverrideImpl implements PermissionOverride
 
     public PermissionOverrideImpl(Channel channel, long id, IPermissionHolder permissionHolder)
     {
-        this.channel = new WeakReference<>(channel);
+        this.channel = new UpstreamReference<>(channel);
         this.id = id;
         this.permissionHolder = permissionHolder;
     }

@@ -24,9 +24,9 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import org.json.JSONObject;
 
-import java.lang.ref.WeakReference;
 import java.util.FormattableFlags;
 import java.util.Formatter;
 import java.util.List;
@@ -34,7 +34,7 @@ import java.util.List;
 public class UserImpl implements User
 {
     protected final long id;
-    protected final WeakReference<JDAImpl> api;
+    protected final UpstreamReference<JDAImpl> api;
 
     protected short discriminator;
     protected String name;
@@ -46,7 +46,7 @@ public class UserImpl implements User
     public UserImpl(long id, JDAImpl api)
     {
         this.id = id;
-        this.api = new WeakReference<>(api);
+        this.api = new UpstreamReference<>(api);
     }
 
     @Override

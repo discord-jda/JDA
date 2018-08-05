@@ -26,12 +26,12 @@ import net.dv8tion.jda.core.managers.impl.ManagerBase;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.PermissionUtil;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 import java.awt.Color;
-import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -65,7 +65,7 @@ public class RoleManager extends ManagerBase
     /** Used to reset the mentionable field */
     public static final long MENTIONABLE = 0x10;
 
-    protected final WeakReference<Role> role;
+    protected final UpstreamReference<Role> role;
 
     protected String name;
     protected int color;
@@ -82,7 +82,7 @@ public class RoleManager extends ManagerBase
     public RoleManager(Role role)
     {
         super(role.getJDA(), Route.Roles.MODIFY_ROLE.compile(role.getGuild().getId(), role.getId()));
-        this.role = new WeakReference<>(role);
+        this.role = new UpstreamReference<>(role);
         if (isPermissionChecksEnabled())
             checkPermissions();
     }

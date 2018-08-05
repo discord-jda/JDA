@@ -40,11 +40,11 @@ import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.Helpers;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.PermissionUtil;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
-import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -57,7 +57,7 @@ import java.util.stream.Stream;
  */
 public class GuildController
 {
-    protected final WeakReference<GuildImpl> guild;
+    protected final UpstreamReference<GuildImpl> guild;
 
     /**
      * Creates a new GuildController instance
@@ -69,7 +69,7 @@ public class GuildController
      */
     public GuildController(Guild guild)
     {
-        this.guild = new WeakReference<>((GuildImpl) guild);
+        this.guild = new UpstreamReference<>((GuildImpl) guild);
     }
 
     /**

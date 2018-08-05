@@ -24,11 +24,11 @@ import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.impl.ManagerBase;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
-import java.lang.ref.WeakReference;
 import java.util.Collection;
 
 /**
@@ -56,7 +56,7 @@ public class PermOverrideManager extends ManagerBase
     /** Used to reset <b>all</b> permissions to their original value */
     public static final long PERMISSIONS = 0x3;
 
-    protected final WeakReference<PermissionOverride> override;
+    protected final UpstreamReference<PermissionOverride> override;
 
     protected long allowed;
     protected long denied;
@@ -74,7 +74,7 @@ public class PermOverrideManager extends ManagerBase
                   override.getChannel().getId(),
                   override.isMemberOverride() ? override.getMember().getUser().getId()
                                               : override.getRole().getId()));
-        this.override = new WeakReference<>(override);
+        this.override = new UpstreamReference<>(override);
         this.allowed = override.getAllowedRaw();
         this.denied = override.getDeniedRaw();
         if (isPermissionChecksEnabled())

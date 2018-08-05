@@ -27,13 +27,13 @@ import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.net.*;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -53,12 +53,12 @@ public class AudioWebSocket extends WebSocketAdapter
 
     protected final ConnectionListener listener;
     protected final ScheduledThreadPoolExecutor keepAlivePool;
-    protected WeakReference<AudioConnection> audioConnection;
+    protected UpstreamReference<AudioConnection> audioConnection;
     protected volatile ConnectionStatus connectionStatus = ConnectionStatus.NOT_CONNECTED;
     protected volatile AudioEncryption encryption;
 
-    private final WeakReference<JDAImpl> api;
-    private final WeakReference<Guild> guild;
+    private final UpstreamReference<JDAImpl> api;
+    private final UpstreamReference<Guild> guild;
     private final String endpoint;
     private final String sessionId;
     private final String token;
@@ -82,8 +82,8 @@ public class AudioWebSocket extends WebSocketAdapter
     {
         this.listener = listener;
         this.endpoint = endpoint;
-        this.api = new WeakReference<>(api);
-        this.guild = new WeakReference<>(guild);
+        this.api = new UpstreamReference<>(api);
+        this.guild = new UpstreamReference<>(guild);
         this.sessionId = sessionId;
         this.token = token;
         this.shouldReconnect = shouldReconnect;

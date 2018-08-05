@@ -25,11 +25,11 @@ import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.impl.ManagerBase;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
-import java.lang.ref.WeakReference;
 
 /**
  * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.core.entities.Webhook Webhook}.
@@ -56,7 +56,7 @@ public class WebhookManager extends ManagerBase
     /** Used to reset the avatar field */
     public static final long AVATAR  = 0x4;
 
-    protected final WeakReference<Webhook> webhook;
+    protected final UpstreamReference<Webhook> webhook;
 
     protected String name;
     protected String channel;
@@ -71,7 +71,7 @@ public class WebhookManager extends ManagerBase
     public WebhookManager(Webhook webhook)
     {
         super(webhook.getJDA(), Route.Webhooks.MODIFY_WEBHOOK.compile(webhook.getId()));
-        this.webhook = new WeakReference<>(webhook);
+        this.webhook = new UpstreamReference<>(webhook);
         if (isPermissionChecksEnabled())
             checkPermissions();
     }

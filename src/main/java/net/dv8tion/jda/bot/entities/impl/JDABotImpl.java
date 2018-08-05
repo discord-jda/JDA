@@ -26,19 +26,19 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 
-import java.lang.ref.WeakReference;
 import java.util.Collection;
 
 public class JDABotImpl implements JDABot
 {
-    protected final WeakReference<JDAImpl> api;
+    protected final UpstreamReference<JDAImpl> api;
     protected String clientId = null;
     protected ShardManager shardManager = null;
 
     public JDABotImpl(JDAImpl api)
     {
-        this.api = new WeakReference<>(api);
+        this.api = new UpstreamReference<>(api);
     }
 
     @Override
