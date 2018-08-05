@@ -193,6 +193,7 @@ public class ClientRateLimiter extends RateLimiter
         @Override
         public void run()
         {
+            requester.setContext();
             try
             {
                 synchronized (requests)
