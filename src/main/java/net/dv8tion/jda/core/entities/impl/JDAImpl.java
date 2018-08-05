@@ -661,7 +661,10 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public RestAction<Webhook> getWebhookById(String webhookId){
+    public RestAction<Webhook> getWebhookById(String webhookId)
+    {
+        Checks.isSnowflake(webhookId, "Webhook ID");
+
         Route.CompiledRoute route = Route.Webhooks.GET_WEBHOOK.compile(webhookId);
 
         return new RestAction<Webhook>(this, route)
