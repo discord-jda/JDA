@@ -77,6 +77,7 @@ public class AudioConnection
     private volatile boolean couldReceive = false;
     private volatile boolean speaking = false;      //Also acts as "couldProvide"
 
+    private volatile int speakingMode = SpeakingMode.VOICE.getRaw();
     private volatile int silenceCounter = 0;
     private boolean sentSilenceOnConnect = false;
     private final byte[] silenceBytes = new byte[] {(byte)0xF8, (byte)0xFF, (byte)0xFE};
@@ -152,6 +153,14 @@ public class AudioConnection
     {
         this.receiveHandler = handler;
         setupReceiveSystem();
+    }
+
+    public void setSpeakingMode(EnumSet<SpeakingMode> mode)
+    {
+        int raw = SpeakingMode.getRaw(mode);
+        if (raw != this.speakingMode && speaking)
+            setSpeaking(raw);
+        this.speakingMode = raw;
     }
 
     public void setQueueTimeout(long queueTimeout)
@@ -630,9 +639,6 @@ public class AudioConnection
                 cond: if (sentSilenceOnConnect && sendHandler != null && sendHandler.canProvide())
                 {
                     silenceCounter = -1;
-                    int flags = SpeakingMode.getRaw(sendHandler.provideSpeakingModes());
-                    if ((flags & SpeakingMode.MASK) == 0) // we have to set a speaking mode, 0 is not acceptable here
-                        flags = SpeakingMode.VOICE.getRaw();
                     byte[] rawAudio = sendHandler.provide20MsAudio();
                     if (rawAudio == null || rawAudio.length == 0)
                     {
@@ -650,7 +656,7 @@ public class AudioConnection
 
                         nextPacket = getPacketData(rawAudio);
                         if (!speaking)
-                            setSpeaking(flags);
+                            setSpeaking(speakingMode);
 
                         if (seq + 1 > Character.MAX_VALUE)
                             seq = 0;
