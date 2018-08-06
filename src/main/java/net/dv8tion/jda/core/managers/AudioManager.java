@@ -24,9 +24,11 @@ import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.JDALogger;
 import org.slf4j.Logger;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 
@@ -93,8 +95,28 @@ public interface AudioManager
      *         If the provided collection is null or empty
      *
      * @see    #getSpeakingMode()
+     * @see    #setSpeakingMode(SpeakingMode...)
      */
     void setSpeakingMode(Collection<SpeakingMode> mode);
+
+    /**
+     * The {@link SpeakingMode} that should be used when sending audio via
+     * the provided {@link AudioSendHandler} from {@link #setSendingHandler(AudioSendHandler)}.
+     * By default this will use {@link SpeakingMode#VOICE}.
+     *
+     * @param  mode
+     *         The speaking modes
+     *
+     * @throws IllegalArgumentException
+     *         If the provided array is null or empty
+     *
+     * @see    #getSpeakingMode()
+     */
+    default void setSpeakingMode(SpeakingMode... mode)
+    {
+        Checks.notNull(mode, "Speaking Mode");
+        setSpeakingMode(Arrays.asList(mode));
+    }
 
     /**
      * The {@link SpeakingMode} that should be used when sending audio via
