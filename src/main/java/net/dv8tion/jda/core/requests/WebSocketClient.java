@@ -1036,7 +1036,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             LOG.error("Got an unexpected error. Please redirect following message to the devs:\n\t{} -> {}", type, content, ex);
         }
 
-        if (responseTotal % 100 == 0)
+        if (responseTotal % EventCache.TIMEOUT_AMOUNT == 0)
             ((JDAImpl) getJDA()).getEventCache().timeout(responseTotal);
     }
 
