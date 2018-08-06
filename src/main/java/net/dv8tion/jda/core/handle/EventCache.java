@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.core.handle;
 
+import gnu.trove.iterator.TLongObjectIterator;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.core.utils.CacheConsumer;
@@ -26,11 +27,48 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class EventCache
 {
     public static final Logger LOG = JDALogger.getLog(EventCache.class);
+    /** Sequence difference after which events will be removed from cache */
+    public static final long TIMEOUT_AMOUNT = 100;
     private final Map<Type, TLongObjectMap<List<CacheNode>>> eventCache = new HashMap<>();
+
+    public synchronized void timeout(final long responseTotal)
+    {
+        if (eventCache.isEmpty())
+            return;
+        AtomicInteger count = new AtomicInteger();
+        eventCache.forEach((type, map) ->
+        {
+            if (map.isEmpty())
+                return;
+            TLongObjectIterator<List<CacheNode>> iterator = map.iterator();
+            while (iterator.hasNext())
+            {
+                iterator.advance();
+                List<CacheNode> cache = iterator.value();
+                //Remove when this node is more than 100 events ago
+                cache.removeIf(node ->
+                {
+                    boolean remove = responseTotal - node.responseTotal > TIMEOUT_AMOUNT;
+                    if (remove)
+                    {
+                        count.incrementAndGet();
+                        LOG.trace("Removing {} from cache with payload {}", type, node.event);
+                    }
+                    return remove;
+                });
+                if (cache.isEmpty())
+                    iterator.remove();
+            }
+        });
+        int amount = count.get();
+        if (amount > 0)
+            LOG.debug("Removed {} events from cache that were too old to be recycled", amount);
+    }
 
     public synchronized void cache(Type type, long triggerId, long responseTotal, JSONObject event, CacheConsumer handler)
     {
