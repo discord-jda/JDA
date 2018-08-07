@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.audio.AudioConnection;
 import net.dv8tion.jda.core.audio.AudioReceiveHandler;
 import net.dv8tion.jda.core.audio.AudioSendHandler;
+import net.dv8tion.jda.core.audio.SpeakingMode;
 import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.audio.hooks.ListenerProxy;
@@ -35,6 +36,7 @@ import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -49,6 +51,7 @@ public class AudioManagerImpl implements AudioManager
     protected final GuildImpl guild;
     protected AudioConnection audioConnection = null;
     protected VoiceChannel queuedAudioConnection = null;
+    protected EnumSet<SpeakingMode> speakingModes = EnumSet.of(SpeakingMode.VOICE);
 
     protected AudioSendHandler sendHandler;
     protected AudioReceiveHandler receiveHandler;
@@ -150,6 +153,21 @@ public class AudioManagerImpl implements AudioManager
                 this.api.getClient().queueAudioDisconnect(guild);
             this.audioConnection = null;
         });
+    }
+
+    @Override
+    public void setSpeakingMode(Collection<SpeakingMode> mode)
+    {
+        Checks.notEmpty(mode, "Speaking Mode");
+        this.speakingModes = EnumSet.copyOf(mode);
+        if (audioConnection != null)
+            audioConnection.setSpeakingMode(this.speakingModes);
+    }
+
+    @Override
+    public EnumSet<SpeakingMode> getSpeakingMode()
+    {
+        return EnumSet.copyOf(this.speakingModes);
     }
 
     @Override
@@ -311,6 +329,7 @@ public class AudioManagerImpl implements AudioManager
         audioConnection.setSendingHandler(sendHandler);
         audioConnection.setReceivingHandler(receiveHandler);
         audioConnection.setQueueTimeout(queueTimeout);
+        audioConnection.setSpeakingMode(speakingModes);
     }
 
     public void prepareForRegionChange()
