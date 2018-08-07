@@ -64,7 +64,7 @@ public class ReadyListener implements EventListener
             .setToken("token")
             .addEventListener(new ReadyListener())
             .build();
-        
+
         // optionally block until JDA is ready
         jda.awaitReady();
     }
@@ -122,7 +122,7 @@ To use sharding in JDA you will need to use `JDABuilder.useSharding(int shardId,
 has the ID 0. The **shardTotal** is the total amount of shards (not 0-based) which can be seen similar to the length of an array, the last shard has the ID of
 `shardTotal - 1`.
 
-The [`SessionController`](https://home.dv8tion.net:8080/job/JDA/javadoc/net/dv8tion/jda/core/utils/SessionController.html) is a tool of the JDABuilder
+The [`SessionController`](http://home.dv8tion.net:8080/job/JDA/javadoc/net/dv8tion/jda/core/utils/SessionController.html) is a tool of the JDABuilder
 that allows to control state and behaviour between shards (sessions). When using multiple builders to build shards you have to create one instance
 of this controller and add the same instance to each builder: `builder.setSessionController(controller)`
 
