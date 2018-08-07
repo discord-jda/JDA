@@ -78,6 +78,7 @@ public class AudioConnection
     private volatile boolean couldReceive = false;
     private volatile boolean speaking = false;      //Also acts as "couldProvide"
 
+    private volatile int speakingMode = SpeakingMode.VOICE.getRaw();
     private volatile int silenceCounter = 0;
     private boolean sentSilenceOnConnect = false;
     private final byte[] silenceBytes = new byte[] {(byte)0xF8, (byte)0xFF, (byte)0xFE};
@@ -153,6 +154,14 @@ public class AudioConnection
     {
         this.receiveHandler = handler;
         setupReceiveSystem();
+    }
+
+    public void setSpeakingMode(EnumSet<SpeakingMode> mode)
+    {
+        int raw = SpeakingMode.getRaw(mode);
+        if (raw != this.speakingMode && speaking)
+            setSpeaking(raw);
+        this.speakingMode = raw;
     }
 
     public void setQueueTimeout(long queueTimeout)
@@ -553,15 +562,15 @@ public class AudioConnection
         return audio;
     }
 
-    private void setSpeaking(boolean isSpeaking)
+    private void setSpeaking(int raw)
     {
-        this.speaking = isSpeaking;
+        this.speaking = raw != 0;
         JSONObject obj = new JSONObject()
-                .put("speaking", isSpeaking ? 1 : 0)
+                .put("speaking", raw)
                 .put("ssrc", webSocket.getSSRC())
                 .put("delay", 0);
         webSocket.send(VoiceCode.USER_SPEAKING_UPDATE, obj);
-        if (!isSpeaking)
+        if (raw == 0)
             sendSilentPackets();
     }
 
@@ -635,7 +644,7 @@ public class AudioConnection
                     if (rawAudio == null || rawAudio.length == 0)
                     {
                         if (speaking && changeTalking)
-                            setSpeaking(false);
+                            setSpeaking(0);
                     }
                     else
                     {
@@ -648,7 +657,7 @@ public class AudioConnection
 
                         nextPacket = getPacketData(rawAudio);
                         if (!speaking)
-                            setSpeaking(true);
+                            setSpeaking(speakingMode);
 
                         if (seq + 1 > Character.MAX_VALUE)
                             seq = 0;
@@ -672,7 +681,7 @@ public class AudioConnection
                 }
                 else if (speaking && changeTalking)
                 {
-                    setSpeaking(false);
+                    setSpeaking(0);
                 }
             }
             catch (Exception e)

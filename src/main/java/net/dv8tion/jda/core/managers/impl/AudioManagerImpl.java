@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.audio.AudioConnection;
 import net.dv8tion.jda.core.audio.AudioReceiveHandler;
 import net.dv8tion.jda.core.audio.AudioSendHandler;
+import net.dv8tion.jda.core.audio.SpeakingMode;
 import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.audio.hooks.ListenerProxy;
@@ -36,6 +37,7 @@ import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -45,11 +47,14 @@ public class AudioManagerImpl implements AudioManager
 
     public final ReentrantLock CONNECTION_LOCK = new ReentrantLock();
 
+    protected final JDAImpl api;
     protected final ListenerProxy connectionListener = new ListenerProxy();
     protected final UpstreamReference<JDAImpl> api;
     protected final UpstreamReference<GuildImpl> guild;
     protected UpstreamReference<VoiceChannel> queuedAudioConnection = null;
     protected AudioConnection audioConnection = null;
+    protected VoiceChannel queuedAudioConnection = null;
+    protected EnumSet<SpeakingMode> speakingModes = EnumSet.of(SpeakingMode.VOICE);
 
     protected AudioSendHandler sendHandler;
     protected AudioReceiveHandler receiveHandler;
@@ -151,6 +156,21 @@ public class AudioManagerImpl implements AudioManager
                 this.api.get().getClient().queueAudioDisconnect(getGuild());
             this.audioConnection = null;
         });
+    }
+
+    @Override
+    public void setSpeakingMode(Collection<SpeakingMode> mode)
+    {
+        Checks.notEmpty(mode, "Speaking Mode");
+        this.speakingModes = EnumSet.copyOf(mode);
+        if (audioConnection != null)
+            audioConnection.setSpeakingMode(this.speakingModes);
+    }
+
+    @Override
+    public EnumSet<SpeakingMode> getSpeakingMode()
+    {
+        return EnumSet.copyOf(this.speakingModes);
     }
 
     @Override
@@ -312,6 +332,7 @@ public class AudioManagerImpl implements AudioManager
         audioConnection.setSendingHandler(sendHandler);
         audioConnection.setReceivingHandler(receiveHandler);
         audioConnection.setQueueTimeout(queueTimeout);
+        audioConnection.setSpeakingMode(speakingModes);
     }
 
     public void prepareForRegionChange()

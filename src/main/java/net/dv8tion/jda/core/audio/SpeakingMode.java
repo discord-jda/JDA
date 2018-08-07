@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.audio;
 
+import java.util.Collection;
 import java.util.EnumSet;
 
 /**
@@ -23,7 +24,9 @@ import java.util.EnumSet;
  */
 public enum SpeakingMode
 {
-    VOICE(1), SOUNDSHARE(2);
+    VOICE(1), SOUNDSHARE(2), PRIORITY(4);
+
+    static final int MASK = getRaw(values());
 
     private final int raw;
 
@@ -81,5 +84,24 @@ public enum SpeakingMode
         for (SpeakingMode m : modes)
             mask |= m.raw;
         return mask;
+    }
+
+    /**
+     * Converts the given speaking modes into raw its bitmast.
+     * This is only useful for sending speaking updates.
+     *
+     * @param  modes
+     *         The modes
+     *
+     * @return The bitmask for the provided speaking modes
+     */
+    public static int getRaw(Collection<SpeakingMode> modes)
+    {
+        if (modes == null)
+            return 0;
+        int raw = 0;
+        for (SpeakingMode mode : modes)
+            raw |= mode.getRaw();
+        return raw;
     }
 }
