@@ -687,7 +687,7 @@ public class JDAImpl implements JDA
                 }
 
                 JSONObject object = response.getObject();
-                EntityBuilder builder = api.getEntityBuilder();
+                EntityBuilder builder = api.get().getEntityBuilder();
                 Webhook webhook = builder.createWebhook(object);
 
                 request.onSuccess(webhook);

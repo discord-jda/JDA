@@ -47,13 +47,11 @@ public class AudioManagerImpl implements AudioManager
 
     public final ReentrantLock CONNECTION_LOCK = new ReentrantLock();
 
-    protected final JDAImpl api;
     protected final ListenerProxy connectionListener = new ListenerProxy();
     protected final UpstreamReference<JDAImpl> api;
     protected final UpstreamReference<GuildImpl> guild;
     protected UpstreamReference<VoiceChannel> queuedAudioConnection = null;
     protected AudioConnection audioConnection = null;
-    protected VoiceChannel queuedAudioConnection = null;
     protected EnumSet<SpeakingMode> speakingModes = EnumSet.of(SpeakingMode.VOICE);
 
     protected AudioSendHandler sendHandler;
