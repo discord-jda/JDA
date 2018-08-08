@@ -121,6 +121,8 @@ public class EntityBuilder
 
     private void createGuildEmotePass(GuildImpl guildObj, JSONArray array)
     {
+        if (!api.isCacheFlagSet(CacheFlag.EMOTE))
+            return;
         TLongObjectMap<Emote> emoteMap = guildObj.getEmoteMap();
         for (int i = 0; i < array.length(); i++)
         {

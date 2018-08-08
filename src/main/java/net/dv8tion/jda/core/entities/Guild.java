@@ -808,6 +808,7 @@ public interface Guild extends ISnowflake
      * one provided.
      * <br>If there is no {@link net.dv8tion.jda.core.entities.Emote Emote} with an id that matches the provided
      * one, then this returns {@code null}.
+     * <br>This will be null if {@link net.dv8tion.jda.core.utils.cache.CacheFlag#EMOTE} is disabled.
      *
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.core.entities.Emote Emote}!</b>
      *
@@ -829,6 +830,7 @@ public interface Guild extends ISnowflake
      * one provided.
      * <br>If there is no {@link net.dv8tion.jda.core.entities.Emote Emote} with an id that matches the provided
      * one, then this returns {@code null}.
+     * <br>This will be null if {@link net.dv8tion.jda.core.utils.cache.CacheFlag#EMOTE} is disabled.
      *
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.core.entities.Emote Emote}!</b>
      *
@@ -859,6 +861,7 @@ public interface Guild extends ISnowflake
      * Gets a list of all {@link net.dv8tion.jda.core.entities.Emote Emotes} in this Guild that have the same
      * name as the one provided.
      * <br>If there are no {@link net.dv8tion.jda.core.entities.Emote Emotes} with the provided name, then this returns an empty list.
+     * <br>This will be empty if {@link net.dv8tion.jda.core.utils.cache.CacheFlag#EMOTE} is disabled.
      *
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.core.entities.Emote Emote}!</b>
      *
@@ -877,6 +880,7 @@ public interface Guild extends ISnowflake
     /**
      * {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
      * all cached {@link net.dv8tion.jda.core.entities.Emote Emotes} of this Guild.
+     * <br>This will be empty if {@link net.dv8tion.jda.core.utils.cache.CacheFlag#EMOTE} is disabled.
      *
      * @return {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */

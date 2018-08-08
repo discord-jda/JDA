@@ -100,11 +100,16 @@ public class JDABuilder
 
     /**
      * Flags used to enable selective parts of the JDA cache to reduce the runtime memory footprint.
+     * <br><b>It is highly recommended to use {@link #setDisabledCacheFlags(EnumSet)} instead
+     * for backwards compatibility</b>. We might add more flags in the future which you then effectively disable
+     * when updating and not changing your setting here.
      *
      * @param  flags
      *         EnumSet containing the flags for cache services that should be <b>enabled</b>
      *
      * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @see    #setDisabledCacheFlags(EnumSet)
      */
     public JDABuilder setEnabledCacheFlags(EnumSet<CacheFlag> flags)
     {

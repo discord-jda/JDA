@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.utils.cache;
 
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 
 /**
@@ -31,5 +32,9 @@ public enum CacheFlag
      * Enables cache for {@link Member#getVoiceState()}
      * <br>This will always be cached for self member.
      */
-    VOICE_STATE
+    VOICE_STATE,
+    /**
+     * Enables cache for {@link Guild#getEmoteCache()}
+     */
+    EMOTE
 }
