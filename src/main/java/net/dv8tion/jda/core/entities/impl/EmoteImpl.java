@@ -19,9 +19,10 @@ package net.dv8tion.jda.core.entities.impl;
 import net.dv8tion.jda.client.managers.EmoteManager;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.ListedEmote;
 import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
@@ -37,12 +38,13 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * @since  2.2
  */
-public class EmoteImpl implements Emote
+public class EmoteImpl implements ListedEmote
 {
     private final long id;
     private final GuildImpl guild;
     private final JDAImpl api;
     private final Set<Role> roles;
+    private final boolean fake;
 
     private final ReentrantLock mngLock = new ReentrantLock();
     private volatile EmoteManager manager = null;
@@ -50,13 +52,20 @@ public class EmoteImpl implements Emote
     private boolean managed = false;
     private boolean animated = false;
     private String name;
+    private User user;
 
     public EmoteImpl(long id, GuildImpl guild)
+    {
+        this(id, guild, false);
+    }
+
+    public EmoteImpl(long id, GuildImpl guild, boolean fake)
     {
         this.id = id;
         this.guild = guild;
         this.api = guild.getJDA();
         this.roles = Collections.synchronizedSet(new HashSet<>());
+        this.fake = false;
     }
 
     public EmoteImpl(long id, JDAImpl api)
@@ -65,6 +74,7 @@ public class EmoteImpl implements Emote
         this.api = api;
         this.guild = null;
         this.roles = null;
+        this.fake = true;
     }
 
     @Override
@@ -96,7 +106,7 @@ public class EmoteImpl implements Emote
     @Override
     public boolean isFake()
     {
-        return guild == null;
+        return fake;
     }
 
     @Override
@@ -109,6 +119,12 @@ public class EmoteImpl implements Emote
     public JDA getJDA()
     {
         return api;
+    }
+
+    @Override
+    public User getUser()
+    {
+        return user;
     }
 
     @Override
@@ -174,6 +190,12 @@ public class EmoteImpl implements Emote
     public EmoteImpl setManaged(boolean val)
     {
         this.managed = val;
+        return this;
+    }
+
+    public EmoteImpl setUser(User user)
+    {
+        this.user = user;
         return this;
     }
 

@@ -699,6 +699,25 @@ public class EntityBuilder
             largeImageKey, largeImageText, smallImageKey, smallImageText);
     }
 
+    public EmoteImpl createEmote(GuildImpl guildObj, JSONObject json, boolean fake)
+    {
+        JSONArray emoteRoles = json.isNull("roles") ? new JSONArray() : json.getJSONArray("roles");
+        final long emoteId = json.getLong("id");
+        final User user = json.isNull("user") ? null : createFakeUser(json.getJSONObject("user"), false);
+        EmoteImpl emoteObj = (EmoteImpl) guildObj.getEmoteById(emoteId);
+        if (emoteObj == null)
+            emoteObj = new EmoteImpl(emoteId, guildObj, fake);
+        Set<Role> roleSet = emoteObj.getRoleSet();
+
+        for (int j = 0; j < emoteRoles.length(); j++)
+            roleSet.add(guildObj.getRoleById(emoteRoles.getString(j)));
+        return emoteObj
+                .setUser(user)
+                .setName(json.optString("name"))
+                .setAnimated(json.optBoolean("animated"))
+                .setManaged(Helpers.optBoolean(json, "managed"));
+    }
+
     public Category createCategory(JSONObject json, long guildId)
     {
         return createCategory(json, guildId, true);

@@ -860,6 +860,38 @@ public interface Guild extends ISnowflake
     SnowflakeCacheView<Emote> getEmoteCache();
 
     /**
+     * Retrieves a list of emotes together with their respective creators.
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: List of {@link net.dv8tion.jda.core.entities.ListedEmote ListedEmote}
+     */
+    RestAction<List<ListedEmote>> retrieveEmotes();
+
+    /**
+     * Retrieves a listed emote together with its respective creators.
+     *
+     * @param  id
+     *         The emote id
+     * @throws IllegalArgumentException
+     *         If the provided id is not a valid snowflake
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.ListedEmote ListedEmote}
+     */
+    RestAction<ListedEmote> retrieveEmoteById(String id);
+
+    /**
+     * Retrieves a listed emote together with its respective creators.
+     *
+     * @param  id
+     *         The emote id
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.ListedEmote ListedEmote}
+     */
+    default RestAction<ListedEmote> retrieveEmoteById(long id)
+    {
+        return retrieveEmoteById(Long.toUnsignedString(id));
+    }
+
+    /**
      * Gets an unmodifiable list of the currently banned {@link net.dv8tion.jda.core.entities.User Users}.
      * <br>If you wish to ban or unban a user, please {@link GuildController#ban(User, int) GuildController.ban(User, int)} or
      * {@link GuildController#unban(User) GuildController.ban(User)}.
