@@ -49,6 +49,7 @@ public class EventCache
             while (iterator.hasNext())
             {
                 iterator.advance();
+                long triggerId = iterator.key();
                 List<CacheNode> cache = iterator.value();
                 //Remove when this node is more than 100 events ago
                 cache.removeIf(node ->
@@ -57,7 +58,7 @@ public class EventCache
                     if (remove)
                     {
                         count.incrementAndGet();
-                        LOG.trace("Removing {} from cache with payload {}", type, node.event);
+                        LOG.trace("Removing type {}/{} from event cache with payload {}", type, triggerId, node.event);
                     }
                     return remove;
                 });
@@ -100,7 +101,7 @@ public class EventCache
 
         if (items != null && !items.isEmpty())
         {
-            EventCache.LOG.debug("Replaying {} events from the EventCache for a {} with id: {}",
+            EventCache.LOG.debug("Replaying {} events from the EventCache for type {} with id: {}",
                 items.size(), type, triggerId);
             List<CacheNode> itemsCopy = new LinkedList<>(items);
             items.clear();
