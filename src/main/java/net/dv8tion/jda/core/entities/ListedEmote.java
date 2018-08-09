@@ -24,7 +24,28 @@ public interface ListedEmote extends Emote
     /**
      * The user who created this Emote
      *
+     * <p>This is only available for manually retrieved emotes from {@link Guild#retrieveEmotes()}
+     * and {@link Guild#retrieveEmoteById(long)}.
+     * Requires {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
+     *
+     * @throws IllegalStateException
+     *         If this emote does not have user information
+     *
      * @return The user who created this Emote
+     *
+     * @see    #hasUser()
      */
     User getUser();
+
+    /**
+     * Whether this Emote has information about the creator.
+     * <br>If this is false, {@link #getUser()} throws an {@link IllegalStateException}.
+     *
+     * <p>This is only available for manually retrieved emotes from {@link Guild#retrieveEmotes()}
+     * and {@link Guild#retrieveEmoteById(long)}.
+     *      * Requires {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
+     *
+     * @return True, if this emote has an owner
+     */
+    boolean hasUser();
 }

@@ -862,12 +862,18 @@ public interface Guild extends ISnowflake
     /**
      * Retrieves a list of emotes together with their respective creators.
      *
+     * <p>Note that {@link ListedEmote#getUser()} is only available if the currently
+     * logged in account has {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
+     *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: List of {@link net.dv8tion.jda.core.entities.ListedEmote ListedEmote}
      */
     RestAction<List<ListedEmote>> retrieveEmotes();
 
     /**
      * Retrieves a listed emote together with its respective creators.
+     *
+     * <p>Note that {@link ListedEmote#getUser()} is only available if the currently
+     * logged in account has {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
      *
      * @param  id
      *         The emote id
@@ -880,6 +886,9 @@ public interface Guild extends ISnowflake
 
     /**
      * Retrieves a listed emote together with its respective creators.
+     *
+     * <p>Note that {@link ListedEmote#getUser()} is only available if the currently
+     * logged in account has {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
      *
      * @param  id
      *         The emote id

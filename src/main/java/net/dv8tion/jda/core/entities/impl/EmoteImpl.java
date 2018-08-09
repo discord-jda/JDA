@@ -65,7 +65,7 @@ public class EmoteImpl implements ListedEmote
         this.guild = guild;
         this.api = guild.getJDA();
         this.roles = Collections.synchronizedSet(new HashSet<>());
-        this.fake = false;
+        this.fake = fake;
     }
 
     public EmoteImpl(long id, JDAImpl api)
@@ -124,7 +124,15 @@ public class EmoteImpl implements ListedEmote
     @Override
     public User getUser()
     {
+        if (!hasUser())
+            throw new IllegalStateException("This emote does not have a user");
         return user;
+    }
+
+    @Override
+    public boolean hasUser()
+    {
+        return user != null;
     }
 
     @Override
