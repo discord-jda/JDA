@@ -511,7 +511,7 @@ public interface ShardManager
         // check cache
         User user = this.getUserById(id);
         if (user != null)
-            return new RestAction.EmptyRestAction<>(api, user);
+            return new RestAction.EmptyRestAction<>(user.getJDA(), user);
 
         Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
         return new RestAction<User>(api, route)
