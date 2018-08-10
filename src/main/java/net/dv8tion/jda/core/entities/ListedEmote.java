@@ -43,7 +43,7 @@ public interface ListedEmote extends Emote
      *
      * <p>This is only available for manually retrieved emotes from {@link Guild#retrieveEmotes()}
      * and {@link Guild#retrieveEmoteById(long)}.
-     *      * Requires {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
+     * Requires {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
      *
      * @return True, if this emote has an owner
      */
