@@ -17,7 +17,6 @@ package net.dv8tion.jda.bot.sharding;
 
 import net.dv8tion.jda.bot.entities.ApplicationInfo;
 import net.dv8tion.jda.bot.utils.cache.ShardCacheView;
-import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDA.Status;
 import net.dv8tion.jda.core.OnlineStatus;
@@ -467,9 +466,6 @@ public interface ShardManager
      * @param  id
      *         The id of the requested {@link net.dv8tion.jda.core.entities.User User}.
      *
-     * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
-     *         This endpoint is {@link AccountType#BOT} only.
-     *
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      * @throws java.lang.IllegalArgumentException
@@ -501,9 +497,6 @@ public interface ShardManager
      *
      * @param  id
      *         The id of the requested {@link net.dv8tion.jda.core.entities.User User}.
-     *
-     * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
-     *         This endpoint is {@link AccountType#BOT} only.
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.User User}
      *         <br>On request, gets the User with id matching provided id from Discord.
