@@ -18,6 +18,8 @@ package net.dv8tion.jda.core.entities;
 
 /**
  * Represents an emote retrieved from {@link Guild#retrieveEmotes()} or {@link Guild#retrieveEmoteById(long)}
+ *
+ * @since 3.8.0
  */
 public interface ListedEmote extends Emote
 {
@@ -26,7 +28,7 @@ public interface ListedEmote extends Emote
      *
      * <p>This is only available for manually retrieved emotes from {@link Guild#retrieveEmotes()}
      * and {@link Guild#retrieveEmoteById(long)}.
-     * Requires {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
+     * <br>Requires {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
      *
      * @throws IllegalStateException
      *         If this emote does not have user information
@@ -43,7 +45,7 @@ public interface ListedEmote extends Emote
      *
      * <p>This is only available for manually retrieved emotes from {@link Guild#retrieveEmotes()}
      * and {@link Guild#retrieveEmoteById(long)}.
-     * Requires {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
+     * <br>Requires {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
      *
      * @return True, if this emote has an owner
      */

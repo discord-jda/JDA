@@ -27,13 +27,15 @@ import java.util.List;
 /**
  * Represents a Custom Emote. (Custom Emoji in official Discord API terminology)
  *
+ * <p>You can retrieve the creator of an emote by using {@link Guild#retrieveEmote(Emote)} followed
+ * by using {@link ListedEmote#getUser()}.
+ *
  * <p><b>This does not represent unicode emojis like they are used in the official client! (:smiley: is not a custom emoji)</b>
  *
  * @since  2.2
  */
 public interface Emote extends ISnowflake, IMentionable, IFakeable
 {
-
     /**
      * The {@link net.dv8tion.jda.core.entities.Guild Guild} this emote is attached to.
      *

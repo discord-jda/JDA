@@ -331,7 +331,8 @@ public class GuildImpl implements Guild
     public RestAction<List<ListedEmote>> retrieveEmotes()
     {
         Route.CompiledRoute route = Route.Emotes.GET_EMOTES.compile(getId());
-        return new RestAction<List<ListedEmote>>(api, route) {
+        return new RestAction<List<ListedEmote>>(api, route)
+        {
             @Override
             protected void handleResponse(Response response, Request<List<ListedEmote>> request)
             {
@@ -359,8 +360,16 @@ public class GuildImpl implements Guild
     public RestAction<ListedEmote> retrieveEmoteById(String id)
     {
         Checks.isSnowflake(id, "Emote ID");
+        Emote emote = getEmoteById(id);
+        if (emote != null && !emote.isFake())
+        {
+            ListedEmote listedEmote = (ListedEmote) emote;
+            if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
+                return new RestAction.EmptyRestAction<>(getJDA(), listedEmote);
+        }
         Route.CompiledRoute route = Route.Emotes.GET_EMOTE.compile(getId(), id);
-        return new RestAction<ListedEmote>(api, route) {
+        return new RestAction<ListedEmote>(api, route)
+        {
             @Override
             protected void handleResponse(Response response, Request<ListedEmote> request)
             {
