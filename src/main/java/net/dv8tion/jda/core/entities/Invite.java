@@ -399,7 +399,7 @@ public interface Invite
     interface Group extends ISnowflake
     {
         /**
-         * The icon id of this group.
+         * The icon id of this group or {@code null} if the group has no icon.
          *
          * @return The group's icon id
          *
@@ -408,7 +408,7 @@ public interface Invite
         String getIconId();
 
         /**
-         * The icon url of this group.
+         * The icon url of this group or {@code null} if the group has no icon.
          *
          * @return The group's icon url
          *
@@ -417,7 +417,7 @@ public interface Invite
         String getIconUrl();
 
         /**
-         * The name of this group.
+         * The name of this group or {@code null} if the group has no name.
          *
          * @return The group's name
          */
