@@ -1310,7 +1310,7 @@ public class EntityBuilder
 
             group = new InviteImpl.GroupImpl(groupIconId, groupName, groupId, usernames);
         }
-        else if (channelType == ChannelType.TEXT || channelType == ChannelType.VOICE)
+        else if (channelType.isGuild())
         {
             type = Invite.Type.GUILD;
 
