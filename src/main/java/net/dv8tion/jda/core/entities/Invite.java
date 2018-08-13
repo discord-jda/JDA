@@ -125,7 +125,7 @@ public interface Invite
      *
      * @return The invites's type
      */
-    Invite.Type getType();
+    Invite.InviteType getType();
 
     /**
      * An {@link net.dv8tion.jda.core.entities.Invite.Channel Invite.Channel} object
@@ -439,7 +439,7 @@ public interface Invite
      *
      * @see #getType()
      */
-    enum Type
+    enum InviteType
     {
         GUILD,
         GROUP,

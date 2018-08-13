@@ -48,11 +48,11 @@ public class InviteImpl implements Invite
     private final boolean temporary;
     private final OffsetDateTime timeCreated;
     private final int uses;
-    private final Type type;
+    private final Invite.InviteType type;
 
     public InviteImpl(final JDAImpl api, final String code, final boolean expanded, final User inviter,
             final int maxAge, final int maxUses, final boolean temporary, final OffsetDateTime timeCreated,
-            final int uses, final Channel channel, final Guild guild, final Group group, final Type type)
+            final int uses, final Channel channel, final Guild guild, final Group group, final Invite.InviteType type)
     {
         this.api = api;
         this.code = code;
@@ -121,7 +121,7 @@ public class InviteImpl implements Invite
         if (this.expanded)
             return new RestAction.EmptyRestAction<>(getJDA(), this);
 
-        if (this.type != Type.GUILD)
+        if (this.type != Invite.InviteType.GUILD)
             throw new UnsupportedOperationException("Only guild invites can be expanded");
 
         final net.dv8tion.jda.core.entities.Guild guild = this.api.getGuildById(this.guild.getIdLong());
@@ -179,7 +179,7 @@ public class InviteImpl implements Invite
     }
 
     @Override
-    public Type getType()
+    public Invite.InviteType getType()
     {
         return this.type;
     }

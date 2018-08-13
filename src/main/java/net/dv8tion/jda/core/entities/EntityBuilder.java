@@ -1286,14 +1286,14 @@ public class EntityBuilder
         final JSONObject channelObject = object.getJSONObject("channel");
         final ChannelType channelType = ChannelType.fromId(channelObject.getInt("type"));
 
-        final Invite.Type type;
+        final Invite.InviteType type;
         final Invite.Guild guild;
         final Invite.Channel channel;
         final Invite.Group group;
 
         if (channelType == ChannelType.GROUP)
         {
-            type = Invite.Type.GROUP;
+            type = Invite.InviteType.GROUP;
             guild = null;
             channel = null;
 
@@ -1312,7 +1312,7 @@ public class EntityBuilder
         }
         else if (channelType.isGuild())
         {
-            type = Invite.Type.GUILD;
+            type = Invite.InviteType.GUILD;
 
             final JSONObject guildObject = object.getJSONObject("guild");
 
@@ -1342,7 +1342,7 @@ public class EntityBuilder
         {
             // Unknown channel type for invites
 
-            type = Invite.Type.UNKNOWN;
+            type = Invite.InviteType.UNKNOWN;
             guild = null;
             channel = null;
             group = null;
