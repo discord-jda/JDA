@@ -171,6 +171,20 @@ public class GuildSetupController
         if (!available)
         {
             node.reset();
+            if (!node.markedUnavailable && !node.requestedChunk)
+            {
+                node.markedUnavailable = true; // this prevents repeated decrements from duplicate events
+                if (node.sync)
+                {
+                    syncingCount--;
+                    trySyncing();
+                }
+                if (incompleteCount > 0)
+                {
+                    incompleteCount--;
+                    tryChunking();
+                }
+            }
         }
         else
         {
@@ -181,6 +195,7 @@ public class GuildSetupController
             else
                 ready(id);
         }
+        log.debug("Updated incompleteCount to {} and syncCount to {}", incompleteCount, syncingCount);
         return true;
     }
 

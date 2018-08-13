@@ -49,7 +49,7 @@ class GuildSetupNode
 
     final boolean join;
     final boolean sync;
-
+    boolean markedUnavailable = false;
 
     GuildSetupNode(long id, GuildSetupController controller, boolean join)
     {
@@ -118,6 +118,7 @@ class GuildSetupNode
             }
         }
         boolean unavailable = Helpers.optBoolean(partialGuild, "unavailable");
+        this.markedUnavailable = unavailable;
         if (unavailable)
             return;
         if (sync && !requestedSync)
