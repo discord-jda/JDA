@@ -17,7 +17,6 @@
 package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.client.managers.EmoteManager;
-import net.dv8tion.jda.client.managers.EmoteManagerUpdatable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.PermissionUtil;
@@ -119,25 +118,6 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      * @return The EmoteManager for this Emote
      */
     EmoteManager getManager();
-
-    /**
-     * An <b>updatable</b> manager for this Emote, used to modify properties of the emote like name and role restrictions.
-     *
-     * <p>This will only work for the client account type.
-     *
-     * <p>This specific Manager is used to modify multiple properties at once
-     * by setting the property and calling {@link EmoteManagerUpdatable#update()}
-     *
-     * @throws IllegalStateException
-     *         if this emote is fake
-     *
-     * @return The EmoteManagerUpdatable for this Emote
-     *
-     * @deprecated
-     *         Use {@link #getManager()} instead
-     */
-    @Deprecated
-    EmoteManagerUpdatable getManagerUpdatable();
 
     /**
      * Whether or not this Emote is animated.

@@ -23,15 +23,28 @@ _Please see the [Discord docs](https://discordapp.com/developers/docs/reference)
 This officially makes [JDA-Client](https://github.com/DV8FromTheWorld/JDA-Client) deprecated.
 Please do not continue using it, and instead switch to the promoted 3.x version listed further below.
 
+## UserBots and SelfBots
+
+Discord is currently not too fond of people creating and using automated client accounts (AccountType.CLIENT).
+We however still have support to login with these accounts due to legacy support. That does not mean it is allowed or
+welcome to use.
+If you need a bot, use a bot account from the [Application Dashboard](https://discordapp.com/developers/applications).
+
+[Read More](https://support.discordapp.com/hc/en-us/articles/115002192352-Automated-user-accounts-self-bots-)
+
 ## Creating the JDA Object
+
 Creating the JDA Object is done via the JDABuilder class by providing an AccountType (Bot/Client).
-After setting the token via setter,
-the JDA Object is then created by calling the `.buildBlocking()` or the `.buildAsync()` (non-blocking login) method.
+After setting the token and other options via setters,
+the JDA Object is then created by calling the `build()` method. When `build()` returns,
+JDA might not have finished starting up. However, you can use `awaitReady()`
+on the JDA object to ensure that the entire cache is loaded before proceeding.
+Note that this method is blocking and will cause the thread to sleep until startup has completed.
 
 **Example**:
 
 ```java
-JDA jda = new JDABuilder(AccountType.BOT).setToken("token").buildBlocking();
+JDA jda = new JDABuilder(AccountType.BOT).setToken("token").build();
 ```
 
 **Note**: It is important to set the correct AccountType because Bot-accounts require a token prefix to login.
@@ -39,17 +52,21 @@ JDA jda = new JDABuilder(AccountType.BOT).setToken("token").buildBlocking();
 #### Examples:
 
 **Using EventListener**:
+
 ```java
 public class ReadyListener implements EventListener
 {
     public static void main(String[] args)
-            throws LoginException, RateLimitedException, InterruptedException
+            throws LoginException, InterruptedException
     {
         // Note: It is important to register your ReadyListener before building
         JDA jda = new JDABuilder(AccountType.BOT)
             .setToken("token")
             .addEventListener(new ReadyListener())
-            .buildBlocking();
+            .build();
+
+        // optionally block until JDA is ready
+        jda.awaitReady();
     }
 
     @Override
@@ -60,14 +77,16 @@ public class ReadyListener implements EventListener
     }
 }
 ```
+
 **Using ListenerAdapter**:
+
 ```java
 public class MessageListener extends ListenerAdapter
 {
     public static void main(String[] args)
-            throws LoginException, RateLimitedException, InterruptedException
+            throws LoginException
     {
-        JDA jda = new JDABuilder(AccountType.BOT).setToken("token").buildBlocking();
+        JDA jda = new JDABuilder(AccountType.BOT).setToken("token").build();
         jda.addEventListener(new MessageListener());
     }
 
@@ -103,7 +122,7 @@ To use sharding in JDA you will need to use `JDABuilder.useSharding(int shardId,
 has the ID 0. The **shardTotal** is the total amount of shards (not 0-based) which can be seen similar to the length of an array, the last shard has the ID of
 `shardTotal - 1`.
 
-The [`SessionController`](https://home.dv8tion.net:8080/job/JDA/javadoc/net/dv8tion/jda/core/utils/SessionController.html) is a tool of the JDABuilder
+The [`SessionController`](http://home.dv8tion.net:8080/job/JDA/javadoc/net/dv8tion/jda/core/utils/SessionController.html) is a tool of the JDABuilder
 that allows to control state and behaviour between shards (sessions). When using multiple builders to build shards you have to create one instance
 of this controller and add the same instance to each builder: `builder.setSessionController(controller)`
 
@@ -120,7 +139,7 @@ public static void main(String[] args) throws Exception
     for (int i = 0; i < 10; i++)
     {
         shardBuilder.useSharding(i, 10)
-                    .buildAsync();
+                    .build();
     }
 }
 ```
@@ -320,13 +339,13 @@ version was by looking at the [release page](https://github.com/DV8FromTheWorld/
 This project requires **Java 8**.<br>
 All dependencies are managed automatically by Gradle.
  * NV Websocket Client
-   * Version: **2.2**
+   * Version: **2.4**
    * [Github](https://github.com/TakahikoKawasaki/nv-websocket-client)
-   * [JCenter Repository](https://bintray.com/bintray/jcenter/com.neovisionaries%3Anv-websocket-client/view)
+   * [JCenter Repository](https://bintray.com/bintray/jcenter/com.neovisionaries%3Anv-websocket-client/2.4)
  * OkHttp
    * Version: **3.8.1**
    * [Github](https://github.com/square/okhttp)
-   * [JCenter Repository](https://bintray.com/bintray/jcenter/com.squareup.okhttp:okhttp)
+   * [JCenter Repository](https://bintray.com/bintray/jcenter/com.squareup.okhttp3:okhttp)
  * Apache Commons Collections4
    * Version: **4.1**
    * [Website](https://commons.apache.org/proper/commons-collections/)

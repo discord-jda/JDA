@@ -16,7 +16,6 @@
 package net.dv8tion.jda.core.events.message.guild;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.guild.GenericGuildEvent;
 
@@ -56,37 +55,6 @@ public abstract class GenericGuildMessageEvent extends GenericGuildEvent
     public long getMessageIdLong()
     {
         return messageId;
-    }
-
-    /**
-     * Deprecated
-     *
-     * @param  type
-     *         The channel type
-     *
-     * @return True, if provided with ChannelType.TEXT
-     *
-     * @deprecated
-     *         It's nonsense for this to exist
-     */
-    @Deprecated
-    public boolean isFromType(ChannelType type)
-    {
-        return getChannel().getType() == type;
-    }
-
-    /**
-     * Deprecated
-     *
-     * @return ChannelType.TEXT
-     *
-     * @deprecated
-     *         It's nonsense for this to exist
-     */
-    @Deprecated
-    public ChannelType getChannelType()
-    {
-        return getChannel().getType();
     }
 
     /**

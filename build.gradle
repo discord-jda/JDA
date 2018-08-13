@@ -29,7 +29,7 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '2.0.1'
 }
 
-def versionObj = new Version(major: 3, minor: 6, revision: 0)
+def versionObj = new Version(major: 3, minor: 7, revision: 1)
 
 group = "net.dv8tion"
 archivesBaseName = "JDA"
@@ -65,7 +65,7 @@ dependencies {
     compile 'club.minnced:opus-java:1.0.2'
 
     //Web Connection Support
-    compile 'com.neovisionaries:nv-websocket-client:2.2'
+    compile 'com.neovisionaries:nv-websocket-client:2.4'
     compile 'com.squareup.okhttp3:okhttp:3.8.1'
 
     //Sets the dependencies for the examples

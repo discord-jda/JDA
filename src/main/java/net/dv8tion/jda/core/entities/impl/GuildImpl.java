@@ -72,8 +72,6 @@ public class GuildImpl implements Guild
 
     private final ReentrantLock mngLock = new ReentrantLock();
     private volatile GuildManager manager;
-    @Deprecated
-    private volatile net.dv8tion.jda.core.managers.GuildManagerUpdatable managerUpdatable;
     private volatile GuildController controller;
 
     private Member owner;
@@ -365,6 +363,36 @@ public class GuildImpl implements Guild
         };
     }
 
+    @Nonnull
+    @Override
+    public RestAction<Ban> getBanById(@Nonnull String userId)
+    {
+        if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS))
+            throw new InsufficientPermissionException(Permission.BAN_MEMBERS);
+
+        Checks.isSnowflake(userId, "User ID");
+
+        Route.CompiledRoute route = Route.Guilds.GET_BAN.compile(getId(), userId);
+        return new RestAction<Ban>(getJDA(), route)
+        {
+            @Override
+            protected void handleResponse(Response response, Request<Ban> request)
+            {
+                if (!response.isOk())
+                {
+                    request.onFailure(response);
+                    return;
+                }
+
+                EntityBuilder builder = api.getEntityBuilder();
+                JSONObject bannedObj = response.getObject();
+                JSONObject user = bannedObj.getJSONObject("user");
+                final Ban ban = new Ban(builder.createFakeUser(user, false), bannedObj.optString("reason", null));
+                request.onSuccess(ban);
+            }
+        };
+    }
+
     @Override
     public RestAction<Integer> getPrunableMemberCount(int days)
     {
@@ -418,23 +446,6 @@ public class GuildImpl implements Guild
                 if (manager == null)
                     manager = new GuildManager(this);
                 return manager;
-            });
-        }
-        return mng;
-    }
-
-    @Override
-    @Deprecated
-    public net.dv8tion.jda.core.managers.GuildManagerUpdatable getManagerUpdatable()
-    {
-        net.dv8tion.jda.core.managers.GuildManagerUpdatable mng = managerUpdatable;
-        if (mng == null)
-        {
-            mng = MiscUtil.locked(mngLock, () ->
-            {
-                if (managerUpdatable == null)
-                    managerUpdatable = new net.dv8tion.jda.core.managers.GuildManagerUpdatable(this);
-                return managerUpdatable;
             });
         }
         return mng;

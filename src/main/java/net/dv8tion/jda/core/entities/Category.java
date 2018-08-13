@@ -81,7 +81,7 @@ public interface Category extends Channel, Comparable<Category>
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or less than 2 characters or greater than 100 characters in length
+     *         If the provided name is {@code null} or empty or greater than 100 characters in length
      *
      * @return A specific {@link net.dv8tion.jda.core.requests.restaction.ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new TextChannel before creating it
@@ -114,7 +114,7 @@ public interface Category extends Channel, Comparable<Category>
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or less than 2 characters or greater than 100 characters in length
+     *         If the provided name is {@code null} or empty or greater than 100 characters in length
      *
      * @return A specific {@link net.dv8tion.jda.core.requests.restaction.ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new VoiceChannel before creating it

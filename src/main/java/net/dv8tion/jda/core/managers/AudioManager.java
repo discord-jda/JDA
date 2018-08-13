@@ -19,12 +19,18 @@ package net.dv8tion.jda.core.managers;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.audio.AudioReceiveHandler;
 import net.dv8tion.jda.core.audio.AudioSendHandler;
+import net.dv8tion.jda.core.audio.SpeakingMode;
 import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.JDALogger;
 import org.slf4j.Logger;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.EnumSet;
 
 
 /**
@@ -75,6 +81,53 @@ public interface AudioManager
      * <br>If this is called when JDA doesn't have an audio connection, nothing happens.
      */
     void closeAudioConnection();
+
+    /**
+     * The {@link SpeakingMode} that should be used when sending audio via
+     * the provided {@link AudioSendHandler} from {@link #setSendingHandler(AudioSendHandler)}.
+     * By default this will use {@link SpeakingMode#VOICE}.
+     * <br>Example: {@code EnumSet.of(SpeakingMode.PRIORITY_SPEAKER, SpeakingMode.VOICE)}
+     *
+     * @param  mode
+     *         The speaking modes
+     *
+     * @throws IllegalArgumentException
+     *         If the provided collection is null or empty
+     *
+     * @see    #getSpeakingMode()
+     * @see    #setSpeakingMode(SpeakingMode...)
+     */
+    void setSpeakingMode(Collection<SpeakingMode> mode);
+
+    /**
+     * The {@link SpeakingMode} that should be used when sending audio via
+     * the provided {@link AudioSendHandler} from {@link #setSendingHandler(AudioSendHandler)}.
+     * By default this will use {@link SpeakingMode#VOICE}.
+     *
+     * @param  mode
+     *         The speaking modes
+     *
+     * @throws IllegalArgumentException
+     *         If the provided array is null or empty
+     *
+     * @see    #getSpeakingMode()
+     */
+    default void setSpeakingMode(SpeakingMode... mode)
+    {
+        Checks.notNull(mode, "Speaking Mode");
+        setSpeakingMode(Arrays.asList(mode));
+    }
+
+    /**
+     * The {@link SpeakingMode} that should be used when sending audio via
+     * the provided {@link AudioSendHandler} from {@link #setSendingHandler(AudioSendHandler)}.
+     * By default this will use {@link SpeakingMode#VOICE}.
+     *
+     * @return The current speaking mode, represented in an {@link EnumSet}
+     *
+     * @see    #setSpeakingMode(Collection)
+     */
+    EnumSet<SpeakingMode> getSpeakingMode();
 
     /**
      * Gets the {@link net.dv8tion.jda.core.JDA JDA} instance that this AudioManager is a part of.

@@ -17,7 +17,6 @@
 package net.dv8tion.jda.client.entities;
 
 import net.dv8tion.jda.client.managers.ApplicationManager;
-import net.dv8tion.jda.client.managers.ApplicationManagerUpdatable;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ISnowflake;
@@ -142,21 +141,6 @@ public interface Application extends ISnowflake
      * @return The ApplicationManager of this Channel
      */
     ApplicationManager getManager();
-
-    /**
-     * Returns the {@link net.dv8tion.jda.client.managers.ApplicationManagerUpdatable ApplicationManagerUpdatable} for this Application.
-     * In the ApplicationManager, you can modify things like the name and icon of this Application.
-     * <br>This can be used to bulk update application settings.
-     *
-     * @return The ApplicationManagerUpdatable of this Application
-     *
-     * @see    #getManager()
-     *
-     * @deprecated
-     *         Use {@link #getManager()} instead
-     */
-    @Deprecated
-    ApplicationManagerUpdatable getManagerUpdatable();
 
     /**
      * The name of this application.

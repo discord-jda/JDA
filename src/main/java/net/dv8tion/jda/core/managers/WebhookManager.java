@@ -69,7 +69,7 @@ public class WebhookManager extends ManagerBase
      */
     public WebhookManager(Webhook webhook)
     {
-        super(webhook.getJDA(), Route.Webhooks.MODIFY_TOKEN_WEBHOOK.compile(webhook.getId(), webhook.getToken()));
+        super(webhook.getJDA(), Route.Webhooks.MODIFY_WEBHOOK.compile(webhook.getId()));
         this.webhook = webhook;
         if (isPermissionChecksEnabled())
             checkPermissions();

@@ -30,8 +30,6 @@ public class SelfUserImpl extends UserImpl implements SelfUser
 {
     protected final ReentrantLock mngLock = new ReentrantLock();
     protected volatile AccountManager manager;
-    @Deprecated
-    protected volatile net.dv8tion.jda.core.managers.AccountManagerUpdatable managerUpdatable;
 
     private boolean verified;
     private boolean mfaEnabled;
@@ -129,23 +127,6 @@ public class SelfUserImpl extends UserImpl implements SelfUser
                 if (manager == null)
                     manager = new AccountManager(this);
                 return manager;
-            });
-        }
-        return mng;
-    }
-
-    @Override
-    @Deprecated
-    public net.dv8tion.jda.core.managers.AccountManagerUpdatable getManagerUpdatable()
-    {
-        net.dv8tion.jda.core.managers.AccountManagerUpdatable mng = managerUpdatable;
-        if (mng == null)
-        {
-            mng = MiscUtil.locked(mngLock, () ->
-            {
-                if (managerUpdatable == null)
-                    managerUpdatable = new net.dv8tion.jda.core.managers.AccountManagerUpdatable(this);
-                return managerUpdatable;
             });
         }
         return mng;
