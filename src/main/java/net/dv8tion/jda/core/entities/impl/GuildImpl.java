@@ -363,6 +363,36 @@ public class GuildImpl implements Guild
         };
     }
 
+    @Nonnull
+    @Override
+    public RestAction<Ban> getBanById(@Nonnull String userId)
+    {
+        if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS))
+            throw new InsufficientPermissionException(Permission.BAN_MEMBERS);
+
+        Checks.isSnowflake(userId, "User ID");
+
+        Route.CompiledRoute route = Route.Guilds.GET_BAN.compile(getId(), userId);
+        return new RestAction<Ban>(getJDA(), route)
+        {
+            @Override
+            protected void handleResponse(Response response, Request<Ban> request)
+            {
+                if (!response.isOk())
+                {
+                    request.onFailure(response);
+                    return;
+                }
+
+                EntityBuilder builder = api.getEntityBuilder();
+                JSONObject bannedObj = response.getObject();
+                JSONObject user = bannedObj.getJSONObject("user");
+                final Ban ban = new Ban(builder.createFakeUser(user, false), bannedObj.optString("reason", null));
+                request.onSuccess(ban);
+            }
+        };
+    }
+
     @Override
     public RestAction<Integer> getPrunableMemberCount(int days)
     {
