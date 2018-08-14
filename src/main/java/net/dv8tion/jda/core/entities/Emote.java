@@ -192,7 +192,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
     }
 
     /**
-     * Whether the specified Member can interact with this Emote within the provided MessageChannel
+     * Whether the specified User can interact with this Emote within the provided MessageChannel
      * <br>Same logic as {@link #canInteract(User, MessageChannel, boolean) canInteract(issuer, channel, true)}!
      *
      * @param  issuer
@@ -211,7 +211,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
     }
 
     /**
-     * Whether the specified Member can interact with this Emote within the provided MessageChannel
+     * Whether the specified User can interact with this Emote within the provided MessageChannel
      * <br>Special override to exclude elevated bot permissions in case of (for instance) reacting to messages.
      *
      * @param  issuer
