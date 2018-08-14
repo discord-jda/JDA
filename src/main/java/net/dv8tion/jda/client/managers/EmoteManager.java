@@ -74,12 +74,18 @@ public class EmoteManager extends ManagerBase
      */
     public EmoteManager(EmoteImpl emote)
     {
-        super(emote.getJDA(), Route.Emotes.MODIFY_EMOTE.compile(emote.getGuild().getId(), emote.getId()));
-        if (emote.isFake())
-            throw new IllegalStateException("Cannot modify a fake emote");
+        super(emote.getJDA(), Route.Emotes.MODIFY_EMOTE.compile(notNullGuild(emote).getId(), emote.getId()));
         this.emote = emote;
         if (isPermissionChecksEnabled())
             checkPermissions();
+    }
+
+    private static Guild notNullGuild(EmoteImpl emote)
+    {
+        Guild g = emote.getGuild();
+        if (g == null)
+            throw new IllegalStateException("Cannot modify a fake emote");
+        return g;
     }
 
     /**
