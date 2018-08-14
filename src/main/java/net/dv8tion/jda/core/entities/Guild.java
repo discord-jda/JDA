@@ -870,6 +870,8 @@ public interface Guild extends ISnowflake
      *
      * @since  3.8.0
      */
+    @Nonnull
+    @CheckReturnValue
     RestAction<List<ListedEmote>> retrieveEmotes();
 
     /**
@@ -896,7 +898,9 @@ public interface Guild extends ISnowflake
      *
      * @since  3.8.0
      */
-    RestAction<ListedEmote> retrieveEmoteById(String id);
+    @Nonnull
+    @CheckReturnValue
+    RestAction<ListedEmote> retrieveEmoteById(@Nonnull String id);
 
     /**
      * Retrieves a listed emote together with its respective creator.
@@ -918,6 +922,8 @@ public interface Guild extends ISnowflake
      *
      * @since  3.8.0
      */
+    @Nonnull
+    @CheckReturnValue
     default RestAction<ListedEmote> retrieveEmoteById(long id)
     {
         return retrieveEmoteById(Long.toUnsignedString(id));
@@ -943,7 +949,9 @@ public interface Guild extends ISnowflake
      *
      * @since  3.8.0
      */
-    default RestAction<ListedEmote> retrieveEmote(Emote emote)
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<ListedEmote> retrieveEmote(@Nonnull Emote emote)
     {
         Checks.notNull(emote, "Emote");
         if (emote.getGuild() != null)
