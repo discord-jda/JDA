@@ -32,6 +32,14 @@ import java.util.List;
  *
  * <p><b>This does not represent unicode emojis like they are used in the official client! (:smiley: is not a custom emoji)</b>
  *
+ * <h2>Fake Emote</h2>
+ * When an emote is declared as fake it cannot be updated by JDA. That means it will not be accessible
+ * through cache such as {@link Guild#getEmoteCache()} and similar.
+ * <br>Fake emotes may or may not have an attached {@link Guild Guild} and thus might not be manageable though
+ * {@link #getManager()} or {@link #delete()}. They also might lack attached roles for {@link #getRoles()}.
+ *
+ * @see    net.dv8tion.jda.core.entities.ListedEmote ListedEmote
+ *
  * @since  2.2
  */
 public interface Emote extends ISnowflake, IMentionable, IFakeable
@@ -50,11 +58,23 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      * <br><a href="https://discordapp.com/developers/docs/resources/guild#emoji-object" target="_blank">Learn More</a>
      *
      * @throws IllegalStateException
-     *         If this Emote is fake ({@link #isFake()})
+     *         If this Emote does not have attached roles according to {@link #hasRoles()}
      *
      * @return An immutable list of the roles this emote is active for (all roles if empty)
+     *
+     * @see    #hasRoles()
      */
     List<Role> getRoles();
+
+    /**
+     * Whether this Emote has attached roles. This might not be the case when the emote
+     * is retrieved through special cases like audit-logs.
+     *
+     * <p>If this is not true then {@link #getRoles()} will throw {@link IllegalStateException}.
+     *
+     * @return True, if this emote has roles attached
+     */
+    boolean hasRoles();
 
     /**
      * The name of this emote
@@ -152,7 +172,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
     @Override
     default String getAsMention()
     {
-        return (isAnimated() ? "<a:" : "<:") + getName() + ":" + getIdLong() + ">";
+        return (isAnimated() ? "<a:" : "<:") + getName() + ":" + getId() + ">";
     }
 
     /**

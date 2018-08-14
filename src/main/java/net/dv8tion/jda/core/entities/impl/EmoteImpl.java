@@ -86,9 +86,15 @@ public class EmoteImpl implements ListedEmote
     @Override
     public List<Role> getRoles()
     {
-        if (isFake())
+        if (!hasRoles())
             throw new IllegalStateException("Unable to return roles because this emote is fake. (We do not know the origin Guild of this emote)");
         return Collections.unmodifiableList(new LinkedList<>(roles));
+    }
+
+    @Override
+    public boolean hasRoles()
+    {
+        return roles != null;
     }
 
     @Override
@@ -160,7 +166,7 @@ public class EmoteImpl implements ListedEmote
     @Override
     public AuditableRestAction<Void> delete()
     {
-        if (isFake())
+        if (getGuild() == null)
             throw new IllegalStateException("The emote you are trying to delete is not an actual emote we have access to (it is fake)!");
         if (managed)
             throw new UnsupportedOperationException("You cannot delete a managed emote!");
@@ -243,7 +249,7 @@ public class EmoteImpl implements ListedEmote
     public EmoteImpl clone()
     {
         if (isFake()) return null;
-        EmoteImpl copy = new EmoteImpl(id, guild).setManaged(managed).setAnimated(animated).setName(name);
+        EmoteImpl copy = new EmoteImpl(id, guild).setUser(user).setManaged(managed).setAnimated(animated).setName(name);
         copy.roles.addAll(roles);
         return copy;
 

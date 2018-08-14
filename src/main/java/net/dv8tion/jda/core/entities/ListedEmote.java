@@ -19,6 +19,8 @@ package net.dv8tion.jda.core.entities;
 /**
  * Represents an emote retrieved from {@link Guild#retrieveEmotes()} or {@link Guild#retrieveEmoteById(long)}
  *
+ * @see   net.dv8tion.jda.core.entities.Emote Emote
+ *
  * @since 3.8.0
  */
 public interface ListedEmote extends Emote
