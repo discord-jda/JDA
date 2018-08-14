@@ -36,10 +36,8 @@ import net.dv8tion.jda.core.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.core.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.core.requests.restaction.order.RoleOrderAction;
 import net.dv8tion.jda.core.utils.Checks;
-import net.dv8tion.jda.core.utils.Helpers;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.PermissionUtil;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
@@ -2008,20 +2006,9 @@ public class GuildController
                     request.onFailure(response);
                     return;
                 }
-                JSONObject obj = response.getObject();
-                final long id = obj.getLong("id");
-                final String name = obj.optString("name", null);
-                final boolean managed = Helpers.optBoolean(obj, "managed");
-                final boolean animated = obj.optBoolean("animated");
-                EmoteImpl emote = new EmoteImpl(id, guild).setName(name).setAnimated(animated).setManaged(managed);
 
-                JSONArray rolesArr = obj.optJSONArray("roles");
-                if (rolesArr != null)
-                {
-                    Set<Role> roleSet = emote.getRoleSet();
-                    for (int i = 0; i < rolesArr.length(); i++)
-                        roleSet.add(guild.getRoleById(rolesArr.getString(i)));
-                }
+                JSONObject obj = response.getObject();
+                EmoteImpl emote = api.getEntityBuilder().createEmote((GuildImpl) getGuild(), obj, true);
                 request.onSuccess(emote);
             }
         };

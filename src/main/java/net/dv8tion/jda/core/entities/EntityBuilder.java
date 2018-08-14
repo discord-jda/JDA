@@ -132,18 +132,8 @@ public class EntityBuilder
                 LOG.error("Received GUILD_CREATE with an emoji with a null ID. JSON: {}", object);
                 continue;
             }
-            JSONArray emoteRoles = object.isNull("roles") ? new JSONArray() : object.getJSONArray("roles");
             final long emoteId = object.getLong("id");
-
-            EmoteImpl emoteObj = new EmoteImpl(emoteId, guildObj);
-            Set<Role> roleSet = emoteObj.getRoleSet();
-
-            for (int j = 0; j < emoteRoles.length(); j++)
-                roleSet.add(guildObj.getRoleById(emoteRoles.getString(j)));
-            emoteMap.put(emoteId, emoteObj
-                        .setName(object.optString("name"))
-                        .setAnimated(object.optBoolean("animated"))
-                        .setManaged(Helpers.optBoolean(object, "managed")));
+            emoteMap.put(emoteId, createEmote(guildObj, object, false));
         }
     }
 
