@@ -157,6 +157,12 @@ public class GuildSetupController
             setupNodes.put(id, node);
             // do not increment incomplete counter, it is only relevant to init guilds
         }
+        else if (node.markedUnavailable && available && incompleteCount > 0)
+        {
+            //Looks like this guild decided to become available again during startup
+            // that means we can now consider it for ReadyEvent status again!
+            incompleteCount++;
+        }
         node.handleCreate(obj);
     }
 
@@ -170,7 +176,6 @@ public class GuildSetupController
         log.debug("Received guild delete for id: {} available: {}", id, available);
         if (!available)
         {
-            node.reset();
             if (!node.markedUnavailable && !node.requestedChunk)
             {
                 node.markedUnavailable = true; // this prevents repeated decrements from duplicate events
@@ -185,6 +190,7 @@ public class GuildSetupController
                     tryChunking();
                 }
             }
+            node.reset();
         }
         else
         {
