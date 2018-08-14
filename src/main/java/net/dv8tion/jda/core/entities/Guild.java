@@ -946,10 +946,11 @@ public interface Guild extends ISnowflake
     default RestAction<ListedEmote> retrieveEmote(Emote emote)
     {
         Checks.notNull(emote, "Emote");
-        Checks.check(emote.getGuild().equals(this), "Emote must be from the same Guild!");
+        if (emote.getGuild() != null)
+            Checks.check(emote.getGuild().equals(this), "Emote must be from the same Guild!");
         if (emote instanceof ListedEmote && !emote.isFake())
         {
-            ListedEmote listedEmote = ((ListedEmote) emote);
+            ListedEmote listedEmote = (ListedEmote) emote;
             if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
                 return new RestAction.EmptyRestAction<>(getJDA(), listedEmote);
         }
