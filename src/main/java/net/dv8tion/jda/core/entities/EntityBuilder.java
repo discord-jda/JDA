@@ -709,10 +709,12 @@ public class EntityBuilder
             emoteObj = new EmoteImpl(emoteId, guildObj, fake);
         Set<Role> roleSet = emoteObj.getRoleSet();
 
+        roleSet.clear();
         for (int j = 0; j < emoteRoles.length(); j++)
             roleSet.add(guildObj.getRoleById(emoteRoles.getString(j)));
+        if (user != null)
+            emoteObj.setUser(user);
         return emoteObj
-                .setUser(user)
                 .setName(json.optString("name"))
                 .setAnimated(json.optBoolean("animated"))
                 .setManaged(Helpers.optBoolean(json, "managed"));
