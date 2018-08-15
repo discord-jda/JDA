@@ -365,7 +365,7 @@ public class GuildImpl implements Guild
     {
         Checks.isSnowflake(id, "Emote ID");
         Emote emote = getEmoteById(id);
-        if (emote != null && !emote.isFake())
+        if (emote != null)
         {
             ListedEmote listedEmote = (ListedEmote) emote;
             if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
