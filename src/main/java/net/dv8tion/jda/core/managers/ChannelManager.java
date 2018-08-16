@@ -459,7 +459,7 @@ public class ChannelManager extends ManagerBase
     /**
      * Sets the <b><u>name</u></b> of the selected {@link net.dv8tion.jda.core.entities.Channel Channel}.
      *
-     * <p>A channel name <b>must not</b> be {@code null} nor less than 2 characters or more than 100 characters long!
+     * <p>A channel name <b>must not</b> be {@code null} nor empty or more than 100 characters long!
      * <br>TextChannel names may only be populated with alphanumeric (with underscore and dash).
      *
      * <p><b>Example</b>: {@code mod-only} or {@code generic_name}
@@ -469,7 +469,7 @@ public class ChannelManager extends ManagerBase
      *         The new name for the selected {@link net.dv8tion.jda.core.entities.Channel Channel}
      *
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or not between 2-100 characters long
+     *         If the provided name is {@code null} or not between 1-100 characters long
      *
      * @return ChannelManager for chaining convenience
      */
@@ -477,7 +477,7 @@ public class ChannelManager extends ManagerBase
     public ChannelManager setName(String name)
     {
         Checks.notBlank(name, "Name");
-        Checks.check(name.length() >= 2 && name.length() <= 100, "Name must be between 2-100 characters long");
+        Checks.check(name.length() > 0 && name.length() <= 100, "Name must be between 1-100 characters long");
         if (getType() == ChannelType.TEXT)
             Checks.noWhitespace(name, "Name");
         this.name = name;

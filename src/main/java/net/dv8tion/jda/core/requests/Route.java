@@ -101,6 +101,7 @@ public class Route
         public static final Route MODIFY_CHANNELS =    new Route(PATCH,  "guilds/{guild_id}/channels",          "guild_id");
         public static final Route MODIFY_ROLES =       new Route(PATCH,  "guilds/{guild_id}/roles",             "guild_id");
         public static final Route GET_BANS =           new Route(GET,    "guilds/{guild_id}/bans",              "guild_id");
+        public static final Route GET_BAN =            new Route(GET,    "guilds/{guild_id}/bans/{user_id}",    "guild_id");
         public static final Route UNBAN =              new Route(DELETE, "guilds/{guild_id}/bans/{user_id}",    "guild_id");
         public static final Route BAN =                new Route(PUT,    "guilds/{guild_id}/bans/{user_id}",    "guild_id");
         public static final Route KICK_MEMBER =        new Route(DELETE, "guilds/{guild_id}/members/{user_id}", "guild_id");
@@ -138,9 +139,12 @@ public class Route
     public static class Emotes
     {
         // These are all client endpoints and thus don't need defined major parameters
-        public static final Route MODIFY_EMOTE = new Route(PATCH,  "guilds/{guild_id}/emojis/{emote_id}");
-        public static final Route DELETE_EMOTE = new Route(DELETE, "guilds/{guild_id}/emojis/{emote_id}");
-        public static final Route CREATE_EMOTE = new Route(POST,   "guilds/{guild_id}/emojis");
+        public static final Route MODIFY_EMOTE = new Route(PATCH,  "guilds/{guild_id}/emojis/{emote_id}", "guild_id");
+        public static final Route DELETE_EMOTE = new Route(DELETE, "guilds/{guild_id}/emojis/{emote_id}", "guild_id");
+        public static final Route CREATE_EMOTE = new Route(POST,   "guilds/{guild_id}/emojis",            "guild_id");
+
+        public static final Route GET_EMOTES   = new Route(GET,    "guilds/{guild_id}/emojis",            "guild_id");
+        public static final Route GET_EMOTE    = new Route(GET,    "guilds/{guild_id}/emojis/{emoji_id}", "guild_id");
     }
 
     public static class Webhooks

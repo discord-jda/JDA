@@ -1798,7 +1798,7 @@ public class GuildController
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or less than 2 characters or greater than 100 characters in length
+     *         If the provided name is {@code null} or empty or greater than 100 characters in length
      *
      * @return A specific {@link net.dv8tion.jda.core.requests.restaction.ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new TextChannel before creating it
@@ -1811,7 +1811,7 @@ public class GuildController
         Checks.notBlank(name, "Name");
         name = name.trim();
 
-        Checks.check(name.length() >= 2 && name.length() <= 100, "Provided name must be 2 - 100 characters in length");
+        Checks.check(name.length() > 0 && name.length() <= 100, "Provided name must be 1 - 100 characters in length");
 
         Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(getGuild().getId());
         return new ChannelAction(route, name, getGuild(), ChannelType.TEXT);
@@ -1839,7 +1839,7 @@ public class GuildController
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or less than 2 characters or greater than 100 characters in length
+     *         If the provided name is {@code null} or empty or greater than 100 characters in length
      *
      * @return A specific {@link net.dv8tion.jda.core.requests.restaction.ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new VoiceChannel before creating it
@@ -1852,7 +1852,7 @@ public class GuildController
         Checks.notBlank(name, "Name");
         name = name.trim();
 
-        Checks.check(name.length() >= 2 && name.length() <= 100, "Provided name must be 2 - 100 characters in length");
+        Checks.check(name.length() > 0 && name.length() <= 100, "Provided name must be 1 - 100 characters in length");
 
         Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(getGuild().getId());
         return new ChannelAction(route, name, getGuild(), ChannelType.VOICE);
@@ -1880,7 +1880,7 @@ public class GuildController
      * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
      *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or less than 2 characters or greater than 100 characters in length
+     *         If the provided name is {@code null} or empty or greater than 100 characters in length
      *
      * @return A specific {@link net.dv8tion.jda.core.requests.restaction.ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new Category before creating it
@@ -1893,7 +1893,7 @@ public class GuildController
         Checks.notBlank(name, "Name");
         name = name.trim();
 
-        Checks.check(name.length() >= 2 && name.length() <= 100, "Provided name must be 2 - 100 characters in length");
+        Checks.check(name.length() > 0 && name.length() <= 100, "Provided name must be 1 - 100 characters in length");
 
         Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(getGuild().getId());
         return new ChannelAction(route, name, getGuild(), ChannelType.CATEGORY);
