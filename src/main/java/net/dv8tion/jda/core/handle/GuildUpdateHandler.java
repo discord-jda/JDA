@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.guild.update.*;
+import net.dv8tion.jda.core.requests.WebSocketClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -66,7 +67,7 @@ public class GuildUpdateHandler extends SocketHandler
         TextChannel systemChannel = content.isNull("system_channel_id")
                 ? null : guild.getTextChannelsMap().get(content.getLong("system_channel_id"));
         Set<String> features;
-        if(!content.isNull("features"))
+        if (!content.isNull("features"))
         {
             JSONArray featureArr = content.getJSONArray("features");
             features = StreamSupport.stream(featureArr.spliterator(), false).map(String::valueOf).collect(Collectors.toSet());
@@ -80,6 +81,8 @@ public class GuildUpdateHandler extends SocketHandler
         {
             Member oldOwner = guild.getOwner();
             Member newOwner = guild.getMembersMap().get(ownerId);
+            if (newOwner == null)
+                WebSocketClient.LOG.warn("Received {} with owner not in cache. UserId: {} GuildId: {}", allContent.get("t"), ownerId, id);
             guild.setOwner(newOwner);
             guild.setOwnerId(ownerId);
             api.getEventManager().handle(
