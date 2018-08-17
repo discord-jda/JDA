@@ -193,11 +193,7 @@ public class EntityBuilder
         }
 
         for (JSONObject memberJson : members.valueCollection())
-        {
-            Member member = createMember(guildObj, memberJson);
-            if (member.getUser().getIdLong() == ownerId)
-                guildObj.setOwner(member);
-        }
+            createMember(guildObj, memberJson);
 
         if (guildObj.getOwner() == null)
             LOG.warn("Finished setup for guild with a null owner. GuildId: {} OwnerId: {}", guildId, guildJson.opt("owner_id"));
@@ -345,6 +341,11 @@ public class EntityBuilder
         {
             member = new MemberImpl(guild, user);
             playbackCache = guild.getMembersMap().put(user.getIdLong(), member) == null;
+            if (guild.getOwnerIdLong() == user.getIdLong())
+            {
+                LOG.trace("Found owner of guild with id {}", guild.getId());
+                guild.setOwner(member);
+            }
         }
 
         GuildVoiceStateImpl state = (GuildVoiceStateImpl) member.getVoiceState();
