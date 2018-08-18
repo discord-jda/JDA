@@ -215,7 +215,7 @@ String getProjectProperty(String propertyName) {
     return property
 }
 
-task wrapper(type: Wrapper) {
+wrapper {
     gradleVersion = '4.9'
 }
 
