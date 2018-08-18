@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.net.*;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -46,12 +47,14 @@ public class AudioWebSocket extends WebSocketAdapter
 {
     public static final Logger LOG = JDALogger.getLog(AudioWebSocket.class);
     public static final int DISCORD_SECRET_KEY_LENGTH = 32;
-    public static final int AUDIO_GATEWAY_VERSION = 3;
+    public static final int AUDIO_GATEWAY_VERSION = 4;
+//    public static final JSONArray CODECS = new JSONArray("[{name: \"opus\", type: \"audio\", priority: 1000, payload_type: 120}]");
 
     protected final ConnectionListener listener;
     protected final ScheduledThreadPoolExecutor keepAlivePool;
     protected AudioConnection audioConnection;
-    protected ConnectionStatus connectionStatus = ConnectionStatus.NOT_CONNECTED;
+    protected volatile ConnectionStatus connectionStatus = ConnectionStatus.NOT_CONNECTED;
+    protected volatile AudioEncryption encryption;
 
     private final JDAImpl api;
     private final Guild guild;
@@ -110,11 +113,14 @@ public class AudioWebSocket extends WebSocketAdapter
     }
 
     @Override
+    public void onThreadStarted(WebSocket websocket, ThreadType threadType, Thread thread) throws Exception
+    {
+        api.setContext();
+    }
+
+    @Override
     public void onConnected(WebSocket websocket, Map<String, List<String>> headers)
     {
-        //writing thread
-        if (api.getContextMap() != null)
-            MDC.setContextMap(api.getContextMap());
         if (shutdown)
         {
             //Somehow this AudioWebSocket was shutdown before we finished connecting....
@@ -137,11 +143,8 @@ public class AudioWebSocket extends WebSocketAdapter
     @Override
     public void onTextMessage(WebSocket websocket, String message)
     {
-        //reading thread
         try
         {
-            if (api.getContextMap() != null)
-                MDC.setContextMap(api.getContextMap());
             handleEvent(new JSONObject(message));
         }
         catch (Exception ex)
@@ -162,8 +165,7 @@ public class AudioWebSocket extends WebSocketAdapter
                 final JSONObject payload = contentAll.getJSONObject("d");
                 final int interval = payload.getInt("heartbeat_interval");
                 stopKeepAlive();
-                setupKeepAlive(interval / 2);
-                //FIXME: discord will rollout a working interval once that is done we need to use it properly
+                setupKeepAlive(interval);
                 break;
             }
             case VoiceCode.READY:
@@ -172,6 +174,19 @@ public class AudioWebSocket extends WebSocketAdapter
                 JSONObject content = contentAll.getJSONObject("d");
                 ssrc = content.getInt("ssrc");
                 int port = content.getInt("port");
+                String ip = content.getString("ip");
+                JSONArray modes = content.getJSONArray("modes");
+                encryption = AudioEncryption.getPreferredMode(modes);
+                if (encryption == null)
+                {
+                    close(ConnectionStatus.ERROR_UNSUPPORTED_ENCRYPTION_MODES);
+                    LOG.error("None of the provided encryption modes are supported: {}", modes);
+                    return;
+                }
+                else
+                {
+                    LOG.debug("Using encryption mode " + encryption.getKey());
+                }
 
                 //Find our external IP and Port using Discord
                 InetSocketAddress externalIpAndPort;
@@ -180,7 +195,7 @@ public class AudioWebSocket extends WebSocketAdapter
                 int tries = 0;
                 do
                 {
-                    externalIpAndPort = handleUdpDiscovery(new InetSocketAddress(endpoint, port), ssrc);
+                    externalIpAndPort = handleUdpDiscovery(new InetSocketAddress(ip, port), ssrc);
                     tries++;
                     if (externalIpAndPort == null && tries > 5)
                     {
@@ -191,10 +206,11 @@ public class AudioWebSocket extends WebSocketAdapter
 
                 final JSONObject object = new JSONObject()
                         .put("protocol", "udp")
+//                        .put("codecs", CODECS)
                         .put("data", new JSONObject()
                             .put("address", externalIpAndPort.getHostString())
                             .put("port", externalIpAndPort.getPort())
-                            .put("mode", "xsalsa20_poly1305"));   //Discord requires encryption
+                            .put("mode", encryption.getKey())); //Discord requires encryption
                 send(VoiceCode.SELECT_PROTOCOL, object);
                 changeStatus(ConnectionStatus.CONNECTING_AWAITING_READY);
                 break;
@@ -239,7 +255,7 @@ public class AudioWebSocket extends WebSocketAdapter
             {
                 LOG.trace("-> USER_SPEAKING_UPDATE {}", contentAll);
                 final JSONObject content = contentAll.getJSONObject("d");
-                final boolean speaking = content.getBoolean("speaking");
+                final EnumSet<SpeakingMode> speaking = SpeakingMode.getModes(content.getInt("speaking"));
                 final int ssrc = content.getInt("ssrc");
                 final long userId = content.getLong("user_id");
 
@@ -264,8 +280,9 @@ public class AudioWebSocket extends WebSocketAdapter
                 break;
             }
             case 12:
+            case 14:
             {
-                LOG.trace("-> OP 12 {}", contentAll);
+                LOG.trace("-> OP {} {}", opCode, contentAll);
                 // ignore op 12 for now
                 break;
             }
@@ -320,7 +337,6 @@ public class AudioWebSocket extends WebSocketAdapter
     @Override
     public void handleCallbackError(WebSocket websocket, Throwable cause)
     {
-        MDC.setContextMap(api.getContextMap());
         LOG.error("There was some audio websocket error", cause);
         api.getEventManager().handle(new ExceptionEvent(api, cause, true));
     }
@@ -352,7 +368,6 @@ public class AudioWebSocket extends WebSocketAdapter
     @Override
     public void onConnectError(WebSocket webSocket, WebSocketException e)
     {
-        MDC.setContextMap(api.getContextMap());
         LOG.warn("Failed to establish websocket connection: {} - {}\nClosing connection and attempting to reconnect.",
             e.getError(), e.getMessage());
         this.close(ConnectionStatus.ERROR_WEBSOCKET_UNABLE_TO_CONNECT);
@@ -651,8 +666,8 @@ public class AudioWebSocket extends WebSocketAdapter
     }
 
     @Override
-    @Deprecated
-    protected void finalize() throws Throwable
+    @SuppressWarnings("deprecation")
+    protected void finalize()
     {
         if (!shutdown)
         {
@@ -679,7 +694,7 @@ public class AudioWebSocket extends WebSocketAdapter
             Runnable r2 = () ->
             {
                 if (contextMap != null)
-                    MDC.setContextMap(contextMap);
+                    contextMap.forEach(MDC::put);
                 r.run();
             };
             final Thread t = new Thread(AudioManagerImpl.AUDIO_THREADS, r2, identifier + " - Thread " + threadCount.getAndIncrement());

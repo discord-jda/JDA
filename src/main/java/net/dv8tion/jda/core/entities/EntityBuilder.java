@@ -699,6 +699,27 @@ public class EntityBuilder
             largeImageKey, largeImageText, smallImageKey, smallImageText);
     }
 
+    public EmoteImpl createEmote(GuildImpl guildObj, JSONObject json, boolean fake)
+    {
+        JSONArray emoteRoles = json.isNull("roles") ? new JSONArray() : json.getJSONArray("roles");
+        final long emoteId = json.getLong("id");
+        final User user = json.isNull("user") ? null : createFakeUser(json.getJSONObject("user"), false);
+        EmoteImpl emoteObj = (EmoteImpl) guildObj.getEmoteById(emoteId);
+        if (emoteObj == null)
+            emoteObj = new EmoteImpl(emoteId, guildObj, fake);
+        Set<Role> roleSet = emoteObj.getRoleSet();
+
+        roleSet.clear();
+        for (int j = 0; j < emoteRoles.length(); j++)
+            roleSet.add(guildObj.getRoleById(emoteRoles.getString(j)));
+        if (user != null)
+            emoteObj.setUser(user);
+        return emoteObj
+                .setName(json.optString("name"))
+                .setAnimated(json.optBoolean("animated"))
+                .setManaged(Helpers.optBoolean(json, "managed"));
+    }
+
     public Category createCategory(JSONObject json, long guildId)
     {
         return createCategory(json, guildId, true);
@@ -1301,8 +1322,18 @@ public class EntityBuilder
         final VerificationLevel guildVerificationLevel = VerificationLevel.fromKey(Helpers.optInt(guildObject, "verification_level", -1));
         final int presenceCount = Helpers.optInt(object, "approximate_presence_count", -1);
         final int memberCount = Helpers.optInt(object, "approximate_member_count", -1);
+        final Set<String> guildFeatures;
 
-        final Invite.Guild guild = new InviteImpl.GuildImpl(guildId, guildIconId, guildName, guildSplashId, guildVerificationLevel, presenceCount, memberCount);
+        if (guildObject.isNull("features"))
+        {
+            guildFeatures = Collections.emptySet();
+        }
+        else
+        {
+            guildFeatures = Collections.unmodifiableSet(StreamSupport.stream(guildObject.getJSONArray("features").spliterator(), false).map(String::valueOf).collect(Collectors.toSet()));
+        }
+
+        final Invite.Guild guild = new InviteImpl.GuildImpl(guildId, guildIconId, guildName, guildSplashId, guildVerificationLevel, presenceCount, memberCount, guildFeatures);
 
         final int maxAge;
         final int maxUses;

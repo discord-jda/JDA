@@ -185,6 +185,52 @@ public interface JDA
     long getPing();
 
     /**
+     * This method will block until JDA has reached the specified connection status.
+     *
+     * <h2>Login Cycle</h2>
+     * <ol>
+     *  <li>{@link net.dv8tion.jda.core.JDA.Status#INITIALIZING INITIALIZING}</li>
+     *  <li>{@link net.dv8tion.jda.core.JDA.Status#INITIALIZED INITIALIZED}</li>
+     *  <li>{@link net.dv8tion.jda.core.JDA.Status#LOGGING_IN LOGGING_IN}</li>
+     *  <li>{@link net.dv8tion.jda.core.JDA.Status#CONNECTING_TO_WEBSOCKET CONNECTING_TO_WEBSOCKET}</li>
+     *  <li>{@link net.dv8tion.jda.core.JDA.Status#IDENTIFYING_SESSION IDENTIFYING_SESSION}</li>
+     *  <li>{@link net.dv8tion.jda.core.JDA.Status#AWAITING_LOGIN_CONFIRMATION AWAITING_LOGIN_CONFIRMATION}</li>
+     *  <li>{@link net.dv8tion.jda.core.JDA.Status#LOADING_SUBSYSTEMS LOADING_SUBSYSTEMS}</li>
+     *  <li>{@link net.dv8tion.jda.core.JDA.Status#CONNECTED CONNECTED}</li>
+     * </ol>
+     *
+     * @param  status
+     *         The init status to wait for, once JDA has reached the specified
+     *         stage of the startup cycle this method will return.
+     *
+     * @throws InterruptedException
+     *         If this thread is interrupted while waiting
+     * @throws IllegalArgumentException
+     *         If the provided status is null or not an init status ({@link Status#isInit()})
+     * @throws IllegalStateException
+     *         If JDA is shutdown during this wait period
+     *
+     * @return The current JDA instance, for chaining convenience
+     */
+    JDA awaitStatus(JDA.Status status) throws InterruptedException;
+
+    /**
+     * This method will block until JDA has reached the status {@link Status#CONNECTED}.
+     * <br>This status means that JDA finished setting up its internal cache and is ready to be used.
+     *
+     * @throws InterruptedException
+     *         If this thread is interrupted while waiting
+     * @throws IllegalStateException
+     *         If JDA is shutdown during this wait period
+     *
+     * @return The current JDA instance, for chaining convenience
+     */
+    default JDA awaitReady() throws InterruptedException
+    {
+        return awaitStatus(Status.CONNECTED);
+    }
+
+    /**
      * Contains all {@code cf-ray} headers that JDA received in this session.
      * <br>These receive a new value whenever the WebSockedClient reconnects to the gateway.
      *
@@ -1091,4 +1137,58 @@ public interface JDA
      * @return The {@link net.dv8tion.jda.bot.JDABot} registry for this instance of JDA.
      */
     JDABot asBot();
+
+    /**
+     * Retrieves a {@link net.dv8tion.jda.core.entities.Webhook Webhook} by its id.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>We do not have the required permissions</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>A webhook with this id does not exist</li>
+     * </ul>
+     *
+     * @param  webhookId
+     *         The webhook id
+     *
+     * @throws IllegalArgumentException
+     *         If the {@code webhookId} is null or empty
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Webhook Webhook}
+     *          <br>The webhook object.
+     *
+     * @see    Guild#getWebhooks()
+     * @see    TextChannel#getWebhooks()
+     */
+    RestAction<Webhook> getWebhookById(String webhookId);
+
+    /**
+     * Retrieves a {@link net.dv8tion.jda.core.entities.Webhook Webhook} by its id.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>We do not have the required permissions</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>A webhook with this id does not exist</li>
+     * </ul>
+     *
+     * @param  webhookId
+     *         The webhook id
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Webhook Webhook}
+     *          <br>The webhook object.
+     *
+     * @see    Guild#getWebhooks()
+     * @see    TextChannel#getWebhooks()
+     */
+    default RestAction<Webhook> getWebhookById(long webhookId)
+    {
+        return getWebhookById(Long.toUnsignedString(webhookId));
+    }
 }

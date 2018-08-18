@@ -89,6 +89,12 @@ public enum ConnectionStatus
      */
     ERROR_WEBSOCKET_UNABLE_TO_CONNECT,
     /**
+     * Indicates that the audio WebSocket was unable to complete a handshake with discord, because
+     * discord did not provide any supported encryption modes.
+     * <br>JDA automatically attempts to reconnect when this error occurs.
+     */
+    ERROR_UNSUPPORTED_ENCRYPTION_MODES,
+    /**
      * Indicates that the UDP setup failed. This is caused when JDA cannot properly communicate with Discord to
      * discover the system's external IP and port which audio data will be sent from. Typically caused by an internet
      * problem or an overly aggressive NAT port table.

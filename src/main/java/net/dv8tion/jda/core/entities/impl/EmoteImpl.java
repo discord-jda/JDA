@@ -19,9 +19,10 @@ package net.dv8tion.jda.core.entities.impl;
 import net.dv8tion.jda.client.managers.EmoteManager;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.ListedEmote;
 import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
@@ -37,28 +38,34 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * @since  2.2
  */
-public class EmoteImpl implements Emote
+public class EmoteImpl implements ListedEmote
 {
     private final long id;
     private final GuildImpl guild;
     private final JDAImpl api;
     private final Set<Role> roles;
+    private final boolean fake;
 
     private final ReentrantLock mngLock = new ReentrantLock();
     private volatile EmoteManager manager = null;
-    @Deprecated
-    private volatile net.dv8tion.jda.client.managers.EmoteManagerUpdatable managerUpdatable = null;
 
     private boolean managed = false;
     private boolean animated = false;
     private String name;
+    private User user;
 
     public EmoteImpl(long id, GuildImpl guild)
+    {
+        this(id, guild, false);
+    }
+
+    public EmoteImpl(long id, GuildImpl guild, boolean fake)
     {
         this.id = id;
         this.guild = guild;
         this.api = guild.getJDA();
         this.roles = Collections.synchronizedSet(new HashSet<>());
+        this.fake = fake;
     }
 
     public EmoteImpl(long id, JDAImpl api)
@@ -67,6 +74,7 @@ public class EmoteImpl implements Emote
         this.api = api;
         this.guild = null;
         this.roles = null;
+        this.fake = true;
     }
 
     @Override
@@ -78,9 +86,15 @@ public class EmoteImpl implements Emote
     @Override
     public List<Role> getRoles()
     {
-        if (isFake())
+        if (!hasRoles())
             throw new IllegalStateException("Unable to return roles because this emote is fake. (We do not know the origin Guild of this emote)");
         return Collections.unmodifiableList(new LinkedList<>(roles));
+    }
+
+    @Override
+    public boolean hasRoles()
+    {
+        return roles != null;
     }
 
     @Override
@@ -98,7 +112,7 @@ public class EmoteImpl implements Emote
     @Override
     public boolean isFake()
     {
-        return guild == null;
+        return fake;
     }
 
     @Override
@@ -111,6 +125,20 @@ public class EmoteImpl implements Emote
     public JDA getJDA()
     {
         return api;
+    }
+
+    @Override
+    public User getUser()
+    {
+        if (!hasUser())
+            throw new IllegalStateException("This emote does not have a user");
+        return user;
+    }
+
+    @Override
+    public boolean hasUser()
+    {
+        return user != null;
     }
 
     @Override
@@ -130,23 +158,6 @@ public class EmoteImpl implements Emote
     }
 
     @Override
-    @Deprecated
-    public net.dv8tion.jda.client.managers.EmoteManagerUpdatable getManagerUpdatable()
-    {
-        net.dv8tion.jda.client.managers.EmoteManagerUpdatable m = managerUpdatable;
-        if (m == null)
-        {
-            m = MiscUtil.locked(mngLock, () ->
-            {
-                if (managerUpdatable == null)
-                    managerUpdatable = new net.dv8tion.jda.client.managers.EmoteManagerUpdatable(this);
-                return managerUpdatable;
-            });
-        }
-        return m;
-    }
-
-    @Override
     public boolean isAnimated()
     {
         return animated;
@@ -155,7 +166,7 @@ public class EmoteImpl implements Emote
     @Override
     public AuditableRestAction<Void> delete()
     {
-        if (isFake())
+        if (getGuild() == null)
             throw new IllegalStateException("The emote you are trying to delete is not an actual emote we have access to (it is fake)!");
         if (managed)
             throw new UnsupportedOperationException("You cannot delete a managed emote!");
@@ -196,6 +207,12 @@ public class EmoteImpl implements Emote
         return this;
     }
 
+    public EmoteImpl setUser(User user)
+    {
+        this.user = user;
+        return this;
+    }
+
     // -- Set Getter --
 
     public Set<Role> getRoleSet()
@@ -232,7 +249,7 @@ public class EmoteImpl implements Emote
     public EmoteImpl clone()
     {
         if (isFake()) return null;
-        EmoteImpl copy = new EmoteImpl(id, guild).setManaged(managed).setAnimated(animated).setName(name);
+        EmoteImpl copy = new EmoteImpl(id, guild).setUser(user).setManaged(managed).setAnimated(animated).setName(name);
         copy.roles.addAll(roles);
         return copy;
 

@@ -17,7 +17,6 @@ package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.managers.ChannelManager;
-import net.dv8tion.jda.core.managers.ChannelManagerUpdatable;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.ChannelAction;
@@ -246,21 +245,6 @@ public interface Channel extends ISnowflake
      * @return The ChannelManager of this Channel
      */
     ChannelManager getManager();
-
-    /**
-     * Returns the {@link net.dv8tion.jda.core.managers.ChannelManagerUpdatable ChannelManagerUpdatable} for this Channel.
-     * In the ChannelManager, you can modify the name, topic and position of this Channel.
-     * <br>This can be used to bulk update channel settings.
-     *
-     * @return The ChannelManagerUpdatable of this Channel
-     *
-     * @see    #getManager()
-     *
-     * @deprecated
-     *         Use {@link #getManager()} instead
-     */
-    @Deprecated
-    ChannelManagerUpdatable getManagerUpdatable();
 
     /**
      * Deletes this Channel.
