@@ -206,6 +206,7 @@ Be sure to replace the **VERSION** key below with the one of the versions shown 
     <version>VERSION</version>
     <exclusions>
         <exclusion>
+            <groupId>club.minnced</groupId>
             <artifactId>opus-java</artifactId>
         </exclusion>
     </exclusions>
