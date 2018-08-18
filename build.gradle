@@ -168,7 +168,10 @@ javadoc {
             'net/dv8tion/jda/core/requests/Requester.java',
             'net/dv8tion/jda/core/requests/Response.java',
             'net/dv8tion/jda/core/requests/ratelimit')
-    exclude('net/dv8tion/jda/core/utils/cache/impl')
+    exclude('net/dv8tion/jda/core/utils/cache/impl',
+            'net/dv8tion/jda/core/utils/JDALogger.java',
+            'net/dv8tion/jda/core/utils/Checks.java',
+            'net/dv8tion/jda/core/utils/Helpers.java')
 
     //voice crypto
     exclude('com/iwebpp/crypto')
@@ -213,7 +216,7 @@ String getProjectProperty(String propertyName) {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '4.8'
+    gradleVersion = '4.9'
 }
 
 build {
