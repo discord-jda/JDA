@@ -346,16 +346,16 @@ version was by looking at the [release page](https://github.com/DV8FromTheWorld/
 This project requires **Java 8**.<br>
 All dependencies are managed automatically by Gradle.
  * NV Websocket Client
-   * Version: **2.4**
+   * Version: **2.5**
    * [Github](https://github.com/TakahikoKawasaki/nv-websocket-client)
-   * [JCenter Repository](https://bintray.com/bintray/jcenter/com.neovisionaries%3Anv-websocket-client/2.4)
+   * [JCenter Repository](https://bintray.com/bintray/jcenter/com.neovisionaries%3Anv-websocket-client/view)
  * OkHttp
    * Version: **3.8.1**
    * [Github](https://github.com/square/okhttp)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/com.squareup.okhttp3:okhttp)
  * Apache Commons Collections4
    * Version: **4.1**
-   * [Website](https://commons.apache.org/proper/commons-collections/)
+   * [Website](https://commons.apache.org/proper/commons-collections)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/org.apache.commons%3Acommons-collections4/view)
  * org.json
    * Version: **20160810**
@@ -370,7 +370,7 @@ All dependencies are managed automatically by Gradle.
    * [Website](https://www.slf4j.org/)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/org.slf4j%3Aslf4j-api/view)
  * opus-java
-   * Version: **1.0.2**
+   * Version: **1.0.3**
    * [GitHub](https://github.com/discord-java/opus-java)
    * [JCenter Repository](https://bintray.com/minndevelopment/maven/opus-java)
 
