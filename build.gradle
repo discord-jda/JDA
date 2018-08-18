@@ -215,10 +215,6 @@ String getProjectProperty(String propertyName) {
     return property
 }
 
-wrapper {
-    gradleVersion = '4.9'
-}
-
 build {
 // clean prevents incremental compilation. should only happen on bintrayUpload
 //    dependsOn clean
