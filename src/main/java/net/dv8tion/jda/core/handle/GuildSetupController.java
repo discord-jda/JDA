@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -309,6 +310,16 @@ public class GuildSetupController
         return false;
     }
 
+    public Set<GuildSetupNode> getSetupNodes()
+    {
+        return new HashSet<>(setupNodes.valueCollection());
+    }
+
+    public Set<GuildSetupNode> getSetupNodes(Status status)
+    {
+        return getSetupNodes().stream().filter((node) -> node.status == status).collect(Collectors.toSet());
+    }
+
     // Chunking
 
     private void sendChunkRequest(JSONArray arr)
@@ -387,5 +398,16 @@ public class GuildSetupController
             sendSyncRequest(array);
             syncingCount = 0;
         }
+    }
+
+    public enum Status
+    {
+        INIT,
+        SYNCING,
+        CHUNKING,
+        BUILDING,
+        READY,
+        UNAVAILABLE,
+        REMOVED
     }
 }

@@ -50,6 +50,7 @@ class GuildSetupNode
     final boolean join;
     final boolean sync;
     boolean markedUnavailable = false;
+    GuildSetupController.Status status = GuildSetupController.Status.INIT;
 
     GuildSetupNode(long id, GuildSetupController controller, boolean join)
     {
@@ -62,6 +63,12 @@ class GuildSetupNode
     private GuildSetupController getController()
     {
         return controller.get();
+    }
+
+    void updateStatus(GuildSetupController.Status status)
+    {
+        GuildSetupController.log.trace("[{}] Updated status {}->{}", id, this.status, status);
+        this.status = status;
     }
 
     boolean containsMember(long userId)
@@ -79,6 +86,7 @@ class GuildSetupNode
 
     void reset()
     {
+        updateStatus(GuildSetupController.Status.UNAVAILABLE);
         expectedMemberCount = 1;
         partialGuild = null;
         requestedChunk = false;
@@ -125,6 +133,7 @@ class GuildSetupNode
         {
             // We are using a client-account and joined a guild
             //  in that case we need to sync before doing anything
+            updateStatus(GuildSetupController.Status.SYNCING);
             getController().addGuildForSyncing(id, join);
             return;
         }
@@ -216,6 +225,7 @@ class GuildSetupNode
 
     void cleanup()
     {
+        updateStatus(GuildSetupController.Status.REMOVED);
         EventCache eventCache = getController().getJDA().getEventCache();
         eventCache.clear(EventCache.Type.GUILD, id);
         if (partialGuild == null)
@@ -257,6 +267,7 @@ class GuildSetupNode
 
     private void completeSetup()
     {
+        updateStatus(GuildSetupController.Status.BUILDING);
         JDAImpl api = getController().getJDA();
         for (TLongIterator it = removedMembers.iterator(); it.hasNext(); )
             members.remove(it.next());
@@ -275,6 +286,7 @@ class GuildSetupNode
             api.getEventManager().handle(new GuildReadyEvent(api, api.getResponseTotal(), guild));
             getController().ready(id);
         }
+        updateStatus(GuildSetupController.Status.READY);
         GuildSetupController.log.debug("Finished setup for guild {} firing cached events {}", id, cachedEvents.size());
         api.getClient().handle(cachedEvents);
         api.getEventCache().playbackCache(EventCache.Type.GUILD, id);
@@ -288,6 +300,7 @@ class GuildSetupNode
         JSONArray memberArray = partialGuild.getJSONArray("members");
         if (memberArray.length() < expectedMemberCount && !requestedChunk)
         {
+            updateStatus(GuildSetupController.Status.CHUNKING);
             getController().addGuildForChunking(id, join);
             requestedChunk = true;
         }
@@ -302,6 +315,7 @@ class GuildSetupNode
                 "member_count: {} members: {} actual_members: {} guild_id: {}",
                 expectedMemberCount, memberArray.length(), members.size(), id);
             members.clear();
+            updateStatus(GuildSetupController.Status.CHUNKING);
             getController().addGuildForChunking(id, join);
             requestedChunk = true;
         }
