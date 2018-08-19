@@ -72,7 +72,7 @@ import java.util.function.Consumer;
 public class MessageAction extends RestAction<Message> implements Appendable
 {
     private static final String CONTENT_TOO_BIG = String.format("A message may not exceed %d characters. Please limit your input!", Message.MAX_CONTENT_LENGTH);
-    protected final Map<String, InputStream> files = new HashMap<>();
+    protected final Map<String, InputStream> files = new LinkedHashMap<>();
     protected final Set<InputStream> ownedResources = new HashSet<>();
     protected final StringBuilder content;
     protected final MessageChannel channel;
