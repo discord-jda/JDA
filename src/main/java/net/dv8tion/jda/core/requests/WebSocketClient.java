@@ -1011,9 +1011,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     sentAuthInfo = true;
                     if (!processingReady)
                     {
-                        api.setStatus(JDA.Status.LOADING_SUBSYSTEMS);
                         initiating = false;
                         ready();
+                    }
+                    else
+                    {
+                        LOG.debug("Resumed while still processing initial ready");
+                        api.setStatus(JDA.Status.LOADING_SUBSYSTEMS);
                     }
                     if (!content.isNull("_trace"))
                         updateTraces(content.getJSONArray("_trace"), "RESUMED", WebSocketCode.DISPATCH);
