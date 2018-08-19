@@ -28,6 +28,7 @@ import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import okhttp3.internal.http.HttpMethod;
+import org.jetbrains.annotations.Async;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
@@ -99,7 +100,7 @@ public class Requester
         return api;
     }
 
-    public <T> void request(Request<T> apiRequest)
+    public <T> void request(@Async.Schedule Request<T> apiRequest)
     {
         if (rateLimiter.isShutdown) 
             throw new IllegalStateException("The Requester has been shutdown! No new requests can be requested!");
@@ -132,7 +133,7 @@ public class Requester
         return execute(apiRequest, false, handleOnRateLimit);
     }
 
-    public Long execute(Request<?> apiRequest, boolean retried, boolean handleOnRatelimit)
+    public Long execute(@Async.Execute Request<?> apiRequest, boolean retried, boolean handleOnRatelimit)
     {
         Route.CompiledRoute route = apiRequest.getRoute();
         Long retryAfter = rateLimiter.getRateLimit(route);
