@@ -19,9 +19,15 @@ JDA strives to provide a clean and full wrapping of the Discord REST api and its
 JDA will be continued with version 3.x and will support Bot-features (for bot-accounts) and Client-features (for user-accounts).
 _Please see the [Discord docs](https://discordapp.com/developers/docs/reference) for more information about bot accounts._
 
-
-This officially makes [JDA-Client](https://github.com/DV8FromTheWorld/JDA-Client) deprecated.
-Please do not continue using it, and instead switch to the promoted 3.x version listed further below.
+1. [Examples](#creating-the-jda-object)
+2. [Sharding](#sharding-a-bot)
+3. [Download](#download)
+4. [Documentation](#documentation)
+5. [Support](#getting-help)
+6. [Extensions And Plugins](#third-party-recommendations)
+7. [Contributing](#contributing-to-jda)
+8. [Dependencies](#dependencies)
+9. [Other Libraries](#related-projects)
 
 ## UserBots and SelfBots
 
@@ -108,10 +114,20 @@ public class MessageListener extends ListenerAdapter
 }
 ```
 
+### More Examples
+We provide a small set of Examples in the [Example Directory](https://github.com/DV8FromTheWorld/JDA/tree/master/src/examples/java).
+
+In addition you can look at the many Discord Bots that were implemented using JDA:
+- [Yui](https://github.com/DV8FromTheWorld/Yui)
+- [Vortex](https://github.com/jagrosh/Vortex)
+- [FredBoat](https://github.com/Frederikam/FredBoat)
+
+[And many more!](https://github.com/search?q=JDA+discord+bot&type=Repositories&utf8=%E2%9C%93)
+
 > **Note**: In these examples we override methods from the inheriting class `ListenerAdapter`.<br>
 > The usage of the `@Override` annotation is recommended to validate methods.
 
-### Sharding a Bot
+## Sharding a Bot
 
 Discord allows Bot-accounts to share load across sessions by limiting them to a fraction of the total connected Guilds/Servers of the bot.
 <br>This can be done using **sharding** which will limit JDA to only a certain amount of Guilds/Servers including events and entities.
@@ -128,7 +144,7 @@ of this controller and add the same instance to each builder: `builder.setSessio
 
 Since version **3.4.0** JDA provides a `ShardManager` which automates this building process.
 
-#### Example Sharding - Using JDABuilder
+### Example Sharding - Using JDABuilder
 
 ```java
 public static void main(String[] args) throws Exception
@@ -146,7 +162,7 @@ public static void main(String[] args) throws Exception
 
 > When the `useSharding` method is invoked for the first time, the builder automatically sets a SessionController internally (if none is present)
 
-#### Example Sharding - Using DefaultShardManager
+### Example Sharding - Using DefaultShardManager
 ```java
 public static void main(String[] args) throws Exception
 {
@@ -157,15 +173,6 @@ public static void main(String[] args) throws Exception
 }
 ```
 
-## More Examples
-We provide a small set of Examples in the [Example Directory](https://github.com/DV8FromTheWorld/JDA/tree/master/src/examples/java).
-
-In addition you can look at the many Discord Bots that were implemented using JDA:
-- [Yui](https://github.com/DV8FromTheWorld/Yui)
-- [Vortex](https://github.com/jagrosh/Vortex)
-- [FredBoat](https://github.com/Frederikam/FredBoat)
-
-[And many more!](https://github.com/search?q=JDA+discord+bot&type=Repositories&utf8=%E2%9C%93)
 
 ## Download
 Latest Stable Version: [GitHub Release](https://github.com/DV8FromTheWorld/JDA/releases/latest)
@@ -199,6 +206,7 @@ Be sure to replace the **VERSION** key below with the one of the versions shown 
     <version>VERSION</version>
     <exclusions>
         <exclusion>
+            <groupId>club.minnced</groupId>
             <artifactId>opus-java</artifactId>
         </exclusion>
     </exclusions>
@@ -339,16 +347,16 @@ version was by looking at the [release page](https://github.com/DV8FromTheWorld/
 This project requires **Java 8**.<br>
 All dependencies are managed automatically by Gradle.
  * NV Websocket Client
-   * Version: **2.4**
+   * Version: **2.5**
    * [Github](https://github.com/TakahikoKawasaki/nv-websocket-client)
-   * [JCenter Repository](https://bintray.com/bintray/jcenter/com.neovisionaries%3Anv-websocket-client/2.4)
+   * [JCenter Repository](https://bintray.com/bintray/jcenter/com.neovisionaries%3Anv-websocket-client/view)
  * OkHttp
    * Version: **3.8.1**
    * [Github](https://github.com/square/okhttp)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/com.squareup.okhttp3:okhttp)
  * Apache Commons Collections4
    * Version: **4.1**
-   * [Website](https://commons.apache.org/proper/commons-collections/)
+   * [Website](https://commons.apache.org/proper/commons-collections)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/org.apache.commons%3Acommons-collections4/view)
  * org.json
    * Version: **20160810**
@@ -363,7 +371,7 @@ All dependencies are managed automatically by Gradle.
    * [Website](https://www.slf4j.org/)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/org.slf4j%3Aslf4j-api/view)
  * opus-java
-   * Version: **1.0.2**
+   * Version: **1.0.3**
    * [GitHub](https://github.com/discord-java/opus-java)
    * [JCenter Repository](https://bintray.com/minndevelopment/maven/opus-java)
 
