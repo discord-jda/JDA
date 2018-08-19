@@ -993,6 +993,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         JSONObject content = raw.getJSONObject("d");
         LOG.trace("{} -> {}", type, content);
 
+        JDAImpl jda = (JDAImpl) getJDA();
         try
         {
             switch (type)
@@ -1013,11 +1014,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     {
                         initiating = false;
                         ready();
+                        jda.getGuildSetupController().onResume(false);
                     }
                     else
                     {
                         LOG.debug("Resumed while still processing initial ready");
-                        api.setStatus(JDA.Status.LOADING_SUBSYSTEMS);
+                        jda.setStatus(JDA.Status.LOADING_SUBSYSTEMS);
+                        jda.getGuildSetupController().onResume(true);
                     }
                     if (!content.isNull("_trace"))
                         updateTraces(content.getJSONArray("_trace"), "RESUMED", WebSocketCode.DISPATCH);
@@ -1041,7 +1044,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
 
         if (responseTotal % EventCache.TIMEOUT_AMOUNT == 0)
-            ((JDAImpl) getJDA()).getEventCache().timeout(responseTotal);
+            jda.getEventCache().timeout(responseTotal);
     }
 
     @Override

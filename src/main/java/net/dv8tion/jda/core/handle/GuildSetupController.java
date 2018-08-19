@@ -143,6 +143,28 @@ public class GuildSetupController
         node.handleReady(obj);
     }
 
+    // - WebSocketClient
+    public void onResume(boolean isInit)
+    {
+        if (setupNodes.isEmpty())
+            return;
+        if (isInit)
+        {
+            // Override current chunking and syncing state - we were interrupted
+            long guildsRequestedChunks = setupNodes.valueCollection().stream().filter((node) -> node.requestedChunk).count();
+            this.setIncompleteCount(Math.max(0, incompleteCount) + (int) guildsRequestedChunks);
+            this.syncingCount = setupNodes.size();
+        }
+
+        setupNodes.forEachEntry((id, node) -> {
+            if (node.sync)
+                addGuildForSyncing(id, node.join);
+            if (node.requestedChunk)
+                addGuildForChunking(id, node.join);
+            return true;
+        });
+    }
+
     // - ReadyHandler (for client accounts)
     // - GuildCreateHandler
     public void onCreate(long id, JSONObject obj)
