@@ -33,6 +33,8 @@ import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("WeakerAccess")
 public class GuildSetupController
@@ -148,12 +150,15 @@ public class GuildSetupController
     {
         if (setupNodes.isEmpty())
             return;
-        if (isInit)
+        if (isInit && incompleteCount > 0)
         {
-            // Override current chunking and syncing state - we were interrupted
-            long guildsRequestedChunks = setupNodes.valueCollection().stream().filter((node) -> node.requestedChunk).count();
-            this.setIncompleteCount(Math.max(0, incompleteCount) + (int) guildsRequestedChunks);
-            this.syncingCount = setupNodes.size();
+            //Override current chunking and syncing state - we were interrupted
+            // this count will be adjusted by addGuildForX(id, join) later, we need to fix the displacement here
+            Set<GuildSetupNode> joinedGuilds = setupNodes.valueCollection().stream().filter((node) -> node.join).collect(Collectors.toSet());
+            long displacementChunking = joinedGuilds.stream().filter((node) -> node.requestedChunk).count();
+            long displacementSyncing  = joinedGuilds.stream().filter((node) -> node.sync).count();
+            this.incompleteCount -= (int) displacementChunking;
+            this.syncingCount -= (int) displacementSyncing;
         }
 
         setupNodes.forEachEntry((id, node) -> {
