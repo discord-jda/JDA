@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -48,6 +49,8 @@ public class GuildSetupController
     private final TLongSet syncingGuilds;
     private int incompleteCount = 0;
     private int syncingCount = 0;
+
+    StatusListener listener = (id, oldStatus, newStatus) -> log.trace("[{}] Updated status {}->{}", id, oldStatus, newStatus);
 
     public GuildSetupController(JDAImpl api)
     {
@@ -331,6 +334,11 @@ public class GuildSetupController
         return getSetupNodeById(MiscUtil.parseSnowflake(id));
     }
 
+    public void setStatusListener(StatusListener listener)
+    {
+        this.listener = Objects.requireNonNull(listener);
+    }
+
     // Chunking
 
     private void sendChunkRequest(JSONArray arr)
@@ -420,5 +428,11 @@ public class GuildSetupController
         READY,
         UNAVAILABLE,
         REMOVED
+    }
+
+    @FunctionalInterface
+    public interface StatusListener
+    {
+        void onStatusChange(long guildId, Status oldStatus, Status newStatus);
     }
 }

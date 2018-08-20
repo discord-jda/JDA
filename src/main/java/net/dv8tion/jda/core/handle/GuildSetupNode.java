@@ -77,6 +77,18 @@ public class GuildSetupNode
         return partialGuild;
     }
 
+    public int getExpectedMemberCount()
+    {
+        return expectedMemberCount;
+    }
+
+    public int getCurrentMemberCount()
+    {
+        TLongHashSet knownMembers = new TLongHashSet(members.keySet());
+        knownMembers.removeAll(removedMembers);
+        return knownMembers.size();
+    }
+
     public boolean isJoin()
     {
         return join;
@@ -95,6 +107,13 @@ public class GuildSetupNode
     public boolean requestedSync()
     {
         return requestedSync;
+    }
+
+    public boolean containsMember(long userId)
+    {
+        if (members == null || members.isEmpty())
+            return false;
+        return members.containsKey(userId);
     }
 
     @Override
@@ -133,21 +152,8 @@ public class GuildSetupNode
 
     void updateStatus(GuildSetupController.Status status)
     {
-        GuildSetupController.log.trace("[{}] Updated status {}->{}", id, this.status, status);
+        getController().listener.onStatusChange(id, this.status, status);
         this.status = status;
-    }
-
-    boolean containsMember(long userId)
-    {
-        if (members == null || members.isEmpty())
-            return false;
-        for (TLongObjectIterator<JSONObject> it = members.iterator(); it.hasNext();)
-        {
-            it.advance();
-            if (it.key() == userId)
-                return true;
-        }
-        return false;
     }
 
     void reset()
