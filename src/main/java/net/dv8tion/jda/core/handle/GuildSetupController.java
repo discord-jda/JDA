@@ -150,30 +150,30 @@ public class GuildSetupController
         node.handleReady(obj);
     }
 
-    // - WebSocketClient
-    public void onResume(boolean isInit)
-    {
-        if (setupNodes.isEmpty())
-            return;
-        if (isInit && incompleteCount > 0)
-        {
-            //Override current chunking and syncing state - we were interrupted
-            // this count will be adjusted by addGuildForX(id, join) later, we need to fix the displacement here
-            Set<GuildSetupNode> joinedGuilds = setupNodes.valueCollection().stream().filter((node) -> node.join).collect(Collectors.toSet());
-            long displacementChunking = joinedGuilds.stream().filter((node) -> node.requestedChunk).count();
-            long displacementSyncing  = joinedGuilds.stream().filter((node) -> node.sync).count();
-            this.incompleteCount -= (int) displacementChunking;
-            this.syncingCount -= (int) displacementSyncing;
-        }
-
-        setupNodes.forEachEntry((id, node) -> {
-            if (node.sync)
-                addGuildForSyncing(id, node.join);
-            if (node.requestedChunk)
-                addGuildForChunking(id, node.join);
-            return true;
-        });
-    }
+//    // - WebSocketClient
+//    public void onResume(boolean isInit)
+//    {
+//        if (setupNodes.isEmpty())
+//            return;
+//        if (isInit && incompleteCount > 0)
+//        {
+//            //Override current chunking and syncing state - we were interrupted
+//            // this count will be adjusted by addGuildForX(id, join) later, we need to fix the displacement here
+//            Set<GuildSetupNode> joinedGuilds = setupNodes.valueCollection().stream().filter((node) -> node.join).collect(Collectors.toSet());
+//            long displacementChunking = joinedGuilds.stream().filter((node) -> node.requestedChunk).count();
+//            long displacementSyncing  = joinedGuilds.stream().filter((node) -> node.sync).count();
+//            this.incompleteCount -= (int) displacementChunking;
+//            this.syncingCount -= (int) displacementSyncing;
+//        }
+//
+//        setupNodes.forEachEntry((id, node) -> {
+//            if (node.sync)
+//                addGuildForSyncing(id, node.join);
+//            if (node.requestedChunk)
+//                addGuildForChunking(id, node.join);
+//            return true;
+//        });
+//    }
 
     // - ReadyHandler (for client accounts)
     // - GuildCreateHandler
@@ -242,12 +242,8 @@ public class GuildSetupController
     {
         log.debug("Received member chunk for guild id: {} size: {}", id, chunk.length());
         GuildSetupNode node = setupNodes.get(id);
-        if (node == null)
-        {
-            log.warn("Received member chunk for a guild that is not currently chunking! ID: {}", id);
-            return;
-        }
-        node.handleMemberChunk(chunk);
+        if (node != null)
+            node.handleMemberChunk(chunk);
     }
 
     // - GuildMemberAddHandler
