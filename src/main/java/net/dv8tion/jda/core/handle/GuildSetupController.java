@@ -27,6 +27,7 @@ import net.dv8tion.jda.core.WebSocketCode;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.WebSocketClient;
 import net.dv8tion.jda.core.utils.JDALogger;
+import net.dv8tion.jda.core.utils.MiscUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -318,6 +319,16 @@ public class GuildSetupController
     public Set<GuildSetupNode> getSetupNodes(Status status)
     {
         return getSetupNodes().stream().filter((node) -> node.status == status).collect(Collectors.toSet());
+    }
+
+    public GuildSetupNode getSetupNodeById(long id)
+    {
+        return setupNodes.get(id);
+    }
+
+    public GuildSetupNode getSetupNodeById(String id)
+    {
+        return getSetupNodeById(MiscUtil.parseSnowflake(id));
     }
 
     // Chunking

@@ -30,12 +30,13 @@ import net.dv8tion.jda.core.utils.Helpers;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-class GuildSetupNode
+public class GuildSetupNode
 {
     private final long id;
     private final WeakReference<GuildSetupController> controller;
@@ -58,6 +59,71 @@ class GuildSetupNode
         this.controller = new WeakReference<>(controller);
         this.join = join;
         this.sync = controller.isClient();
+    }
+
+    public long getIdLong()
+    {
+        return id;
+    }
+
+    public String getId()
+    {
+        return Long.toUnsignedString(id);
+    }
+
+    @Nullable
+    public JSONObject getGuildPayload()
+    {
+        return partialGuild;
+    }
+
+    public boolean isJoin()
+    {
+        return join;
+    }
+
+    public boolean isMarkedUnavailable()
+    {
+        return markedUnavailable;
+    }
+
+    public boolean requestedChunks()
+    {
+        return requestedChunk;
+    }
+
+    public boolean requestedSync()
+    {
+        return requestedSync;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "GuildSetupNode[" + id + "|" + status + ']' +
+            '{' +
+                "expectedMemberCount=" + expectedMemberCount + ", " +
+                "requestedSync="       + requestedSync + ", " +
+                "requestedChunk="      + requestedChunk + ", " +
+                "join="                + join + ", " +
+                "sync="                + sync + ", " +
+                "markedUnavailable="   + markedUnavailable +
+            '}';
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Long.hashCode(id);
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (!(obj instanceof GuildSetupNode))
+            return false;
+        GuildSetupNode node = (GuildSetupNode) obj;
+        return node.id == id;
     }
 
     private GuildSetupController getController()
