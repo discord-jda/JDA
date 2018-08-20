@@ -82,7 +82,7 @@ public class GuildSetupController
             if (incompleteCount <= 0)
             {
                 // this happens during runtime -> chunk right away
-                sendChunkRequest(new JSONArray().put(id));
+                sendChunkRequest(id);
                 return;
             }
             incompleteCount++;
@@ -337,15 +337,15 @@ public class GuildSetupController
 
     // Chunking
 
-    private void sendChunkRequest(JSONArray arr)
+    private void sendChunkRequest(Object obj)
     {
-        log.debug("Sending chunking requests for {} guilds", arr.length());
+        log.debug("Sending chunking requests for {} guilds", obj instanceof JSONArray ? ((JSONArray) obj).length() : 1);
 
         getJDA().getClient().chunkOrSyncRequest(
             new JSONObject()
                 .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
                 .put("d", new JSONObject()
-                    .put("guild_id", arr)
+                    .put("guild_id", obj)
                     .put("query", "")
                     .put("limit", 0)));
     }

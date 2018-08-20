@@ -198,10 +198,11 @@ public class GuildSetupNode
             }
         }
         boolean unavailable = Helpers.optBoolean(partialGuild, "unavailable");
+        boolean wasMarkedUnavailable = this.markedUnavailable;
         this.markedUnavailable = unavailable;
         if (unavailable)
             return;
-        if (sync && !requestedSync)
+        if (wasMarkedUnavailable && sync && !requestedSync)
         {
             // We are using a client-account and joined a guild
             //  in that case we need to sync before doing anything
