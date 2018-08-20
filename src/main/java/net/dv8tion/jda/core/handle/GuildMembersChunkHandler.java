@@ -16,7 +16,11 @@
 
 package net.dv8tion.jda.core.handle;
 
+import net.dv8tion.jda.core.entities.EntityBuilder;
+import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.requests.WebSocketClient;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class GuildMembersChunkHandler extends SocketHandler
@@ -30,7 +34,19 @@ public class GuildMembersChunkHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long guildId = content.getLong("guild_id");
-        api.getGuildSetupController().onMemberChunk(guildId, content.getJSONArray("members"));
+        JSONArray members = content.getJSONArray("members");
+        GuildImpl guild = (GuildImpl) api.getGuildById(guildId);
+        if (guild != null)
+        {
+            WebSocketClient.LOG.debug("Received member chunk for guild that is already in cache. GuildId: {} Count: {}", guildId, members.length());
+            EntityBuilder builder = api.getEntityBuilder();
+            for (int i = 0; i < members.length(); i++)
+            {
+                JSONObject object = members.getJSONObject(i);
+                builder.createMember(guild, object);
+            }
+        }
+        api.getGuildSetupController().onMemberChunk(guildId, members);
         return null;
     }
 
