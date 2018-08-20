@@ -208,6 +208,7 @@ public class GuildSetupNode
             //  in that case we need to sync before doing anything
             updateStatus(GuildSetupController.Status.SYNCING);
             getController().addGuildForSyncing(id, join);
+            requestedSync = true;
             return;
         }
 
