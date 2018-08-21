@@ -175,12 +175,16 @@ public class GuildSetupNode
         if (!sync)
             return;
         partialGuild = obj;
-        boolean unavailable = Helpers.optBoolean(partialGuild, "unavailable");
-        if (unavailable)
-            return;
-
-        getController().addGuildForSyncing(id, join);
-        requestedSync = true;
+        markedUnavailable = Helpers.optBoolean(partialGuild, "unavailable");
+        if (markedUnavailable)
+        {
+            updateStatus(GuildSetupController.Status.UNAVAILABLE);
+        }
+        else
+        {
+            getController().addGuildForSyncing(id, join);
+            requestedSync = true;
+        }
     }
 
     void handleCreate(JSONObject obj)

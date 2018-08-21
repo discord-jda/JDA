@@ -148,6 +148,16 @@ public class GuildSetupController
         GuildSetupNode node = new GuildSetupNode(id, this, false);
         setupNodes.put(id, node);
         node.handleReady(obj);
+        if (node.markedUnavailable)
+        {
+            if (node.sync)
+            {
+                syncingCount--;
+                trySyncing();
+            }
+            incompleteCount--;
+            tryChunking();
+        }
     }
 
 //    // - WebSocketClient
@@ -193,6 +203,8 @@ public class GuildSetupController
         {
             //Looks like this guild decided to become available again during startup
             // that means we can now consider it for ReadyEvent status again!
+            if (node.sync)
+                syncingCount++;
             incompleteCount++;
         }
         node.handleCreate(obj);
