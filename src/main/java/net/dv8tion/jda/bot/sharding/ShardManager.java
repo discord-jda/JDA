@@ -466,13 +466,8 @@ public interface ShardManager
      * @param  id
      *         The id of the requested {@link net.dv8tion.jda.core.entities.User User}.
      *
-     * @throws java.lang.NumberFormatException
-     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      * @throws java.lang.IllegalArgumentException
-     *         <ul>
-     *             <li>If the provided id String is null.</li>
-     *             <li>If the provided id String is empty.</li>
-     *         </ul>
+     *         If the provided id String is not a valid snowflake.
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.User User}
      *         <br>On request, gets the User with id matching provided id from Discord.
