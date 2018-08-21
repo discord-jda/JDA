@@ -468,6 +468,8 @@ public interface ShardManager
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided id String is not a valid snowflake.
+     * @throws java.lang.IllegalStateException
+     *         If there isn't any active shards.
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.User User}
      *         <br>On request, gets the User with id matching provided id from Discord.
@@ -493,20 +495,26 @@ public interface ShardManager
      * @param  id
      *         The id of the requested {@link net.dv8tion.jda.core.entities.User User}.
      *
+     * @throws java.lang.IllegalStateException
+     *         If there isn't any active shards.
+     *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.User User}
      *         <br>On request, gets the User with id matching provided id from Discord.
      */
     @CheckReturnValue
     default RestAction<User> retrieveUserById(long id)
     {
-        // We need a JDA instance
-        JDA api = this.getShardCache().stream()
-                .findAny().orElseThrow(() -> new IllegalStateException("no active shards"));
+        JDA api = null;
+        for (JDA shard : getShardCache())
+        {
+            api = shard;
+            User user = shard.getUserById(id);
+            if (user != null)
+                return new RestAction.EmptyRestAction<>(shard, user);
+        }
 
-        // check cache
-        User user = this.getUserById(id);
-        if (user != null)
-            return new RestAction.EmptyRestAction<>(api, user);
+        if (api == null)
+            throw new IllegalStateException("no shards active");
 
         Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
         return new RestAction<User>(api, route)
