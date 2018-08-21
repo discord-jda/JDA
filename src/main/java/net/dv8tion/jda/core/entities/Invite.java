@@ -99,7 +99,7 @@ public interface Invite
 
     /**
      * Tries to retrieve a new expanded {@link net.dv8tion.jda.core.entities.Invite Invite} with more info.
-     * <br>As bots can't be in groups this is only available for guild invites and will throw an {@link java.lang.UnsupportedOperationException UnsupportedOperationException}
+     * <br>As bots can't be in groups this is only available for guild invites and will throw an {@link java.lang.IllegalStateException IllegalStateException}
      * for other types.
      * <br>Requires either {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER MANAGE_SERVER} in the invite's guild or
      * {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} in the invite's channel.
@@ -108,7 +108,7 @@ public interface Invite
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         if the account neither has {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER MANAGE_SERVER} in the invite's guild nor
      *         {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} in the invite's channel
-     * @throws java.lang.UnsupportedOperationException
+     * @throws java.lang.IllegalStateException
      *         If this is a group invite
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Invite Invite}

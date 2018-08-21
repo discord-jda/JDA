@@ -122,7 +122,7 @@ public class InviteImpl implements Invite
             return new RestAction.EmptyRestAction<>(getJDA(), this);
 
         if (this.type != Invite.InviteType.GUILD)
-            throw new UnsupportedOperationException("Only guild invites can be expanded");
+            throw new IllegalStateException("Only guild invites can be expanded");
 
         final net.dv8tion.jda.core.entities.Guild guild = this.api.getGuildById(this.guild.getIdLong());
 
