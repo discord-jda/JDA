@@ -21,12 +21,12 @@ import org.apache.tools.ant.filters.ReplaceTokens
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
-    id 'com.jfrog.bintray' version '1.7.3'
-    id 'java'
+    id 'com.jfrog.bintray' version '1.8.1'
+    id 'java-library'
     id 'maven-publish'
     id 'signing'
-    id 'com.github.ben-manes.versions' version '0.15.0'
-    id 'com.github.johnrengelman.shadow' version '2.0.1'
+    id 'com.github.ben-manes.versions' version '0.19.0'
+    id 'com.github.johnrengelman.shadow' version '2.0.4'
 }
 
 def versionObj = new Version(major: 3, minor: 7, revision: 1)
@@ -35,8 +35,7 @@ group = "net.dv8tion"
 archivesBaseName = "JDA"
 version = "$versionObj"
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = targetCompatibility = 1.8
 
 repositories {
     jcenter()
@@ -50,65 +49,72 @@ sourceSets {
 }
 
 dependencies {
+    /* ABI dependencies */
+
     //Code safety
-    compile 'com.google.code.findbugs:jsr305:3.0.2'
+    api 'com.google.code.findbugs:jsr305:3.0.2'
+    api 'org.jetbrains:annotations:16.0.1'
 
     //Logger
-    compile 'org.slf4j:slf4j-api:1.7.25'
-
-    //General Utility
-    compile 'org.apache.commons:commons-collections4:4.1'
-    compile 'org.json:json:20160810'
-    compile 'net.sf.trove4j:trove4j:3.0.3'
-
-    //Native Library Support
-    compile 'club.minnced:opus-java:1.0.2'
+    api 'org.slf4j:slf4j-api:1.7.25'
 
     //Web Connection Support
-    compile 'com.neovisionaries:nv-websocket-client:2.4'
-    compile 'com.squareup.okhttp3:okhttp:3.8.1'
+    api 'com.neovisionaries:nv-websocket-client:2.5'
+    api 'com.squareup.okhttp3:okhttp:3.8.1'
+
+    //Opus library support
+    api ('club.minnced:opus-java:1.0.3@pom') {
+        transitive = true
+    }
+
+    /* Internal dependencies */
+
+    //General Utility
+    implementation 'org.apache.commons:commons-collections4:4.1'
+    implementation 'org.json:json:20160810'
+    implementation 'net.sf.trove4j:trove4j:3.0.3'
 
     //Sets the dependencies for the examples
-    examplesCompile configurations.compile
-    examplesRuntime configurations.runtime
+    examplesCompile configurations.apiElements
+    examplesRuntime configurations.implementation
 }
 
 task sourcesForRelease(type: Copy) {
     from 'src/main/java'
     into 'build/filteredSrc'
     filter(ReplaceTokens, tokens: [
-            versionMajor: versionObj.major.toString(),
-            versionMinor: versionObj.minor.toString(),
-            versionRevision: versionObj.revision.toString(),
-            versionBuild: versionObj.build.toString()
-        ])
+        versionMajor:    versionObj.major,
+        versionMinor:    versionObj.minor,
+        versionRevision: versionObj.revision,
+        versionBuild:    versionObj.build
+    ])
 }
 
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+    options.incremental = true
+    options.compilerArgs += ["-Xlint:deprecation", "-Xlint:unchecked"]
+}
 
 compileJava {
-    options.compilerArgs += ["-Xlint:deprecation", "-Xlint:unchecked"]
-    options.encoding = 'UTF-8'
     source = sourcesForRelease.destinationDir
-    classpath = sourceSets.main.compileClasspath
-
     dependsOn sourcesForRelease
 }
 
+compileTestJava.enabled = false
+processTestResources.enabled = false
+
 jar {
     baseName = project.name
-    manifest {
-        attributes 'Implementation-Version': version
-    }
+    manifest.attributes 'Implementation-Version': version
 }
 
-shadowJar {
-    classifier = 'withDependencies'
-}
+shadowJar.classifier = 'withDependencies'
 
 task noOpusJar(type: ShadowJar, dependsOn: shadowJar) {
     classifier = shadowJar.classifier + '-no-opus'
 
-    configurations = [project.configurations.runtime]
+    configurations += shadowJar.configurations
     from sourceSets.main.output
     exclude 'natives/**'     // ~2 MB
     exclude 'com/sun/jna/**' // ~1 MB
@@ -164,7 +170,10 @@ javadoc {
             'net/dv8tion/jda/core/requests/Requester.java',
             'net/dv8tion/jda/core/requests/Response.java',
             'net/dv8tion/jda/core/requests/ratelimit')
-    exclude('net/dv8tion/jda/core/utils/cache/impl')
+    exclude('net/dv8tion/jda/core/utils/cache/impl',
+            'net/dv8tion/jda/core/utils/JDALogger.java',
+            'net/dv8tion/jda/core/utils/Checks.java',
+            'net/dv8tion/jda/core/utils/Helpers.java')
 
     //voice crypto
     exclude('com/iwebpp/crypto')
@@ -200,20 +209,17 @@ publishing {
     }
 }
 
-String getProjectProperty(String propertyName)
-{
+String getProjectProperty(String propertyName) {
     String property = ""
-    if (hasProperty(propertyName))
-    {
+    if (hasProperty(propertyName)) {
         property = this.properties[propertyName]
     }
     return property
 }
 
-wrapper.gradleVersion = '4.6'
-
 build {
-    dependsOn clean
+// clean prevents incremental compilation. should only happen on bintrayUpload
+//    dependsOn clean
     dependsOn jar
     dependsOn javadocJar
     dependsOn sourcesJar
@@ -227,7 +233,9 @@ build {
 }
 
 bintrayUpload {
+    dependsOn clean
     dependsOn build
+    build.mustRunAfter clean
 
     onlyIf { !getProjectProperty("bintrayUsername").empty }
     onlyIf { !getProjectProperty("bintrayApiKey").empty }
@@ -243,6 +251,6 @@ class Version {
     }
 
     String toString() {
-        "${major}.${minor}.${revision}_$build"
+        "$major.$minor.${revision}_$build"
     }
 }

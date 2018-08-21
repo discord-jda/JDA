@@ -17,6 +17,7 @@ package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.client.requests.restaction.pagination.MentionPaginationAction;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.GuildController;
@@ -858,6 +859,111 @@ public interface Guild extends ISnowflake
      * @return {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
     SnowflakeCacheView<Emote> getEmoteCache();
+
+    /**
+     * Retrieves a list of emotes together with their respective creators.
+     *
+     * <p>Note that {@link ListedEmote#getUser()} is only available if the currently
+     * logged in account has {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: List of {@link net.dv8tion.jda.core.entities.ListedEmote ListedEmote}
+     *
+     * @since  3.8.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<List<ListedEmote>> retrieveEmotes();
+
+    /**
+     * Retrieves a listed emote together with its respective creator.
+     * <br><b>This does not include unicode emoji.</b>
+     *
+     * <p>Note that {@link ListedEmote#getUser()} is only available if the currently
+     * logged in account has {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>If the provided id does not correspond to an emote in this guild</li>
+     * </ul>
+     *
+     * @param  id
+     *         The emote id
+     *
+     * @throws IllegalArgumentException
+     *         If the provided id is not a valid snowflake
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.ListedEmote ListedEmote}
+     *
+     * @since  3.8.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<ListedEmote> retrieveEmoteById(@Nonnull String id);
+
+    /**
+     * Retrieves a listed emote together with its respective creator.
+     *
+     * <p>Note that {@link ListedEmote#getUser()} is only available if the currently
+     * logged in account has {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>If the provided id does not correspond to an emote in this guild</li>
+     * </ul>
+     *
+     * @param  id
+     *         The emote id
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.ListedEmote ListedEmote}
+     *
+     * @since  3.8.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<ListedEmote> retrieveEmoteById(long id)
+    {
+        return retrieveEmoteById(Long.toUnsignedString(id));
+    }
+
+    /**
+     * Retrieves a listed emote together with its respective creator.
+     *
+     * <p>Note that {@link ListedEmote#getUser()} is only available if the currently
+     * logged in account has {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>If the provided emote does not correspond to an emote in this guild anymore</li>
+     * </ul>
+     *
+     * @param  emote
+     *         The emote
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.ListedEmote ListedEmote}
+     *
+     * @since  3.8.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<ListedEmote> retrieveEmote(@Nonnull Emote emote)
+    {
+        Checks.notNull(emote, "Emote");
+        if (emote.getGuild() != null)
+            Checks.check(emote.getGuild().equals(this), "Emote must be from the same Guild!");
+        if (emote instanceof ListedEmote && !emote.isFake())
+        {
+            ListedEmote listedEmote = (ListedEmote) emote;
+            if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
+                return new RestAction.EmptyRestAction<>(getJDA(), listedEmote);
+        }
+        return retrieveEmoteById(emote.getId());
+    }
 
     /**
      * Retrieves an unmodifiable list of the currently banned {@link net.dv8tion.jda.core.entities.User Users}.
