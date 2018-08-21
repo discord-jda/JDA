@@ -327,6 +327,65 @@ public class GuildImpl implements Guild
         return emoteCache;
     }
 
+    @Override
+    public RestAction<List<ListedEmote>> retrieveEmotes()
+    {
+        Route.CompiledRoute route = Route.Emotes.GET_EMOTES.compile(getId());
+        return new RestAction<List<ListedEmote>>(api, route)
+        {
+            @Override
+            protected void handleResponse(Response response, Request<List<ListedEmote>> request)
+            {
+                if (!response.isOk())
+                {
+                    request.onFailure(response);
+                    return;
+                }
+
+                EntityBuilder builder = GuildImpl.this.getJDA().getEntityBuilder();
+                JSONArray emotes = response.getArray();
+                List<ListedEmote> list = new ArrayList<>(emotes.length());
+                for (int i = 0; i < emotes.length(); i++)
+                {
+                    JSONObject emote = emotes.getJSONObject(i);
+                    list.add(builder.createEmote(GuildImpl.this, emote, true));
+                }
+
+                request.onSuccess(Collections.unmodifiableList(list));
+            }
+        };
+    }
+
+    @Override
+    public RestAction<ListedEmote> retrieveEmoteById(String id)
+    {
+        Checks.isSnowflake(id, "Emote ID");
+        Emote emote = getEmoteById(id);
+        if (emote != null && !emote.isFake())
+        {
+            ListedEmote listedEmote = (ListedEmote) emote;
+            if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
+                return new RestAction.EmptyRestAction<>(getJDA(), listedEmote);
+        }
+        Route.CompiledRoute route = Route.Emotes.GET_EMOTE.compile(getId(), id);
+        return new RestAction<ListedEmote>(api, route)
+        {
+            @Override
+            protected void handleResponse(Response response, Request<ListedEmote> request)
+            {
+                if (!response.isOk())
+                {
+                    request.onFailure(response);
+                    return;
+                }
+
+                EntityBuilder builder = GuildImpl.this.getJDA().getEntityBuilder();
+                EmoteImpl emote = builder.createEmote(GuildImpl.this, response.getObject(), true);
+                request.onSuccess(emote);
+            }
+        };
+    }
+
     @Nonnull
     @Override
     public RestAction<List<Ban>> getBanList()
@@ -359,6 +418,36 @@ public class GuildImpl implements Guild
                     bans.add(new Ban(builder.createFakeUser(user, false), object.optString("reason", null)));
                 }
                 request.onSuccess(Collections.unmodifiableList(bans));
+            }
+        };
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Ban> getBanById(@Nonnull String userId)
+    {
+        if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS))
+            throw new InsufficientPermissionException(Permission.BAN_MEMBERS);
+
+        Checks.isSnowflake(userId, "User ID");
+
+        Route.CompiledRoute route = Route.Guilds.GET_BAN.compile(getId(), userId);
+        return new RestAction<Ban>(getJDA(), route)
+        {
+            @Override
+            protected void handleResponse(Response response, Request<Ban> request)
+            {
+                if (!response.isOk())
+                {
+                    request.onFailure(response);
+                    return;
+                }
+
+                EntityBuilder builder = api.getEntityBuilder();
+                JSONObject bannedObj = response.getObject();
+                JSONObject user = bannedObj.getJSONObject("user");
+                final Ban ban = new Ban(builder.createFakeUser(user, false), bannedObj.optString("reason", null));
+                request.onSuccess(ban);
             }
         };
     }
