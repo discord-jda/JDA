@@ -17,6 +17,7 @@
 package net.dv8tion.jda.webhook;
 
 import net.dv8tion.jda.annotations.ReplaceWith;
+import net.dv8tion.jda.annotations.Since;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
@@ -402,7 +403,7 @@ public class WebhookMessageBuilder
      * @deprecated
      *         Use {@link #addFile(File)} instead
      */
-    @Deprecated
+    @Deprecated @Since("3.7.0")
     @ReplaceWith("addFile(File)")
     public WebhookMessageBuilder setFile(File file)
     {
@@ -426,7 +427,7 @@ public class WebhookMessageBuilder
      * @deprecated
      *         Use {@link #addFile(String, File)} instead
      */
-    @Deprecated
+    @Deprecated @Since("3.7.0")
     @ReplaceWith("addFile(String, File)")
     public WebhookMessageBuilder setFile(File file, String fileName)
     {
@@ -449,7 +450,7 @@ public class WebhookMessageBuilder
      * @deprecated
      *         Use {@link #addFile(String, byte[])} instead
      */
-    @Deprecated
+    @Deprecated @Since("3.7.0")
     @ReplaceWith("addFile(String, byte[])")
     public WebhookMessageBuilder setFile(byte[] data, String fileName)
     {
@@ -469,7 +470,7 @@ public class WebhookMessageBuilder
      * @deprecated
      *         Use {@link #addFile(String, InputStream)} instead
      */
-    @Deprecated
+    @Deprecated @Since("3.7.0")
     @ReplaceWith("addFile(String, InputStream)")
     public WebhookMessageBuilder setFile(InputStream data, String fileName)
     {

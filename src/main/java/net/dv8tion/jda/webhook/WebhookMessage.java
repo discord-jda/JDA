@@ -17,6 +17,7 @@
 package net.dv8tion.jda.webhook;
 
 import net.dv8tion.jda.annotations.ReplaceWith;
+import net.dv8tion.jda.annotations.Since;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.requests.Requester;
@@ -73,7 +74,7 @@ public class WebhookMessage
      * @deprecated
      *         Use {@link #embeds(MessageEmbed, MessageEmbed...)} instead.
      */
-    @Deprecated
+    @Deprecated @Since("3.7.0")
     @ReplaceWith("embeds(MessageEmbed, MessageEmbed...)")
     public static WebhookMessage of(MessageEmbed... embeds)
     {
@@ -98,7 +99,7 @@ public class WebhookMessage
      * @deprecated
      *         Use {@link #embeds(Collection)} instead.
      */
-    @Deprecated
+    @Deprecated @Since("3.7.0")
     @ReplaceWith("embeds(Collection<MessageEmbed>)")
     public static WebhookMessage of(Collection<MessageEmbed> embeds)
     {
