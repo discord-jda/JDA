@@ -95,6 +95,8 @@ public interface AudioManager
      * @throws IllegalArgumentException
      *         If the provided collection is null or empty
      *
+     * @incubating Discord has not officially confirmed that this feature will be available to bots
+     *
      * @see    #getSpeakingMode()
      * @see    #setSpeakingMode(SpeakingMode...)
      */
@@ -112,6 +114,8 @@ public interface AudioManager
      * @throws IllegalArgumentException
      *         If the provided array is null or empty
      *
+     * @incubating Discord has not officially confirmed that this feature will be available to bots
+     *
      * @see    #getSpeakingMode()
      */
     @Incubating
@@ -127,6 +131,8 @@ public interface AudioManager
      * By default this will use {@link SpeakingMode#VOICE}.
      *
      * @return The current speaking mode, represented in an {@link EnumSet}
+     *
+     * @incubating Discord has not officially confirmed that this feature will be available to bots
      *
      * @see    #setSpeakingMode(Collection)
      */

@@ -228,6 +228,8 @@ public class Game
      *         if the specified name is null, empty or blank
      *
      * @return A valid Game instance with the provided name with {@link GameType#WATCHING}
+     *
+     * @incubating This feature is not yet confirmed for the official bot API
      */
     @Incubating
     public static Game watching(String name)
@@ -326,6 +328,8 @@ public class Game
         /**
          * Used to indicate that the {@link net.dv8tion.jda.core.entities.Game Game} should display
          * as {@code Watching...} in the official client.
+         *
+         * @incubating This feature is not yet confirmed for the official bot API
          */
         @Incubating
         WATCHING(3);
