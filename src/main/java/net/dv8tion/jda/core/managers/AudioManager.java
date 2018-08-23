@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.managers;
 
+import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.audio.AudioReceiveHandler;
 import net.dv8tion.jda.core.audio.AudioSendHandler;
@@ -97,6 +98,7 @@ public interface AudioManager
      * @see    #getSpeakingMode()
      * @see    #setSpeakingMode(SpeakingMode...)
      */
+    @Incubating
     void setSpeakingMode(Collection<SpeakingMode> mode);
 
     /**
@@ -112,6 +114,7 @@ public interface AudioManager
      *
      * @see    #getSpeakingMode()
      */
+    @Incubating
     default void setSpeakingMode(SpeakingMode... mode)
     {
         Checks.notNull(mode, "Speaking Mode");
@@ -127,6 +130,7 @@ public interface AudioManager
      *
      * @see    #setSpeakingMode(Collection)
      */
+    @Incubating
     EnumSet<SpeakingMode> getSpeakingMode();
 
     /**

@@ -264,6 +264,20 @@ The most popular implementations are [Log4j 2](https://logging.apache.org/log4j/
 Docs can be found on the [Jenkins](http://home.dv8tion.net:8080/) or directly [here](http://home.dv8tion.net:8080/job/JDA/javadoc/)
 <br>A simple Wiki can also be found in this repository's [Wiki section](https://github.com/DV8FromTheWorld/JDA/wiki)
 
+### Annotations
+
+We use a number of annotations to indicate future plans for implemented functionality such as new features of
+the Discord API.
+
+- Incubating
+    <br>This annotation is used to indicate that functionality may change in the future. Often used when a new feature is added
+- ReplaceWith
+    <br>Paired with `@Deprecated` this is used to inform you how the new code-fragment is supposed to look once the hereby annotated functionality is removed.
+- ForRemoval
+    <br>Paired with `@Deprecated` this indicates that we plan to entirely remove the hereby annotated functionality in the future.
+    
+[Sources](https://github.com/DV8FromTheWorld/JDA/tree/development/src/main/java/net/dv8tion/jda/annotations)
+
 ## Getting Help
 If you need help, or just want to talk with the JDA or other Devs, you can join the [Official JDA Discord Guild][discord-invite].
 

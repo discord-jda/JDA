@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.core.entities;
 
+import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.core.utils.Checks;
 
 import javax.annotation.Nullable;
@@ -228,6 +229,7 @@ public class Game
      *
      * @return A valid Game instance with the provided name with {@link GameType#WATCHING}
      */
+    @Incubating
     public static Game watching(String name)
     {
         Checks.notBlank(name, "Name");
@@ -325,6 +327,7 @@ public class Game
          * Used to indicate that the {@link net.dv8tion.jda.core.entities.Game Game} should display
          * as {@code Watching...} in the official client.
          */
+        @Incubating
         WATCHING(3);
 
         private final int key;
