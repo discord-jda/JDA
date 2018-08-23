@@ -63,7 +63,9 @@ dependencies {
     api 'com.squareup.okhttp3:okhttp:3.8.1'
 
     //Opus library support
-    api 'club.minnced:opus-java:1.0.3'
+    api ('club.minnced:opus-java:1.0.3@pom') {
+        transitive = true
+    }
 
     /* Internal dependencies */
 
