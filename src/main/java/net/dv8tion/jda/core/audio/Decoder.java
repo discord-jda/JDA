@@ -130,7 +130,7 @@ public class Decoder
     }
 
     @Override
-    @Deprecated
+    @SuppressWarnings("deprecation")
     protected void finalize() throws Throwable
     {
         super.finalize();
