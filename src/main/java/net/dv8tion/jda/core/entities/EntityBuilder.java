@@ -145,7 +145,7 @@ public class EntityBuilder
 
     public GuildImpl createGuild(long guildId, JSONObject guildJson, TLongObjectMap<JSONObject> members)
     {
-        final GuildImpl guildObj = new GuildImpl(api, guildId);
+        final GuildImpl guildObj = new GuildImpl(getJDA(), guildId);
         final String name = guildJson.optString("name", "");
         final String iconId = guildJson.optString("icon", null);
         final String splashId = guildJson.optString("splash", null);
@@ -228,7 +228,7 @@ public class EntityBuilder
                 createPresence(member, presence);
         }
 
-        api.getGuildMap().put(guildId, guildObj);
+        getJDA().getGuildMap().put(guildId, guildObj);
         return guildObj;
     }
 
@@ -334,7 +334,7 @@ public class EntityBuilder
             .setAvatarId(user.optString("avatar", null))
             .setBot(Helpers.optBoolean(user, "bot"));
         if (!fake && modifyCache)
-            api.getEventCache().playbackCache(EventCache.Type.USER, id);
+            getJDA().getEventCache().playbackCache(EventCache.Type.USER, id);
         return userObj;
     }
 
@@ -384,7 +384,7 @@ public class EntityBuilder
         if (playbackCache)
         {
             long hashId = guild.getIdLong() ^ user.getIdLong();
-            api.getEventCache().playbackCache(EventCache.Type.MEMBER, hashId);
+            getJDA().getEventCache().playbackCache(EventCache.Type.MEMBER, hashId);
         }
         return member;
     }
@@ -394,7 +394,7 @@ public class EntityBuilder
     {
         if (memberOrFriend == null)
             throw new NullPointerException("Provided memberOrFriend was null!");
-        boolean cacheGame = api.isCacheFlagSet(CacheFlag.GAME);
+        boolean cacheGame = getJDA().isCacheFlagSet(CacheFlag.GAME);
 
         JSONObject gameJson = !cacheGame || presenceJson.isNull("game") ? null : presenceJson.getJSONObject("game");
         OnlineStatus onlineStatus = OnlineStatus.fromKey(presenceJson.getString("status"));
@@ -571,7 +571,7 @@ public class EntityBuilder
             .setName(json.getString("name"))
             .setPosition(json.getInt("position"));
         if (playbackCache)
-            api.getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
+            getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
         return channel;
     }
 
@@ -609,7 +609,7 @@ public class EntityBuilder
             .setPosition(json.getInt("position"))
             .setNSFW(Helpers.optBoolean(json, "nsfw"));
         if (playbackCache)
-            api.getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
+            getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
         return channel;
     }
 
@@ -645,7 +645,7 @@ public class EntityBuilder
             .setUserLimit(json.getInt("user_limit"))
             .setBitrate(json.getInt("bitrate"));
         if (playbackCache)
-            api.getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
+            getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
         return channel;
     }
 
@@ -722,7 +722,7 @@ public class EntityBuilder
             .setColor(color == 0 ? Role.DEFAULT_COLOR_RAW : color)
             .setMentionable(roleJson.has("mentionable") && roleJson.getBoolean("mentionable"));
         if (playbackCache)
-            api.getEventCache().playbackCache(EventCache.Type.ROLE, id);
+            getJDA().getEventCache().playbackCache(EventCache.Type.ROLE, id);
         return role;
     }
 
@@ -1144,7 +1144,7 @@ public class EntityBuilder
             .setName(name)
             .setIconId(iconId);
         if (playbackCache)
-            api.getEventCache().playbackCache(EventCache.Type.CHANNEL, groupId);
+            getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, groupId);
         return group;
     }
 

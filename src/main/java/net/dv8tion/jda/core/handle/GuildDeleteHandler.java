@@ -49,7 +49,7 @@ public class GuildDeleteHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long id = content.getLong("id");
-        boolean wasInit = api.getGuildSetupController().onDelete(id, content);
+        boolean wasInit = getJDA().getGuildSetupController().onDelete(id, content);
         if (wasInit)
             return null;
         //TODO: check logic here

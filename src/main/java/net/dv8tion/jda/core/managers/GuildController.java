@@ -39,7 +39,6 @@ import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 import net.dv8tion.jda.core.utils.cache.UpstreamReference;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
@@ -2010,7 +2009,7 @@ public class GuildController
                 }
 
                 JSONObject obj = response.getObject();
-                EmoteImpl emote = getJDA().getEntityBuilder().createEmote((GuildImpl) getGuild(), obj, true);
+                EmoteImpl emote = api.get().getEntityBuilder().createEmote((GuildImpl) getGuild(), obj, true);
                 request.onSuccess(emote);
             }
         };

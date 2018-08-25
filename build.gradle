@@ -97,7 +97,7 @@ tasks.withType(JavaCompile) {
 }
 
 compileJava {
-    source = sourcesForRelease.destinationDir
+//    source = sourcesForRelease.destinationDir
     dependsOn sourcesForRelease
 }
 

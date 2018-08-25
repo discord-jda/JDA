@@ -28,12 +28,12 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.WebSocketClient;
 import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
-import java.lang.ref.WeakReference;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 public class GuildSetupController
 {
     protected static final Logger log = JDALogger.getLog(GuildSetupController.class);
-    private final WeakReference<JDAImpl> api;
+    private final UpstreamReference<JDAImpl> api;
     private final TLongObjectMap<GuildSetupNode> setupNodes = new TLongObjectHashMap<>();
     private final TLongSet chunkingGuilds = new TLongHashSet();
     private final TLongSet syncingGuilds;
@@ -54,7 +54,7 @@ public class GuildSetupController
 
     public GuildSetupController(JDAImpl api)
     {
-        this.api = new WeakReference<>(api);
+        this.api = new UpstreamReference<>(api);
         if (isClient())
             syncingGuilds = new TLongHashSet();
         else

@@ -27,11 +27,11 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.core.utils.Helpers;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.annotation.Nullable;
-import java.lang.ref.WeakReference;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,7 +39,7 @@ import java.util.List;
 public class GuildSetupNode
 {
     private final long id;
-    private final WeakReference<GuildSetupController> controller;
+    private final UpstreamReference<GuildSetupController> controller;
     private final List<JSONObject> cachedEvents = new LinkedList<>();
     private TLongObjectMap<JSONObject> members;
     private TLongSet removedMembers;
@@ -56,7 +56,7 @@ public class GuildSetupNode
     GuildSetupNode(long id, GuildSetupController controller, boolean join)
     {
         this.id = id;
-        this.controller = new WeakReference<>(controller);
+        this.controller = new UpstreamReference<>(controller);
         this.join = join;
         this.sync = controller.isClient();
     }

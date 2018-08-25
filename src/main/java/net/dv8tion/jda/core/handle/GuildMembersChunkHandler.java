@@ -46,7 +46,7 @@ public class GuildMembersChunkHandler extends SocketHandler
                 builder.createMember(guild, object);
             }
         }
-        api.getGuildSetupController().onMemberChunk(guildId, members);
+        getJDA().getGuildSetupController().onMemberChunk(guildId, members);
         return null;
     }
 

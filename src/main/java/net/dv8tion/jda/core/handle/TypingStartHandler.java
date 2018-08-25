@@ -43,7 +43,7 @@ public class TypingStartHandler extends SocketHandler
         if (!content.isNull("guild_id"))
         {
             long guildId = content.getLong("guild_id");
-            if (api.getGuildSetupController().isLocked(guildId))
+            if (getJDA().getGuildSetupController().isLocked(guildId))
                 return guildId;
         }
 

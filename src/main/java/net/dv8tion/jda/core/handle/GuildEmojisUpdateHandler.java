@@ -43,7 +43,7 @@ public class GuildEmojisUpdateHandler extends SocketHandler
     @Override
     protected Long handleInternally(JSONObject content)
     {
-        if (!api.isCacheFlagSet(CacheFlag.EMOTE))
+        if (!getJDA().isCacheFlagSet(CacheFlag.EMOTE))
             return null;
         final long guildId = content.getLong("guild_id");
         if (getJDA().getGuildSetupController().isLocked(guildId))

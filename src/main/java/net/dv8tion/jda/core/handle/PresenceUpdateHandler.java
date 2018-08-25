@@ -108,7 +108,7 @@ public class PresenceUpdateHandler extends SocketHandler
 
             //Now that we've update the User's info, lets see if we need to set the specific Presence information.
             // This is stored in the Member or Relation objects.
-            final JSONObject game = !api.isCacheFlagSet(CacheFlag.GAME) || content.isNull("game") ? null : content.optJSONObject("game");
+            final JSONObject game = !getJDA().isCacheFlagSet(CacheFlag.GAME) || content.isNull("game") ? null : content.optJSONObject("game");
             Game nextGame = null;
             boolean parsedGame = false;
             try

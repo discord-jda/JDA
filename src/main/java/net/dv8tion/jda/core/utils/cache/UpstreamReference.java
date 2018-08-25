@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.utils.cache;
 
+import javax.annotation.Nonnull;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 
@@ -31,6 +32,7 @@ public class UpstreamReference<T> extends WeakReference<T>
         super(referent, q);
     }
 
+    @Nonnull
     @Override
     public T get()
     {
