@@ -49,12 +49,12 @@ public class CallCreateHandler extends SocketHandler
         JSONArray voiceStates = content.getJSONArray("voice_states");
         JSONArray ringing = content.getJSONArray("ringing");
 
-        CallableChannel channel = api.asClient().getGroupById(channelId);
+        CallableChannel channel = getJDA().asClient().getGroupById(channelId);
         if (channel == null)
-            channel = api.getPrivateChannelMap().get(channelId);
+            channel = getJDA().getPrivateChannelMap().get(channelId);
         if (channel == null)
         {
-            api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
+            getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Received a CALL_CREATE for a Group/PrivateChannel that is not yet cached. JSON: {}", content);
             return null;
         }
@@ -94,7 +94,7 @@ public class CallCreateHandler extends SocketHandler
                 WebSocketClient.LOG.error("Received a CALL_CREATE for a PrivateChannel that already has an active call cached! JSON: {}", content);
             priv.setCurrentCall(call);
             callUsers.put(priv.getUser().getIdLong(), new CallUserImpl(call, priv.getUser()));
-            callUsers.put(api.getSelfUser().getIdLong(), new CallUserImpl(call, api.getSelfUser()));
+            callUsers.put(getJDA().getSelfUser().getIdLong(), new CallUserImpl(call, getJDA().getSelfUser()));
         }
 
         for (int i = 0; i < voiceStates.length(); i++)
@@ -109,9 +109,9 @@ public class CallCreateHandler extends SocketHandler
             vState.setSelfMuted(voiceState.getBoolean("self_mute"));
             vState.setSelfDeafened(voiceState.getBoolean("self_deaf"));
 
-            api.asClient().getCallUserMap().put(userId, cUser);
+            getJDA().asClient().getCallUserMap().put(userId, cUser);
         }
-        api.getEventCache().playbackCache(EventCache.Type.CALL, channelId);
+        getJDA().getEventCache().playbackCache(EventCache.Type.CALL, channelId);
         return null;
     }
 }

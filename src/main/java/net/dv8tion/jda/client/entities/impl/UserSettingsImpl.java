@@ -20,26 +20,26 @@ import net.dv8tion.jda.client.entities.UserSettings;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 
 import java.util.List;
 import java.util.Locale;
 
 public class UserSettingsImpl implements UserSettings
 {
-
-    private final JDA api;
+    private final UpstreamReference<JDA> api;
 
     private OnlineStatus status = OnlineStatus.UNKNOWN;
 
     public UserSettingsImpl(JDA api)
     {
-        this.api = api;
+        this.api = new UpstreamReference<>(api);
     }
 
     @Override
     public JDA getJDA()
     {
-        return api;
+        return api.get();
     }
 
 

@@ -42,6 +42,7 @@ import net.dv8tion.jda.core.utils.*;
 import net.dv8tion.jda.core.utils.cache.CacheFlag;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import net.dv8tion.jda.core.utils.cache.impl.AbstractCacheView;
 import net.dv8tion.jda.core.utils.cache.impl.SnowflakeCacheViewImpl;
 import net.dv8tion.jda.core.utils.tuple.Pair;
@@ -94,7 +95,7 @@ public class JDAImpl implements JDA
     protected final SessionController sessionController;
     protected final GuildSetupController guildSetupController;
 
-    protected WebSocketClient client;
+    protected UpstreamReference<WebSocketClient> client;
     protected Requester requester;
     protected IEventManager eventManager = new InterfacedEventManager();
     protected IAudioSendFactory audioSendFactory = new DefaultSendFactory();
@@ -192,7 +193,7 @@ public class JDAImpl implements JDA
             LOG.info("Login Successful!");
         }
 
-        client = new WebSocketClient(this, compression);
+        client = new UpstreamReference<>(new WebSocketClient(this, compression));
         // remove our MDC metadata when we exit our code
         if (previousContext != null)
             previousContext.forEach(MDC::put);
@@ -370,7 +371,7 @@ public class JDAImpl implements JDA
     {
         this.autoReconnect = autoReconnect;
         if (client != null)
-            client.setAutoReconnect(autoReconnect);
+            client.get().setAutoReconnect(autoReconnect);
     }
 
     @Override
@@ -417,13 +418,13 @@ public class JDAImpl implements JDA
     @Override
     public List<String> getCloudflareRays()
     {
-        return Collections.unmodifiableList(new LinkedList<>(client.getCfRays()));
+        return Collections.unmodifiableList(new LinkedList<>(client.get().getCfRays()));
     }
 
     @Override
     public List<String> getWebSocketTrace()
     {
-        return Collections.unmodifiableList(new LinkedList<>(client.getTraces()));
+        return Collections.unmodifiableList(new LinkedList<>(client.get().getTraces()));
     }
 
     @Override
@@ -701,7 +702,7 @@ public class JDAImpl implements JDA
                 }
 
                 JSONObject object = response.getObject();
-                EntityBuilder builder = api.getEntityBuilder();
+                EntityBuilder builder = api.get().getEntityBuilder();
                 Webhook webhook = builder.createWebhook(object);
 
                 request.onSuccess(webhook);
@@ -747,7 +748,7 @@ public class JDAImpl implements JDA
 
     public WebSocketClient getClient()
     {
-        return client;
+        return client.get();
     }
 
     public TLongObjectMap<User> getUserMap()

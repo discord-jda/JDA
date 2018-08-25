@@ -33,6 +33,7 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.utils.JDALogger;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import net.dv8tion.jda.core.utils.tuple.Pair;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -64,7 +65,7 @@ public class AudioConnection
     private final String threadIdentifier;
     private final AudioWebSocket webSocket;
     private DatagramSocket udpSocket;
-    private VoiceChannel channel;
+    private UpstreamReference<VoiceChannel> channel;
     private volatile AudioSendHandler sendHandler = null;
     private volatile AudioReceiveHandler receiveHandler = null;
     private PointerByReference opusEncoder;
@@ -85,9 +86,9 @@ public class AudioConnection
 
     public AudioConnection(AudioWebSocket webSocket, VoiceChannel channel)
     {
-        this.channel = channel;
+        this.channel = new UpstreamReference<>(channel);
         this.webSocket = webSocket;
-        this.webSocket.audioConnection = this;
+        this.webSocket.audioConnection = new UpstreamReference<>(this);
 
         final JDAImpl api = (JDAImpl) channel.getJDA();
         this.threadIdentifier = api.getIdentifierString() + " AudioConnection Guild: " + channel.getGuild().getId();
@@ -170,22 +171,22 @@ public class AudioConnection
 
     public VoiceChannel getChannel()
     {
-        return channel;
+        return channel.get();
     }
 
     public void setChannel(VoiceChannel channel)
     {
-        this.channel = channel;
+        this.channel = channel == null ? null : new UpstreamReference<>(channel);
     }
 
     public JDAImpl getJDA()
     {
-        return (JDAImpl) channel.getJDA();
+        return (JDAImpl) channel.get().getJDA();
     }
 
     public Guild getGuild()
     {
-        return channel.getGuild();
+        return channel.get().getGuild();
     }
 
     public void removeUserSSRC(long userId)
@@ -216,7 +217,7 @@ public class AudioConnection
                 //Different User already existed with this ssrc. What should we do? Just replace? Probably should nuke the old opusDecoder.
                 //Log for now and see if any user report the error.
                 LOG.error("Yeah.. So.. JDA received a UserSSRC update for an ssrc that already had a User set. Inform DV8FromTheWorld.\nChannelId: {} SSRC: {} oldId: {} newId: {}",
-                    channel.getId(), ssrc, previousId, userId);
+                      channel.get().getId(), ssrc, previousId, userId);
             }
         }
         else
@@ -267,7 +268,7 @@ public class AudioConnection
     {
         if (udpSocket != null && !udpSocket.isClosed() && sendHandler != null && sendSystem == null)
         {
-            IAudioSendFactory factory = ((JDAImpl) channel.getJDA()).getAudioSendFactory();
+            IAudioSendFactory factory = ((JDAImpl) channel.get().getJDA()).getAudioSendFactory();
             sendSystem = factory.createSendSystem(new PacketProvider());
             sendSystem.setContextMap(getJDA().getContextMap());
             sendSystem.start();
@@ -608,7 +609,7 @@ public class AudioConnection
         @Override
         public VoiceChannel getConnectedChannel()
         {
-            return AudioConnection.this.channel;
+            return AudioConnection.this.channel.get();
         }
 
         @Override

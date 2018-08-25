@@ -35,11 +35,11 @@ public class GuildMembersChunkHandler extends SocketHandler
     {
         final long guildId = content.getLong("guild_id");
         JSONArray members = content.getJSONArray("members");
-        GuildImpl guild = (GuildImpl) api.getGuildById(guildId);
+        GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
         if (guild != null)
         {
             WebSocketClient.LOG.debug("Received member chunk for guild that is already in cache. GuildId: {} Count: {}", guildId, members.length());
-            EntityBuilder builder = api.getEntityBuilder();
+            EntityBuilder builder = getJDA().getEntityBuilder();
             for (int i = 0; i < members.length(); i++)
             {
                 JSONObject object = members.getJSONObject(i);

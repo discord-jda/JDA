@@ -39,16 +39,16 @@ public class GuildMemberUpdateHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long id = content.getLong("guild_id");
-        if (api.getGuildSetupController().isLocked(id))
+        if (getJDA().getGuildSetupController().isLocked(id))
             return id;
 
         JSONObject userJson = content.getJSONObject("user");
         final long userId = userJson.getLong("id");
-        GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
+        GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(id);
         if (guild == null)
         {
             //Do not cache this here, it will be outdated once we receive the GUILD_CREATE and could cause invalid cache
-            //api.getEventCache().cache(EventCache.Type.GUILD, userId, responseNumber, allContent, this::handle);
+            //getJDA().getEventCache().cache(EventCache.Type.GUILD, userId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Got GuildMember update but JDA currently does not have the Guild cached. Ignoring. {}", content);
             return null;
         }
@@ -57,7 +57,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
         if (member == null)
         {
             long hashId = id ^ userId;
-            api.getEventCache().cache(EventCache.Type.MEMBER, hashId, responseNumber, allContent, this::handle);
+            getJDA().getEventCache().cache(EventCache.Type.MEMBER, hashId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Got GuildMember update but Member is not currently present in Guild. HASH_ID: {} JSON: {}", hashId, content);
             return null;
         }
@@ -92,16 +92,16 @@ public class GuildMemberUpdateHandler extends SocketHandler
 
         if (removedRoles.size() > 0)
         {
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                     new GuildMemberRoleRemoveEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             member, removedRoles));
         }
         if (newRoles.size() > 0)
         {
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                     new GuildMemberRoleAddEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             member, newRoles));
         }
         if (content.has("nick"))
@@ -111,9 +111,9 @@ public class GuildMemberUpdateHandler extends SocketHandler
             if (!Objects.equals(prevNick, newNick))
             {
                 member.setNickname(newNick);
-                api.getEventManager().handle(
+                getJDA().getEventManager().handle(
                         new GuildMemberNickChangeEvent(
-                                api, responseNumber,
+                                getJDA(), responseNumber,
                                 member, prevNick, newNick));
             }
         }
@@ -133,7 +133,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
             }
             else
             {
-                api.getEventCache().cache(EventCache.Type.ROLE, id, responseNumber, allContent, this::handle);
+                getJDA().getEventCache().cache(EventCache.Type.ROLE, id, responseNumber, allContent, this::handle);
                 EventCache.LOG.debug("Got GuildMember update but one of the Roles for the Member is not yet cached.");
                 return null;
             }

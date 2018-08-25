@@ -33,22 +33,22 @@ public class GuildMemberAddHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long id = content.getLong("guild_id");
-        boolean setup = api.getGuildSetupController().onAddMember(id, content);
+        boolean setup = getJDA().getGuildSetupController().onAddMember(id, content);
         if (setup)
             return null;
 
-        GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
+        GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(id);
         if (guild == null)
         {
-            api.getEventCache().cache(EventCache.Type.GUILD, id, responseNumber, allContent, this::handle);
+            getJDA().getEventCache().cache(EventCache.Type.GUILD, id, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Caching member for guild that is not yet cached. Guild ID: {} JSON: {}", id, content);
             return null;
         }
 
-        Member member = api.getEntityBuilder().createMember(guild, content);
-        api.getEventManager().handle(
+        Member member = getJDA().getEntityBuilder().createMember(guild, content);
+        getJDA().getEventManager().handle(
             new GuildMemberJoinEvent(
-                api, responseNumber,
+                getJDA(), responseNumber,
                 member));
         return null;
     }

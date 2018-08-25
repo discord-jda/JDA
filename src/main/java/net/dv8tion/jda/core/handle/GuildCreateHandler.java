@@ -34,10 +34,10 @@ public class GuildCreateHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long id = content.getLong("id");
-        GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
+        GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(id);
         if (guild == null)
         {
-            api.getGuildSetupController().onCreate(id, content);
+            getJDA().getGuildSetupController().onCreate(id, content);
             return null;
         }
 
@@ -45,21 +45,21 @@ public class GuildCreateHandler extends SocketHandler
         if (guild.isAvailable() && unavailable)
         {
             guild.setAvailable(false);
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                 new GuildUnavailableEvent(
-                    api, responseNumber,
+                    getJDA(), responseNumber,
                     guild));
         }
         else if (!guild.isAvailable() && !unavailable)
         {
             guild.setAvailable(true);
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                 new GuildAvailableEvent(
-                    api, responseNumber,
+                    getJDA(), responseNumber,
                     guild));
             // I'm not sure if this is actually needed, but if discord sends us an updated field here
             //  we can just use the same logic we use for GUILD_UPDATE in order to update it and fire events
-            api.getClient().<GuildUpdateHandler>getHandler("GUILD_UPDATE").handle(responseNumber, allContent);
+            getJDA().getClient().<GuildUpdateHandler>getHandler("GUILD_UPDATE").handle(responseNumber, allContent);
         }
         return null;
     }

@@ -53,12 +53,12 @@ public class GuildDeleteHandler extends SocketHandler
         if (wasInit)
             return null;
         //TODO: check logic here
-        GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
+        GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(id);
 
         boolean unavailable = Helpers.optBoolean(content, "unavailable");
         if (guild == null)
         {
-            //api.getEventCache().cache(EventCache.Type.GUILD, id, () -> handle(responseNumber, allContent));
+            //getJDA().getEventCache().cache(EventCache.Type.GUILD, id, () -> handle(responseNumber, allContent));
             WebSocketClient.LOG.debug("Received GUILD_DELETE for a Guild that is not currently cached. ID: {} unavailable: {}", id, unavailable);
             return null;
         }
@@ -71,15 +71,15 @@ public class GuildDeleteHandler extends SocketHandler
         if (unavailable)
         {
             guild.setAvailable(false);
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                 new GuildUnavailableEvent(
-                    api, responseNumber,
+                    getJDA(), responseNumber,
                     guild));
             return null;
         }
 
-        api.getClient().removeAudioConnection(id);
-        final TLongObjectMap<AudioManager> audioManagerMap = api.getAudioManagerMap();
+        getJDA().getClient().removeAudioConnection(id);
+        final TLongObjectMap<AudioManager> audioManagerMap = getJDA().getAudioManagerMap();
         synchronized (audioManagerMap)
         {
             final AudioManagerImpl manager = (AudioManagerImpl) audioManagerMap.get(id);
@@ -93,7 +93,7 @@ public class GuildDeleteHandler extends SocketHandler
         // Anything left in memberIds will be removed from the main userMap
         //Use a new HashSet so that we don't actually modify the Member map so it doesn't affect Guild#getMembers for the leave event.
         TLongSet memberIds = new TLongHashSet(guild.getMembersMap().keySet());
-        for (Guild guildI : api.getGuilds())
+        for (Guild guildI : getJDA().getGuilds())
         {
             GuildImpl g = (GuildImpl) guildI;
             if (g.equals(guild))
@@ -108,9 +108,9 @@ public class GuildDeleteHandler extends SocketHandler
 
         //If we are a client account, be sure to not remove any users from the cache that are Friends.
         // Remember, everything left in memberIds is removed from the userMap
-        if (api.getAccountType() == AccountType.CLIENT)
+        if (getJDA().getAccountType() == AccountType.CLIENT)
         {
-            TLongObjectMap<Relationship> relationships = api.asClient().getRelationshipMap();
+            TLongObjectMap<Relationship> relationships = getJDA().asClient().getRelationshipMap();
             for (TLongIterator it = memberIds.iterator(); it.hasNext();)
             {
                 Relationship rel = relationships.get(it.next());
@@ -119,48 +119,48 @@ public class GuildDeleteHandler extends SocketHandler
             }
         }
 
-        long selfId = api.getSelfUser().getIdLong();
+        long selfId = getJDA().getSelfUser().getIdLong();
         memberIds.forEach(memberId ->
         {
             if (memberId == selfId)
                 return true; // don't remove selfUser from cache
-            UserImpl user = (UserImpl) api.getUserMap().remove(memberId);
+            UserImpl user = (UserImpl) getJDA().getUserMap().remove(memberId);
             if (user.hasPrivateChannel())
             {
                 PrivateChannelImpl priv = (PrivateChannelImpl) user.getPrivateChannel();
                 user.setFake(true);
                 priv.setFake(true);
-                api.getFakeUserMap().put(user.getIdLong(), user);
-                api.getFakePrivateChannelMap().put(priv.getIdLong(), priv);
+                getJDA().getFakeUserMap().put(user.getIdLong(), user);
+                getJDA().getFakePrivateChannelMap().put(priv.getIdLong(), priv);
             }
-            else if (api.getAccountType() == AccountType.CLIENT)
+            else if (getJDA().getAccountType() == AccountType.CLIENT)
             {
                 //While the user might not have a private channel, if this is a client account then the user
                 // could be in a Group, and if so we need to change the User object to be fake and
                 // place it in the FakeUserMap
-                for (Group grp : api.asClient().getGroups())
+                for (Group grp : getJDA().asClient().getGroups())
                 {
                     if (grp.getNonFriendUsers().contains(user))
                     {
                         user.setFake(true);
-                        api.getFakeUserMap().put(user.getIdLong(), user);
+                        getJDA().getFakeUserMap().put(user.getIdLong(), user);
                         break; //Breaks from groups loop, not memberIds loop
                     }
                 }
             }
-            api.getEventCache().clear(EventCache.Type.USER, memberId);
+            getJDA().getEventCache().clear(EventCache.Type.USER, memberId);
             return true;
         });
 
-        api.getGuildMap().remove(id);
-        guild.getTextChannelCache().forEach(chan -> api.getTextChannelMap().remove(chan.getIdLong()));
-        guild.getVoiceChannelCache().forEach(chan -> api.getVoiceChannelMap().remove(chan.getIdLong()));
-        guild.getCategoryCache().forEach(chan -> api.getCategoryMap().remove(chan.getIdLong()));
-        api.getEventManager().handle(
+        getJDA().getGuildMap().remove(id);
+        guild.getTextChannelCache().forEach(chan -> getJDA().getTextChannelMap().remove(chan.getIdLong()));
+        guild.getVoiceChannelCache().forEach(chan -> getJDA().getVoiceChannelMap().remove(chan.getIdLong()));
+        guild.getCategoryCache().forEach(chan -> getJDA().getCategoryMap().remove(chan.getIdLong()));
+        getJDA().getEventManager().handle(
             new GuildLeaveEvent(
-                api, responseNumber,
+                getJDA(), responseNumber,
                 guild));
-        api.getEventCache().clear(EventCache.Type.GUILD, id);
+        getJDA().getEventCache().clear(EventCache.Type.GUILD, id);
         return null;
     }
 }

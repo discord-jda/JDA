@@ -38,33 +38,33 @@ public class MessageReactionBulkRemoveHandler extends SocketHandler
     {
         final long messageId = content.getLong("message_id");
         final long channelId = content.getLong("channel_id");
-        MessageChannel channel = api.getTextChannelById(channelId);
+        MessageChannel channel = getJDA().getTextChannelById(channelId);
         if (channel == null)
         {
-            api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
+            getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Received a reaction for a channel that JDA does not currently have cached channel_id: {} message_id: {}", channelId, messageId);
             return null;
         }
-        IEventManager manager = api.getEventManager();
+        IEventManager manager = getJDA().getEventManager();
 
         switch (channel.getType())
         {
             case TEXT:
                manager.handle(
                    new GuildMessageReactionRemoveAllEvent(
-                           api, responseNumber,
+                           getJDA(), responseNumber,
                            messageId, (TextChannel) channel));
                break;
             case GROUP:
                 manager.handle(
                     new GroupMessageReactionRemoveAllEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             messageId, (Group) channel));
         }
 
         manager.handle(
             new MessageReactionRemoveAllEvent(
-                    api, responseNumber,
+                    getJDA(), responseNumber,
                     messageId, channel));
         return null;
     }

@@ -26,6 +26,7 @@ import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.impl.ManagerBase;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
 
@@ -72,7 +73,7 @@ public class GuildManager extends ManagerBase
     /** Used to reset the verification level field */
     public static final long VERIFICATION_LEVEL     = 0x400;
 
-    protected final Guild guild;
+    protected final UpstreamReference<Guild> guild;
 
     protected String name;
     protected String region;
@@ -89,7 +90,7 @@ public class GuildManager extends ManagerBase
     public GuildManager(Guild guild)
     {
         super(guild.getJDA(), Route.Guilds.MODIFY_GUILD.compile(guild.getId()));
-        this.guild = guild;
+        this.guild = new UpstreamReference<>(guild);
         if (isPermissionChecksEnabled())
             checkPermissions();
     }
@@ -102,7 +103,7 @@ public class GuildManager extends ManagerBase
      */
     public Guild getGuild()
     {
-        return guild;
+        return guild.get();
     }
 
     /**
@@ -243,7 +244,7 @@ public class GuildManager extends ManagerBase
     {
         Checks.notNull(region, "Region");
         Checks.check(region != Region.UNKNOWN, "Region must not be UNKNOWN");
-        Checks.check(!region.isVip() || guild.getFeatures().contains("VIP_REGIONS"), "Cannot set a VIP voice region on this guild");
+        Checks.check(!region.isVip() || getGuild().getFeatures().contains("VIP_REGIONS"), "Cannot set a VIP voice region on this guild");
         this.region = region.getKey();
         set |= REGION;
         return this;
@@ -281,7 +282,7 @@ public class GuildManager extends ManagerBase
     @CheckReturnValue
     public GuildManager setSplash(Icon splash)
     {
-        Checks.check(splash == null || guild.getFeatures().contains("INVITE_SPLASH"), "Cannot set a splash on this guild");
+        Checks.check(splash == null || getGuild().getFeatures().contains("INVITE_SPLASH"), "Cannot set a splash on this guild");
         this.splash = splash;
         set |= SPLASH;
         return this;
@@ -302,7 +303,7 @@ public class GuildManager extends ManagerBase
     @CheckReturnValue
     public GuildManager setAfkChannel(VoiceChannel afkChannel)
     {
-        Checks.check(afkChannel == null || afkChannel.getGuild().equals(guild), "Channel must be from the same guild");
+        Checks.check(afkChannel == null || afkChannel.getGuild().equals(getGuild()), "Channel must be from the same guild");
         this.afkChannel = afkChannel == null ? null : afkChannel.getId();
         set |= AFK_CHANNEL;
         return this;
@@ -323,7 +324,7 @@ public class GuildManager extends ManagerBase
     @CheckReturnValue
     public GuildManager setSystemChannel(TextChannel systemChannel)
     {
-        Checks.check(systemChannel == null || systemChannel.getGuild().equals(guild), "Channel must be from the same guild");
+        Checks.check(systemChannel == null || systemChannel.getGuild().equals(getGuild()), "Channel must be from the same guild");
         this.systemChannel = systemChannel == null ? null : systemChannel.getId();
         set |= SYSTEM_CHANNEL;
         return this;
@@ -436,7 +437,7 @@ public class GuildManager extends ManagerBase
     @Override
     protected RequestBody finalizeData()
     {
-        JSONObject body = new JSONObject().put("name", guild.getName());
+        JSONObject body = new JSONObject().put("name", getGuild().getName());
         if (shouldUpdate(NAME))
             body.put("name", name);
         if (shouldUpdate(REGION))
@@ -467,7 +468,7 @@ public class GuildManager extends ManagerBase
     @Override
     protected boolean checkPermissions()
     {
-        if (!guild.getSelfMember().hasPermission(Permission.MANAGE_SERVER))
+        if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_SERVER))
             throw new InsufficientPermissionException(Permission.MANAGE_SERVER);
         return super.checkPermissions();
     }

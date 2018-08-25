@@ -36,11 +36,11 @@ public class GuildMemberRemoveHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long id = content.getLong("guild_id");
-        boolean setup = api.getGuildSetupController().onRemoveMember(id, content);
+        boolean setup = getJDA().getGuildSetupController().onRemoveMember(id, content);
         if (setup)
             return null;
 
-        GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
+        GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(id);
         if (guild == null)
         {
             //We probably just left the guild and this event is trying to remove us from the guild, therefore ignore
@@ -48,7 +48,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
         }
 
         final long userId = content.getJSONObject("user").getLong("id");
-        if (userId == api.getSelfUser().getIdLong())
+        if (userId == getJDA().getSelfUser().getIdLong())
         {
             //We probably just left the guild and this event is trying to remove us from the guild, therefore ignore
             return null;
@@ -67,47 +67,47 @@ public class GuildMemberRemoveHandler extends SocketHandler
             VoiceChannel channel = voiceState.getChannel();
             voiceState.setConnectedChannel(null);
             ((VoiceChannelImpl) channel).getConnectedMembersMap().remove(member.getUser().getIdLong());
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                     new GuildVoiceLeaveEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             member, channel));
         }
 
         //The user is not in a different guild that we share
         // The user also is not a friend of this account in the case that the logged in account is a client account.
-        if (userId != api.getSelfUser().getIdLong() // don't remove selfUser from cache
-            && api.getGuildMap().valueCollection().stream().noneMatch(g -> ((GuildImpl) g).getMembersMap().containsKey(userId))
-            && !(api.getAccountType() == AccountType.CLIENT && api.asClient().getFriendById(userId) != null))
+        if (userId != getJDA().getSelfUser().getIdLong() // don't remove selfUser from cache
+            && getJDA().getGuildMap().valueCollection().stream().noneMatch(g -> ((GuildImpl) g).getMembersMap().containsKey(userId))
+            && !(getJDA().getAccountType() == AccountType.CLIENT && getJDA().asClient().getFriendById(userId) != null))
         {
-            UserImpl user = (UserImpl) api.getUserMap().remove(userId);
+            UserImpl user = (UserImpl) getJDA().getUserMap().remove(userId);
             if (user.hasPrivateChannel())
             {
                 PrivateChannelImpl priv = (PrivateChannelImpl) user.getPrivateChannel();
                 user.setFake(true);
                 priv.setFake(true);
-                api.getFakeUserMap().put(user.getIdLong(), user);
-                api.getFakePrivateChannelMap().put(priv.getIdLong(), priv);
+                getJDA().getFakeUserMap().put(user.getIdLong(), user);
+                getJDA().getFakePrivateChannelMap().put(priv.getIdLong(), priv);
             }
-            else if (api.getAccountType() == AccountType.CLIENT)
+            else if (getJDA().getAccountType() == AccountType.CLIENT)
             {
                 //While the user might not have a private channel, if this is a client account then the user
                 // could be in a Group, and if so we need to change the User object to be fake and
                 // place it in the FakeUserMap
-                for (Group grp : api.asClient().getGroups())
+                for (Group grp : getJDA().asClient().getGroups())
                 {
                     if (grp.getNonFriendUsers().contains(user))
                     {
                         user.setFake(true);
-                        api.getFakeUserMap().put(user.getIdLong(), user);
+                        getJDA().getFakeUserMap().put(user.getIdLong(), user);
                         break; //Breaks from groups loop
                     }
                 }
             }
-            api.getEventCache().clear(EventCache.Type.USER, userId);
+            getJDA().getEventCache().clear(EventCache.Type.USER, userId);
         }
-        api.getEventManager().handle(
+        getJDA().getEventManager().handle(
                 new GuildMemberLeaveEvent(
-                        api, responseNumber,
+                        getJDA(), responseNumber,
                         member));
         return null;
     }

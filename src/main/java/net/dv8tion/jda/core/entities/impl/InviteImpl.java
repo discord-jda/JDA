@@ -31,7 +31,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
-import java.util.Collections;
 import java.util.Set;
 
 public class InviteImpl implements Invite
@@ -82,7 +81,7 @@ public class InviteImpl implements Invite
             {
                 if (response.isOk())
                 {
-                    final Invite invite = this.api.getEntityBuilder().createInvite(response.getObject());
+                    final Invite invite = this.api.get().getEntityBuilder().createInvite(response.getObject());
                     request.onSuccess(invite);
                 }
                 else
@@ -150,7 +149,7 @@ public class InviteImpl implements Invite
             {
                 if (response.isOk())
                 {
-                    final EntityBuilder entityBuilder = this.api.getEntityBuilder();
+                    final EntityBuilder entityBuilder = this.api.get().getEntityBuilder();
                     final JSONArray array = response.getArray();
                     for (int i = 0; i < array.length(); i++)
                     {

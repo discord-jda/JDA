@@ -40,7 +40,7 @@ public class ReadyHandler extends SocketHandler
     @Override
     protected Long handleInternally(JSONObject content)
     {
-        EntityBuilder builder = api.getEntityBuilder();
+        EntityBuilder builder = getJDA().getEntityBuilder();
 
         //Core
         JSONArray guilds = content.getJSONArray("guilds");
@@ -48,17 +48,17 @@ public class ReadyHandler extends SocketHandler
 
         builder.createSelfUser(selfJson);
 
-        if (api.getAccountType() == AccountType.CLIENT && !content.isNull("user_settings"))
+        if (getJDA().getAccountType() == AccountType.CLIENT && !content.isNull("user_settings"))
         {
             // handle user settings
             JSONObject userSettingsJson = content.getJSONObject("user_settings");
-            UserSettingsImpl userSettingsObj = (UserSettingsImpl) api.asClient().getSettings();
+            UserSettingsImpl userSettingsObj = (UserSettingsImpl) getJDA().asClient().getSettings();
             userSettingsObj
                     // TODO: set all information and handle updates
                     .setStatus(userSettingsJson.isNull("status") ? OnlineStatus.ONLINE : OnlineStatus.fromKey(userSettingsJson.getString("status")));
             // update presence information unless the status is ONLINE
             if (userSettingsObj.getStatus() != OnlineStatus.ONLINE)
-                ((PresenceImpl) api.getPresence()).setCacheStatus(userSettingsObj.getStatus());
+                ((PresenceImpl) getJDA().getPresence()).setCacheStatus(userSettingsObj.getStatus());
         }
 
         if (api.getGuildSetupController().setIncompleteCount(guilds.length()))
@@ -76,10 +76,10 @@ public class ReadyHandler extends SocketHandler
 
     public void handleReady(JSONObject content)
     {
-        EntityBuilder builder = api.getEntityBuilder();
+        EntityBuilder builder = getJDA().getEntityBuilder();
         JSONArray privateChannels = content.getJSONArray("private_channels");
 
-        if (api.getAccountType() == AccountType.CLIENT)
+        if (getJDA().getAccountType() == AccountType.CLIENT)
         {
             JSONArray relationships = content.getJSONArray("relationships");
             JSONArray presences = content.getJSONArray("presences");
@@ -96,7 +96,7 @@ public class ReadyHandler extends SocketHandler
             {
                 JSONObject presence = presences.getJSONObject(i);
                 long userId = presence.getJSONObject("user").getLong("id");
-                FriendImpl friend = (FriendImpl) api.asClient().getFriendById(userId);
+                FriendImpl friend = (FriendImpl) getJDA().asClient().getFriendById(userId);
                 if (friend == null)
                     WebSocketClient.LOG.debug("Received a presence in the Presences array in READY that did not correspond to a cached Friend! JSON: {}", presence);
                 else

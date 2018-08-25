@@ -32,6 +32,7 @@ import net.dv8tion.jda.core.requests.restaction.RoleAction;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.PermissionUtil;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 
 import java.awt.Color;
 import java.time.OffsetDateTime;
@@ -43,7 +44,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class RoleImpl implements Role
 {
     private final long id;
-    private final Guild guild;
+    private final UpstreamReference<Guild> guild;
 
     private final ReentrantLock mngLock = new ReentrantLock();
     private volatile RoleManager manager;
@@ -59,18 +60,18 @@ public class RoleImpl implements Role
     public RoleImpl(long id, Guild guild)
     {
         this.id = id;
-        this.guild = guild;
+        this.guild = new UpstreamReference<>(guild);
     }
 
     @Override
     public int getPosition()
     {
-        if (this == guild.getPublicRole())
+        if (this == getGuild().getPublicRole())
             return -1;
 
         //Subtract 1 to get into 0-index, and 1 to disregard the everyone role.
-        int i = guild.getRoles().size() - 2;
-        for (Role r : guild.getRoles())
+        int i = getGuild().getRoles().size() - 2;
+        for (Role r : getGuild().getRoles())
         {
             if (r == this)
                 return i;
@@ -143,7 +144,7 @@ public class RoleImpl implements Role
     @Override
     public boolean hasPermission(Permission... permissions)
     {
-        long effectivePerms = rawPermissions | guild.getPublicRole().getPermissionsRaw();
+        long effectivePerms = rawPermissions | getGuild().getPublicRole().getPermissionsRaw();
         for (Permission perm : permissions)
         {
             final long rawValue = perm.getRawValue();
@@ -191,7 +192,7 @@ public class RoleImpl implements Role
     @Override
     public Guild getGuild()
     {
-        return guild;
+        return guild.get();
     }
 
     @Override
@@ -232,7 +233,7 @@ public class RoleImpl implements Role
         if (managed)
             throw new UnsupportedOperationException("Cannot delete a Role that is managed. ");
 
-        Route.CompiledRoute route = Route.Roles.DELETE_ROLE.compile(guild.getId(), getId());
+        Route.CompiledRoute route = Route.Roles.DELETE_ROLE.compile(getGuild().getId(), getId());
         return new AuditableRestAction<Void>(getJDA(), route)
         {
             @Override
@@ -249,7 +250,7 @@ public class RoleImpl implements Role
     @Override
     public JDA getJDA()
     {
-        return guild.getJDA();
+        return getGuild().getJDA();
     }
 
     @Override

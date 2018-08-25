@@ -44,14 +44,14 @@ public class GuildUpdateHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long id = content.getLong("id");
-        if (api.getGuildSetupController().isLocked(id))
+        if (getJDA().getGuildSetupController().isLocked(id))
             return id;
 
         //////////////
         //  WARNING //
         //Do not rely on allContent past this point, this method is also called from GuildCreateHandler!
         //////////////
-        GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
+        GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(id);
         long ownerId = content.getLong("owner_id");
         String name = content.getString("name");
         String iconId = content.optString("icon", null);
@@ -85,117 +85,117 @@ public class GuildUpdateHandler extends SocketHandler
                 WebSocketClient.LOG.warn("Received {} with owner not in cache. UserId: {} GuildId: {}", allContent.get("t"), ownerId, id);
             guild.setOwner(newOwner);
             guild.setOwnerId(ownerId);
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                     new GuildUpdateOwnerEvent(
-                        api, responseNumber,
+                        getJDA(), responseNumber,
                         guild, oldOwner));
         }
         if (!Objects.equals(name, guild.getName()))
         {
             String oldName = guild.getName();
             guild.setName(name);
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                     new GuildUpdateNameEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             guild, oldName));
         }
         if (!Objects.equals(iconId, guild.getIconId()))
         {
             String oldIconId = guild.getIconId();
             guild.setIconId(iconId);
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                     new GuildUpdateIconEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             guild, oldIconId));
         }
         if (!features.equals(guild.getFeatures()))
         {
             Set<String> oldFeatures = guild.getFeatures();
             guild.setFeatures(features);
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                     new GuildUpdateFeaturesEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             guild, oldFeatures));
         }
         if (!Objects.equals(splashId, guild.getSplashId()))
         {
             String oldSplashId = guild.getSplashId();
             guild.setSplashId(splashId);
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                     new GuildUpdateSplashEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             guild, oldSplashId));
         }
         if (!Objects.equals(region, guild.getRegionRaw()))
         {
             String oldRegion = guild.getRegionRaw();
             guild.setRegion(region);
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                     new GuildUpdateRegionEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             guild, oldRegion));
         }
         if (!Objects.equals(verificationLevel, guild.getVerificationLevel()))
         {
             Guild.VerificationLevel oldVerificationLevel = guild.getVerificationLevel();
             guild.setVerificationLevel(verificationLevel);
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                     new GuildUpdateVerificationLevelEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             guild, oldVerificationLevel));
         }
         if (!Objects.equals(notificationLevel, guild.getDefaultNotificationLevel()))
         {
             Guild.NotificationLevel oldNotificationLevel = guild.getDefaultNotificationLevel();
             guild.setDefaultNotificationLevel(notificationLevel);
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                     new GuildUpdateNotificationLevelEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             guild, oldNotificationLevel));
         }
         if (!Objects.equals(mfaLevel, guild.getRequiredMFALevel()))
         {
             Guild.MFALevel oldMfaLevel = guild.getRequiredMFALevel();
             guild.setRequiredMFALevel(mfaLevel);
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                     new GuildUpdateMFALevelEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             guild, oldMfaLevel));
         }
         if (!Objects.equals(explicitContentLevel, guild.getExplicitContentLevel()))
         {
             Guild.ExplicitContentLevel oldExplicitContentLevel = guild.getExplicitContentLevel();
             guild.setExplicitContentLevel(explicitContentLevel);
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                     new GuildUpdateExplicitContentLevelEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             guild, oldExplicitContentLevel));
         }
         if (!Objects.equals(afkTimeout, guild.getAfkTimeout()))
         {
             Guild.Timeout oldAfkTimeout = guild.getAfkTimeout();
             guild.setAfkTimeout(afkTimeout);
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                     new GuildUpdateAfkTimeoutEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             guild, oldAfkTimeout));
         }
         if (!Objects.equals(afkChannel, guild.getAfkChannel()))
         {
             VoiceChannel oldAfkChannel = guild.getAfkChannel();
             guild.setAfkChannel(afkChannel);
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                     new GuildUpdateAfkChannelEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             guild, oldAfkChannel));
         }
         if (!Objects.equals(systemChannel, guild.getSystemChannel()))
         {
             TextChannel oldSystemChannel = guild.getSystemChannel();
             guild.setSystemChannel(systemChannel);
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                     new GuildUpdateSystemChannelEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             guild, oldSystemChannel));
         }
         return null;

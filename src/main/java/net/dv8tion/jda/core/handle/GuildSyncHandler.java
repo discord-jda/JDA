@@ -30,7 +30,7 @@ public class GuildSyncHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long guildId = content.getLong("id");
-        api.getGuildSetupController().onSync(guildId, content);
+        getJDA().getGuildSetupController().onSync(guildId, content);
         return null;
     }
 }

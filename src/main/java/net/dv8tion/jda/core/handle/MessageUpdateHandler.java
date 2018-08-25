@@ -86,7 +86,7 @@ public class MessageUpdateHandler extends SocketHandler
         Message message;
         try
         {
-            message = api.getEntityBuilder().createMessage(content);
+            message = getJDA().getEntityBuilder().createMessage(content);
         }
         catch (IllegalArgumentException e)
         {
@@ -95,14 +95,14 @@ public class MessageUpdateHandler extends SocketHandler
                 case EntityBuilder.MISSING_CHANNEL:
                 {
                     final long channelId = content.getLong("channel_id");
-                    api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
+                    getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
                     EventCache.LOG.debug("Received a message update for a channel that JDA does not currently have cached");
                     return null;
                 }
                 case EntityBuilder.MISSING_USER:
                 {
                     final long authorId = content.getJSONObject("author").getLong("id");
-                    api.getEventCache().cache(EventCache.Type.USER, authorId, responseNumber, allContent, this::handle);
+                    getJDA().getEventCache().cache(EventCache.Type.USER, authorId, responseNumber, allContent, this::handle);
                     EventCache.LOG.debug("Received a message update for a user that JDA does not currently have cached");
                     return null;
                 }
@@ -116,27 +116,27 @@ public class MessageUpdateHandler extends SocketHandler
             case TEXT:
             {
                 TextChannel channel = message.getTextChannel();
-                if (api.getGuildSetupController().isLocked(channel.getGuild().getIdLong()))
+                if (getJDA().getGuildSetupController().isLocked(channel.getGuild().getIdLong()))
                     return channel.getGuild().getIdLong();
-                api.getEventManager().handle(
+                getJDA().getEventManager().handle(
                         new GuildMessageUpdateEvent(
-                                api, responseNumber,
+                                getJDA(), responseNumber,
                                 message));
                 break;
             }
             case PRIVATE:
             {
-                api.getEventManager().handle(
+                getJDA().getEventManager().handle(
                         new PrivateMessageUpdateEvent(
-                                api, responseNumber,
+                                getJDA(), responseNumber,
                                 message));
                 break;
             }
             case GROUP:
             {
-                api.getEventManager().handle(
+                getJDA().getEventManager().handle(
                         new GroupMessageUpdateEvent(
-                                api, responseNumber,
+                                getJDA(), responseNumber,
                                 message));
                 break;
             }
@@ -147,29 +147,29 @@ public class MessageUpdateHandler extends SocketHandler
         }
 
         //Combo event
-        api.getEventManager().handle(
+        getJDA().getEventManager().handle(
                 new MessageUpdateEvent(
-                        api, responseNumber,
+                        getJDA(), responseNumber,
                         message));
         return null;
     }
 
     private Long handleMessageEmbed(JSONObject content)
     {
-        EntityBuilder builder = api.getEntityBuilder();
+        EntityBuilder builder = getJDA().getEntityBuilder();
         final long messageId = content.getLong("id");
         final long channelId = content.getLong("channel_id");
         LinkedList<MessageEmbed> embeds = new LinkedList<>();
-        MessageChannel channel = api.getTextChannelMap().get(channelId);
+        MessageChannel channel = getJDA().getTextChannelMap().get(channelId);
         if (channel == null)
-            channel = api.getPrivateChannelMap().get(channelId);
+            channel = getJDA().getPrivateChannelMap().get(channelId);
         if (channel == null)
-            channel = api.getFakePrivateChannelMap().get(channelId);
-        if (channel == null && api.getAccountType() == AccountType.CLIENT)
-            channel = api.asClient().getGroupById(channelId);
+            channel = getJDA().getFakePrivateChannelMap().get(channelId);
+        if (channel == null && getJDA().getAccountType() == AccountType.CLIENT)
+            channel = getJDA().asClient().getGroupById(channelId);
         if (channel == null)
         {
-            api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
+            getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Received message update for embeds for a channel/group that JDA does not have cached yet.");
             return null;
         }
@@ -183,31 +183,31 @@ public class MessageUpdateHandler extends SocketHandler
         if (channel instanceof TextChannel)
         {
             TextChannel tChannel = (TextChannel) channel;
-            if (api.getGuildSetupController().isLocked(tChannel.getGuild().getIdLong()))
+            if (getJDA().getGuildSetupController().isLocked(tChannel.getGuild().getIdLong()))
                 return tChannel.getGuild().getIdLong();
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                     new GuildMessageEmbedEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             messageId, tChannel, embeds));
         }
         else if (channel instanceof PrivateChannel)
         {
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                     new PrivateMessageEmbedEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             messageId, (PrivateChannel) channel, embeds));
         }
         else
         {
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                     new GroupMessageEmbedEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             messageId, (Group) channel, embeds));
         }
         //Combo event
-        api.getEventManager().handle(
+        getJDA().getEventManager().handle(
                 new MessageEmbedEvent(
-                        api, responseNumber,
+                        getJDA(), responseNumber,
                         messageId, channel, embeds));
         return null;
     }

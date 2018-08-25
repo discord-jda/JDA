@@ -37,6 +37,7 @@ import net.dv8tion.jda.core.handle.EventCache;
 import net.dv8tion.jda.core.utils.Helpers;
 import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.cache.CacheFlag;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.json.JSONArray;
@@ -75,25 +76,30 @@ public class EntityBuilder
         richGameFields = Collections.unmodifiableSet(tmp);
     }
 
-    protected final JDAImpl api;
+    protected final UpstreamReference<JDAImpl> api;
 
     public EntityBuilder(JDA api)
     {
-        this.api = (JDAImpl) api;
+        this.api = new UpstreamReference<>((JDAImpl) api);
+    }
+
+    public JDAImpl getJDA()
+    {
+        return api.get();
     }
 
     public SelfUser createSelfUser(JSONObject self)
     {
-        SelfUserImpl selfUser = ((SelfUserImpl) api.getSelfUser());
+        SelfUserImpl selfUser = ((SelfUserImpl) getJDA().getSelfUser());
         if (selfUser == null)
         {
             final long id = self.getLong("id");
-            selfUser = new SelfUserImpl(id, api);
-            api.setSelfUser(selfUser);
+            selfUser = new SelfUserImpl(id, getJDA());
+            getJDA().setSelfUser(selfUser);
         }
 
-        if (!api.getUserMap().containsKey(selfUser.getIdLong()))
-            api.getUserMap().put(selfUser.getIdLong(), selfUser);
+        if (!getJDA().getUserMap().containsKey(selfUser.getIdLong()))
+            getJDA().getUserMap().put(selfUser.getIdLong(), selfUser);
 
         selfUser.setVerified(self.getBoolean("verified"))
                 .setMfaEnabled(self.getBoolean("mfa_enabled"))
@@ -102,7 +108,7 @@ public class EntityBuilder
                 .setAvatarId(self.optString("avatar", null))
                 .setBot(Helpers.optBoolean(self, "bot"));
 
-        if (this.api.getAccountType() == AccountType.CLIENT)
+        if (this.getJDA().getAccountType() == AccountType.CLIENT)
         {
             selfUser
                 .setEmail(self.optString("email", null))
@@ -121,7 +127,7 @@ public class EntityBuilder
 
     private void createGuildEmotePass(GuildImpl guildObj, JSONArray array)
     {
-        if (!api.isCacheFlagSet(CacheFlag.EMOTE))
+        if (!getJDA().isCacheFlagSet(CacheFlag.EMOTE))
             return;
         TLongObjectMap<Emote> emoteMap = guildObj.getEmoteMap();
         for (int i = 0; i < array.length(); i++)
@@ -289,35 +295,35 @@ public class EntityBuilder
         final long id = user.getLong("id");
         UserImpl userObj;
 
-        userObj = (UserImpl) api.getUserMap().get(id);
+        userObj = (UserImpl) getJDA().getUserMap().get(id);
         if (userObj == null)
         {
-            userObj = (UserImpl) api.getFakeUserMap().get(id);
+            userObj = (UserImpl) getJDA().getFakeUserMap().get(id);
             if (userObj != null)
             {
                 if (!fake && modifyCache)
                 {
-                    api.getFakeUserMap().remove(id);
+                    getJDA().getFakeUserMap().remove(id);
                     userObj.setFake(false);
-                    api.getUserMap().put(userObj.getIdLong(), userObj);
+                    getJDA().getUserMap().put(userObj.getIdLong(), userObj);
                     if (userObj.hasPrivateChannel())
                     {
                         PrivateChannelImpl priv = (PrivateChannelImpl) userObj.getPrivateChannel();
                         priv.setFake(false);
-                        api.getFakePrivateChannelMap().remove(priv.getIdLong());
-                        api.getPrivateChannelMap().put(priv.getIdLong(), priv);
+                        getJDA().getFakePrivateChannelMap().remove(priv.getIdLong());
+                        getJDA().getPrivateChannelMap().put(priv.getIdLong(), priv);
                     }
                 }
             }
             else
             {
-                userObj = new UserImpl(id, api).setFake(fake);
+                userObj = new UserImpl(id, getJDA()).setFake(fake);
                 if (modifyCache)
                 {
                     if (fake)
-                        api.getFakeUserMap().put(id, userObj);
+                        getJDA().getFakeUserMap().put(id, userObj);
                     else
-                        api.getUserMap().put(id, userObj);
+                        getJDA().getUserMap().put(id, userObj);
                 }
             }
         }
@@ -545,14 +551,14 @@ public class EntityBuilder
     {
         boolean playbackCache = false;
         final long id = json.getLong("id");
-        CategoryImpl channel = (CategoryImpl) api.getCategoryMap().get(id);
+        CategoryImpl channel = (CategoryImpl) getJDA().getCategoryMap().get(id);
         if (channel == null)
         {
             if (guild == null)
-                guild = (GuildImpl) api.getGuildMap().get(guildId);
+                guild = (GuildImpl) getJDA().getGuildMap().get(guildId);
             channel = new CategoryImpl(id, guild);
             guild.getCategoriesMap().put(id, channel);
-            playbackCache = api.getCategoryMap().put(id, channel) == null;
+            playbackCache = getJDA().getCategoryMap().put(id, channel) == null;
         }
 
         if (!json.isNull("permission_overwrites"))
@@ -579,14 +585,14 @@ public class EntityBuilder
     {
         boolean playbackCache = false;
         final long id = json.getLong("id");
-        TextChannelImpl channel = (TextChannelImpl) api.getTextChannelMap().get(id);
+        TextChannelImpl channel = (TextChannelImpl) getJDA().getTextChannelMap().get(id);
         if (channel == null)
         {
             if (guildObj == null)
-                guildObj = (GuildImpl) api.getGuildMap().get(guildId);
+                guildObj = (GuildImpl) getJDA().getGuildMap().get(guildId);
             channel = new TextChannelImpl(id, guildObj);
             guildObj.getTextChannelsMap().put(id, channel);
-            playbackCache = api.getTextChannelMap().put(id, channel) == null;
+            playbackCache = getJDA().getTextChannelMap().put(id, channel) == null;
         }
 
         if (!json.isNull("permission_overwrites"))
@@ -616,14 +622,14 @@ public class EntityBuilder
     {
         boolean playbackCache = false;
         final long id = json.getLong("id");
-        VoiceChannelImpl channel = ((VoiceChannelImpl) api.getVoiceChannelMap().get(id));
+        VoiceChannelImpl channel = ((VoiceChannelImpl) getJDA().getVoiceChannelMap().get(id));
         if (channel == null)
         {
             if (guild == null)
-                guild = (GuildImpl) api.getGuildMap().get(guildId);
+                guild = (GuildImpl) getJDA().getGuildMap().get(guildId);
             channel = new VoiceChannelImpl(id, guild);
             guild.getVoiceChannelsMap().put(id, channel);
-            playbackCache = api.getVoiceChannelMap().put(id, channel) == null;
+            playbackCache = getJDA().getVoiceChannelMap().put(id, channel) == null;
         }
 
         if (!json.isNull("permission_overwrites"))
@@ -649,9 +655,9 @@ public class EntityBuilder
             privatechat.getJSONArray("recipients").getJSONObject(0) :
             privatechat.getJSONObject("recipient");
         final long userId = recipient.getLong("id");
-        UserImpl user = (UserImpl) api.getUserMap().get(userId);
+        UserImpl user = (UserImpl) getJDA().getUserMap().get(userId);
         if (user == null)
-        {   //The API can give us private channels connected to Users that we can no longer communicate with.
+        {   //The getJDA() can give us private channels connected to Users that we can no longer communicate with.
             // As such, make a fake user and fake private channel.
             user = createFakeUser(recipient, true);
         }
@@ -664,12 +670,12 @@ public class EntityBuilder
         if (user.isFake())
         {
             priv.setFake(true);
-            api.getFakePrivateChannelMap().put(channelId, priv);
+            getJDA().getFakePrivateChannelMap().put(channelId, priv);
         }
         else
         {
-            api.getPrivateChannelMap().put(channelId, priv);
-            api.getEventCache().playbackCache(EventCache.Type.CHANNEL, channelId);
+            getJDA().getPrivateChannelMap().put(channelId, priv);
+            getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, channelId);
         }
         return priv;
     }
@@ -700,7 +706,7 @@ public class EntityBuilder
         boolean playbackCache = false;
         final long id = roleJson.getLong("id");
         if (guild == null)
-            guild = (GuildImpl) api.getGuildMap().get(guildId);
+            guild = (GuildImpl) getJDA().getGuildMap().get(guildId);
         RoleImpl role = (RoleImpl) guild.getRolesMap().get(id);
         if (role == null)
         {
@@ -725,13 +731,13 @@ public class EntityBuilder
     {
         final long channelId = jsonObject.getLong("channel_id");
 
-        MessageChannel chan = api.getTextChannelById(channelId);
+        MessageChannel chan = getJDA().getTextChannelById(channelId);
         if (chan == null)
-            chan = api.getPrivateChannelById(channelId);
+            chan = getJDA().getPrivateChannelById(channelId);
         if (chan == null)
-            chan = api.getFakePrivateChannelMap().get(channelId);
-        if (chan == null && api.getAccountType() == AccountType.CLIENT)
-            chan = api.asClient().getGroupById(channelId);
+            chan = getJDA().getFakePrivateChannelMap().get(channelId);
+        if (chan == null && getJDA().getAccountType() == AccountType.CLIENT)
+            chan = getJDA().asClient().getGroupById(channelId);
         if (chan == null)
             throw new IllegalArgumentException(MISSING_CHANNEL);
 
@@ -759,15 +765,15 @@ public class EntityBuilder
         switch (chan.getType())
         {
             case PRIVATE:
-                if (authorId == api.getSelfUser().getIdLong())
-                    user = api.getSelfUser();
+                if (authorId == getJDA().getSelfUser().getIdLong())
+                    user = getJDA().getSelfUser();
                 else
                     user = ((PrivateChannel) chan).getUser();
                 break;
             case GROUP:
-                user = api.getUserById(authorId);
+                user = getJDA().getUserById(authorId);
                 if (user == null)
-                    user = api.getFakeUserMap().get(authorId);
+                    user = getJDA().getFakeUserMap().get(authorId);
                 if (user == null && fromWebhook)
                     user = createFakeUser(author, false);
                 if (user == null)
@@ -840,15 +846,15 @@ public class EntityBuilder
         final MessageReaction.ReactionEmote reactionEmote;
         if (emojiID != null)
         {
-            Emote emote = api.getEmoteById(emojiID);
+            Emote emote = getJDA().getEmoteById(emojiID);
             // creates fake emoji because no guild has this emoji id
             if (emote == null)
-                emote = new EmoteImpl(emojiID, api).setAnimated(animated).setName(name);
+                emote = new EmoteImpl(emojiID, getJDA()).setAnimated(animated).setName(name);
             reactionEmote = new MessageReaction.ReactionEmote(emote);
         }
         else
         {
-            reactionEmote = new MessageReaction.ReactionEmote(name, null, api);
+            reactionEmote = new MessageReaction.ReactionEmote(name, null, getJDA());
         }
 
         return new MessageReaction(chan, reactionEmote, id, me, count);
@@ -863,7 +869,7 @@ public class EntityBuilder
         final String proxyUrl = jsonObject.optString("proxy_url", null);
         final String filename = jsonObject.getString("filename");
         final long id = jsonObject.getLong("id");
-        return new Message.Attachment(id, url, proxyUrl, filename, size, height, width, api);
+        return new Message.Attachment(id, url, proxyUrl, filename, size, height, width, getJDA());
     }
 
     public MessageEmbed createMessageEmbed(JSONObject content)
@@ -1024,7 +1030,7 @@ public class EntityBuilder
         final long channelId = object.getLong("channel_id");
         final String token = object.optString("token", null);
 
-        TextChannel channel = api.getTextChannelById(channelId);
+        TextChannel channel = getJDA().getTextChannelById(channelId);
         if (channel == null)
             throw new NullPointerException(String.format("Tried to create Webhook for an un-cached TextChannel! WebhookId: %s ChannelId: %s GuildId: %s",
                     id, channelId, guildId));
@@ -1046,7 +1052,7 @@ public class EntityBuilder
         {
             final long userId = ownerJson.getLong("id");
 
-            owner = api.getUserById(userId);
+            owner = getJDA().getUserById(userId);
             if (owner == null)
             {
                 ownerJson.put("id", userId);
@@ -1062,7 +1068,7 @@ public class EntityBuilder
 
     public Relationship createRelationship(JSONObject relationshipJson)
     {
-        if (api.getAccountType() != AccountType.CLIENT)
+        if (getJDA().getAccountType() != AccountType.CLIENT)
             throw new AccountTypeException(AccountType.CLIENT, "Attempted to create a Relationship but the logged in account is not a CLIENT!");
 
         RelationshipType type = RelationshipType.fromKey(relationshipJson.getInt("type"));
@@ -1072,7 +1078,7 @@ public class EntityBuilder
         else
             user = createFakeUser(relationshipJson.getJSONObject("user"), true);
 
-        Relationship relationship = api.asClient().getRelationshipById(user.getIdLong(), type);
+        Relationship relationship = getJDA().asClient().getRelationshipById(user.getIdLong(), type);
         if (relationship == null)
         {
             switch (type)
@@ -1092,14 +1098,14 @@ public class EntityBuilder
                 default:
                     return null;
             }
-            api.asClient().getRelationshipMap().put(user.getIdLong(), relationship);
+            getJDA().asClient().getRelationshipMap().put(user.getIdLong(), relationship);
         }
         return relationship;
     }
 
     public Group createGroup(JSONObject groupJson)
     {
-        if (api.getAccountType() != AccountType.CLIENT)
+        if (getJDA().getAccountType() != AccountType.CLIENT)
             throw new AccountTypeException(AccountType.CLIENT, "Attempted to create a Group but the logged in account is not a CLIENT!");
 
         boolean playbackCache = false;
@@ -1110,24 +1116,24 @@ public class EntityBuilder
         final String iconId = groupJson.optString("icon", null);
         final long lastMessage = Helpers.optLong(groupJson, "last_message_id", 0);
 
-        GroupImpl group = (GroupImpl) api.asClient().getGroupById(groupId);
+        GroupImpl group = (GroupImpl) getJDA().asClient().getGroupById(groupId);
         if (group == null)
         {
-            group = new GroupImpl(groupId, api);
-            playbackCache = api.asClient().getGroupMap().put(groupId, group) == null;
+            group = new GroupImpl(groupId, getJDA());
+            playbackCache = getJDA().asClient().getGroupMap().put(groupId, group) == null;
         }
 
         TLongObjectMap<User> groupUsers = group.getUserMap();
-        groupUsers.put(api.getSelfUser().getIdLong(), api.getSelfUser());
+        groupUsers.put(getJDA().getSelfUser().getIdLong(), getJDA().getSelfUser());
         for (int i = 0; i < recipients.length(); i++)
         {
             JSONObject groupUser = recipients.getJSONObject(i);
             groupUsers.put(groupUser.getLong("id"), createFakeUser(groupUser, true));
         }
 
-        User owner = api.getUserMap().get(ownerId);
+        User owner = getJDA().getUserMap().get(ownerId);
         if (owner == null)
-            owner = api.getFakeUserMap().get(ownerId);
+            owner = getJDA().getFakeUserMap().get(ownerId);
         if (owner == null)
             throw new IllegalArgumentException("Attempted to build a Group, but could not find user by provided owner id." +
                     "This should not be possible because the owner should be IN the group!");
@@ -1204,7 +1210,7 @@ public class EntityBuilder
             timeCreated = null;
         }
 
-        return new InviteImpl(api, code, expanded, inviter,
+        return new InviteImpl(getJDA(), code, expanded, inviter,
                               maxAge, maxUses, temporary,
                               timeCreated, uses, channel, guild);
     }
@@ -1219,12 +1225,12 @@ public class EntityBuilder
         final boolean isBotPublic = object.getBoolean("bot_public");
         final User owner = createFakeUser(object.getJSONObject("owner"), false);
 
-        return new ApplicationInfoImpl(api, description, doesBotRequireCodeGrant, iconId, id, isBotPublic, name, owner);
+        return new ApplicationInfoImpl(getJDA(), description, doesBotRequireCodeGrant, iconId, id, isBotPublic, name, owner);
     }
 
     public Application createApplication(JSONObject object)
     {
-        return new ApplicationImpl(api, object);
+        return new ApplicationImpl(getJDA(), object);
     }
 
     public AuthorizedApplication createAuthorizedApplication(JSONObject object)
@@ -1244,7 +1250,7 @@ public class EntityBuilder
         final long id = application.getLong("id");
         final String name = application.getString("name");
 
-        return new AuthorizedApplicationImpl(api, authId, description, iconId, id, name, scopes);
+        return new AuthorizedApplicationImpl(getJDA(), authId, description, iconId, id, name, scopes);
     }
 
     public AuditLogEntry createAuditLogEntry(GuildImpl guild, JSONObject entryJson, JSONObject userJson, JSONObject webhookJson)

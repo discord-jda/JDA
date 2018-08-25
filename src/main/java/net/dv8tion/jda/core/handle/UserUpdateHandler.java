@@ -34,7 +34,7 @@ public class UserUpdateHandler extends SocketHandler
     @Override
     protected Long handleInternally(JSONObject content)
     {
-        SelfUserImpl self = (SelfUserImpl) api.getSelfUser();
+        SelfUserImpl self = (SelfUserImpl) getJDA().getSelfUser();
 
         String name = content.getString("username");
         String discriminator = content.getString("discriminator");
@@ -52,9 +52,9 @@ public class UserUpdateHandler extends SocketHandler
         {
             String oldName = self.getName();
             self.setName(name);
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                 new SelfUpdateNameEvent(
-                    api, responseNumber,
+                    getJDA(), responseNumber,
                     oldName));
         }
 
@@ -62,9 +62,9 @@ public class UserUpdateHandler extends SocketHandler
         {
             String oldAvatarId = self.getAvatarId();
             self.setAvatarId(avatarId);
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                 new SelfUpdateAvatarEvent(
-                    api, responseNumber,
+                    getJDA(), responseNumber,
                     oldAvatarId));
         }
 
@@ -72,9 +72,9 @@ public class UserUpdateHandler extends SocketHandler
         {
             boolean wasVerified = self.isVerified();
             self.setVerified(verified);
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                 new SelfUpdateVerifiedEvent(
-                    api, responseNumber,
+                    getJDA(), responseNumber,
                     wasVerified));
         }
 
@@ -82,21 +82,21 @@ public class UserUpdateHandler extends SocketHandler
         {
             boolean wasMfaEnabled = self.isMfaEnabled();
             self.setMfaEnabled(mfaEnabled);
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                 new SelfUpdateMFAEvent(
-                    api, responseNumber,
+                    getJDA(), responseNumber,
                     wasMfaEnabled));
         }
 
-        if (api.getAccountType() == AccountType.CLIENT)
+        if (getJDA().getAccountType() == AccountType.CLIENT)
         {
             if (!Objects.equals(email, self.getEmail()))
             {
                 String oldEmail = self.getEmail();
                 self.setEmail(email);
-                api.getEventManager().handle(
+                getJDA().getEventManager().handle(
                     new SelfUpdateEmailEvent(
-                        api, responseNumber,
+                        getJDA(), responseNumber,
                         oldEmail));
             }
 
@@ -104,9 +104,9 @@ public class UserUpdateHandler extends SocketHandler
             {
                 boolean oldMobile = self.isMobile();
                 self.setMobile(mobile);
-                api.getEventManager().handle(
+                getJDA().getEventManager().handle(
                     new SelfUpdateMobileEvent(
-                        api, responseNumber,
+                        getJDA(), responseNumber,
                         oldMobile));
             }
 
@@ -114,9 +114,9 @@ public class UserUpdateHandler extends SocketHandler
             {
                 boolean oldNitro = self.isNitro();
                 self.setNitro(nitro);
-                api.getEventManager().handle(
+                getJDA().getEventManager().handle(
                     new SelfUpdateNitroEvent(
-                        api, responseNumber,
+                        getJDA(), responseNumber,
                         oldNitro));
             }
 
@@ -124,9 +124,9 @@ public class UserUpdateHandler extends SocketHandler
             {
                 String oldPhoneNumber = self.getPhoneNumber();
                 self.setPhoneNumber(phoneNumber);
-                api.getEventManager().handle(
+                getJDA().getEventManager().handle(
                     new SelfUpdatePhoneNumberEvent(
-                        api, responseNumber,
+                        getJDA(), responseNumber,
                         oldPhoneNumber));
             }
         }

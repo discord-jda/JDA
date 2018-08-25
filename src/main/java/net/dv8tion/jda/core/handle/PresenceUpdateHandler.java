@@ -47,12 +47,12 @@ public class PresenceUpdateHandler extends SocketHandler
         if (!content.isNull("guild_id"))
         {
             final long guildId = content.getLong("guild_id");
-            if (api.getGuildSetupController().isLocked(guildId))
+            if (getJDA().getGuildSetupController().isLocked(guildId))
                 return guildId;
-            guild = (GuildImpl) api.getGuildById(guildId);
+            guild = (GuildImpl) getJDA().getGuildById(guildId);
             if (guild == null)
             {
-                api.getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
+                getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
                 EventCache.LOG.debug("Received a PRESENCE_UPDATE for a guild that is not yet cached! " +
                     "GuildId: " + guildId + " UserId: " + content.getJSONObject("user").get("id"));
                 return null;
@@ -61,7 +61,7 @@ public class PresenceUpdateHandler extends SocketHandler
 
         JSONObject jsonUser = content.getJSONObject("user");
         final long userId = jsonUser.getLong("id");
-        UserImpl user = (UserImpl) api.getUserMap().get(userId);
+        UserImpl user = (UserImpl) getJDA().getUserMap().get(userId);
 
         //If we do know about the user, lets update the user's specific info.
         // Afterwards, we will see if we already have them cached in the specific guild
@@ -81,27 +81,27 @@ public class PresenceUpdateHandler extends SocketHandler
                 {
                     String oldUsername = user.getName();
                     user.setName(name);
-                    api.getEventManager().handle(
+                    getJDA().getEventManager().handle(
                         new UserUpdateNameEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             user, oldUsername));
                 }
                 if (!user.getDiscriminator().equals(discriminator))
                 {
                     String oldDiscriminator = user.getDiscriminator();
                     user.setDiscriminator(discriminator);
-                    api.getEventManager().handle(
+                    getJDA().getEventManager().handle(
                         new UserUpdateDiscriminatorEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             user, oldDiscriminator));
                 }
                 if (!Objects.equals(avatarId, oldAvatar))
                 {
                     String oldAvatarId = user.getAvatarId();
                     user.setAvatarId(avatarId);
-                    api.getEventManager().handle(
+                    getJDA().getEventManager().handle(
                         new UserUpdateAvatarEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             user, oldAvatarId));
                 }
             }
@@ -153,18 +153,18 @@ public class PresenceUpdateHandler extends SocketHandler
                     {
                         OnlineStatus oldStatus = member.getOnlineStatus();
                         member.setOnlineStatus(status);
-                        api.getEventManager().handle(
+                        getJDA().getEventManager().handle(
                             new UserUpdateOnlineStatusEvent(
-                                api, responseNumber,
+                                getJDA(), responseNumber,
                                 user, guild, oldStatus));
                     }
                     if (parsedGame && !Objects.equals(member.getGame(), nextGame))
                     {
                         Game oldGame = member.getGame();
                         member.setGame(nextGame);
-                        api.getEventManager().handle(
+                        getJDA().getEventManager().handle(
                             new UserUpdateGameEvent(
-                                api, responseNumber,
+                                getJDA(), responseNumber,
                                 user, guild, oldGame));
                     }
                 }
@@ -172,9 +172,9 @@ public class PresenceUpdateHandler extends SocketHandler
             else
             {
                 //In this case, this PRESENCE_UPDATE is for a Relation.
-                if (api.getAccountType() != AccountType.CLIENT)
+                if (getJDA().getAccountType() != AccountType.CLIENT)
                     return null;
-                JDAClient client = api.asClient();
+                JDAClient client = getJDA().asClient();
                 FriendImpl friend = (FriendImpl) client.getFriendById(userId);
 
                 if (friend != null)
@@ -183,18 +183,18 @@ public class PresenceUpdateHandler extends SocketHandler
                     {
                         OnlineStatus oldStatus = friend.getOnlineStatus();
                         friend.setOnlineStatus(status);
-                        api.getEventManager().handle(
+                        getJDA().getEventManager().handle(
                             new UserUpdateOnlineStatusEvent(
-                                api, responseNumber,
+                                getJDA(), responseNumber,
                                 user, null, oldStatus));
                     }
                     if (parsedGame && !Objects.equals(friend.getGame(), nextGame))
                     {
                         Game oldGame = friend.getGame();
                         friend.setGame(nextGame);
-                        api.getEventManager().handle(
+                        getJDA().getEventManager().handle(
                             new UserUpdateGameEvent(
-                                api, responseNumber,
+                                getJDA(), responseNumber,
                                 user, null, oldGame));
                     }
                 }
