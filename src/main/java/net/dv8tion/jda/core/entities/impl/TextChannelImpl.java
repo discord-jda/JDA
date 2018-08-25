@@ -178,7 +178,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     @Override
     public boolean canTalk(Member member)
     {
-        if (!guild.equals(member.getGuild()))
+        if (!getGuild().equals(member.getGuild()))
             throw new IllegalArgumentException("Provided Member is not from the Guild that this TextChannel is part of.");
 
         return member.hasPermission(this, Permission.MESSAGE_READ, Permission.MESSAGE_WRITE);
