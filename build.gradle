@@ -92,12 +92,19 @@ task sourcesForRelease(type: Copy) {
     into 'build/filteredSrc'
 }
 
-compileJava {
+task generateJavaSources(type: SourceTask) {
     def javaSources = sourceSets.main.allJava.filter {
         it.name != 'JDAInfo.java'
     }
     source = javaSources + sourcesForRelease.destinationDir
+
     dependsOn sourcesForRelease
+}
+
+compileJava {
+    source = generateJavaSources.source
+
+    dependsOn generateJavaSources
 }
 
 tasks.withType(JavaCompile) {
@@ -133,7 +140,12 @@ task noOpusJar(type: ShadowJar, dependsOn: shadowJar) {
 
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
-    from "${buildDir}/filteredSrc"
+    from ('src/main/java') {
+        exclude '**/JDAInfo.java'
+    }
+    from sourcesForRelease.destinationDir
+
+    dependsOn sourcesForRelease
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
