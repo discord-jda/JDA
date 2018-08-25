@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.PermissionUtil;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 
 import javax.annotation.Nullable;
 import java.awt.Color;
@@ -30,9 +31,9 @@ import java.util.*;
 
 public class MemberImpl implements Member
 {
-    private final GuildImpl guild;
+    private final UpstreamReference<GuildImpl> guild;
     private final User user;
-    private final HashSet<Role> roles = new HashSet<>();
+    private final Set<Role> roles = new HashSet<>();
     private final GuildVoiceState voiceState;
 
     private String nickname;
@@ -42,7 +43,7 @@ public class MemberImpl implements Member
 
     public MemberImpl(GuildImpl guild, User user)
     {
-        this.guild = guild;
+        this.guild = new UpstreamReference<>(guild);
         this.user = user;
         this.voiceState = new GuildVoiceStateImpl(guild, this);
     }
@@ -54,9 +55,9 @@ public class MemberImpl implements Member
     }
 
     @Override
-    public Guild getGuild()
+    public GuildImpl getGuild()
     {
-        return guild;
+        return guild.get();
     }
 
     @Override
@@ -196,7 +197,7 @@ public class MemberImpl implements Member
 
     @Override
     public boolean isOwner() {
-        return this.equals(guild.getOwner());
+        return this.equals(getGuild().getOwner());
     }
 
     public MemberImpl setNickname(String nickname)
@@ -241,7 +242,7 @@ public class MemberImpl implements Member
     @Override
     public int hashCode()
     {
-        return (guild.getId() + user.getId()).hashCode();
+        return (getGuild().getId() + user.getId()).hashCode();
     }
 
     @Override
@@ -260,7 +261,7 @@ public class MemberImpl implements Member
     @Override
     public TextChannel getDefaultChannel()
     {
-        return guild.getTextChannelsMap().valueCollection().stream()
+        return getGuild().getTextChannelsMap().valueCollection().stream()
                 .sorted(Comparator.reverseOrder())
                 .filter(c -> hasPermission(c, Permission.MESSAGE_READ))
                 .findFirst().orElse(null);

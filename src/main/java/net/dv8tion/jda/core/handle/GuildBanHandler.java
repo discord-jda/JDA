@@ -37,32 +37,32 @@ public class GuildBanHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long id = content.getLong("guild_id");
-        if (api.getGuildLock().isLocked(id))
+        if (getJDA().getGuildLock().isLocked(id))
             return id;
 
         JSONObject userJson = content.getJSONObject("user");
-        GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
+        GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(id);
         if (guild == null)
         {
-            api.getEventCache().cache(EventCache.Type.GUILD, id, () -> handle(responseNumber, allContent));
+            getJDA().getEventCache().cache(EventCache.Type.GUILD, id, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Received Guild Member {} event for a Guild not yet cached.", JDALogger.getLazyString(() -> banned ? "Ban" : "Unban"));
             return null;
         }
 
-        User user = api.getEntityBuilder().createFakeUser(userJson, false);
+        User user = getJDA().getEntityBuilder().createFakeUser(userJson, false);
 
         if (banned)
         {
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                     new GuildBanEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             guild, user));
         }
         else
         {
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                     new GuildUnbanEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             guild, user));
         }
         return null;

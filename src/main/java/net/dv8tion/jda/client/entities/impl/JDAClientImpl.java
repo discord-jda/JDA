@@ -35,6 +35,7 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import net.dv8tion.jda.core.utils.cache.impl.SnowflakeCacheViewImpl;
 import org.json.JSONArray;
 
@@ -45,7 +46,7 @@ import java.util.stream.Collectors;
 
 public class JDAClientImpl implements JDAClient
 {
-    protected final JDAImpl api;
+    protected final UpstreamReference<JDAImpl> api;
     protected final SnowflakeCacheViewImpl<Group> groups = new SnowflakeCacheViewImpl<>(Group.class, Group::getName);
     protected final TLongObjectMap<Relationship> relationships = MiscUtil.newLongMap();
     protected final TLongObjectMap<CallUser> callUsers = MiscUtil.newLongMap();
@@ -53,14 +54,14 @@ public class JDAClientImpl implements JDAClient
 
     public JDAClientImpl(JDAImpl api)
     {
-        this.api = api;
+        this.api = new UpstreamReference<>(api);
         this.userSettings = new UserSettingsImpl(api);
     }
 
     @Override
     public JDA getJDA()
     {
-        return api;
+        return api.get();
     }
 
     @Override
@@ -228,14 +229,14 @@ public class JDAClientImpl implements JDAClient
     @Override
     public ApplicationAction createApplication(String name)
     {
-        return new ApplicationAction(api, name);
+        return new ApplicationAction(api.get(), name);
     }
 
     @Override
     public RestAction<List<Application>> getApplications()
     {
         Route.CompiledRoute route = Route.Applications.GET_APPLICATIONS.compile();
-        return new RestAction<List<Application>>(api, route)
+        return new RestAction<List<Application>>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<List<Application>> request)
@@ -244,7 +245,7 @@ public class JDAClientImpl implements JDAClient
                 {
                     JSONArray array = response.getArray();
                     List<Application> applications = new ArrayList<>(array.length());
-                    EntityBuilder entityBuilder = api.getEntityBuilder();
+                    EntityBuilder entityBuilder = api.get().getEntityBuilder();
 
                     for (int i = 0; i < array.length(); i++)
                         applications.add(entityBuilder.createApplication(array.getJSONObject(i)));
@@ -265,13 +266,13 @@ public class JDAClientImpl implements JDAClient
         Checks.notEmpty(id, "id");
 
         Route.CompiledRoute route = Route.Applications.GET_APPLICATION.compile(id);
-        return new RestAction<Application>(api, route)
+        return new RestAction<Application>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<Application> request)
             {
                 if (response.isOk())
-                    request.onSuccess(api.getEntityBuilder().createApplication(response.getObject()));
+                    request.onSuccess(api.get().getEntityBuilder().createApplication(response.getObject()));
                 else
                     request.onFailure(response);
             }
@@ -282,7 +283,7 @@ public class JDAClientImpl implements JDAClient
     public RestAction<List<AuthorizedApplication>> getAuthorizedApplications()
     {
         Route.CompiledRoute route = Route.Applications.GET_AUTHORIZED_APPLICATIONS.compile();
-        return new RestAction<List<AuthorizedApplication>>(api, route)
+        return new RestAction<List<AuthorizedApplication>>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<List<AuthorizedApplication>> request)
@@ -291,7 +292,7 @@ public class JDAClientImpl implements JDAClient
                 {
                     JSONArray array = response.getArray();
                     List<AuthorizedApplication> applications = new ArrayList<>(array.length());
-                    EntityBuilder entityBuilder = api.getEntityBuilder();
+                    EntityBuilder entityBuilder = api.get().getEntityBuilder();
 
                     for (int i = 0; i < array.length(); i++)
                         applications.add(entityBuilder.createAuthorizedApplication(array.getJSONObject(i)));
@@ -312,13 +313,13 @@ public class JDAClientImpl implements JDAClient
         Checks.notEmpty(id, "id");
 
         Route.CompiledRoute route = Route.Applications.GET_AUTHORIZED_APPLICATION.compile(id);
-        return new RestAction<AuthorizedApplication>(api, route)
+        return new RestAction<AuthorizedApplication>(getJDA(), route)
         {
             @Override
             protected void handleResponse(Response response, Request<AuthorizedApplication> request)
             {
                 if (response.isOk())
-                    request.onSuccess(api.getEntityBuilder().createAuthorizedApplication(response.getObject()));
+                    request.onSuccess(api.get().getEntityBuilder().createAuthorizedApplication(response.getObject()));
                 else
                     request.onFailure(response);
             }

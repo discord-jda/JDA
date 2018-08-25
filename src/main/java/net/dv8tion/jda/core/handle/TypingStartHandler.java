@@ -42,13 +42,13 @@ public class TypingStartHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long channelId = content.getLong("channel_id");
-        MessageChannel channel = api.getTextChannelMap().get(channelId);
+        MessageChannel channel = getJDA().getTextChannelMap().get(channelId);
         if (channel == null)
-            channel = api.getPrivateChannelMap().get(channelId);
+            channel = getJDA().getPrivateChannelMap().get(channelId);
         if (channel == null)
-            channel = api.getFakePrivateChannelMap().get(channelId);
-        if (channel == null && api.getAccountType() == AccountType.CLIENT)
-            channel = api.asClient().getGroupById(channelId);
+            channel = getJDA().getFakePrivateChannelMap().get(channelId);
+        if (channel == null && getJDA().getAccountType() == AccountType.CLIENT)
+            channel = getJDA().asClient().getGroupById(channelId);
         if (channel == null)
             return null;    //We don't have the channel cached yet. We chose not to cache this event
                             // because that happen very often and could easily fill up the EventCache if
@@ -57,7 +57,7 @@ public class TypingStartHandler extends SocketHandler
         if (channel instanceof TextChannel)
         {
             final long guildId = ((TextChannel) channel).getGuild().getIdLong();
-            if (api.getGuildLock().isLocked(guildId))
+            if (getJDA().getGuildLock().isLocked(guildId))
                 return guildId;
         }
 
@@ -68,16 +68,16 @@ public class TypingStartHandler extends SocketHandler
         else if (channel instanceof Group)
             user = ((GroupImpl) channel).getUserMap().get(userId);
         else
-            user = api.getUserMap().get(userId);
+            user = getJDA().getUserMap().get(userId);
 
         if (user == null)
             return null;    //Just like in the comment above, if for some reason we don't have the user for some reason
                             // then we will just throw the event away.
 
         OffsetDateTime timestamp = Instant.ofEpochSecond(content.getInt("timestamp")).atOffset(ZoneOffset.UTC);
-        api.getEventManager().handle(
+        getJDA().getEventManager().handle(
                 new UserTypingEvent(
-                        api, responseNumber,
+                        getJDA(), responseNumber,
                         user, channel, timestamp));
         return null;
     }

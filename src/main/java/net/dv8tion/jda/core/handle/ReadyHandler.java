@@ -50,7 +50,7 @@ public class ReadyHandler extends SocketHandler
     @Override
     protected Long handleInternally(JSONObject content)
     {
-        EntityBuilder builder = api.getEntityBuilder();
+        EntityBuilder builder = getJDA().getEntityBuilder();
 
         //Core
         JSONArray guilds = content.getJSONArray("guilds");
@@ -58,17 +58,17 @@ public class ReadyHandler extends SocketHandler
 
         builder.createSelfUser(selfJson);
 
-        if (api.getAccountType() == AccountType.CLIENT && !content.isNull("user_settings"))
+        if (getJDA().getAccountType() == AccountType.CLIENT && !content.isNull("user_settings"))
         {
             // handle user settings
             JSONObject userSettingsJson = content.getJSONObject("user_settings");
-            UserSettingsImpl userSettingsObj = (UserSettingsImpl) api.asClient().getSettings();
+            UserSettingsImpl userSettingsObj = (UserSettingsImpl) getJDA().asClient().getSettings();
             userSettingsObj
                     // TODO: set all information and handle updates
                     .setStatus(userSettingsJson.isNull("status") ? OnlineStatus.ONLINE : OnlineStatus.fromKey(userSettingsJson.getString("status")));
             // update presence information unless the status is ONLINE
             if (userSettingsObj.getStatus() != OnlineStatus.ONLINE)
-                ((PresenceImpl) api.getPresence()).setCacheStatus(userSettingsObj.getStatus());
+                ((PresenceImpl) getJDA().getPresence()).setCacheStatus(userSettingsObj.getStatus());
         }
 
         //Keep a list of all guilds in incompleteGuilds that need to be setup (GuildMemberChunk / GuildSync)
@@ -112,11 +112,11 @@ public class ReadyHandler extends SocketHandler
 
     public void guildLoadComplete(JSONObject content)
     {
-        api.getClient().setChunkingAndSyncing(false);
-        EntityBuilder builder = api.getEntityBuilder();
+        getJDA().getClient().setChunkingAndSyncing(false);
+        EntityBuilder builder = getJDA().getEntityBuilder();
         JSONArray privateChannels = content.getJSONArray("private_channels");
 
-        if (api.getAccountType() == AccountType.CLIENT)
+        if (getJDA().getAccountType() == AccountType.CLIENT)
         {
             JSONArray relationships = content.getJSONArray("relationships");
             JSONArray presences = content.getJSONArray("presences");
@@ -136,7 +136,7 @@ public class ReadyHandler extends SocketHandler
             {
                 JSONObject presence = presences.getJSONObject(i);
                 String userId = presence.getJSONObject("user").getString("id");
-                FriendImpl friend = (FriendImpl) api.asClient().getFriendById(userId);
+                FriendImpl friend = (FriendImpl) getJDA().asClient().getFriendById(userId);
                 if (friend == null)
                     WebSocketClient.LOG.warn("Received a presence in the Presences array in READY that did not correspond to a cached Friend! JSON: {}", presence);
                 else
@@ -163,7 +163,7 @@ public class ReadyHandler extends SocketHandler
 
         }
 
-        api.getClient().ready();
+        getJDA().getClient().ready();
     }
 
     public void acknowledgeGuild(Guild guild, boolean available, boolean requiresChunking, boolean requiresSync)
@@ -209,8 +209,8 @@ public class ReadyHandler extends SocketHandler
     {
         if (acknowledgedGuilds.size() == incompleteGuilds.size())
         {
-            api.getClient().setChunkingAndSyncing(true);
-            if (api.getAccountType() == AccountType.CLIENT)
+            getJDA().getClient().setChunkingAndSyncing(true);
+            if (getJDA().getAccountType() == AccountType.CLIENT)
                 sendGuildSyncRequests();
             sendMemberChunkRequests();
         }
@@ -231,7 +231,7 @@ public class ReadyHandler extends SocketHandler
             // and reset the
             if (guildIds.length() == 50)
             {
-                api.getClient().chunkOrSyncRequest(new JSONObject()
+                getJDA().getClient().chunkOrSyncRequest(new JSONObject()
                         .put("op", WebSocketCode.GUILD_SYNC)
                         .put("d", guildIds));
                 guildIds = new JSONArray();
@@ -241,7 +241,7 @@ public class ReadyHandler extends SocketHandler
         //Send the remaining guilds that need to be sent
         if (guildIds.length() > 0)
         {
-            api.getClient().chunkOrSyncRequest(new JSONObject()
+            getJDA().getClient().chunkOrSyncRequest(new JSONObject()
                     .put("op", WebSocketCode.GUILD_SYNC)
                     .put("d", guildIds));
         }
@@ -262,7 +262,7 @@ public class ReadyHandler extends SocketHandler
             // and reset the
             if (guildIds.length() == 50)
             {
-                api.getClient().chunkOrSyncRequest(new JSONObject()
+                getJDA().getClient().chunkOrSyncRequest(new JSONObject()
                     .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
                     .put("d", new JSONObject()
                         .put("guild_id", guildIds)
@@ -276,7 +276,7 @@ public class ReadyHandler extends SocketHandler
         //Send the remaining guilds that need to be sent
         if (guildIds.length() > 0)
         {
-            api.getClient().chunkOrSyncRequest(new JSONObject()
+            getJDA().getClient().chunkOrSyncRequest(new JSONObject()
                 .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
                 .put("d", new JSONObject()
                         .put("guild_id", guildIds)

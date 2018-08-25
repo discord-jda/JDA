@@ -36,13 +36,13 @@ public class VoiceServerUpdateHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long guildId = content.getLong("guild_id");
-        Guild guild = api.getGuildMap().get(guildId);
+        Guild guild = getJDA().getGuildMap().get(guildId);
         if (guild == null)
             throw new IllegalArgumentException("Attempted to start audio connection with Guild that doesn't exist! JSON: " + content);
 
-        api.getClient().updateAudioConnection(guildId, guild.getSelfMember().getVoiceState().getChannel());
+        getJDA().getClient().updateAudioConnection(guildId, guild.getSelfMember().getVoiceState().getChannel());
 
-        if (api.getGuildLock().isLocked(guildId))
+        if (getJDA().getGuildLock().isLocked(guildId))
             return guildId;
 
         if (content.isNull("endpoint"))
@@ -75,7 +75,7 @@ public class VoiceServerUpdateHandler extends SocketHandler
                 return;
             }
 
-            AudioWebSocket socket = new AudioWebSocket(audioManager.getListenerProxy(), endpoint, api, guild, sessionId, token, audioManager.isAutoReconnect());
+            AudioWebSocket socket = new AudioWebSocket(audioManager.getListenerProxy(), endpoint, getJDA(), guild, sessionId, token, audioManager.isAutoReconnect());
             AudioConnection connection = new AudioConnection(socket, audioManager.getQueuedAudioConnection());
             audioManager.setAudioConnection(connection);
             socket.startConnection();

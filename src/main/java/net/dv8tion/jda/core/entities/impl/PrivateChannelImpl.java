@@ -25,13 +25,14 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.MessageAction;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 
 import java.io.InputStream;
 
 public class PrivateChannelImpl implements PrivateChannel
 {
     private final long id;
-    private final User user;
+    private final UpstreamReference<User> user;
 
     private long lastMessageId;
     private Call currentCall = null;
@@ -40,13 +41,13 @@ public class PrivateChannelImpl implements PrivateChannel
     public PrivateChannelImpl(long id, User user)
     {
         this.id = id;
-        this.user = user;
+        this.user = new UpstreamReference<>(user);
     }
 
     @Override
     public User getUser()
     {
-        return user;
+        return user.get();
     }
 
     @Override
@@ -67,7 +68,7 @@ public class PrivateChannelImpl implements PrivateChannel
     @Override
     public String getName()
     {
-        return user.getName();
+        return getUser().getName();
     }
 
     @Override
@@ -79,7 +80,7 @@ public class PrivateChannelImpl implements PrivateChannel
     @Override
     public JDA getJDA()
     {
-        return user.getJDA();
+        return getUser().getJDA();
     }
 
     @Override
@@ -193,7 +194,7 @@ public class PrivateChannelImpl implements PrivateChannel
 
     private void checkBot()
     {
-        if (user.isBot() && getJDA().getAccountType() == AccountType.BOT)
+        if (getUser().isBot() && getJDA().getAccountType() == AccountType.BOT)
             throw new UnsupportedOperationException("Cannot send a private message between bots.");
     }
 }

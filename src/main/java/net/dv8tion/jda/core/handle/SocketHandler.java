@@ -16,17 +16,18 @@
 package net.dv8tion.jda.core.handle;
 
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import org.json.JSONObject;
 
 public abstract class SocketHandler
 {
-    protected final JDAImpl api;
+    protected final UpstreamReference<JDAImpl> api;
     protected long responseNumber;
     protected JSONObject allContent;
 
     public SocketHandler(JDAImpl api)
     {
-        this.api = api;
+        this.api = new UpstreamReference<>(api);
     }
 
 
@@ -36,7 +37,12 @@ public abstract class SocketHandler
         this.responseNumber = responseTotal;
         final Long guildId = handleInternally(o.getJSONObject("d"));
         if (guildId != null)
-            api.getGuildLock().queue(guildId, o);
+            getJDA().getGuildLock().queue(guildId, o);
+    }
+
+    protected JDAImpl getJDA()
+    {
+        return api.get();
     }
 
     /**

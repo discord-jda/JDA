@@ -528,7 +528,7 @@ public interface ShardManager
                     return;
                 }
                 JSONObject user = response.getObject();
-                request.onSuccess(api.getEntityBuilder().createFakeUser(user, false));
+                request.onSuccess(api.get().getEntityBuilder().createFakeUser(user, false));
             }
         };
     }

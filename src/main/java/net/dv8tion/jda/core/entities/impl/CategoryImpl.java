@@ -78,7 +78,7 @@ public class CategoryImpl extends AbstractChannelImpl<CategoryImpl> implements C
     {
         //We call getCategories instead of directly accessing the GuildImpl.getCategories because
         // getCategories does the sorting logic.
-        List<Category> channels = guild.getCategories();
+        List<Category> channels = getGuild().getCategories();
         for (int i = 0; i < channels.size(); i++)
         {
             if (channels.get(i) == this)
@@ -147,7 +147,7 @@ public class CategoryImpl extends AbstractChannelImpl<CategoryImpl> implements C
     @Override
     public ChannelAction createTextChannel(String name)
     {
-        ChannelAction action = guild.getController().createTextChannel(name).setParent(this);
+        ChannelAction action = getGuild().getController().createTextChannel(name).setParent(this);
         applyPermission(action);
         return action;
     }
@@ -155,7 +155,7 @@ public class CategoryImpl extends AbstractChannelImpl<CategoryImpl> implements C
     @Override
     public ChannelAction createVoiceChannel(String name)
     {
-        ChannelAction action = guild.getController().createVoiceChannel(name).setParent(this);
+        ChannelAction action = getGuild().getController().createVoiceChannel(name).setParent(this);
         applyPermission(action);
         return action;
     }

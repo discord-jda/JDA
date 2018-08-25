@@ -38,10 +38,10 @@ public class ChannelRecipientRemoveHandler extends SocketHandler
         final long groupId = content.getLong("channel_id");
         final long userId = content.getJSONObject("user").getLong("id");
 
-        GroupImpl group = (GroupImpl) api.asClient().getGroupById(groupId);
+        GroupImpl group = (GroupImpl) getJDA().asClient().getGroupById(groupId);
         if (group == null)
         {
-            api.getEventCache().cache(EventCache.Type.CHANNEL, groupId, () -> handle(responseNumber, allContent));
+            getJDA().getEventCache().cache(EventCache.Type.CHANNEL, groupId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Received a CHANNEL_RECIPIENT_REMOVE for a group that is not yet cached! JSON: {}", content);
             return null;
         }
@@ -49,7 +49,7 @@ public class ChannelRecipientRemoveHandler extends SocketHandler
         User user = group.getUserMap().remove(userId);
         if (user == null)
         {
-            api.getEventCache().cache(EventCache.Type.USER, userId, () -> handle(responseNumber, allContent));
+            getJDA().getEventCache().cache(EventCache.Type.USER, userId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Received a CHANNEL_RECIPIENT_REMOVE for a user that is not yet cached in the group! JSON: {}", content);
             return null;
         }
@@ -65,14 +65,14 @@ public class ChannelRecipientRemoveHandler extends SocketHandler
         //Note: we getGroups() which gets all groups, however we already removed the user from the current group.
         if (user.isFake()
                 && !user.hasPrivateChannel()
-                && api.asClient().getRelationshipById(userId) == null
-                && api.asClient().getGroups().stream().noneMatch(g -> g.getUsers().contains(user)))
+                && getJDA().asClient().getRelationshipById(userId) == null
+                && getJDA().asClient().getGroups().stream().noneMatch(g -> g.getUsers().contains(user)))
         {
-            api.getFakeUserMap().remove(userId);
+            getJDA().getFakeUserMap().remove(userId);
         }
-        api.getEventManager().handle(
+        getJDA().getEventManager().handle(
                 new GroupUserLeaveEvent(
-                        api, responseNumber,
+                        getJDA(), responseNumber,
                         group, user));
         return null;
     }

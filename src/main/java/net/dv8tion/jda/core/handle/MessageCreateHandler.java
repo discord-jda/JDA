@@ -51,7 +51,7 @@ public class MessageCreateHandler extends SocketHandler
         Message message;
         try
         {
-            message = api.getEntityBuilder().createMessage(content, true);
+            message = getJDA().getEntityBuilder().createMessage(content, true);
         }
         catch (IllegalArgumentException e)
         {
@@ -60,14 +60,14 @@ public class MessageCreateHandler extends SocketHandler
                 case EntityBuilder.MISSING_CHANNEL:
                 {
                     final long channelId = content.getLong("channel_id");
-                    api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+                    getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
                     EventCache.LOG.debug("Received a message for a channel that JDA does not currently have cached");
                     return null;
                 }
                 case EntityBuilder.MISSING_USER:
                 {
                     final long authorId = content.getJSONObject("author").getLong("id");
-                    api.getEventCache().cache(EventCache.Type.USER, authorId, () -> handle(responseNumber, allContent));
+                    getJDA().getEventCache().cache(EventCache.Type.USER, authorId, () -> handle(responseNumber, allContent));
                     EventCache.LOG.debug("Received a message for a user that JDA does not currently have cached");
                     return null;
                 }
@@ -76,20 +76,20 @@ public class MessageCreateHandler extends SocketHandler
             }
         }
 
-        final IEventManager manager = api.getEventManager();
+        final IEventManager manager = getJDA().getEventManager();
         switch (message.getChannelType())
         {
             case TEXT:
             {
                 TextChannelImpl channel = (TextChannelImpl) message.getTextChannel();
-                if (api.getGuildLock().isLocked(channel.getGuild().getIdLong()))
+                if (getJDA().getGuildLock().isLocked(channel.getGuild().getIdLong()))
                 {
                     return channel.getGuild().getIdLong();
                 }
                 channel.setLastMessageId(message.getIdLong());
                 manager.handle(
                     new GuildMessageReceivedEvent(
-                        api, responseNumber,
+                        getJDA(), responseNumber,
                         message));
                 break;
             }
@@ -99,7 +99,7 @@ public class MessageCreateHandler extends SocketHandler
                 channel.setLastMessageId(message.getIdLong());
                 manager.handle(
                     new PrivateMessageReceivedEvent(
-                        api, responseNumber,
+                        getJDA(), responseNumber,
                         message));
                 break;
             }
@@ -109,7 +109,7 @@ public class MessageCreateHandler extends SocketHandler
                 channel.setLastMessageId(message.getIdLong());
                 manager.handle(
                     new GroupMessageReceivedEvent(
-                        api, responseNumber,
+                        getJDA(), responseNumber,
                         message));
                 break;
             }
@@ -121,7 +121,7 @@ public class MessageCreateHandler extends SocketHandler
         //Combo event
         manager.handle(
             new MessageReceivedEvent(
-                api, responseNumber,
+                getJDA(), responseNumber,
                 message));
         return null;
     }

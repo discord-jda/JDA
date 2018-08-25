@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.JDALogger;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.json.JSONArray;
@@ -167,7 +168,7 @@ public abstract class RestAction<T>
 
     protected static boolean passContext = false;
 
-    protected final JDAImpl api;
+    protected final UpstreamReference<JDAImpl> api;
 
     private final Route.CompiledRoute route;
     private final RequestBody data;
@@ -234,7 +235,7 @@ public abstract class RestAction<T>
     {
         Checks.notNull(api, "api");
 
-        this.api = (JDAImpl) api;
+        this.api = new UpstreamReference<>((JDAImpl) api);
         this.route = route;
         this.data = data;
     }
@@ -264,7 +265,7 @@ public abstract class RestAction<T>
      */
     public JDA getJDA()
     {
-        return api;
+        return api.get();
     }
 
     /**
@@ -335,7 +336,7 @@ public abstract class RestAction<T>
             success = DEFAULT_SUCCESS == null ? FALLBACK_CONSUMER : DEFAULT_SUCCESS;
         if (failure == null)
             failure = DEFAULT_FAILURE == null ? FALLBACK_CONSUMER : DEFAULT_FAILURE;
-        api.getRequester().request(new Request<>(this, success, failure, finisher, true, data, rawData, route, headers));
+        api.get().getRequester().request(new Request<>(this, success, failure, finisher, true, data, rawData, route, headers));
     }
 
     /**
@@ -460,7 +461,7 @@ public abstract class RestAction<T>
      */
     public ScheduledFuture<T> submitAfter(long delay, TimeUnit unit)
     {
-        return submitAfter(delay, unit, api.getRateLimitPool());
+        return submitAfter(delay, unit, api.get().getRateLimitPool());
     }
 
     /**
@@ -552,7 +553,7 @@ public abstract class RestAction<T>
      */
     public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit)
     {
-        return queueAfter(delay, unit, api.getRateLimitPool());
+        return queueAfter(delay, unit, api.get().getRateLimitPool());
     }
 
     /**
@@ -584,7 +585,7 @@ public abstract class RestAction<T>
      */
     public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<? super T> success)
     {
-        return queueAfter(delay, unit, success, api.getRateLimitPool());
+        return queueAfter(delay, unit, success, api.get().getRateLimitPool());
     }
 
     /**
@@ -617,7 +618,7 @@ public abstract class RestAction<T>
      */
     public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<? super T> success, Consumer<? super Throwable> failure)
     {
-        return queueAfter(delay, unit, success, failure, api.getRateLimitPool());
+        return queueAfter(delay, unit, success, failure, api.get().getRateLimitPool());
     }
 
     /**

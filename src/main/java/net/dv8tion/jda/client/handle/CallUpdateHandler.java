@@ -47,12 +47,12 @@ public class CallUpdateHandler extends SocketHandler
         JSONArray ringing = content.getJSONArray("ringing");
         Region region = Region.fromKey(content.getString("region"));
 
-        CallableChannel channel = api.asClient().getGroupById(channelId);
+        CallableChannel channel = getJDA().asClient().getGroupById(channelId);
         if (channel == null)
-            channel = api.getPrivateChannelMap().get(channelId);
+            channel = getJDA().getPrivateChannelMap().get(channelId);
         if (channel == null)
         {
-            api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+            getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Received a CALL_UPDATE for a Group/PrivateChannel that has not yet been cached. JSON: {}", content);
             return null;
         }
@@ -60,7 +60,7 @@ public class CallUpdateHandler extends SocketHandler
         CallImpl call = (CallImpl) channel.getCurrentCall();
         if (call == null)
         {
-            api.getEventCache().cache(EventCache.Type.CALL, channelId, () -> handle(responseNumber, allContent));
+            getJDA().getEventCache().cache(EventCache.Type.CALL, channelId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Received a CALL_UPDATE for a Call that has not yet been cached. JSON: {}", content);
             return null;
         }
@@ -69,9 +69,9 @@ public class CallUpdateHandler extends SocketHandler
         {
             Region oldRegion = call.getRegion();
             call.setRegion(region);
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                     new CallUpdateRegionEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             call, oldRegion));
         }
 
@@ -108,9 +108,9 @@ public class CallUpdateHandler extends SocketHandler
 
             if (stoppedRingingUsers.size() > 0 || startedRingingUsers.size() > 0)
             {
-                api.getEventManager().handle(
+                getJDA().getEventManager().handle(
                         new CallUpdateRingingUsersEvent(
-                                api, responseNumber,
+                                getJDA(), responseNumber,
                                 call, stoppedRingingUsers, startedRingingUsers));
             }
         }

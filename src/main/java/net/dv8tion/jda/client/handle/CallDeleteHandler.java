@@ -20,7 +20,6 @@ import net.dv8tion.jda.client.entities.CallableChannel;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.client.entities.impl.CallImpl;
 import net.dv8tion.jda.client.entities.impl.GroupImpl;
-import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.client.events.call.CallDeleteEvent;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.entities.impl.PrivateChannelImpl;
@@ -39,12 +38,12 @@ public class CallDeleteHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long channelId = content.getLong("channel_id");
-        CallableChannel channel = api.asClient().getGroupById(channelId);
+        CallableChannel channel = getJDA().asClient().getGroupById(channelId);
         if (channel == null)
-            channel = api.getPrivateChannelMap().get(channelId);
+            channel = getJDA().getPrivateChannelMap().get(channelId);
         if (channel == null)
         {
-            api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+            getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Received CALL_DELETE for a Group/PrivateChannel that is not yet cached. JSON: {}", content);
             return null;
         }
@@ -52,7 +51,7 @@ public class CallDeleteHandler extends SocketHandler
         CallImpl call = (CallImpl) channel.getCurrentCall();
         if (call == null)
         {
-            api.getEventCache().cache(EventCache.Type.CALL, channelId, () -> handle(responseNumber, allContent));
+            getJDA().getEventCache().cache(EventCache.Type.CALL, channelId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Received a CALL_DELETE for a Call that is not yet cached. JSON: {}", content);
             return null;
         }
@@ -63,7 +62,7 @@ public class CallDeleteHandler extends SocketHandler
             group.setCurrentCall(null);
             call.getCallUserMap().forEachKey(userId ->
             {
-                api.asClient().getCallUserMap().remove(userId);
+                getJDA().asClient().getCallUserMap().remove(userId);
                 return true;
             });
         }
@@ -71,13 +70,13 @@ public class CallDeleteHandler extends SocketHandler
         {
             PrivateChannelImpl priv = (PrivateChannelImpl) channel;
             priv.setCurrentCall(null);
-            api.asClient().getCallUserMap().remove(priv.getUser().getIdLong());
-            api.asClient().getCallUserMap().remove(api.getSelfUser().getIdLong());
+            getJDA().asClient().getCallUserMap().remove(priv.getUser().getIdLong());
+            getJDA().asClient().getCallUserMap().remove(getJDA().getSelfUser().getIdLong());
         }
 
-        api.getEventManager().handle(
+        getJDA().getEventManager().handle(
                 new CallDeleteEvent(
-                        api, responseNumber,
+                        getJDA(), responseNumber,
                         call));
         return null;
     }

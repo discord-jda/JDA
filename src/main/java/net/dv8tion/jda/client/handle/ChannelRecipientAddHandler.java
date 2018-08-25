@@ -39,15 +39,15 @@ public class ChannelRecipientAddHandler extends SocketHandler
         final long groupId = content.getLong("channel_id");
         JSONObject userJson = content.getJSONObject("user");
 
-        GroupImpl group = (GroupImpl) api.asClient().getGroupById(groupId);
+        GroupImpl group = (GroupImpl) getJDA().asClient().getGroupById(groupId);
         if (group == null)
         {
-            api.getEventCache().cache(EventCache.Type.CHANNEL, groupId, () -> handle(responseNumber, allContent));
+            getJDA().getEventCache().cache(EventCache.Type.CHANNEL, groupId, () -> handle(responseNumber, allContent));
             EventCache.LOG.debug("Received a CHANNEL_RECIPIENT_ADD for a group that is not yet cached! JSON: {}", content);
             return null;
         }
 
-        User user = api.getEntityBuilder().createFakeUser(userJson, true);
+        User user = getJDA().getEntityBuilder().createFakeUser(userJson, true);
         group.getUserMap().put(user.getIdLong(), user);
 
         CallImpl call = (CallImpl) group.getCurrentCall();
@@ -56,12 +56,12 @@ public class ChannelRecipientAddHandler extends SocketHandler
             call.getCallUserMap().put(user.getIdLong(), new CallUserImpl(call, user));
         }
 
-        api.getEventManager().handle(
+        getJDA().getEventManager().handle(
                 new GroupUserJoinEvent(
-                        api, responseNumber,
+                        getJDA(), responseNumber,
                         group, user));
 
-        api.getEventCache().playbackCache(EventCache.Type.USER, user.getIdLong());
+        getJDA().getEventCache().playbackCache(EventCache.Type.USER, user.getIdLong());
         return null;
     }
 }
