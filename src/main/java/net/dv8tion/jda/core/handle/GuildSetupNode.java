@@ -152,6 +152,8 @@ public class GuildSetupNode
 
     void updateStatus(GuildSetupController.Status status)
     {
+        if (status == this.status)
+            return;
         getController().listener.onStatusChange(id, this.status, status);
         this.status = status;
     }
