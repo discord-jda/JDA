@@ -147,7 +147,7 @@ public class MemberImpl implements Member
     @Override
     public List<Permission> getPermissions(Channel channel)
     {
-        if (!guild.equals(channel.getGuild()))
+        if (!getGuild().equals(channel.getGuild()))
             throw new IllegalArgumentException("Provided channel is not in the same guild as this member!");
 
         return Collections.unmodifiableList(
@@ -242,7 +242,7 @@ public class MemberImpl implements Member
             return false;
 
         Member oMember = (Member) o;
-        return this == oMember || (oMember.getUser().equals(user) && oMember.getGuild().equals(guild));
+        return this == oMember || (oMember.getUser().equals(user) && oMember.getGuild().equals(getGuild()));
     }
 
     @Override
@@ -254,7 +254,7 @@ public class MemberImpl implements Member
     @Override
     public String toString()
     {
-        return "MB:" + getEffectiveName() + '(' + user.toString() + " / " + guild.toString() +')';
+        return "MB:" + getEffectiveName() + '(' + user.toString() + " / " + getGuild().toString() +')';
     }
 
     @Override

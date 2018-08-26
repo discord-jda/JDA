@@ -114,7 +114,7 @@ public class PermissionOverrideImpl implements PermissionOverride
     @Override
     public Guild getGuild()
     {
-        return channel.get().getGuild();
+        return getChannel().getGuild();
     }
 
     @Override
@@ -185,7 +185,7 @@ public class PermissionOverrideImpl implements PermissionOverride
             return false;
         PermissionOverrideImpl oPerm = (PermissionOverrideImpl) o;
         return this == oPerm
-                || ((this.permissionHolder.equals(oPerm.permissionHolder)) && this.channel.equals(oPerm.channel));
+                || ((this.permissionHolder.equals(oPerm.permissionHolder)) && this.getChannel().equals(oPerm.getChannel()));
     }
 
     @Override
