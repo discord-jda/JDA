@@ -128,7 +128,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     @Override
     public int hashCode()
     {
-        return member.hashCode();
+        return getMember().hashCode();
     }
 
     @Override

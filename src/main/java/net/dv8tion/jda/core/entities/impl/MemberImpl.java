@@ -236,7 +236,7 @@ public class MemberImpl implements Member
             return false;
 
         Member oMember = (Member) o;
-        return this == oMember || (oMember.getUser().equals(user) && oMember.getGuild().equals(guild));
+        return this == oMember || (oMember.getUser().equals(user) && oMember.getGuild().equals(getGuild()));
     }
 
     @Override
@@ -248,7 +248,7 @@ public class MemberImpl implements Member
     @Override
     public String toString()
     {
-        return "MB:" + getEffectiveName() + '(' + user.toString() + " / " + guild.toString() +')';
+        return "MB:" + getEffectiveName() + '(' + user.toString() + " / " + getGuild().toString() +')';
     }
 
     @Override
