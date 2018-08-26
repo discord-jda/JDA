@@ -77,7 +77,7 @@ public class GuildSetupController
     void addGuildForChunking(long id, boolean join)
     {
         log.trace("Adding guild for chunking ID: {}", id);
-        if (join)
+        if (join || incompleteCount <= 0)
         {
             if (incompleteCount <= 0)
             {
@@ -96,7 +96,7 @@ public class GuildSetupController
         if (!isClient())
             return;
         log.trace("Adding guild for syncing ID: {}", id);
-        if (join)
+        if (join || incompleteCount <= 0)
         {
             if (incompleteCount <= 0)
             {
