@@ -141,7 +141,7 @@ public class MemberImpl implements Member
     @Override
     public List<Permission> getPermissions(Channel channel)
     {
-        if (!guild.equals(channel.getGuild()))
+        if (!getGuild().equals(channel.getGuild()))
             throw new IllegalArgumentException("Provided channel is not in the same guild as this member!");
 
         return Collections.unmodifiableList(
