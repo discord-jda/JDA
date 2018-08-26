@@ -16,8 +16,8 @@
 package net.dv8tion.jda.core;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
+import net.dv8tion.jda.annotations.DeprecatedSince;
 import net.dv8tion.jda.annotations.ReplaceWith;
-import net.dv8tion.jda.annotations.Since;
 import net.dv8tion.jda.core.JDA.Status;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Game;
@@ -677,7 +677,8 @@ public class JDABuilder
      * @deprecated
      *         Use {@link #build()} instead
      */
-    @Deprecated @Since("3.8.0")
+    @Deprecated
+    @DeprecatedSince("3.8.0")
     @ReplaceWith("build()")
     public JDA buildAsync() throws LoginException
     {
@@ -718,7 +719,8 @@ public class JDABuilder
      * @deprecated
      *         Use {@link #build()} and {@link JDA#awaitStatus(Status)} instead
      */
-    @Deprecated @Since("3.8.0")
+    @Deprecated
+    @DeprecatedSince("3.8.0")
     @ReplaceWith("build().awaitStatus(Status)")
     public JDA buildBlocking(JDA.Status status) throws LoginException, InterruptedException
     {
@@ -747,7 +749,8 @@ public class JDABuilder
      * @deprecated
      *         Use {@link #build()} and {@link JDA#awaitReady()} instead
      */
-    @Deprecated @Since("3.8.0")
+    @Deprecated
+    @DeprecatedSince("3.8.0")
     @ReplaceWith("build().awaitReady()")
     public JDA buildBlocking() throws LoginException, InterruptedException
     {

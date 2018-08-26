@@ -275,7 +275,7 @@ the Discord API.
     <br>Paired with `@Deprecated` this is used to inform you how the new code-fragment is supposed to look once the hereby annotated functionality is removed.
 - [ForRemoval](https://github.com/DV8FromTheWorld/JDA/blob/development/src/main/java/net/dv8tion/jda/annotations/ForRemoval.java)
     <br>Paired with `@Deprecated` this indicates that we plan to entirely remove the hereby annotated functionality in the future.
-- [Since](https://github.com/DV8FromTheWorld/JDA/blob/development/src/main/java/net/dv8tion/jda/annotations/Since.java)
+- [DeprecatedSince](https://github.com/DV8FromTheWorld/JDA/blob/development/src/main/java/net/dv8tion/jda/annotations/Since.java)
     <br>Paired with `@Deprecated` this specifies when a feature was marked as deprecated.
 
 [Sources](https://github.com/DV8FromTheWorld/JDA/tree/development/src/main/java/net/dv8tion/jda/annotations)
