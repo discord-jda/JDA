@@ -173,7 +173,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public String getJumpUrl()
     {
-        return String.format("https://discordapp.com/channels/%s/%s?jump=%s", getGuild() == null ? "@me" : getGuild().getId(), getChannel().getId(), getId());
+        return String.format("https://discordapp.com/channels/%s/%s/%s", getGuild() == null ? "@me" : getGuild().getId(), getChannel().getId(), getId());
     }
 
     @Override
