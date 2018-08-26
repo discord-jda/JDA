@@ -189,7 +189,7 @@ public class PrivateChannelImpl implements PrivateChannel
     @Override
     public String toString()
     {
-        return "PC:" + getUser().getName() + '(' + id + ')';
+        return "PC:" + getUser().getName() + '(' + getId() + ')';
     }
 
     private void checkBot()

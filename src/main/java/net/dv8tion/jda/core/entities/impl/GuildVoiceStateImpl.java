@@ -128,7 +128,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     @Override
     public int hashCode()
     {
-        return member.hashCode();
+        return getMember().hashCode();
     }
 
     @Override
@@ -139,7 +139,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
             return false;
         }
         GuildVoiceState oStatus = (GuildVoiceState) obj;
-        return this == oStatus || (this.member.equals(oStatus.getMember()) && this.guild.equals(oStatus.getGuild()));
+        return this == oStatus || (this.getMember().equals(oStatus.getMember()) && this.getGuild().equals(oStatus.getGuild()));
     }
 
     @Override

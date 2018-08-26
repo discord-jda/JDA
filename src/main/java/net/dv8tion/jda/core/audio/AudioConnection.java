@@ -268,7 +268,7 @@ public class AudioConnection
     {
         if (udpSocket != null && !udpSocket.isClosed() && sendHandler != null && sendSystem == null)
         {
-            IAudioSendFactory factory = ((JDAImpl) channel.get().getJDA()).getAudioSendFactory();
+            IAudioSendFactory factory = getJDA().getAudioSendFactory();
             sendSystem = factory.createSendSystem(new PacketProvider());
             sendSystem.setContextMap(getJDA().getContextMap());
             sendSystem.start();
@@ -432,7 +432,7 @@ public class AudioConnection
             receiveThread.setUncaughtExceptionHandler((thread, throwable) ->
             {
                 LOG.error("There was some uncaught exception in the audio receive thread", throwable);
-                JDAImpl api = (JDAImpl) getJDA();
+                JDAImpl api = getJDA();
                 api.getEventManager().handle(new ExceptionEvent(api, throwable, true));
             });
             receiveThread.setDaemon(true);

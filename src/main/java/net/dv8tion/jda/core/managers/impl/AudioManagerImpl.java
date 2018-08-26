@@ -82,7 +82,7 @@ public class AudioManagerImpl implements AudioManager
 
 //        if (!AUDIO_SUPPORTED)
 //            throw new UnsupportedOperationException("Sorry! Audio is disabled due to an internal JDA error! Contact Dev!");
-        if (!guild.equals(channel.getGuild()))
+        if (!getGuild().equals(channel.getGuild()))
             throw new IllegalArgumentException("The provided VoiceChannel is not a part of the Guild that this AudioManager handles." +
                     "Please provide a VoiceChannel from the proper Guild");
         if (!getGuild().isAvailable())

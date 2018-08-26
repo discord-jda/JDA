@@ -39,4 +39,22 @@ public class UpstreamReference<T> extends WeakReference<T>
             throw new IllegalStateException("Cannot get reference as it has already been Garbage Collected");
         return tmp;
     }
+
+    @Override
+    public int hashCode()
+    {
+        return get().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        return get().equals(obj);
+    }
+
+    @Override
+    public String toString()
+    {
+        return get().toString();
+    }
 }
