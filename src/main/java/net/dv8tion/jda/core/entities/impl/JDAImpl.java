@@ -355,8 +355,9 @@ public class JDAImpl implements JDA
     public void setAutoReconnect(boolean autoReconnect)
     {
         this.autoReconnect = autoReconnect;
+        WebSocketClient client = getClient();
         if (client != null)
-            client.get().setAutoReconnect(autoReconnect);
+            client.setAutoReconnect(autoReconnect);
     }
 
     @Override
@@ -403,13 +404,15 @@ public class JDAImpl implements JDA
     @Override
     public List<String> getCloudflareRays()
     {
-        return Collections.unmodifiableList(new LinkedList<>(client.get().getCfRays()));
+        WebSocketClient client = getClient();
+        return client == null ? Collections.emptyList() : Collections.unmodifiableList(new LinkedList<>(client.getCfRays()));
     }
 
     @Override
     public List<String> getWebSocketTrace()
     {
-        return Collections.unmodifiableList(new LinkedList<>(client.get().getTraces()));
+        WebSocketClient client = getClient();
+        return client == null ? Collections.emptyList() : Collections.unmodifiableList(new LinkedList<>(client.getTraces()));
     }
 
     @Override
@@ -738,7 +741,7 @@ public class JDAImpl implements JDA
 
     public WebSocketClient getClient()
     {
-        return client.get();
+        return client == null ? null : client.get();
     }
 
     public TLongObjectMap<User> getUserMap()
