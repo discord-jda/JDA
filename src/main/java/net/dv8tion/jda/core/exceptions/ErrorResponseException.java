@@ -145,6 +145,9 @@ public class ErrorResponseException extends RuntimeException
             meaning = response.getString();
         }
 
-        return new ErrorResponseException(errorResponse, response, code, meaning);
+        ErrorResponseException exception = new ErrorResponseException(errorResponse, response, code, meaning);
+        if (response.getException() != null)
+            exception.initCause(response.getException());
+        return exception;
     }
 }
