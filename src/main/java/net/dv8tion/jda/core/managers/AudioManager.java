@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.managers;
 
+import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.audio.AudioReceiveHandler;
 import net.dv8tion.jda.core.audio.AudioSendHandler;
@@ -94,9 +95,12 @@ public interface AudioManager
      * @throws IllegalArgumentException
      *         If the provided collection is null or empty
      *
+     * @incubating Discord has not officially confirmed that this feature will be available to bots
+     *
      * @see    #getSpeakingMode()
      * @see    #setSpeakingMode(SpeakingMode...)
      */
+    @Incubating
     void setSpeakingMode(Collection<SpeakingMode> mode);
 
     /**
@@ -110,8 +114,11 @@ public interface AudioManager
      * @throws IllegalArgumentException
      *         If the provided array is null or empty
      *
+     * @incubating Discord has not officially confirmed that this feature will be available to bots
+     *
      * @see    #getSpeakingMode()
      */
+    @Incubating
     default void setSpeakingMode(SpeakingMode... mode)
     {
         Checks.notNull(mode, "Speaking Mode");
@@ -125,8 +132,11 @@ public interface AudioManager
      *
      * @return The current speaking mode, represented in an {@link EnumSet}
      *
+     * @incubating Discord has not officially confirmed that this feature will be available to bots
+     *
      * @see    #setSpeakingMode(Collection)
      */
+    @Incubating
     EnumSet<SpeakingMode> getSpeakingMode();
 
     /**

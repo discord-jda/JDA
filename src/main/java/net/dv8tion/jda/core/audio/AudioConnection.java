@@ -586,7 +586,7 @@ public class AudioConnection
     }
 
     @Override
-    @Deprecated
+    @SuppressWarnings("deprecation")
     protected void finalize()
     {
         shutdown();
