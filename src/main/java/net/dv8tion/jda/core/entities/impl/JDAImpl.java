@@ -18,6 +18,8 @@ package net.dv8tion.jda.core.entities.impl;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
 import gnu.trove.map.TLongObjectMap;
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.bot.entities.impl.JDABotImpl;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.core.AccountType;
@@ -157,6 +159,14 @@ public class JDAImpl implements JDA
     public SessionController getSessionController()
     {
         return sessionController;
+    }
+
+    @Deprecated
+    @DeprecatedSince("3.8.0")
+    @ReplaceWith("getGuildSetupController()")
+    public GuildLock getGuildLock()
+    {
+        return new GuildLock(this);
     }
 
     public GuildSetupController getGuildSetupController()
