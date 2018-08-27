@@ -28,9 +28,14 @@ import net.dv8tion.jda.core.handle.GuildSetupController;
  */
 public class ReadyEvent extends Event
 {
+    private final int availableGuilds;
+    private final int unavailableGuilds;
+
     public ReadyEvent(JDA api, long responseNumber)
     {
         super(api, responseNumber);
+        this.availableGuilds = (int) getJDA().getGuildCache().size();
+        this.unavailableGuilds = ((JDAImpl) getJDA()).getGuildSetupController().getSetupNodes(GuildSetupController.Status.UNAVAILABLE).size();
     }
 
     /**
@@ -45,7 +50,7 @@ public class ReadyEvent extends Event
      */
     public int getGuildAvailableCount()
     {
-        return (int) getJDA().getGuildCache().size();
+        return availableGuilds;
     }
 
     /**
@@ -57,7 +62,7 @@ public class ReadyEvent extends Event
      */
     public int getGuildUnavailableCount()
     {
-        return ((JDAImpl) getJDA()).getGuildSetupController().getSetupNodes(GuildSetupController.Status.UNAVAILABLE).size();
+        return unavailableGuilds;
     }
 
     /**
