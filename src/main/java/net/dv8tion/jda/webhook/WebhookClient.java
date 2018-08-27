@@ -346,8 +346,8 @@ public class WebhookClient implements AutoCloseable
     }
 
     @Override
-    @Deprecated
-    protected void finalize() throws Throwable
+    @SuppressWarnings("deprecation")
+    protected void finalize()
     {
         if (!isShutdown)
             LOG.warn("Detected unclosed WebhookClient! Did you forget to close it?");

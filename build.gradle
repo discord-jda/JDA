@@ -159,6 +159,7 @@ javadoc {
     options.author()
     options.encoding = 'UTF-8'
     options.addStringOption('-html5')
+    options.addStringOption('tag', 'incubating:any:Incubating')
 
     //### excludes ###
     //jda internals
