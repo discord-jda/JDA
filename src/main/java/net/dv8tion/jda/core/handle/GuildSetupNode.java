@@ -154,7 +154,14 @@ public class GuildSetupNode
     {
         if (status == this.status)
             return;
-        getController().listener.onStatusChange(id, this.status, status);
+        try
+        {
+            getController().listener.onStatusChange(id, this.status, status);
+        }
+        catch (Exception ex)
+        {
+            GuildSetupController.log.error("Uncaught exception in status listener", ex);
+        }
         this.status = status;
     }
 
