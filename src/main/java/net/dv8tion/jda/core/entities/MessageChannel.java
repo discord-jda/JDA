@@ -115,6 +115,11 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @param  messages
      *         The message ids to delete
      *
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If one of the provided messages is from another user and cannot be deleted due to permissions
+     * @throws IllegalArgumentException
+     *         If one of the provided messages is from another user and cannot be deleted because this is not in a guild
+     *
      * @return List of futures representing all deletion tasks
      *
      * @see    RequestFuture#allOf(Collection)
@@ -122,10 +127,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     default List<RequestFuture<Void>> purgeMessages(Message... messages)
     {
         Checks.notNull(messages, "Messages");
-        long[] ids = new long[messages.length];
-        for (int i = 0; i < ids.length; i++)
-            ids[i] = messages[i].getIdLong();
-        return purgeMessagesById(ids);
+        return purgeMessages(Arrays.asList(messages));
     }
 
     /**

@@ -23,8 +23,10 @@ import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.client.entities.Relationship;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.ChannelType;
+import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.requests.RequestFuture;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.core.utils.cache.UpstreamReference;
@@ -138,6 +140,20 @@ public class GroupImpl implements Group
                 friends.add(friend);
         });
         return Collections.unmodifiableList(friends);
+    }
+
+    @Override
+    public List<RequestFuture<Void>> purgeMessages(List<? extends Message> messages)
+    {
+        if (messages == null || messages.isEmpty())
+            return Collections.emptyList();
+        for (Message m : messages)
+        {
+            if (m.getAuthor().equals(getJDA().getSelfUser()))
+                continue;
+            throw new IllegalArgumentException("Cannot delete messages of other users in a group channel");
+        }
+        return Group.super.purgeMessages(messages);
     }
 
     @Override

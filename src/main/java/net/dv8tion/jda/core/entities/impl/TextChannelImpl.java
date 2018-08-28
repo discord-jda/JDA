@@ -166,13 +166,29 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     }
 
     @Override
+    public List<RequestFuture<Void>> purgeMessages(List<? extends Message> messages)
+    {
+        if (messages == null || messages.isEmpty())
+            return Collections.emptyList();
+        boolean hasPerms = getGuild().getSelfMember().hasPermission(this, Permission.MESSAGE_MANAGE);
+        for (Message m : messages)
+        {
+            if (m.getAuthor().equals(getJDA().getSelfUser()))
+                continue;
+            if (!hasPerms)
+                throw new InsufficientPermissionException(Permission.MESSAGE_MANAGE, "Cannot delete messages of other users");
+        }
+        return TextChannel.super.purgeMessages(messages);
+    }
+
+    @Override
     @SuppressWarnings("ConstantConditions")
     public List<RequestFuture<Void>> purgeMessagesById(long... messageIds)
     {
         if (messageIds == null || messageIds.length == 0)
             return Collections.emptyList();
         if (getJDA().getAccountType() != AccountType.BOT
-            || !getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE))
+            || !getGuild().getSelfMember().hasPermission(this, Permission.MESSAGE_MANAGE))
             return TextChannel.super.purgeMessagesById(messageIds);
 
         // remove duplicates and sort messages
