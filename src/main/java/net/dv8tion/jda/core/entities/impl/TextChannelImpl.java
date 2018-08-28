@@ -177,13 +177,13 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
 
         // remove duplicates and sort messages
         List<RequestFuture<Void>> list = new LinkedList<>();
-        TreeSet<Long> sortedIds = new TreeSet<>();
+        TreeSet<Long> sortedIds = new TreeSet<>(Comparator.reverseOrder());
         for (long messageId : messageIds)
             sortedIds.add(messageId);
 
         // delete messages too old for bulk delete
         long twoWeeksAgo = MiscUtil.getDiscordTimestamp(System.currentTimeMillis() - (14 * 24 * 60 * 60 * 1000) - 10000);
-        Set<Long> oldMessages = sortedIds.stream().filter(id -> twoWeeksAgo > id).collect(Collectors.toSet());
+        List<Long> oldMessages = sortedIds.stream().filter(id -> twoWeeksAgo > id).sorted(Comparator.reverseOrder()).collect(Collectors.toList());
         for (long message : oldMessages)
             list.add(deleteMessageById(message).submit());
 
@@ -196,7 +196,10 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
             toDelete.clear();
             for (int i = 0; i < 100 && !sortedIds.isEmpty(); i++)
                 toDelete.add(Long.toUnsignedString(sortedIds.pollLast()));
-            list.add(deleteMessages0(toDelete).submit());
+            if (toDelete.size() == 1)
+                list.add(deleteMessageById(toDelete.get(0)).submit());
+            else if (!toDelete.isEmpty())
+                list.add(deleteMessages0(toDelete).submit());
         }
         return list;
     }

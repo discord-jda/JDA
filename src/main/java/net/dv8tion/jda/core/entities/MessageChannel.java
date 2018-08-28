@@ -186,7 +186,10 @@ public interface MessageChannel extends ISnowflake, Formattable
         if (messageIds == null || messageIds.length == 0)
             return Collections.emptyList();
         List<RequestFuture<Void>> list = new ArrayList<>(messageIds.length);
+        TreeSet<Long> sortedIds = new TreeSet<>(Comparator.reverseOrder());
         for (long messageId : messageIds)
+            sortedIds.add(messageId);
+        for (long messageId : sortedIds)
             list.add(deleteMessageById(messageId).submit());
         return list;
     }
