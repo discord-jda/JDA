@@ -18,10 +18,7 @@ package net.dv8tion.jda.core.entities;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.MessageAction;
 import net.dv8tion.jda.core.requests.restaction.pagination.MessagePaginationAction;
@@ -32,6 +29,7 @@ import org.json.JSONArray;
 import javax.annotation.CheckReturnValue;
 import java.io.*;
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * Represents a Discord channel that can have {@link net.dv8tion.jda.core.entities.Message Messages} and files sent to it.
@@ -64,7 +62,6 @@ import java.util.*;
  */
 public interface MessageChannel extends ISnowflake, Formattable
 {
-
     /**
      * The id for the most recent message sent
      * in this current MessageChannel.
@@ -81,6 +78,117 @@ public interface MessageChannel extends ISnowflake, Formattable
     default String getLatestMessageId()
     {
         return Long.toUnsignedString(getLatestMessageIdLong());
+    }
+
+    /**
+     * Convenience method to delete messages in the most efficient way available.
+     * <br>This combines both {@link TextChannel#deleteMessagesByIds(Collection)} as well as {@link Message#delete()}
+     * to delete all messages provided. No checks will be done to prevent failures, use {@link java.util.concurrent.CompletionStage#exceptionally(Function)}
+     * to handle failures.
+     *
+     * <p>For possible ErrorResponses see {@link #purgeMessagesById(long...)}.
+     *
+     * @param  messageIds
+     *         The message ids to delete
+     *
+     * @return List of futures representing all deletion tasks
+     *
+     * @see    RequestFuture#allOf(Collection)
+     */
+    default List<RequestFuture<Void>> purgeMessagesById(List<String> messageIds)
+    {
+        Checks.notNull(messageIds, "Messages IDs");
+        long[] ids = new long[messageIds.size()];
+        for (int i = 0; i < ids.length; i++)
+            ids[i] = MiscUtil.parseSnowflake(messageIds.get(i));
+        return purgeMessagesById(ids);
+    }
+
+    /**
+     * Convenience method to delete messages in the most efficient way available.
+     * <br>This combines both {@link TextChannel#deleteMessagesByIds(Collection)} as well as {@link Message#delete()}
+     * to delete all messages provided. No checks will be done to prevent failures, use {@link java.util.concurrent.CompletionStage#exceptionally(Function)}
+     * to handle failures.
+     *
+     * <p>For possible ErrorResponses see {@link #purgeMessagesById(long...)}.
+     *
+     * @param  messages
+     *         The message ids to delete
+     *
+     * @return List of futures representing all deletion tasks
+     *
+     * @see    RequestFuture#allOf(Collection)
+     */
+    default List<RequestFuture<Void>> purgeMessages(Message... messages)
+    {
+        Checks.notNull(messages, "Messages");
+        long[] ids = new long[messages.length];
+        for (int i = 0; i < ids.length; i++)
+            ids[i] = messages[i].getIdLong();
+        return purgeMessagesById(ids);
+    }
+
+    /**
+     * Convenience method to delete messages in the most efficient way available.
+     * <br>This combines both {@link TextChannel#deleteMessagesByIds(Collection)} as well as {@link Message#delete()}
+     * to delete all messages provided. No checks will be done to prevent failures, use {@link java.util.concurrent.CompletionStage#exceptionally(Function)}
+     * to handle failures.
+     *
+     * <p>For possible ErrorResponses see {@link #purgeMessagesById(long...)}.
+     *
+     * @param  messages
+     *         The message ids to delete
+     *
+     * @return List of futures representing all deletion tasks
+     *
+     * @see    RequestFuture#allOf(Collection)
+     */
+    default List<RequestFuture<Void>> purgeMessages(List<? extends Message> messages)
+    {
+        Checks.notNull(messages, "Messages");
+        long[] ids = new long[messages.size()];
+        for (int i = 0; i < ids.length; i++)
+            ids[i] = messages.get(i).getIdLong();
+        return purgeMessagesById(ids);
+    }
+
+    /**
+     * Convenience method to delete messages in the most efficient way available.
+     * <br>This combines both {@link TextChannel#deleteMessagesByIds(Collection)} as well as {@link Message#delete()}
+     * to delete all messages provided. No checks will be done to prevent failures, use {@link java.util.concurrent.CompletionStage#exceptionally(Function)}
+     * to handle failures.
+     *
+     * <p>Possible ErrorResponses include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>if this channel was deleted</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>if any of the provided messages does not exist</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>if we were removed from the channel</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The send request was attempted after the account lost
+     *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in the channel.</li>
+     * </ul>
+     *
+     * @param  messageIds
+     *         The message ids to delete
+     *
+     * @return List of futures representing all deletion tasks
+     *
+     * @see    RequestFuture#allOf(Collection)
+     */
+    default List<RequestFuture<Void>> purgeMessagesById(long... messageIds)
+    {
+        if (messageIds == null || messageIds.length == 0)
+            return Collections.emptyList();
+        List<RequestFuture<Void>> list = new ArrayList<>(messageIds.length);
+        for (long messageId : messageIds)
+            list.add(deleteMessageById(messageId).submit());
+        return list;
     }
 
     /**
