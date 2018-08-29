@@ -27,6 +27,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -312,6 +313,51 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
     public final int getLimit()
     {
         return limit.get();
+    }
+
+    /**
+     * Convenience method to retrieve an amount of entities from this pagination action.
+     *
+     * @param  amount
+     *         The maximum amount to retrieve
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} - Type: {@link java.util.List List}
+     *
+     * @see    #forEachAsync(Procedure)
+     */
+    public RequestFuture<List<T>> takeAsync(int amount)
+    {
+        return takeAsync0(amount, (task, list) -> forEachAsync(val -> {
+            list.add(val);
+            return list.size() < amount;
+        }, task::completeExceptionally));
+    }
+
+    /**
+     * Convenience method to retrieve an amount of entities from this pagination action.
+     *
+     * @param  amount
+     *         The maximum amount to retrieve
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} - Type: {@link java.util.List List}
+     *
+     * @see    #forEachRemainingAsync(Procedure)
+     */
+    public RequestFuture<List<T>> takeRemainingAsync(int amount)
+    {
+        return takeAsync0(amount, (task, list) -> forEachRemainingAsync(val -> {
+            list.add(val);
+            return list.size() < amount;
+        }, task::completeExceptionally));
+    }
+
+    private RequestFuture<List<T>> takeAsync0(int amount, BiFunction<Promise<?>, List<T>, RequestFuture<?>> converter)
+    {
+        Promise<List<T>> task = new Promise<>();
+        List<T> list = new ArrayList<>(amount);
+        RequestFuture<?> promise = converter.apply(task, list);
+        promise.thenRun(() -> task.complete(list));
+        return task;
     }
 
     /**
