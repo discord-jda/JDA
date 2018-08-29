@@ -90,6 +90,8 @@ task sourcesForRelease(type: Copy) {
         ])
     }
     into 'build/filteredSrc'
+
+    includeEmptyDirs = false
 }
 
 task generateJavaSources(type: SourceTask) {
