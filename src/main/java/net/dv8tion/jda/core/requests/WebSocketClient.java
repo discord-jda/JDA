@@ -319,7 +319,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     }
                     else if (audioRequest != null)
                     {
-                        VoiceChannel channel = audioRequest.getChannel();
+                        long channel = audioRequest.getChannelId();
                         Guild guild = api.getGuildById(audioRequest.getGuildIdLong());
                         if (guild == null)
                         {
@@ -340,7 +340,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                                 break;
                             default:
                             case CONNECT:
-                                packet = newVoiceOpen(audioManager, channel);
+                                packet = newVoiceOpen(audioManager, channel, guild.getIdLong());
                         }
                         needRatelimit = !send(packet.toString(), false);
                         if (!needRatelimit)
@@ -405,13 +405,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 .put("self_deaf", false));
     }
 
-    protected JSONObject newVoiceOpen(AudioManager manager, VoiceChannel channel)
+    protected JSONObject newVoiceOpen(AudioManager manager, long channel, long guild)
     {
         return new JSONObject()
             .put("op", WebSocketCode.VOICE_STATE)
             .put("d", new JSONObject()
-                .put("guild_id", channel.getGuild().getId())
-                .put("channel_id", channel.getId())
+                .put("guild_id", guild)
+                .put("channel_id", channel)
                 .put("self_mute", manager.isSelfMuted())
                 .put("self_deaf", manager.isSelfDeafened()));
     }
@@ -1343,7 +1343,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             //If the removeRequest was related to a channel that isn't the currently queued
             // request, then don't remove it.
-            if (request.getChannel().getIdLong() == connectedChannel.getIdLong())
+            if (request.getChannelId() == connectedChannel.getIdLong())
                 return queuedAudioConnections.remove(guildId);
         }
         //If the channel is not the one we are looking for!
@@ -1382,7 +1382,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 ConnectionListener listener = guild.getAudioManager().getConnectionListener();
                 if (audioRequest.getStage() != ConnectionStage.DISCONNECT)
                 {
-                    VoiceChannel channel = guild.getVoiceChannelById(audioRequest.getChannel().getIdLong());
+                    VoiceChannel channel = guild.getVoiceChannelById(audioRequest.getChannelId());
                     if (channel == null)
                     {
                         it.remove();
