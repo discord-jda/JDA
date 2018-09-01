@@ -195,29 +195,38 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
 
         // remove duplicates and sort messages
         List<RequestFuture<Void>> list = new LinkedList<>();
-        TreeSet<Long> sortedIds = new TreeSet<>(Comparator.reverseOrder());
+        TreeSet<Long> bulk = new TreeSet<>(Comparator.reverseOrder());
+        TreeSet<Long> norm = new TreeSet<>(Comparator.reverseOrder());
+        long twoWeeksAgo = MiscUtil.getDiscordTimestamp(System.currentTimeMillis() - (14 * 24 * 60 * 60 * 1000) + 10000);
         for (long messageId : messageIds)
-            sortedIds.add(messageId);
-
-        // delete messages too old for bulk delete
-        long twoWeeksAgo = MiscUtil.getDiscordTimestamp(System.currentTimeMillis() - (14 * 24 * 60 * 60 * 1000) - 10000);
-        List<Long> oldMessages = sortedIds.stream().filter(id -> twoWeeksAgo > id).sorted(Comparator.reverseOrder()).collect(Collectors.toList());
-        for (long message : oldMessages)
-            list.add(deleteMessageById(message).submit());
-
-        sortedIds.removeAll(oldMessages);
+        {
+            if (messageId > twoWeeksAgo)
+                bulk.add(messageId);
+            else
+                norm.add(messageId);
+        }
 
         // delete chunks of 100 messages each
-        List<String> toDelete = new ArrayList<>(100);
-        while (!sortedIds.isEmpty())
+        if (!bulk.isEmpty())
         {
-            toDelete.clear();
-            for (int i = 0; i < 100 && !sortedIds.isEmpty(); i++)
-                toDelete.add(Long.toUnsignedString(sortedIds.pollLast()));
-            if (toDelete.size() == 1)
-                list.add(deleteMessageById(toDelete.get(0)).submit());
-            else if (!toDelete.isEmpty())
-                list.add(deleteMessages0(toDelete).submit());
+            List<String> toDelete = new ArrayList<>(100);
+            while (!bulk.isEmpty())
+            {
+                toDelete.clear();
+                for (int i = 0; i < 100 && !bulk.isEmpty(); i++)
+                    toDelete.add(Long.toUnsignedString(bulk.pollLast()));
+                if (toDelete.size() == 1)
+                    list.add(deleteMessageById(toDelete.get(0)).submit());
+                else if (!toDelete.isEmpty())
+                    list.add(deleteMessages0(toDelete).submit());
+            }
+        }
+
+        // delete messages too old for bulk delete
+        if (!norm.isEmpty())
+        {
+            for (long message : norm)
+                list.add(deleteMessageById(message).submit());
         }
         return list;
     }
