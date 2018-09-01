@@ -76,7 +76,7 @@ public class ChannelDeleteHandler extends SocketHandler
             case VOICE:
             {
                 GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(guildId);
-                VoiceChannel channel = guild.getVoiceChannelsMap().remove(channelId);
+                VoiceChannel channel = getJDA().getVoiceChannelMap().remove(channelId);
                 if (channel == null)
                 {
 //                    getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));

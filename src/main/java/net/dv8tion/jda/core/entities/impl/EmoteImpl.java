@@ -81,7 +81,7 @@ public class EmoteImpl implements ListedEmote
     @Override
     public GuildImpl getGuild()
     {
-        return guild.get();
+        return guild == null ? null : guild.get();
     }
 
     @Override
