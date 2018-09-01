@@ -168,6 +168,7 @@ public static void main(String[] args) throws Exception
 {
     DefaultShardManagerBuilder builder = new DefaultShardManagerBuilder();
     builder.setToken(args[0]);
+    //register your listeners here using builder.addEventListener(...)
     builder.addEventListener(new MessageListener());
     builder.build();
 }
