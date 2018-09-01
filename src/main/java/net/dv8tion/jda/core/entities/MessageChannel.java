@@ -97,7 +97,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     default List<RequestFuture<Void>> purgeMessagesById(List<String> messageIds)
     {
-        Checks.notNull(messageIds, "Messages IDs");
+        if (messageIds == null || messageIds.isEmpty())
+            return Collections.emptyList();
         long[] ids = new long[messageIds.size()];
         for (int i = 0; i < ids.length; i++)
             ids[i] = MiscUtil.parseSnowflake(messageIds.get(i));
@@ -112,8 +113,30 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * <p>For possible ErrorResponses see {@link #purgeMessagesById(long...)}.
      *
-     * @param  messages
+     * @param  messageIds
      *         The message ids to delete
+     *
+     * @return List of futures representing all deletion tasks
+     *
+     * @see    RequestFuture#allOf(Collection)
+     */
+    default List<RequestFuture<Void>> purgeMessagesById(String... messageIds)
+    {
+        if (messageIds == null || messageIds.length == 0)
+            return Collections.emptyList();
+        return purgeMessagesById(Arrays.asList(messageIds));
+    }
+
+    /**
+     * Convenience method to delete messages in the most efficient way available.
+     * <br>This combines both {@link TextChannel#deleteMessagesByIds(Collection)} as well as {@link Message#delete()}
+     * to delete all messages provided. No checks will be done to prevent failures, use {@link java.util.concurrent.CompletionStage#exceptionally(Function)}
+     * to handle failures.
+     *
+     * <p>For possible ErrorResponses see {@link #purgeMessagesById(long...)}.
+     *
+     * @param  messages
+     *         The message to delete
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If one of the provided messages is from another user and cannot be deleted due to permissions
@@ -126,7 +149,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     default List<RequestFuture<Void>> purgeMessages(Message... messages)
     {
-        Checks.notNull(messages, "Messages");
+        if (messages == null || messages.length == 0)
+            return Collections.emptyList();
         return purgeMessages(Arrays.asList(messages));
     }
 
@@ -139,7 +163,12 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>For possible ErrorResponses see {@link #purgeMessagesById(long...)}.
      *
      * @param  messages
-     *         The message ids to delete
+     *         The message to delete
+     *
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If one of the provided messages is from another user and cannot be deleted due to permissions
+     * @throws IllegalArgumentException
+     *         If one of the provided messages is from another user and cannot be deleted because this is not in a guild
      *
      * @return List of futures representing all deletion tasks
      *
@@ -147,7 +176,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     default List<RequestFuture<Void>> purgeMessages(List<? extends Message> messages)
     {
-        Checks.notNull(messages, "Messages");
+        if (messages == null || messages.isEmpty())
+            return Collections.emptyList();
         long[] ids = new long[messages.size()];
         for (int i = 0; i < ids.length; i++)
             ids[i] = messages.get(i).getIdLong();
@@ -156,7 +186,7 @@ public interface MessageChannel extends ISnowflake, Formattable
 
     /**
      * Convenience method to delete messages in the most efficient way available.
-     * <br>This combines both {@link TextChannel#deleteMessagesByIds(Collection)} as well as {@link Message#delete()}
+     * <br>This combines both {@link TextChannel#deleteMessagesByIds(Collection)} as well as {@link deleteMessageById(long)}
      * to delete all messages provided. No checks will be done to prevent failures, use {@link java.util.concurrent.CompletionStage#exceptionally(Function)}
      * to handle failures.
      *

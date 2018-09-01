@@ -171,12 +171,14 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         if (messages == null || messages.isEmpty())
             return Collections.emptyList();
         boolean hasPerms = getGuild().getSelfMember().hasPermission(this, Permission.MESSAGE_MANAGE);
-        for (Message m : messages)
+        if (!hasPerms)
         {
-            if (m.getAuthor().equals(getJDA().getSelfUser()))
-                continue;
-            if (!hasPerms)
+            for (Message m : messages)
+            {
+                if (m.getAuthor().equals(getJDA().getSelfUser()))
+                    continue;
                 throw new InsufficientPermissionException(Permission.MESSAGE_MANAGE, "Cannot delete messages of other users");
+            }
         }
         return TextChannel.super.purgeMessages(messages);
     }

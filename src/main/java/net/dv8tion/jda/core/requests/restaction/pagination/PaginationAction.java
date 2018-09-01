@@ -317,6 +317,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
 
     /**
      * Convenience method to retrieve an amount of entities from this pagination action.
+     * <br>This also includes already cached entities similar to {@link #forEachAsync(Procedure)}.
      *
      * @param  amount
      *         The maximum amount to retrieve
@@ -335,6 +336,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
 
     /**
      * Convenience method to retrieve an amount of entities from this pagination action.
+     * <br>Unlike {@link #takeAsync(int)} this does not include already cached entities.
      *
      * @param  amount
      *         The maximum amount to retrieve
