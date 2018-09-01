@@ -136,7 +136,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>For possible ErrorResponses see {@link #purgeMessagesById(long...)}.
      *
      * @param  messages
-     *         The message to delete
+     *         The messages to delete
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If one of the provided messages is from another user and cannot be deleted due to permissions
@@ -163,7 +163,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>For possible ErrorResponses see {@link #purgeMessagesById(long...)}.
      *
      * @param  messages
-     *         The message to delete
+     *         The messages to delete
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If one of the provided messages is from another user and cannot be deleted due to permissions
