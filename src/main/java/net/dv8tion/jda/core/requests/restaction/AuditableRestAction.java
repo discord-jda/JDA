@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.requests.restaction;
 
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.audit.ThreadLocalReason;
 import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import okhttp3.RequestBody;
@@ -24,11 +25,15 @@ import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 /**
  * Extension of RestAction to allow setting a reason, only available to accounts of {@link net.dv8tion.jda.core.AccountType#BOT AccountType.BOT}
+ *
+ * <p>This will automatically use the {@link net.dv8tion.jda.core.audit.ThreadLocalReason ThreadLocalReason} if no
+ * reason was specified via {@link #reason(String)}.
  *
  * @param  <T>
  *         The return type
@@ -37,7 +42,6 @@ import java.util.function.Consumer;
  */
 public abstract class AuditableRestAction<T> extends RestAction<T>
 {
-
     protected String reason = null;
 
     public AuditableRestAction(JDA api, Route.CompiledRoute route)
@@ -80,6 +84,8 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
      *         The reason for this action which should be logged in the Guild's AuditLogs
      *
      * @return The current AuditableRestAction instance for chaining convenience
+     *
+     * @see    ThreadLocalReason
      */
     @CheckReturnValue
     public AuditableRestAction<T> reason(String reason)
@@ -94,13 +100,24 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
         CaseInsensitiveMap<String, String> headers = super.finalizeHeaders();
 
         if (reason == null || reason.isEmpty())
-            return headers;
+        {
+            String localReason = ThreadLocalReason.getCurrent();
+            if (localReason == null)
+                return headers;
+            else
+                return generateHeaders(headers, localReason);
+        }
 
+        return generateHeaders(headers, reason);
+    }
+
+    @Nonnull
+    private CaseInsensitiveMap<String, String> generateHeaders(CaseInsensitiveMap<String, String> headers, String reason)
+    {
         if (headers == null)
             headers = new CaseInsensitiveMap<>();
 
         headers.put("X-Audit-Log-Reason", uriEncode(reason));
-
         return headers;
     }
 
