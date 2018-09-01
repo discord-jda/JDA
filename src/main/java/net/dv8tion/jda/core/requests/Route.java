@@ -508,7 +508,7 @@ public class Route
     {
         private DeleteMessageRoute()
         {
-            super(DELETE, "channels/{channel_id}/messages/{message_id}", "channel_id");
+            super(DELETE, true, "channels/{channel_id}/messages/{message_id}", "channel_id");
         }
 
         @Override
