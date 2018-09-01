@@ -82,7 +82,7 @@ public interface MessageChannel extends ISnowflake, Formattable
 
     /**
      * Convenience method to delete messages in the most efficient way available.
-     * <br>This combines both {@link TextChannel#deleteMessagesByIds(Collection)} as well as {@link Message#delete()}
+     * <br>This combines both {@link TextChannel#deleteMessagesByIds(Collection)} as well as {@link #deleteMessageById(long)}
      * to delete all messages provided. No checks will be done to prevent failures, use {@link java.util.concurrent.CompletionStage#exceptionally(Function)}
      * to handle failures.
      *
@@ -107,7 +107,7 @@ public interface MessageChannel extends ISnowflake, Formattable
 
     /**
      * Convenience method to delete messages in the most efficient way available.
-     * <br>This combines both {@link TextChannel#deleteMessagesByIds(Collection)} as well as {@link Message#delete()}
+     * <br>This combines both {@link TextChannel#deleteMessagesByIds(Collection)} as well as {@link #deleteMessageById(long)}
      * to delete all messages provided. No checks will be done to prevent failures, use {@link java.util.concurrent.CompletionStage#exceptionally(Function)}
      * to handle failures.
      *
@@ -186,7 +186,7 @@ public interface MessageChannel extends ISnowflake, Formattable
 
     /**
      * Convenience method to delete messages in the most efficient way available.
-     * <br>This combines both {@link TextChannel#deleteMessagesByIds(Collection)} as well as {@link deleteMessageById(long)}
+     * <br>This combines both {@link TextChannel#deleteMessagesByIds(Collection)} as well as {@link #deleteMessageById(long)}
      * to delete all messages provided. No checks will be done to prevent failures, use {@link java.util.concurrent.CompletionStage#exceptionally(Function)}
      * to handle failures.
      *
