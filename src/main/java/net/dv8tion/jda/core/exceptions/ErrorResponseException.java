@@ -107,6 +107,12 @@ public class ErrorResponseException extends RuntimeException
         return response;
     }
 
+    @Override
+    public synchronized Throwable getCause()
+    {
+        return response != null ? response.getException() : null;
+    }
+
     public static ErrorResponseException create(ErrorResponse errorResponse, Response response)
     {
         Optional<JSONObject> optObj = response.optObject();

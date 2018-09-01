@@ -158,6 +158,10 @@ public abstract class RestAction<T>
         {
             LOG.error("RestAction queue returned failure", t);
         }
+        else if (t.getCause() != null)
+        {
+            LOG.error("RestAction queue returned failure: [{}] {}", t.getClass().getSimpleName(), t.getMessage(), t.getCause());
+        }
         else
         {
             LOG.error("RestAction queue returned failure: [{}] {}", t.getClass().getSimpleName(), t.getMessage());
