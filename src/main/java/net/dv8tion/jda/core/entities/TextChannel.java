@@ -140,6 +140,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *
      * @see    #deleteMessagesByIds(Collection)
+     * @see    #purgeMessages(List)
      */
     @CheckReturnValue
     RestAction<Void> deleteMessages(Collection<Message> messages);
@@ -188,6 +189,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *
      * @see    #deleteMessages(Collection)
+     * @see    #purgeMessagesById(List)
      */
     @CheckReturnValue
     RestAction<Void> deleteMessagesByIds(Collection<String> messageIds);

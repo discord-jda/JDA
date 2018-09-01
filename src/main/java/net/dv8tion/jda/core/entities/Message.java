@@ -720,8 +720,8 @@ public interface Message extends ISnowflake, Formattable
      * a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the current account has
      * {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in the channel.
      *
-     * <p><u>To delete up 100 messages at once in a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
-     * you should use {@link net.dv8tion.jda.core.entities.TextChannel#deleteMessages(java.util.Collection) TextChannel.deleteMessages(Collection)}</u>
+     * <p><u>To delete many messages at once in a {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}
+     * you should use {@link net.dv8tion.jda.core.entities.MessageChannel#purgeMessages(List) MessageChannel.purgeMessages(Collection)} instead.</u>
      *
      * <p>The following {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -754,6 +754,7 @@ public interface Message extends ISnowflake, Formattable
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *
      * @see    net.dv8tion.jda.core.entities.TextChannel#deleteMessages(java.util.Collection) TextChannel.deleteMessages(Collection)
+     * @see    net.dv8tion.jda.core.entities.MessageChannel#purgeMessages(java.util.List) MessageChannel.purgeMessages(List)
      */
     @CheckReturnValue
     AuditableRestAction<Void> delete();
