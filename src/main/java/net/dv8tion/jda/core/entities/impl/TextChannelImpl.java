@@ -17,13 +17,11 @@
 package net.dv8tion.jda.core.entities.impl;
 
 import net.dv8tion.jda.client.exceptions.VerificationLevelException;
+import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.ChannelAction;
 import net.dv8tion.jda.core.requests.restaction.MessageAction;
@@ -35,10 +33,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implements TextChannel
@@ -126,25 +121,11 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         if (messageIds.size() < 2 || messageIds.size() > 100)
             throw new IllegalArgumentException("Must provide at least 2 or at most 100 messages to be deleted.");
 
-        long twoWeeksAgo = ((System.currentTimeMillis() - (14 * 24 * 60 * 60 * 1000)) - MiscUtil.DISCORD_EPOCH) << MiscUtil.TIMESTAMP_OFFSET;
+        long twoWeeksAgo = MiscUtil.getDiscordTimestamp((System.currentTimeMillis() - (14 * 24 * 60 * 60 * 1000)));
         for (String id : messageIds)
-        {
             Checks.check(MiscUtil.parseSnowflake(id) > twoWeeksAgo, "Message Id provided was older than 2 weeks. Id: " + id);
-        }
 
-        JSONObject body = new JSONObject().put("messages", messageIds);
-        Route.CompiledRoute route = Route.Messages.DELETE_MESSAGES.compile(getId());
-        return new RestAction<Void>(getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return deleteMessages0(messageIds);
     }
 
     @Override
@@ -182,6 +163,72 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
             throw new IllegalArgumentException("Provided Member is not from the Guild that this TextChannel is part of.");
 
         return member.hasPermission(this, Permission.MESSAGE_READ, Permission.MESSAGE_WRITE);
+    }
+
+    @Override
+    public List<RequestFuture<Void>> purgeMessages(List<? extends Message> messages)
+    {
+        if (messages == null || messages.isEmpty())
+            return Collections.emptyList();
+        boolean hasPerms = getGuild().getSelfMember().hasPermission(this, Permission.MESSAGE_MANAGE);
+        if (!hasPerms)
+        {
+            for (Message m : messages)
+            {
+                if (m.getAuthor().equals(getJDA().getSelfUser()))
+                    continue;
+                throw new InsufficientPermissionException(Permission.MESSAGE_MANAGE, "Cannot delete messages of other users");
+            }
+        }
+        return TextChannel.super.purgeMessages(messages);
+    }
+
+    @Override
+    @SuppressWarnings("ConstantConditions")
+    public List<RequestFuture<Void>> purgeMessagesById(long... messageIds)
+    {
+        if (messageIds == null || messageIds.length == 0)
+            return Collections.emptyList();
+        if (getJDA().getAccountType() != AccountType.BOT
+            || !getGuild().getSelfMember().hasPermission(this, Permission.MESSAGE_MANAGE))
+            return TextChannel.super.purgeMessagesById(messageIds);
+
+        // remove duplicates and sort messages
+        List<RequestFuture<Void>> list = new LinkedList<>();
+        TreeSet<Long> bulk = new TreeSet<>(Comparator.reverseOrder());
+        TreeSet<Long> norm = new TreeSet<>(Comparator.reverseOrder());
+        long twoWeeksAgo = MiscUtil.getDiscordTimestamp(System.currentTimeMillis() - (14 * 24 * 60 * 60 * 1000) + 10000);
+        for (long messageId : messageIds)
+        {
+            if (messageId > twoWeeksAgo)
+                bulk.add(messageId);
+            else
+                norm.add(messageId);
+        }
+
+        // delete chunks of 100 messages each
+        if (!bulk.isEmpty())
+        {
+            List<String> toDelete = new ArrayList<>(100);
+            while (!bulk.isEmpty())
+            {
+                toDelete.clear();
+                for (int i = 0; i < 100 && !bulk.isEmpty(); i++)
+                    toDelete.add(Long.toUnsignedString(bulk.pollLast()));
+                if (toDelete.size() == 1)
+                    list.add(deleteMessageById(toDelete.get(0)).submit());
+                else if (!toDelete.isEmpty())
+                    list.add(deleteMessages0(toDelete).submit());
+            }
+        }
+
+        // delete messages too old for bulk delete
+        if (!norm.isEmpty())
+        {
+            for (long message : norm)
+                list.add(deleteMessageById(message).submit());
+        }
+        return list;
     }
 
     @Override
@@ -496,5 +543,22 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     {
         if (!getGuild().checkVerification())
             throw new VerificationLevelException(getGuild().getVerificationLevel());
+    }
+
+    private RestAction<Void> deleteMessages0(Collection<String> messageIds)
+    {
+        JSONObject body = new JSONObject().put("messages", messageIds);
+        Route.CompiledRoute route = Route.Messages.DELETE_MESSAGES.compile(getId());
+        return new RestAction<Void>(getJDA(), route, body)
+        {
+            @Override
+            protected void handleResponse(Response response, Request<Void> request)
+            {
+                if (response.isOk())
+                    request.onSuccess(null);
+                else
+                    request.onFailure(response);
+            }
+        };
     }
 }
