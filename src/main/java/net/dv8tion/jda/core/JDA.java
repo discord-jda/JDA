@@ -917,6 +917,7 @@ public interface JDA
 
     /**
      * A collection of all to us known emotes (managed/restricted included).
+     * <br>This will be empty if {@link net.dv8tion.jda.core.utils.cache.CacheFlag#EMOTE} is disabled.
      *
      * <p><b>Hint</b>: To check whether you can use an {@link net.dv8tion.jda.core.entities.Emote Emote} in a specific
      * context you can use {@link Emote#canInteract(net.dv8tion.jda.core.entities.Member)} or {@link
@@ -933,6 +934,7 @@ public interface JDA
 
     /**
      * Retrieves an emote matching the specified {@code id} if one is available in our cache.
+     * <br>This will be null if {@link net.dv8tion.jda.core.utils.cache.CacheFlag#EMOTE} is disabled.
      *
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.core.entities.Emote Emote}!</b>
      *
@@ -950,6 +952,7 @@ public interface JDA
 
     /**
      * Retrieves an emote matching the specified {@code id} if one is available in our cache.
+     * <br>This will be null if {@link net.dv8tion.jda.core.utils.cache.CacheFlag#EMOTE} is disabled.
      *
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.core.entities.Emote Emote}!</b>
      *
@@ -967,6 +970,7 @@ public interface JDA
      * An unmodifiable list of all {@link net.dv8tion.jda.core.entities.Emote Emotes} that have the same name as the one
      * provided. <br>If there are no {@link net.dv8tion.jda.core.entities.Emote Emotes} with the provided name, then
      * this returns an empty list.
+     * <br>This will be empty if {@link net.dv8tion.jda.core.utils.cache.CacheFlag#EMOTE} is disabled.
      *
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.core.entities.Emote Emote}!</b>
      *

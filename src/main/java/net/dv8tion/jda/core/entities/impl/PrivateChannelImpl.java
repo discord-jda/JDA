@@ -20,18 +20,18 @@ import net.dv8tion.jda.client.entities.Call;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.requests.restaction.MessageAction;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 
 import java.io.InputStream;
+import java.util.Collections;
+import java.util.List;
 
 public class PrivateChannelImpl implements PrivateChannel
 {
     private final long id;
-    private final User user;
+    private final UpstreamReference<User> user;
 
     private long lastMessageId;
     private Call currentCall = null;
@@ -40,13 +40,13 @@ public class PrivateChannelImpl implements PrivateChannel
     public PrivateChannelImpl(long id, User user)
     {
         this.id = id;
-        this.user = user;
+        this.user = new UpstreamReference<>(user);
     }
 
     @Override
     public User getUser()
     {
-        return user;
+        return user.get();
     }
 
     @Override
@@ -67,7 +67,7 @@ public class PrivateChannelImpl implements PrivateChannel
     @Override
     public String getName()
     {
-        return user.getName();
+        return getUser().getName();
     }
 
     @Override
@@ -79,7 +79,7 @@ public class PrivateChannelImpl implements PrivateChannel
     @Override
     public JDA getJDA()
     {
-        return user.getJDA();
+        return getUser().getJDA();
     }
 
     @Override
@@ -97,6 +97,20 @@ public class PrivateChannelImpl implements PrivateChannel
                     request.onFailure(response);
             }
         };
+    }
+
+    @Override
+    public List<RequestFuture<Void>> purgeMessages(List<? extends Message> messages)
+    {
+        if (messages == null || messages.isEmpty())
+            return Collections.emptyList();
+        for (Message m : messages)
+        {
+            if (m.getAuthor().equals(getJDA().getSelfUser()))
+                continue;
+            throw new IllegalArgumentException("Cannot delete messages of other users in a private channel");
+        }
+        return PrivateChannel.super.purgeMessages(messages);
     }
 
     @Override
@@ -188,12 +202,12 @@ public class PrivateChannelImpl implements PrivateChannel
     @Override
     public String toString()
     {
-        return "PC:" + getUser().getName() + '(' + id + ')';
+        return "PC:" + getUser().getName() + '(' + getId() + ')';
     }
 
     private void checkBot()
     {
-        if (user.isBot() && getJDA().getAccountType() == AccountType.BOT)
+        if (getUser().isBot() && getJDA().getAccountType() == AccountType.BOT)
             throw new UnsupportedOperationException("Cannot send a private message between bots.");
     }
 }

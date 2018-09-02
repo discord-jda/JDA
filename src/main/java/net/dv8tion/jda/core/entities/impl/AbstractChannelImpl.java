@@ -31,6 +31,7 @@ import net.dv8tion.jda.core.requests.restaction.InviteAction;
 import net.dv8tion.jda.core.requests.restaction.PermissionOverrideAction;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import org.json.JSONArray;
 
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ import java.util.stream.Collectors;
 public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> implements Channel
 {
     protected final long id;
-    protected final GuildImpl guild;
+    protected final UpstreamReference<GuildImpl> guild;
 
     protected final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
 
@@ -57,7 +58,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     public AbstractChannelImpl(long id, GuildImpl guild)
     {
         this.id = id;
-        this.guild = guild;
+        this.guild = new UpstreamReference<>(guild);
     }
 
     @Override
@@ -67,15 +68,15 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     }
 
     @Override
-    public Guild getGuild()
+    public GuildImpl getGuild()
     {
-        return guild;
+        return guild.get();
     }
 
     @Override
     public Category getParent()
     {
-        return guild.getCategoriesMap().get(parentId);
+        return getGuild().getCategoriesMap().get(parentId);
     }
 
     @Override
@@ -186,7 +187,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         checkPermission(Permission.MANAGE_PERMISSIONS);
         Checks.notNull(member, "member");
 
-        if (!guild.equals(member.getGuild()))
+        if (!getGuild().equals(member.getGuild()))
             throw new IllegalArgumentException("Provided member is not from the same guild as this channel!");
         Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(getId(), member.getUser().getId());
         return new PermissionOverrideAction(getJDA(), route, this, member);
@@ -198,7 +199,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         checkPermission(Permission.MANAGE_PERMISSIONS);
         Checks.notNull(role, "role");
 
-        if (!guild.equals(role.getGuild()))
+        if (!getGuild().equals(role.getGuild()))
             throw new IllegalArgumentException("Provided role is not from the same guild as this channel!");
         Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(getId(), role.getId());
         return new PermissionOverrideAction(getJDA(), route, this, role);
@@ -207,7 +208,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     @Override
     public InviteAction createInvite()
     {
-        if (!this.guild.getSelfMember().hasPermission(this, Permission.CREATE_INSTANT_INVITE))
+        if (!this.getGuild().getSelfMember().hasPermission(this, Permission.CREATE_INSTANT_INVITE))
             throw new InsufficientPermissionException(Permission.CREATE_INSTANT_INVITE);
 
         return new InviteAction(this.getJDA(), this.getId());
@@ -216,7 +217,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     @Override
     public RestAction<List<Invite>> getInvites()
     {
-        if (!this.guild.getSelfMember().hasPermission(this, Permission.MANAGE_CHANNEL))
+        if (!this.getGuild().getSelfMember().hasPermission(this, Permission.MANAGE_CHANNEL))
             throw new InsufficientPermissionException(Permission.MANAGE_CHANNEL);
 
         final Route.CompiledRoute route = Route.Invites.GET_CHANNEL_INVITES.compile(getId());
@@ -228,7 +229,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
             {
                 if (response.isOk())
                 {
-                    EntityBuilder entityBuilder = this.api.getEntityBuilder();
+                    EntityBuilder entityBuilder = api.get().getEntityBuilder();
                     JSONArray array = response.getArray();
                     List<Invite> invites = new ArrayList<>(array.length());
                     for (int i = 0; i < array.length(); i++)
@@ -295,7 +296,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     protected void checkPermission(Permission permission) {checkPermission(permission, null);}
     protected void checkPermission(Permission permission, String message)
     {
-        if (!guild.getSelfMember().hasPermission(this, permission))
+        if (!getGuild().getSelfMember().hasPermission(this, permission))
         {
             if (message != null)
                 throw new InsufficientPermissionException(permission, message);

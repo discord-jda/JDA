@@ -127,7 +127,7 @@ public class MessagePaginationAction extends PaginationAction<Message, MessagePa
 
         JSONArray array = response.getArray();
         List<Message> messages = new ArrayList<>(array.length());
-        EntityBuilder builder = api.getEntityBuilder();
+        EntityBuilder builder = api.get().getEntityBuilder();
         for (int i = 0; i < array.length(); i++)
         {
             try

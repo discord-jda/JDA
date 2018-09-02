@@ -26,6 +26,7 @@ import net.dv8tion.jda.core.managers.impl.ManagerBase;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.PermissionUtil;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
 
@@ -64,7 +65,7 @@ public class RoleManager extends ManagerBase
     /** Used to reset the mentionable field */
     public static final long MENTIONABLE = 0x10;
 
-    protected final Role role;
+    protected final UpstreamReference<Role> role;
 
     protected String name;
     protected int color;
@@ -81,7 +82,7 @@ public class RoleManager extends ManagerBase
     public RoleManager(Role role)
     {
         super(role.getJDA(), Route.Roles.MODIFY_ROLE.compile(role.getGuild().getId(), role.getId()));
-        this.role = role;
+        this.role = new UpstreamReference<>(role);
         if (isPermissionChecksEnabled())
             checkPermissions();
     }
@@ -95,7 +96,7 @@ public class RoleManager extends ManagerBase
      */
     public Guild getGuild()
     {
-        return role.getGuild();
+        return getRole().getGuild();
     }
 
     /**
@@ -106,7 +107,7 @@ public class RoleManager extends ManagerBase
      */
     public Role getRole()
     {
-        return role;
+        return role.get();
     }
 
     /**
@@ -470,7 +471,7 @@ public class RoleManager extends ManagerBase
     @Override
     protected RequestBody finalizeData()
     {
-        JSONObject object = new JSONObject().put("name", role.getName());
+        JSONObject object = new JSONObject().put("name", getRole().getName());
         if (shouldUpdate(NAME))
             object.put("name", name);
         if (shouldUpdate(PERMISSION))
@@ -491,7 +492,7 @@ public class RoleManager extends ManagerBase
         Member selfMember = getGuild().getSelfMember();
         if (!selfMember.hasPermission(Permission.MANAGE_ROLES))
             throw new InsufficientPermissionException(Permission.MANAGE_ROLES);
-        if (!selfMember.canInteract(role))
+        if (!selfMember.canInteract(getRole()))
             throw new HierarchyException("Cannot modify a role that is higher or equal in hierarchy");
         return super.checkPermissions();
         /*
@@ -511,6 +512,6 @@ public class RoleManager extends ManagerBase
     private void setupPermissions()
     {
         if (!shouldUpdate(PERMISSION))
-            this.permissions = role.getPermissionsRaw();
+            this.permissions = getRole().getPermissionsRaw();
     }
 }

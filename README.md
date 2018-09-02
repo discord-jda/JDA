@@ -264,8 +264,26 @@ The most popular implementations are [Log4j 2](https://logging.apache.org/log4j/
 Docs can be found on the [Jenkins](http://home.dv8tion.net:8080/) or directly [here](http://home.dv8tion.net:8080/job/JDA/javadoc/)
 <br>A simple Wiki can also be found in this repository's [Wiki section](https://github.com/DV8FromTheWorld/JDA/wiki)
 
+### Annotations
+
+We use a number of annotations to indicate future plans for implemented functionality such as new features of
+the Discord API.
+
+- [Incubating](https://github.com/DV8FromTheWorld/JDA/blob/development/src/main/java/net/dv8tion/jda/annotations/Incubating.java)
+    <br>This annotation is used to indicate that functionality may change in the future. Often used when a new feature is added.
+- [ReplaceWith](https://github.com/DV8FromTheWorld/JDA/blob/development/src/main/java/net/dv8tion/jda/annotations/ReplaceWith.java)
+    <br>Paired with `@Deprecated` this is used to inform you how the new code-fragment is supposed to look once the hereby annotated functionality is removed.
+- [ForRemoval](https://github.com/DV8FromTheWorld/JDA/blob/development/src/main/java/net/dv8tion/jda/annotations/ForRemoval.java)
+    <br>Paired with `@Deprecated` this indicates that we plan to entirely remove the hereby annotated functionality in the future.
+- [DeprecatedSince](https://github.com/DV8FromTheWorld/JDA/blob/development/src/main/java/net/dv8tion/jda/annotations/DeprecatedSince.java)
+    <br>Paired with `@Deprecated` this specifies when a feature was marked as deprecated.
+
+[Sources](https://github.com/DV8FromTheWorld/JDA/tree/development/src/main/java/net/dv8tion/jda/annotations)
+
 ## Getting Help
-If you need help, or just want to talk with the JDA or other Devs, you can join the [Official JDA Discord Guild][discord-invite].
+
+For general troubleshooting you can visit our wiki [Troubleshooting](https://github.com/DV8FromTheWorld/JDA/wiki/19\)-Troubleshooting) and [FAQ](https://github.com/DV8FromTheWorld/JDA/wiki/10\)-FAQ).
+<br>If you need help, or just want to talk with the JDA or other Devs, you can join the [Official JDA Discord Guild][discord-invite].
 
 Alternatively you can also join the [Unofficial Discord API Guild](https://discord.gg/discord-api).
 Once you joined, you can find JDA-specific help in the `#java_jda` channel.
@@ -371,7 +389,7 @@ All dependencies are managed automatically by Gradle.
    * [Website](https://www.slf4j.org/)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/org.slf4j%3Aslf4j-api/view)
  * opus-java
-   * Version: **1.0.3**
+   * Version: **1.0.4**
    * [GitHub](https://github.com/discord-java/opus-java)
    * [JCenter Repository](https://bintray.com/minndevelopment/maven/opus-java)
 

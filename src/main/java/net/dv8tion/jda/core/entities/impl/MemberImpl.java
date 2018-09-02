@@ -22,29 +22,36 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.PermissionUtil;
+import net.dv8tion.jda.core.utils.cache.CacheFlag;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 
 import javax.annotation.Nullable;
 import java.awt.Color;
+import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 
 public class MemberImpl implements Member
 {
-    private final GuildImpl guild;
+    private static final ZoneOffset OFFSET = ZoneOffset.of("+00:00");
+    private final UpstreamReference<GuildImpl> guild;
     private final User user;
-    private final HashSet<Role> roles = new HashSet<>();
+    private final Set<Role> roles = new HashSet<>();
     private final GuildVoiceState voiceState;
 
     private String nickname;
-    private OffsetDateTime joinDate;
+    private long joinDate;
     private Game game;
     private OnlineStatus onlineStatus = OnlineStatus.OFFLINE;
 
     public MemberImpl(GuildImpl guild, User user)
     {
-        this.guild = guild;
+        this.guild = new UpstreamReference<>(guild);
         this.user = user;
-        this.voiceState = new GuildVoiceStateImpl(guild, this);
+        JDAImpl jda = (JDAImpl) getJDA();
+        boolean cacheState = jda.isCacheFlagSet(CacheFlag.VOICE_STATE) || user.equals(jda.getSelfUser());
+        this.voiceState = cacheState ? new GuildVoiceStateImpl(guild, this) : null;
     }
 
     @Override
@@ -54,9 +61,9 @@ public class MemberImpl implements Member
     }
 
     @Override
-    public Guild getGuild()
+    public GuildImpl getGuild()
     {
-        return guild;
+        return guild.get();
     }
 
     @Override
@@ -68,7 +75,7 @@ public class MemberImpl implements Member
     @Override
     public OffsetDateTime getJoinDate()
     {
-        return joinDate;
+        return OffsetDateTime.ofInstant(Instant.ofEpochMilli(joinDate), OFFSET);
     }
 
     @Override
@@ -140,7 +147,7 @@ public class MemberImpl implements Member
     @Override
     public List<Permission> getPermissions(Channel channel)
     {
-        if (!guild.equals(channel.getGuild()))
+        if (!getGuild().equals(channel.getGuild()))
             throw new IllegalArgumentException("Provided channel is not in the same guild as this member!");
 
         return Collections.unmodifiableList(
@@ -196,7 +203,7 @@ public class MemberImpl implements Member
 
     @Override
     public boolean isOwner() {
-        return this.equals(guild.getOwner());
+        return this.equals(getGuild().getOwner());
     }
 
     public MemberImpl setNickname(String nickname)
@@ -205,7 +212,7 @@ public class MemberImpl implements Member
         return this;
     }
 
-    public MemberImpl setJoinDate(OffsetDateTime joinDate)
+    public MemberImpl setJoinDate(long joinDate)
     {
         this.joinDate = joinDate;
         return this;
@@ -235,19 +242,19 @@ public class MemberImpl implements Member
             return false;
 
         Member oMember = (Member) o;
-        return this == oMember || (oMember.getUser().equals(user) && oMember.getGuild().equals(guild));
+        return this == oMember || (oMember.getUser().equals(user) && oMember.getGuild().equals(getGuild()));
     }
 
     @Override
     public int hashCode()
     {
-        return (guild.getId() + user.getId()).hashCode();
+        return (getGuild().getId() + user.getId()).hashCode();
     }
 
     @Override
     public String toString()
     {
-        return "MB:" + getEffectiveName() + '(' + user.toString() + " / " + guild.toString() +')';
+        return "MB:" + getEffectiveName() + '(' + user.toString() + " / " + getGuild().toString() +')';
     }
 
     @Override
@@ -260,7 +267,7 @@ public class MemberImpl implements Member
     @Override
     public TextChannel getDefaultChannel()
     {
-        return guild.getTextChannelsMap().valueCollection().stream()
+        return getGuild().getTextChannelsMap().valueCollection().stream()
                 .sorted(Comparator.reverseOrder())
                 .filter(c -> hasPermission(c, Permission.MESSAGE_READ))
                 .findFirst().orElse(null);

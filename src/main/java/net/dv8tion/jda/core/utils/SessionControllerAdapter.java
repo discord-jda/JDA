@@ -113,7 +113,7 @@ public class SessionControllerAdapter implements SessionController
                     }
                     else if (response.code == 401)
                     {
-                        api.verifyToken(true);
+                        api.get().verifyToken(true);
                     }
                     else
                     {
@@ -207,12 +207,14 @@ public class SessionControllerAdapter implements SessionController
 
         protected void processQueue()
         {
+            boolean isMultiple = connectQueue.size() > 1;
             while (!connectQueue.isEmpty())
             {
                 SessionConnectNode node = connectQueue.poll();
                 try
                 {
-                    node.run(connectQueue.isEmpty());
+                    node.run(isMultiple && connectQueue.isEmpty());
+                    isMultiple = true;
                     lastConnect = System.currentTimeMillis();
                     if (connectQueue.isEmpty())
                         break;

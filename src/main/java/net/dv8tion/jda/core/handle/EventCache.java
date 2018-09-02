@@ -15,42 +15,83 @@
  */
 package net.dv8tion.jda.core.handle;
 
+import gnu.trove.iterator.TLongObjectIterator;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import net.dv8tion.jda.core.utils.CacheConsumer;
 import net.dv8tion.jda.core.utils.JDALogger;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class EventCache
 {
     public static final Logger LOG = JDALogger.getLog(EventCache.class);
-    private final Map<Type, TLongObjectMap<List<Runnable>>> eventCache = new HashMap<>();
+    /** Sequence difference after which events will be removed from cache */
+    public static final long TIMEOUT_AMOUNT = 100;
+    private final Map<Type, TLongObjectMap<List<CacheNode>>> eventCache = new HashMap<>();
 
-    public void cache(Type type, long triggerId, Runnable handler)
+    public synchronized void timeout(final long responseTotal)
     {
-        TLongObjectMap<List<Runnable>> triggerCache =
+        if (eventCache.isEmpty())
+            return;
+        AtomicInteger count = new AtomicInteger();
+        eventCache.forEach((type, map) ->
+        {
+            if (map.isEmpty())
+                return;
+            TLongObjectIterator<List<CacheNode>> iterator = map.iterator();
+            while (iterator.hasNext())
+            {
+                iterator.advance();
+                long triggerId = iterator.key();
+                List<CacheNode> cache = iterator.value();
+                //Remove when this node is more than 100 events ago
+                cache.removeIf(node ->
+                {
+                    boolean remove = responseTotal - node.responseTotal > TIMEOUT_AMOUNT;
+                    if (remove)
+                    {
+                        count.incrementAndGet();
+                        LOG.trace("Removing type {}/{} from event cache with payload {}", type, triggerId, node.event);
+                    }
+                    return remove;
+                });
+                if (cache.isEmpty())
+                    iterator.remove();
+            }
+        });
+        int amount = count.get();
+        if (amount > 0)
+            LOG.debug("Removed {} events from cache that were too old to be recycled", amount);
+    }
+
+    public synchronized void cache(Type type, long triggerId, long responseTotal, JSONObject event, CacheConsumer handler)
+    {
+        TLongObjectMap<List<CacheNode>> triggerCache =
                 eventCache.computeIfAbsent(type, k -> new TLongObjectHashMap<>());
 
-        List<Runnable> items = triggerCache.get(triggerId);
+        List<CacheNode> items = triggerCache.get(triggerId);
         if (items == null)
         {
             items = new LinkedList<>();
             triggerCache.put(triggerId, items);
         }
 
-        items.add(handler);
+        items.add(new CacheNode(responseTotal, event, handler));
     }
 
-    public void playbackCache(Type type, long triggerId)
+    public synchronized void playbackCache(Type type, long triggerId)
     {
-        List<Runnable> items;
+        List<CacheNode> items;
         try
         {
-            items = eventCache.get(type).get(triggerId);
+            items = eventCache.get(type).remove(triggerId);
         }
         catch (NullPointerException e)
         {
@@ -60,18 +101,16 @@ public class EventCache
 
         if (items != null && !items.isEmpty())
         {
-            EventCache.LOG.debug("Replaying {} events from the EventCache for a {} with id: {}",
+            EventCache.LOG.debug("Replaying {} events from the EventCache for type {} with id: {}",
                 items.size(), type, triggerId);
-            List<Runnable> itemsCopy = new LinkedList<>(items);
+            List<CacheNode> itemsCopy = new LinkedList<>(items);
             items.clear();
-            for (Runnable item : itemsCopy)
-            {
-                item.run();
-            }
+            for (CacheNode item : itemsCopy)
+                item.execute();
         }
     }
 
-    public int size()
+    public synchronized int size()
     {
         return (int) eventCache.values().stream()
                 .mapToLong(typeMap ->
@@ -79,16 +118,16 @@ public class EventCache
                 .sum();
     }
 
-    public void clear()
+    public synchronized void clear()
     {
         eventCache.clear();
     }
 
-    public void clear(Type type, long id)
+    public synchronized void clear(Type type, long id)
     {
         try
         {
-            List<Runnable> events = eventCache.get(type).remove(id);
+            List<CacheNode> events = eventCache.get(type).remove(id);
             LOG.debug("Clearing cache for type {} with ID {} (Size: {})", type, id, events.size());
         }
         catch (NullPointerException ignored) {}
@@ -96,6 +135,25 @@ public class EventCache
 
     public enum Type
     {
-        USER, GUILD, CHANNEL, ROLE, RELATIONSHIP, CALL
+        USER, MEMBER, GUILD, CHANNEL, ROLE, RELATIONSHIP, CALL
+    }
+
+    private class CacheNode
+    {
+        private final long responseTotal;
+        private final JSONObject event;
+        private final CacheConsumer callback;
+
+        public CacheNode(long responseTotal, JSONObject event, CacheConsumer callback)
+        {
+            this.responseTotal = responseTotal;
+            this.event = event;
+            this.callback = callback;
+        }
+
+        void execute()
+        {
+            callback.execute(responseTotal, event);
+        }
     }
 }

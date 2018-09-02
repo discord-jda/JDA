@@ -21,12 +21,17 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDA.Status;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.requests.Request;
+import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
+import org.json.JSONObject;
 
+import javax.annotation.CheckReturnValue;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.IntFunction;
@@ -444,6 +449,88 @@ public interface ShardManager
     {
         Checks.notNull(users, "users");
         return this.getMutualGuilds(Arrays.asList(users));
+    }
+
+    /**
+     * Attempts to retrieve a {@link net.dv8tion.jda.core.entities.User User} object based on the provided id.
+     * <br>This first calls {@link #getUserById(long)}, and if the return is {@code null} then a request
+     * is made to the Discord servers.
+     *
+     * <p>The returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} can encounter the following Discord errors:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_USER ErrorResponse.UNKNOWN_USER}
+     *     <br>Occurs when the provided id does not refer to a {@link net.dv8tion.jda.core.entities.User User}
+     *     known by Discord. Typically occurs when developers provide an incomplete id (cut short).</li>
+     * </ul>
+     *
+     * @param  id
+     *         The id of the requested {@link net.dv8tion.jda.core.entities.User User}.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided id String is not a valid snowflake.
+     * @throws java.lang.IllegalStateException
+     *         If there isn't any active shards.
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.User User}
+     *         <br>On request, gets the User with id matching provided id from Discord.
+     */
+    @CheckReturnValue
+    default RestAction<User> retrieveUserById(String id)
+    {
+        return retrieveUserById(MiscUtil.parseSnowflake(id));
+    }
+
+    /**
+     * Attempts to retrieve a {@link net.dv8tion.jda.core.entities.User User} object based on the provided id.
+     * <br>This first calls {@link #getUserById(long)}, and if the return is {@code null} then a request
+     * is made to the Discord servers.
+     *
+     * <p>The returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} can encounter the following Discord errors:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_USER ErrorResponse.UNKNOWN_USER}
+     *     <br>Occurs when the provided id does not refer to a {@link net.dv8tion.jda.core.entities.User User}
+     *     known by Discord. Typically occurs when developers provide an incomplete id (cut short).</li>
+     * </ul>
+     *
+     * @param  id
+     *         The id of the requested {@link net.dv8tion.jda.core.entities.User User}.
+     *
+     * @throws java.lang.IllegalStateException
+     *         If there isn't any active shards.
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.User User}
+     *         <br>On request, gets the User with id matching provided id from Discord.
+     */
+    @CheckReturnValue
+    default RestAction<User> retrieveUserById(long id)
+    {
+        JDA api = null;
+        for (JDA shard : getShardCache())
+        {
+            api = shard;
+            User user = shard.getUserById(id);
+            if (user != null)
+                return new RestAction.EmptyRestAction<>(shard, user);
+        }
+
+        if (api == null)
+            throw new IllegalStateException("no shards active");
+
+        Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
+        return new RestAction<User>(api, route)
+        {
+            @Override
+            protected void handleResponse(Response response, Request<User> request)
+            {
+                if (!response.isOk())
+                {
+                    request.onFailure(response);
+                    return;
+                }
+                JSONObject user = response.getObject();
+                request.onSuccess(api.get().getEntityBuilder().createFakeUser(user, false));
+            }
+        };
     }
 
     /**

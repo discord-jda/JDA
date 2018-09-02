@@ -63,7 +63,7 @@ dependencies {
     api 'com.squareup.okhttp3:okhttp:3.8.1'
 
     //Opus library support
-    api ('club.minnced:opus-java:1.0.3@pom') {
+    api ('club.minnced:opus-java:1.0.4@pom') {
         transitive = true
     }
 
@@ -80,25 +80,39 @@ dependencies {
 }
 
 task sourcesForRelease(type: Copy) {
-    from 'src/main/java'
+    from ('src/main/java') {
+        include '**/JDAInfo.java'
+        filter(ReplaceTokens, tokens: [
+            versionMajor:    versionObj.major,
+            versionMinor:    versionObj.minor,
+            versionRevision: versionObj.revision,
+            versionBuild:    versionObj.build
+        ])
+    }
     into 'build/filteredSrc'
-    filter(ReplaceTokens, tokens: [
-        versionMajor:    versionObj.major,
-        versionMinor:    versionObj.minor,
-        versionRevision: versionObj.revision,
-        versionBuild:    versionObj.build
-    ])
+
+    includeEmptyDirs = false
+}
+
+task generateJavaSources(type: SourceTask) {
+    def javaSources = sourceSets.main.allJava.filter {
+        it.name != 'JDAInfo.java'
+    }
+    source = javaSources + sourcesForRelease.destinationDir
+
+    dependsOn sourcesForRelease
+}
+
+compileJava {
+    source = generateJavaSources.source
+
+    dependsOn generateJavaSources
 }
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
     options.incremental = true
     options.compilerArgs += ["-Xlint:deprecation", "-Xlint:unchecked"]
-}
-
-compileJava {
-    source = sourcesForRelease.destinationDir
-    dependsOn sourcesForRelease
 }
 
 compileTestJava.enabled = false
@@ -128,7 +142,12 @@ task noOpusJar(type: ShadowJar, dependsOn: shadowJar) {
 
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
-    from "${buildDir}/filteredSrc"
+    from ('src/main/java') {
+        exclude '**/JDAInfo.java'
+    }
+    from sourcesForRelease.destinationDir
+
+    dependsOn sourcesForRelease
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
@@ -142,6 +161,7 @@ javadoc {
     options.author()
     options.encoding = 'UTF-8'
     options.addStringOption('-html5')
+    options.addStringOption('tag', 'incubating:any:Incubating:')
 
     //### excludes ###
     //jda internals

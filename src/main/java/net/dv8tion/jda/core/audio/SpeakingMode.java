@@ -26,8 +26,6 @@ public enum SpeakingMode
 {
     VOICE(1), SOUNDSHARE(2), PRIORITY(4);
 
-    static final int MASK = getRaw(values());
-
     private final int raw;
 
     SpeakingMode(int raw)

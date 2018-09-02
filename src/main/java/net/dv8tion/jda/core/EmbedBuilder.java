@@ -40,7 +40,7 @@ import java.util.regex.Pattern;
 public class EmbedBuilder
 {
     public final static String ZERO_WIDTH_SPACE = "\u200E";
-    public final static Pattern URL_PATTERN = Pattern.compile("\\s*(https?|attachment)://.+\\..{2,}\\s*", Pattern.CASE_INSENSITIVE);
+    public final static Pattern URL_PATTERN = Pattern.compile("\\s*(https?|attachment)://\\S+\\s*", Pattern.CASE_INSENSITIVE);
 
     private final List<MessageEmbed.Field> fields = new LinkedList<>();
     private final StringBuilder description = new StringBuilder();
@@ -263,10 +263,8 @@ public class EmbedBuilder
         }
         else
         {
-            if (title.isEmpty())
-                throw new IllegalArgumentException("Title cannot be empty!");
-            if (title.length() > MessageEmbed.TITLE_MAX_LENGTH)
-                throw new IllegalArgumentException("Title cannot be longer than " + MessageEmbed.TITLE_MAX_LENGTH + " characters.");
+            Checks.notEmpty(title, "Title");
+            Checks.check(title.length() <= MessageEmbed.TITLE_MAX_LENGTH, "Title cannot be longer than %d characters.", MessageEmbed.TITLE_MAX_LENGTH);
             if (Helpers.isBlank(url))
                 url = null;
             urlCheck(url);
@@ -669,8 +667,7 @@ public class EmbedBuilder
         }
         else
         {
-            if (text.length() > MessageEmbed.TEXT_MAX_LENGTH)
-                throw new IllegalArgumentException("Text cannot be longer than " + MessageEmbed.TEXT_MAX_LENGTH + " characters.");
+            Checks.check(text.length() <= MessageEmbed.TEXT_MAX_LENGTH, "Text cannot be longer than %d characters.", MessageEmbed.TEXT_MAX_LENGTH);
             urlCheck(iconUrl);
             this.footer = new MessageEmbed.Footer(text, iconUrl, null);
         }
@@ -770,11 +767,10 @@ public class EmbedBuilder
 
     private void urlCheck(String url)
     {
-        if (url == null)
-            return;
-        else if (url.length() > MessageEmbed.URL_MAX_LENGTH)
-            throw new IllegalArgumentException("URL cannot be longer than " + MessageEmbed.URL_MAX_LENGTH + " characters.");
-        else if (!URL_PATTERN.matcher(url).matches())
-            throw new IllegalArgumentException("URL must be a valid http or https url.");
+        if (url != null)
+        {
+            Checks.check(url.length() <= MessageEmbed.URL_MAX_LENGTH, "URL cannot be longer than %d characters.", MessageEmbed.URL_MAX_LENGTH);
+            Checks.check(URL_PATTERN.matcher(url).matches(), "URL must be a valid http(s) or attachment url.");
+        }
     }
 }

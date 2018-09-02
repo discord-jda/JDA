@@ -27,6 +27,7 @@ import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -52,12 +53,12 @@ public class AudioWebSocket extends WebSocketAdapter
 
     protected final ConnectionListener listener;
     protected final ScheduledThreadPoolExecutor keepAlivePool;
-    protected AudioConnection audioConnection;
+    protected UpstreamReference<AudioConnection> audioConnection;
     protected volatile ConnectionStatus connectionStatus = ConnectionStatus.NOT_CONNECTED;
     protected volatile AudioEncryption encryption;
 
-    private final JDAImpl api;
-    private final Guild guild;
+    private final UpstreamReference<JDAImpl> api;
+    private final UpstreamReference<Guild> guild;
     private final String endpoint;
     private final String sessionId;
     private final String token;
@@ -81,8 +82,8 @@ public class AudioWebSocket extends WebSocketAdapter
     {
         this.listener = listener;
         this.endpoint = endpoint;
-        this.api = api;
-        this.guild = guild;
+        this.api = new UpstreamReference<>(api);
+        this.guild = new UpstreamReference<>(guild);
         this.sessionId = sessionId;
         this.token = token;
         this.shouldReconnect = shouldReconnect;
@@ -115,7 +116,7 @@ public class AudioWebSocket extends WebSocketAdapter
     @Override
     public void onThreadStarted(WebSocket websocket, ThreadType threadType, Thread thread) throws Exception
     {
-        api.setContext();
+        api.get().setContext();
     }
 
     @Override
@@ -137,7 +138,7 @@ public class AudioWebSocket extends WebSocketAdapter
         reconnecting = false;
         changeStatus(ConnectionStatus.CONNECTING_AWAITING_AUTHENTICATING);
         if (!reconnecting)
-            audioConnection.ready();
+            audioConnection.get().ready();
     }
 
     @Override
@@ -267,7 +268,7 @@ public class AudioWebSocket extends WebSocketAdapter
                     break;
                 }
 
-                audioConnection.updateUserSSRC(ssrc, userId);
+                audioConnection.get().updateUserSSRC(ssrc, userId);
                 listener.onUserSpeaking(user, speaking);
                 break;
             }
@@ -276,7 +277,7 @@ public class AudioWebSocket extends WebSocketAdapter
                 LOG.trace("-> USER_DISCONNECT {}", contentAll);
                 final JSONObject payload = contentAll.getJSONObject("d");
                 final long userId = payload.getLong("user_id");
-                audioConnection.removeUserSSRC(userId);
+                audioConnection.get().removeUserSSRC(userId);
                 break;
             }
             case 12:
@@ -338,14 +339,14 @@ public class AudioWebSocket extends WebSocketAdapter
     public void handleCallbackError(WebSocket websocket, Throwable cause)
     {
         LOG.error("There was some audio websocket error", cause);
-        api.getEventManager().handle(new ExceptionEvent(api, cause, true));
+        api.get().getEventManager().handle(new ExceptionEvent(api.get(), cause, true));
     }
 
     @Override
     public void onThreadCreated(WebSocket websocket, ThreadType threadType, Thread thread) throws Exception
     {
-        final String identifier = api.getIdentifierString();
-        final String guildId = guild.getId();
+        final String identifier = api.get().getIdentifierString();
+        final String guildId = guild.get().getId();
         switch (threadType)
         {
             case CONNECT_THREAD:
@@ -376,8 +377,8 @@ public class AudioWebSocket extends WebSocketAdapter
     private void identify()
     {
         JSONObject connectObj = new JSONObject()
-                .put("server_id", guild.getId())
-                .put("user_id", api.getSelfUser().getId())
+                .put("server_id", guild.get().getId())
+                .put("user_id", api.get().getSelfUser().getId())
                 .put("session_id", sessionId)
                 .put("token", token);
         send(VoiceCode.IDENTIFY, connectObj);
@@ -387,7 +388,7 @@ public class AudioWebSocket extends WebSocketAdapter
     {
         LOG.debug("Sending resume payload...");
         JSONObject resumeObj = new JSONObject()
-                .put("server_id", guild.getId())
+                .put("server_id", guild.get().getId())
                 .put("session_id", sessionId)
                 .put("token", token);
         send(VoiceCode.RESUME, resumeObj);
@@ -400,7 +401,7 @@ public class AudioWebSocket extends WebSocketAdapter
 
         try
         {
-            socket = api.getWebSocketFactory()
+            socket = api.get().getWebSocketFactory()
                     .createSocket(wssEndpoint)
                     .addListener(this);
             changeStatus(ConnectionStatus.CONNECTING_AWAITING_WEBSOCKET_CONNECT);
@@ -416,7 +417,7 @@ public class AudioWebSocket extends WebSocketAdapter
 
     private void locked(Consumer<AudioManagerImpl> consumer)
     {
-        AudioManagerImpl manager = (AudioManagerImpl) guild.getAudioManager();
+        AudioManagerImpl manager = (AudioManagerImpl) guild.get().getAudioManager();
         MiscUtil.locked(manager.CONNECTION_LOCK, () -> consumer.accept(manager));
     }
 
@@ -457,8 +458,8 @@ public class AudioWebSocket extends WebSocketAdapter
                 socket.sendClose(1000);
 
             VoiceChannel disconnectedChannel;
-            if (audioConnection != null)
-                audioConnection.shutdown();
+            if (audioConnection != null && audioConnection.get() != null)
+                audioConnection.get().shutdown();
 
             if (manager.getConnectedChannel() != null)
                 disconnectedChannel = manager.getConnectedChannel();
@@ -472,10 +473,10 @@ public class AudioWebSocket extends WebSocketAdapter
             {
                 //Get guild from JDA, don't use [guild] field to make sure that we don't have
                 // a problem of an out of date guild stored in [guild] during a possible mWS invalidate.
-                Guild connGuild = api.getGuildById(guild.getIdLong());
+                Guild connGuild = api.get().getGuildById(guild.get().getIdLong());
                 if (connGuild != null)
                 {
-                    if (connGuild.getVoiceChannelById(audioConnection.getChannel().getIdLong()) == null)
+                    if (connGuild.getVoiceChannelById(audioConnection.get().getChannel().getIdLong()) == null)
                         status = ConnectionStatus.DISCONNECTED_CHANNEL_DELETED;
                 }
             }
@@ -490,11 +491,11 @@ public class AudioWebSocket extends WebSocketAdapter
                 && status != ConnectionStatus.AUDIO_REGION_CHANGE) //Already handled.
             {
                 manager.setQueuedAudioConnection(disconnectedChannel);
-                api.getClient().queueAudioReconnect(disconnectedChannel);
+                api.get().getClient().queueAudioReconnect(disconnectedChannel);
             }
             else if (status != ConnectionStatus.AUDIO_REGION_CHANGE)
             {
-                api.getClient().queueAudioDisconnect(guild);
+                api.get().getClient().queueAudioDisconnect(guild.get());
             }
         });
     }
@@ -649,10 +650,10 @@ public class AudioWebSocket extends WebSocketAdapter
 
     private User getUser(final long userId)
     {
-        User user = api.getUserById(userId);
+        User user = api.get().getUserById(userId);
         if (user != null)
             return user;
-        return api.getFakeUserMap().get(userId);
+        return api.get().getFakeUserMap().get(userId);
     }
 
     public ConnectionStatus getConnectionStatus()

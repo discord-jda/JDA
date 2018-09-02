@@ -16,6 +16,8 @@
 package net.dv8tion.jda.core;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.core.JDA.Status;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Game;
@@ -26,13 +28,11 @@ import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.SessionController;
 import net.dv8tion.jda.core.utils.SessionControllerAdapter;
+import net.dv8tion.jda.core.utils.cache.CacheFlag;
 import okhttp3.OkHttpClient;
 
 import javax.security.auth.login.LoginException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
@@ -56,6 +56,7 @@ public class JDABuilder
     protected boolean shutdownRateLimitPool = true;
     protected ExecutorService callbackPool = null;
     protected boolean shutdownCallbackPool = true;
+    protected EnumSet<CacheFlag> cacheFlags = EnumSet.allOf(CacheFlag.class);
     protected ConcurrentMap<String, String> contextMap = null;
     protected SessionController controller = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
@@ -97,6 +98,39 @@ public class JDABuilder
 
         this.accountType = accountType;
         this.listeners = new LinkedList<>();
+    }
+
+    /**
+     * Flags used to enable selective parts of the JDA cache to reduce the runtime memory footprint.
+     * <br><b>It is highly recommended to use {@link #setDisabledCacheFlags(EnumSet)} instead
+     * for backwards compatibility</b>. We might add more flags in the future which you then effectively disable
+     * when updating and not changing your setting here.
+     *
+     * @param  flags
+     *         EnumSet containing the flags for cache services that should be <b>enabled</b>
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @see    #setDisabledCacheFlags(EnumSet)
+     */
+    public JDABuilder setEnabledCacheFlags(EnumSet<CacheFlag> flags)
+    {
+        this.cacheFlags = flags == null ? EnumSet.noneOf(CacheFlag.class) : EnumSet.copyOf(flags);
+        return this;
+    }
+
+    /**
+     * Flags used to disable parts of the JDA cache to reduce the runtime memory footprint.
+     * <br>Shortcut for {@code setEnabledCacheFlags(EnumSet.complementOf(flags))}
+     *
+     * @param  flags
+     *         EnumSet containing the flags for cache services that should be <b>disabled</b>
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     */
+    public JDABuilder setDisabledCacheFlags(EnumSet<CacheFlag> flags)
+    {
+        return setEnabledCacheFlags(EnumSet.complementOf(flags));
     }
 
     /**
@@ -676,6 +710,8 @@ public class JDABuilder
      *         Use {@link #build()} instead
      */
     @Deprecated
+    @DeprecatedSince("3.8.0")
+    @ReplaceWith("build()")
     public JDA buildAsync() throws LoginException
     {
         return build();
@@ -716,6 +752,8 @@ public class JDABuilder
      *         Use {@link #build()} and {@link JDA#awaitStatus(Status)} instead
      */
     @Deprecated
+    @DeprecatedSince("3.8.0")
+    @ReplaceWith("build().awaitStatus(Status)")
     public JDA buildBlocking(JDA.Status status) throws LoginException, InterruptedException
     {
         Checks.notNull(status, "Status");
@@ -744,6 +782,8 @@ public class JDABuilder
      *         Use {@link #build()} and {@link JDA#awaitReady()} instead
      */
     @Deprecated
+    @DeprecatedSince("3.8.0")
+    @ReplaceWith("build().awaitReady()")
     public JDA buildBlocking() throws LoginException, InterruptedException
     {
         return buildBlocking(Status.CONNECTED);
@@ -787,7 +827,7 @@ public class JDABuilder
         JDAImpl jda = new JDAImpl(accountType, token, controller, httpClient, wsFactory, rateLimitPool, callbackPool,
                                   autoReconnect, enableVoice, enableShutdownHook, enableBulkDeleteSplitting,
                                   requestTimeoutRetry, enableContext, shutdownRateLimitPool, shutdownCallbackPool,
-                                  corePoolSize, maxReconnectDelay, contextMap);
+                                  corePoolSize, maxReconnectDelay, contextMap, cacheFlags);
 
         if (eventManager != null)
             jda.setEventManager(eventManager);

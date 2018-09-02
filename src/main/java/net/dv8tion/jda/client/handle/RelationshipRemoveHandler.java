@@ -19,7 +19,6 @@ package net.dv8tion.jda.client.handle;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.client.entities.Relationship;
 import net.dv8tion.jda.client.entities.RelationshipType;
-import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.client.events.relationship.FriendRemovedEvent;
 import net.dv8tion.jda.client.events.relationship.FriendRequestCanceledEvent;
 import net.dv8tion.jda.client.events.relationship.FriendRequestIgnoredEvent;
@@ -54,45 +53,45 @@ public class RelationshipRemoveHandler extends SocketHandler
 
         //Make sure that we get the proper relationship, not just any one cached by this userId.
         //Deals with possibly out of order RELATIONSHIP_REMOVE and RELATIONSHIP_ADD when blocking a Friend.
-        Relationship relationship = api.asClient().getRelationshipById(userId, type);
+        Relationship relationship = getJDA().asClient().getRelationshipById(userId, type);
         if (relationship == null)
         {
-            api.getEventCache().cache(EventCache.Type.RELATIONSHIP, userId, () -> handle(responseNumber, allContent));
+            getJDA().getEventCache().cache(EventCache.Type.RELATIONSHIP, userId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Received a RELATIONSHIP_REMOVE for a relationship that was not yet cached! JSON: {}", content);
             return null;
         }
-        api.asClient().getRelationshipMap().remove(userId);
+        getJDA().asClient().getRelationshipMap().remove(userId);
 
         if (relationship.getType() == RelationshipType.FRIEND)
         {
             //The user is not in a different guild that we share
-            if (api.getGuildMap().valueCollection().stream().noneMatch(g -> ((GuildImpl) g).getMembersMap().containsKey(userId)))
+            if (getJDA().getGuildMap().valueCollection().stream().noneMatch(g -> ((GuildImpl) g).getMembersMap().containsKey(userId)))
             {
-                UserImpl user = (UserImpl) api.getUserMap().remove(userId);
+                UserImpl user = (UserImpl) getJDA().getUserMap().remove(userId);
                 if (user.hasPrivateChannel())
                 {
                     PrivateChannelImpl priv = (PrivateChannelImpl) user.getPrivateChannel();
                     user.setFake(true);
                     priv.setFake(true);
-                    api.getFakeUserMap().put(user.getIdLong(), user);
-                    api.getFakePrivateChannelMap().put(priv.getIdLong(), priv);
+                    getJDA().getFakeUserMap().put(user.getIdLong(), user);
+                    getJDA().getFakePrivateChannelMap().put(priv.getIdLong(), priv);
                 }
                 else
                 {
                     //While the user might not have a private channel, if this is a client account then the user
                     // could be in a Group, and if so we need to change the User object to be fake and
                     // place it in the FakeUserMap
-                    for (Group grp : api.asClient().getGroups())
+                    for (Group grp : getJDA().asClient().getGroups())
                     {
                         if (grp.getNonFriendUsers().contains(user))
                         {
                             user.setFake(true);
-                            api.getFakeUserMap().put(user.getIdLong(), user);
+                            getJDA().getFakeUserMap().put(user.getIdLong(), user);
                             break;
                         }
                     }
                 }
-                api.getEventCache().clear(EventCache.Type.USER, userId);
+                getJDA().getEventCache().clear(EventCache.Type.USER, userId);
             }
         }
         else
@@ -103,43 +102,43 @@ public class RelationshipRemoveHandler extends SocketHandler
             User user = relationship.getUser();
             if (user.isFake()
                     && !user.hasPrivateChannel()
-                    && api.asClient().getGroups().stream().noneMatch(g -> g.getUsers().contains(user)))
+                    && getJDA().asClient().getGroups().stream().noneMatch(g -> g.getUsers().contains(user)))
             {
-                api.getFakeUserMap().remove(userId);
+                getJDA().getFakeUserMap().remove(userId);
             }
         }
 
         switch (type)
         {
             case FRIEND:
-                api.getEventManager().handle(
+                getJDA().getEventManager().handle(
                         new FriendRemovedEvent(
-                                api, responseNumber,
+                                getJDA(), responseNumber,
                                 relationship));
                 break;
             case BLOCKED:
-                api.getEventManager().handle(
+                getJDA().getEventManager().handle(
                         new UserUnblockedEvent(
-                                api, responseNumber,
+                                getJDA(), responseNumber,
                                 relationship));
                 break;
             case INCOMING_FRIEND_REQUEST:
-                api.getEventManager().handle(
+                getJDA().getEventManager().handle(
                         new FriendRequestIgnoredEvent(
-                                api, responseNumber,
+                                getJDA(), responseNumber,
                                 relationship));
                 break;
             case OUTGOING_FRIEND_REQUEST:
-                api.getEventManager().handle(
+                getJDA().getEventManager().handle(
                         new FriendRequestCanceledEvent(
-                                api, responseNumber,
+                                getJDA(), responseNumber,
                                 relationship));
                 break;
             default:
                 WebSocketClient.LOG.warn("Received a RELATIONSHIP_REMOVE with an unknown RelationshipType! JSON: {}", content);
                 return null;
         }
-        api.getEventCache().clear(EventCache.Type.RELATIONSHIP, userId);
+        getJDA().getEventCache().clear(EventCache.Type.RELATIONSHIP, userId);
         return null;
     }
 }

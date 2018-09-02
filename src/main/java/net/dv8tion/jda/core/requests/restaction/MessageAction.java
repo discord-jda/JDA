@@ -684,13 +684,13 @@ public class MessageAction extends RestAction<Message> implements Appendable
     protected void handleResponse(Response response, Request<Message> request)
     {
         if (response.isOk())
-            request.onSuccess(api.getEntityBuilder().createMessage(response.getObject(), channel, false));
+            request.onSuccess(api.get().getEntityBuilder().createMessage(response.getObject(), channel, false));
         else
             request.onFailure(response);
     }
 
     @Override
-    @Deprecated /* If this was in JDK9 we would be using java.lang.ref.Cleaner instead! */
+    @SuppressWarnings("deprecation") /* If this was in JDK9 we would be using java.lang.ref.Cleaner instead! */
     protected void finalize()
     {
         if (ownedResources.isEmpty())

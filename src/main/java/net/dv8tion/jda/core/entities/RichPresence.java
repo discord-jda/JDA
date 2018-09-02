@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.entities;
 
+import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.core.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -476,7 +477,10 @@ public class RichPresence extends Game
          * The current size of this party, or {@code 0} if unset
          *
          * @return The current size of this party, or {@code 0} if unset
+         *
+         * @incubating The return type for this method will change to {@code long} for compatibility
          */
+        @Incubating
         public int getSize()
         {
             return (int)size;
@@ -496,7 +500,10 @@ public class RichPresence extends Game
          * The maximum size of this party, or {@code 0} if unset
          *
          * @return The maximum size of this party, or {@code 0} if unset
+         *
+         * @incubating The return type for this method will change to {@code long} for compatibility
          */
+        @Incubating
         public int getMax()
         {
             return (int)max;

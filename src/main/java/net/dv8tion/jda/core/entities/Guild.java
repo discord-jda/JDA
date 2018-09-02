@@ -236,8 +236,6 @@ public interface Guild extends ISnowflake
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER MANAGE_SERVER} permission.
      * @throws java.lang.IllegalStateException
      *         If the guild doesn't have the VANITY_URL feature
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link #isAvailable() available}
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: String
      *         <br>The vanity url of this server
@@ -271,13 +269,38 @@ public interface Guild extends ISnowflake
     TextChannel getSystemChannel();
 
     /**
-     * The {@link net.dv8tion.jda.core.entities.Member Member} object of the owner of this {@link net.dv8tion.jda.core.entities.Guild Guild}.
-     * <p>
-     * Ownership can be transferred using {@link GuildController#transferOwnership(Member)}.
+     * The {@link net.dv8tion.jda.core.entities.Member Member} object for the owner of this Guild.
      *
-     * @return Never-null Member object containing the Guild owner.
+     * <p>Ownership can be transferred using {@link GuildController#transferOwnership(Member)}.
+     *
+     * @return Member object for the Guild owner.
+     *
+     * @see    #getOwnerIdLong()
      */
     Member getOwner();
+
+    /**
+     * The ID for the current owner of this guild.
+     * <br>This is useful for debugging purposes or as a shortcut.
+     *
+     * @return The ID for the current owner
+     *
+     * @see    #getOwner()
+     */
+    long getOwnerIdLong();
+
+    /**
+     * The ID for the current owner of this guild.
+     * <br>This is useful for debugging purposes or as a shortcut.
+     *
+     * @return The ID for the current owner
+     *
+     * @see    #getOwner()
+     */
+    default String getOwnerId()
+    {
+        return Long.toUnsignedString(getOwnerIdLong());
+    }
 
     /**
      * The {@link net.dv8tion.jda.core.entities.Guild.Timeout Timeout} set for this Guild representing the amount of time
@@ -786,6 +809,7 @@ public interface Guild extends ISnowflake
      * one provided.
      * <br>If there is no {@link net.dv8tion.jda.core.entities.Emote Emote} with an id that matches the provided
      * one, then this returns {@code null}.
+     * <br>This will be null if {@link net.dv8tion.jda.core.utils.cache.CacheFlag#EMOTE} is disabled.
      *
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.core.entities.Emote Emote}!</b>
      *
@@ -807,6 +831,7 @@ public interface Guild extends ISnowflake
      * one provided.
      * <br>If there is no {@link net.dv8tion.jda.core.entities.Emote Emote} with an id that matches the provided
      * one, then this returns {@code null}.
+     * <br>This will be null if {@link net.dv8tion.jda.core.utils.cache.CacheFlag#EMOTE} is disabled.
      *
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.core.entities.Emote Emote}!</b>
      *
@@ -837,6 +862,7 @@ public interface Guild extends ISnowflake
      * Gets a list of all {@link net.dv8tion.jda.core.entities.Emote Emotes} in this Guild that have the same
      * name as the one provided.
      * <br>If there are no {@link net.dv8tion.jda.core.entities.Emote Emotes} with the provided name, then this returns an empty list.
+     * <br>This will be empty if {@link net.dv8tion.jda.core.utils.cache.CacheFlag#EMOTE} is disabled.
      *
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.core.entities.Emote Emote}!</b>
      *
@@ -855,6 +881,7 @@ public interface Guild extends ISnowflake
     /**
      * {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
      * all cached {@link net.dv8tion.jda.core.entities.Emote Emotes} of this Guild.
+     * <br>This will be empty if {@link net.dv8tion.jda.core.utils.cache.CacheFlag#EMOTE} is disabled.
      *
      * @return {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
@@ -982,8 +1009,6 @@ public interface Guild extends ISnowflake
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link #isAvailable() available}
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@literal List<}{@link net.dv8tion.jda.core.entities.Guild.Ban Ban}{@literal >}
      *         <br>An unmodifiable list of all users currently banned from this Guild
@@ -1111,8 +1136,6 @@ public interface Guild extends ISnowflake
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the account doesn't have {@link net.dv8tion.jda.core.Permission#KICK_MEMBERS KICK_MEMBER} Permission.
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link #isAvailable() available}
      * @throws IllegalArgumentException
      *         If the provided days are less than {@code 1}
      *
@@ -1152,8 +1175,6 @@ public interface Guild extends ISnowflake
      * all properties and settings of the Guild.
      * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.core.requests.RestAction#queue() RestAction.queue()}.
      *
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         if the guild is temporarily unavailable ({@link #isAvailable()})
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER Permission.MANAGE_SERVER}
      *
@@ -1180,8 +1201,6 @@ public interface Guild extends ISnowflake
      *
      * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
      *         If the currently logged in account is not from {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If this Guild is not currently {@link #isAvailable() available}
      *
      * @return {@link net.dv8tion.jda.client.requests.restaction.pagination.MentionPaginationAction MentionPaginationAction}
      *
