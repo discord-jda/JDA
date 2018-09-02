@@ -49,12 +49,16 @@ public class GuildDeleteHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long id = content.getLong("id");
+        boolean wasInit = getJDA().getGuildSetupController().onDelete(id, content);
+        if (wasInit)
+            return null;
+        //TODO: check logic here
         GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(id);
 
         boolean unavailable = Helpers.optBoolean(content, "unavailable");
         if (guild == null)
         {
-//            getJDA().getEventCache().cache(EventCache.Type.GUILD, id, () -> handle(responseNumber, allContent));
+            //getJDA().getEventCache().cache(EventCache.Type.GUILD, id, () -> handle(responseNumber, allContent));
             WebSocketClient.LOG.debug("Received GUILD_DELETE for a Guild that is not currently cached. ID: {} unavailable: {}", id, unavailable);
             return null;
         }
@@ -63,9 +67,6 @@ public class GuildDeleteHandler extends SocketHandler
         // ignore the event
         if (!guild.isAvailable() && unavailable)
             return null;
-
-        if (getJDA().getGuildLock().isLocked(id))
-            return id;
 
         if (unavailable)
         {
@@ -151,8 +152,6 @@ public class GuildDeleteHandler extends SocketHandler
             return true;
         });
 
-        GuildMembersChunkHandler chunkHandler = getJDA().getClient().getHandler("GUILD_MEMBERS_CHUNK");
-        chunkHandler.clearCache(id);
         getJDA().getGuildMap().remove(id);
         guild.getTextChannelCache().forEach(chan -> getJDA().getTextChannelMap().remove(chan.getIdLong()));
         guild.getVoiceChannelCache().forEach(chan -> getJDA().getVoiceChannelMap().remove(chan.getIdLong()));

@@ -26,7 +26,6 @@ import org.json.JSONObject;
 
 public class GuildRoleDeleteHandler extends SocketHandler
 {
-
     public GuildRoleDeleteHandler(JDAImpl api)
     {
         super(api);
@@ -36,13 +35,13 @@ public class GuildRoleDeleteHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long guildId = content.getLong("guild_id");
-        if (getJDA().getGuildLock().isLocked(guildId))
+        if (getJDA().getGuildSetupController().isLocked(guildId))
             return guildId;
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(guildId);
         if (guild == null)
         {
-            getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, () -> handle(responseNumber, allContent));
+            getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("GUILD_ROLE_DELETE was received for a Guild that is not yet cached: {}", content);
             return null;
         }
@@ -51,7 +50,7 @@ public class GuildRoleDeleteHandler extends SocketHandler
         Role removedRole = guild.getRolesMap().remove(roleId);
         if (removedRole == null)
         {
-//            getJDA().getEventCache().cache(EventCache.Type.ROLE, roleId, () -> handle(responseNumber, allContent));
+            //getJDA().getEventCache().cache(EventCache.Type.ROLE, roleId, () -> handle(responseNumber, allContent));
             WebSocketClient.LOG.debug("GUILD_ROLE_DELETE was received for a Role that is not yet cached: {}", content);
             return null;
         }

@@ -33,25 +33,22 @@ public class GuildRoleCreateHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long guildId = content.getLong("guild_id");
-        if (getJDA().getGuildLock().isLocked(guildId))
-        {
+        if (getJDA().getGuildSetupController().isLocked(guildId))
             return guildId;
-        }
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(guildId);
         if (guild == null)
         {
-            getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, () -> handle(responseNumber, allContent));
+            getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("GUILD_ROLE_CREATE was received for a Guild that is not yet cached: {}", content);
             return null;
         }
 
-        Role newRole = getJDA().getEntityBuilder().createRole(content.getJSONObject("role"), guild.getIdLong());
+        Role newRole = getJDA().getEntityBuilder().createRole(guild, content.getJSONObject("role"), guild.getIdLong());
         getJDA().getEventManager().handle(
-                new RoleCreateEvent(
-                        getJDA(), responseNumber,
-                        newRole));
-        getJDA().getEventCache().playbackCache(EventCache.Type.ROLE, newRole.getIdLong());
+            new RoleCreateEvent(
+                getJDA(), responseNumber,
+                newRole));
         return null;
     }
 }

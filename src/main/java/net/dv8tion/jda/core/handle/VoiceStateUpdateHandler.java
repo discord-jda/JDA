@@ -47,8 +47,8 @@ public class VoiceStateUpdateHandler extends SocketHandler
     @Override
     protected Long handleInternally(JSONObject content)
     {
-        final Long guildId = content.has("guild_id") ? content.getLong("guild_id") : null;
-        if (guildId != null && getJDA().getGuildLock().isLocked(guildId))
+        final Long guildId = content.isNull("guild_id") ? null : content.getLong("guild_id");
+        if (guildId != null && getJDA().getGuildSetupController().isLocked(guildId))
             return guildId;
 
         if (guildId != null)
@@ -73,7 +73,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
         Guild guild = getJDA().getGuildById(guildId);
         if (guild == null)
         {
-            getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, () -> handle(responseNumber, allContent));
+            getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Received a VOICE_STATE_UPDATE for a Guild that has yet to be cached. JSON: {}", content);
             return;
         }
@@ -81,7 +81,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
         VoiceChannelImpl channel = channelId != null ? (VoiceChannelImpl) guild.getVoiceChannelById(channelId) : null;
         if (channel == null && channelId != null)
         {
-            getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+            getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Received VOICE_STATE_UPDATE for a VoiceChannel that has yet to be cached. JSON: {}", content);
             return;
         }
@@ -99,12 +99,15 @@ public class VoiceStateUpdateHandler extends SocketHandler
             // in fact the issue was that the VOICE_STATE_UPDATE was sent after they had left, however, by caching
             // it we will preserve the integrity of the cache in the event that it was actually a mis-ordering of
             // GUILD_MEMBER_ADD and VOICE_STATE_UPDATE. I'll take some bad-data events over an invalid cache.
-            getJDA().getEventCache().cache(EventCache.Type.USER, userId, () -> handle(responseNumber, allContent));
-            EventCache.LOG.debug("Received VOICE_STATE_UPDATE for a Member that has yet to be cached. JSON: {}", content);
+            long idHash = guildId ^ userId;
+            getJDA().getEventCache().cache(EventCache.Type.MEMBER, idHash, responseNumber, allContent, this::handle);
+            EventCache.LOG.debug("Received VOICE_STATE_UPDATE for a Member that has yet to be cached. HASH_ID: {} JSON: {}", idHash, content);
             return;
         }
 
         GuildVoiceStateImpl vState = (GuildVoiceStateImpl) member.getVoiceState();
+        if (vState == null)
+            return;
         vState.setSessionId(sessionId); //Cant really see a reason for an event for this
 
         if (!Objects.equals(channel, vState.getChannel()))
@@ -213,7 +216,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
 
             if (channel == null)
             {
-                getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+                getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
                 EventCache.LOG.debug("Received a VOICE_STATE_UPDATE for a Group/PrivateChannel that was not yet cached! JSON: {}", content);
                 return;
             }
@@ -221,7 +224,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
             CallImpl call = (CallImpl) channel.getCurrentCall();
             if (call == null)
             {
-                getJDA().getEventCache().cache(EventCache.Type.CALL, channelId, () -> handle(responseNumber, allContent));
+                getJDA().getEventCache().cache(EventCache.Type.CALL, channelId, responseNumber, allContent, this::handle);
                 EventCache.LOG.debug("Received a VOICE_STATE_UPDATE for a Call that is not yet cached. JSON: {}", content);
                 return;
             }
@@ -236,7 +239,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
             cUser = call.getCallUserMap().get(userId);
             if (cUser == null)
             {
-                getJDA().getEventCache().cache(EventCache.Type.USER, userId, () -> handle(responseNumber, allContent));
+                getJDA().getEventCache().cache(EventCache.Type.USER, userId, responseNumber, allContent, this::handle);
                 EventCache.LOG.debug("Received a VOICE_STATE_UPDATE for a user that is not yet a a cached CallUser for the call. (groups only). JSON: {}", content);
                 return;
             }
@@ -256,7 +259,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
             CallUser cUser = getJDA().asClient().getCallUserMap().remove(userId);
             if (cUser == null)
             {
-                getJDA().getEventCache().cache(EventCache.Type.USER, userId, () -> handle(responseNumber, allContent));
+                getJDA().getEventCache().cache(EventCache.Type.USER, userId, responseNumber, allContent, this::handle);
                 EventCache.LOG.debug("Received a VOICE_STATE_UPDATE for a User leaving a Call, but the Call was not yet cached! JSON: {}", content);
                 return;
             }

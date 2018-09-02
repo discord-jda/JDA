@@ -54,7 +54,7 @@ public class CallCreateHandler extends SocketHandler
             channel = getJDA().getPrivateChannelMap().get(channelId);
         if (channel == null)
         {
-            getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+            getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Received a CALL_CREATE for a Group/PrivateChannel that is not yet cached. JSON: {}", content);
             return null;
         }

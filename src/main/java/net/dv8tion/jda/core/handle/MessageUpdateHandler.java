@@ -44,6 +44,13 @@ public class MessageUpdateHandler extends SocketHandler
     @Override
     protected Long handleInternally(JSONObject content)
     {
+        if (!content.isNull("guild_id"))
+        {
+            long guildId = content.getLong("guild_id");
+            if (getJDA().getGuildSetupController().isLocked(guildId))
+                return guildId;
+        }
+
         if (content.has("author"))
         {
             if (content.has("type"))
@@ -88,14 +95,14 @@ public class MessageUpdateHandler extends SocketHandler
                 case EntityBuilder.MISSING_CHANNEL:
                 {
                     final long channelId = content.getLong("channel_id");
-                    getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+                    getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
                     EventCache.LOG.debug("Received a message update for a channel that JDA does not currently have cached");
                     return null;
                 }
                 case EntityBuilder.MISSING_USER:
                 {
                     final long authorId = content.getJSONObject("author").getLong("id");
-                    getJDA().getEventCache().cache(EventCache.Type.USER, authorId, () -> handle(responseNumber, allContent));
+                    getJDA().getEventCache().cache(EventCache.Type.USER, authorId, responseNumber, allContent, this::handle);
                     EventCache.LOG.debug("Received a message update for a user that JDA does not currently have cached");
                     return null;
                 }
@@ -109,10 +116,8 @@ public class MessageUpdateHandler extends SocketHandler
             case TEXT:
             {
                 TextChannel channel = message.getTextChannel();
-                if (getJDA().getGuildLock().isLocked(channel.getGuild().getIdLong()))
-                {
+                if (getJDA().getGuildSetupController().isLocked(channel.getGuild().getIdLong()))
                     return channel.getGuild().getIdLong();
-                }
                 getJDA().getEventManager().handle(
                         new GuildMessageUpdateEvent(
                                 getJDA(), responseNumber,
@@ -164,7 +169,7 @@ public class MessageUpdateHandler extends SocketHandler
             channel = getJDA().asClient().getGroupById(channelId);
         if (channel == null)
         {
-            getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+            getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Received message update for embeds for a channel/group that JDA does not have cached yet.");
             return null;
         }
@@ -178,7 +183,7 @@ public class MessageUpdateHandler extends SocketHandler
         if (channel instanceof TextChannel)
         {
             TextChannel tChannel = (TextChannel) channel;
-            if (getJDA().getGuildLock().isLocked(tChannel.getGuild().getIdLong()))
+            if (getJDA().getGuildSetupController().isLocked(tChannel.getGuild().getIdLong()))
                 return tChannel.getGuild().getIdLong();
             getJDA().getEventManager().handle(
                     new GuildMessageEmbedEvent(

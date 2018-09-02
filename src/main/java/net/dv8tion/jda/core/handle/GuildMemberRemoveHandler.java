@@ -36,11 +36,12 @@ public class GuildMemberRemoveHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long id = content.getLong("guild_id");
-        if (getJDA().getGuildLock().isLocked(id))
-            return id;
+        boolean setup = getJDA().getGuildSetupController().onRemoveMember(id, content);
+        if (setup)
+            return null;
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(id);
-        if(guild == null)
+        if (guild == null)
         {
             //We probably just left the guild and this event is trying to remove us from the guild, therefore ignore
             return null;
@@ -60,11 +61,11 @@ public class GuildMemberRemoveHandler extends SocketHandler
             return null;
         }
 
-        if (member.getVoiceState().inVoiceChannel())//If this user was in a VoiceChannel, fire VoiceLeaveEvent.
+        GuildVoiceStateImpl voiceState = (GuildVoiceStateImpl) member.getVoiceState();
+        if (voiceState != null && voiceState.inVoiceChannel())//If this user was in a VoiceChannel, fire VoiceLeaveEvent.
         {
-            GuildVoiceStateImpl vState = (GuildVoiceStateImpl) member.getVoiceState();
-            VoiceChannel channel = vState.getChannel();
-            vState.setConnectedChannel(null);
+            VoiceChannel channel = voiceState.getChannel();
+            voiceState.setConnectedChannel(null);
             ((VoiceChannelImpl) channel).getConnectedMembersMap().remove(member.getUser().getIdLong());
             getJDA().getEventManager().handle(
                     new GuildVoiceLeaveEvent(

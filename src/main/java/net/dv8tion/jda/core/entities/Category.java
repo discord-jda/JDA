@@ -78,8 +78,6 @@ public interface Category extends Channel, Comparable<Category>
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL} permission
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      * @throws IllegalArgumentException
      *         If the provided name is {@code null} or empty or greater than 100 characters in length
      *
@@ -111,8 +109,6 @@ public interface Category extends Channel, Comparable<Category>
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL} permission
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      * @throws IllegalArgumentException
      *         If the provided name is {@code null} or empty or greater than 100 characters in length
      *

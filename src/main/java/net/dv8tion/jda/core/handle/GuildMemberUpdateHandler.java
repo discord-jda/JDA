@@ -39,7 +39,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long id = content.getLong("guild_id");
-        if (getJDA().getGuildLock().isLocked(id))
+        if (getJDA().getGuildSetupController().isLocked(id))
             return id;
 
         JSONObject userJson = content.getJSONObject("user");
@@ -47,22 +47,18 @@ public class GuildMemberUpdateHandler extends SocketHandler
         GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(id);
         if (guild == null)
         {
-            getJDA().getEventCache().cache(EventCache.Type.GUILD, userId, () ->
-            {
-                handle(responseNumber, allContent);
-            });
-            EventCache.LOG.debug("Got GuildMember update but JDA currently does not have the Guild cached. {}", content);
+            //Do not cache this here, it will be outdated once we receive the GUILD_CREATE and could cause invalid cache
+            //getJDA().getEventCache().cache(EventCache.Type.GUILD, userId, responseNumber, allContent, this::handle);
+            EventCache.LOG.debug("Got GuildMember update but JDA currently does not have the Guild cached. Ignoring. {}", content);
             return null;
         }
 
         MemberImpl member = (MemberImpl) guild.getMembersMap().get(userId);
         if (member == null)
         {
-            getJDA().getEventCache().cache(EventCache.Type.USER, userId, () ->
-            {
-                handle(responseNumber, allContent);
-            });
-            EventCache.LOG.debug("Got GuildMember update but Member is not currently present in Guild. {}", content);
+            long hashId = id ^ userId;
+            getJDA().getEventCache().cache(EventCache.Type.MEMBER, hashId, responseNumber, allContent, this::handle);
+            EventCache.LOG.debug("Got GuildMember update but Member is not currently present in Guild. HASH_ID: {} JSON: {}", hashId, content);
             return null;
         }
 
@@ -137,10 +133,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
             }
             else
             {
-                getJDA().getEventCache().cache(EventCache.Type.ROLE, id, () ->
-                {
-                    handle(responseNumber, allContent);
-                });
+                getJDA().getEventCache().cache(EventCache.Type.ROLE, id, responseNumber, allContent, this::handle);
                 EventCache.LOG.debug("Got GuildMember update but one of the Roles for the Member is not yet cached.");
                 return null;
             }

@@ -26,6 +26,7 @@ import net.dv8tion.jda.core.events.emote.EmoteAddedEvent;
 import net.dv8tion.jda.core.events.emote.EmoteRemovedEvent;
 import net.dv8tion.jda.core.events.emote.update.EmoteUpdateNameEvent;
 import net.dv8tion.jda.core.events.emote.update.EmoteUpdateRolesEvent;
+import net.dv8tion.jda.core.utils.cache.CacheFlag;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -42,15 +43,16 @@ public class GuildEmojisUpdateHandler extends SocketHandler
     @Override
     protected Long handleInternally(JSONObject content)
     {
+        if (!getJDA().isCacheFlagSet(CacheFlag.EMOTE))
+            return null;
         final long guildId = content.getLong("guild_id");
-        if (getJDA().getGuildLock().isLocked(guildId))
+        if (getJDA().getGuildSetupController().isLocked(guildId))
             return guildId;
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(guildId);
         if (guild == null)
         {
-            getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, () ->
-                    handle(responseNumber, allContent));
+            getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
             return null;
         }
 

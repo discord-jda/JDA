@@ -33,6 +33,12 @@ public class MessageBulkDeleteHandler extends SocketHandler
     @Override
     protected Long handleInternally(JSONObject content)
     {
+        if (!content.isNull("guild_id"))
+        {
+            long guildId = content.getLong("guild_id");
+            if (getJDA().getGuildSetupController().isLocked(guildId))
+                return guildId;
+        }
         final long channelId = content.getLong("channel_id");
 
         if (getJDA().isBulkDeleteSplittingEnabled())
@@ -52,12 +58,12 @@ public class MessageBulkDeleteHandler extends SocketHandler
             TextChannel channel = getJDA().getTextChannelMap().get(channelId);
             if (channel == null)
             {
-                getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+                getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
                 EventCache.LOG.debug("Received a Bulk Message Delete for a TextChannel that is not yet cached.");
                 return null;
             }
 
-            if (getJDA().getGuildLock().isLocked(channel.getGuild().getIdLong()))
+            if (getJDA().getGuildSetupController().isLocked(channel.getGuild().getIdLong()))
             {
                 return channel.getGuild().getIdLong();
             }

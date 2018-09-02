@@ -26,6 +26,7 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.entities.impl.MemberImpl;
 import net.dv8tion.jda.core.entities.impl.UserImpl;
 import net.dv8tion.jda.core.events.user.update.*;
+import net.dv8tion.jda.core.utils.cache.CacheFlag;
 import org.json.JSONObject;
 
 import java.util.Objects;
@@ -46,12 +47,12 @@ public class PresenceUpdateHandler extends SocketHandler
         if (!content.isNull("guild_id"))
         {
             final long guildId = content.getLong("guild_id");
-            if (getJDA().getGuildLock().isLocked(guildId))
+            if (getJDA().getGuildSetupController().isLocked(guildId))
                 return guildId;
             guild = (GuildImpl) getJDA().getGuildById(guildId);
             if (guild == null)
             {
-                getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, () -> handle(responseNumber, allContent));
+                getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
                 EventCache.LOG.debug("Received a PRESENCE_UPDATE for a guild that is not yet cached! " +
                     "GuildId: " + guildId + " UserId: " + content.getJSONObject("user").get("id"));
                 return null;
@@ -107,7 +108,7 @@ public class PresenceUpdateHandler extends SocketHandler
 
             //Now that we've update the User's info, lets see if we need to set the specific Presence information.
             // This is stored in the Member or Relation objects.
-            final JSONObject game = content.isNull("game") ? null : content.optJSONObject("game");
+            final JSONObject game = !getJDA().isCacheFlagSet(CacheFlag.GAME) || content.isNull("game") ? null : content.optJSONObject("game");
             Game nextGame = null;
             boolean parsedGame = false;
             try

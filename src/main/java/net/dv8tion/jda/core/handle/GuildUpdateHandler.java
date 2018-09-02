@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.guild.update.*;
+import net.dv8tion.jda.core.requests.WebSocketClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -43,11 +44,15 @@ public class GuildUpdateHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long id = content.getLong("id");
-        if (getJDA().getGuildLock().isLocked(id))
+        if (getJDA().getGuildSetupController().isLocked(id))
             return id;
 
+        //////////////
+        //  WARNING //
+        //Do not rely on allContent past this point, this method is also called from GuildCreateHandler!
+        //////////////
         GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(id);
-        Member owner = guild.getMembersMap().get(content.getLong("owner_id"));
+        long ownerId = content.getLong("owner_id");
         String name = content.getString("name");
         String iconId = content.optString("icon", null);
         String splashId = content.optString("splash", null);
@@ -62,7 +67,7 @@ public class GuildUpdateHandler extends SocketHandler
         TextChannel systemChannel = content.isNull("system_channel_id")
                 ? null : guild.getTextChannelsMap().get(content.getLong("system_channel_id"));
         Set<String> features;
-        if(!content.isNull("features"))
+        if (!content.isNull("features"))
         {
             JSONArray featureArr = content.getJSONArray("features");
             features = StreamSupport.stream(featureArr.spliterator(), false).map(String::valueOf).collect(Collectors.toSet());
@@ -72,10 +77,14 @@ public class GuildUpdateHandler extends SocketHandler
             features = Collections.emptySet();
         }
 
-        if (!Objects.equals(owner, guild.getOwner()))
+        if (ownerId != guild.getOwnerIdLong())
         {
             Member oldOwner = guild.getOwner();
-            guild.setOwner(owner);
+            Member newOwner = guild.getMembersMap().get(ownerId);
+            if (newOwner == null)
+                WebSocketClient.LOG.warn("Received {} with owner not in cache. UserId: {} GuildId: {}", allContent.get("t"), ownerId, id);
+            guild.setOwner(newOwner);
+            guild.setOwnerId(ownerId);
             getJDA().getEventManager().handle(
                     new GuildUpdateOwnerEvent(
                         getJDA(), responseNumber,

@@ -47,7 +47,7 @@ public class ChannelDeleteHandler extends SocketHandler
         if (type.isGuild())
         {
             guildId = content.getLong("guild_id");
-            if (getJDA().getGuildLock().isLocked(guildId))
+            if (getJDA().getGuildSetupController().isLocked(guildId))
                 return guildId;
         }
 

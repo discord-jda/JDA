@@ -1245,9 +1245,9 @@ public interface Message extends ISnowflake, Formattable
 
         /**
          * The height of the Attachment if this Attachment is an image.
-         * <br>If this Attachment is not an image, this returns 0.
+         * <br>If this Attachment is not an image, this returns -1.
          *
-         * @return Never-negative int containing image Attachment height.
+         * @return int containing image Attachment height.
          */
         public int getHeight()
         {
@@ -1256,9 +1256,9 @@ public interface Message extends ISnowflake, Formattable
 
         /**
          * The width of the Attachment if this Attachment is an image.
-         * <br>If this Attachment is not an image, this returns 0.
+         * <br>If this Attachment is not an image, this returns -1.
          *
-         * @return Never-negative int containing image Attachment width.
+         * @return int containing image Attachment width.
          */
         public int getWidth()
         {

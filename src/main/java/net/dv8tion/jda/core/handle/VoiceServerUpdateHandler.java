@@ -36,14 +36,13 @@ public class VoiceServerUpdateHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long guildId = content.getLong("guild_id");
+        if (getJDA().getGuildSetupController().isLocked(guildId))
+            return guildId;
         Guild guild = getJDA().getGuildMap().get(guildId);
         if (guild == null)
-            throw new IllegalArgumentException("Attempted to start audio connection with Guild that doesn't exist! JSON: " + content);
+            throw new IllegalArgumentException("Attempted to start audio connection with Guild that doesn't exist!");
 
         getJDA().getClient().updateAudioConnection(guildId, guild.getSelfMember().getVoiceState().getChannel());
-
-        if (getJDA().getGuildLock().isLocked(guildId))
-            return guildId;
 
         if (content.isNull("endpoint"))
         {

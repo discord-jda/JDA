@@ -123,9 +123,8 @@ public class ReceivedMessage extends AbstractMessage
 
         if (reaction == null)
         {
-            checkFake(emote, "Emote");
-            if (!emote.canInteract(getJDA().getSelfUser(), channel))
-                throw new IllegalArgumentException("Cannot react with the provided emote because it is not available in the current channel.");
+            Checks.check(emote.canInteract(getJDA().getSelfUser(), channel),
+                         "Cannot react with the provided emote because it is not available in the current channel.");
         }
         else if (reaction.isSelf())
         {
@@ -797,12 +796,6 @@ public class ReceivedMessage extends AbstractMessage
             if (!location.getGuild().getSelfMember().hasPermission(location, permission))
                 throw new InsufficientPermissionException(permission);
         }
-    }
-
-    private void checkFake(IFakeable o, String name)
-    {
-        if (o.isFake())
-            throw new IllegalArgumentException("We are unable to use a fake " + name + " in this situation!");
     }
 
     @Override

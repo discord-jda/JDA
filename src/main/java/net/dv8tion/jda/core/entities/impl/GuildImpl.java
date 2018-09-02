@@ -23,7 +23,6 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
-import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.managers.AudioManager;
@@ -80,6 +79,7 @@ public class GuildImpl implements Guild
     private String iconId;
     private String splashId;
     private String region;
+    private long ownerId;
     private Set<String> features;
     private VoiceChannel afkChannel;
     private TextChannel systemChannel;
@@ -179,8 +179,6 @@ public class GuildImpl implements Guild
     @Override
     public RestAction<String> getVanityUrl()
     {
-        if (!isAvailable())
-            throw new GuildUnavailableException();
         if (!getSelfMember().hasPermission(Permission.MANAGE_SERVER))
             throw new InsufficientPermissionException(Permission.MANAGE_SERVER);
         if (!getFeatures().contains("VANITY_URL"))
@@ -260,6 +258,12 @@ public class GuildImpl implements Guild
     public Member getOwner()
     {
         return owner;
+    }
+
+    @Override
+    public long getOwnerIdLong()
+    {
+        return ownerId;
     }
 
     @Override
@@ -362,7 +366,7 @@ public class GuildImpl implements Guild
     {
         Checks.isSnowflake(id, "Emote ID");
         Emote emote = getEmoteById(id);
-        if (emote != null && !emote.isFake())
+        if (emote != null)
         {
             ListedEmote listedEmote = (ListedEmote) emote;
             if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
@@ -391,8 +395,6 @@ public class GuildImpl implements Guild
     @Override
     public RestAction<List<Ban>> getBanList()
     {
-        if (!isAvailable())
-            throw new GuildUnavailableException();
         if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS))
             throw new InsufficientPermissionException(Permission.BAN_MEMBERS);
 
@@ -456,8 +458,6 @@ public class GuildImpl implements Guild
     @Override
     public RestAction<Integer> getPrunableMemberCount(int days)
     {
-        if (!isAvailable())
-            throw new GuildUnavailableException();
         if (!getSelfMember().hasPermission(Permission.KICK_MEMBERS))
             throw new InsufficientPermissionException(Permission.KICK_MEMBERS);
 
@@ -630,7 +630,7 @@ public class GuildImpl implements Guild
     public List<GuildVoiceState> getVoiceStates()
     {
         return Collections.unmodifiableList(
-                getMembersMap().valueCollection().stream().map(Member::getVoiceState).collect(Collectors.toList()));
+                getMembersMap().valueCollection().stream().map(Member::getVoiceState).filter(Objects::nonNull).collect(Collectors.toList()));
     }
 
     @Override
@@ -792,6 +792,12 @@ public class GuildImpl implements Guild
     public GuildImpl setAfkTimeout(Timeout afkTimeout)
     {
         this.afkTimeout = afkTimeout;
+        return this;
+    }
+
+    public GuildImpl setOwnerId(long ownerId)
+    {
+        this.ownerId = ownerId;
         return this;
     }
 

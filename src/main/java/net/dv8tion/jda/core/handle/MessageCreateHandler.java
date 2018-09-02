@@ -48,6 +48,13 @@ public class MessageCreateHandler extends SocketHandler
             return null;
         }
 
+        if (!content.isNull("guild_id"))
+        {
+            long guildId = content.getLong("guild_id");
+            if (getJDA().getGuildSetupController().isLocked(guildId))
+                return guildId;
+        }
+
         Message message;
         try
         {
@@ -60,14 +67,14 @@ public class MessageCreateHandler extends SocketHandler
                 case EntityBuilder.MISSING_CHANNEL:
                 {
                     final long channelId = content.getLong("channel_id");
-                    getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+                    getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
                     EventCache.LOG.debug("Received a message for a channel that JDA does not currently have cached");
                     return null;
                 }
                 case EntityBuilder.MISSING_USER:
                 {
                     final long authorId = content.getJSONObject("author").getLong("id");
-                    getJDA().getEventCache().cache(EventCache.Type.USER, authorId, () -> handle(responseNumber, allContent));
+                    getJDA().getEventCache().cache(EventCache.Type.USER, authorId, responseNumber, allContent, this::handle);
                     EventCache.LOG.debug("Received a message for a user that JDA does not currently have cached");
                     return null;
                 }
@@ -82,10 +89,8 @@ public class MessageCreateHandler extends SocketHandler
             case TEXT:
             {
                 TextChannelImpl channel = (TextChannelImpl) message.getTextChannel();
-                if (getJDA().getGuildLock().isLocked(channel.getGuild().getIdLong()))
-                {
+                if (getJDA().getGuildSetupController().isLocked(channel.getGuild().getIdLong()))
                     return channel.getGuild().getIdLong();
-                }
                 channel.setLastMessageId(message.getIdLong());
                 manager.handle(
                     new GuildMessageReceivedEvent(

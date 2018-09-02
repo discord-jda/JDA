@@ -52,7 +52,7 @@ public class CallUpdateHandler extends SocketHandler
             channel = getJDA().getPrivateChannelMap().get(channelId);
         if (channel == null)
         {
-            getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+            getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Received a CALL_UPDATE for a Group/PrivateChannel that has not yet been cached. JSON: {}", content);
             return null;
         }
@@ -60,7 +60,7 @@ public class CallUpdateHandler extends SocketHandler
         CallImpl call = (CallImpl) channel.getCurrentCall();
         if (call == null)
         {
-            getJDA().getEventCache().cache(EventCache.Type.CALL, channelId, () -> handle(responseNumber, allContent));
+            getJDA().getEventCache().cache(EventCache.Type.CALL, channelId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Received a CALL_UPDATE for a Call that has not yet been cached. JSON: {}", content);
             return null;
         }

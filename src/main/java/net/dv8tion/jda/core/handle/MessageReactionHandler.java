@@ -50,6 +50,13 @@ public class MessageReactionHandler extends SocketHandler
     @Override
     protected Long handleInternally(JSONObject content)
     {
+        if (!content.isNull("guild_id"))
+        {
+            long guildId = content.getLong("guild_id");
+            if (getJDA().getGuildSetupController().isLocked(guildId))
+                return guildId;
+        }
+
         JSONObject emoji = content.getJSONObject("emoji");
 
         final long userId    = content.getLong("user_id");
@@ -72,8 +79,14 @@ public class MessageReactionHandler extends SocketHandler
             user = getJDA().getFakeUserMap().get(userId);
         if (user == null)
         {
-            getJDA().getEventCache().cache(EventCache.Type.USER, userId, () -> handle(responseNumber, allContent));
-            EventCache.LOG.debug("Received a reaction for a user that JDA does not currently have cached");
+            if (!add)
+            {
+                //This can be caused by a ban, we should just drop it in that case
+                return null;
+            }
+            getJDA().getEventCache().cache(EventCache.Type.USER, userId, responseNumber, allContent, this::handle);
+            EventCache.LOG.debug("Received a reaction for a user that JDA does not currently have cached. " +
+                                 "UserID: {} ChannelId: {} MessageId: {}", userId, channelId, messageId);
             return null;
         }
 
@@ -92,7 +105,7 @@ public class MessageReactionHandler extends SocketHandler
         }
         if (channel == null)
         {
-            getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+            getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Received a reaction for a channel that JDA does not currently have cached");
             return null;
         }

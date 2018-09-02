@@ -95,8 +95,6 @@ public interface JDAClient
      *
      * @throws java.lang.IllegalArgumentException
      *         If the specified Guild is {@code null}
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the specified Guild is not currently {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      *
      * @return {@link net.dv8tion.jda.client.requests.restaction.pagination.MentionPaginationAction MentionPaginationAction}
      */

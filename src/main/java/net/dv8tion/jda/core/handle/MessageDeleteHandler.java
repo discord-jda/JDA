@@ -58,7 +58,7 @@ public class MessageDeleteHandler extends SocketHandler
         }
         if (channel == null)
         {
-            getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+            getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Got message delete for a channel/group that is not yet cached. ChannelId: {}", channelId);
             return null;
         }
@@ -66,10 +66,8 @@ public class MessageDeleteHandler extends SocketHandler
         if (channel instanceof TextChannel)
         {
             TextChannelImpl tChan = (TextChannelImpl) channel;
-            if (getJDA().getGuildLock().isLocked(tChan.getGuild().getIdLong()))
-            {
+            if (getJDA().getGuildSetupController().isLocked(tChan.getGuild().getIdLong()))
                 return tChan.getGuild().getIdLong();
-            }
             if (tChan.hasLatestMessage() && messageId == channel.getLatestMessageIdLong())
                 tChan.setLastMessageId(0); // Reset latest message id as it was deleted.
             getJDA().getEventManager().handle(

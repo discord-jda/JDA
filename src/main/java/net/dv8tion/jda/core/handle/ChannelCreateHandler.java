@@ -41,7 +41,7 @@ public class ChannelCreateHandler extends SocketHandler
         if (type.isGuild())
         {
             guildId = content.getLong("guild_id");
-            if (getJDA().getGuildLock().isLocked(guildId))
+            if (getJDA().getGuildSetupController().isLocked(guildId))
                 return guildId;
         }
 
@@ -90,7 +90,6 @@ public class ChannelCreateHandler extends SocketHandler
             default:
                 throw new IllegalArgumentException("Discord provided an CREATE_CHANNEL event with an unknown channel type! JSON: " + content);
         }
-        getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, content.getLong("id"));
         return null;
     }
 }

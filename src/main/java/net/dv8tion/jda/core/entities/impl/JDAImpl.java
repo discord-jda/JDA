@@ -18,6 +18,8 @@ package net.dv8tion.jda.core.entities.impl;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
 import gnu.trove.map.TLongObjectMap;
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.bot.entities.impl.JDABotImpl;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.core.AccountType;
@@ -30,6 +32,7 @@ import net.dv8tion.jda.core.events.StatusChangeEvent;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.handle.EventCache;
+import net.dv8tion.jda.core.handle.GuildSetupController;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.InterfacedEventManager;
 import net.dv8tion.jda.core.managers.AudioManager;
@@ -38,6 +41,7 @@ import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.requests.restaction.GuildAction;
 import net.dv8tion.jda.core.utils.*;
+import net.dv8tion.jda.core.utils.cache.CacheFlag;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.core.utils.cache.UpstreamReference;
@@ -87,10 +91,11 @@ public class JDAImpl implements JDA
     protected final Thread shutdownHook;
     protected final EntityBuilder entityBuilder = new EntityBuilder(this);
     protected final EventCache eventCache = new EventCache();
-    protected final GuildLock guildLock = new GuildLock(this);
     protected final Object akapLock = new Object();
+    protected final EnumSet<CacheFlag> cacheFlags;
 
     protected final SessionController sessionController;
+    protected final GuildSetupController guildSetupController;
 
     protected UpstreamReference<WebSocketClient> client;
     protected Requester requester;
@@ -115,7 +120,7 @@ public class JDAImpl implements JDA
                    boolean bulkDeleteSplittingEnabled, boolean retryOnTimeout, boolean enableMDC,
                    boolean shutdownRateLimitPool, boolean shutdownCallbackPool,
                    int poolSize, int maxReconnectDelay,
-                   ConcurrentMap<String, String> contextMap)
+                   ConcurrentMap<String, String> contextMap, EnumSet<CacheFlag> cacheFlags)
     {
         this.accountType = accountType;
         this.setToken(token);
@@ -142,11 +147,31 @@ public class JDAImpl implements JDA
 
         this.jdaClient = accountType == AccountType.CLIENT ? new JDAClientImpl(this) : null;
         this.jdaBot = accountType == AccountType.BOT ? new JDABotImpl(this) : null;
+        this.guildSetupController = new GuildSetupController(this);
+        this.cacheFlags = cacheFlags;
+    }
+
+    public boolean isCacheFlagSet(CacheFlag flag)
+    {
+        return cacheFlags.contains(flag);
     }
 
     public SessionController getSessionController()
     {
         return sessionController;
+    }
+
+    @Deprecated
+    @DeprecatedSince("3.8.0")
+    @ReplaceWith("getGuildSetupController()")
+    public GuildLock getGuildLock()
+    {
+        return new GuildLock(this);
+    }
+
+    public GuildSetupController getGuildSetupController()
+    {
+        return guildSetupController;
     }
 
     public int login(String gatewayUrl, ShardInfo shardInfo, boolean compression, boolean validateToken) throws LoginException
@@ -701,11 +726,6 @@ public class JDAImpl implements JDA
     public EntityBuilder getEntityBuilder()
     {
         return entityBuilder;
-    }
-
-    public GuildLock getGuildLock()
-    {
-        return this.guildLock;
     }
 
     public IAudioSendFactory getAudioSendFactory()

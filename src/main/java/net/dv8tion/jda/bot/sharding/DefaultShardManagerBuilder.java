@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.SessionController;
+import net.dv8tion.jda.core.utils.cache.CacheFlag;
 import okhttp3.OkHttpClient;
 
 import javax.security.auth.login.LoginException;
@@ -44,6 +45,7 @@ public class DefaultShardManagerBuilder
     protected final List<Object> listeners = new ArrayList<>();
     protected final List<IntFunction<Object>> listenerProviders = new ArrayList<>();
     protected SessionController sessionController = null;
+    protected EnumSet<CacheFlag> cacheFlags = EnumSet.allOf(CacheFlag.class);
     protected boolean enableContext = true;
     protected boolean enableBulkDeleteSplitting = true;
     protected boolean enableShutdownHook = true;
@@ -77,6 +79,37 @@ public class DefaultShardManagerBuilder
      * before calling {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder#build() build()}.
      */
     public DefaultShardManagerBuilder() {}
+
+    /**
+     * Flags used to enable parts of the JDA cache to reduce the runtime memory footprint.
+     * <br><b>It is highly recommended to use {@link #setDisabledCacheFlags(EnumSet)} instead
+     * for backwards compatibility</b>. We might add more flags in the future which you then effectively disable
+     * when updating and not changing your setting here.
+     *
+     * @param  flags
+     *         EnumSet containing the flags for cache services that should be <b>enabled</b>
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     */
+    public DefaultShardManagerBuilder setEnabledCacheFlags(EnumSet<CacheFlag> flags)
+    {
+        this.cacheFlags = flags == null ? EnumSet.noneOf(CacheFlag.class) : EnumSet.copyOf(flags);
+        return this;
+    }
+
+    /**
+     * Flags used to disable parts of the JDA cache to reduce the runtime memory footprint.
+     * <br>Shortcut for {@code setEnabledCacheFlags(EnumSet.complementOf(flags))}
+     *
+     * @param  flags
+     *         EnumSet containing the flags for cache services that should be <b>disabled</b>
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     */
+    public DefaultShardManagerBuilder setDisabledCacheFlags(EnumSet<CacheFlag> flags)
+    {
+        return setEnabledCacheFlags(EnumSet.complementOf(flags));
+    }
 
     /**
      * Sets the {@link net.dv8tion.jda.core.utils.SessionController SessionController}
@@ -955,7 +988,8 @@ public class DefaultShardManagerBuilder
             this.audioSendFactory, this.gameProvider, this.statusProvider,
             this.httpClientBuilder, this.httpClient, this.rateLimitPoolProvider, this.callbackPoolProvider, this.wsFactory, this.threadFactory,
             this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting,
-            this.autoReconnect, this.idleProvider, this.retryOnTimeout, this.useShutdownNow, this.enableContext, this.contextProvider, this.enableCompression);
+            this.autoReconnect, this.idleProvider, this.retryOnTimeout, this.useShutdownNow, this.enableContext,
+            this.contextProvider, this.cacheFlags, this.enableCompression);
 
         manager.login();
 

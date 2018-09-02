@@ -30,14 +30,14 @@ public abstract class SocketHandler
         this.api = new UpstreamReference<>(api);
     }
 
-
-    public final void handle(long responseTotal, JSONObject o)
+    public final synchronized void handle(long responseTotal, JSONObject o)
     {
         this.allContent = o;
         this.responseNumber = responseTotal;
         final Long guildId = handleInternally(o.getJSONObject("d"));
         if (guildId != null)
-            getJDA().getGuildLock().queue(guildId, o);
+            getJDA().getGuildSetupController().cacheEvent(guildId, o);
+        this.allContent = null;
     }
 
     protected JDAImpl getJDA()

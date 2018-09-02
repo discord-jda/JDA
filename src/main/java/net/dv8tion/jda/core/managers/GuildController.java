@@ -22,7 +22,6 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.EmoteImpl;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.MemberImpl;
-import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.core.exceptions.HierarchyException;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
@@ -37,11 +36,9 @@ import net.dv8tion.jda.core.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.core.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.core.requests.restaction.order.RoleOrderAction;
 import net.dv8tion.jda.core.utils.Checks;
-import net.dv8tion.jda.core.utils.Helpers;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.PermissionUtil;
 import net.dv8tion.jda.core.utils.cache.UpstreamReference;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
@@ -121,7 +118,7 @@ public class GuildController
      *         moved to.
      *
      * @throws IllegalStateException
-     *         If the Member isn't currently in a VoiceChannel in this Guild.
+     *         If the Member isn't currently in a VoiceChannel in this Guild, or {@link net.dv8tion.jda.core.utils.cache.CacheFlag#VOICE_STATE} is disabled.
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If any of the provided arguments is {@code null}</li>
@@ -135,21 +132,20 @@ public class GuildController
      *             <li>If this account <b>AND</b> the Member being moved don't have
      *                 {@link net.dv8tion.jda.core.Permission#VOICE_CONNECT} for the destination VoiceChannel.</li>
      *         </ul>
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
      */
     @CheckReturnValue
     public RestAction<Void> moveVoiceMember(Member member, VoiceChannel voiceChannel)
     {
-        checkAvailable();
         Checks.notNull(member, "Member");
         Checks.notNull(voiceChannel, "VoiceChannel");
         checkGuild(member.getGuild(), "Member");
         checkGuild(voiceChannel.getGuild(), "VoiceChannel");
 
         GuildVoiceState vState = member.getVoiceState();
+        if (vState == null)
+            throw new IllegalStateException("Cannot move a Member with disabled CacheFlag.VOICE_STATE");
         if (!vState.inVoiceChannel())
             throw new IllegalStateException("You cannot move a Member who isn't in a VoiceChannel!");
 
@@ -219,15 +215,12 @@ public class GuildController
      * @throws net.dv8tion.jda.core.exceptions.HierarchyException
      *         If attempting to set nickname for another member and the logged in account cannot manipulate the other user due to permission hierarchy position.
      *         <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @CheckReturnValue
     public AuditableRestAction<Void> setNickname(Member member, String nickname)
     {
-        checkAvailable();
         Checks.notNull(member, "Member");
         checkGuild(member.getGuild(), "Member");
 
@@ -291,8 +284,6 @@ public class GuildController
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the account doesn't have {@link net.dv8tion.jda.core.Permission#KICK_MEMBERS KICK_MEMBER} Permission.
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      * @throws IllegalArgumentException
      *         If the provided days are less than {@code 1}
      *
@@ -302,7 +293,6 @@ public class GuildController
     @CheckReturnValue
     public AuditableRestAction<Integer> prune(int days)
     {
-        checkAvailable();
         checkPermission(Permission.KICK_MEMBERS);
 
         Checks.check(days >= 1, "Days amount must be at minimum 1 day.");
@@ -348,8 +338,6 @@ public class GuildController
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided member is not a Member of this Guild or is {@code null}
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#KICK_MEMBERS} permission.
      * @throws net.dv8tion.jda.core.exceptions.HierarchyException
@@ -362,7 +350,6 @@ public class GuildController
     @CheckReturnValue
     public AuditableRestAction<Void> kick(Member member, String reason)
     {
-        checkAvailable();
         Checks.notNull(member, "member");
         checkGuild(member.getGuild(), "member");
         checkPermission(Permission.KICK_MEMBERS);
@@ -420,8 +407,6 @@ public class GuildController
      *         <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
      * @throws java.lang.IllegalArgumentException
      *         If the userId provided does not correspond to a Member in this Guild or the provided {@code userId} is blank/null.
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -458,8 +443,6 @@ public class GuildController
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided member is not a Member of this Guild or is {@code null}
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#KICK_MEMBERS} permission.
      * @throws net.dv8tion.jda.core.exceptions.HierarchyException
@@ -504,8 +487,6 @@ public class GuildController
      *         <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
      * @throws java.lang.IllegalArgumentException
      *         If the userId provided does not correspond to a Member in this Guild or the provided {@code userId} is blank/null.
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -556,15 +537,12 @@ public class GuildController
      *             <li>If the provided member is {@code null}</li>
      *         </ul>
      *
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @CheckReturnValue
     public AuditableRestAction<Void> ban(Member member, int delDays, String reason)
     {
-        checkAvailable();
         Checks.notNull(member, "Member");
         //Don't check if the provided member is from this guild. It doesn't matter if they are or aren't.
 
@@ -611,15 +589,12 @@ public class GuildController
      *             <li>If the provided amount of days (delDays) is less than 0.</li>
      *             <li>If the provided user is null</li>
      *         </ul>
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @CheckReturnValue
     public AuditableRestAction<Void> ban(User user, int delDays, String reason)
     {
-        checkAvailable();
         Checks.notNull(user, "User");
         checkPermission(Permission.BAN_MEMBERS);
 
@@ -686,15 +661,12 @@ public class GuildController
      *         <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
      * @throws IllegalArgumentException
      *         If the provided amount of days (delDays) is less than 0.
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @CheckReturnValue
     public AuditableRestAction<Void> ban(String userId, int delDays, String reason)
     {
-        checkAvailable();
         checkPermission(Permission.BAN_MEMBERS);
 
         User user = getGuild().getJDA().getUserById(userId);
@@ -761,9 +733,6 @@ public class GuildController
      *             <li>If the provided member is {@code null}</li>
      *         </ul>
      *
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
-     *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @CheckReturnValue
@@ -811,9 +780,6 @@ public class GuildController
      *             <li>If the provided member is {@code null}</li>
      *         </ul>
      *
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
-     *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @CheckReturnValue
@@ -857,8 +823,6 @@ public class GuildController
      *         <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
      * @throws IllegalArgumentException
      *         If the provided amount of days (delDays) is less than 0.
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -889,8 +853,6 @@ public class GuildController
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      * @throws IllegalArgumentException
      *         If the provided user is null
      *
@@ -925,8 +887,6 @@ public class GuildController
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      * @throws IllegalArgumentException
      *         If the provided id is null or blank
      *
@@ -935,7 +895,6 @@ public class GuildController
     @CheckReturnValue
     public AuditableRestAction<Void> unban(String userId)
     {
-        checkAvailable();
         Checks.isSnowflake(userId, "User ID");
         checkPermission(Permission.BAN_MEMBERS);
 
@@ -986,15 +945,12 @@ public class GuildController
      *         If the provided member is the Guild's owner. You cannot modify the owner of a Guild.
      * @throws IllegalArgumentException
      *         If the provided member is not from this Guild or null.
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @CheckReturnValue
     public AuditableRestAction<Void> setDeafen(Member member, boolean deafen)
     {
-        checkAvailable();
         Checks.notNull(member, "Member");
         checkGuild(member.getGuild(), "Member");
         checkPermission(Permission.VOICE_DEAF_OTHERS);
@@ -1004,7 +960,8 @@ public class GuildController
         if (getGuild().getOwner().equals(member))
             throw new HierarchyException("Cannot modify Guild Deafen status the Owner of the Guild");
 
-        if (member.getVoiceState().isGuildDeafened() == deafen)
+        GuildVoiceState voiceState = member.getVoiceState();
+        if (voiceState != null && voiceState.isGuildDeafened() == deafen)
             return new AuditableRestAction.EmptyRestAction<>(getJDA(), null);
 
         JSONObject body = new JSONObject().put("deaf", deafen);
@@ -1053,15 +1010,12 @@ public class GuildController
      *         If the provided member is the Guild's owner. You cannot modify the owner of a Guild.
      * @throws java.lang.IllegalArgumentException
      *         If the provided member is not from this Guild or null.
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @CheckReturnValue
     public AuditableRestAction<Void> setMute(Member member, boolean mute)
     {
-        checkAvailable();
         Checks.notNull(member, "Member");
         checkGuild(member.getGuild(), "Member");
         checkPermission(Permission.VOICE_MUTE_OTHERS);
@@ -1071,7 +1025,8 @@ public class GuildController
         if (getGuild().getOwner().equals(member))
             throw new HierarchyException("Cannot modify Guild Mute status the Owner of the Guild");
 
-        if (member.getVoiceState().isGuildMuted() == mute)
+        GuildVoiceState voiceState = member.getVoiceState();
+        if (voiceState != null && voiceState.isGuildMuted() == mute)
             return new AuditableRestAction.EmptyRestAction<>(getJDA(), null);
 
         JSONObject body = new JSONObject().put("mute", mute);
@@ -1252,8 +1207,6 @@ public class GuildController
      * @param  roles
      *         Not-null Roles that should be added to the specified Member
      *
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
      * @throws net.dv8tion.jda.core.exceptions.HierarchyException
@@ -1308,8 +1261,6 @@ public class GuildController
      * @param  roles
      *         Not-null Roles that should be added to the specified Member
      *
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
      * @throws net.dv8tion.jda.core.exceptions.HierarchyException
@@ -1364,8 +1315,6 @@ public class GuildController
      * @param  roles
      *         Not-null Roles that should be removed from the specified Member
      *
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
      * @throws net.dv8tion.jda.core.exceptions.HierarchyException
@@ -1420,8 +1369,6 @@ public class GuildController
      * @param  roles
      *         Not-null Roles that should be removed from the specified Member
      *
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
      * @throws net.dv8tion.jda.core.exceptions.HierarchyException
@@ -1484,8 +1431,6 @@ public class GuildController
      *         A {@link java.util.Collection Collection} of {@link net.dv8tion.jda.core.entities.Role Roles}
      *         to remove from the current Roles the specified {@link net.dv8tion.jda.core.entities.Member Member} already has
      *
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
      * @throws net.dv8tion.jda.core.exceptions.HierarchyException
@@ -1502,7 +1447,6 @@ public class GuildController
     @CheckReturnValue
     public AuditableRestAction<Void> modifyMemberRoles(Member member, Collection<Role> rolesToAdd, Collection<Role> rolesToRemove)
     {
-        checkAvailable();
         Checks.notNull(member, "Member");
         Checks.notNull(rolesToAdd, "Collection containing roles to be added to the member");
         Checks.notNull(rolesToRemove, "Collection containing roles to be removed from the member");
@@ -1583,8 +1527,6 @@ public class GuildController
      * @param  roles
      *         New collection of {@link net.dv8tion.jda.core.entities.Role Roles} for the specified Member
      *
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
      * @throws net.dv8tion.jda.core.exceptions.HierarchyException
@@ -1638,8 +1580,6 @@ public class GuildController
      * @param  roles
      *         New collection of {@link net.dv8tion.jda.core.entities.Role Roles} for the specified Member
      *
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
      * @throws net.dv8tion.jda.core.exceptions.HierarchyException
@@ -1660,7 +1600,6 @@ public class GuildController
     @CheckReturnValue
     public AuditableRestAction<Void> modifyMemberRoles(Member member, Collection<Role> roles)
     {
-        checkAvailable();
         Checks.notNull(member, "Member");
         Checks.notNull(roles, "Roles");
         checkGuild(member.getGuild(), "Member");
@@ -1734,8 +1673,6 @@ public class GuildController
      * @param  newOwner
      *         Not-null Member to transfer ownership to
      *
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      * @throws net.dv8tion.jda.core.exceptions.PermissionException
      *         If the currently logged in account is not the owner of this Guild
      * @throws IllegalArgumentException
@@ -1750,7 +1687,6 @@ public class GuildController
     @CheckReturnValue
     public AuditableRestAction<Void> transferOwnership(Member newOwner)
     {
-        checkAvailable();
         Checks.notNull(newOwner, "Member");
         checkGuild(newOwner.getGuild(), "Member");
         if (!getGuild().getOwner().equals(getGuild().getSelfMember()))
@@ -1795,8 +1731,6 @@ public class GuildController
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL} permission
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      * @throws IllegalArgumentException
      *         If the provided name is {@code null} or empty or greater than 100 characters in length
      *
@@ -1806,7 +1740,6 @@ public class GuildController
     @CheckReturnValue
     public ChannelAction createTextChannel(String name)
     {
-        checkAvailable();
         checkPermission(Permission.MANAGE_CHANNEL);
         Checks.notBlank(name, "Name");
         name = name.trim();
@@ -1836,8 +1769,6 @@ public class GuildController
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL} permission
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      * @throws IllegalArgumentException
      *         If the provided name is {@code null} or empty or greater than 100 characters in length
      *
@@ -1847,7 +1778,6 @@ public class GuildController
     @CheckReturnValue
     public ChannelAction createVoiceChannel(String name)
     {
-        checkAvailable();
         checkPermission(Permission.MANAGE_CHANNEL);
         Checks.notBlank(name, "Name");
         name = name.trim();
@@ -1877,8 +1807,6 @@ public class GuildController
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL} permission
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      * @throws IllegalArgumentException
      *         If the provided name is {@code null} or empty or greater than 100 characters in length
      *
@@ -1888,7 +1816,6 @@ public class GuildController
     @CheckReturnValue
     public ChannelAction createCategory(String name)
     {
-        checkAvailable();
         checkPermission(Permission.MANAGE_CHANNEL);
         Checks.notBlank(name, "Name");
         name = name.trim();
@@ -1967,8 +1894,6 @@ public class GuildController
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES} Permission
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.RoleAction RoleAction}
      *         <br>Creates a new role with previously selected field values
@@ -1976,7 +1901,6 @@ public class GuildController
     @CheckReturnValue
     public RoleAction createRole()
     {
-        checkAvailable();
         checkPermission(Permission.MANAGE_ROLES);
 
         Route.CompiledRoute route = Route.Roles.CREATE_ROLE.compile(getGuild().getId());
@@ -2010,8 +1934,6 @@ public class GuildController
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES} Permission and every Permission the provided Role has
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      * @throws java.lang.IllegalArgumentException
      *         If the specified role is {@code null}
      *
@@ -2057,15 +1979,12 @@ public class GuildController
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES MANAGE_EMOTES} Permission
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link net.dv8tion.jda.core.entities.Guild#isAvailable() available}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction} - Type: {@link net.dv8tion.jda.core.entities.Emote Emote}
      */
     @CheckReturnValue
     public AuditableRestAction<Emote> createEmote(String name, Icon icon, Role... roles)
     {
-        checkAvailable();
         checkPermission(Permission.MANAGE_EMOTES);
         Checks.notBlank(name, "Emote name");
         Checks.notNull(icon, "Emote icon");
@@ -2088,20 +2007,9 @@ public class GuildController
                     request.onFailure(response);
                     return;
                 }
-                JSONObject obj = response.getObject();
-                final long id = obj.getLong("id");
-                final String name = obj.optString("name", null);
-                final boolean managed = Helpers.optBoolean(obj, "managed");
-                final boolean animated = obj.optBoolean("animated");
-                EmoteImpl emote = new EmoteImpl(id, (GuildImpl) getGuild()).setName(name).setAnimated(animated).setManaged(managed);
 
-                JSONArray rolesArr = obj.optJSONArray("roles");
-                if (rolesArr != null)
-                {
-                    Set<Role> roleSet = emote.getRoleSet();
-                    for (int i = 0; i < rolesArr.length(); i++)
-                        roleSet.add(getGuild().getRoleById(rolesArr.getString(i)));
-                }
+                JSONObject obj = response.getObject();
+                EmoteImpl emote = api.get().getEntityBuilder().createEmote((GuildImpl) getGuild(), obj, true);
                 request.onSuccess(emote);
             }
         };
@@ -2306,12 +2214,6 @@ public class GuildController
     public RoleOrderAction modifyRolePositions(boolean useDiscordOrder)
     {
         return new RoleOrderAction(getGuild(), useDiscordOrder);
-    }
-
-    protected void checkAvailable()
-    {
-        if (!getGuild().isAvailable())
-            throw new GuildUnavailableException();
     }
 
     protected void checkGuild(Guild providedGuild, String comment)

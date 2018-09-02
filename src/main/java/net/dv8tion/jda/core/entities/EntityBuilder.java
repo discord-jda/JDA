@@ -26,7 +26,6 @@ import net.dv8tion.jda.client.entities.impl.*;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
-import net.dv8tion.jda.core.WebSocketCode;
 import net.dv8tion.jda.core.audit.ActionType;
 import net.dv8tion.jda.core.audit.AuditLogChange;
 import net.dv8tion.jda.core.audit.AuditLogEntry;
@@ -34,11 +33,10 @@ import net.dv8tion.jda.core.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.core.entities.MessageEmbed.*;
 import net.dv8tion.jda.core.entities.impl.*;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
-import net.dv8tion.jda.core.handle.GuildMembersChunkHandler;
-import net.dv8tion.jda.core.handle.ReadyHandler;
+import net.dv8tion.jda.core.handle.EventCache;
 import net.dv8tion.jda.core.utils.Helpers;
 import net.dv8tion.jda.core.utils.JDALogger;
-import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.core.utils.cache.CacheFlag;
 import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
@@ -49,8 +47,9 @@ import org.slf4j.Logger;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
@@ -78,8 +77,6 @@ public class EntityBuilder
     }
 
     protected final UpstreamReference<JDAImpl> api;
-    protected final TLongObjectMap<JSONObject> cachedGuildJsons = MiscUtil.newLongMap();
-    protected final TLongObjectMap<Consumer<Guild>> cachedGuildCallbacks = MiscUtil.newLongMap();
 
     public EntityBuilder(JDA api)
     {
@@ -128,331 +125,129 @@ public class EntityBuilder
         return new Game(name, url, type);
     }
 
-    public void createGuildFirstPass(JSONObject guild, Consumer<Guild> secondPassCallback)
+    private void createGuildEmotePass(GuildImpl guildObj, JSONArray array)
     {
-        final long id = guild.getLong("id");
-        GuildImpl guildObj = ((GuildImpl) getJDA().getGuildMap().get(id));
-        if (guildObj == null)
-        {
-            guildObj = new GuildImpl(getJDA(), id);
-            getJDA().getGuildMap().put(id, guildObj);
-        }
-        if (Helpers.optBoolean(guild, "unavailable"))
-        {
-            guildObj.setAvailable(false);
-            //This is used for when GuildCreateHandler receives a guild that is currently unavailable. During normal READY
-            // loading for bots (which unavailable is always true) the secondPassCallback parameter will always
-            // be null.
-            if (secondPassCallback != null)
-                secondPassCallback.accept(guildObj);
-            getJDA().getGuildLock().lock(id);
+        if (!getJDA().isCacheFlagSet(CacheFlag.EMOTE))
             return;
+        TLongObjectMap<Emote> emoteMap = guildObj.getEmoteMap();
+        for (int i = 0; i < array.length(); i++)
+        {
+            JSONObject object = array.getJSONObject(i);
+            if (object.isNull("id"))
+            {
+                LOG.error("Received GUILD_CREATE with an emoji with a null ID. JSON: {}", object);
+                continue;
+            }
+            final long emoteId = object.getLong("id");
+            emoteMap.put(emoteId, createEmote(guildObj, object, false));
         }
+    }
 
-        //If we make it to here, the Guild is available. This means 1 of 2 things:
-        //Either:
-        // 1) This is Guild provided during READY for a Client account
-        // 2) This is a Guild received from GuildCreateHandler from a GUILD_CREATE event.
-        //      This could be triggered by joining a guild or due to discord finally
-        //      providing us with Guild information about a previously unavailable guild.
-        //      Whether it was unavailable due to Bot READY unavailability or due to an
-        //      outage within discord matters now.
-        //
-        // Either way, we now have enough information to fill in the general information about the Guild.
-        // This does NOT necessarily mean that we have all information to complete the guild.
-        // For Client accounts, we will also need to use op 12 (GUILD_SYNC) to get all presences of online users because
-        // discord only provides Online users that we have an open PM channel with or are friends with for Client accounts.
-        // On larger guilds we will still need to request all users using op 8 (GUILD_MEMBERS_CHUNK).
-        //
-        // The code below takes the information we -do- have and starts to fill in the Guild. It won't create anything
-        // that might rely on Users that we don't have due to needing the GUILD_MEMBERS_CHUNK
-        // This includes making VoiceStatus and PermissionOverrides
+    public GuildImpl createGuild(long guildId, JSONObject guildJson, TLongObjectMap<JSONObject> members)
+    {
+        final GuildImpl guildObj = new GuildImpl(getJDA(), guildId);
+        final String name = guildJson.optString("name", "");
+        final String iconId = guildJson.optString("icon", null);
+        final String splashId = guildJson.optString("splash", null);
+        final String region = guildJson.optString("region", null);
+        final JSONArray roleArray = guildJson.getJSONArray("roles");
+        final JSONArray channelArray = guildJson.getJSONArray("channels");
+        final JSONArray emotesArray = guildJson.getJSONArray("emojis");
+        final JSONArray voiceStateArray = guildJson.getJSONArray("voice_states");
+        final JSONArray featuresArray = guildJson.optJSONArray("features");
+        final JSONArray presencesArray = guildJson.optJSONArray("presences");
+        final long ownerId = Helpers.optLong(guildJson, "owner_id", 0L);
+        final long afkChannelId = Helpers.optLong(guildJson, "afk_channel_id", 0L);
+        final long systemChannelId = Helpers.optLong(guildJson, "system_channel_id", 0L);
+        final int mfaLevel = Helpers.optInt(guildJson, "mfa_level", 0);
+        final int afkTimeout = Helpers.optInt(guildJson, "afk_timeout", 0);
+        final int verificationLevel = Helpers.optInt(guildJson, "verification_level", 0);
+        final int notificationLevel = Helpers.optInt(guildJson, "default_message_notifications", 0);
+        final int explicitContentLevel = Helpers.optInt(guildJson, "explicit_content_filter", 0);
 
         guildObj.setAvailable(true)
-                .setIconId(guild.optString("icon", null))
-                .setSplashId(guild.optString("splash", null))
-                .setRegion(guild.getString("region"))
-                .setName(guild.getString("name"))
-                .setAfkTimeout(Guild.Timeout.fromKey(guild.getInt("afk_timeout")))
-                .setVerificationLevel(Guild.VerificationLevel.fromKey(guild.getInt("verification_level")))
-                .setDefaultNotificationLevel(Guild.NotificationLevel.fromKey(guild.getInt("default_message_notifications")))
-                .setRequiredMFALevel(Guild.MFALevel.fromKey(guild.getInt("mfa_level")))
-                .setExplicitContentLevel(Guild.ExplicitContentLevel.fromKey(guild.getInt("explicit_content_filter")));
+                .setName(name)
+                .setIconId(iconId)
+                .setSplashId(splashId)
+                .setRegion(region)
+                .setOwnerId(ownerId)
+                .setAfkTimeout(Guild.Timeout.fromKey(afkTimeout))
+                .setVerificationLevel(VerificationLevel.fromKey(verificationLevel))
+                .setDefaultNotificationLevel(Guild.NotificationLevel.fromKey(notificationLevel))
+                .setExplicitContentLevel(Guild.ExplicitContentLevel.fromKey(explicitContentLevel))
+                .setRequiredMFALevel(Guild.MFALevel.fromKey(mfaLevel));
 
-
-        if(guild.isNull("features"))
+        if (featuresArray == null)
+        {
             guildObj.setFeatures(Collections.emptySet());
+        }
         else
         {
             guildObj.setFeatures(
-                StreamSupport.stream(guild.getJSONArray("features").spliterator(), false)
-                    .map(String::valueOf)
-                    .collect(Collectors.toSet())
-            );
+                    StreamSupport.stream(featuresArray.spliterator(), false)
+                                 .map(String::valueOf)
+                                 .collect(Collectors.toSet()));
         }
 
-        JSONArray roles = guild.getJSONArray("roles");
-        for (int i = 0; i < roles.length(); i++)
+        for (int i = 0; i < roleArray.length(); i++)
         {
-            Role role = createRole(roles.getJSONObject(i), guildObj.getIdLong());
+            JSONObject obj = roleArray.getJSONObject(i);
+            Role role = createRole(guildObj, obj, guildId);
             guildObj.getRolesMap().put(role.getIdLong(), role);
             if (role.getIdLong() == guildObj.getIdLong())
                 guildObj.setPublicRole(role);
         }
 
-        if (!guild.isNull("emojis"))
-        {
-            JSONArray array = guild.getJSONArray("emojis");
-            TLongObjectMap<Emote> emoteMap = guildObj.getEmoteMap();
-            for (int i = 0; i < array.length(); i++)
-            {
-                JSONObject object = array.getJSONObject(i);
-                if (object.isNull("id"))
-                {
-                    LOG.error("Received GUILD_CREATE with an emoji with a null ID. JSON: {}", object);
-                    continue;
-                }
-                JSONArray emoteRoles = object.isNull("roles") ? new JSONArray() : object.getJSONArray("roles");
-                final long emoteId = object.getLong("id");
-
-                EmoteImpl emoteObj = new EmoteImpl(emoteId, guildObj);
-                Set<Role> roleSet = emoteObj.getRoleSet();
-
-                for (int j = 0; j < emoteRoles.length(); j++)
-                    roleSet.add(guildObj.getRoleById(emoteRoles.getString(j)));
-                emoteMap.put(emoteId, emoteObj
-                            .setName(object.optString("name"))
-                            .setAnimated(object.optBoolean("animated"))
-                            .setManaged(Helpers.optBoolean(object, "managed")));
-            }
-        }
-
-        if (guild.has("members"))
-        {
-            JSONArray members = guild.getJSONArray("members");
-            createGuildMemberPass(guildObj, members);
-        }
-
-        //This could be null for Client accounts. Will be fixed by GUILD_SYNC
-        Member owner = guildObj.getMemberById(guild.getLong("owner_id"));
-        if (owner != null)
-            guildObj.setOwner(owner);
-
-        if (guild.has("presences"))
-        {
-            JSONArray presences = guild.getJSONArray("presences");
-            for (int i = 0; i < presences.length(); i++)
-            {
-                JSONObject presence = presences.getJSONObject(i);
-                final long userId = presence.getJSONObject("user").getLong("id");
-                MemberImpl member = (MemberImpl) guildObj.getMembersMap().get(userId);
-
-                if (member == null)
-                    LOG.debug("Received a ghost presence in GuildFirstPass! UserId: {} Guild: {}", userId, guildObj);
-                else
-                    createPresence(member, presence);
-            }
-        }
-
-        if (guild.has("channels"))
-        {
-            JSONArray channels = guild.getJSONArray("channels");
-
-            for (int i = 0; i < channels.length(); i++)
-            {
-                JSONObject channel = channels.getJSONObject(i);
-                ChannelType type = ChannelType.fromId(channel.getInt("type"));
-                switch (type)
-                {
-                    case TEXT:
-                        createTextChannel(channel, guildObj.getIdLong(), false);
-                        break;
-                    case VOICE:
-                        createVoiceChannel(channel, guildObj.getIdLong(), false);
-                        break;
-                    case CATEGORY:
-                        createCategory(channel, guildObj.getIdLong(), false);
-                        break;
-                    default:
-                        LOG.error("Received a channel for a guild that isn't a text, voice or category channel. JSON: {}", channel);
-                }
-            }
-        }
-
-        if (!guild.isNull("system_channel_id"))
-            guildObj.setSystemChannel(guildObj.getTextChannelsMap().get(guild.getLong("system_channel_id")));
-
-        if (!guild.isNull("afk_channel_id"))
-            guildObj.setAfkChannel(guildObj.getVoiceChannelsMap().get(guild.getLong("afk_channel_id")));
-
-        //If the members that we were provided with (and loaded above) were not all of the
-        //  the members in this guild, then we need to request more users from Discord using
-        //  op 9 (GUILD_MEMBERS_CHUNK). To do so, we will cache the guild's JSON so we can properly
-        //  load stuff that relies on Users like Channels, PermissionOverrides and VoiceStatuses
-        //  after we have the rest of the users. We will request the GUILD_MEMBERS_CHUNK information
-        //  which will be sent from discord over the main Websocket and will be handled by
-        //  GuildMemberChunkHandler. After the handler has received all users as determined by the
-        //  value set using `setExpectedGuildMembers`, it will do one of the following:
-        //    1) If this is a Bot account, immediately call EntityBuilder#createGuildSecondPass, thus finishing
-        //        the Guild object creation process.
-        //    2) If this is a Client account, it will request op 12 (GUILD_SYNC) to make sure we have all information
-        //        about online users as GUILD_MEMBERS_CHUNK does not include presence information, and when loading the
-        //        members from GUILD_MEMBERS_CHUNK, we assume they are offline. GUILD_SYNC makes sure that we mark them
-        //        properly. After GUILD_SYNC is received by GuildSyncHandler, it will call EntityBuilder#createGuildSecondPass
-        //
-        //If we actually -did- get all of the users needed, then we don't need to Chunk. Furthermore,
-        // we don't need to use GUILD_SYNC because we always get presences with users thus we have all information
-        // needed to guild the Guild. We will skip
-        if (guild.getJSONArray("members").length() != guild.getInt("member_count"))
-        {
-            cachedGuildJsons.put(id, guild);
-            cachedGuildCallbacks.put(id, secondPassCallback);
-
-            GuildMembersChunkHandler handler = getJDA().getClient().getHandler("GUILD_MEMBERS_CHUNK");
-            handler.setExpectedGuildMembers(id, guild.getInt("member_count"));
-
-            //If we are already past READY / RESUME, then chunk at runtime. Otherwise, pass back to the ReadyHandler
-            // and let it send a burst chunk request.
-            if (getJDA().getClient().isReady())
-            {
-                if (getJDA().getAccountType() == AccountType.CLIENT)
-                {
-                    JSONObject obj = new JSONObject()
-                            .put("op", WebSocketCode.GUILD_SYNC)
-                            .put("guild_id", guildObj.getId());
-                    getJDA().getClient().chunkOrSyncRequest(obj);
-                }
-                JSONObject obj = new JSONObject()
-                        .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
-                        .put("d", new JSONObject()
-                            .put("guild_id", id)
-                            .put("query","")
-                            .put("limit", 0)
-                        );
-                getJDA().getClient().chunkOrSyncRequest(obj);
-            }
-            else
-            {
-                ReadyHandler readyHandler = getJDA().getClient().getHandler("READY");
-                readyHandler.acknowledgeGuild(guildObj, true, true, getJDA().getAccountType() == AccountType.CLIENT);
-            }
-
-            getJDA().getGuildLock().lock(id);
-            return;
-        }
-
-        //As detailed in the comment above, if we've made it this far then we have all member information needed to
-        // create the Guild. Thus, we fill in the remaining information, unlock the guild, and provide the guild
-        // to the callback
-        //This should only occur on small user count guilds.
-
-        JSONArray channels = guild.getJSONArray("channels");
-        createGuildChannelPass(guildObj, channels); //Actually creates PermissionOverrides
-
-        JSONArray voiceStates = guild.getJSONArray("voice_states");
-        createGuildVoiceStatePass(guildObj, voiceStates);
-
-        getJDA().getGuildLock().unlock(guildObj.getIdLong());
-        if (secondPassCallback != null)
-            secondPassCallback.accept(guildObj);
-    }
-
-    public void createGuildSecondPass(long guildId, List<JSONArray> memberChunks)
-    {
-        JSONObject guildJson = cachedGuildJsons.remove(guildId);
-        Consumer<Guild> secondPassCallback = cachedGuildCallbacks.remove(guildId);
-        GuildImpl guildObj = (GuildImpl) getJDA().getGuildMap().get(guildId);
-
-        if (guildObj == null)
-            throw new IllegalStateException("Attempted to perform a second pass on an unknown Guild. Guild not in JDA " +
-                    "mapping. GuildId: " + guildId);
-        if (guildJson == null)
-            throw new IllegalStateException("Attempted to perform a second pass on an unknown Guild. No cached Guild " +
-                    "for second pass. GuildId: " + guildId);
-        if (secondPassCallback == null)
-            throw new IllegalArgumentException("No callback provided for the second pass on the Guild!");
-
-        for (JSONArray chunk : memberChunks)
-            createGuildMemberPass(guildObj, chunk);
-
-        Member owner = guildObj.getMemberById(guildJson.getLong("owner_id"));
-        if (owner != null)
-            guildObj.setOwner(owner);
+        for (JSONObject memberJson : members.valueCollection())
+            createMember(guildObj, memberJson);
 
         if (guildObj.getOwner() == null)
-            LOG.error("Never set the Owner of the Guild: {} because we don't have the owner User object! How?!", guildObj.getId());
+            LOG.warn("Finished setup for guild with a null owner. GuildId: {} OwnerId: {}", guildId, guildJson.opt("owner_id"));
 
-        JSONArray channels = guildJson.getJSONArray("channels");
-        createGuildChannelPass(guildObj, channels);
-
-        JSONArray voiceStates = guildJson.getJSONArray("voice_states");
-        createGuildVoiceStatePass(guildObj, voiceStates);
-
-        secondPassCallback.accept(guildObj);
-        getJDA().getGuildLock().unlock(guildId);
-    }
-
-    public void handleGuildSync(GuildImpl guild, JSONArray members, JSONArray presences)
-    {
-        for (int i = 0; i < members.length(); i++)
+        for (int i = 0; i < channelArray.length(); i++)
         {
-            JSONObject memberJson = members.getJSONObject(i);
-            createMember(guild, memberJson);
+            JSONObject channelJson = channelArray.getJSONObject(i);
+            createGuildChannel(guildObj, channelJson);
         }
 
-        for (int i = 0; i < presences.length(); i++)
-        {
-            JSONObject presenceJson = presences.getJSONObject(i);
-            final long userId = presenceJson.getJSONObject("user").getLong("id");
+        createGuildEmotePass(guildObj, emotesArray);
+        createGuildVoiceStatePass(guildObj, voiceStateArray);
 
-            MemberImpl member = (MemberImpl) guild.getMembersMap().get(userId);
+        guildObj.setAfkChannel(guildObj.getVoiceChannelById(afkChannelId))
+                .setSystemChannel(guildObj.getTextChannelById(systemChannelId));
+
+        for (int i = 0; i < presencesArray.length(); i++)
+        {
+            JSONObject presence = presencesArray.getJSONObject(i);
+            final long userId = presence.getJSONObject("user").getLong("id");
+            MemberImpl member = (MemberImpl) guildObj.getMembersMap().get(userId);
+
             if (member == null)
-                LOG.error("Received a Presence for a non-existent Member when dealing with GuildSync!");
+                LOG.debug("Received a ghost presence in GuildFirstPass! UserId: {} Guild: {}", userId, guildObj);
             else
-                this.createPresence(member, presenceJson);
+                createPresence(member, presence);
         }
+
+        getJDA().getGuildMap().put(guildId, guildObj);
+        return guildObj;
     }
 
-    private void createGuildMemberPass(GuildImpl guildObj, JSONArray members)
+    private void createGuildChannel(GuildImpl guildObj, JSONObject channelData)
     {
-        for (int i = 0; i < members.length(); i++)
+        final ChannelType channelType = ChannelType.fromId(channelData.getInt("type"));
+        switch (channelType)
         {
-            JSONObject memberJson = members.getJSONObject(i);
-            createMember(guildObj, memberJson);
-        }
-    }
-
-    private void createGuildChannelPass(GuildImpl guildObj, JSONArray channels)
-    {
-        for (int i = 0; i < channels.length(); i++)
-        {
-            JSONObject channel = channels.getJSONObject(i);
-            ChannelType type = ChannelType.fromId(channel.getInt("type"));
-            Channel channelObj = null;
-            switch (type)
-            {
-                case TEXT:
-                    channelObj = getJDA().getTextChannelById(channel.getLong("id"));
-                    break;
-                case VOICE:
-                    channelObj = getJDA().getVoiceChannelById(channel.getLong("id"));
-                    break;
-                case CATEGORY:
-                    channelObj = getJDA().getCategoryMap().get(channel.getLong("id"));
-                    break;
-                default:
-                    LOG.error("Received a channel for a guild that isn't a text, voice or category channel (ChannelPass). JSON: {}", channel);
-            }
-
-            if (channelObj != null)
-            {
-                JSONArray permissionOverwrites = channel.getJSONArray("permission_overwrites");
-                createOverridesPass((AbstractChannelImpl<?>) channelObj, permissionOverwrites);
-            }
-            else
-            {
-                LOG.error("Got permission_override for unknown channel with id: {}", channel.getString("id"));
-            }
+        case TEXT:
+            createTextChannel(guildObj, channelData, guildObj.getIdLong());
+            break;
+        case VOICE:
+            createVoiceChannel(guildObj, channelData, guildObj.getIdLong());
+            break;
+        case CATEGORY:
+            createCategory(guildObj, channelData, guildObj.getIdLong());
+            break;
+        default:
+            throw new IllegalArgumentException("Cannot create channel for type " + channelData.getInt("type"));
         }
     }
 
@@ -470,6 +265,9 @@ public class EntityBuilder
                 continue;
             }
 
+            GuildVoiceStateImpl voiceState = (GuildVoiceStateImpl) member.getVoiceState();
+            if (voiceState == null)
+                continue;
             final long channelId = voiceStateJson.getLong("channel_id");
             VoiceChannelImpl voiceChannel =
                     (VoiceChannelImpl) guildObj.getVoiceChannelsMap().get(channelId);
@@ -480,7 +278,6 @@ public class EntityBuilder
                     channelId, guildObj.getId(), userId);
 
             // VoiceState is considered volatile so we don't expect anything to actually exist
-            GuildVoiceStateImpl voiceState = (GuildVoiceStateImpl) member.getVoiceState();
             voiceState.setSelfMuted(Helpers.optBoolean(voiceStateJson, "self_mute"))
                       .setSelfDeafened(Helpers.optBoolean(voiceStateJson, "self_deaf"))
                       .setGuildMuted(Helpers.optBoolean(voiceStateJson, "mute"))
@@ -531,28 +328,41 @@ public class EntityBuilder
             }
         }
 
-        return userObj
-                .setName(user.getString("username"))
-                .setDiscriminator(user.get("discriminator").toString())
-                .setAvatarId(user.optString("avatar", null))
-                .setBot(Helpers.optBoolean(user, "bot"));
+        userObj
+            .setName(user.getString("username"))
+            .setDiscriminator(user.get("discriminator").toString())
+            .setAvatarId(user.optString("avatar", null))
+            .setBot(Helpers.optBoolean(user, "bot"));
+        if (!fake && modifyCache)
+            getJDA().getEventCache().playbackCache(EventCache.Type.USER, id);
+        return userObj;
     }
 
     public Member createMember(GuildImpl guild, JSONObject memberJson)
     {
+        boolean playbackCache = false;
         User user = createUser(memberJson.getJSONObject("user"));
         MemberImpl member = (MemberImpl) guild.getMember(user);
         if (member == null)
         {
             member = new MemberImpl(guild, user);
-            guild.getMembersMap().put(user.getIdLong(), member);
+            playbackCache = guild.getMembersMap().put(user.getIdLong(), member) == null;
+            if (guild.getOwnerIdLong() == user.getIdLong())
+            {
+                LOG.trace("Found owner of guild with id {}", guild.getId());
+                guild.setOwner(member);
+            }
         }
 
-        ((GuildVoiceStateImpl) member.getVoiceState())
-            .setGuildMuted(memberJson.getBoolean("mute"))
-            .setGuildDeafened(memberJson.getBoolean("deaf"));
+        GuildVoiceStateImpl state = (GuildVoiceStateImpl) member.getVoiceState();
+        if (state != null)
+        {
+            state.setGuildMuted(memberJson.getBoolean("mute"))
+                 .setGuildDeafened(memberJson.getBoolean("deaf"));
+        }
 
-        member.setJoinDate(OffsetDateTime.parse(memberJson.getString("joined_at")))
+        TemporalAccessor joinedAt = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(memberJson.getString("joined_at"));
+        member.setJoinDate(Instant.from(joinedAt).toEpochMilli())
               .setNickname(memberJson.optString("nick", null));
 
         JSONArray rolesJson = memberJson.getJSONArray("roles");
@@ -571,6 +381,11 @@ public class EntityBuilder
             }
         }
 
+        if (playbackCache)
+        {
+            long hashId = guild.getIdLong() ^ user.getIdLong();
+            getJDA().getEventCache().playbackCache(EventCache.Type.MEMBER, hashId);
+        }
         return member;
     }
 
@@ -579,13 +394,14 @@ public class EntityBuilder
     {
         if (memberOrFriend == null)
             throw new NullPointerException("Provided memberOrFriend was null!");
+        boolean cacheGame = getJDA().isCacheFlagSet(CacheFlag.GAME);
 
-        JSONObject gameJson = presenceJson.isNull("game") ? null : presenceJson.getJSONObject("game");
+        JSONObject gameJson = !cacheGame || presenceJson.isNull("game") ? null : presenceJson.getJSONObject("game");
         OnlineStatus onlineStatus = OnlineStatus.fromKey(presenceJson.getString("status"));
         Game game = null;
         boolean parsedGame = false;
 
-        if (gameJson != null && !gameJson.isNull("name"))
+        if (cacheGame && gameJson != null && !gameJson.isNull("name"))
         {
             try
             {
@@ -611,14 +427,14 @@ public class EntityBuilder
         {
             MemberImpl member = (MemberImpl) memberOrFriend;
             member.setOnlineStatus(onlineStatus);
-            if (parsedGame)
+            if (cacheGame && parsedGame)
                 member.setGame(game);
         }
         else if (memberOrFriend instanceof Friend)
         {
             FriendImpl friend = (FriendImpl) memberOrFriend;
             friend.setOnlineStatus(onlineStatus);
-            if (parsedGame)
+            if (cacheGame && parsedGame)
                 friend.setGame(game);
 
             OffsetDateTime lastModified = OffsetDateTime.ofInstant(
@@ -728,94 +544,109 @@ public class EntityBuilder
 
     public Category createCategory(JSONObject json, long guildId)
     {
-        return createCategory(json, guildId, true);
+        return createCategory(null, json, guildId);
     }
 
-    public Category createCategory(JSONObject json, long guildId, boolean guildIsLoaded)
+    public Category createCategory(GuildImpl guild, JSONObject json, long guildId)
     {
+        boolean playbackCache = false;
         final long id = json.getLong("id");
         CategoryImpl channel = (CategoryImpl) getJDA().getCategoryMap().get(id);
         if (channel == null)
         {
-            GuildImpl guild = ((GuildImpl) getJDA().getGuildMap().get(guildId));
+            if (guild == null)
+                guild = (GuildImpl) getJDA().getGuildMap().get(guildId);
             channel = new CategoryImpl(id, guild);
             guild.getCategoriesMap().put(id, channel);
-            getJDA().getCategoryMap().put(id, channel);
+            playbackCache = getJDA().getCategoryMap().put(id, channel) == null;
         }
 
-        if (!json.isNull("permission_overwrites") && guildIsLoaded)
+        if (!json.isNull("permission_overwrites"))
         {
             JSONArray overrides = json.getJSONArray("permission_overwrites");
             createOverridesPass(channel, overrides);
         }
 
-        return channel
-                .setName(json.getString("name"))
-                .setPosition(json.getInt("position"));
+        channel
+            .setName(json.getString("name"))
+            .setPosition(json.getInt("position"));
+        if (playbackCache)
+            getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
+        return channel;
     }
 
     public TextChannel createTextChannel(JSONObject json, long guildId)
     {
-        return createTextChannel(json, guildId, true);
+        return createTextChannel(null, json, guildId);
 
     }
 
-    public TextChannel createTextChannel(JSONObject json, long guildId, boolean guildIsLoaded)
+    public TextChannel createTextChannel(GuildImpl guildObj, JSONObject json, long guildId)
     {
+        boolean playbackCache = false;
         final long id = json.getLong("id");
         TextChannelImpl channel = (TextChannelImpl) getJDA().getTextChannelMap().get(id);
         if (channel == null)
         {
-            GuildImpl guild = ((GuildImpl) getJDA().getGuildMap().get(guildId));
-            channel = new TextChannelImpl(id, guild);
-            guild.getTextChannelsMap().put(id, channel);
-            getJDA().getTextChannelMap().put(id, channel);
+            if (guildObj == null)
+                guildObj = (GuildImpl) getJDA().getGuildMap().get(guildId);
+            channel = new TextChannelImpl(id, guildObj);
+            guildObj.getTextChannelsMap().put(id, channel);
+            playbackCache = getJDA().getTextChannelMap().put(id, channel) == null;
         }
 
-        if (!json.isNull("permission_overwrites") && guildIsLoaded)
+        if (!json.isNull("permission_overwrites"))
         {
             JSONArray overrides = json.getJSONArray("permission_overwrites");
             createOverridesPass(channel, overrides);
         }
 
-        return channel
-                .setParent(Helpers.optLong(json, "parent_id", 0))
-                .setLastMessageId(Helpers.optLong(json, "last_message_id", 0))
-                .setName(json.getString("name"))
-                .setTopic(json.optString("topic"))
-                .setPosition(json.getInt("position"))
-                .setNSFW(Helpers.optBoolean(json, "nsfw"));
+        channel
+            .setParent(Helpers.optLong(json, "parent_id", 0))
+            .setLastMessageId(Helpers.optLong(json, "last_message_id", 0))
+            .setName(json.getString("name"))
+            .setTopic(json.optString("topic"))
+            .setPosition(json.getInt("position"))
+            .setNSFW(Helpers.optBoolean(json, "nsfw"));
+        if (playbackCache)
+            getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
+        return channel;
     }
 
     public VoiceChannel createVoiceChannel(JSONObject json, long guildId)
     {
-        return createVoiceChannel(json, guildId, true);
+        return createVoiceChannel(null, json, guildId);
     }
 
-    public VoiceChannel createVoiceChannel(JSONObject json, long guildId, boolean guildIsLoaded)
+    public VoiceChannel createVoiceChannel(GuildImpl guild, JSONObject json, long guildId)
     {
+        boolean playbackCache = false;
         final long id = json.getLong("id");
         VoiceChannelImpl channel = ((VoiceChannelImpl) getJDA().getVoiceChannelMap().get(id));
         if (channel == null)
         {
-            GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(guildId);
+            if (guild == null)
+                guild = (GuildImpl) getJDA().getGuildMap().get(guildId);
             channel = new VoiceChannelImpl(id, guild);
             guild.getVoiceChannelsMap().put(id, channel);
-            getJDA().getVoiceChannelMap().put(id, channel);
+            playbackCache = getJDA().getVoiceChannelMap().put(id, channel) == null;
         }
 
-        if (!json.isNull("permission_overwrites") && guildIsLoaded)
+        if (!json.isNull("permission_overwrites"))
         {
             JSONArray overrides = json.getJSONArray("permission_overwrites");
             createOverridesPass(channel, overrides);
         }
 
-        return channel
-                .setParent(Helpers.optLong(json, "parent_id", 0))
-                .setName(json.getString("name"))
-                .setPosition(json.getInt("position"))
-                .setUserLimit(json.getInt("user_limit"))
-                .setBitrate(json.getInt("bitrate"));
+        channel
+            .setParent(Helpers.optLong(json, "parent_id", 0))
+            .setName(json.getString("name"))
+            .setPosition(json.getInt("position"))
+            .setUserLimit(json.getInt("user_limit"))
+            .setBitrate(json.getInt("bitrate"));
+        if (playbackCache)
+            getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
+        return channel;
     }
 
     public PrivateChannel createPrivateChannel(JSONObject privatechat)
@@ -824,11 +655,11 @@ public class EntityBuilder
             privatechat.getJSONArray("recipients").getJSONObject(0) :
             privatechat.getJSONObject("recipient");
         final long userId = recipient.getLong("id");
-        UserImpl user = ((UserImpl) getJDA().getUserMap().get(userId));
+        UserImpl user = (UserImpl) getJDA().getUserMap().get(userId);
         if (user == null)
         {   //The getJDA() can give us private channels connected to Users that we can no longer communicate with.
             // As such, make a fake user and fake private channel.
-            user = (UserImpl) createFakeUser(recipient, true);
+            user = createFakeUser(recipient, true);
         }
 
         final long channelId = privatechat.getLong("id");
@@ -842,7 +673,10 @@ public class EntityBuilder
             getJDA().getFakePrivateChannelMap().put(channelId, priv);
         }
         else
+        {
             getJDA().getPrivateChannelMap().put(channelId, priv);
+            getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, channelId);
+        }
         return priv;
     }
 
@@ -867,24 +701,29 @@ public class EntityBuilder
         }
     }
 
-    public Role createRole(JSONObject roleJson, long guildId)
+    public Role createRole(GuildImpl guild, JSONObject roleJson, long guildId)
     {
+        boolean playbackCache = false;
         final long id = roleJson.getLong("id");
-        GuildImpl guild = ((GuildImpl) getJDA().getGuildMap().get(guildId));
-        RoleImpl role = ((RoleImpl) guild.getRolesMap().get(id));
+        if (guild == null)
+            guild = (GuildImpl) getJDA().getGuildMap().get(guildId);
+        RoleImpl role = (RoleImpl) guild.getRolesMap().get(id);
         if (role == null)
         {
             role = new RoleImpl(id, guild);
-            guild.getRolesMap().put(id, role);
+            playbackCache = guild.getRolesMap().put(id, role) == null;
         }
         final int color = roleJson.getInt("color");
-        return role.setName(roleJson.getString("name"))
-                .setRawPosition(roleJson.getInt("position"))
-                .setRawPermissions(roleJson.getLong("permissions"))
-                .setManaged(roleJson.getBoolean("managed"))
-                .setHoisted(roleJson.getBoolean("hoist"))
-                .setColor(color == 0 ? Role.DEFAULT_COLOR_RAW : color)
-                .setMentionable(roleJson.has("mentionable") && roleJson.getBoolean("mentionable"));
+        role.setName(roleJson.getString("name"))
+            .setRawPosition(roleJson.getInt("position"))
+            .setRawPermissions(roleJson.getLong("permissions"))
+            .setManaged(roleJson.getBoolean("managed"))
+            .setHoisted(roleJson.getBoolean("hoist"))
+            .setColor(color == 0 ? Role.DEFAULT_COLOR_RAW : color)
+            .setMentionable(roleJson.has("mentionable") && roleJson.getBoolean("mentionable"));
+        if (playbackCache)
+            getJDA().getEventCache().playbackCache(EventCache.Type.ROLE, id);
+        return role;
     }
 
     public Message createMessage(JSONObject jsonObject) { return createMessage(jsonObject, false); }
@@ -1269,6 +1108,7 @@ public class EntityBuilder
         if (getJDA().getAccountType() != AccountType.CLIENT)
             throw new AccountTypeException(AccountType.CLIENT, "Attempted to create a Group but the logged in account is not a CLIENT!");
 
+        boolean playbackCache = false;
         final long groupId = groupJson.getLong("id");
         JSONArray recipients = groupJson.getJSONArray("recipients");
         final long ownerId = groupJson.getLong("owner_id");
@@ -1280,7 +1120,7 @@ public class EntityBuilder
         if (group == null)
         {
             group = new GroupImpl(groupId, getJDA());
-            getJDA().asClient().getGroupMap().put(groupId, group);
+            playbackCache = getJDA().asClient().getGroupMap().put(groupId, group) == null;
         }
 
         TLongObjectMap<User> groupUsers = group.getUserMap();
@@ -1298,11 +1138,14 @@ public class EntityBuilder
             throw new IllegalArgumentException("Attempted to build a Group, but could not find user by provided owner id." +
                     "This should not be possible because the owner should be IN the group!");
 
-        return group
-                .setOwner(owner)
-                .setLastMessageId(lastMessage)
-                .setName(name)
-                .setIconId(iconId);
+        group
+            .setOwner(owner)
+            .setLastMessageId(lastMessage)
+            .setName(name)
+            .setIconId(iconId);
+        if (playbackCache)
+            getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, groupId);
+        return group;
     }
 
     public Invite createInvite(JSONObject object)
@@ -1370,12 +1213,6 @@ public class EntityBuilder
         return new InviteImpl(getJDA(), code, expanded, inviter,
                               maxAge, maxUses, temporary,
                               timeCreated, uses, channel, guild);
-    }
-
-    public void clearCache()
-    {
-        cachedGuildJsons.clear();
-        cachedGuildCallbacks.clear();
     }
 
     public ApplicationInfo createApplicationInfo(JSONObject object)

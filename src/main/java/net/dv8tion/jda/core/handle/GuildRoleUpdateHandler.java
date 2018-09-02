@@ -35,15 +35,14 @@ public class GuildRoleUpdateHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long guildId = content.getLong("guild_id");
-        if (getJDA().getGuildLock().isLocked(guildId))
+        if (getJDA().getGuildSetupController().isLocked(guildId))
             return guildId;
 
         JSONObject rolejson = content.getJSONObject("role");
         GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(guildId);
         if (guild == null)
         {
-            getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, () ->
-                    handle(responseNumber, allContent));
+            getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Received a Role Update for a Guild that is not yet cached: {}", content);
             return null;
         }
@@ -52,7 +51,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
         RoleImpl role = (RoleImpl) guild.getRolesMap().get(roleId);
         if (role == null)
         {
-            getJDA().getEventCache().cache(EventCache.Type.ROLE, roleId, () -> handle(responseNumber, allContent));
+            getJDA().getEventCache().cache(EventCache.Type.ROLE, roleId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Received a Role Update for Role that is not yet cached: {}", content);
             return null;
         }

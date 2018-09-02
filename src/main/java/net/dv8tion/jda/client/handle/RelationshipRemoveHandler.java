@@ -56,7 +56,7 @@ public class RelationshipRemoveHandler extends SocketHandler
         Relationship relationship = getJDA().asClient().getRelationshipById(userId, type);
         if (relationship == null)
         {
-            getJDA().getEventCache().cache(EventCache.Type.RELATIONSHIP, userId, () -> handle(responseNumber, allContent));
+            getJDA().getEventCache().cache(EventCache.Type.RELATIONSHIP, userId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Received a RELATIONSHIP_REMOVE for a relationship that was not yet cached! JSON: {}", content);
             return null;
         }
