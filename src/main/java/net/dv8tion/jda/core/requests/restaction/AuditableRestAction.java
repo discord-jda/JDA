@@ -102,7 +102,7 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
         if (reason == null || reason.isEmpty())
         {
             String localReason = ThreadLocalReason.getCurrent();
-            if (localReason == null)
+            if (localReason == null || localReason.isEmpty())
                 return headers;
             else
                 return generateHeaders(headers, localReason);
