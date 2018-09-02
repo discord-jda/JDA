@@ -59,7 +59,6 @@ public class AudioWebSocket extends WebSocketAdapter
 
     private final UpstreamReference<JDAImpl> api;
     private final UpstreamReference<Guild> guild;
-    private final String endpoint;
     private final String sessionId;
     private final String token;
     private boolean connected = false;
@@ -81,7 +80,6 @@ public class AudioWebSocket extends WebSocketAdapter
     public AudioWebSocket(ConnectionListener listener, String endpoint, JDAImpl api, Guild guild, String sessionId, String token, boolean shouldReconnect)
     {
         this.listener = listener;
-        this.endpoint = endpoint;
         this.api = new UpstreamReference<>(api);
         this.guild = new UpstreamReference<>(guild);
         this.sessionId = sessionId;
@@ -461,9 +459,8 @@ public class AudioWebSocket extends WebSocketAdapter
             if (audioConnection != null && audioConnection.get() != null)
                 audioConnection.get().shutdown();
 
-            if (manager.getConnectedChannel() != null)
-                disconnectedChannel = manager.getConnectedChannel();
-            else
+            disconnectedChannel = manager.getConnectedChannel();
+            if (disconnectedChannel == null)
                 disconnectedChannel = manager.getQueuedAudioConnection();
 
             manager.setAudioConnection(null);

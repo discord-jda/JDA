@@ -15,7 +15,6 @@
  */
 package net.dv8tion.jda.core.managers.impl;
 
-import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.audio.AudioConnection;
 import net.dv8tion.jda.core.audio.AudioReceiveHandler;
@@ -24,7 +23,6 @@ import net.dv8tion.jda.core.audio.SpeakingMode;
 import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.audio.hooks.ListenerProxy;
-import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
@@ -35,7 +33,6 @@ import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.PermissionUtil;
-import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 
 import java.util.Collection;
 import java.util.EnumSet;
@@ -48,9 +45,8 @@ public class AudioManagerImpl implements AudioManager
     public final ReentrantLock CONNECTION_LOCK = new ReentrantLock();
 
     protected final ListenerProxy connectionListener = new ListenerProxy();
-    protected final UpstreamReference<JDAImpl> api;
-    protected final UpstreamReference<GuildImpl> guild;
-    protected UpstreamReference<VoiceChannel> queuedAudioConnection = null;
+    protected final GuildImpl guild;
+    protected VoiceChannel queuedAudioConnection = null;
     protected AudioConnection audioConnection = null;
     protected EnumSet<SpeakingMode> speakingModes = EnumSet.of(SpeakingMode.VOICE);
 
@@ -66,8 +62,7 @@ public class AudioManagerImpl implements AudioManager
 
     public AudioManagerImpl(GuildImpl guild)
     {
-        this.guild = new UpstreamReference<>(guild);
-        this.api = new UpstreamReference<>(guild.getJDA());
+        this.guild = guild;
     }
 
     public AudioConnection getAudioConnection()
@@ -96,8 +91,8 @@ public class AudioManagerImpl implements AudioManager
         {
             checkChannel(channel, self);
             //Start establishing connection, joining provided channel
-            queuedAudioConnection = new UpstreamReference<>(channel);
-            api.get().getClient().queueAudioConnect(channel);
+            queuedAudioConnection = channel;
+            getJDA().getClient().queueAudioConnect(channel);
         }
         else
         {
@@ -109,7 +104,7 @@ public class AudioManagerImpl implements AudioManager
 
             checkChannel(channel, self);
 
-            api.get().getClient().queueAudioConnect(channel);
+            getJDA().getClient().queueAudioConnect(channel);
             audioConnection.setChannel(channel);
         }
     }
@@ -151,7 +146,7 @@ public class AudioManagerImpl implements AudioManager
             if (audioConnection != null)
                 this.audioConnection.close(reason);
             else
-                this.api.get().getClient().queueAudioDisconnect(getGuild());
+                this.getJDA().getClient().queueAudioDisconnect(getGuild());
             this.audioConnection = null;
         });
     }
@@ -172,15 +167,15 @@ public class AudioManagerImpl implements AudioManager
     }
 
     @Override
-    public JDA getJDA()
+    public JDAImpl getJDA()
     {
-        return api.get();
+        return getGuild().getJDA();
     }
 
     @Override
-    public Guild getGuild()
+    public GuildImpl getGuild()
     {
-        return guild.get();
+        return guild;
     }
 
     @Override
@@ -192,7 +187,7 @@ public class AudioManagerImpl implements AudioManager
     @Override
     public VoiceChannel getQueuedAudioConnection()
     {
-        return queuedAudioConnection == null ? null : queuedAudioConnection.get();
+        return queuedAudioConnection;
     }
 
     @Override
@@ -337,12 +332,12 @@ public class AudioManagerImpl implements AudioManager
     {
         VoiceChannel queuedChannel = audioConnection.getChannel();
         closeAudioConnection(ConnectionStatus.AUDIO_REGION_CHANGE);
-        this.queuedAudioConnection = new UpstreamReference<>(queuedChannel);
+        this.queuedAudioConnection = queuedChannel;
     }
 
     public void setQueuedAudioConnection(VoiceChannel channel)
     {
-        queuedAudioConnection = channel == null ? null : new UpstreamReference<>(channel);
+        queuedAudioConnection = channel;
     }
 
     public void setConnectedChannel(VoiceChannel channel)
@@ -365,7 +360,7 @@ public class AudioManagerImpl implements AudioManager
             VoiceChannel channel = isConnected() ? getConnectedChannel() : getQueuedAudioConnection();
 
             //This is technically equivalent to an audio open/move packet.
-            api.get().getClient().queueAudioConnect(channel);
+            getJDA().getClient().queueAudioConnect(channel);
         }
     }
 }

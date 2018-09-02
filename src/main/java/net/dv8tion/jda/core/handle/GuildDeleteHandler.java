@@ -25,7 +25,6 @@ import net.dv8tion.jda.client.entities.Relationship;
 import net.dv8tion.jda.client.entities.RelationshipType;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
-import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.entities.impl.PrivateChannelImpl;
@@ -52,9 +51,8 @@ public class GuildDeleteHandler extends SocketHandler
         boolean wasInit = getJDA().getGuildSetupController().onDelete(id, content);
         if (wasInit)
             return null;
-        //TODO: check logic here
-        GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(id);
 
+        GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(id);
         boolean unavailable = Helpers.optBoolean(content, "unavailable");
         if (guild == null)
         {
@@ -78,6 +76,13 @@ public class GuildDeleteHandler extends SocketHandler
             return null;
         }
 
+        //Remove everything from global cache
+        // this prevents some race-conditions for getting audio managers from guilds
+        getJDA().getGuildMap().remove(id);
+        guild.getTextChannelCache().forEach(chan -> getJDA().getTextChannelMap().remove(chan.getIdLong()));
+        guild.getVoiceChannelCache().forEach(chan -> getJDA().getVoiceChannelMap().remove(chan.getIdLong()));
+        guild.getCategoryCache().forEach(chan -> getJDA().getCategoryMap().remove(chan.getIdLong()));
+
         getJDA().getClient().removeAudioConnection(id);
         final TLongObjectMap<AudioManager> audioManagerMap = getJDA().getAudioManagerMap();
         synchronized (audioManagerMap)
@@ -93,18 +98,9 @@ public class GuildDeleteHandler extends SocketHandler
         // Anything left in memberIds will be removed from the main userMap
         //Use a new HashSet so that we don't actually modify the Member map so it doesn't affect Guild#getMembers for the leave event.
         TLongSet memberIds = new TLongHashSet(guild.getMembersMap().keySet());
-        for (Guild guildI : getJDA().getGuilds())
-        {
-            GuildImpl g = (GuildImpl) guildI;
-            if (g.equals(guild))
-                continue;
-
-            for (TLongIterator it = memberIds.iterator(); it.hasNext();)
-            {
-                if (g.getMembersMap().containsKey(it.next()))
-                    it.remove();
-            }
-        }
+        getJDA().getGuildCache().stream()
+                .map(GuildImpl.class::cast)
+                .forEach(g -> memberIds.removeAll(g.getMembersMap().keySet()));
 
         //If we are a client account, be sure to not remove any users from the cache that are Friends.
         // Remember, everything left in memberIds is removed from the userMap
@@ -152,10 +148,6 @@ public class GuildDeleteHandler extends SocketHandler
             return true;
         });
 
-        getJDA().getGuildMap().remove(id);
-        guild.getTextChannelCache().forEach(chan -> getJDA().getTextChannelMap().remove(chan.getIdLong()));
-        guild.getVoiceChannelCache().forEach(chan -> getJDA().getVoiceChannelMap().remove(chan.getIdLong()));
-        guild.getCategoryCache().forEach(chan -> getJDA().getCategoryMap().remove(chan.getIdLong()));
         getJDA().getEventManager().handle(
             new GuildLeaveEvent(
                 getJDA(), responseNumber,

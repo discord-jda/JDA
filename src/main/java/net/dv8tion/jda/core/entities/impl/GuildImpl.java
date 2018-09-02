@@ -609,10 +609,13 @@ public class GuildImpl implements Guild
             // No previous manager found -> create one
             synchronized (managerMap)
             {
+                GuildImpl cachedGuild = (GuildImpl) getJDA().getGuildById(id);
+                if (cachedGuild == null)
+                    throw new IllegalStateException("Cannot get an AudioManager instance on an uncached Guild");
                 mng = managerMap.get(id);
                 if (mng == null)
                 {
-                    mng = new AudioManagerImpl(this);
+                    mng = new AudioManagerImpl(cachedGuild);
                     managerMap.put(id, mng);
                 }
             }
