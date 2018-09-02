@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Set;
@@ -425,12 +426,13 @@ public interface Invite
 
         /**
          * The names of all users in this group. If the users were not included in the
-         * invite, this will return {@code null}. Users will usually only be returned when resolving the invite via the
+         * invite, this will return {@code null}. Users will only be returned when resolving the invite via the
          * {@link #resolve(net.dv8tion.jda.core.JDA, java.lang.String, boolean) Invite.resolve()} method with the
          * {@code withCounts} boolean set to {@code true}.
          *
          * @return The names of the groups's users or null if not preset in the invite
          */
+        @Nullable
         List<String> getUsers();
     }
 
