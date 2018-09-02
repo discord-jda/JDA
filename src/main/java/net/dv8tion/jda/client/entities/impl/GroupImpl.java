@@ -91,7 +91,7 @@ public class GroupImpl implements Group
     @Override
     public String getIconUrl()
     {
-        return iconId == null ? null : "https://cdn.discordapp.com/channel-icons/" + id + "/" + iconId + ".jpg";
+        return iconId == null ? null : "https://cdn.discordapp.com/channel-icons/" + id + "/" + iconId + ".png";
     }
 
     @Override

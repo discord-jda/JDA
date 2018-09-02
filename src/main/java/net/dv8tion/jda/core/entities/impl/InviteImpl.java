@@ -336,7 +336,7 @@ public class InviteImpl implements Invite
         public String getIconUrl()
         {
             return this.iconId == null ? null
-                    : "https://cdn.discordapp.com/icons/" + this.id + "/" + this.iconId + ".jpg";
+                    : "https://cdn.discordapp.com/icons/" + this.id + "/" + this.iconId + ".png";
         }
 
         @Override
@@ -361,7 +361,7 @@ public class InviteImpl implements Invite
         public String getSplashUrl()
         {
             return this.splashId == null ? null
-                    : "https://cdn.discordapp.com/splashes/" + this.id + "/" + this.splashId + ".jpg";
+                    : "https://cdn.discordapp.com/splashes/" + this.id + "/" + this.splashId + ".png";
         }
 
         @Override
@@ -414,7 +414,7 @@ public class InviteImpl implements Invite
         public String getIconUrl()
         {
             return this.iconId == null ? null
-                : "https://cdn.discordapp.com/channel-icons/" + this.id + "/" + this.iconId + ".jpg";
+                : "https://cdn.discordapp.com/channel-icons/" + this.id + "/" + this.iconId + ".png";
         }
 
         @Override

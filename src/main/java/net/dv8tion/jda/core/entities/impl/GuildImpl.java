@@ -155,7 +155,7 @@ public class GuildImpl implements Guild
     @Override
     public String getIconUrl()
     {
-        return iconId == null ? null : "https://cdn.discordapp.com/icons/" + id + "/" + iconId + ".jpg";
+        return iconId == null ? null : "https://cdn.discordapp.com/icons/" + id + "/" + iconId + ".png";
     }
 
     @Override
@@ -173,7 +173,7 @@ public class GuildImpl implements Guild
     @Override
     public String getSplashUrl()
     {
-        return splashId == null ? null : "https://cdn.discordapp.com/splashes/" + id + "/" + splashId + ".jpg";
+        return splashId == null ? null : "https://cdn.discordapp.com/splashes/" + id + "/" + splashId + ".png";
     }
 
     @Override

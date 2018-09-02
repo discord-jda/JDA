@@ -129,7 +129,7 @@ public class ApplicationImpl implements Application
     public String getIconUrl()
     {
         return this.iconId == null ? null
-                : "https://cdn.discordapp.com/app-icons/" + this.id + '/' + this.iconId + ".jpg";
+                : "https://cdn.discordapp.com/app-icons/" + this.id + '/' + this.iconId + ".png";
     }
 
     @Override
@@ -294,7 +294,7 @@ public class ApplicationImpl implements Application
         public String getAvatarUrl()
         {
             return this.avatarId == null ? null
-                    : "https://cdn.discordapp.com/avatars/" + this.id + "/" + this.avatarId + ".jpg";
+                    : "https://cdn.discordapp.com/avatars/" + this.id + "/" + this.avatarId + ".png";
         }
 
         @Override
