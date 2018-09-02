@@ -837,41 +837,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         listener.onStatusChange(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD);
                     it.remove();
                 }
-                else
-                {
-                    final AudioManagerImpl newMng = new AudioManagerImpl(guild);
-                    newMng.setSelfMuted(mng.isSelfMuted());
-                    newMng.setSelfDeafened(mng.isSelfDeafened());
-                    newMng.setQueueTimeout(mng.getConnectTimeout());
-                    newMng.setSendingHandler(mng.getSendingHandler());
-                    newMng.setReceivingHandler(mng.getReceiveHandler());
-                    newMng.setConnectionListener(listener);
-                    newMng.setAutoReconnect(mng.isAutoReconnect());
-
-                    if (mng.isConnected() || mng.isAttemptingToConnect())
-                    {
-                        final long channelId = mng.isConnected()
-                            ? mng.getConnectedChannel().getIdLong()
-                            : mng.getQueuedAudioConnection().getIdLong();
-
-                        final VoiceChannel channel = api.getVoiceChannelById(channelId);
-                        if (channel != null)
-                        {
-                            if (mng.isConnected())
-                                mng.closeAudioConnection(ConnectionStatus.ERROR_CANNOT_RESUME);
-                            //closing old connection in order to reconnect later
-                            newMng.setQueuedAudioConnection(channel);
-                        }
-                        else
-                        {
-                            //The voice channel is not cached. It was probably deleted.
-                            queuedAudioConnections.remove(guildId);
-                            if (listener != null)
-                                listener.onStatusChange(ConnectionStatus.DISCONNECTED_CHANNEL_DELETED);
-                        }
-                    }
-                    it.setValue(newMng);
-                }
             }
         }
     }

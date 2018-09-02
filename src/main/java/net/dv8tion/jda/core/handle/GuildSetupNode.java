@@ -22,10 +22,15 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
+import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
+import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
+import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.guild.GuildReadyEvent;
+import net.dv8tion.jda.core.managers.AudioManager;
+import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.utils.Helpers;
 import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import org.json.JSONArray;
@@ -360,6 +365,7 @@ public class GuildSetupNode
             members.remove(it.next());
         removedMembers.clear();
         GuildImpl guild = api.getEntityBuilder().createGuild(id, partialGuild, members);
+        updateAudioManagerReference(guild);
         if (join)
         {
             api.getEventManager().handle(new GuildJoinEvent(api, api.getResponseTotal(), guild));
@@ -405,6 +411,51 @@ public class GuildSetupNode
             updateStatus(GuildSetupController.Status.CHUNKING);
             getController().addGuildForChunking(id, join);
             requestedChunk = true;
+        }
+    }
+
+    private void updateAudioManagerReference(GuildImpl guild)
+    {
+        JDAImpl api = getController().getJDA();
+        TLongObjectMap<AudioManager> audioManagerMap = api.getAudioManagerMap();
+        synchronized (audioManagerMap)
+        {
+            AudioManagerImpl mng = (AudioManagerImpl) audioManagerMap.get(id);
+            if (mng == null)
+                return;
+            ConnectionListener listener = mng.getConnectionListener();
+            final AudioManagerImpl newMng = new AudioManagerImpl(guild);
+            newMng.setSelfMuted(mng.isSelfMuted());
+            newMng.setSelfDeafened(mng.isSelfDeafened());
+            newMng.setQueueTimeout(mng.getConnectTimeout());
+            newMng.setSendingHandler(mng.getSendingHandler());
+            newMng.setReceivingHandler(mng.getReceiveHandler());
+            newMng.setConnectionListener(listener);
+            newMng.setAutoReconnect(mng.isAutoReconnect());
+
+            if (mng.isConnected() || mng.isAttemptingToConnect())
+            {
+                final long channelId = mng.isConnected()
+                                       ? mng.getConnectedChannel().getIdLong()
+                                       : mng.getQueuedAudioConnection().getIdLong();
+
+                final VoiceChannel channel = api.getVoiceChannelById(channelId);
+                if (channel != null)
+                {
+                    if (mng.isConnected())
+                        mng.closeAudioConnection(ConnectionStatus.ERROR_CANNOT_RESUME);
+                    //closing old connection in order to reconnect later
+                    newMng.setQueuedAudioConnection(channel);
+                }
+                else
+                {
+                    //The voice channel is not cached. It was probably deleted.
+                    api.getClient().removeAudioConnection(id);
+                    if (listener != null)
+                        listener.onStatusChange(ConnectionStatus.DISCONNECTED_CHANNEL_DELETED);
+                }
+            }
+            audioManagerMap.put(id, newMng);
         }
     }
 }
