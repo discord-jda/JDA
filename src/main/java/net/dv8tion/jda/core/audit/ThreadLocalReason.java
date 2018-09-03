@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.audit;
 
 import javax.annotation.Nullable;
+import java.util.function.Consumer;
 
 /**
  * Thread-Local audit-log reason used automatically by {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction} instances
@@ -26,15 +27,35 @@ import javax.annotation.Nullable;
  * thread-local reason set through this handle. Thus audit-log reasons done by callbacks will also use the one set
  * from the executing thread.
  *
+ * <h1>Example without closable</h1>
  * <pre><code>
+ * String previousReason = ThreadLocalReason.getCurrent();
  * ThreadLocalReason.setCurrent("Hello World");
- * GuildController c = guild.getController();
- * c.ban(user, 0).queue(v -&gt; {
- *     c.unban(user).queue(); // also uses the reason "Hello World"
- * });
- * //Forwarding the reason is not async so resetting it here is fine.
- * ThreadLocalReason.resetCurrent();
+ * try {
+ *     GuildController c = guild.getController();
+ *     c.ban(user, 0).queue(v -&gt; {
+ *         c.unban(user).queue(); // also uses the reason "Hello World"
+ *     });
+ * } finally {
+ *     //Forwarding the reason is not async so resetting it here is fine.
+ *     ThreadLocalReason.setCurrent(previousReason);
+ * }
+ * //This will not use the reason "Hello World" but the previous, or none if none was set previously
+ * c.kick(user).queue();
  * </code></pre>
+ *
+ * <h1>Example with closable</h1>
+ * <pre><code>
+ * try (ThreadLocalReason.Closable __ = ThreadLocalReason.closable("Hello World")) {
+ *     GuildController c = guild.getController();
+ *     c.ban(user, 0).queue(v -&gt; {
+ *         c.unban(user).queue(); // also uses the reason "Hello World"
+ *     });
+ * } // automatically changes reason back
+ * //This will not use the reason "Hello World" but the previous, or none if none was set previously
+ * c.kick(user).queue();
+ * </code></pre>
+ *
  *
  * @see net.dv8tion.jda.core.requests.restaction.AuditableRestAction#reason(String) AuditableRestAction.reason(String)
  * @see ThreadLocal
