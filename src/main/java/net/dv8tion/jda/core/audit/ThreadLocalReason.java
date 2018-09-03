@@ -118,15 +118,18 @@ public final class ThreadLocalReason
      */
     public static class Closable implements AutoCloseable
     {
+        private final String previous;
+
         public Closable(String reason)
         {
+            this.previous = getCurrent();
             setCurrent(reason);
         }
 
         @Override
         public void close()
         {
-            resetCurrent();
+            setCurrent(previous);
         }
     }
 }
