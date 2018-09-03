@@ -220,7 +220,7 @@ public class AudioPacket
         final byte[] decryptedAudio = boxer.open(encodedAudio, extendedNonce);
         if (decryptedAudio == null)
         {
-            AudioConnection.LOG.debug("Failed to decrypt audio packet");
+            AudioConnection.LOG.trace("Failed to decrypt audio packet");
             return null;
         }
         final byte[] decryptedRawPacket = new byte[RTP_HEADER_BYTE_LENGTH + decryptedAudio.length];

@@ -498,15 +498,19 @@ public class AudioConnection
 
                         if (!audioParts.isEmpty())
                         {
-                            int audioLength = audioParts.get(0).length;
+                            int audioLength = audioParts.stream().mapToInt(it -> it.length).max().getAsInt();
                             short[] mix = new short[1920];  //960 PCM samples for each channel
                             int sample;
                             for (int i = 0; i < audioLength; i++)
                             {
                                 sample = 0;
-                                for (short[] audio : audioParts)
+                                for (Iterator<short[]> iterator = audioParts.iterator(); iterator.hasNext(); )
                                 {
-                                    sample += audio[i];
+                                    short[] audio = iterator.next();
+                                    if (i < audio.length)
+                                        sample += audio[i];
+                                    else
+                                        iterator.remove();
                                 }
                                 if (sample > Short.MAX_VALUE)
                                     mix[i] = Short.MAX_VALUE;
