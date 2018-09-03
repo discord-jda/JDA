@@ -22,6 +22,20 @@ import javax.annotation.Nullable;
  * Thread-Local audit-log reason used automatically by {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction} instances
  * when no other reason was set.
  *
+ * <p>Note that {@link net.dv8tion.jda.core.requests.RestAction#queue(Consumer) RestAction.queue()} will forward any
+ * thread-local reason set through this handle. Thus audit-log reasons done by callbacks will also use the one set
+ * from the executing thread.
+ *
+ * <pre><code>
+ * ThreadLocalReason.setCurrent("Hello World");
+ * GuildController c = guild.getController();
+ * c.ban(user, 0).queue(v -&gt; {
+ *     c.unban(user).queue(); // also uses the reason "Hello World"
+ * });
+ * //Forwarding the reason is not async so resetting it here is fine.
+ * ThreadLocalReason.resetCurrent();
+ * </code></pre>
+ *
  * @see net.dv8tion.jda.core.requests.restaction.AuditableRestAction#reason(String) AuditableRestAction.reason(String)
  * @see ThreadLocal
  */
@@ -97,7 +111,7 @@ public final class ThreadLocalReason
      *     {@literal List<Member>} mentions = event.getMessage().getMentionedMembers();
      *     GuildController controller = event.getGuild().getController();
      *     mentions.stream()
-     *             .map(m -> controller.ban(m, 7))
+     *             .map(m -&gt; controller.ban(m, 7))
      *             .forEach(RestAction::queue);
      * } // calls resetCurrent()
      * </code></pre>
