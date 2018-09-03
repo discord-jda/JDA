@@ -160,7 +160,7 @@ public class PermissionUtil
             }
         }
 
-        return emote.hasRoles() && (emote.getRoles().isEmpty() // Emote restricted to roles -> check if the issuer has them
+        return emote.canProvideRoles() && (emote.getRoles().isEmpty() // Emote restricted to roles -> check if the issuer has them
             || CollectionUtils.containsAny(issuer.getRoles(), emote.getRoles()));
     }
 

@@ -18,9 +18,7 @@ package net.dv8tion.jda.core.entities.impl;
 
 import net.dv8tion.jda.client.managers.EmoteManager;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.ListedEmote;
-import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
@@ -87,13 +85,13 @@ public class EmoteImpl implements ListedEmote
     @Override
     public List<Role> getRoles()
     {
-        if (!hasRoles())
+        if (!canProvideRoles())
             throw new IllegalStateException("Unable to return roles because this emote is fake. (We do not know the origin Guild of this emote)");
         return Collections.unmodifiableList(new LinkedList<>(roles));
     }
 
     @Override
-    public boolean hasRoles()
+    public boolean canProvideRoles()
     {
         return roles != null;
     }
