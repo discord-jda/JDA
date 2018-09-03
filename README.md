@@ -4,11 +4,13 @@
 [license]: https://img.shields.io/badge/License-Apache%202.0-lightgrey.svg
 [jenkins]: https://img.shields.io/badge/Download-Jenkins-brightgreen.svg
 [FAQ]: https://img.shields.io/badge/Wiki-FAQ-blue.svg
+[Troubleshooting]: https://img.shields.io/badge/Wiki-Troubleshooting-red.svg
 [ ![version][] ][download]
 [ ![jenkins][] ](http://home.dv8tion.net:8080/job/JDA/lastSuccessfulBuild/)
 [ ![license][] ](https://github.com/DV8FromTheWorld/JDA/tree/master/LICENSE)
 [ ![Discord](https://discordapp.com/api/guilds/125227483518861312/widget.png) ][discord-invite]
 [ ![FAQ] ](https://github.com/DV8FromTheWorld/JDA/wiki/10\)-FAQ)
+[ ![Troubleshooting] ](https://github.com/DV8FromTheWorld/JDA/wiki/19\)-Troubleshooting)
 
 <img align="right" src="https://i.imgur.com/OG7Tne8.png" height="200" width="200">
 
