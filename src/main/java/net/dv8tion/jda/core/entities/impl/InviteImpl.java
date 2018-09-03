@@ -31,6 +31,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Set;
 
 public class InviteImpl implements Invite
@@ -40,16 +41,18 @@ public class InviteImpl implements Invite
     private final String code;
     private final boolean expanded;
     private final Guild guild;
+    private final Group group;
     private final User inviter;
     private final int maxAge;
     private final int maxUses;
     private final boolean temporary;
     private final OffsetDateTime timeCreated;
     private final int uses;
+    private final Invite.InviteType type;
 
     public InviteImpl(final JDAImpl api, final String code, final boolean expanded, final User inviter,
             final int maxAge, final int maxUses, final boolean temporary, final OffsetDateTime timeCreated,
-            final int uses, final Channel channel, final Guild guild)
+            final int uses, final Channel channel, final Guild guild, final Group group, final Invite.InviteType type)
     {
         this.api = api;
         this.code = code;
@@ -62,6 +65,8 @@ public class InviteImpl implements Invite
         this.uses = uses;
         this.channel = channel;
         this.guild = guild;
+        this.group = group;
+        this.type = type;
     }
 
     public static RestAction<Invite> resolve(final JDA api, final String code, final boolean withCounts)
@@ -115,6 +120,9 @@ public class InviteImpl implements Invite
     {
         if (this.expanded)
             return new RestAction.EmptyRestAction<>(getJDA(), this);
+
+        if (this.type != Invite.InviteType.GUILD)
+            throw new IllegalStateException("Only guild invites can be expanded");
 
         final net.dv8tion.jda.core.entities.Guild guild = this.api.getGuildById(this.guild.getIdLong());
 
@@ -171,6 +179,12 @@ public class InviteImpl implements Invite
     }
 
     @Override
+    public Invite.InviteType getType()
+    {
+        return this.type;
+    }
+
+    @Override
     public Channel getChannel()
     {
         return this.channel;
@@ -194,6 +208,12 @@ public class InviteImpl implements Invite
     public Guild getGuild()
     {
         return this.guild;
+    }
+
+    @Override
+    public Group getGroup()
+    {
+        return this.group;
     }
 
     @Override
@@ -316,7 +336,7 @@ public class InviteImpl implements Invite
         public String getIconUrl()
         {
             return this.iconId == null ? null
-                    : "https://cdn.discordapp.com/icons/" + this.id + "/" + this.iconId + ".jpg";
+                    : "https://cdn.discordapp.com/icons/" + this.id + "/" + this.iconId + ".png";
         }
 
         @Override
@@ -341,7 +361,7 @@ public class InviteImpl implements Invite
         public String getSplashUrl()
         {
             return this.splashId == null ? null
-                    : "https://cdn.discordapp.com/splashes/" + this.id + "/" + this.splashId + ".jpg";
+                    : "https://cdn.discordapp.com/splashes/" + this.id + "/" + this.splashId + ".png";
         }
 
         @Override
@@ -369,4 +389,50 @@ public class InviteImpl implements Invite
         }
     }
 
+    public static class GroupImpl implements Group
+    {
+
+        private final String iconId, name;
+        private final long id;
+        private final List<String> users;
+
+        public GroupImpl(final String iconId, final String name, final long id, final List<String> users)
+        {
+            this.iconId = iconId;
+            this.name = name;
+            this.id = id;
+            this.users = users;
+        }
+
+        @Override
+        public String getIconId()
+        {
+            return iconId;
+        }
+
+        @Override
+        public String getIconUrl()
+        {
+            return this.iconId == null ? null
+                : "https://cdn.discordapp.com/channel-icons/" + this.id + "/" + this.iconId + ".png";
+        }
+
+        @Override
+        public String getName()
+        {
+            return name;
+        }
+
+        @Override
+        public long getIdLong()
+        {
+            return id;
+        }
+
+        @Override
+        public List<String> getUsers()
+        {
+            return users;
+        }
+    }
 }

@@ -37,6 +37,6 @@ public class GroupUpdateIconEvent extends GenericGroupUpdateEvent
     public String getOldIconUrl()
     {
         return oldIconId == null ? null :
-                "https://cdn.discordapp.com/channel-icons/" + group.getId() + "/" + oldIconId + ".jpg";
+                "https://cdn.discordapp.com/channel-icons/" + group.getId() + "/" + oldIconId + ".png";
     }
 }

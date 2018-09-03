@@ -284,7 +284,7 @@ public class RichPresence extends Game
             if (key.startsWith("spotify:"))
                 return "https://i.scdn.co/image/" + key.substring("spotify:".length());
             if (key.startsWith("twitch:"))
-                return String.format("https://static-cdn.jtvnw.net/previews-ttv/live_user_%s-108x60.jpg", key.substring("twitch:".length()));
+                return String.format("https://static-cdn.jtvnw.net/previews-ttv/live_user_%s-1920x1080.png", key.substring("twitch:".length()));
             return "https://cdn.discordapp.com/app-assets/" + applicationId + "/" + key + ".png";
         }
 
