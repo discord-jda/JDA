@@ -50,7 +50,7 @@ Note that this method is blocking and will cause the thread to sleep until start
 **Example**:
 
 ```java
-JDA jda = new JDABuilder(AccountType.BOT).setToken("token").build();
+JDA jda = new JDABuilder("token").build();
 ```
 
 **Note**: It is important to set the correct AccountType because Bot-accounts require a token prefix to login.
@@ -66,8 +66,7 @@ public class ReadyListener implements EventListener
             throws LoginException, InterruptedException
     {
         // Note: It is important to register your ReadyListener before building
-        JDA jda = new JDABuilder(AccountType.BOT)
-            .setToken("token")
+        JDA jda = new JDABuilder("token")
             .addEventListener(new ReadyListener())
             .build();
 
@@ -92,7 +91,7 @@ public class MessageListener extends ListenerAdapter
     public static void main(String[] args)
             throws LoginException
     {
-        JDA jda = new JDABuilder(AccountType.BOT).setToken("token").build();
+        JDA jda = new JDABuilder("token").build();
         jda.addEventListener(new MessageListener());
     }
 
@@ -149,7 +148,7 @@ Since version **3.4.0** JDA provides a `ShardManager` which automates this build
 ```java
 public static void main(String[] args) throws Exception
 {
-    JDABuilder shardBuilder = new JDABuilder(AccountType.BOT).setToken(args[0]);
+    JDABuilder shardBuilder = new JDABuilder(args[0]);
     //register your listeners here using shardBuilder.addEventListener(...)
     shardBuilder.addEventListener(new MessageListener());
     for (int i = 0; i < 10; i++)
