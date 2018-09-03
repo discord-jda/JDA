@@ -97,6 +97,11 @@ public class JDABuilder
 
     /**
      * Creates a JDABuilder with the predefined token.
+     *
+     * @param token
+     *        The bot token to use
+     *
+     * @see   #setToken(String)
      */
     public JDABuilder(String token)
     {
