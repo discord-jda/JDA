@@ -533,7 +533,11 @@ public class EntityBuilder
 
         roleSet.clear();
         for (int j = 0; j < emoteRoles.length(); j++)
-            roleSet.add(guildObj.getRoleById(emoteRoles.getString(j)));
+        {
+            Role role = guildObj.getRoleById(emoteRoles.getString(j));
+            if (role != null)
+                roleSet.add(role);
+        }
         if (user != null)
             emoteObj.setUser(user);
         return emoteObj

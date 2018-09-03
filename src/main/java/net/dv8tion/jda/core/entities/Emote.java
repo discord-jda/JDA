@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.entities;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.client.managers.EmoteManager;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
@@ -58,11 +60,11 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      * <br><a href="https://discordapp.com/developers/docs/resources/guild#emoji-object" target="_blank">Learn More</a>
      *
      * @throws IllegalStateException
-     *         If this Emote does not have attached roles according to {@link #hasRoles()}
+     *         If this Emote does not have attached roles according to {@link #canProvideRoles()}
      *
      * @return An immutable list of the roles this emote is active for (all roles if empty)
      *
-     * @see    #hasRoles()
+     * @see    #canProvideRoles()
      */
     List<Role> getRoles();
 
@@ -73,8 +75,26 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      * <p>If this is not true then {@link #getRoles()} will throw {@link IllegalStateException}.
      *
      * @return True, if this emote has roles attached
+     *
+     * @deprecated This will be replaced by {@link #canProvideRoles()}
      */
-    boolean hasRoles();
+    @Deprecated
+    @DeprecatedSince("3.8.0")
+    @ReplaceWith("canProvideRoles()")
+    default boolean hasRoles()
+    {
+        return canProvideRoles();
+    }
+
+    /**
+     * Whether this Emote has an attached roles list. This might not be the case when the emote
+     * is retrieved through special cases like audit-logs.
+     *
+     * <p>If this is not true then {@link #getRoles()} will throw {@link IllegalStateException}.
+     *
+     * @return True, if this emote has an attached roles list
+     */
+    boolean canProvideRoles();
 
     /**
      * The name of this emote

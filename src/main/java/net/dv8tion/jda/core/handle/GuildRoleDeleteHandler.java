@@ -15,8 +15,10 @@
  */
 package net.dv8tion.jda.core.handle;
 
+import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.impl.EmoteImpl;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.entities.impl.MemberImpl;
@@ -55,12 +57,20 @@ public class GuildRoleDeleteHandler extends SocketHandler
             return null;
         }
 
-        //Now that the role is removed from the Guild, remove it from all users.
+        //Now that the role is removed from the Guild, remove it from all users and emotes.
         for (Member m : guild.getMembersMap().valueCollection())
         {
             MemberImpl member = (MemberImpl) m;
             member.getRoleSet().remove(removedRole);
         }
+
+        for (Emote emote : guild.getEmoteCache())
+        {
+            EmoteImpl impl = (EmoteImpl) emote;
+            if (impl.canProvideRoles())
+                impl.getRoleSet().remove(removedRole);
+        }
+
         getJDA().getEventManager().handle(
             new RoleDeleteEvent(
                 getJDA(), responseNumber,

@@ -89,8 +89,11 @@ public class GuildEmojisUpdateHandler extends SocketHandler
             for (int j = 0; j < roles.length(); j++)
             {
                 Role role = guild.getRoleById(roles.getString(j));
-                newRoles.add(role);
-                oldRoles.remove(role);
+                if (role != null)
+                {
+                    newRoles.add(role);
+                    oldRoles.remove(role);
+                }
             }
 
             //cleanup old cached roles that were not found in the JSONArray
