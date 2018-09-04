@@ -18,7 +18,7 @@ package net.dv8tion.jda.core.requests;
 
 class CallbackContext implements AutoCloseable
 {
-    private static ThreadLocal<Boolean> callback = ThreadLocal.withInitial(() -> false);
+    private static final ThreadLocal<Boolean> callback = ThreadLocal.withInitial(() -> false);
     private static final CallbackContext instance = new CallbackContext();
 
     static CallbackContext getInstance()
