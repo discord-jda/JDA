@@ -362,9 +362,7 @@ public interface ShardManager
      */
     default Guild getGuildById(final long id)
     {
-        int shardId = MiscUtil.getShardForGuild(id, getShardsTotal());
-        JDA shard = this.getShardById(shardId);
-        return shard == null ? null : shard.getGuildById(id);
+        return getGuildCache().getElementById(id);
     }
 
     /**

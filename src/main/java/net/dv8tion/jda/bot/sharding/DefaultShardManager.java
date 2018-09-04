@@ -24,11 +24,13 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.JDALogger;
+import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.SessionController;
 import net.dv8tion.jda.core.utils.SessionControllerAdapter;
 import net.dv8tion.jda.core.utils.cache.CacheFlag;
@@ -387,6 +389,20 @@ public class DefaultShardManager implements ShardManager
     public int getShardsQueued()
     {
         return this.queue.size();
+    }
+
+    @Override
+    public int getShardsTotal()
+    {
+        return shardsTotal;
+    }
+
+    @Override
+    public Guild getGuildById(long id)
+    {
+        int shardId = MiscUtil.getShardForGuild(id, getShardsTotal());
+        JDA shard = this.getShardById(shardId);
+        return shard == null ? null : shard.getGuildById(id);
     }
 
     @Override
