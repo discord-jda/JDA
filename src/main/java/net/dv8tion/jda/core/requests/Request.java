@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.requests;
 
+import net.dv8tion.jda.core.audit.ThreadLocalReason;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.events.http.HttpRequestEvent;
@@ -41,6 +42,8 @@ public class Request<T>
     private final Object rawBody;
     private final CaseInsensitiveMap<String, String> headers;
 
+    private final String localReason;
+
     private boolean isCanceled = false;
 
     public Request(RestAction<T> restAction, Consumer<? super T> onSuccess, Consumer<? super Throwable> onFailure,
@@ -61,13 +64,14 @@ public class Request<T>
         this.headers = headers;
 
         this.api = (JDAImpl) restAction.getJDA();
+        this.localReason = ThreadLocalReason.getCurrent();
     }
 
     public void onSuccess(T successObj)
     {
         api.getCallbackPool().execute(() ->
         {
-            try
+            try (ThreadLocalReason.Closable __ = ThreadLocalReason.closable(localReason))
             {
                 onSuccess.accept(successObj);
             }
@@ -97,7 +101,7 @@ public class Request<T>
     {
         api.getCallbackPool().execute(() ->
         {
-            try
+            try (ThreadLocalReason.Closable __ = ThreadLocalReason.closable(localReason))
             {
                 onFailure.accept(failException);
                 if (failException instanceof Error)

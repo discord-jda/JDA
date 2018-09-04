@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.requests;
 
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.audit.ThreadLocalReason;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
@@ -496,7 +497,7 @@ public abstract class RestAction<T>
     {
         Checks.notNull(executor, "Scheduler");
         Checks.notNull(unit, "TimeUnit");
-        return executor.schedule((Callable<T>) this::complete, delay, unit);
+        return executor.schedule((Callable<T>) new ContextRunnable((Callable<T>) this::complete), delay, unit);
     }
 
     /**
@@ -720,7 +721,7 @@ public abstract class RestAction<T>
     {
         Checks.notNull(executor, "Scheduler");
         Checks.notNull(unit, "TimeUnit");
-        return executor.schedule(() -> queue(success, failure), delay, unit);
+        return executor.schedule((Runnable) new ContextRunnable(() -> queue(success, failure)), delay, unit);
     }
 
     protected RequestBody finalizeData() { return data; }
@@ -832,6 +833,45 @@ public abstract class RestAction<T>
         public boolean getAsBoolean()
         {
             return pre() && test();
+        }
+    }
+
+    private class ContextRunnable implements Runnable, Callable<T>
+    {
+        private final String localReason;
+        private final Runnable runnable;
+        private final Callable<T> callable;
+
+        protected ContextRunnable(Runnable runnable)
+        {
+            this.localReason = ThreadLocalReason.getCurrent();
+            this.runnable = runnable;
+            this.callable = null;
+        }
+
+        protected ContextRunnable(Callable<T> callable)
+        {
+            this.localReason = ThreadLocalReason.getCurrent();
+            this.runnable = null;
+            this.callable = callable;
+        }
+
+        @Override
+        public void run()
+        {
+            try (ThreadLocalReason.Closable __ = ThreadLocalReason.closable(localReason))
+            {
+                runnable.run();
+            }
+        }
+
+        @Override
+        public T call() throws Exception
+        {
+            try (ThreadLocalReason.Closable __ = ThreadLocalReason.closable(localReason))
+            {
+                return callable.call();
+            }
         }
     }
 }
