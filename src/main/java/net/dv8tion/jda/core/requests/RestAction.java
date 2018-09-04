@@ -387,6 +387,9 @@ public abstract class RestAction<T>
      *
      * <p><b>This might throw {@link java.lang.RuntimeException RuntimeExceptions}</b>
      *
+     * @throws IllegalStateException
+     *         If used within a {@link #queue(Consumer, Consumer) queue(...)} callback
+     *
      * @return The response value
      */
     public T complete()
@@ -412,6 +415,8 @@ public abstract class RestAction<T>
      * @param  shouldQueue
      *         Whether this should automatically handle rate limitations (default true)
      *
+     * @throws IllegalStateException
+     *         If used within a {@link #queue(Consumer, Consumer) queue(...)} callback
      * @throws RateLimitedException
      *         If we were rate limited and the {@code shouldQueue} is false.
      *         Use {@link #complete()} to avoid this Exception.
