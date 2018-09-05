@@ -33,17 +33,18 @@ _Please see the [Discord docs](https://discordapp.com/developers/docs/reference)
 
 ## UserBots and SelfBots
 
-Discord is currently not too fond of people creating and using automated client accounts (AccountType.CLIENT).
+Discord is currently prohibiting creation and usage of automated client accounts (AccountType.CLIENT).
 We however still have support to login with these accounts due to legacy support. That does not mean it is allowed or
 welcome to use.
+Note that JDA is not a good tool to build a custom discord client as it loads all servers/guilds on startup unlike
+a client which does this via lazy loading instead.
 If you need a bot, use a bot account from the [Application Dashboard](https://discordapp.com/developers/applications).
 
 [Read More](https://support.discordapp.com/hc/en-us/articles/115002192352-Automated-user-accounts-self-bots-)
 
 ## Creating the JDA Object
 
-Creating the JDA Object is done via the JDABuilder class by providing an AccountType (Bot/Client).
-After setting the token and other options via setters,
+Creating the JDA Object is done via the JDABuilder class. After setting the token and other options via setters,
 the JDA Object is then created by calling the `build()` method. When `build()` returns,
 JDA might not have finished starting up. However, you can use `awaitReady()`
 on the JDA object to ensure that the entire cache is loaded before proceeding.
@@ -55,7 +56,9 @@ Note that this method is blocking and will cause the thread to sleep until start
 JDA jda = new JDABuilder("token").build();
 ```
 
-**Note**: It is important to set the correct AccountType because Bot-accounts require a token prefix to login.
+**Note**: By default this will use the `AccountType.BOT` as that is the recommended type of account.
+You can change this to use `AccountType.CLIENT` however that is risking account termination.
+Use `new JDABuilder(AccountType)` to change to a different account type.
 
 #### Examples:
 
