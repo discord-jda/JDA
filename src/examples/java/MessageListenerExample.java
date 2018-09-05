@@ -15,7 +15,6 @@
  */
 
 import net.dv8tion.jda.client.entities.Group;
-import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.Permission;
@@ -40,8 +39,7 @@ public class MessageListenerExample extends ListenerAdapter
         // we would use AccountType.CLIENT
         try
         {
-            JDA jda = new JDABuilder(AccountType.BOT)
-                    .setToken("Your-Token-Goes-Here")                // The token of the account that is logging in.
+            JDA jda = new JDABuilder("Your-Token-Goes-Here")         // The token of the account that is logging in.
                     .addEventListener(new MessageListenerExample())  // An instance of a class that will handle events.
                     .build();
             jda.awaitReady(); // Blocking guarantees that JDA will be completely loaded.
@@ -253,7 +251,7 @@ public class MessageListenerExample extends ListenerAdapter
         else if (msg.equals("!block"))
         {
             //This is an example of how to use the complete() method on RestAction. The complete method acts similarly to how
-            // JDABuilder's buildBlocking works, it waits until the request has been sent before continuing execution.
+            // JDABuilder's awaitReady() works, it waits until the request has been sent before continuing execution.
             //Most developers probably wont need this and can just use queue. If you use complete, JDA will still handle ratelimit
             // control, however if shouldQueue is false it won't queue the Request to be sent after the ratelimit retry after time is past. It
             // will instead fire a RateLimitException!

@@ -17,6 +17,7 @@ package net.dv8tion.jda.core;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
 import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.core.JDA.Status;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
@@ -51,6 +52,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 public class JDABuilder
 {
     protected final List<Object> listeners;
+    protected final AccountType accountType;
 
     protected ScheduledThreadPoolExecutor rateLimitPool = null;
     protected boolean shutdownRateLimitPool = true;
@@ -62,7 +64,6 @@ public class JDABuilder
     protected OkHttpClient.Builder httpClientBuilder = null;
     protected OkHttpClient httpClient = null;
     protected WebSocketFactory wsFactory = null;
-    protected AccountType accountType;
     protected String token = null;
     protected IEventManager eventManager = null;
     protected IAudioSendFactory audioSendFactory = null;
@@ -82,6 +83,34 @@ public class JDABuilder
 
     /**
      * Creates a completely empty JDABuilder.
+     *
+     * <br>If you use this, you need to set the token using
+     * {@link net.dv8tion.jda.core.JDABuilder#setToken(String) setToken(String)}
+     * before calling {@link net.dv8tion.jda.core.JDABuilder#build() build()}
+     *
+     * @see #JDABuilder(String)
+     */
+    public JDABuilder()
+    {
+        this(AccountType.BOT);
+    }
+
+    /**
+     * Creates a JDABuilder with the predefined token.
+     *
+     * @param token
+     *        The bot token to use
+     *
+     * @see   #setToken(String)
+     */
+    public JDABuilder(String token)
+    {
+        this();
+        setToken(token);
+    }
+
+    /**
+     * Creates a completely empty JDABuilder.
      * <br>If you use this, you need to set the token using
      * {@link net.dv8tion.jda.core.JDABuilder#setToken(String) setToken(String)}
      * before calling {@link net.dv8tion.jda.core.JDABuilder#build() build()}
@@ -91,7 +120,10 @@ public class JDABuilder
      *
      * @throws IllegalArgumentException
      *         If the given AccountType is {@code null}
+     *
+     * @incubating Due to policy changes for the discord API this method may not be provided in a future version
      */
+    @Incubating
     public JDABuilder(AccountType accountType)
     {
         Checks.notNull(accountType, "accountType");
@@ -225,15 +257,6 @@ public class JDABuilder
      *     <li>Create or select an already existing application</li>
      *     <li>Verify that it has already been turned into a Bot. If you see the "Create a Bot User" button, click it.</li>
      *     <li>Click the <i>click to reveal</i> link beside the <b>Token</b> label to show your Bot's {@code token}</li>
-     * </ol>
-     *
-     * <h2>For {@link net.dv8tion.jda.core.AccountType#CLIENT}</h2>
-     * <br>Using either the Discord desktop app or the Browser Webapp
-     * <ol>
-     *     <li>Press {@code Ctrl-Shift-i} which will bring up the developer tools.</li>
-     *     <li>Go to the {@code Application} tab</li>
-     *     <li>Under {@code Storage}, select {@code Local Storage}, and then {@code discordapp.com}</li>
-     *     <li>Find the {@code token} row and copy the value that is in quotes.</li>
      * </ol>
      *
      * @param  token

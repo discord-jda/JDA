@@ -4,11 +4,13 @@
 [license]: https://img.shields.io/badge/License-Apache%202.0-lightgrey.svg
 [jenkins]: https://img.shields.io/badge/Download-Jenkins-brightgreen.svg
 [FAQ]: https://img.shields.io/badge/Wiki-FAQ-blue.svg
+[Troubleshooting]: https://img.shields.io/badge/Wiki-Troubleshooting-red.svg
 [ ![version][] ][download]
 [ ![jenkins][] ](http://home.dv8tion.net:8080/job/JDA/lastSuccessfulBuild/)
 [ ![license][] ](https://github.com/DV8FromTheWorld/JDA/tree/master/LICENSE)
 [ ![Discord](https://discordapp.com/api/guilds/125227483518861312/widget.png) ][discord-invite]
 [ ![FAQ] ](https://github.com/DV8FromTheWorld/JDA/wiki/10\)-FAQ)
+[ ![Troubleshooting] ](https://github.com/DV8FromTheWorld/JDA/wiki/19\)-Troubleshooting)
 
 <img align="right" src="https://i.imgur.com/OG7Tne8.png" height="200" width="200">
 
@@ -31,17 +33,18 @@ _Please see the [Discord docs](https://discordapp.com/developers/docs/reference)
 
 ## UserBots and SelfBots
 
-Discord is currently not too fond of people creating and using automated client accounts (AccountType.CLIENT).
+Discord is currently prohibiting creation and usage of automated client accounts (AccountType.CLIENT).
 We however still have support to login with these accounts due to legacy support. That does not mean it is allowed or
 welcome to use.
+Note that JDA is not a good tool to build a custom discord client as it loads all servers/guilds on startup unlike
+a client which does this via lazy loading instead.
 If you need a bot, use a bot account from the [Application Dashboard](https://discordapp.com/developers/applications).
 
 [Read More](https://support.discordapp.com/hc/en-us/articles/115002192352-Automated-user-accounts-self-bots-)
 
 ## Creating the JDA Object
 
-Creating the JDA Object is done via the JDABuilder class by providing an AccountType (Bot/Client).
-After setting the token and other options via setters,
+Creating the JDA Object is done via the JDABuilder class. After setting the token and other options via setters,
 the JDA Object is then created by calling the `build()` method. When `build()` returns,
 JDA might not have finished starting up. However, you can use `awaitReady()`
 on the JDA object to ensure that the entire cache is loaded before proceeding.
@@ -50,10 +53,12 @@ Note that this method is blocking and will cause the thread to sleep until start
 **Example**:
 
 ```java
-JDA jda = new JDABuilder(AccountType.BOT).setToken("token").build();
+JDA jda = new JDABuilder("token").build();
 ```
 
-**Note**: It is important to set the correct AccountType because Bot-accounts require a token prefix to login.
+**Note**: By default this will use the `AccountType.BOT` as that is the recommended type of account.
+You can change this to use `AccountType.CLIENT` however that is risking account termination.
+Use `new JDABuilder(AccountType)` to change to a different account type.
 
 #### Examples:
 
@@ -66,8 +71,7 @@ public class ReadyListener implements EventListener
             throws LoginException, InterruptedException
     {
         // Note: It is important to register your ReadyListener before building
-        JDA jda = new JDABuilder(AccountType.BOT)
-            .setToken("token")
+        JDA jda = new JDABuilder("token")
             .addEventListener(new ReadyListener())
             .build();
 
@@ -92,7 +96,7 @@ public class MessageListener extends ListenerAdapter
     public static void main(String[] args)
             throws LoginException
     {
-        JDA jda = new JDABuilder(AccountType.BOT).setToken("token").build();
+        JDA jda = new JDABuilder("token").build();
         jda.addEventListener(new MessageListener());
     }
 
@@ -149,7 +153,7 @@ Since version **3.4.0** JDA provides a `ShardManager` which automates this build
 ```java
 public static void main(String[] args) throws Exception
 {
-    JDABuilder shardBuilder = new JDABuilder(AccountType.BOT).setToken(args[0]);
+    JDABuilder shardBuilder = new JDABuilder(args[0]);
     //register your listeners here using shardBuilder.addEventListener(...)
     shardBuilder.addEventListener(new MessageListener());
     for (int i = 0; i < 10; i++)
