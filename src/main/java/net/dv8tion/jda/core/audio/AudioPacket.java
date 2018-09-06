@@ -79,12 +79,14 @@ public class AudioPacket
         final byte profile = buffer.get(0);
         final byte[] data = buffer.array();
         final boolean hasExtension = (profile & 0x10) != 0; // extension bit is at 000X
-        final short extension = hasExtension ? getShort(data, RTP_HEADER_BYTE_LENGTH) : 0;
-        final byte cc = (byte) (profile & 0x0f); // CSRC count - we ignore this for now
+        final byte cc = (byte) (profile & 0x0f);            // CSRC count - we ignore this for now
+        final int csrcLength = cc * 4;                      // defines count of 4-byte words
+        // it seems as if extensions only exist without a csrc list being present
+        final short extension = hasExtension ? getShort(data, RTP_HEADER_BYTE_LENGTH + csrcLength) : 0;
 
-        int offset = RTP_HEADER_BYTE_LENGTH + cc;
+        int offset = RTP_HEADER_BYTE_LENGTH + csrcLength;
         if (hasExtension && extension == RTP_DISCORD_EXTENSION)
-            offset = getPayloadOffset(data, cc);
+            offset = getPayloadOffset(data, csrcLength);
 
         this.encodedAudio = new byte[data.length - offset];
         System.arraycopy(data, offset, this.encodedAudio, 0, this.encodedAudio.length);
@@ -99,18 +101,19 @@ public class AudioPacket
         this.rawPacket = generateRawPacket(seq, timestamp, ssrc, encodedAudio);
     }
 
-    private int getPayloadOffset(byte[] data, byte cc)
+    private int getPayloadOffset(byte[] data, int csrcLength)
     {
         // headerLength defines number of 4-byte words in the extension
-        final short headerLength = getShort(data, RTP_HEADER_BYTE_LENGTH + 2);
+        final short headerLength = getShort(data, RTP_HEADER_BYTE_LENGTH + 2 + csrcLength);
         int i = RTP_HEADER_BYTE_LENGTH // RTP header = 12 bytes
                 + 4                    // header which defines a profile and length each 2-bytes = 4 bytes
+                + csrcLength           // length of CSRC list (this seems to be always 0 when an extension exists)
                 + headerLength * 4;    // number of 4-byte words in extension = len * 4 bytes
 
         // strip excess 0 bytes
         while (data[i] == 0)
             i++;
-        return i + cc;
+        return i + csrcLength;
     }
 
     private short getShort(byte[] arr, int offset)
