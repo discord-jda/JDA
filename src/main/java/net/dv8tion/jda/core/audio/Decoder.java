@@ -46,7 +46,7 @@ public class Decoder
 
     protected boolean isInOrder(char newSeq)
     {
-        return lastSeq == -1 || newSeq > lastSeq || lastSeq - newSeq > 10;
+        return lastSeq == (char) -1 || newSeq > lastSeq || lastSeq - newSeq > 10;
     }
 
     protected boolean wasPacketLost(char newSeq)
@@ -60,8 +60,7 @@ public class Decoder
         ShortBuffer decoded = ShortBuffer.allocate(4096);
         if (decryptedPacket == null)    //Flag for packet-loss
         {
-            result = Opus.INSTANCE.opus_decode(opusDecoder, null, 0, decoded,
-                    AudioConnection.OPUS_FRAME_SIZE, 0);
+            result = Opus.INSTANCE.opus_decode(opusDecoder, null, 0, decoded, AudioConnection.OPUS_FRAME_SIZE, 0);
             lastSeq = (char) -1;
             lastTimestamp = -1;
         }
