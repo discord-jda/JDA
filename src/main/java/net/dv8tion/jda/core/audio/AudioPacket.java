@@ -26,6 +26,8 @@ import java.util.Arrays;
 /**
  * Represents the contents of a audio packet that was either received from Discord or
  * will be sent to discord.
+ *
+ * @see <a href="https://tools.ietf.org/html/rfc3550" target="_blank">RFC 3350 - RTP: A Transport Protocol for Real-Time Applications</a>
  */
 public class AudioPacket
 {
@@ -34,20 +36,20 @@ public class AudioPacket
     /**
      * Bit index 0 and 1 represent the RTP Protocol version used. Discord uses the latest RTP protocol version, 2.<br>
      * Bit index 2 represents whether or not we pad. Opus uses an internal padding system, so RTP padding is not used.<br>
-     * Bit index 3 represents if we use extensions. Discord does not use RTP extensions.<br>
-     * Bit index 4 to 7 represent the CC or CSRC count. CSRC is Combined SSRC. Discord doesn't combine audio streams,
-     *      so the Combined count will always be 0 (binary: 0000).<br>
-     * This byte should always be the same, no matter the library implementation.
+     * Bit index 3 represents if we use extensions.<br>
+     * Bit index 4 to 7 represent the CC or CSRC count. CSRC is Combined SSRC.
      */
     public static final byte RTP_VERSION_PAD_EXTEND = (byte) 0x80;  //Binary: 1000 0000
 
     /**
      * This is Discord's RTP Profile Payload type.<br>
-     * I've yet to find actual documentation on what the bits inside this value represent.<br>
-     * As far as I can tell, this byte will always be the same, no matter the library implementation.<br>
+     * I've yet to find actual documentation on what the bits inside this value represent.
      */
     public static final byte RTP_PAYLOAD_TYPE = (byte) 0x78;        //Binary: 0100 1000
 
+    /**
+     * This defines the extension type used by discord for presumably video?
+     */
     public static final short RTP_DISCORD_EXTENSION = (short) 0xBEDE;
 
     public static final int SEQ_INDEX =                     2;
