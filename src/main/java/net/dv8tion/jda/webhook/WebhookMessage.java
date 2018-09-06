@@ -62,55 +62,6 @@ public class WebhookMessage
     /**
      * Creates a new WebhookMessage instance with the provided {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbeds}
      *
-     * @param  embeds
-     *         The embeds to use for this message
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If any of the provided embeds is {@code null}
-     *         or exceeds the maximum total character count of {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}
-     *
-     * @return The resulting WebhookMessage instance
-     *
-     * @deprecated
-     *         Use {@link #embeds(MessageEmbed, MessageEmbed...)} instead.
-     */
-    @Deprecated
-    @DeprecatedSince("3.7.0")
-    @ReplaceWith("embeds(MessageEmbed, MessageEmbed...)")
-    public static WebhookMessage of(MessageEmbed... embeds)
-    {
-        Checks.notEmpty(embeds, "Embeds");
-        if (embeds.length > 1)
-            return embeds(Arrays.asList(embeds));
-        return embeds(embeds[0]);
-    }
-
-    /**
-     * Creates a new WebhookMessage instance with the provided {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbeds}
-     *
-     * @param  embeds
-     *         The embeds to use for this message
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If any of the provided embeds is {@code null}
-     *         or exceeds the maximum total character count of {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}
-     *
-     * @return The resulting WebhookMessage instance
-     *
-     * @deprecated
-     *         Use {@link #embeds(Collection)} instead.
-     */
-    @Deprecated
-    @DeprecatedSince("3.7.0")
-    @ReplaceWith("embeds(Collection<MessageEmbed>)")
-    public static WebhookMessage of(Collection<MessageEmbed> embeds)
-    {
-        return embeds(embeds);
-    }
-
-    /**
-     * Creates a new WebhookMessage instance with the provided {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbeds}
-     *
      * @param  first
      *         The first embed to use for this message
      * @param  embeds
