@@ -113,7 +113,7 @@ public class AudioPacket
         // strip excess 0 bytes
         while (data[i] == 0)
             i++;
-        return i + csrcLength;
+        return i;
     }
 
     private short getShort(byte[] arr, int offset)
