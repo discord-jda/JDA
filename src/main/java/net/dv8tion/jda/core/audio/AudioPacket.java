@@ -48,6 +48,8 @@ public class AudioPacket
      */
     public static final byte RTP_PAYLOAD_TYPE = (byte) 0x78;        //Binary: 0100 1000
 
+    public static final short RTP_DISCORD_EXTENSION = (short) 0xBEDE;
+
     public static final int SEQ_INDEX =                     2;
     public static final int TIMESTAMP_INDEX =               4;
     public static final int SSRC_INDEX =                    8;
@@ -72,30 +74,15 @@ public class AudioPacket
         this.timestamp = buffer.getInt(TIMESTAMP_INDEX);
         this.ssrc = buffer.getInt(SSRC_INDEX);
 
-        final byte versionPad = buffer.get(0);
+        final byte profile = buffer.get(0);
         final byte[] data = buffer.array();
-        final short ext = getShort(data, RTP_HEADER_BYTE_LENGTH);
-        final byte cc = (byte) (versionPad & 0x0f);
-        int offset;
-        if ((versionPad & 0x10) != 0 && ext == (short) 0xBEDE)
-        {
-            final short headerLength = getShort(data, RTP_HEADER_BYTE_LENGTH + 2);
-            int i = RTP_HEADER_BYTE_LENGTH + 4;
-            for (; i < headerLength + RTP_HEADER_BYTE_LENGTH + 4; i++)
-            {
-                byte b = data[i];
-                byte len = (byte) ((b & (byte) 0x0F) + 1);
-                i += len;
-            }
+        final boolean hasExtension = (profile & 0x10) != 0; // extension bit is at 000X
+        final short extension = hasExtension ? getShort(data, RTP_HEADER_BYTE_LENGTH) : 0;
+        final byte cc = (byte) (profile & 0x0f); // CSRC count - we ignore this for now
 
-            while (data[i] == 0 || data[i] == (byte) 0x90)
-                i++;
-            offset = i + cc;
-        }
-        else
-        {
-            offset = RTP_HEADER_BYTE_LENGTH + cc;
-        }
+        int offset = RTP_HEADER_BYTE_LENGTH + cc;
+        if (hasExtension && extension == RTP_DISCORD_EXTENSION)
+            offset = getPayloadOffset(data, cc);
 
         this.encodedAudio = new byte[data.length - offset];
         System.arraycopy(data, offset, this.encodedAudio, 0, this.encodedAudio.length);
@@ -108,6 +95,20 @@ public class AudioPacket
         this.timestamp = timestamp;
         this.encodedAudio = encodedAudio;
         this.rawPacket = generateRawPacket(seq, timestamp, ssrc, encodedAudio);
+    }
+
+    private int getPayloadOffset(byte[] data, byte cc)
+    {
+        // headerLength defines number of 4-byte words in the extension
+        final short headerLength = getShort(data, RTP_HEADER_BYTE_LENGTH + 2);
+        int i = RTP_HEADER_BYTE_LENGTH // RTP header = 12 bytes
+                + 4                    // header which defines a profile and length each 2-bytes = 4 bytes
+                + headerLength * 4;    // number of 4-byte words in extension = len * 4 bytes
+
+        // strip excess 0 bytes
+        while (data[i] == 0)
+            i++;
+        return i + cc;
     }
 
     private short getShort(byte[] arr, int offset)
