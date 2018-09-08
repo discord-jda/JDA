@@ -35,7 +35,6 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.net.*;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -504,7 +503,7 @@ class AudioWebSocket extends WebSocketAdapter
 
     protected byte[] getSecretKey()
     {
-        return Arrays.copyOf(secretKey, secretKey.length);
+        return secretKey;
     }
 
     protected int getSSRC()
