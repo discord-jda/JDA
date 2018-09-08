@@ -49,6 +49,7 @@ class AudioWebSocket extends WebSocketAdapter
 {
     public static final Logger LOG = JDALogger.getLog(AudioWebSocket.class);
     public static final int DISCORD_SECRET_KEY_LENGTH = 32;
+    private static final byte[] UDP_KEEP_ALIVE= { (byte) 0xC9, 0, 0, 0, 0, 0, 0, 0, 0 };
 
     protected final AudioConnection audioConnection;
     protected final ConnectionListener listener;
@@ -599,13 +600,9 @@ class AudioWebSocket extends WebSocketAdapter
                 send(VoiceCode.HEARTBEAT, System.currentTimeMillis());
             if (audioConnection.udpSocket != null && !audioConnection.udpSocket.isClosed())
             {
-                long seq = 0;
                 try
                 {
-                    ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES + 1);
-                    buffer.put((byte)0xC9);
-                    buffer.putLong(seq);
-                    DatagramPacket keepAlivePacket = new DatagramPacket(buffer.array(), buffer.array().length, address);
+                    DatagramPacket keepAlivePacket = new DatagramPacket(UDP_KEEP_ALIVE, UDP_KEEP_ALIVE.length, address);
                     audioConnection.udpSocket.send(keepAlivePacket);
                 }
                 catch (NoRouteToHostException e)

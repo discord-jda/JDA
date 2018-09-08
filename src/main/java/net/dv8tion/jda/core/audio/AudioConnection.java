@@ -59,6 +59,9 @@ public class AudioConnection
                                                         // to Left and Right mono (stereo that is the same on both sides)
     public static final long MAX_UINT_32 = 4294967295L;
 
+    protected static final byte[] silenceBytes = new byte[] {(byte)0xF8, (byte)0xFF, (byte)0xFE};
+    protected static boolean printedError = false;
+
     protected final TIntLongMap ssrcMap = new TIntLongHashMap();
     protected final TIntObjectMap<Decoder> opusDecoders = new TIntObjectHashMap<>();
     protected final HashMap<User, Queue<Pair<Long, short[]>>> combinedQueue = new HashMap<>();
@@ -84,8 +87,6 @@ public class AudioConnection
     protected volatile int speakingMode = SpeakingMode.VOICE.getRaw();
     protected volatile int silenceCounter = 0;
     protected boolean sentSilenceOnConnect = false;
-    protected final byte[] silenceBytes = new byte[] {(byte)0xF8, (byte)0xFF, (byte)0xFE};
-    protected static boolean printedError = false;
 
     public AudioConnection(AudioManagerImpl manager, String endpoint, String sessionId, String token)
     {
@@ -612,6 +613,7 @@ public class AudioConnection
         protected int timestamp = 0;      //Used to sync up our packets within the same timeframe of other people talking.
         protected long nonce = 0;
         protected ByteBuffer buffer = ByteBuffer.allocate(512);
+        protected ByteBuffer encryptionBuffer = ByteBuffer.allocate(512);
         protected final byte[] nonceBuffer = new byte[TweetNaclFast.SecretBox.nonceLength];
 
         @Override
@@ -741,7 +743,8 @@ public class AudioConnection
 
         protected ByteBuffer getPacketData(byte[] rawAudio)
         {
-            AudioPacket packet = new AudioPacket(seq, timestamp, webSocket.getSSRC(), rawAudio);
+            ensureEncryptionBuffer(rawAudio);
+            AudioPacket packet = new AudioPacket(encryptionBuffer, seq, timestamp, webSocket.getSSRC(), rawAudio);
             int nlen;
             switch (webSocket.encryption)
             {
@@ -763,6 +766,15 @@ public class AudioConnection
                     throw new IllegalStateException("Encryption mode [" + webSocket.encryption + "] is not supported!");
             }
             return buffer = packet.asEncryptedPacket(buffer, webSocket.getSecretKey(), nonceBuffer, nlen);
+        }
+
+        private void ensureEncryptionBuffer(byte[] data)
+        {
+            ((Buffer) encryptionBuffer).clear();
+            int currentCapacity = encryptionBuffer.remaining();
+            int requiredCapacity = AudioPacket.RTP_HEADER_BYTE_LENGTH + data.length;
+            if (currentCapacity < requiredCapacity)
+                encryptionBuffer = ByteBuffer.allocate(requiredCapacity);
         }
 
         protected void loadNextNonce(long nonce)
