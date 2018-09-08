@@ -826,15 +826,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 it.advance();
                 final long guildId = it.key();
                 final AudioManagerImpl mng = (AudioManagerImpl) it.value();
-                ConnectionListener listener = mng.getConnectionListener();
 
                 GuildImpl guild = (GuildImpl) api.getGuildById(guildId);
                 if (guild == null)
                 {
                     //We no longer have access to the guild that this audio manager was for. Set the value to null.
                     queuedAudioConnections.remove(guildId);
-                    if (listener != null)
-                        listener.onStatusChange(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD);
+                    mng.closeAudioConnection(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD);
                     it.remove();
                 }
             }

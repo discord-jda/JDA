@@ -17,7 +17,6 @@
 package net.dv8tion.jda.core.handle;
 
 import net.dv8tion.jda.core.audio.AudioConnection;
-import net.dv8tion.jda.core.audio.AudioWebSocket;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
@@ -74,10 +73,9 @@ public class VoiceServerUpdateHandler extends SocketHandler
                 return;
             }
 
-            AudioWebSocket socket = new AudioWebSocket(audioManager.getListenerProxy(), endpoint, getJDA(), guild, sessionId, token, audioManager.isAutoReconnect());
-            AudioConnection connection = new AudioConnection(socket, audioManager.getQueuedAudioConnection());
+            AudioConnection connection = new AudioConnection(audioManager, endpoint, sessionId, token);
             audioManager.setAudioConnection(connection);
-            socket.startConnection();
+            connection.startConnection();
         });
         return null;
     }

@@ -258,7 +258,7 @@ public class AudioManagerImpl implements AudioManager
     public ConnectionStatus getConnectionStatus()
     {
         if (audioConnection != null)
-            return audioConnection.getWebSocket().getConnectionStatus();
+            return audioConnection.getConnectionStatus();
         else
             return ConnectionStatus.NOT_CONNECTED;
     }
@@ -268,7 +268,7 @@ public class AudioManagerImpl implements AudioManager
     {
         this.shouldReconnect = shouldReconnect;
         if (audioConnection != null)
-            audioConnection.getWebSocket().setAutoReconnect(shouldReconnect);
+            audioConnection.setAutoReconnect(shouldReconnect);
     }
 
     @Override
@@ -362,5 +362,17 @@ public class AudioManagerImpl implements AudioManager
             //This is technically equivalent to an audio open/move packet.
             getJDA().getClient().queueAudioConnect(channel);
         }
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    protected void finalize()
+    {
+        if (audioConnection != null)
+        {
+            LOG.warn("Finalized AudioManager with active audio connection. GuildId: {}", getGuild().getId());
+            audioConnection.close(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD);
+        }
+        audioConnection = null;
     }
 }

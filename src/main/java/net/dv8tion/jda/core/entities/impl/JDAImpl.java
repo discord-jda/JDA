@@ -24,7 +24,7 @@ import net.dv8tion.jda.bot.entities.impl.JDABotImpl;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.audio.AudioWebSocket;
+import net.dv8tion.jda.core.audio.KeepAliveThreadFactory;
 import net.dv8tion.jda.core.audio.factory.DefaultSendFactory;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.*;
@@ -846,7 +846,7 @@ public class JDAImpl implements JDA
             {
                 akap = audioKeepAlivePool;
                 if (akap == null)
-                    akap = audioKeepAlivePool = new ScheduledThreadPoolExecutor(1, new AudioWebSocket.KeepAliveThreadFactory(this));
+                    akap = audioKeepAlivePool = new ScheduledThreadPoolExecutor(1, new KeepAliveThreadFactory(this));
             }
         }
         return akap;

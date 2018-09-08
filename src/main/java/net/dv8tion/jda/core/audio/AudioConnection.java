@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.audio;
 
 import com.iwebpp.crypto.TweetNaclFast;
+import com.neovisionaries.ws.client.WebSocket;
 import com.sun.jna.ptr.PointerByReference;
 import gnu.trove.map.TIntLongMap;
 import gnu.trove.map.TIntObjectMap;
@@ -58,43 +59,60 @@ public class AudioConnection
                                                         // to Left and Right mono (stereo that is the same on both sides)
     public static final long MAX_UINT_32 = 4294967295L;
 
-    private final TIntLongMap ssrcMap = new TIntLongHashMap();
-    private final TIntObjectMap<Decoder> opusDecoders = new TIntObjectHashMap<>();
-    private final HashMap<User, Queue<Pair<Long, short[]>>> combinedQueue = new HashMap<>();
+    protected final TIntLongMap ssrcMap = new TIntLongHashMap();
+    protected final TIntObjectMap<Decoder> opusDecoders = new TIntObjectHashMap<>();
+    protected final HashMap<User, Queue<Pair<Long, short[]>>> combinedQueue = new HashMap<>();
 
-    private final String threadIdentifier;
-    private final AudioWebSocket webSocket;
-    private DatagramSocket udpSocket;
-    private UpstreamReference<VoiceChannel> channel;
-    private volatile AudioSendHandler sendHandler = null;
-    private volatile AudioReceiveHandler receiveHandler = null;
-    private PointerByReference opusEncoder;
-    private ScheduledExecutorService combinedAudioExecutor;
+    protected final String threadIdentifier;
+    protected final AudioWebSocket webSocket;
+    protected final UpstreamReference<JDAImpl> api;
+    protected UpstreamReference<VoiceChannel> channel;
 
-    private IAudioSendSystem sendSystem;
-    private Thread receiveThread;
-    private long queueTimeout;
+    protected volatile DatagramSocket udpSocket;
+    protected volatile AudioSendHandler sendHandler = null;
+    protected volatile AudioReceiveHandler receiveHandler = null;
 
-    private volatile boolean couldReceive = false;
-    private volatile boolean speaking = false;      //Also acts as "couldProvide"
+    protected PointerByReference opusEncoder;
+    protected ScheduledExecutorService combinedAudioExecutor;
+    protected IAudioSendSystem sendSystem;
+    protected Thread receiveThread;
+    protected long queueTimeout;
 
-    private volatile int speakingMode = SpeakingMode.VOICE.getRaw();
-    private volatile int silenceCounter = 0;
-    private boolean sentSilenceOnConnect = false;
-    private final byte[] silenceBytes = new byte[] {(byte)0xF8, (byte)0xFF, (byte)0xFE};
-    private static boolean printedError = false;
+    protected volatile boolean couldReceive = false;
+    protected volatile boolean speaking = false;      //Also acts as "couldProvide"
 
-    public AudioConnection(AudioWebSocket webSocket, VoiceChannel channel)
+    protected volatile int speakingMode = SpeakingMode.VOICE.getRaw();
+    protected volatile int silenceCounter = 0;
+    protected boolean sentSilenceOnConnect = false;
+    protected final byte[] silenceBytes = new byte[] {(byte)0xF8, (byte)0xFF, (byte)0xFE};
+    protected static boolean printedError = false;
+
+    public AudioConnection(AudioManagerImpl manager, String endpoint, String sessionId, String token)
     {
+        VoiceChannel channel = manager.getQueuedAudioConnection();
         this.channel = new UpstreamReference<>(channel);
-        this.webSocket = webSocket;
-        this.webSocket.audioConnection = new UpstreamReference<>(this);
-
         final JDAImpl api = (JDAImpl) channel.getJDA();
+        this.api = new UpstreamReference<>(api);
         this.threadIdentifier = api.getIdentifierString() + " AudioConnection Guild: " + channel.getGuild().getId();
+        this.webSocket = new AudioWebSocket(this, manager.getListenerProxy(), endpoint, channel.getGuild(), sessionId, token, manager.isAutoReconnect());
     }
 
-    public void ready()
+    public void startConnection()
+    {
+        webSocket.startConnection();
+    }
+
+    public ConnectionStatus getConnectionStatus()
+    {
+        return webSocket.getConnectionStatus();
+    }
+
+    public void setAutoReconnect(boolean shouldReconnect)
+    {
+        webSocket.setAutoReconnect(shouldReconnect);
+    }
+
+    protected void prepareReady()
     {
         Thread readyThread = new Thread(AudioManagerImpl.AUDIO_THREADS, () ->
         {
@@ -102,14 +120,10 @@ public class AudioConnection
             final long timeout = getGuild().getAudioManager().getConnectTimeout();
 
             final long started = System.currentTimeMillis();
-            boolean connectionTimeout = false;
             while (!webSocket.isReady())
             {
                 if (timeout > 0 && System.currentTimeMillis() - started > timeout)
-                {
-                    connectionTimeout = true;
                     break;
-                }
 
                 try
                 {
@@ -121,10 +135,8 @@ public class AudioConnection
                     Thread.currentThread().interrupt();
                 }
             }
-            if (!connectionTimeout)
+            if (webSocket.isReady())
             {
-                this.udpSocket = webSocket.getUdpSocket();
-
                 setupSendSystem();
                 setupReceiveSystem();
             }
@@ -136,7 +148,7 @@ public class AudioConnection
         readyThread.setUncaughtExceptionHandler((thread, throwable) ->
         {
             LOG.error("Uncaught exception in Audio ready-thread", throwable);
-            JDAImpl api = (JDAImpl) getJDA();
+            JDAImpl api = getJDA();
             api.getEventManager().handle(new ExceptionEvent(api, throwable, true));
         });
         readyThread.setDaemon(true);
@@ -181,12 +193,12 @@ public class AudioConnection
 
     public JDAImpl getJDA()
     {
-        return (JDAImpl) channel.get().getJDA();
+        return api.get();
     }
 
     public Guild getGuild()
     {
-        return channel.get().getGuild();
+        return getChannel().getGuild();
     }
 
     public void removeUserSSRC(long userId)
@@ -238,7 +250,6 @@ public class AudioConnection
 
     public synchronized void shutdown()
     {
-//        setSpeaking(false);
         if (sendSystem != null)
         {
             sendSystem.shutdown();
@@ -264,7 +275,7 @@ public class AudioConnection
         opusDecoders.clear();
     }
 
-    private synchronized void setupSendSystem()
+    protected synchronized void setupSendSystem()
     {
         if (udpSocket != null && !udpSocket.isClosed() && sendHandler != null && sendSystem == null)
         {
@@ -286,7 +297,7 @@ public class AudioConnection
         }
     }
 
-    private synchronized void setupReceiveSystem()
+    protected synchronized void setupReceiveSystem()
     {
         if (udpSocket != null && !udpSocket.isClosed() && receiveHandler != null && receiveThread == null)
         {
@@ -313,7 +324,7 @@ public class AudioConnection
         }
     }
 
-    private synchronized void setupReceiveThread()
+    protected synchronized void setupReceiveThread()
     {
         if (receiveThread == null)
         {
@@ -446,7 +457,7 @@ public class AudioConnection
         }
     }
 
-    private synchronized void setupCombinedExecutor()
+    protected synchronized void setupCombinedExecutor()
     {
         if (combinedAudioExecutor == null)
         {
@@ -536,7 +547,7 @@ public class AudioConnection
         }
     }
 
-    private byte[] encodeToOpus(byte[] rawAudio)
+    protected byte[] encodeToOpus(byte[] rawAudio)
     {
         ShortBuffer nonEncodedBuffer = ShortBuffer.allocate(rawAudio.length / 2);
         ByteBuffer encoded = ByteBuffer.allocate(4096);
@@ -566,7 +577,7 @@ public class AudioConnection
         return audio;
     }
 
-    private void setSpeaking(int raw)
+    protected void setSpeaking(int raw)
     {
         this.speaking = raw != 0;
         JSONObject obj = new JSONObject()
@@ -578,15 +589,14 @@ public class AudioConnection
             sendSilentPackets();
     }
 
-    //Actual logic for this is in the Sending Thread.
-
-    private void sendSilentPackets()
+    protected void sendSilentPackets()
     {
         silenceCounter = 0;
     }
-    public AudioWebSocket getWebSocket()
+
+    public WebSocket getWebSocket()
     {
-        return webSocket;
+        return webSocket.socket;
     }
 
     @Override
@@ -596,13 +606,13 @@ public class AudioConnection
         shutdown();
     }
 
-    private class PacketProvider implements IPacketProvider
+    protected class PacketProvider implements IPacketProvider
     {
-        char seq = 0;           //Sequence of audio packets. Used to determine the order of the packets.
-        int timestamp = 0;      //Used to sync up our packets within the same timeframe of other people talking.
-        private long nonce = 0;
-        private ByteBuffer buffer = ByteBuffer.allocate(512);
-        private final byte[] nonceBuffer = new byte[TweetNaclFast.SecretBox.nonceLength];
+        protected char seq = 0;           //Sequence of audio packets. Used to determine the order of the packets.
+        protected int timestamp = 0;      //Used to sync up our packets within the same timeframe of other people talking.
+        protected long nonce = 0;
+        protected ByteBuffer buffer = ByteBuffer.allocate(512);
+        protected final byte[] nonceBuffer = new byte[TweetNaclFast.SecretBox.nonceLength];
 
         @Override
         public String getIdentifier()
@@ -613,13 +623,13 @@ public class AudioConnection
         @Override
         public VoiceChannel getConnectedChannel()
         {
-            return AudioConnection.this.channel.get();
+            return getChannel();
         }
 
         @Override
         public DatagramSocket getUdpSocket()
         {
-            return AudioConnection.this.udpSocket;
+            return udpSocket;
         }
 
         @Override
@@ -699,7 +709,7 @@ public class AudioConnection
             return nextPacket;
         }
 
-        private byte[] encodeAudio(byte[] rawAudio)
+        protected byte[] encodeAudio(byte[] rawAudio)
         {
             if (opusEncoder == null)
             {
@@ -721,7 +731,7 @@ public class AudioConnection
             return encodeToOpus(rawAudio);
         }
 
-        private DatagramPacket getDatagramPacket(ByteBuffer b)
+        protected DatagramPacket getDatagramPacket(ByteBuffer b)
         {
             byte[] data = b.array();
             int offset = b.arrayOffset();
@@ -729,7 +739,7 @@ public class AudioConnection
             return new DatagramPacket(data, offset, position - offset, webSocket.getAddress());
         }
 
-        private ByteBuffer getPacketData(byte[] rawAudio)
+        protected ByteBuffer getPacketData(byte[] rawAudio)
         {
             AudioPacket packet = new AudioPacket(seq, timestamp, webSocket.getSSRC(), rawAudio);
             int nlen;
@@ -755,7 +765,7 @@ public class AudioConnection
             return buffer = packet.asEncryptedPacket(buffer, webSocket.getSecretKey(), nonceBuffer, nlen);
         }
 
-        private void loadNextNonce(long nonce)
+        protected void loadNextNonce(long nonce)
         {
             nonceBuffer[0] = (byte) ((nonce >>> 24) & 0xFF);
             nonceBuffer[1] = (byte) ((nonce >>> 16) & 0xFF);
