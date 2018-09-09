@@ -94,11 +94,16 @@ public class AudioPacket
 
     public AudioPacket(char seq, int timestamp, int ssrc, byte[] encodedAudio)
     {
+        this(null, seq, timestamp, ssrc, encodedAudio);
+    }
+
+    public AudioPacket(ByteBuffer buffer, char seq, int timestamp, int ssrc, byte[] encodedAudio)
+    {
         this.seq = seq;
         this.ssrc = ssrc;
         this.timestamp = timestamp;
         this.encodedAudio = encodedAudio;
-        this.rawPacket = generateRawPacket(seq, timestamp, ssrc, encodedAudio);
+        this.rawPacket = generateRawPacket(buffer, seq, timestamp, ssrc, encodedAudio);
     }
 
     private int getPayloadOffset(byte[] data, int csrcLength)
@@ -249,9 +254,10 @@ public class AudioPacket
         return new AudioPacket(decryptedRawPacket);
     }
 
-    private static byte[] generateRawPacket(char seq, int timestamp, int ssrc, byte[] data)
+    private static byte[] generateRawPacket(ByteBuffer buffer, char seq, int timestamp, int ssrc, byte[] data)
     {
-        ByteBuffer buffer = ByteBuffer.allocate(RTP_HEADER_BYTE_LENGTH + data.length);
+        if (buffer == null)
+            buffer = ByteBuffer.allocate(RTP_HEADER_BYTE_LENGTH + data.length);
         populateBuffer(seq, timestamp, ssrc, data, buffer);
         return buffer.array();
     }
