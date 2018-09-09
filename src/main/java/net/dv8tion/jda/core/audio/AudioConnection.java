@@ -35,7 +35,6 @@ import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.cache.UpstreamReference;
-import net.dv8tion.jda.core.utils.tuple.Pair;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import tomp2p.opuswrapper.Opus;
@@ -59,34 +58,33 @@ public class AudioConnection
                                                         // to Left and Right mono (stereo that is the same on both sides)
     public static final long MAX_UINT_32 = 4294967295L;
 
-    protected static final byte[] silenceBytes = new byte[] {(byte)0xF8, (byte)0xFF, (byte)0xFE};
-    protected static boolean printedError = false;
-
-    protected final TIntLongMap ssrcMap = new TIntLongHashMap();
-    protected final TIntObjectMap<Decoder> opusDecoders = new TIntObjectHashMap<>();
-    protected final HashMap<User, Queue<Pair<Long, short[]>>> combinedQueue = new HashMap<>();
-
-    protected final String threadIdentifier;
-    protected final AudioWebSocket webSocket;
-    protected final UpstreamReference<JDAImpl> api;
-    protected UpstreamReference<VoiceChannel> channel;
+    private static final byte[] silenceBytes = new byte[] {(byte)0xF8, (byte)0xFF, (byte)0xFE};
+    private static boolean printedError = false;
 
     protected volatile DatagramSocket udpSocket;
-    protected volatile AudioSendHandler sendHandler = null;
-    protected volatile AudioReceiveHandler receiveHandler = null;
 
-    protected PointerByReference opusEncoder;
-    protected ScheduledExecutorService combinedAudioExecutor;
-    protected IAudioSendSystem sendSystem;
-    protected Thread receiveThread;
-    protected long queueTimeout;
+    private final TIntLongMap ssrcMap = new TIntLongHashMap();
+    private final TIntObjectMap<Decoder> opusDecoders = new TIntObjectHashMap<>();
+    private final HashMap<User, Queue<AudioData>> combinedQueue = new HashMap<>();
+    private final String threadIdentifier;
+    private final AudioWebSocket webSocket;
+    private final UpstreamReference<JDAImpl> api;
 
-    protected volatile boolean couldReceive = false;
-    protected volatile boolean speaking = false;      //Also acts as "couldProvide"
+    private UpstreamReference<VoiceChannel> channel;
+    private PointerByReference opusEncoder;
+    private ScheduledExecutorService combinedAudioExecutor;
+    private IAudioSendSystem sendSystem;
+    private Thread receiveThread;
+    private long queueTimeout;
+    private boolean sentSilenceOnConnect = false;
 
-    protected volatile int speakingMode = SpeakingMode.VOICE.getRaw();
-    protected volatile int silenceCounter = 0;
-    protected boolean sentSilenceOnConnect = false;
+    private volatile AudioSendHandler sendHandler = null;
+    private volatile AudioReceiveHandler receiveHandler = null;
+
+    private volatile boolean couldReceive = false;
+    private volatile boolean speaking = false;      //Also acts as "couldProvide"
+    private volatile int speakingMode = SpeakingMode.VOICE.getRaw();
+    private volatile int silenceCounter = 0;
 
     public AudioConnection(AudioManagerImpl manager, String endpoint, String sessionId, String token)
     {
@@ -97,6 +95,8 @@ public class AudioConnection
         this.threadIdentifier = api.getIdentifierString() + " AudioConnection Guild: " + channel.getGuild().getId();
         this.webSocket = new AudioWebSocket(this, manager.getListenerProxy(), endpoint, channel.getGuild(), sessionId, token, manager.isAutoReconnect());
     }
+
+    /* Used by AudioManagerImpl */
 
     public void startConnection()
     {
@@ -111,50 +111,6 @@ public class AudioConnection
     public void setAutoReconnect(boolean shouldReconnect)
     {
         webSocket.setAutoReconnect(shouldReconnect);
-    }
-
-    protected void prepareReady()
-    {
-        Thread readyThread = new Thread(AudioManagerImpl.AUDIO_THREADS, () ->
-        {
-            getJDA().setContext();
-            final long timeout = getGuild().getAudioManager().getConnectTimeout();
-
-            final long started = System.currentTimeMillis();
-            while (!webSocket.isReady())
-            {
-                if (timeout > 0 && System.currentTimeMillis() - started > timeout)
-                    break;
-
-                try
-                {
-                    Thread.sleep(10);
-                }
-                catch (InterruptedException e)
-                {
-                    LOG.error("AudioConnection ready thread got interrupted while sleeping", e);
-                    Thread.currentThread().interrupt();
-                }
-            }
-            if (webSocket.isReady())
-            {
-                setupSendSystem();
-                setupReceiveSystem();
-            }
-            else
-            {
-                webSocket.close(ConnectionStatus.ERROR_CONNECTION_TIMEOUT);
-            }
-        });
-        readyThread.setUncaughtExceptionHandler((thread, throwable) ->
-        {
-            LOG.error("Uncaught exception in Audio ready-thread", throwable);
-            JDAImpl api = getJDA();
-            api.getEventManager().handle(new ExceptionEvent(api, throwable, true));
-        });
-        readyThread.setDaemon(true);
-        readyThread.setName(threadIdentifier + " Ready Thread");
-        readyThread.start();
     }
 
     public void setSendingHandler(AudioSendHandler handler)
@@ -202,7 +158,91 @@ public class AudioConnection
         return getChannel().getGuild();
     }
 
-    public void removeUserSSRC(long userId)
+    public void close(ConnectionStatus closeStatus)
+    {
+        shutdown();
+        webSocket.close(closeStatus);
+    }
+
+    public synchronized void shutdown()
+    {
+        if (sendSystem != null)
+        {
+            sendSystem.shutdown();
+            sendSystem = null;
+        }
+        if (receiveThread != null)
+        {
+            receiveThread.interrupt();
+            receiveThread = null;
+        }
+        if (combinedAudioExecutor != null)
+        {
+            combinedAudioExecutor.shutdownNow();
+            combinedAudioExecutor = null;
+        }
+        if (opusEncoder != null)
+        {
+            Opus.INSTANCE.opus_encoder_destroy(opusEncoder);
+            opusEncoder = null;
+        }
+
+        opusDecoders.valueCollection().forEach(Decoder::close);
+        opusDecoders.clear();
+    }
+
+    public WebSocket getWebSocket()
+    {
+        return webSocket.socket;
+    }
+
+    /* Used by AudioWebSocket */
+
+    protected void prepareReady()
+    {
+        Thread readyThread = new Thread(AudioManagerImpl.AUDIO_THREADS, () ->
+        {
+            getJDA().setContext();
+            final long timeout = getGuild().getAudioManager().getConnectTimeout();
+
+            final long started = System.currentTimeMillis();
+            while (!webSocket.isReady())
+            {
+                if (timeout > 0 && System.currentTimeMillis() - started > timeout)
+                    break;
+
+                try
+                {
+                    Thread.sleep(10);
+                }
+                catch (InterruptedException e)
+                {
+                    LOG.error("AudioConnection ready thread got interrupted while sleeping", e);
+                    Thread.currentThread().interrupt();
+                }
+            }
+            if (webSocket.isReady())
+            {
+                setupSendSystem();
+                setupReceiveSystem();
+            }
+            else
+            {
+                webSocket.close(ConnectionStatus.ERROR_CONNECTION_TIMEOUT);
+            }
+        });
+        readyThread.setUncaughtExceptionHandler((thread, throwable) ->
+        {
+            LOG.error("Uncaught exception in Audio ready-thread", throwable);
+            JDAImpl api = getJDA();
+            api.getEventManager().handle(new ExceptionEvent(api, throwable, true));
+        });
+        readyThread.setDaemon(true);
+        readyThread.setName(threadIdentifier + " Ready Thread");
+        readyThread.start();
+    }
+
+    protected void removeUserSSRC(long userId)
     {
         final AtomicInteger ssrcRef = new AtomicInteger(0);
         final boolean modified = ssrcMap.retainEntries((ssrc, id) ->
@@ -243,40 +283,9 @@ public class AudioConnection
         }
     }
 
-    public void close(ConnectionStatus closeStatus)
-    {
-        shutdown();
-        webSocket.close(closeStatus);
-    }
+    /* Internals */
 
-    public synchronized void shutdown()
-    {
-        if (sendSystem != null)
-        {
-            sendSystem.shutdown();
-            sendSystem = null;
-        }
-        if (receiveThread != null)
-        {
-            receiveThread.interrupt();
-            receiveThread = null;
-        }
-        if (combinedAudioExecutor != null)
-        {
-            combinedAudioExecutor.shutdownNow();
-            combinedAudioExecutor = null;
-        }
-        if (opusEncoder != null)
-        {
-            Opus.INSTANCE.opus_encoder_destroy(opusEncoder);
-            opusEncoder = null;
-        }
-
-        opusDecoders.valueCollection().forEach(Decoder::close);
-        opusDecoders.clear();
-    }
-
-    protected synchronized void setupSendSystem()
+    private synchronized void setupSendSystem()
     {
         if (udpSocket != null && !udpSocket.isClosed() && sendHandler != null && sendSystem == null)
         {
@@ -298,7 +307,7 @@ public class AudioConnection
         }
     }
 
-    protected synchronized void setupReceiveSystem()
+    private synchronized void setupReceiveSystem()
     {
         if (udpSocket != null && !udpSocket.isClosed() && receiveHandler != null && receiveThread == null)
         {
@@ -325,7 +334,7 @@ public class AudioConnection
         }
     }
 
-    protected synchronized void setupReceiveThread()
+    private synchronized void setupReceiveThread()
     {
         if (receiveThread == null)
         {
@@ -410,13 +419,13 @@ public class AudioConnection
                             }
                             if (receiveHandler.canReceiveCombined())
                             {
-                                Queue<Pair<Long, short[]>> queue = combinedQueue.get(user);
+                                Queue<AudioData> queue = combinedQueue.get(user);
                                 if (queue == null)
                                 {
                                     queue = new ConcurrentLinkedQueue<>();
                                     combinedQueue.put(user, queue);
                                 }
-                                queue.add(Pair.of(System.currentTimeMillis(), decodedAudio));
+                                queue.add(new AudioData(decodedAudio));
                             }
                         }
                         else if (couldReceive)
@@ -458,7 +467,7 @@ public class AudioConnection
         }
     }
 
-    protected synchronized void setupCombinedExecutor()
+    private synchronized void setupCombinedExecutor()
     {
         if (combinedAudioExecutor == null)
         {
@@ -484,17 +493,17 @@ public class AudioConnection
                     if (receiveHandler != null && receiveHandler.canReceiveCombined())
                     {
                         long currentTime = System.currentTimeMillis();
-                        for (Map.Entry<User, Queue<Pair<Long, short[]>>> entry : combinedQueue.entrySet())
+                        for (Map.Entry<User, Queue<AudioData>> entry : combinedQueue.entrySet())
                         {
                             User user = entry.getKey();
-                            Queue<Pair<Long, short[]>> queue = entry.getValue();
+                            Queue<AudioData> queue = entry.getValue();
 
                             if (queue.isEmpty())
                                 continue;
 
-                            Pair<Long, short[]> audioData = queue.poll();
+                            AudioData audioData = queue.poll();
                             //Make sure the audio packet is younger than 100ms
-                            while (audioData != null && currentTime - audioData.getLeft() > queueTimeout)
+                            while (audioData != null && currentTime - audioData.time > queueTimeout)
                             {
                                 audioData = queue.poll();
                             }
@@ -505,7 +514,7 @@ public class AudioConnection
                                 continue;
                             }
                             users.add(user);
-                            audioParts.add(audioData.getRight());
+                            audioParts.add(audioData.data);
                         }
 
                         if (!audioParts.isEmpty())
@@ -548,7 +557,7 @@ public class AudioConnection
         }
     }
 
-    protected byte[] encodeToOpus(byte[] rawAudio)
+    private byte[] encodeToOpus(byte[] rawAudio)
     {
         ShortBuffer nonEncodedBuffer = ShortBuffer.allocate(rawAudio.length / 2);
         ByteBuffer encoded = ByteBuffer.allocate(4096);
@@ -578,7 +587,7 @@ public class AudioConnection
         return audio;
     }
 
-    protected void setSpeaking(int raw)
+    private void setSpeaking(int raw)
     {
         this.speaking = raw != 0;
         JSONObject obj = new JSONObject()
@@ -590,14 +599,9 @@ public class AudioConnection
             sendSilentPackets();
     }
 
-    protected void sendSilentPackets()
+    private void sendSilentPackets()
     {
         silenceCounter = 0;
-    }
-
-    public WebSocket getWebSocket()
-    {
-        return webSocket.socket;
     }
 
     @Override
@@ -607,14 +611,14 @@ public class AudioConnection
         shutdown();
     }
 
-    protected class PacketProvider implements IPacketProvider
+    private class PacketProvider implements IPacketProvider
     {
-        protected char seq = 0;           //Sequence of audio packets. Used to determine the order of the packets.
-        protected int timestamp = 0;      //Used to sync up our packets within the same timeframe of other people talking.
-        protected long nonce = 0;
-        protected ByteBuffer buffer = ByteBuffer.allocate(512);
-        protected ByteBuffer encryptionBuffer = ByteBuffer.allocate(512);
-        protected final byte[] nonceBuffer = new byte[TweetNaclFast.SecretBox.nonceLength];
+        private char seq = 0;           //Sequence of audio packets. Used to determine the order of the packets.
+        private int timestamp = 0;      //Used to sync up our packets within the same timeframe of other people talking.
+        private long nonce = 0;
+        private ByteBuffer buffer = ByteBuffer.allocate(512);
+        private ByteBuffer encryptionBuffer = ByteBuffer.allocate(512);
+        private final byte[] nonceBuffer = new byte[TweetNaclFast.SecretBox.nonceLength];
 
         @Override
         public String getIdentifier()
@@ -711,7 +715,7 @@ public class AudioConnection
             return nextPacket;
         }
 
-        protected byte[] encodeAudio(byte[] rawAudio)
+        private byte[] encodeAudio(byte[] rawAudio)
         {
             if (opusEncoder == null)
             {
@@ -733,7 +737,7 @@ public class AudioConnection
             return encodeToOpus(rawAudio);
         }
 
-        protected DatagramPacket getDatagramPacket(ByteBuffer b)
+        private DatagramPacket getDatagramPacket(ByteBuffer b)
         {
             byte[] data = b.array();
             int offset = b.arrayOffset();
@@ -741,7 +745,7 @@ public class AudioConnection
             return new DatagramPacket(data, offset, position - offset, webSocket.getAddress());
         }
 
-        protected ByteBuffer getPacketData(byte[] rawAudio)
+        private ByteBuffer getPacketData(byte[] rawAudio)
         {
             ensureEncryptionBuffer(rawAudio);
             AudioPacket packet = new AudioPacket(encryptionBuffer, seq, timestamp, webSocket.getSSRC(), rawAudio);
@@ -777,7 +781,7 @@ public class AudioConnection
                 encryptionBuffer = ByteBuffer.allocate(requiredCapacity);
         }
 
-        protected void loadNextNonce(long nonce)
+        private void loadNextNonce(long nonce)
         {
             nonceBuffer[0] = (byte) ((nonce >>> 24) & 0xFF);
             nonceBuffer[1] = (byte) ((nonce >>> 16) & 0xFF);
@@ -800,6 +804,18 @@ public class AudioConnection
             LOG.warn("Cannot send audio packet because JDA cannot navigate the route to Discord.\n" +
                 "Are you sure you have internet connection? It is likely that you've lost connection.");
             webSocket.close(ConnectionStatus.ERROR_LOST_CONNECTION);
+        }
+    }
+
+    private static class AudioData
+    {
+        private final long time;
+        private final short[] data;
+
+        public AudioData(short[] data)
+        {
+            this.time = System.currentTimeMillis();
+            this.data = data;
         }
     }
 }
