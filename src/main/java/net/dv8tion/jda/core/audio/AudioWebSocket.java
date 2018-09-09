@@ -249,7 +249,7 @@ class AudioWebSocket extends WebSocketAdapter
             resume();
         else
             identify();
-        changeStatus(ConnectionStatus.CONNECTING_AWAITING_AUTHENTICATING);
+        changeStatus(ConnectionStatus.CONNECTING_AWAITING_AUTHENTICATION);
         if (!reconnecting)
             audioConnection.prepareReady();
         reconnecting = false;
