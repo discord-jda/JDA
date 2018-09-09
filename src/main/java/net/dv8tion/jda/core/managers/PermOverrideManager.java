@@ -204,7 +204,7 @@ public class PermOverrideManager extends ManagerBase
         setupValues();
         this.allowed |= permissions;
         this.denied &= ~permissions;
-        this.set |= ALLOWED;
+        this.set |= PERMISSIONS;
         return this;
     }
 
@@ -267,7 +267,7 @@ public class PermOverrideManager extends ManagerBase
         setupValues();
         this.denied |= permissions;
         this.allowed &= ~permissions;
-        this.set |= DENIED;
+        this.set |= PERMISSIONS;
         return this;
     }
 
