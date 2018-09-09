@@ -202,18 +202,9 @@ public class PermOverrideManager extends ManagerBase
         if (permissions == 0)
             return this;
         setupValues();
-        if ((allowed & permissions) == 0)
-        {
-            this.allowed |= permissions;
-            this.set |= ALLOWED;
-        }
-
-        if ((denied & permissions) != 0)
-        {
-            this.denied &= ~permissions;
-            this.set |= DENIED;
-        }
-
+        this.allowed |= permissions;
+        this.denied &= ~permissions;
+        this.set |= PERMISSIONS;
         return this;
     }
 
@@ -274,18 +265,9 @@ public class PermOverrideManager extends ManagerBase
         if (permissions == 0)
             return this;
         setupValues();
-        if ((allowed & permissions) != 0)
-        {
-            this.allowed &= ~permissions;
-            this.set |= ALLOWED;
-        }
-
-        if ((denied & permissions) == 0)
-        {
-            this.denied |= permissions;
-            this.set |= DENIED;
-        }
-
+        this.denied |= permissions;
+        this.allowed &= ~permissions;
+        this.set |= PERMISSIONS;
         return this;
     }
 
