@@ -28,7 +28,7 @@ import java.net.NoRouteToHostException;
 import java.net.SocketException;
 import java.util.concurrent.ConcurrentMap;
 
-import static net.dv8tion.jda.core.audio.AudioConnection.OPUS_FRAME_TIME_AMOUNT;
+import static net.dv8tion.jda.core.audio.OpusPacket.OPUS_FRAME_TIME_AMOUNT;
 
 /**
  * The default implementation of the {@link net.dv8tion.jda.core.audio.factory.IAudioSendSystem IAudioSendSystem}.

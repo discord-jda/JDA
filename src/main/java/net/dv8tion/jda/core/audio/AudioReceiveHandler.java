@@ -43,6 +43,13 @@ public interface AudioReceiveHandler
      */
     boolean canReceiveUser();
 
+    default boolean canReceiveEncoded()
+    {
+        return false;
+    }
+
+    default void handleEncodedAudio(OpusPacket packet) {}
+
     /**
      * If {@link #canReceiveCombined()} returns true, JDA will provide a {@link net.dv8tion.jda.core.audio.CombinedAudio CombinedAudio}
      * object to this method <b>every 20 milliseconds</b>. The data provided by CombinedAudio is all audio that occurred

@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.audio;
 
 import com.iwebpp.crypto.TweetNaclFast;
+import net.dv8tion.jda.core.utils.IOUtil;
 
 import java.net.DatagramPacket;
 import java.nio.Buffer;
@@ -82,7 +83,7 @@ public class AudioPacket
         final byte cc = (byte) (profile & 0x0f);            // CSRC count - we ignore this for now
         final int csrcLength = cc * 4;                      // defines count of 4-byte words
         // it seems as if extensions only exist without a csrc list being present
-        final short extension = hasExtension ? getShort(data, RTP_HEADER_BYTE_LENGTH + csrcLength) : 0;
+        final short extension = hasExtension ? IOUtil.getShortBigEndian(data, RTP_HEADER_BYTE_LENGTH + csrcLength) : 0;
 
         int offset = RTP_HEADER_BYTE_LENGTH + csrcLength;
         if (hasExtension && extension == RTP_DISCORD_EXTENSION)
@@ -109,7 +110,7 @@ public class AudioPacket
     private int getPayloadOffset(byte[] data, int csrcLength)
     {
         // headerLength defines number of 4-byte words in the extension
-        final short headerLength = getShort(data, RTP_HEADER_BYTE_LENGTH + 2 + csrcLength);
+        final short headerLength = IOUtil.getShortBigEndian(data, RTP_HEADER_BYTE_LENGTH + 2 + csrcLength);
         int i = RTP_HEADER_BYTE_LENGTH // RTP header = 12 bytes
                 + 4                    // header which defines a profile and length each 2-bytes = 4 bytes
                 + csrcLength           // length of CSRC list (this seems to be always 0 when an extension exists)
@@ -119,11 +120,6 @@ public class AudioPacket
         while (data[i] == 0)
             i++;
         return i;
-    }
-
-    private short getShort(byte[] arr, int offset)
-    {
-        return (short) ((arr[offset] & 0xff) << 8 | arr[offset + 1] & 0xff);
     }
 
     @SuppressWarnings("unused")
@@ -173,7 +169,7 @@ public class AudioPacket
         return timestamp;
     }
 
-    public ByteBuffer asEncryptedPacket(ByteBuffer buffer, byte[] secretKey, byte[] nonce, int nlen)
+    protected ByteBuffer asEncryptedPacket(ByteBuffer buffer, byte[] secretKey, byte[] nonce, int nlen)
     {
         //Xsalsa20's Nonce is 24 bytes long, however RTP (and consequently Discord)'s nonce is a different length
         // so we need to create a 24 byte array, and copy the nonce into it.
@@ -196,7 +192,7 @@ public class AudioPacket
         return buffer;
     }
 
-    public static AudioPacket decryptAudioPacket(AudioEncryption encryption, DatagramPacket packet, byte[] secretKey)
+    protected static AudioPacket decryptAudioPacket(AudioEncryption encryption, DatagramPacket packet, byte[] secretKey)
     {
         TweetNaclFast.SecretBox boxer = new TweetNaclFast.SecretBox(secretKey);
         AudioPacket encryptedPacket = new AudioPacket(packet);
