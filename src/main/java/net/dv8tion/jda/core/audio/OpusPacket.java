@@ -28,41 +28,35 @@ public final class OpusPacket implements Comparable<OpusPacket>
     public static final int OPUS_CHANNEL_COUNT = 2;     //We want to use stereo. If the audio given is mono, the encoder promotes it
                                                         // to Left and Right mono (stereo that is the same on both sides)
 
-    private final char seq;
-    private final int timestamp;
-    private final int ssrc;
     private final long userId;
     private final byte[] opusAudio;
-    private short[] decoded;
-    private boolean triedDecode;
-
     private final Decoder decoder;
     private final AudioPacket rawPacket;
+
+    private short[] decoded;
+    private boolean triedDecode;
 
     OpusPacket(AudioPacket packet, long userId, Decoder decoder)
     {
         this.rawPacket = packet;
-        this.seq = packet.getSequence();
-        this.timestamp = packet.getTimestamp();
-        this.ssrc = packet.getSSRC();
         this.userId = userId;
         this.decoder = decoder;
         this.opusAudio = packet.getEncodedAudio();
     }
 
-    public char getSeq()
+    public char getSequence()
     {
-        return seq;
+        return rawPacket.getSequence();
     }
 
     public int getTimestamp()
     {
-        return timestamp;
+        return rawPacket.getTimestamp();
     }
 
     public int getSsrc()
     {
-        return ssrc;
+        return rawPacket.getSSRC();
     }
 
     public long getUserId()
@@ -72,7 +66,7 @@ public final class OpusPacket implements Comparable<OpusPacket>
 
     public boolean canDecode()
     {
-        return decoder != null && decoder.isInOrder(seq);
+        return decoder != null && decoder.isInOrder(getSequence());
     }
 
     public byte[] getOpusAudio()
@@ -87,7 +81,7 @@ public final class OpusPacket implements Comparable<OpusPacket>
             return decoded;
         if (decoder == null)
             throw new IllegalStateException("No decoder available");
-        if (!decoder.isInOrder(seq))
+        if (!decoder.isInOrder(getSequence()))
             throw new IllegalStateException("Packet is not in order");
         triedDecode = true;
         return decoded = decoder.decodeFromOpus(rawPacket);
@@ -121,13 +115,13 @@ public final class OpusPacket implements Comparable<OpusPacket>
     @Override
     public int compareTo(@Nonnull OpusPacket o)
     {
-        return seq - o.seq;
+        return getSequence() - o.getSequence();
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash(seq, timestamp, ssrc);
+        return Objects.hash(getSequence(), getTimestamp(), getOpusAudio());
     }
 
     @Override
@@ -138,6 +132,8 @@ public final class OpusPacket implements Comparable<OpusPacket>
         if (!(obj instanceof OpusPacket))
             return false;
         OpusPacket other = (OpusPacket) obj;
-        return seq == other.seq && timestamp == other.timestamp && ssrc == other.ssrc;
+        return getSequence() == other.getSequence()
+            && getTimestamp() == other.getTimestamp()
+            && getSsrc() == other.getSsrc();
     }
 }
