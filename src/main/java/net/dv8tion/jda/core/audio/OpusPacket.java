@@ -16,8 +16,7 @@
 
 package net.dv8tion.jda.core.audio;
 
-import org.jetbrains.annotations.NotNull;
-
+import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -120,7 +119,7 @@ public final class OpusPacket implements Comparable<OpusPacket>
     }
 
     @Override
-    public int compareTo(@NotNull OpusPacket o)
+    public int compareTo(@Nonnull OpusPacket o)
     {
         return seq - o.seq;
     }
