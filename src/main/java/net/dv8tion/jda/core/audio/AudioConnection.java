@@ -369,7 +369,6 @@ public class AudioConnection
                             int ssrc = decryptedPacket.getSSRC();
                             final long userId = ssrcMap.get(ssrc);
                             Decoder decoder = opusDecoders.get(ssrc);
-                            OpusPacket opusPacket = null;
                             if (userId == ssrcMap.getNoEntryValue())
                             {
                                 byte[] audio = decryptedPacket.getEncodedAudio();
@@ -393,15 +392,11 @@ public class AudioConnection
                                     break;
                                 }
                             }
+                            OpusPacket opusPacket = new OpusPacket(decryptedPacket, userId, decoder);
                             if (receiveHandler.canReceiveEncoded())
-                                receiveHandler.handleEncodedAudio(opusPacket = new OpusPacket(decryptedPacket, userId, decoder));
-                            if (!shouldDecode || decoder == null)
+                                receiveHandler.handleEncodedAudio(opusPacket);
+                            if (!shouldDecode || !opusPacket.canDecode())
                                 continue;
-                            if (!decoder.isInOrder(decryptedPacket.getSequence()))
-                            {
-                                LOG.trace("Got out-of-order audio packet. Ignoring.");
-                                continue;
-                            }
 
                             User user = getJDA().getUserById(userId);
                             if (user == null)
@@ -409,20 +404,7 @@ public class AudioConnection
                                 LOG.warn("Received audio data with a known SSRC, but the userId associate with the SSRC is unknown to JDA!");
                                 continue;
                             }
-                            short[] decodedAudio;
-                            try
-                            {
-                                if (opusPacket != null)
-                                    opusPacket.startDecode();
-                                decodedAudio = decoder.decodeFromOpus(decryptedPacket);
-                                if (opusPacket != null)
-                                    opusPacket.setDecoded(decodedAudio);
-                            }
-                            finally
-                            {
-                                if (opusPacket != null)
-                                    opusPacket.finishDecode();
-                            }
+                            short[] decodedAudio = opusPacket.decode();
                             //If decodedAudio is null, then the Opus decode failed, so throw away the packet.
                             if (decodedAudio == null)
                             {

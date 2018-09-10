@@ -20,7 +20,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.concurrent.locks.ReentrantLock;
 
 public final class OpusPacket implements Comparable<OpusPacket>
 {
@@ -36,10 +35,10 @@ public final class OpusPacket implements Comparable<OpusPacket>
     private final long userId;
     private final byte[] opusAudio;
     private short[] decoded;
+    private boolean triedDecode;
 
     private final Decoder decoder;
     private final AudioPacket rawPacket;
-    private final ReentrantLock decoderLock = new ReentrantLock();
 
     OpusPacket(AudioPacket packet, long userId, Decoder decoder)
     {
@@ -52,21 +51,6 @@ public final class OpusPacket implements Comparable<OpusPacket>
 
         final byte[] audio = packet.getEncodedAudio();
         this.opusAudio = Arrays.copyOf(audio, audio.length);
-    }
-
-    void startDecode() throws InterruptedException
-    {
-        decoderLock.lockInterruptibly();
-    }
-
-    void finishDecode()
-    {
-        decoderLock.unlock();
-    }
-
-    void setDecoded(short[] decoded)
-    {
-        this.decoded = decoded;
     }
 
     public char getSeq()
@@ -99,27 +83,16 @@ public final class OpusPacket implements Comparable<OpusPacket>
         return opusAudio;
     }
 
-    public short[] decode()
+    public synchronized short[] decode()
     {
-        if (decoded != null)
+        if (triedDecode)
             return decoded;
-        try
-        {
-            startDecode();
-            if (decoder == null)
-                throw new IllegalStateException("No decoder available");
-            if (!decoder.isInOrder(seq))
-                throw new IllegalStateException("Packet is not in order");
-            return decoded = decoder.decodeFromOpus(rawPacket);
-        }
-        catch (InterruptedException ex)
-        {
-            throw new IllegalStateException("Was interrupted while decoding audio!");
-        }
-        finally
-        {
-            finishDecode();
-        }
+        if (decoder == null)
+            throw new IllegalStateException("No decoder available");
+        if (!decoder.isInOrder(seq))
+            throw new IllegalStateException("Packet is not in order");
+        triedDecode = true;
+        return decoded = decoder.decodeFromOpus(rawPacket);
     }
 
     public byte[] getAudioData(double volume)
@@ -129,17 +102,17 @@ public final class OpusPacket implements Comparable<OpusPacket>
 
     public static byte[] getAudioData(short[] decoded, double volume)
     {
-        short s;
+        if (decoded == null)
+            throw new IllegalArgumentException("Cannot get audio data from null");
         int byteIndex = 0;
         byte[] audio = new byte[decoded.length * 2];
-        for (short aDecoded : decoded)
+        for (short s : decoded)
         {
-            s = aDecoded;
             if (volume != 1.0)
                 s = (short) (s * volume);
 
-            byte leftByte = (byte) ((0x000000FF) & (s >> 8));
-            byte rightByte = (byte) (0x000000FF & s);
+            byte leftByte  = (byte) ((s >>> 8) & 0xFF);
+            byte rightByte = (byte)  (s        & 0xFF);
             audio[byteIndex] = leftByte;
             audio[byteIndex + 1] = rightByte;
             byteIndex += 2;
