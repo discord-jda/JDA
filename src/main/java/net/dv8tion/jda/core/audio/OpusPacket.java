@@ -48,9 +48,7 @@ public final class OpusPacket implements Comparable<OpusPacket>
         this.ssrc = packet.getSSRC();
         this.userId = userId;
         this.decoder = decoder;
-
-        final byte[] audio = packet.getEncodedAudio();
-        this.opusAudio = Arrays.copyOf(audio, audio.length);
+        this.opusAudio = packet.getEncodedAudio();
     }
 
     public char getSeq()
@@ -80,7 +78,8 @@ public final class OpusPacket implements Comparable<OpusPacket>
 
     public byte[] getOpusAudio()
     {
-        return opusAudio;
+        //prevent write access to backing array
+        return Arrays.copyOf(opusAudio, opusAudio.length);
     }
 
     public synchronized short[] decode()
