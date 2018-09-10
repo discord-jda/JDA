@@ -39,6 +39,7 @@ import net.dv8tion.jda.core.handle.*;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
+import net.dv8tion.jda.core.utils.IOUtil;
 import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.SessionController;
@@ -1031,7 +1032,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected boolean onBufferMessage(byte[] binary) throws IOException
     {
-        if (binary.length >= 4 && getInt(binary, binary.length - 4) == ZLIB_SUFFIX)
+        if (binary.length >= 4 && IOUtil.getIntBigEndian(binary, binary.length - 4) == ZLIB_SUFFIX)
         {
             extendBuffer(binary);
             return true;
@@ -1078,14 +1079,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         if (buffer == null)
             decompressBuffer = new SoftReference<>(buffer = new ByteArrayOutputStream(1024));
         return buffer;
-    }
-
-    protected static int getInt(byte[] sink, int offset)
-    {
-        return sink[offset + 3] & 0xFF
-            | (sink[offset + 2] & 0xFF) << 8
-            | (sink[offset + 1] & 0xFF) << 16
-            | (sink[offset    ] & 0xFF) << 24;
     }
 
     @Override
