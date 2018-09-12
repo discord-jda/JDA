@@ -176,6 +176,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onTextChannelUpdatePermissions(TextChannelUpdatePermissionsEvent event) {}
     public void onTextChannelUpdateNSFW(TextChannelUpdateNSFWEvent event) {}
     public void onTextChannelUpdateParent(TextChannelUpdateParentEvent event) {}
+    public void onTextChannelUpdateUserRateLimit(TextChannelUpdateUserRateLimitEvent event) {}
     public void onTextChannelCreate(TextChannelCreateEvent event) {}
 
     //VoiceChannel Events
