@@ -465,6 +465,8 @@ public abstract class ListenerAdapter implements EventListener
             onTextChannelUpdateNSFW((TextChannelUpdateNSFWEvent) event);
         else if (event instanceof TextChannelUpdateParentEvent)
             onTextChannelUpdateParent((TextChannelUpdateParentEvent) event);
+        else if (event instanceof TextChannelUpdateUserRateLimitEvent)
+            onTextChannelUpdateUserRateLimit((TextChannelUpdateUserRateLimitEvent) event);
         else if (event instanceof TextChannelDeleteEvent)
         onTextChannelDelete((TextChannelDeleteEvent) event);
 
