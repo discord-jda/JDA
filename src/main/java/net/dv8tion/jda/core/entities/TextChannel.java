@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.core.entities;
 
+import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.WebhookAction;
@@ -52,6 +53,10 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
     * @return True, If this TextChannel is considered NSFW by the official Discord Client
     */
     boolean isNSFW();
+
+    // TODO Docs
+    @Incubating
+    int getRateLimitPerUser();
 
     /**
      * Retrieves the {@link net.dv8tion.jda.core.entities.Webhook Webhooks} attached to this TextChannel.

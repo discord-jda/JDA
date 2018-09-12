@@ -64,6 +64,7 @@ public class ChannelUpdateHandler extends SocketHandler
         final int position = content.getInt("position");
         final String name = content.getString("name");
         final boolean nsfw = Helpers.optBoolean(content, "nsfw");
+        final int rateLimitPerUser = Helpers.optInt(content, "rate_limit_per_user", 0);
         JSONArray permOverwrites = content.getJSONArray("permission_overwrites");
         switch (type)
         {
@@ -85,6 +86,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 final String oldTopic = textChannel.getTopic();
                 final int oldPosition = textChannel.getPositionRaw();
                 final boolean oldNsfw = textChannel.isNSFW();
+                final int oldRateLimitPerUser = textChannel.getRateLimitPerUser();
                 if (!Objects.equals(oldName, name))
                 {
                     textChannel.setName(name);
@@ -124,7 +126,16 @@ public class ChannelUpdateHandler extends SocketHandler
                     getJDA().getEventManager().handle(
                             new TextChannelUpdateNSFWEvent(
                                     getJDA(), responseNumber,
-                                    textChannel, nsfw));
+                                    textChannel, oldNsfw));
+                }
+
+                if (oldRateLimitPerUser != rateLimitPerUser)
+                {
+                    textChannel.setRateLimitPerUser(rateLimitPerUser);
+                    getJDA().getEventManager().handle(
+                            new TextChannelUpdateUserRateLimitEvent(
+                                    getJDA(), responseNumber,
+                                    textChannel, oldRateLimitPerUser));
                 }
 
                 applyPermissions(textChannel, content, permOverwrites, contained, changed);

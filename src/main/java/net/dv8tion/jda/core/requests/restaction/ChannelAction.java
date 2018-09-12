@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.core.requests.restaction;
 
+import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.requests.Request;
@@ -50,6 +51,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
     // --text only--
     protected String topic = null;
     protected Boolean nsfw = null;
+    protected Integer rateLimitPerUser = null;
 
     // --voice only--
     protected Integer bitrate = null;
@@ -167,6 +169,27 @@ public class ChannelAction extends AuditableRestAction<Channel>
         if (type != ChannelType.TEXT)
             throw new UnsupportedOperationException("Can only set nsfw for a TextChannel!");
         this.nsfw = nsfw;
+        return this;
+    }
+
+    /**
+     * Sets the rate limit for which individual users can send messages in the
+     * new TextChannel. This is measured in seconds.
+     *
+     * @param  rateLimitPerUser
+     *         The number of seconds required to wait between sending messages in the channel.
+     *
+     * @throws IllegalArgumentException
+     *         If the {@code rateLimitPerUser} is greater than 120, or less than 0
+     *
+     * @return The current ChannelAction, for chaining convenience
+     */
+    @Incubating
+    @CheckReturnValue
+    public ChannelAction setRateLimitPerUser(int rateLimitPerUser)
+    {
+        Checks.check(rateLimitPerUser <= 120 && rateLimitPerUser >= 0, "RateLimit per user must be between 0 and 120 (seconds)!");
+        this.rateLimitPerUser = rateLimitPerUser;
         return this;
     }
 
@@ -343,6 +366,8 @@ public class ChannelAction extends AuditableRestAction<Channel>
                     object.put("topic", topic);
                 if (nsfw != null)
                     object.put("nsfw", nsfw);
+                if (rateLimitPerUser != null)
+                    object.put("rate_limit_per_user", rateLimitPerUser);
         }
         if (type != ChannelType.CATEGORY && parent != null)
             object.put("parent_id", parent.getId());

@@ -611,7 +611,8 @@ public class EntityBuilder
             .setName(json.getString("name"))
             .setTopic(json.optString("topic"))
             .setPosition(json.getInt("position"))
-            .setNSFW(Helpers.optBoolean(json, "nsfw"));
+            .setNSFW(Helpers.optBoolean(json, "nsfw"))
+            .setRateLimitPerUser(Helpers.optInt(json, "rate_limit_per_user", 0));
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
         return channel;

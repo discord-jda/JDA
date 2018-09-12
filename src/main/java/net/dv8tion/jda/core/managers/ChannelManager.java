@@ -19,6 +19,7 @@ package net.dv8tion.jda.core.managers;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
+import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.AbstractChannelImpl;
@@ -55,21 +56,23 @@ import java.util.Collection;
 public class ChannelManager extends ManagerBase
 {
     /** Used to reset the name field */
-    public static final long NAME      = 0x1;
+    public static final long NAME                = 0x1;
     /** Used to reset the parent field */
-    public static final long PARENT    = 0x2;
+    public static final long PARENT              = 0x2;
     /** Used to reset the topic field */
-    public static final long TOPIC     = 0x4;
+    public static final long TOPIC               = 0x4;
     /** Used to reset the position field */
-    public static final long POSITION  = 0x8;
+    public static final long POSITION            = 0x8;
     /** Used to reset the nsfw field */
-    public static final long NSFW      = 0x10;
+    public static final long NSFW                = 0x10;
+    /** Used to reset the rate-limit per user field */
+    public static final long RATE_LIMIT_PER_USER = 0x12;
     /** Used to reset the userlimit field */
-    public static final long USERLIMIT = 0x20;
+    public static final long USERLIMIT           = 0x20;
     /** Used to reset the bitrate field */
-    public static final long BITRATE   = 0x40;
+    public static final long BITRATE             = 0x40;
     /** Used to reset the permission field */
-    public static final long PERMISSION = 0x80;
+    public static final long PERMISSION          = 0x80;
 
     protected final UpstreamReference<Channel> channel;
 
@@ -78,6 +81,7 @@ public class ChannelManager extends ManagerBase
     protected String topic;
     protected int position;
     protected boolean nsfw;
+    protected int rateLimitPerUser;
     protected int userlimit;
     protected int bitrate;
 
@@ -148,6 +152,7 @@ public class ChannelManager extends ManagerBase
      *     <li>{@link #TOPIC}</li>
      *     <li>{@link #POSITION}</li>
      *     <li>{@link #NSFW}</li>
+     *     <li>{@link #RATE_LIMIT_PER_USER}</li>
      *     <li>{@link #USERLIMIT}</li>
      *     <li>{@link #BITRATE}</li>
      *     <li>{@link #PERMISSION}</li>
@@ -588,6 +593,35 @@ public class ChannelManager extends ManagerBase
     }
 
     /**
+     * Sets the <b><u>rate-limit per user</u></b> of the selected {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
+     * <br>Provide {@code 0} to reset the rate-limit per user of the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
+     *
+     * <p>A channel rate-limit per user <b>must not</b> be negative nor greater than {@code 120}!
+     * <br><b>This is only available to {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}</b>
+     *
+     * @param  rateLimitPerUser
+     *         The new rate-limit per user for the selected {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
+     *
+     * @throws IllegalStateException
+     *         If the selected {@link net.dv8tion.jda.core.entities.Channel Channel}'s type is not {@link net.dv8tion.jda.core.entities.ChannelType#TEXT TEXT}
+     * @throws IllegalArgumentException
+     *         If the provided user-limit is negative or greater than {@code 120}
+     *
+     * @return ChannelManager for chaining convenience
+     */
+    @Incubating
+    @CheckReturnValue
+    public ChannelManager setRateLimitPerUser(int rateLimitPerUser)
+    {
+        if (getType() != ChannelType.TEXT)
+            throw new IllegalStateException("Can only set rate-limit per user on text channels");
+        Checks.check(rateLimitPerUser <= 120 && rateLimitPerUser >= 0, "RateLimit per user must be between 0 and 120 (seconds)!");
+        this.rateLimitPerUser = rateLimitPerUser;
+        set |= RATE_LIMIT_PER_USER;
+        return this;
+    }
+
+    /**
      * Sets the <b><u>user-limit</u></b> of the selected {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}.
      * <br>Provide {@code 0} to reset the user-limit of the {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
      *
@@ -661,6 +695,8 @@ public class ChannelManager extends ManagerBase
             frame.put("topic", opt(topic));
         if (shouldUpdate(NSFW))
             frame.put("nsfw", nsfw);
+        if (shouldUpdate(RATE_LIMIT_PER_USER))
+            frame.put("rate_limit_per_user", rateLimitPerUser);
         if (shouldUpdate(USERLIMIT))
             frame.put("user_limit", userlimit);
         if (shouldUpdate(BITRATE))
