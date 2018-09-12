@@ -65,14 +65,14 @@ public class ChannelManager extends ManagerBase
     public static final long POSITION            = 0x8;
     /** Used to reset the nsfw field */
     public static final long NSFW                = 0x10;
-    /** Used to reset the rate-limit per user field */
-    public static final long RATE_LIMIT_PER_USER = 0x12;
     /** Used to reset the userlimit field */
     public static final long USERLIMIT           = 0x20;
     /** Used to reset the bitrate field */
     public static final long BITRATE             = 0x40;
     /** Used to reset the permission field */
     public static final long PERMISSION          = 0x80;
+    /** Used to reset the rate-limit per user field */
+    public static final long RATE_LIMIT_PER_USER = 0x100;
 
     protected final UpstreamReference<Channel> channel;
 
