@@ -28,11 +28,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
-import net.dv8tion.jda.core.utils.Checks;
-import net.dv8tion.jda.core.utils.JDALogger;
-import net.dv8tion.jda.core.utils.MiscUtil;
-import net.dv8tion.jda.core.utils.SessionController;
-import net.dv8tion.jda.core.utils.SessionControllerAdapter;
+import net.dv8tion.jda.core.utils.*;
 import net.dv8tion.jda.core.utils.cache.CacheFlag;
 import net.dv8tion.jda.core.utils.tuple.Pair;
 import okhttp3.OkHttpClient;
@@ -153,6 +149,8 @@ public class DefaultShardManager implements ShardManager
      */
     protected final ThreadPoolProvider<? extends ScheduledThreadPoolExecutor> rateLimitPoolProvider;
 
+    protected final ThreadPoolProvider<? extends ScheduledExecutorService> mainWsPoolProvider;
+
     /**
      * The {@link ExecutorService ExecutorService} that will be used by JDAs callback handler.
      */
@@ -261,6 +259,14 @@ public class DefaultShardManager implements ShardManager
      *         The statusProvider used at startup of new JDA instances
      * @param  httpClientBuilder
      *         The {@link okhttp3.OkHttpClient.Builder OkHttpClient.Builder}
+     * @param  httpClient
+     *         The {@link okhttp3.OkHttpClient OkHttpClient}
+     * @param  rateLimitPoolProvider
+     *         Provider for the rate-limit pool
+     * @param  mainWsPoolProvider
+     *         Provider for the main ws pool
+     * @param  callbackPoolProvider
+     *         Provider for the callback pool
      * @param  wsFactory
      *         The {@link com.neovisionaries.ws.client.WebSocketFactory WebSocketFactory}
      * @param  threadFactory
@@ -281,31 +287,35 @@ public class DefaultShardManager implements ShardManager
      * @param  idleProvider
      *         The Function that is used to set a shards idle state
      * @param  retryOnTimeout
-     *         hether the Requester should retry when a {@link java.net.SocketTimeoutException SocketTimeoutException} occurs.
+     *         Whether the Requester should retry when a {@link java.net.SocketTimeoutException SocketTimeoutException} occurs.
      * @param  useShutdownNow
      *         Whether the ShardManager should use JDA#shutdown() or not
      * @param  enableMDC
      *         Whether MDC should be enabled
      * @param  contextProvider
      *         The MDC context provider new JDA instances should use on startup
+     * @param  cacheFlags
+     *         The enabled cache flags
      * @param  enableCompression
      *         Whether to enable transport compression
      */
-    protected DefaultShardManager(final int shardsTotal, final Collection<Integer> shardIds,
-                                  final SessionController controller, final List<Object> listeners,
-                                  final List<IntFunction<Object>> listenerProviders,
-                                  final String token, final IEventManager eventManager, final IAudioSendFactory audioSendFactory,
-                                  final IntFunction<? extends Game> gameProvider, final IntFunction<OnlineStatus> statusProvider,
-                                  final OkHttpClient.Builder httpClientBuilder, final OkHttpClient httpClient,
-                                  final ThreadPoolProvider<? extends ScheduledThreadPoolExecutor> rateLimitPoolProvider,
-                                  final ThreadPoolProvider<? extends ExecutorService> callbackPoolProvider,
-                                  final WebSocketFactory wsFactory, final ThreadFactory threadFactory,
-                                  final int maxReconnectDelay, final int corePoolSize, final boolean enableVoice,
-                                  final boolean enableShutdownHook, final boolean enableBulkDeleteSplitting,
-                                  final boolean autoReconnect, final IntFunction<Boolean> idleProvider,
-                                  final boolean retryOnTimeout, final boolean useShutdownNow,
-                                  final boolean enableMDC, final IntFunction<? extends ConcurrentMap<String, String>> contextProvider,
-                                  final EnumSet<CacheFlag> cacheFlags, final boolean enableCompression)
+    protected DefaultShardManager(
+            final int shardsTotal, final Collection<Integer> shardIds,
+            final SessionController controller, final List<Object> listeners,
+            final List<IntFunction<Object>> listenerProviders,
+            final String token, final IEventManager eventManager, final IAudioSendFactory audioSendFactory,
+            final IntFunction<? extends Game> gameProvider, final IntFunction<OnlineStatus> statusProvider,
+            final OkHttpClient.Builder httpClientBuilder, final OkHttpClient httpClient,
+            final ThreadPoolProvider<? extends ScheduledThreadPoolExecutor> rateLimitPoolProvider,
+            final ThreadPoolProvider<? extends ScheduledExecutorService> mainWsPoolProvider,
+            final ThreadPoolProvider<? extends ExecutorService> callbackPoolProvider,
+            final WebSocketFactory wsFactory, final ThreadFactory threadFactory,
+            final int maxReconnectDelay, final int corePoolSize, final boolean enableVoice,
+            final boolean enableShutdownHook, final boolean enableBulkDeleteSplitting,
+            final boolean autoReconnect, final IntFunction<Boolean> idleProvider,
+            final boolean retryOnTimeout, final boolean useShutdownNow,
+            final boolean enableMDC, final IntFunction<? extends ConcurrentMap<String, String>> contextProvider,
+            final EnumSet<CacheFlag> cacheFlags, final boolean enableCompression)
     {
         this.shardsTotal = shardsTotal;
         this.listeners = listeners;
@@ -321,6 +331,7 @@ public class DefaultShardManager implements ShardManager
         else
             this.httpClientBuilder = null;
         this.rateLimitPoolProvider = rateLimitPoolProvider;
+        this.mainWsPoolProvider = mainWsPoolProvider;
         this.callbackPoolProvider = callbackPoolProvider;
         this.wsFactory = wsFactory == null ? new WebSocketFactory() : wsFactory;
         this.executor = createExecutor(threadFactory);
@@ -633,6 +644,13 @@ public class DefaultShardManager implements ShardManager
             rateLimitPool = rateLimitPoolProvider.provide(shardId);
             shutdownRateLimitPool = rateLimitPoolProvider.shouldShutdownAutomatically(shardId);
         }
+        ScheduledExecutorService mainWsPool = null;
+        boolean shutdownMainWsPool = true;
+        if (mainWsPoolProvider != null)
+        {
+            mainWsPool = mainWsPoolProvider.provide(shardId);
+            shutdownMainWsPool = mainWsPoolProvider.shouldShutdownAutomatically(shardId);
+        }
         ExecutorService callbackPool = null;
         boolean shutdownCallbackPool = true;
         if (callbackPoolProvider != null)
@@ -641,8 +659,8 @@ public class DefaultShardManager implements ShardManager
             shutdownCallbackPool = callbackPoolProvider.shouldShutdownAutomatically(shardId);
         }
         final JDAImpl jda = new JDAImpl(AccountType.BOT, this.token, this.controller, httpClient, this.wsFactory,
-            rateLimitPool, callbackPool, this.autoReconnect, this.enableVoice, false, this.enableBulkDeleteSplitting,
-            this.retryOnTimeout, this.enableMDC, shutdownRateLimitPool, shutdownCallbackPool, this.corePoolSize, this.maxReconnectDelay,
+                                        rateLimitPool, mainWsPool, callbackPool, this.autoReconnect, this.enableVoice, false, this.enableBulkDeleteSplitting,
+                                        this.retryOnTimeout, this.enableMDC, shutdownRateLimitPool, shutdownMainWsPool, shutdownCallbackPool, this.corePoolSize, this.maxReconnectDelay,
             this.contextProvider == null || !this.enableMDC ? null : contextProvider.apply(shardId), this.cacheFlags);
 
         jda.asBot().setShardManager(this);

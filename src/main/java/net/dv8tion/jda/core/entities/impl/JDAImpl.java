@@ -57,6 +57,8 @@ import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class JDAImpl implements JDA
@@ -64,8 +66,10 @@ public class JDAImpl implements JDA
     public static final Logger LOG = JDALogger.getLog(JDA.class);
 
     protected final ScheduledThreadPoolExecutor rateLimitPool;
+    protected final ScheduledExecutorService mainWsPool;
     protected final ExecutorService callbackPool;
     protected final boolean shutdownRateLimitPool;
+    protected final boolean shutdownMainWsPool;
     protected final boolean shutdownCallbackPool;
 
     protected final SnowflakeCacheViewImpl<User> userCache = new SnowflakeCacheViewImpl<>(User.class, User::getName);
@@ -113,16 +117,19 @@ public class JDAImpl implements JDA
     protected String token;
     protected String gatewayUrl;
 
-    public JDAImpl(AccountType accountType, String token, SessionController controller,
-                   OkHttpClient httpClient, WebSocketFactory wsFactory,
-                   ScheduledThreadPoolExecutor rateLimitPool, ExecutorService callbackPool,
-                   boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook,
-                   boolean bulkDeleteSplittingEnabled, boolean retryOnTimeout, boolean enableMDC,
-                   boolean shutdownRateLimitPool, boolean shutdownCallbackPool,
-                   int poolSize, int maxReconnectDelay,
-                   ConcurrentMap<String, String> contextMap, EnumSet<CacheFlag> cacheFlags)
+    public JDAImpl(
+            AccountType accountType, String token, SessionController controller,
+            OkHttpClient httpClient, WebSocketFactory wsFactory,
+            ScheduledThreadPoolExecutor rateLimitPool, ScheduledExecutorService mainWsPool,
+            ExecutorService callbackPool,
+            boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook,
+            boolean bulkDeleteSplittingEnabled, boolean retryOnTimeout, boolean enableMDC,
+            boolean shutdownRateLimitPool, boolean shutdownMainWsPool, boolean shutdownCallbackPool,
+            int poolSize, int maxReconnectDelay,
+            ConcurrentMap<String, String> contextMap, EnumSet<CacheFlag> cacheFlags)
     {
         this.accountType = accountType;
+
         this.setToken(token);
         this.httpClient = httpClient;
         this.wsFactory = wsFactory;
@@ -130,9 +137,11 @@ public class JDAImpl implements JDA
         this.audioEnabled = audioEnabled;
         this.shutdownHook = useShutdownHook ? new Thread(this::shutdown, "JDA Shutdown Hook") : null;
         this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
-        this.rateLimitPool = rateLimitPool == null ? new ScheduledThreadPoolExecutor(poolSize, new RateLimitThreadFactory()) : rateLimitPool;
+        this.rateLimitPool = rateLimitPool == null ? new ScheduledThreadPoolExecutor(poolSize, new RateLimitThreadFactory(this::getIdentifierString)) : rateLimitPool;
+        this.mainWsPool = mainWsPool == null ? Executors.newSingleThreadScheduledExecutor(new MainWebSocketThreadFactory(this::getIdentifierString)) : mainWsPool;
         this.callbackPool = callbackPool == null ? ForkJoinPool.commonPool() : callbackPool;
         this.shutdownRateLimitPool = shutdownRateLimitPool;
+        this.shutdownMainWsPool = shutdownMainWsPool;
         this.shutdownCallbackPool = shutdownCallbackPool;
         this.maxReconnectDelay = maxReconnectDelay;
         this.sessionController = controller == null ? new SessionControllerAdapter() : controller;
@@ -556,6 +565,8 @@ public class JDAImpl implements JDA
         shutdown();
         if (shutdownRateLimitPool)
             getRateLimitPool().shutdownNow();
+        if (shutdownMainWsPool)
+            getMainWsPool().shutdownNow();
         if (shutdownCallbackPool)
             getCallbackPool().shutdownNow();
     }
@@ -585,6 +596,8 @@ public class JDAImpl implements JDA
             getRateLimitPool().setKeepAliveTime(time, unit);
             getRateLimitPool().allowCoreThreadTimeOut(true);
         }
+        if (shutdownMainWsPool)
+            getMainWsPool().shutdown();
         if (shutdownCallbackPool)
             getCallbackPool().shutdown();
 
@@ -867,27 +880,50 @@ public class JDAImpl implements JDA
         return rateLimitPool;
     }
 
+    public ScheduledExecutorService getMainWsPool()
+    {
+        return mainWsPool;
+    }
+
     public ExecutorService getCallbackPool()
     {
         return callbackPool;
     }
 
-    private class RateLimitThreadFactory implements ThreadFactory
+    private static class RateLimitThreadFactory implements ThreadFactory
     {
-        final String identifier;
+        final Supplier<String> identifier;
         final AtomicInteger threadCount = new AtomicInteger(1);
 
-        public RateLimitThreadFactory()
+        public RateLimitThreadFactory(Supplier<String> identifier)
         {
-            identifier = getIdentifierString() + " RateLimit-Queue Pool";
+            this.identifier = () -> identifier.get() + " RateLimit-Queue Pool";
         }
 
         @Override
         public Thread newThread(Runnable r)
         {
-            Thread t = new Thread(r, identifier + " - Thread " + threadCount.getAndIncrement());
+            Thread t = new Thread(r, identifier.get() + " - Thread " + threadCount.getAndIncrement());
             t.setDaemon(true);
+            return t;
+        }
+    }
 
+    private static class MainWebSocketThreadFactory implements ThreadFactory
+    {
+        final Supplier<String> identifier;
+        final AtomicLong threadCount = new AtomicLong(1);
+
+        private MainWebSocketThreadFactory(Supplier<String> identifier)
+        {
+            this.identifier = () -> identifier.get() + " MainWS-Worker";
+        }
+
+        @Override
+        public Thread newThread(Runnable r)
+        {
+            Thread t = new Thread(r, identifier.get() + "Thread " + threadCount.getAndIncrement());
+            t.setDaemon(true);
             return t;
         }
     }

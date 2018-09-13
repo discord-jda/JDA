@@ -34,10 +34,7 @@ import okhttp3.OkHttpClient;
 
 import javax.security.auth.login.LoginException;
 import java.util.*;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.*;
 
 /**
  * Used to create new {@link net.dv8tion.jda.core.JDA} instances. This is also useful for making sure all of
@@ -56,6 +53,8 @@ public class JDABuilder
 
     protected ScheduledThreadPoolExecutor rateLimitPool = null;
     protected boolean shutdownRateLimitPool = true;
+    protected ScheduledExecutorService mainWsPool = null;
+    protected boolean shutdownMainWsPool = true;
     protected ExecutorService callbackPool = null;
     protected boolean shutdownCallbackPool = true;
     protected EnumSet<CacheFlag> cacheFlags = EnumSet.allOf(CacheFlag.class);
@@ -369,6 +368,18 @@ public class JDABuilder
     {
         this.rateLimitPool = pool;
         this.shutdownRateLimitPool = automaticShutdown;
+        return this;
+    }
+
+    public JDABuilder setMainWsPool(ScheduledExecutorService pool)
+    {
+        return setMainWsPool(pool, pool == null);
+    }
+
+    public JDABuilder setMainWsPool(ScheduledExecutorService pool, boolean automaticShutdown)
+    {
+        this.mainWsPool = pool;
+        this.shutdownMainWsPool = automaticShutdown;
         return this;
     }
 
@@ -847,9 +858,11 @@ public class JDABuilder
         if (controller == null && shardInfo != null)
             controller = new SessionControllerAdapter();
 
-        JDAImpl jda = new JDAImpl(accountType, token, controller, httpClient, wsFactory, rateLimitPool, callbackPool,
+        JDAImpl jda = new JDAImpl(accountType, token, controller, httpClient, wsFactory, rateLimitPool, mainWsPool,
+                                  callbackPool,
                                   autoReconnect, enableVoice, enableShutdownHook, enableBulkDeleteSplitting,
-                                  requestTimeoutRetry, enableContext, shutdownRateLimitPool, shutdownCallbackPool,
+                                  requestTimeoutRetry, enableContext,
+                                  shutdownRateLimitPool, shutdownMainWsPool, shutdownCallbackPool,
                                   corePoolSize, maxReconnectDelay, contextMap, cacheFlags);
 
         if (eventManager != null)

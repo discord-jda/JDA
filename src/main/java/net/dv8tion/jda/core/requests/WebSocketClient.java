@@ -54,10 +54,8 @@ import java.io.UnsupportedEncodingException;
 import java.lang.ref.SoftReference;
 import java.time.OffsetDateTime;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
@@ -90,7 +88,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     //this is a SoftReference in order to allow this resource to be freed to prevent resources starvation
     protected SoftReference<ByteArrayOutputStream> decompressBuffer;
 
-    protected volatile Thread keepAliveThread;
+    protected final ScheduledExecutorService executors;
+    protected volatile Future<?> ratelimitThread;
+    protected volatile Future<?> keepAliveThread;
+
     protected boolean initiating;
 
     protected int reconnectTimeoutS = 2;
@@ -102,7 +103,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected final Queue<String> chunkSyncQueue = new ConcurrentLinkedQueue<>();
     protected final Queue<String> ratelimitQueue = new ConcurrentLinkedQueue<>();
-    protected volatile Thread ratelimitThread = null;
+
     protected volatile long ratelimitResetTime;
     protected final AtomicInteger messagesSent = new AtomicInteger(0);
 
@@ -121,6 +122,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public WebSocketClient(JDAImpl api, boolean compression)
     {
         this.api = api;
+        this.executors = api.getMainWsPool();
         this.shardInfo = api.getShardInfo();
         this.compression = compression;
         this.shouldReconnect = api.isAutoReconnect();
@@ -283,114 +285,102 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected void setupSendingThread()
     {
-        ratelimitThread = new Thread(() ->
+        AtomicBoolean needRateLimit = new AtomicBoolean();
+        AtomicBoolean attemptedToSend = new AtomicBoolean();
+        ratelimitThread = executors.scheduleAtFixedRate(() ->
         {
+            if (needRateLimit.getAndSet(false) || !attemptedToSend.getAndSet(true))
+                return; // wait another 500 ms
             api.setContext();
-            boolean needRatelimit;
-            boolean attemptedToSend;
-            while (!Thread.currentThread().isInterrupted())
+            try
             {
-                try
-                {
-                    //Make sure that we don't send any packets before sending auth info.
-                    if (!sentAuthInfo)
-                    {
-                        Thread.sleep(500);
-                        continue;
-                    }
-                    attemptedToSend = false;
-                    needRatelimit = false;
-                    audioQueueLock.lockInterruptibly();
+                //Make sure that we don't send any packets before sending auth info.
+                if (!sentAuthInfo)
+                    return;
+                attemptedToSend.set(false);
+                needRateLimit.set(false);
+                audioQueueLock.lockInterruptibly();
 
-                    ConnectionRequest audioRequest = getNextAudioConnectRequest();
-                    String chunkOrSyncRequest = chunkSyncQueue.peek();
+                ConnectionRequest audioRequest = getNextAudioConnectRequest();
+                String chunkOrSyncRequest = chunkSyncQueue.peek();
 
-                    //if lock isn't needed we already unlock here
-                    if (audioRequest == null || chunkOrSyncRequest != null)
-                        maybeUnlock();
-                    if (chunkOrSyncRequest != null)
-                    {
-                        needRatelimit = !send(chunkOrSyncRequest, false);
-                        if (!needRatelimit)
-                            chunkSyncQueue.remove();
-
-                        attemptedToSend = true;
-                    }
-                    else if (audioRequest != null)
-                    {
-                        long channel = audioRequest.getChannelId();
-                        Guild guild = api.getGuildById(audioRequest.getGuildIdLong());
-                        if (guild == null)
-                        {
-                            // race condition on guild delete, avoid NPE on DISCONNECT requests
-                            queuedAudioConnections.remove(audioRequest.getGuildIdLong());
-
-                            maybeUnlock();
-                            continue;
-                        }
-                        ConnectionStage stage = audioRequest.getStage();
-                        AudioManager audioManager = guild.getAudioManager();
-                        JSONObject packet;
-                        switch (stage)
-                        {
-                            case RECONNECT:
-                            case DISCONNECT:
-                                packet = newVoiceClose(audioRequest.getGuildIdLong());
-                                break;
-                            default:
-                            case CONNECT:
-                                packet = newVoiceOpen(audioManager, channel, guild.getIdLong());
-                        }
-                        needRatelimit = !send(packet.toString(), false);
-                        if (!needRatelimit)
-                        {
-                            //If we didn't get RateLimited, Next request attempt will be 2 seconds from now
-                            // we remove it in VoiceStateUpdateHandler once we hear that it has updated our status
-                            // in 2 seconds we will attempt again in case we did not receive an update
-                            audioRequest.setNextAttemptEpoch(System.currentTimeMillis() + 2000);
-                            //If we are already in the correct state according to voice state
-                            // we will not receive a VOICE_STATE_UPDATE that would remove it
-                            // thus we update it here
-                            final GuildVoiceState voiceState = guild.getSelfMember().getVoiceState();
-                            updateAudioConnection0(guild.getIdLong(), voiceState.getChannel());
-                        }
-                        maybeUnlock();
-                        attemptedToSend = true;
-                    }
-                    else
-                    {
-                        String message = ratelimitQueue.peek();
-                        if (message != null)
-                        {
-                            needRatelimit = !send(message, false);
-                            if (!needRatelimit)
-                                ratelimitQueue.remove();
-                            attemptedToSend = true;
-                        }
-                    }
-
-                    if (needRatelimit || !attemptedToSend)
-                        Thread.sleep(1000);
-                }
-                catch (InterruptedException ignored)
-                {
-                    LOG.debug("Main WS send thread interrupted. Most likely JDA is disconnecting the websocket.");
-                    break;
-                }
-                finally
-                {
-                    // on any exception that might cause this lock to not release
+                //if lock isn't needed we already unlock here
+                if (audioRequest == null || chunkOrSyncRequest != null)
                     maybeUnlock();
+                if (chunkOrSyncRequest != null)
+                {
+                    LOG.debug("Sending chunk/sync request {}", chunkOrSyncRequest);
+                    needRateLimit.set(!send(chunkOrSyncRequest, false));
+                    if (!needRateLimit.get())
+                        chunkSyncQueue.remove();
+
+                    attemptedToSend.set(true);
+                }
+                else if (audioRequest != null)
+                {
+                    long channel = audioRequest.getChannelId();
+                    Guild guild = api.getGuildById(audioRequest.getGuildIdLong());
+                    if (guild == null)
+                    {
+                        // race condition on guild delete, avoid NPE on DISCONNECT requests
+                        queuedAudioConnections.remove(audioRequest.getGuildIdLong());
+
+                        maybeUnlock();
+                        return;
+                    }
+                    ConnectionStage stage = audioRequest.getStage();
+                    AudioManager audioManager = guild.getAudioManager();
+                    JSONObject packet;
+                    switch (stage)
+                    {
+                        case RECONNECT:
+                        case DISCONNECT:
+                            packet = newVoiceClose(audioRequest.getGuildIdLong());
+                            break;
+                        default:
+                        case CONNECT:
+                            packet = newVoiceOpen(audioManager, channel, guild.getIdLong());
+                    }
+                    LOG.debug("Sending voice request {}", packet);
+                    needRateLimit.set(!send(packet.toString(), false));
+                    if (!needRateLimit.get())
+                    {
+                        //If we didn't get RateLimited, Next request attempt will be 2 seconds from now
+                        // we remove it in VoiceStateUpdateHandler once we hear that it has updated our status
+                        // in 2 seconds we will attempt again in case we did not receive an update
+                        audioRequest.setNextAttemptEpoch(System.currentTimeMillis() + 2000);
+                        //If we are already in the correct state according to voice state
+                        // we will not receive a VOICE_STATE_UPDATE that would remove it
+                        // thus we update it here
+                        final GuildVoiceState voiceState = guild.getSelfMember().getVoiceState();
+                        updateAudioConnection0(guild.getIdLong(), voiceState.getChannel());
+                    }
+                    maybeUnlock();
+                    attemptedToSend.set(true);
+                }
+                else
+                {
+                    String message = ratelimitQueue.peek();
+                    if (message != null)
+                    {
+                        LOG.debug("Sending normal message {}", message);
+                        needRateLimit.set(!send(message, false));
+                        if (!needRateLimit.get())
+                            ratelimitQueue.remove();
+                        attemptedToSend.set(true);
+                    }
                 }
             }
-        });
-        ratelimitThread.setUncaughtExceptionHandler((thread, throwable) ->
-        {
-            handleCallbackError(socket, throwable);
-            setupSendingThread();
-        });
-        ratelimitThread.setName(api.getIdentifierString() + " MainWS-Sending Thread");
-        ratelimitThread.start();
+            catch (InterruptedException ignored)
+            {
+                LOG.debug("Main WS send thread interrupted. Most likely JDA is disconnecting the websocket.");
+            }
+            finally
+            {
+                // on any exception that might cause this lock to not release
+                maybeUnlock();
+            }
+        }, 0, 500, TimeUnit.MILLISECONDS);
     }
 
     protected JSONObject newVoiceClose(long guildId)
@@ -523,7 +513,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         if (keepAliveThread != null)
         {
-            keepAliveThread.interrupt();
+            keepAliveThread.cancel(false);
             keepAliveThread = null;
         }
         if (serverCloseFrame != null)
@@ -551,7 +541,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         if (!shouldReconnect || !closeCodeIsReconnect) //we should not reconnect
         {
             if (ratelimitThread != null)
-                ratelimitThread.interrupt();
+            {
+                ratelimitThread.cancel(false);
+                ratelimitThread = null;
+            }
 
             if (!closeCodeIsReconnect)
             {
@@ -694,34 +687,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected void setupKeepAlive(long timeout)
     {
-        keepAliveThread = new Thread(() ->
+        keepAliveThread = executors.scheduleAtFixedRate(() ->
         {
             api.setContext();
-            while (connected)
-            {
-                try
-                {
-                    sendKeepAlive();
-
-                    //Sleep for heartbeat interval
-                    Thread.sleep(timeout);
-                }
-                catch (InterruptedException ex)
-                {
-                    //connection got cut... terminating keepAliveThread
-                    break;
-                }
-            }
-        });
-        keepAliveThread.setUncaughtExceptionHandler((thread, throwable) ->
-        {
-            handleCallbackError(socket, throwable);
-            setupKeepAlive(timeout);
-        });
-        keepAliveThread.setName(api.getIdentifierString() + " MainWS-KeepAlive Thread");
-        keepAliveThread.setPriority(Thread.MAX_PRIORITY);
-        keepAliveThread.setDaemon(true);
-        keepAliveThread.start();
+            if (connected)
+                sendKeepAlive();
+        }, 0, timeout, TimeUnit.MILLISECONDS);
     }
 
     protected void sendKeepAlive()
