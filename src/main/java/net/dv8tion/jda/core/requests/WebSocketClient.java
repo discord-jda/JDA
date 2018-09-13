@@ -286,17 +286,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected void setupSendingThread()
     {
         AtomicBoolean needRateLimit = new AtomicBoolean();
-        AtomicBoolean attemptedToSend = new AtomicBoolean();
+        AtomicBoolean attemptedToSend = new AtomicBoolean(true);
         ratelimitThread = executors.scheduleAtFixedRate(() ->
         {
-            if (needRateLimit.getAndSet(false) || !attemptedToSend.getAndSet(true))
+            //Make sure that we don't send any packets before sending auth info.
+            if (!sentAuthInfo || needRateLimit.getAndSet(false) || !attemptedToSend.getAndSet(true))
                 return; // wait another 500 ms
-            api.setContext();
             try
             {
-                //Make sure that we don't send any packets before sending auth info.
-                if (!sentAuthInfo)
-                    return;
+                api.setContext();
                 attemptedToSend.set(false);
                 needRateLimit.set(false);
                 audioQueueLock.lockInterruptibly();
