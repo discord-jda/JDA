@@ -705,16 +705,52 @@ public class DefaultShardManagerBuilder
         return this;
     }
 
+    /**
+     * Sets the {@link ScheduledExecutorService ScheduledExecutorService} that should be used for
+     * the JDA main WebSocket workers.
+     * <br><b>Only change this pool if you know what you're doing.</b>
+     * <br>This will override the worker pool provider set from {@link #setMainWsPoolProvider(ThreadPoolProvider)}.
+     * <br><b>This automatically disables the automatic shutdown of the JDA pools, you can enable
+     * it using {@link #setMainWsPool(ScheduledExecutorService, boolean) setMainWsPoolProvider(pool, true)}</b>
+     *
+     * @param  pool
+     *         The thread-pool to use for main WebSocket workers
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     */
     public DefaultShardManagerBuilder setMainWsPool(ScheduledExecutorService pool)
     {
         return setMainWsPool(pool, pool == null);
     }
 
+    /**
+     * Sets the {@link ScheduledExecutorService ScheduledExecutorService} that should be used for
+     * the JDA main WebSocket workers.
+     * <br><b>Only change this pool if you know what you're doing.</b>
+     * <br>This will override the worker pool provider set from {@link #setMainWsPoolProvider(ThreadPoolProvider)}.
+     *
+     * @param  pool
+     *         The thread-pool to use for main WebSocket workers
+     * @param  automaticShutdown
+     *         Whether {@link net.dv8tion.jda.core.JDA#shutdown()} should automatically shutdown this pool
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     */
     public DefaultShardManagerBuilder setMainWsPool(ScheduledExecutorService pool, boolean automaticShutdown)
     {
         return setMainWsPoolProvider(pool == null ? null : new ThreadPoolProviderImpl<>(pool, automaticShutdown));
     }
 
+    /**
+     * Sets the {@link ScheduledExecutorService ScheduledExecutorService} that should be used for
+     * the JDA main WebSocket workers.
+     * <br><b>Only change this pool if you know what you're doing.</b>
+     *
+     * @param  provider
+     *         The thread-pool provider to use for main WebSocket workers
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     */
     public DefaultShardManagerBuilder setMainWsPoolProvider(ThreadPoolProvider<? extends ScheduledExecutorService> provider)
     {
         this.mainWsPoolProvider = provider;

@@ -149,6 +149,9 @@ public class DefaultShardManager implements ShardManager
      */
     protected final ThreadPoolProvider<? extends ScheduledThreadPoolExecutor> rateLimitPoolProvider;
 
+    /**
+     * The {@link ScheduledExecutorService ScheduledExecutorService} that will be used for JDAs main WebSocket workers.
+     */
     protected final ThreadPoolProvider<? extends ScheduledExecutorService> mainWsPoolProvider;
 
     /**

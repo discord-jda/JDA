@@ -371,11 +371,37 @@ public class JDABuilder
         return this;
     }
 
+    /**
+     * Sets the {@link ScheduledExecutorService ScheduledExecutorService} used by
+     * the main WebSocket connection for workers. These workers spend most of their lifetime
+     * sleeping because they only activate for sending messages over the gateway.
+     * <br><b>Only change this pool if you know what you're doing.
+     * <br>This automatically disables the automatic shutdown of the JDA pools, you can enable
+     * it using {@link #setMainWsPool(ScheduledExecutorService, boolean) setMainWsPool(pool, true)}</b>
+     *
+     * @param  pool
+     *         The thread-pool to use for WebSocket workers
+     *
+     * @return THre JDABuilder instance. Useful for chaining.
+     */
     public JDABuilder setMainWsPool(ScheduledExecutorService pool)
     {
         return setMainWsPool(pool, pool == null);
     }
 
+    /**
+     * Sets the {@link ScheduledExecutorService ScheduledExecutorService} used by
+     * the main WebSocket connection for workers. These workers spend most of their lifetime
+     * sleeping because they only activate for sending messages over the gateway.
+     * <br><b>Only change this pool if you know what you're doing.</b>
+     *
+     * @param  pool
+     *         The thread-pool to use for WebSocket workers
+     * @param  automaticShutdown
+     *         Whether {@link JDA#shutdown()} should shutdown this pool
+     *
+     * @return THre JDABuilder instance. Useful for chaining.
+     */
     public JDABuilder setMainWsPool(ScheduledExecutorService pool, boolean automaticShutdown)
     {
         this.mainWsPool = pool;
