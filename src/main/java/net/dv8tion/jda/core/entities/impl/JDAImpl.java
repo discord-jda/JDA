@@ -578,28 +578,33 @@ public class JDAImpl implements JDA
             return;
 
         setStatus(Status.SHUTTING_DOWN);
+
+        WebSocketClient client = getClient();
+        if (client != null)
+            client.shutdown();
+
+        shutdownInternals();
+    }
+
+    public void shutdownInternals()
+    {
+        //so we can shutdown from WebSocketClient properly
         audioManagers.forEach(AudioManager::closeAudioConnection);
         audioManagers.clear();
 
         if (audioKeepAlivePool != null)
             audioKeepAlivePool.shutdownNow();
 
-        WebSocketClient client = getClient();
-        if (client != null)
-            client.shutdown();
-
-        final long time = 5L;
-        final TimeUnit unit = TimeUnit.SECONDS;
         getRequester().shutdown();
-        if (shutdownRateLimitPool)
-        {
-            getRateLimitPool().setKeepAliveTime(time, unit);
-            getRateLimitPool().allowCoreThreadTimeOut(true);
-        }
         if (shutdownMainWsPool)
             getMainWsPool().shutdown();
         if (shutdownCallbackPool)
             getCallbackPool().shutdown();
+        if (shutdownRateLimitPool)
+        {
+            getRateLimitPool().setKeepAliveTime(5L, TimeUnit.SECONDS);
+            getRateLimitPool().allowCoreThreadTimeOut(true);
+        }
 
         if (shutdownHook != null)
         {

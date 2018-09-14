@@ -552,7 +552,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 LOG.error("WebSocket connection was closed and cannot be recovered due to identification issues\n{}", closeCode);
             }
 
-            api.setStatus(JDA.Status.SHUTDOWN);
+            api.shutdownInternals();
             api.getEventManager().handle(new ShutdownEvent(api, OffsetDateTime.now(), rawCloseCode));
         }
         else
