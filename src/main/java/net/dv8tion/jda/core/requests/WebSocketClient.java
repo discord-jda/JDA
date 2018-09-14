@@ -88,7 +88,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     //this is a SoftReference in order to allow this resource to be freed to prevent resources starvation
     protected SoftReference<ByteArrayOutputStream> decompressBuffer;
 
-    protected final ScheduledExecutorService executors;
+    protected final ScheduledExecutorService executor;
     protected volatile Future<?> ratelimitThread;
     protected volatile Future<?> keepAliveThread;
 
@@ -122,7 +122,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public WebSocketClient(JDAImpl api, boolean compression)
     {
         this.api = api;
-        this.executors = api.getMainWsPool();
+        this.executor = api.getMainWsPool();
         this.shardInfo = api.getShardInfo();
         this.compression = compression;
         this.shouldReconnect = api.isAutoReconnect();
@@ -285,9 +285,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected void setupSendingThread()
     {
-        AtomicBoolean needRateLimit = new AtomicBoolean();
+        AtomicBoolean needRateLimit = new AtomicBoolean(false);
         AtomicBoolean attemptedToSend = new AtomicBoolean(true);
-        ratelimitThread = executors.scheduleAtFixedRate(() ->
+        ratelimitThread = executor.scheduleAtFixedRate(() ->
         {
             //Make sure that we don't send any packets before sending auth info.
             if (!sentAuthInfo || needRateLimit.getAndSet(false) || !attemptedToSend.getAndSet(true))
@@ -685,7 +685,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected void setupKeepAlive(long timeout)
     {
-        keepAliveThread = executors.scheduleAtFixedRate(() ->
+        keepAliveThread = executor.scheduleAtFixedRate(() ->
         {
             api.setContext();
             if (connected)

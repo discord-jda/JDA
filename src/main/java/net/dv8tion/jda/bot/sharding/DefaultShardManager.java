@@ -640,31 +640,25 @@ public class DefaultShardManager implements ShardManager
         OkHttpClient httpClient = this.httpClient;
         if (httpClient == null)
             httpClient = this.httpClientBuilder.build();
-        ScheduledThreadPoolExecutor rateLimitPool = null;
-        boolean shutdownRateLimitPool = true;
-        if (rateLimitPoolProvider != null)
-        {
-            rateLimitPool = rateLimitPoolProvider.provide(shardId);
-            shutdownRateLimitPool = rateLimitPoolProvider.shouldShutdownAutomatically(shardId);
-        }
-        ScheduledExecutorService mainWsPool = null;
-        boolean shutdownMainWsPool = true;
-        if (mainWsPoolProvider != null)
-        {
-            mainWsPool = mainWsPoolProvider.provide(shardId);
-            shutdownMainWsPool = mainWsPoolProvider.shouldShutdownAutomatically(shardId);
-        }
-        ExecutorService callbackPool = null;
-        boolean shutdownCallbackPool = true;
-        if (callbackPoolProvider != null)
-        {
-            callbackPool = callbackPoolProvider.provide(shardId);
-            shutdownCallbackPool = callbackPoolProvider.shouldShutdownAutomatically(shardId);
-        }
-        final JDAImpl jda = new JDAImpl(AccountType.BOT, this.token, this.controller, httpClient, this.wsFactory,
-                                        rateLimitPool, mainWsPool, callbackPool, this.autoReconnect, this.enableVoice, false, this.enableBulkDeleteSplitting,
-                                        this.retryOnTimeout, this.enableMDC, shutdownRateLimitPool, shutdownMainWsPool, shutdownCallbackPool, this.corePoolSize, this.maxReconnectDelay,
-            this.contextProvider == null || !this.enableMDC ? null : contextProvider.apply(shardId), this.cacheFlags);
+
+        // imagine if we had macros or closures or destructing :)
+        ExecutorPaid<ScheduledThreadPoolExecutor> rateLimitPair = getExecutor(rateLimitPoolProvider, shardId);
+        ScheduledThreadPoolExecutor rateLimitPool = rateLimitPair.executor;
+        boolean shutdownRateLimitPool = rateLimitPair.automaticShutdown;
+
+        ExecutorPaid<ScheduledExecutorService> mainWsPair = getExecutor(mainWsPoolProvider, shardId);
+        ScheduledExecutorService mainWsPool = mainWsPair.executor;
+        boolean shutdownMainWsPool = mainWsPair.automaticShutdown;
+
+        ExecutorPaid<ExecutorService> callbackPaid = getExecutor(callbackPoolProvider, shardId);
+        ExecutorService callbackPool = callbackPaid.executor;
+        boolean shutdownCallbackPool = callbackPaid.automaticShutdown;
+
+        final JDAImpl jda = new JDAImpl(
+                AccountType.BOT, this.token, this.controller, httpClient, this.wsFactory,
+                rateLimitPool, mainWsPool, callbackPool, this.autoReconnect, this.enableVoice, false, this.enableBulkDeleteSplitting,
+                this.retryOnTimeout, this.enableMDC, shutdownRateLimitPool, shutdownMainWsPool, shutdownCallbackPool, this.corePoolSize, this.maxReconnectDelay,
+                this.contextProvider == null || !this.enableMDC ? null : contextProvider.apply(shardId), this.cacheFlags);
 
         jda.asBot().setShardManager(this);
 
@@ -769,5 +763,29 @@ public class DefaultShardManager implements ShardManager
             : threadFactory;
 
         return Executors.newSingleThreadScheduledExecutor(factory);
+    }
+
+    protected static <E extends ExecutorService> ExecutorPaid<E> getExecutor(ThreadPoolProvider<? extends E> provider, int shardId)
+    {
+        E executor = null;
+        boolean automaticShutdown = true;
+        if (provider != null)
+        {
+            executor = provider.provide(shardId);
+            automaticShutdown = provider.shouldShutdownAutomatically(shardId);
+        }
+        return new ExecutorPaid<>(executor, automaticShutdown);
+    }
+
+    protected static class ExecutorPaid<E extends ExecutorService>
+    {
+        protected final E executor;
+        protected final boolean automaticShutdown;
+
+        protected ExecutorPaid(E executor, boolean automaticShutdown)
+        {
+            this.executor = executor;
+            this.automaticShutdown = automaticShutdown;
+        }
     }
 }
