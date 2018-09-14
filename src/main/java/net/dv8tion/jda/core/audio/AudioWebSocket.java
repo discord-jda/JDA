@@ -617,6 +617,7 @@ class AudioWebSocket extends WebSocketAdapter
 
         Runnable keepAliveRunnable = () ->
         {
+            getJDA().setContext();
             if (socket != null && socket.isOpen()) //TCP keep-alive
                 send(VoiceCode.HEARTBEAT, System.currentTimeMillis());
             if (audioConnection.udpSocket != null && !audioConnection.udpSocket.isClosed()) //UDP keep-alive

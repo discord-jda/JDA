@@ -24,7 +24,6 @@ import net.dv8tion.jda.bot.entities.impl.JDABotImpl;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.audio.KeepAliveThreadFactory;
 import net.dv8tion.jda.core.audio.factory.DefaultSendFactory;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.*;
@@ -47,6 +46,9 @@ import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import net.dv8tion.jda.core.utils.cache.impl.AbstractCacheView;
 import net.dv8tion.jda.core.utils.cache.impl.SnowflakeCacheViewImpl;
+import net.dv8tion.jda.core.utils.concurrent.AudioThreadFactory;
+import net.dv8tion.jda.core.utils.concurrent.MainWebSocketThreadFactory;
+import net.dv8tion.jda.core.utils.concurrent.RateLimitThreadFactory;
 import net.dv8tion.jda.core.utils.tuple.Pair;
 import okhttp3.OkHttpClient;
 import org.json.JSONObject;
@@ -56,9 +58,6 @@ import org.slf4j.MDC;
 import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class JDAImpl implements JDA
@@ -866,7 +865,7 @@ public class JDAImpl implements JDA
             {
                 akap = audioKeepAlivePool;
                 if (akap == null)
-                    akap = audioKeepAlivePool = new ScheduledThreadPoolExecutor(1, new KeepAliveThreadFactory(this));
+                    akap = audioKeepAlivePool = new ScheduledThreadPoolExecutor(1, new AudioThreadFactory(this));
             }
         }
         return akap;
@@ -895,43 +894,5 @@ public class JDAImpl implements JDA
     public ExecutorService getCallbackPool()
     {
         return callbackPool;
-    }
-
-    private static class RateLimitThreadFactory implements ThreadFactory
-    {
-        final Supplier<String> identifier;
-        final AtomicInteger threadCount = new AtomicInteger(1);
-
-        public RateLimitThreadFactory(Supplier<String> identifier)
-        {
-            this.identifier = () -> identifier.get() + " RateLimit-Queue Pool";
-        }
-
-        @Override
-        public Thread newThread(Runnable r)
-        {
-            Thread t = new Thread(r, identifier.get() + " - Thread " + threadCount.getAndIncrement());
-            t.setDaemon(true);
-            return t;
-        }
-    }
-
-    private static class MainWebSocketThreadFactory implements ThreadFactory
-    {
-        final Supplier<String> identifier;
-        final AtomicLong threadCount = new AtomicLong(1);
-
-        private MainWebSocketThreadFactory(Supplier<String> identifier)
-        {
-            this.identifier = () -> identifier.get() + " MainWS-Worker";
-        }
-
-        @Override
-        public Thread newThread(Runnable r)
-        {
-            Thread t = new Thread(r, identifier.get() + "Thread " + threadCount.getAndIncrement());
-            t.setDaemon(true);
-            return t;
-        }
     }
 }

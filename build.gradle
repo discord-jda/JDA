@@ -193,7 +193,9 @@ javadoc {
     exclude('net/dv8tion/jda/core/utils/cache/impl',
             'net/dv8tion/jda/core/utils/JDALogger.java',
             'net/dv8tion/jda/core/utils/Checks.java',
-            'net/dv8tion/jda/core/utils/Helpers.java')
+            'net/dv8tion/jda/core/utils/Helpers.java',
+            'net/dv8tion/jda/core/utils/concurrent',
+            'net/dv8tion/jda/core/utils/tuple')
 
     //voice crypto
     exclude('com/iwebpp/crypto')
