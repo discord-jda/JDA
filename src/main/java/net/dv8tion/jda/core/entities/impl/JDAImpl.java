@@ -586,7 +586,7 @@ public class JDAImpl implements JDA
         shutdownInternals();
     }
 
-    public void shutdownInternals()
+    public synchronized void shutdownInternals()
     {
         if (status == Status.SHUTDOWN)
             return;
