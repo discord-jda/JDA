@@ -588,6 +588,8 @@ public class JDAImpl implements JDA
 
     public void shutdownInternals()
     {
+        if (status == Status.SHUTDOWN)
+            return;
         //so we can shutdown from WebSocketClient properly
         audioManagers.forEach(AudioManager::closeAudioConnection);
         audioManagers.clear();

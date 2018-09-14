@@ -536,7 +536,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         // null is considered -reconnectable- as we do not know the close-code meaning
         boolean closeCodeIsReconnect = closeCode == null || closeCode.isReconnect();
-        if (!shouldReconnect || !closeCodeIsReconnect) //we should not reconnect
+        if (!shouldReconnect || !closeCodeIsReconnect || executor.isShutdown()) //we should not reconnect
         {
             if (ratelimitThread != null)
             {
