@@ -642,17 +642,17 @@ public class DefaultShardManager implements ShardManager
             httpClient = this.httpClientBuilder.build();
 
         // imagine if we had macros or closures or destructuring :)
-        ExecutorPair<ScheduledThreadPoolExecutor> rateLimitPair = getExecutor(rateLimitPoolProvider, shardId);
+        ExecutorPair<ScheduledThreadPoolExecutor> rateLimitPair = resolveExecutor(rateLimitPoolProvider, shardId);
         ScheduledThreadPoolExecutor rateLimitPool = rateLimitPair.executor;
         boolean shutdownRateLimitPool = rateLimitPair.automaticShutdown;
 
-        ExecutorPair<ScheduledExecutorService> mainWsPair = getExecutor(mainWsPoolProvider, shardId);
+        ExecutorPair<ScheduledExecutorService> mainWsPair = resolveExecutor(mainWsPoolProvider, shardId);
         ScheduledExecutorService mainWsPool = mainWsPair.executor;
         boolean shutdownMainWsPool = mainWsPair.automaticShutdown;
 
-        ExecutorPair<ExecutorService> callbackPaid = getExecutor(callbackPoolProvider, shardId);
-        ExecutorService callbackPool = callbackPaid.executor;
-        boolean shutdownCallbackPool = callbackPaid.automaticShutdown;
+        ExecutorPair<ExecutorService> callbackPair = resolveExecutor(callbackPoolProvider, shardId);
+        ExecutorService callbackPool = callbackPair.executor;
+        boolean shutdownCallbackPool = callbackPair.automaticShutdown;
 
         final JDAImpl jda = new JDAImpl(
                 AccountType.BOT, this.token, this.controller, httpClient, this.wsFactory,
@@ -765,7 +765,7 @@ public class DefaultShardManager implements ShardManager
         return Executors.newSingleThreadScheduledExecutor(factory);
     }
 
-    protected static <E extends ExecutorService> ExecutorPair<E> getExecutor(ThreadPoolProvider<? extends E> provider, int shardId)
+    protected static <E extends ExecutorService> ExecutorPair<E> resolveExecutor(ThreadPoolProvider<? extends E> provider, int shardId)
     {
         E executor = null;
         boolean automaticShutdown = true;
