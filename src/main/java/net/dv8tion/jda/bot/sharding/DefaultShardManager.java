@@ -642,15 +642,15 @@ public class DefaultShardManager implements ShardManager
             httpClient = this.httpClientBuilder.build();
 
         // imagine if we had macros or closures or destructing :)
-        ExecutorPaid<ScheduledThreadPoolExecutor> rateLimitPair = getExecutor(rateLimitPoolProvider, shardId);
+        ExecutorPair<ScheduledThreadPoolExecutor> rateLimitPair = getExecutor(rateLimitPoolProvider, shardId);
         ScheduledThreadPoolExecutor rateLimitPool = rateLimitPair.executor;
         boolean shutdownRateLimitPool = rateLimitPair.automaticShutdown;
 
-        ExecutorPaid<ScheduledExecutorService> mainWsPair = getExecutor(mainWsPoolProvider, shardId);
+        ExecutorPair<ScheduledExecutorService> mainWsPair = getExecutor(mainWsPoolProvider, shardId);
         ScheduledExecutorService mainWsPool = mainWsPair.executor;
         boolean shutdownMainWsPool = mainWsPair.automaticShutdown;
 
-        ExecutorPaid<ExecutorService> callbackPaid = getExecutor(callbackPoolProvider, shardId);
+        ExecutorPair<ExecutorService> callbackPaid = getExecutor(callbackPoolProvider, shardId);
         ExecutorService callbackPool = callbackPaid.executor;
         boolean shutdownCallbackPool = callbackPaid.automaticShutdown;
 
@@ -765,7 +765,7 @@ public class DefaultShardManager implements ShardManager
         return Executors.newSingleThreadScheduledExecutor(factory);
     }
 
-    protected static <E extends ExecutorService> ExecutorPaid<E> getExecutor(ThreadPoolProvider<? extends E> provider, int shardId)
+    protected static <E extends ExecutorService> ExecutorPair<E> getExecutor(ThreadPoolProvider<? extends E> provider, int shardId)
     {
         E executor = null;
         boolean automaticShutdown = true;
@@ -774,15 +774,15 @@ public class DefaultShardManager implements ShardManager
             executor = provider.provide(shardId);
             automaticShutdown = provider.shouldShutdownAutomatically(shardId);
         }
-        return new ExecutorPaid<>(executor, automaticShutdown);
+        return new ExecutorPair<>(executor, automaticShutdown);
     }
 
-    protected static class ExecutorPaid<E extends ExecutorService>
+    protected static class ExecutorPair<E extends ExecutorService>
     {
         protected final E executor;
         protected final boolean automaticShutdown;
 
-        protected ExecutorPaid(E executor, boolean automaticShutdown)
+        protected ExecutorPair(E executor, boolean automaticShutdown)
         {
             this.executor = executor;
             this.automaticShutdown = automaticShutdown;
