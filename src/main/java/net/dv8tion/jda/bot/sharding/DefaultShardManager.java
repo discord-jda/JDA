@@ -641,7 +641,7 @@ public class DefaultShardManager implements ShardManager
         if (httpClient == null)
             httpClient = this.httpClientBuilder.build();
 
-        // imagine if we had macros or closures or destructing :)
+        // imagine if we had macros or closures or destructuring :)
         ExecutorPair<ScheduledThreadPoolExecutor> rateLimitPair = getExecutor(rateLimitPoolProvider, shardId);
         ScheduledThreadPoolExecutor rateLimitPool = rateLimitPair.executor;
         boolean shutdownRateLimitPool = rateLimitPair.automaticShutdown;
