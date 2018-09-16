@@ -26,6 +26,8 @@ import java.util.Arrays;
 /**
  * Represents the contents of a audio packet that was either received from Discord or
  * will be sent to discord.
+ *
+ * @see <a href="https://tools.ietf.org/html/rfc3550" target="_blank">RFC 3350 - RTP: A Transport Protocol for Real-Time Applications</a>
  */
 public class AudioPacket
 {
@@ -34,19 +36,21 @@ public class AudioPacket
     /**
      * Bit index 0 and 1 represent the RTP Protocol version used. Discord uses the latest RTP protocol version, 2.<br>
      * Bit index 2 represents whether or not we pad. Opus uses an internal padding system, so RTP padding is not used.<br>
-     * Bit index 3 represents if we use extensions. Discord does not use RTP extensions.<br>
-     * Bit index 4 to 7 represent the CC or CSRC count. CSRC is Combined SSRC. Discord doesn't combine audio streams,
-     *      so the Combined count will always be 0 (binary: 0000).<br>
-     * This byte should always be the same, no matter the library implementation.
+     * Bit index 3 represents if we use extensions.<br>
+     * Bit index 4 to 7 represent the CC or CSRC count. CSRC is Combined SSRC.
      */
     public static final byte RTP_VERSION_PAD_EXTEND = (byte) 0x80;  //Binary: 1000 0000
 
     /**
      * This is Discord's RTP Profile Payload type.<br>
-     * I've yet to find actual documentation on what the bits inside this value represent.<br>
-     * As far as I can tell, this byte will always be the same, no matter the library implementation.<br>
+     * I've yet to find actual documentation on what the bits inside this value represent.
      */
     public static final byte RTP_PAYLOAD_TYPE = (byte) 0x78;        //Binary: 0100 1000
+
+    /**
+     * This defines the extension type used by discord for presumably video?
+     */
+    public static final short RTP_DISCORD_EXTENSION = (short) 0xBEDE;
 
     public static final int SEQ_INDEX =                     2;
     public static final int TIMESTAMP_INDEX =               4;
@@ -72,37 +76,54 @@ public class AudioPacket
         this.timestamp = buffer.getInt(TIMESTAMP_INDEX);
         this.ssrc = buffer.getInt(SSRC_INDEX);
 
-        final byte versionPad = buffer.get(0);
+        final byte profile = buffer.get(0);
         final byte[] data = buffer.array();
-        if ((versionPad & 0b0001_0000) != 0
-            && data[RTP_HEADER_BYTE_LENGTH] == (byte) 0xBE && data[RTP_HEADER_BYTE_LENGTH + 1] == (byte) 0xDE)
-        {
-            final short headerLength = (short) (data[RTP_HEADER_BYTE_LENGTH + 2] << 8 | data[RTP_HEADER_BYTE_LENGTH + 3]);
-            int i = RTP_HEADER_BYTE_LENGTH + 4;
-            for (; i < headerLength + RTP_HEADER_BYTE_LENGTH + 4; i++)
-            {
-                byte len = (byte) ((data[i] & 0x0F) + 1);
-                i += len;
-            }
-            while (data[i] == 0)
-                i++;
-            this.encodedAudio = new byte[data.length - i];
-            System.arraycopy(data, i, encodedAudio, 0, encodedAudio.length);
-        }
-        else
-        {
-            this.encodedAudio = new byte[buffer.array().length - RTP_HEADER_BYTE_LENGTH];
-            System.arraycopy(buffer.array(), RTP_HEADER_BYTE_LENGTH, this.encodedAudio, 0, this.encodedAudio.length);
-        }
+        final boolean hasExtension = (profile & 0x10) != 0; // extension bit is at 000X
+        final byte cc = (byte) (profile & 0x0f);            // CSRC count - we ignore this for now
+        final int csrcLength = cc * 4;                      // defines count of 4-byte words
+        // it seems as if extensions only exist without a csrc list being present
+        final short extension = hasExtension ? getShort(data, RTP_HEADER_BYTE_LENGTH + csrcLength) : 0;
+
+        int offset = RTP_HEADER_BYTE_LENGTH + csrcLength;
+        if (hasExtension && extension == RTP_DISCORD_EXTENSION)
+            offset = getPayloadOffset(data, csrcLength);
+
+        this.encodedAudio = new byte[data.length - offset];
+        System.arraycopy(data, offset, this.encodedAudio, 0, this.encodedAudio.length);
     }
 
     public AudioPacket(char seq, int timestamp, int ssrc, byte[] encodedAudio)
+    {
+        this(null, seq, timestamp, ssrc, encodedAudio);
+    }
+
+    public AudioPacket(ByteBuffer buffer, char seq, int timestamp, int ssrc, byte[] encodedAudio)
     {
         this.seq = seq;
         this.ssrc = ssrc;
         this.timestamp = timestamp;
         this.encodedAudio = encodedAudio;
-        this.rawPacket = generateRawPacket(seq, timestamp, ssrc, encodedAudio);
+        this.rawPacket = generateRawPacket(buffer, seq, timestamp, ssrc, encodedAudio);
+    }
+
+    private int getPayloadOffset(byte[] data, int csrcLength)
+    {
+        // headerLength defines number of 4-byte words in the extension
+        final short headerLength = getShort(data, RTP_HEADER_BYTE_LENGTH + 2 + csrcLength);
+        int i = RTP_HEADER_BYTE_LENGTH // RTP header = 12 bytes
+                + 4                    // header which defines a profile and length each 2-bytes = 4 bytes
+                + csrcLength           // length of CSRC list (this seems to be always 0 when an extension exists)
+                + headerLength * 4;    // number of 4-byte words in extension = len * 4 bytes
+
+        // strip excess 0 bytes
+        while (data[i] == 0)
+            i++;
+        return i;
+    }
+
+    private short getShort(byte[] arr, int offset)
+    {
+        return (short) ((arr[offset] & 0xff) << 8 | arr[offset + 1] & 0xff);
     }
 
     @SuppressWarnings("unused")
@@ -220,7 +241,7 @@ public class AudioPacket
         final byte[] decryptedAudio = boxer.open(encodedAudio, extendedNonce);
         if (decryptedAudio == null)
         {
-            AudioConnection.LOG.debug("Failed to decrypt audio packet");
+            AudioConnection.LOG.trace("Failed to decrypt audio packet");
             return null;
         }
         final byte[] decryptedRawPacket = new byte[RTP_HEADER_BYTE_LENGTH + decryptedAudio.length];
@@ -233,9 +254,10 @@ public class AudioPacket
         return new AudioPacket(decryptedRawPacket);
     }
 
-    private static byte[] generateRawPacket(char seq, int timestamp, int ssrc, byte[] data)
+    private static byte[] generateRawPacket(ByteBuffer buffer, char seq, int timestamp, int ssrc, byte[] data)
     {
-        ByteBuffer buffer = ByteBuffer.allocate(RTP_HEADER_BYTE_LENGTH + data.length);
+        if (buffer == null)
+            buffer = ByteBuffer.allocate(RTP_HEADER_BYTE_LENGTH + data.length);
         populateBuffer(seq, timestamp, ssrc, data, buffer);
         return buffer.array();
     }

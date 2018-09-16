@@ -116,7 +116,7 @@ public class ReactionPaginationAction extends PaginationAction<User, ReactionPag
             return;
         }
 
-        final EntityBuilder builder = api.getEntityBuilder();;
+        final EntityBuilder builder = api.get().getEntityBuilder();
         final JSONArray array = response.getArray();
         final List<User> users = new LinkedList<>();
         for (int i = 0; i < array.length(); i++)

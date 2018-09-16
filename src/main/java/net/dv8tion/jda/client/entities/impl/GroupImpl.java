@@ -23,10 +23,13 @@ import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.client.entities.Relationship;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.ChannelType;
+import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.core.requests.RequestFuture;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import net.dv8tion.jda.core.utils.cache.impl.SnowflakeCacheViewImpl;
 
 import java.util.ArrayList;
@@ -36,7 +39,7 @@ import java.util.List;
 public class GroupImpl implements Group
 {
     private final long id;
-    private final JDAImpl api;
+    private final UpstreamReference<JDAImpl> api;
 
     private final SnowflakeCacheViewImpl<User> userCache = new SnowflakeCacheViewImpl<>(User.class, User::getName);
 
@@ -49,7 +52,7 @@ public class GroupImpl implements Group
     public GroupImpl(long id, JDAImpl api)
     {
         this.id = id;
-        this.api = api;
+        this.api = new UpstreamReference<>(api);
     }
 
     @Override
@@ -88,7 +91,7 @@ public class GroupImpl implements Group
     @Override
     public String getIconUrl()
     {
-        return iconId == null ? null : "https://cdn.discordapp.com/channel-icons/" + id + "/" + iconId + ".jpg";
+        return iconId == null ? null : "https://cdn.discordapp.com/channel-icons/" + id + "/" + iconId + ".png";
     }
 
     @Override
@@ -113,7 +116,7 @@ public class GroupImpl implements Group
     public List<User> getNonFriendUsers()
     {
         List<User> nonFriends = new ArrayList<>();
-        TLongObjectMap<Relationship> map = api.asClient().getRelationshipMap();
+        TLongObjectMap<Relationship> map = api.get().asClient().getRelationshipMap();
         userCache.forEach((user) ->
         {
             Relationship relationship = map.get(user.getIdLong());
@@ -128,7 +131,7 @@ public class GroupImpl implements Group
     public List<Friend> getFriends()
     {
         List<Friend> friends = new ArrayList<>();
-        TLongObjectMap<Relationship> map = api.asClient().getRelationshipMap();
+        TLongObjectMap<Relationship> map = api.get().asClient().getRelationshipMap();
         userCache.forEach(user ->
         {
             Relationship relationship = map.get(user.getIdLong());
@@ -137,6 +140,20 @@ public class GroupImpl implements Group
                 friends.add(friend);
         });
         return Collections.unmodifiableList(friends);
+    }
+
+    @Override
+    public List<RequestFuture<Void>> purgeMessages(List<? extends Message> messages)
+    {
+        if (messages == null || messages.isEmpty())
+            return Collections.emptyList();
+        for (Message m : messages)
+        {
+            if (m.getAuthor().equals(getJDA().getSelfUser()))
+                continue;
+            throw new IllegalArgumentException("Cannot delete messages of other users in a group channel");
+        }
+        return Group.super.purgeMessages(messages);
     }
 
     @Override
@@ -160,7 +177,7 @@ public class GroupImpl implements Group
     @Override
     public JDA getJDA()
     {
-        return api;
+        return api.get();
     }
 
     @Override

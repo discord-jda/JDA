@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.webhook;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.requests.Requester;
@@ -55,51 +57,6 @@ public class WebhookMessage
         this.embeds = embeds;
         this.isTTS = isTTS;
         this.attachments = files;
-    }
-
-    /**
-     * Creates a new WebhookMessage instance with the provided {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbeds}
-     *
-     * @param  embeds
-     *         The embeds to use for this message
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If any of the provided embeds is {@code null}
-     *         or exceeds the maximum total character count of {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}
-     *
-     * @return The resulting WebhookMessage instance
-     *
-     * @deprecated
-     *         Use {@link #embeds(MessageEmbed, MessageEmbed...)} instead.
-     */
-    @Deprecated
-    public static WebhookMessage of(MessageEmbed... embeds)
-    {
-        Checks.notEmpty(embeds, "Embeds");
-        if (embeds.length > 1)
-            return embeds(Arrays.asList(embeds));
-        return embeds(embeds[0]);
-    }
-
-    /**
-     * Creates a new WebhookMessage instance with the provided {@link net.dv8tion.jda.core.entities.MessageEmbed MessageEmbeds}
-     *
-     * @param  embeds
-     *         The embeds to use for this message
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If any of the provided embeds is {@code null}
-     *         or exceeds the maximum total character count of {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}
-     *
-     * @return The resulting WebhookMessage instance
-     *
-     * @deprecated
-     *         Use {@link #embeds(Collection)} instead.
-     */
-    @Deprecated
-    public static WebhookMessage of(Collection<MessageEmbed> embeds)
-    {
-        return embeds(embeds);
     }
 
     /**

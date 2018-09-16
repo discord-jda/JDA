@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.core.entities;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.client.managers.EmoteManager;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
@@ -27,13 +29,23 @@ import java.util.List;
 /**
  * Represents a Custom Emote. (Custom Emoji in official Discord API terminology)
  *
+ * <p>You can retrieve the creator of an emote by using {@link Guild#retrieveEmote(Emote)} followed
+ * by using {@link ListedEmote#getUser()}.
+ *
  * <p><b>This does not represent unicode emojis like they are used in the official client! (:smiley: is not a custom emoji)</b>
+ *
+ * <h2>Fake Emote</h2>
+ * When an emote is declared as fake it cannot be updated by JDA. That means it will not be accessible
+ * through cache such as {@link Guild#getEmoteCache()} and similar.
+ * <br>Fake emotes may or may not have an attached {@link Guild Guild} and thus might not be manageable though
+ * {@link #getManager()} or {@link #delete()}. They also might lack attached roles for {@link #getRoles()}.
+ *
+ * @see    net.dv8tion.jda.core.entities.ListedEmote ListedEmote
  *
  * @since  2.2
  */
 public interface Emote extends ISnowflake, IMentionable, IFakeable
 {
-
     /**
      * The {@link net.dv8tion.jda.core.entities.Guild Guild} this emote is attached to.
      *
@@ -48,11 +60,41 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      * <br><a href="https://discordapp.com/developers/docs/resources/guild#emoji-object" target="_blank">Learn More</a>
      *
      * @throws IllegalStateException
-     *         If this Emote is fake ({@link #isFake()})
+     *         If this Emote does not have attached roles according to {@link #canProvideRoles()}
      *
      * @return An immutable list of the roles this emote is active for (all roles if empty)
+     *
+     * @see    #canProvideRoles()
      */
     List<Role> getRoles();
+
+    /**
+     * Whether this Emote has attached roles. This might not be the case when the emote
+     * is retrieved through special cases like audit-logs.
+     *
+     * <p>If this is not true then {@link #getRoles()} will throw {@link IllegalStateException}.
+     *
+     * @return True, if this emote has roles attached
+     *
+     * @deprecated This will be replaced by {@link #canProvideRoles()}
+     */
+    @Deprecated
+    @DeprecatedSince("3.8.0")
+    @ReplaceWith("canProvideRoles()")
+    default boolean hasRoles()
+    {
+        return canProvideRoles();
+    }
+
+    /**
+     * Whether this Emote has an attached roles list. This might not be the case when the emote
+     * is retrieved through special cases like audit-logs.
+     *
+     * <p>If this is not true then {@link #getRoles()} will throw {@link IllegalStateException}.
+     *
+     * @return True, if this emote has an attached roles list
+     */
+    boolean canProvideRoles();
 
     /**
      * The name of this emote
@@ -150,7 +192,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
     @Override
     default String getAsMention()
     {
-        return (isAnimated() ? "<a:" : "<:") + getName() + ":" + getIdLong() + ">";
+        return (isAnimated() ? "<a:" : "<:") + getName() + ":" + getId() + ">";
     }
 
     /**
@@ -170,7 +212,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
     }
 
     /**
-     * Whether the specified Member can interact with this Emote within the provided MessageChannel
+     * Whether the specified User can interact with this Emote within the provided MessageChannel
      * <br>Same logic as {@link #canInteract(User, MessageChannel, boolean) canInteract(issuer, channel, true)}!
      *
      * @param  issuer
@@ -189,7 +231,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
     }
 
     /**
-     * Whether the specified Member can interact with this Emote within the provided MessageChannel
+     * Whether the specified User can interact with this Emote within the provided MessageChannel
      * <br>Special override to exclude elevated bot permissions in case of (for instance) reacting to messages.
      *
      * @param  issuer

@@ -20,7 +20,6 @@ import net.dv8tion.jda.client.entities.impl.GroupImpl;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.PrivateChannel;
-import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.user.UserTypingEvent;
@@ -41,25 +40,32 @@ public class TypingStartHandler extends SocketHandler
     @Override
     protected Long handleInternally(JSONObject content)
     {
+        if (!content.isNull("guild_id"))
+        {
+            long guildId = content.getLong("guild_id");
+            if (getJDA().getGuildSetupController().isLocked(guildId))
+                return guildId;
+        }
+
         final long channelId = content.getLong("channel_id");
-        MessageChannel channel = api.getTextChannelMap().get(channelId);
+        MessageChannel channel = getJDA().getTextChannelMap().get(channelId);
         if (channel == null)
-            channel = api.getPrivateChannelMap().get(channelId);
+            channel = getJDA().getPrivateChannelMap().get(channelId);
         if (channel == null)
-            channel = api.getFakePrivateChannelMap().get(channelId);
-        if (channel == null && api.getAccountType() == AccountType.CLIENT)
-            channel = api.asClient().getGroupById(channelId);
+            channel = getJDA().getFakePrivateChannelMap().get(channelId);
+        if (channel == null && getJDA().getAccountType() == AccountType.CLIENT)
+            channel = getJDA().asClient().getGroupById(channelId);
         if (channel == null)
             return null;    //We don't have the channel cached yet. We chose not to cache this event
                             // because that happen very often and could easily fill up the EventCache if
                             // we, for some reason, never get the channel. Especially in an active channel.
 
-        if (channel instanceof TextChannel)
-        {
-            final long guildId = ((TextChannel) channel).getGuild().getIdLong();
-            if (api.getGuildLock().isLocked(guildId))
-                return guildId;
-        }
+//        if (channel instanceof TextChannel)
+//        {
+//            final long guildId = ((TextChannel) channel).getGuild().getIdLong();
+//            if (getJDA().getGuildSetupController().isLocked(guildId))
+//                return guildId;
+//        }
 
         final long userId = content.getLong("user_id");
         User user;
@@ -68,16 +74,16 @@ public class TypingStartHandler extends SocketHandler
         else if (channel instanceof Group)
             user = ((GroupImpl) channel).getUserMap().get(userId);
         else
-            user = api.getUserMap().get(userId);
+            user = getJDA().getUserMap().get(userId);
 
         if (user == null)
-            return null;    //Just like in the comment above, if for some reason we don't have the user for some reason
+            return null;    //Just like in the comment above, if for some reason we don't have the user
                             // then we will just throw the event away.
 
         OffsetDateTime timestamp = Instant.ofEpochSecond(content.getInt("timestamp")).atOffset(ZoneOffset.UTC);
-        api.getEventManager().handle(
+        getJDA().getEventManager().handle(
                 new UserTypingEvent(
-                        api, responseNumber,
+                        getJDA(), responseNumber,
                         user, channel, timestamp));
         return null;
     }

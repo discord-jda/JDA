@@ -51,12 +51,17 @@ import org.slf4j.MDC;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.ref.SoftReference;
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterOutputStream;
@@ -73,8 +78,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected final JDAImpl api;
     protected final JDA.ShardInfo shardInfo;
     protected final Map<String, SocketHandler> handlers = new HashMap<>();
-    protected final Set<String> cfRays = new HashSet<>();
-    protected final Set<String> traces = new HashSet<>();
+    protected final Set<String> cfRays = ConcurrentHashMap.newKeySet();
+    protected final Set<String> traces = ConcurrentHashMap.newKeySet();
     protected final boolean compression;
 
     public WebSocket socket;
@@ -82,11 +87,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected final Object readLock = new Object();
     protected Inflater zlibContext = new Inflater();
     protected ByteArrayOutputStream readBuffer;
-    protected ByteArrayOutputStream decompressBuffer = new ByteArrayOutputStream(1024);
+    //this is a SoftReference in order to allow this resource to be freed to prevent resources starvation
+    protected SoftReference<ByteArrayOutputStream> decompressBuffer;
 
     protected volatile Thread keepAliveThread;
-    protected boolean initiating;             //cache all events?
-    protected final List<JSONObject> cachedEvents = new LinkedList<>();
+    protected boolean initiating;
 
     protected int reconnectTimeoutS = 2;
     protected long heartbeatStartTime;
@@ -95,8 +100,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected final TLongObjectMap<ConnectionRequest> queuedAudioConnections = MiscUtil.newLongMap();
     protected final ReentrantLock audioQueueLock = new ReentrantLock();
 
-    protected final LinkedList<String> chunkSyncQueue = new LinkedList<>();
-    protected final LinkedList<String> ratelimitQueue = new LinkedList<>();
+    protected final Queue<String> chunkSyncQueue = new ConcurrentLinkedQueue<>();
+    protected final Queue<String> ratelimitQueue = new ConcurrentLinkedQueue<>();
     protected volatile Thread ratelimitThread = null;
     protected volatile long ratelimitResetTime;
     protected final AtomicInteger messagesSent = new AtomicInteger(0);
@@ -106,7 +111,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected boolean handleIdentifyRateLimit = false;
     protected boolean connected = false;
 
-    protected volatile boolean chunkingAndSyncing = false;
     protected volatile boolean printedRateLimitMessage = false;
     protected boolean sentAuthInfo = false;
     protected boolean firstInit = true;
@@ -121,6 +125,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         this.compression = compression;
         this.shouldReconnect = api.isAutoReconnect();
         this.connectNode = new StartingNode();
+        setupHandlers();
         try
         {
             api.getSessionController().appendSession(connectNode);
@@ -220,10 +225,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             api.getEventManager().handle(new ResumedEvent(api, api.getResponseTotal()));
         }
         api.setStatus(JDA.Status.CONNECTED);
-        LOG.debug("Resending {} cached events...", cachedEvents.size());
-        handle(cachedEvents);
-        LOG.debug("Sending of cached events finished.");
-        cachedEvents.clear();
     }
 
     public boolean isReady()
@@ -238,12 +239,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     public void send(String message)
     {
-        ratelimitQueue.addLast(message);
+        ratelimitQueue.add(message);
     }
 
     public void chunkOrSyncRequest(JSONObject request)
     {
-        chunkSyncQueue.addLast(request.toString());
+        chunkSyncQueue.add(request.toString());
     }
 
     protected boolean send(String message, boolean skipQueue)
@@ -272,7 +273,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             if (!printedRateLimitMessage)
             {
-                LOG.warn("Hit the WebSocket RateLimit! If you see this message a lot then you might need to talk to DV8FromTheWorld.");
+                LOG.warn("Hit the WebSocket RateLimit! This can be caused by too many presence or voice status updates (connect/disconnect/mute/deaf). " +
+                         "Regular: {} Voice: {} Chunking: {}", ratelimitQueue.size(), queuedAudioConnections.size(), chunkSyncQueue.size());
                 printedRateLimitMessage = true;
             }
             return false;
@@ -283,8 +285,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         ratelimitThread = new Thread(() ->
         {
-            if (api.getContextMap() != null)
-                MDC.setContextMap(api.getContextMap());
+            api.setContext();
             boolean needRatelimit;
             boolean attemptedToSend;
             while (!Thread.currentThread().isInterrupted())
@@ -302,7 +303,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     audioQueueLock.lockInterruptibly();
 
                     ConnectionRequest audioRequest = getNextAudioConnectRequest();
-                    String chunkOrSyncRequest = chunkSyncQueue.peekFirst();
+                    String chunkOrSyncRequest = chunkSyncQueue.peek();
 
                     //if lock isn't needed we already unlock here
                     if (audioRequest == null || chunkOrSyncRequest != null)
@@ -311,13 +312,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     {
                         needRatelimit = !send(chunkOrSyncRequest, false);
                         if (!needRatelimit)
-                            chunkSyncQueue.removeFirst();
+                            chunkSyncQueue.remove();
 
                         attemptedToSend = true;
                     }
                     else if (audioRequest != null)
                     {
-                        VoiceChannel channel = audioRequest.getChannel();
+                        long channel = audioRequest.getChannelId();
                         Guild guild = api.getGuildById(audioRequest.getGuildIdLong());
                         if (guild == null)
                         {
@@ -338,7 +339,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                                 break;
                             default:
                             case CONNECT:
-                                packet = newVoiceOpen(audioManager, channel);
+                                packet = newVoiceOpen(audioManager, channel, guild.getIdLong());
                         }
                         needRatelimit = !send(packet.toString(), false);
                         if (!needRatelimit)
@@ -358,12 +359,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     }
                     else
                     {
-                        String message = ratelimitQueue.peekFirst();
+                        String message = ratelimitQueue.peek();
                         if (message != null)
                         {
                             needRatelimit = !send(message, false);
                             if (!needRatelimit)
-                                ratelimitQueue.removeFirst();
+                                ratelimitQueue.remove();
                             attemptedToSend = true;
                         }
                     }
@@ -403,13 +404,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 .put("self_deaf", false));
     }
 
-    protected JSONObject newVoiceOpen(AudioManager manager, VoiceChannel channel)
+    protected JSONObject newVoiceOpen(AudioManager manager, long channel, long guild)
     {
         return new JSONObject()
             .put("op", WebSocketCode.VOICE_STATE)
             .put("d", new JSONObject()
-                .put("guild_id", channel.getGuild().getId())
-                .put("channel_id", channel.getId())
+                .put("guild_id", guild)
+                .put("channel_id", channel)
                 .put("self_mute", manager.isSelfMuted())
                 .put("self_deaf", manager.isSelfDeafened()));
     }
@@ -455,7 +456,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         String url = api.getGatewayUrl() + "?encoding=json&v=" + DISCORD_GATEWAY_VERSION;
         if (compression)
+        {
             url += "&compress=zlib-stream";
+            decompressBuffer = newDecompressBuffer();
+        }
 
         try
         {
@@ -474,11 +478,14 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     }
 
     @Override
+    public void onThreadStarted(WebSocket websocket, ThreadType threadType, Thread thread) throws Exception
+    {
+        api.setContext();
+    }
+
+    @Override
     public void onConnected(WebSocket websocket, Map<String, List<String>> headers)
     {
-        //writing thread
-        if (api.getContextMap() != null)
-            MDC.setContextMap(api.getContextMap());
         api.setStatus(JDA.Status.IDENTIFYING_SESSION);
         LOG.info("Connected to WebSocket");
         if (headers.containsKey("cf-ray"))
@@ -563,7 +570,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             synchronized (readLock)
             {
                 zlibContext = new Inflater();
-                decompressBuffer = new ByteArrayOutputStream(1024);
+                if (decompressBuffer != null)
+                    decompressBuffer.clear();
                 readBuffer = null;
             }
             if (isInvalidate)
@@ -584,6 +592,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             }
         }
     }
+
 
     protected void queueReconnect()
     {
@@ -620,8 +629,18 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
      */
     public void reconnect(boolean callFromQueue, boolean shouldHandleIdentify) throws InterruptedException
     {
-        if (callFromQueue && api.getContextMap() != null)
-            api.getContextMap().forEach(MDC::put);
+        Set<MDC.MDCCloseable> contextEntries = null;
+        Map<String, String> previousContext = null;
+        {
+            ConcurrentMap<String, String> contextMap = api.getContextMap();
+            if (callFromQueue && contextMap != null)
+            {
+                previousContext = MDC.getCopyOfContextMap();
+                contextEntries = contextMap.entrySet().stream()
+                          .map((entry) -> MDC.putCloseable(entry.getKey(), entry.getValue()))
+                          .collect(Collectors.toSet());
+            }
+        }
         if (shutdown)
         {
             api.setStatus(JDA.Status.SHUTDOWN);
@@ -667,14 +686,17 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 LOG.warn("Reconnect failed! Next attempt in {}s", reconnectTimeoutS);
             }
         }
+        if (contextEntries != null)
+            contextEntries.forEach(MDC.MDCCloseable::close);
+        if (previousContext != null)
+            previousContext.forEach(MDC::put);
     }
 
     protected void setupKeepAlive(long timeout)
     {
         keepAliveThread = new Thread(() ->
         {
-            if (api.getContextMap() != null)
-                MDC.setContextMap(api.getContextMap());
+            api.setContext();
             while (connected)
             {
                 try
@@ -711,7 +733,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 ).toString();
 
         if (!send(keepAlivePacket, true))
-            ratelimitQueue.addLast(keepAlivePacket);
+            ratelimitQueue.add(keepAlivePacket);
         heartbeatStartTime = System.currentTimeMillis();
     }
 
@@ -767,7 +789,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected void invalidate()
     {
         sessionId = null;
-        chunkingAndSyncing = false;
         sentAuthInfo = false;
 
         chunkSyncQueue.clear();
@@ -779,11 +800,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         api.getPrivateChannelMap().clear();
         api.getFakeUserMap().clear();
         api.getFakePrivateChannelMap().clear();
-        api.getEntityBuilder().clearCache();
         api.getEventCache().clear();
-        api.getGuildLock().clear();
-        this.<ReadyHandler>getHandler("READY").clearCache();
-        this.<GuildMembersChunkHandler>getHandler("GUILD_MEMBERS_CHUNK").clearCache();
+        api.getGuildSetupController().clearCache();
 
         if (api.getAccountType() == AccountType.CLIENT)
         {
@@ -808,51 +826,14 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 it.advance();
                 final long guildId = it.key();
                 final AudioManagerImpl mng = (AudioManagerImpl) it.value();
-                ConnectionListener listener = mng.getConnectionListener();
 
                 GuildImpl guild = (GuildImpl) api.getGuildById(guildId);
                 if (guild == null)
                 {
                     //We no longer have access to the guild that this audio manager was for. Set the value to null.
                     queuedAudioConnections.remove(guildId);
-                    if (listener != null)
-                        listener.onStatusChange(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD);
+                    mng.closeAudioConnection(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD);
                     it.remove();
-                }
-                else
-                {
-                    final AudioManagerImpl newMng = new AudioManagerImpl(guild);
-                    newMng.setSelfMuted(mng.isSelfMuted());
-                    newMng.setSelfDeafened(mng.isSelfDeafened());
-                    newMng.setQueueTimeout(mng.getConnectTimeout());
-                    newMng.setSendingHandler(mng.getSendingHandler());
-                    newMng.setReceivingHandler(mng.getReceiveHandler());
-                    newMng.setConnectionListener(listener);
-                    newMng.setAutoReconnect(mng.isAutoReconnect());
-
-                    if (mng.isConnected() || mng.isAttemptingToConnect())
-                    {
-                        final long channelId = mng.isConnected()
-                            ? mng.getConnectedChannel().getIdLong()
-                            : mng.getQueuedAudioConnection().getIdLong();
-
-                        final VoiceChannel channel = api.getVoiceChannelById(channelId);
-                        if (channel != null)
-                        {
-                            if (mng.isConnected())
-                                mng.closeAudioConnection(ConnectionStatus.ERROR_CANNOT_RESUME);
-                            //closing old connection in order to reconnect later
-                            newMng.setQueuedAudioConnection(channel);
-                        }
-                        else
-                        {
-                            //The voice channel is not cached. It was probably deleted.
-                            queuedAudioConnections.remove(guildId);
-                            if (listener != null)
-                                listener.onStatusChange(ConnectionStatus.DISCONNECTED_CHANNEL_DELETED);
-                        }
-                    }
-                    it.setValue(newMng);
                 }
             }
         }
@@ -953,52 +934,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         String type = raw.getString("t");
         long responseTotal = api.getResponseTotal();
 
-        if (type.equals("GUILD_MEMBER_ADD"))
-            this.<GuildMembersChunkHandler>getHandler("GUILD_MEMBERS_CHUNK").modifyExpectedGuildMember(raw.getJSONObject("d").getLong("guild_id"), 1);
-        if (type.equals("GUILD_MEMBER_REMOVE"))
-            this.<GuildMembersChunkHandler>getHandler("GUILD_MEMBERS_CHUNK").modifyExpectedGuildMember(raw.getJSONObject("d").getLong("guild_id"), -1);
-
-        boolean isJSON = raw.opt("d") instanceof JSONObject;
-        //If initiating, only allows READY, RESUMED, GUILD_MEMBERS_CHUNK, GUILD_SYNC, and GUILD_CREATE through.
-        // If we are currently chunking, we don't allow GUILD_CREATE through anymore.
-        if (initiating &&  !(type.equals("READY")
-                || type.equals("GUILD_MEMBERS_CHUNK")
-                || type.equals("RESUMED")
-                || type.equals("GUILD_SYNC")
-                || (!chunkingAndSyncing && type.equals("GUILD_CREATE"))))
-        {
-            if (!isJSON)
-            {
-                if (type.equals("PRESENCES_REPLACE"))
-                {
-                    List<JSONObject> converted = convertPresencesReplace(responseTotal, raw.getJSONArray("d"));
-                    LOG.debug("Caching PRESENCES_REPLACE event during init as PRESENCE_UPDATE dispatches!");
-                    cachedEvents.addAll(converted);
-                }
-                else
-                {
-                    LOG.debug("Received event with unhandled body type during init JSON: {}", raw);
-                }
-                return;
-            }
-            //If we are currently GuildStreaming, and we get a GUILD_DELETE informing us that a Guild is unavailable
-            // convert it to a GUILD_CREATE for handling.
-            JSONObject content = raw.getJSONObject("d");
-            if (!chunkingAndSyncing && type.equals("GUILD_DELETE") && content.has("unavailable") && content.getBoolean("unavailable"))
-            {
-                type = "GUILD_CREATE";
-                raw.put("t", "GUILD_CREATE")
-                   .put("jda-field","This event was originally a GUILD_DELETE but was converted to GUILD_CREATE for WS init Guild streaming");
-            }
-            else
-            {
-                LOG.debug("Caching {} event during init!", type);
-                cachedEvents.add(raw);
-                return;
-            }
-        }
-
-        if (!isJSON)
+        if (!(raw.opt("d") instanceof JSONObject))
         {
             // Needs special handling due to content of "d" being an array
             if (type.equals("PRESENCES_REPLACE"))
@@ -1006,7 +942,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 final JSONArray payload = raw.getJSONArray("d");
                 final List<JSONObject> converted = convertPresencesReplace(responseTotal, payload);
                 final PresenceUpdateHandler handler = getHandler("PRESENCE_UPDATE");
-                LOG.trace(String.format("%s -> %s", type, payload.toString()));
+                LOG.trace("{} -> {}", type, payload);
                 for (JSONObject o : converted)
                     handler.handle(responseTotal, o);
             }
@@ -1020,6 +956,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         JSONObject content = raw.getJSONObject("d");
         LOG.trace("{} -> {}", type, content);
 
+        JDAImpl jda = (JDAImpl) getJDA();
         try
         {
             switch (type)
@@ -1038,9 +975,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     sentAuthInfo = true;
                     if (!processingReady)
                     {
-                        api.setStatus(JDA.Status.LOADING_SUBSYSTEMS);
                         initiating = false;
                         ready();
+//                        jda.getGuildSetupController().onResume(false);
+                    }
+                    else
+                    {
+                        LOG.debug("Resumed while still processing initial ready");
+                        jda.setStatus(JDA.Status.LOADING_SUBSYSTEMS);
+//                        jda.getGuildSetupController().onResume(true);
                     }
                     if (!content.isNull("_trace"))
                         updateTraces(content.getJSONArray("_trace"), "RESUMED", WebSocketCode.DISPATCH);
@@ -1062,23 +1005,20 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             LOG.error("Got an unexpected error. Please redirect following message to the devs:\n\t{} -> {}", type, content, ex);
         }
+
+        if (responseTotal % EventCache.TIMEOUT_AMOUNT == 0)
+            jda.getEventCache().timeout(responseTotal);
     }
 
     @Override
     public void onTextMessage(WebSocket websocket, String message)
     {
-        //reading thread
-        if (api.getContextMap() != null)
-            MDC.setContextMap(api.getContextMap());
         handleEvent(new JSONObject(message));
     }
 
     @Override
     public void onBinaryMessage(WebSocket websocket, byte[] binary) throws IOException, DataFormatException
     {
-        //reading thread
-        if (api.getContextMap() != null)
-            MDC.setContextMap(api.getContextMap());
         JSONObject json;
         synchronized (readLock)
         {
@@ -1110,6 +1050,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         //Thanks to ShadowLordAlpha and Shredder121 for code and debugging.
         //Get the compressed message and inflate it
         //We use the same buffer here to optimize gc use
+        ByteArrayOutputStream decompressBuffer = getDecompressBuffer();
         try (InflaterOutputStream decompressor = new InflaterOutputStream(decompressBuffer, zlibContext))
         {
             if (readBuffer != null)
@@ -1127,6 +1068,16 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         String jsonString = decompressBuffer.toString("UTF-8");
         decompressBuffer.reset();
         return new JSONObject(jsonString);
+    }
+
+    protected ByteArrayOutputStream getDecompressBuffer()
+    {
+        if (decompressBuffer == null)
+            decompressBuffer = newDecompressBuffer();
+        ByteArrayOutputStream buffer = decompressBuffer.get();
+        if (buffer == null)
+            decompressBuffer = new SoftReference<>(buffer = new ByteArrayOutputStream(1024));
+        return buffer;
     }
 
     protected static int getInt(byte[] sink, int offset)
@@ -1171,11 +1122,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             default:
                 thread.setName(identifier + " MainWS-" + threadType);
         }
-    }
-
-    public void setChunkingAndSyncing(boolean active)
-    {
-        chunkingAndSyncing = active;
     }
 
     protected void maybeUnlock()
@@ -1331,7 +1277,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             //If the removeRequest was related to a channel that isn't the currently queued
             // request, then don't remove it.
-            if (request.getChannel().getIdLong() == connectedChannel.getIdLong())
+            if (request.getChannelId() == connectedChannel.getIdLong())
                 return queuedAudioConnections.remove(guildId);
         }
         //If the channel is not the one we are looking for!
@@ -1342,6 +1288,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 //    {
 //        return queuedAudioConnections;
 //    }
+
+    private SoftReference<ByteArrayOutputStream> newDecompressBuffer()
+    {
+        return new SoftReference<>(new ByteArrayOutputStream(1024));
+    }
 
     protected ConnectionRequest getNextAudioConnectRequest()
     {
@@ -1370,7 +1321,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 ConnectionListener listener = guild.getAudioManager().getConnectionListener();
                 if (audioRequest.getStage() != ConnectionStage.DISCONNECT)
                 {
-                    VoiceChannel channel = guild.getVoiceChannelById(audioRequest.getChannel().getIdLong());
+                    VoiceChannel channel = guild.getVoiceChannelById(audioRequest.getChannelId());
                     if (channel == null)
                     {
                         it.remove();
@@ -1497,11 +1448,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             if (shutdown)
                 return;
-            setupHandlers();
             setupSendingThread();
             connect();
-            while (!isLast && api.getStatus().ordinal() < JDA.Status.AWAITING_LOGIN_CONFIRMATION.ordinal())
-                Thread.sleep(50);
+            if (isLast)
+                return;
+            api.awaitStatus(JDA.Status.AWAITING_LOGIN_CONFIRMATION);
         }
     }
 
@@ -1519,8 +1470,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             if (shutdown)
                 return;
             reconnect(true, !isLast);
-            while (!isLast && api.getStatus().ordinal() < JDA.Status.AWAITING_LOGIN_CONFIRMATION.ordinal())
-                Thread.sleep(50);
+            if (isLast)
+                return;
+            api.awaitStatus(JDA.Status.AWAITING_LOGIN_CONFIRMATION);
         }
     }
 }

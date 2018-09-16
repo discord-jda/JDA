@@ -86,10 +86,10 @@ public class ChannelAction extends AuditableRestAction<Channel>
      * Sets the name for the new Channel
      *
      * @param  name
-     *         The not-null name for the new Channel (2-100 chars long)
+     *         The not-null name for the new Channel (1-100 chars long)
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the provided name is null or not between 2-100 chars long
+     *         If the provided name is null or not between 1-100 chars long
      *
      * @return The current ChannelAction, for chaining convenience
      */
@@ -97,8 +97,8 @@ public class ChannelAction extends AuditableRestAction<Channel>
     public ChannelAction setName(String name)
     {
         Checks.notNull(name, "Channel name");
-        if (name.length() < 2 || name.length() > 100)
-            throw new IllegalArgumentException("Provided channel name must be 2 to 100 characters in length");
+        if (name.length() < 1 || name.length() > 100)
+            throw new IllegalArgumentException("Provided channel name must be 1 to 100 characters in length");
 
         this.name = name;
         return this;
@@ -359,7 +359,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
             return;
         }
 
-        EntityBuilder builder = api.getEntityBuilder();;
+        EntityBuilder builder = api.get().getEntityBuilder();
         Channel channel;
         switch (type)
         {

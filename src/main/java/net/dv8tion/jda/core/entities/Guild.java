@@ -17,6 +17,7 @@ package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.client.requests.restaction.pagination.MentionPaginationAction;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.GuildController;
@@ -235,8 +236,6 @@ public interface Guild extends ISnowflake
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER MANAGE_SERVER} permission.
      * @throws java.lang.IllegalStateException
      *         If the guild doesn't have the VANITY_URL feature
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link #isAvailable() available}
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: String
      *         <br>The vanity url of this server
@@ -270,13 +269,38 @@ public interface Guild extends ISnowflake
     TextChannel getSystemChannel();
 
     /**
-     * The {@link net.dv8tion.jda.core.entities.Member Member} object of the owner of this {@link net.dv8tion.jda.core.entities.Guild Guild}.
-     * <p>
-     * Ownership can be transferred using {@link GuildController#transferOwnership(Member)}.
+     * The {@link net.dv8tion.jda.core.entities.Member Member} object for the owner of this Guild.
      *
-     * @return Never-null Member object containing the Guild owner.
+     * <p>Ownership can be transferred using {@link GuildController#transferOwnership(Member)}.
+     *
+     * @return Member object for the Guild owner.
+     *
+     * @see    #getOwnerIdLong()
      */
     Member getOwner();
+
+    /**
+     * The ID for the current owner of this guild.
+     * <br>This is useful for debugging purposes or as a shortcut.
+     *
+     * @return The ID for the current owner
+     *
+     * @see    #getOwner()
+     */
+    long getOwnerIdLong();
+
+    /**
+     * The ID for the current owner of this guild.
+     * <br>This is useful for debugging purposes or as a shortcut.
+     *
+     * @return The ID for the current owner
+     *
+     * @see    #getOwner()
+     */
+    default String getOwnerId()
+    {
+        return Long.toUnsignedString(getOwnerIdLong());
+    }
 
     /**
      * The {@link net.dv8tion.jda.core.entities.Guild.Timeout Timeout} set for this Guild representing the amount of time
@@ -785,6 +809,7 @@ public interface Guild extends ISnowflake
      * one provided.
      * <br>If there is no {@link net.dv8tion.jda.core.entities.Emote Emote} with an id that matches the provided
      * one, then this returns {@code null}.
+     * <br>This will be null if {@link net.dv8tion.jda.core.utils.cache.CacheFlag#EMOTE} is disabled.
      *
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.core.entities.Emote Emote}!</b>
      *
@@ -806,6 +831,7 @@ public interface Guild extends ISnowflake
      * one provided.
      * <br>If there is no {@link net.dv8tion.jda.core.entities.Emote Emote} with an id that matches the provided
      * one, then this returns {@code null}.
+     * <br>This will be null if {@link net.dv8tion.jda.core.utils.cache.CacheFlag#EMOTE} is disabled.
      *
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.core.entities.Emote Emote}!</b>
      *
@@ -836,6 +862,7 @@ public interface Guild extends ISnowflake
      * Gets a list of all {@link net.dv8tion.jda.core.entities.Emote Emotes} in this Guild that have the same
      * name as the one provided.
      * <br>If there are no {@link net.dv8tion.jda.core.entities.Emote Emotes} with the provided name, then this returns an empty list.
+     * <br>This will be empty if {@link net.dv8tion.jda.core.utils.cache.CacheFlag#EMOTE} is disabled.
      *
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.core.entities.Emote Emote}!</b>
      *
@@ -854,15 +881,121 @@ public interface Guild extends ISnowflake
     /**
      * {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
      * all cached {@link net.dv8tion.jda.core.entities.Emote Emotes} of this Guild.
+     * <br>This will be empty if {@link net.dv8tion.jda.core.utils.cache.CacheFlag#EMOTE} is disabled.
      *
      * @return {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
     SnowflakeCacheView<Emote> getEmoteCache();
 
     /**
-     * Gets an unmodifiable list of the currently banned {@link net.dv8tion.jda.core.entities.User Users}.
-     * <br>If you wish to ban or unban a user, please {@link GuildController#ban(User, int) GuildController.ban(User, int)} or
-     * {@link GuildController#unban(User) GuildController.ban(User)}.
+     * Retrieves a list of emotes together with their respective creators.
+     *
+     * <p>Note that {@link ListedEmote#getUser()} is only available if the currently
+     * logged in account has {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: List of {@link net.dv8tion.jda.core.entities.ListedEmote ListedEmote}
+     *
+     * @since  3.8.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<List<ListedEmote>> retrieveEmotes();
+
+    /**
+     * Retrieves a listed emote together with its respective creator.
+     * <br><b>This does not include unicode emoji.</b>
+     *
+     * <p>Note that {@link ListedEmote#getUser()} is only available if the currently
+     * logged in account has {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>If the provided id does not correspond to an emote in this guild</li>
+     * </ul>
+     *
+     * @param  id
+     *         The emote id
+     *
+     * @throws IllegalArgumentException
+     *         If the provided id is not a valid snowflake
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.ListedEmote ListedEmote}
+     *
+     * @since  3.8.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<ListedEmote> retrieveEmoteById(@Nonnull String id);
+
+    /**
+     * Retrieves a listed emote together with its respective creator.
+     *
+     * <p>Note that {@link ListedEmote#getUser()} is only available if the currently
+     * logged in account has {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>If the provided id does not correspond to an emote in this guild</li>
+     * </ul>
+     *
+     * @param  id
+     *         The emote id
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.ListedEmote ListedEmote}
+     *
+     * @since  3.8.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<ListedEmote> retrieveEmoteById(long id)
+    {
+        return retrieveEmoteById(Long.toUnsignedString(id));
+    }
+
+    /**
+     * Retrieves a listed emote together with its respective creator.
+     *
+     * <p>Note that {@link ListedEmote#getUser()} is only available if the currently
+     * logged in account has {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>If the provided emote does not correspond to an emote in this guild anymore</li>
+     * </ul>
+     *
+     * @param  emote
+     *         The emote
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.ListedEmote ListedEmote}
+     *
+     * @since  3.8.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<ListedEmote> retrieveEmote(@Nonnull Emote emote)
+    {
+        Checks.notNull(emote, "Emote");
+        if (emote.getGuild() != null)
+            Checks.check(emote.getGuild().equals(this), "Emote must be from the same Guild!");
+        if (emote instanceof ListedEmote && !emote.isFake())
+        {
+            ListedEmote listedEmote = (ListedEmote) emote;
+            if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
+                return new RestAction.EmptyRestAction<>(getJDA(), listedEmote);
+        }
+        return retrieveEmoteById(emote.getId());
+    }
+
+    /**
+     * Retrieves an unmodifiable list of the currently banned {@link net.dv8tion.jda.core.entities.User Users}.
+     * <br>If you wish to ban or unban a user, use either {@link GuildController#ban(User, int) GuildController.ban(User, int)} or
+     * {@link GuildController#unban(User) GuildController.unban(User)}.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
@@ -876,8 +1009,6 @@ public interface Guild extends ISnowflake
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link #isAvailable() available}
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@literal List<}{@link net.dv8tion.jda.core.entities.Guild.Ban Ban}{@literal >}
      *         <br>An unmodifiable list of all users currently banned from this Guild
@@ -885,6 +1016,106 @@ public interface Guild extends ISnowflake
     @Nonnull
     @CheckReturnValue
     RestAction<List<Ban>> getBanList();
+
+    /**
+     * Retrieves a {@link net.dv8tion.jda.core.entities.Guild.Ban Ban} of the provided ID
+     * <br>If you wish to ban or unban a user, use either {@link GuildController#ban(String, int)}  GuildController.ban(id, int)} or
+     * {@link GuildController#unban(String)}  GuildController.unban(id)}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The ban list cannot be fetched due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>We were removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_BAN UNKNOWN_BAN}
+     *     <br>Either the ban was removed before finishing the task or it did not exist in the first place</li>
+     * </ul>
+     *
+     * @param  userId
+     *         the id of the banned user
+     *
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Guild.Ban Ban}
+     *         <br>An unmodifiable ban object for the user banned from this guild
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<Ban> getBanById(long userId)
+    {
+        return getBanById(Long.toUnsignedString(userId));
+    }
+
+    /**
+     * Retrieves a {@link net.dv8tion.jda.core.entities.Guild.Ban Ban} of the provided ID
+     * <br>If you wish to ban or unban a user, use either {@link GuildController#ban(String, int) GuildController.ban(id, int)} or
+     * {@link GuildController#unban(String) GuildController.unban(id)}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The ban list cannot be fetched due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>We were removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_BAN UNKNOWN_BAN}
+     *     <br>Either the ban was removed before finishing the task or it did not exist in the first place</li>
+     * </ul>
+     *
+     * @param  userId
+     *         the id of the banned user
+     *
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Guild.Ban Ban}
+     *         <br>An unmodifiable ban object for the user banned from this guild
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Ban> getBanById(@Nonnull String userId);
+
+    /**
+     * Retrieves a {@link net.dv8tion.jda.core.entities.Guild.Ban Ban} of the provided {@link net.dv8tion.jda.core.entities.User User}
+     * <br>If you wish to ban or unban a user, use either {@link GuildController#ban(User, int) GuildController.ban(User, int)} or
+     * {@link GuildController#unban(User) GuildController.unban(User)}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The ban list cannot be fetched due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>We were removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_BAN UNKNOWN_BAN}
+     *     <br>Either the ban was removed before finishing the task or it did not exist in the first place</li>
+     * </ul>
+     *
+     * @param  bannedUser
+     *         the banned user
+     *
+     * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Guild.Ban Ban}
+     *         <br>An unmodifiable ban object for the user banned from this guild
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<Ban> getBan(@Nonnull User bannedUser)
+    {
+        Checks.notNull(bannedUser, "bannedUser");
+        return getBanById(bannedUser.getId());
+    }
 
     /**
      * The method calculates the amount of Members that would be pruned if {@link GuildController#prune(int)} was executed.
@@ -905,8 +1136,6 @@ public interface Guild extends ISnowflake
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the account doesn't have {@link net.dv8tion.jda.core.Permission#KICK_MEMBERS KICK_MEMBER} Permission.
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If the guild is temporarily not {@link #isAvailable() available}
      * @throws IllegalArgumentException
      *         If the provided days are less than {@code 1}
      *
@@ -946,8 +1175,6 @@ public interface Guild extends ISnowflake
      * all properties and settings of the Guild.
      * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.core.requests.RestAction#queue() RestAction.queue()}.
      *
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         if the guild is temporarily unavailable ({@link #isAvailable()})
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER Permission.MANAGE_SERVER}
      *
@@ -974,8 +1201,6 @@ public interface Guild extends ISnowflake
      *
      * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
      *         If the currently logged in account is not from {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}
-     * @throws net.dv8tion.jda.core.exceptions.GuildUnavailableException
-     *         If this Guild is not currently {@link #isAvailable() available}
      *
      * @return {@link net.dv8tion.jda.client.requests.restaction.pagination.MentionPaginationAction MentionPaginationAction}
      *

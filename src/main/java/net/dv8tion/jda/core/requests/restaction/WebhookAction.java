@@ -106,7 +106,7 @@ public class WebhookAction extends AuditableRestAction<Webhook>
             return;
         }
         JSONObject json = response.getObject();
-        Webhook webhook = api.getEntityBuilder().createWebhook(json);
+        Webhook webhook = api.get().getEntityBuilder().createWebhook(json);
 
         request.onSuccess(webhook);
     }

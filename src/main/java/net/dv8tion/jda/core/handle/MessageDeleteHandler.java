@@ -43,22 +43,22 @@ public class MessageDeleteHandler extends SocketHandler
         final long messageId = content.getLong("id");
         final long channelId = content.getLong("channel_id");
 
-        MessageChannel channel = api.getTextChannelById(channelId);
+        MessageChannel channel = getJDA().getTextChannelById(channelId);
         if (channel == null)
         {
-            channel = api.getPrivateChannelById(channelId);
+            channel = getJDA().getPrivateChannelById(channelId);
         }
         if (channel == null)
         {
-            channel = api.getFakePrivateChannelMap().get(channelId);
+            channel = getJDA().getFakePrivateChannelMap().get(channelId);
         }
-        if (channel == null && api.getAccountType() == AccountType.CLIENT)
+        if (channel == null && getJDA().getAccountType() == AccountType.CLIENT)
         {
-            channel = api.asClient().getGroupById(channelId);
+            channel = getJDA().asClient().getGroupById(channelId);
         }
         if (channel == null)
         {
-            api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
+            getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Got message delete for a channel/group that is not yet cached. ChannelId: {}", channelId);
             return null;
         }
@@ -66,15 +66,13 @@ public class MessageDeleteHandler extends SocketHandler
         if (channel instanceof TextChannel)
         {
             TextChannelImpl tChan = (TextChannelImpl) channel;
-            if (api.getGuildLock().isLocked(tChan.getGuild().getIdLong()))
-            {
+            if (getJDA().getGuildSetupController().isLocked(tChan.getGuild().getIdLong()))
                 return tChan.getGuild().getIdLong();
-            }
             if (tChan.hasLatestMessage() && messageId == channel.getLatestMessageIdLong())
                 tChan.setLastMessageId(0); // Reset latest message id as it was deleted.
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                     new GuildMessageDeleteEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             messageId, tChan));
         }
         else if (channel instanceof PrivateChannel)
@@ -82,9 +80,9 @@ public class MessageDeleteHandler extends SocketHandler
             PrivateChannelImpl pChan = (PrivateChannelImpl) channel;
             if (channel.hasLatestMessage() && messageId == channel.getLatestMessageIdLong())
                 pChan.setLastMessageId(0); // Reset latest message id as it was deleted.
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                     new PrivateMessageDeleteEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             messageId, pChan));
         }
         else
@@ -92,16 +90,16 @@ public class MessageDeleteHandler extends SocketHandler
             GroupImpl group = (GroupImpl) channel;
             if (channel.hasLatestMessage() && messageId == channel.getLatestMessageIdLong())
                 group.setLastMessageId(0); // Reset latest message id as it was deleted.
-            api.getEventManager().handle(
+            getJDA().getEventManager().handle(
                     new GroupMessageDeleteEvent(
-                            api, responseNumber,
+                            getJDA(), responseNumber,
                             messageId, group));
         }
 
         //Combo event
-        api.getEventManager().handle(
+        getJDA().getEventManager().handle(
                 new MessageDeleteEvent(
-                        api, responseNumber,
+                        getJDA(), responseNumber,
                         messageId, channel));
         return null;
     }

@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.webhook;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
@@ -384,91 +386,6 @@ public class WebhookMessageBuilder
         {
             throw new IllegalArgumentException(ex);
         }
-    }
-
-    /**
-     * Sets the attached file for the resulting message.
-     *
-     * @param  file
-     *         The {@link java.io.File File} that should be attached to the message
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided file is {@code null}, does not exist, is not readable
-     *         or exceeds the maximum size of 8MB
-     *
-     * @return The current WebhookMessageBuilder for chaining convenience
-     *
-     * @deprecated
-     *         Use {@link #addFile(File)} instead
-     */
-    @Deprecated
-    public WebhookMessageBuilder setFile(File file)
-    {
-        return addFile(file == null ? null : file.getName(), file);
-    }
-
-    /**
-     * Sets the attached file for the resulting message.
-     *
-     * @param  file
-     *         The {@link java.io.File File} that should be attached to the message
-     * @param  fileName
-     *         The name that should be used for this attachment
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided file is does not exist, is not readable
-     *         or exceeds the maximum size of 8MB
-     *
-     * @return The current WebhookMessageBuilder for chaining convenience
-     *
-     * @deprecated
-     *         Use {@link #addFile(String, File)} instead
-     */
-    @Deprecated
-    public WebhookMessageBuilder setFile(File file, String fileName)
-    {
-        return addFile(fileName, file);
-    }
-
-    /**
-     * Sets the attached file for the resulting message.
-     *
-     * @param  data
-     *         The {@code byte[]} data that should be attached to the message
-     * @param  fileName
-     *         The name that should be used for this attachment
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided data exceeds the maximum size of 8MB
-     *
-     * @return The current WebhookMessageBuilder for chaining convenience
-     *
-     * @deprecated
-     *         Use {@link #addFile(String, byte[])} instead
-     */
-    @Deprecated
-    public WebhookMessageBuilder setFile(byte[] data, String fileName)
-    {
-        return addFile(fileName, data);
-    }
-
-    /**
-     * Sets the attached file for the resulting message.
-     *
-     * @param  data
-     *         The {@link java.io.InputStream InputStream} data that should be attached to the message
-     * @param  fileName
-     *         The name that should be used for this attachment
-     *
-     * @return The current WebhookMessageBuilder for chaining convenience
-     *
-     * @deprecated
-     *         Use {@link #addFile(String, InputStream)} instead
-     */
-    @Deprecated
-    public WebhookMessageBuilder setFile(InputStream data, String fileName)
-    {
-        return addFile(fileName, data);
     }
 
     /**

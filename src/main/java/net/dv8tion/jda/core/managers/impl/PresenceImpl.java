@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import org.json.JSONObject;
 
 /**
@@ -34,7 +35,7 @@ import org.json.JSONObject;
 public class PresenceImpl implements Presence
 {
 
-    private final JDAImpl api;
+    private final UpstreamReference<JDAImpl> api;
     private boolean idle = false;
     private Game game = null;
     private OnlineStatus status = OnlineStatus.ONLINE;
@@ -47,7 +48,7 @@ public class PresenceImpl implements Presence
      */
     public PresenceImpl(JDAImpl jda)
     {
-        this.api = jda;
+        this.api = new UpstreamReference<>(jda);
     }
 
 
@@ -57,7 +58,7 @@ public class PresenceImpl implements Presence
     @Override
     public JDA getJDA()
     {
-        return api;
+        return api.get();
     }
 
     @Override
@@ -202,7 +203,7 @@ public class PresenceImpl implements Presence
 
     protected void update(JSONObject data)
     {
-        api.getClient().send(new JSONObject()
+        api.get().getClient().send(new JSONObject()
             .put("d", data)
             .put("op", WebSocketCode.PRESENCE).toString());
     }

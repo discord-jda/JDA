@@ -23,7 +23,9 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -73,7 +75,7 @@ public interface Invite
      * @param  code
      *         A valid invite code
      * @param  withCounts
-     *         Whether or not to include online and member counts
+     *         Whether or not to include online and member counts for guild invites or users for group invites
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Invite Invite}
      *         <br>The Invite object
@@ -98,6 +100,8 @@ public interface Invite
 
     /**
      * Tries to retrieve a new expanded {@link net.dv8tion.jda.core.entities.Invite Invite} with more info.
+     * <br>As bots can't be in groups this is only available for guild invites and will throw an {@link java.lang.IllegalStateException IllegalStateException}
+     * for other types.
      * <br>Requires either {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER MANAGE_SERVER} in the invite's guild or
      * {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} in the invite's channel.
      * Will throw a {@link net.dv8tion.jda.core.exceptions.InsufficientPermissionException InsufficientPermissionException} otherwise.
@@ -105,20 +109,30 @@ public interface Invite
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         if the account neither has {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER MANAGE_SERVER} in the invite's guild nor
      *         {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} in the invite's channel
+     * @throws java.lang.IllegalStateException
+     *         If this is a group invite
      *
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Invite Invite}
      *         <br>The expanded Invite object
      *
+     * @see    #getType()
      * @see    #isExpanded()
      */
     @CheckReturnValue
     RestAction<Invite> expand();
 
     /**
+     * The type of this invite.
+     *
+     * @return The invites's type
+     */
+    Invite.InviteType getType();
+
+    /**
      * An {@link net.dv8tion.jda.core.entities.Invite.Channel Invite.Channel} object
      * containing information about this invite's origin channel.
      *
-     * @return Information about this invite's origin channel
+     * @return Information about this invite's origin channel or null in case of a group invite
      * 
      * @see    net.dv8tion.jda.core.entities.Invite.Channel
      */
@@ -130,6 +144,16 @@ public interface Invite
      * @return the invite code
      */
     String getCode();
+
+    /**
+     * An {@link net.dv8tion.jda.core.entities.Invite.Group Invite.Group} object
+     * containing information about this invite's origin group.
+     *
+     * @return Information about this invite's origin group or null in case of a guild invite
+     *
+     * @see    net.dv8tion.jda.core.entities.Invite.Group
+     */
+    Group getGroup();
 
     /**
      * The invite URL for this invite in the format of:
@@ -161,7 +185,7 @@ public interface Invite
      * An {@link net.dv8tion.jda.core.entities.Invite.Guild Invite.Guild} object
      * containing information about this invite's origin guild.
      *
-     * @return Information about this invite's origin guild
+     * @return Information about this invite's origin guild or null in case of a group invite
      * 
      * @see    net.dv8tion.jda.core.entities.Invite.Guild
      */
@@ -366,5 +390,61 @@ public interface Invite
          * @return Never-null, unmodifiable Set containing all of the Guild's features.
          */
         Set<String> getFeatures();
+    }
+
+    /**
+     * POJO for the group information provided by an invite.
+     *
+     * @see #getChannel()
+     */
+    interface Group extends ISnowflake
+    {
+        /**
+         * The icon id of this group or {@code null} if the group has no icon.
+         *
+         * @return The group's icon id
+         *
+         * @see    #getIconUrl()
+         */
+        String getIconId();
+
+        /**
+         * The icon url of this group or {@code null} if the group has no icon.
+         *
+         * @return The group's icon url
+         *
+         * @see    #getIconId()
+         */
+        String getIconUrl();
+
+        /**
+         * The name of this group or {@code null} if the group has no name.
+         *
+         * @return The group's name
+         */
+        String getName();
+
+        /**
+         * The names of all users in this group. If the users were not included in the
+         * invite, this will return {@code null}. Users will only be returned when resolving the invite via the
+         * {@link #resolve(net.dv8tion.jda.core.JDA, java.lang.String, boolean) Invite.resolve()} method with the
+         * {@code withCounts} boolean set to {@code true}.
+         *
+         * @return The names of the groups's users or null if not preset in the invite
+         */
+        @Nullable
+        List<String> getUsers();
+    }
+
+    /**
+     * Enum representing the type of an invite.
+     *
+     * @see #getType()
+     */
+    enum InviteType
+    {
+        GUILD,
+        GROUP,
+        UNKNOWN
     }
 }

@@ -28,7 +28,7 @@ public enum ConnectionStatus
     /** JDA has received a valid endpoint and is attempting to setup and connect the audio websocket */
     CONNECTING_AWAITING_WEBSOCKET_CONNECT,
     /** JDA has connected the audio websocket to Discord and has sent the authentication information, awaiting reply.*/
-    CONNECTING_AWAITING_AUTHENTICATING,
+    CONNECTING_AWAITING_AUTHENTICATION,
     /**
      * JDA successfully authenticated the audio websocket and it now attempting UDP discovery. UDP discovery involves
      * opening a UDP socket and sending a packet to a provided Discord remote resource which responds with the

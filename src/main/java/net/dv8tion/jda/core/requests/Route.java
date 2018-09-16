@@ -101,6 +101,7 @@ public class Route
         public static final Route MODIFY_CHANNELS =    new Route(PATCH,  "guilds/{guild_id}/channels",          "guild_id");
         public static final Route MODIFY_ROLES =       new Route(PATCH,  "guilds/{guild_id}/roles",             "guild_id");
         public static final Route GET_BANS =           new Route(GET,    "guilds/{guild_id}/bans",              "guild_id");
+        public static final Route GET_BAN =            new Route(GET,    "guilds/{guild_id}/bans/{user_id}",    "guild_id");
         public static final Route UNBAN =              new Route(DELETE, "guilds/{guild_id}/bans/{user_id}",    "guild_id");
         public static final Route BAN =                new Route(PUT,    "guilds/{guild_id}/bans/{user_id}",    "guild_id");
         public static final Route KICK_MEMBER =        new Route(DELETE, "guilds/{guild_id}/members/{user_id}", "guild_id");
@@ -138,9 +139,12 @@ public class Route
     public static class Emotes
     {
         // These are all client endpoints and thus don't need defined major parameters
-        public static final Route MODIFY_EMOTE = new Route(PATCH,  "guilds/{guild_id}/emojis/{emote_id}");
-        public static final Route DELETE_EMOTE = new Route(DELETE, "guilds/{guild_id}/emojis/{emote_id}");
-        public static final Route CREATE_EMOTE = new Route(POST,   "guilds/{guild_id}/emojis");
+        public static final Route MODIFY_EMOTE = new Route(PATCH,  "guilds/{guild_id}/emojis/{emote_id}", "guild_id");
+        public static final Route DELETE_EMOTE = new Route(DELETE, "guilds/{guild_id}/emojis/{emote_id}", "guild_id");
+        public static final Route CREATE_EMOTE = new Route(POST,   "guilds/{guild_id}/emojis",            "guild_id");
+
+        public static final Route GET_EMOTES   = new Route(GET,    "guilds/{guild_id}/emojis",            "guild_id");
+        public static final Route GET_EMOTE    = new Route(GET,    "guilds/{guild_id}/emojis/{emoji_id}", "guild_id");
     }
 
     public static class Webhooks
@@ -204,7 +208,7 @@ public class Route
         public static final Route REMOVE_ALL_REACTIONS =     new Route(DELETE, "channels/{channel_id}/messages/{message_id}/reactions",                           "channel_id");
         public static final Route GET_REACTION_USERS =       new Route(GET,    "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}",           "channel_id");
 
-        public static final Route DELETE_MESSAGE =      new Route(DELETE, true, "channels/{channel_id}/messages/{message_id}", "channel_id");
+        public static final Route DELETE_MESSAGE =      new DeleteMessageRoute();
         public static final Route GET_MESSAGE_HISTORY = new Route(GET,    true, "channels/{channel_id}/messages",              "channel_id");
 
         //Bot only
@@ -349,7 +353,7 @@ public class Route
 
         //Compile the route for interfacing with discord.
         String compiledRoute = String.format(compilableRoute, (Object[]) params);
-        String compiledRatelimitRoute = ratelimitRoute;
+        String compiledRatelimitRoute = getRatelimitRoute();
 
         //If this route has major parameters which help to uniquely distinguish it from others of this route type then
         // compile it using the major parameter indexes we discovered in the constructor.
@@ -485,6 +489,32 @@ public class Route
         public final int getResetTime()
         {
             return this.resetTime;
+        }
+    }
+
+    //edit message uses a different rate-limit bucket as delete message and thus we need a special handling
+
+    /*
+    From the docs:
+
+    There is currently a single exception to the above rule regarding different HTTP methods sharing the same rate limit,
+    and that is for the deletion of messages.
+    Deleting messages falls under a separate, higher rate limit so that bots are able
+    to more quickly delete content from channels (which is useful for moderation bots).
+
+    As of 1st of September 2018
+     */
+    private static class DeleteMessageRoute extends Route
+    {
+        private DeleteMessageRoute()
+        {
+            super(DELETE, true, "channels/{channel_id}/messages/{message_id}", "channel_id");
+        }
+
+        @Override
+        public String getRatelimitRoute()
+        {
+            return "channels/%s/messages/{message_id}/delete"; //the additional "/delete" forces a new bucket
         }
     }
 }

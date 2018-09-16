@@ -64,10 +64,11 @@ public interface Member extends IMentionable, IPermissionHolder
 
     /**
      * The {@link net.dv8tion.jda.core.entities.GuildVoiceState VoiceState} of this Member.
+     * <br><b>This will be null when the {@link net.dv8tion.jda.core.utils.cache.CacheFlag#VOICE_STATE} is disabled manually</b>
      *
      * <p>This can be used to get the Member's VoiceChannel using {@link GuildVoiceState#getChannel()}.
      *
-     * @return {@link net.dv8tion.jda.core.entities.GuildVoiceState VoiceState}
+     * @return {@link net.dv8tion.jda.core.entities.GuildVoiceState GuildVoiceState}
      */
     GuildVoiceState getVoiceState();
 

@@ -36,8 +36,6 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.function.IntConsumer;
-import java.util.function.LongConsumer;
 
 public class BotRateLimiter extends RateLimiter
 {
@@ -46,9 +44,9 @@ public class BotRateLimiter extends RateLimiter
     private static final String REMAINING_HEADER = "X-RateLimit-Remaining";
     protected volatile Long timeOffset = null;
 
-    public BotRateLimiter(Requester requester, int poolSize)
+    public BotRateLimiter(Requester requester)
     {
-        super(requester, poolSize);
+        super(requester);
     }
 
     @Override
@@ -271,7 +269,7 @@ public class BotRateLimiter extends RateLimiter
                     if (delay == null)
                         delay = 0L;
 
-                    pool.schedule(this, delay, TimeUnit.MILLISECONDS);
+                    requester.getJDA().getRateLimitPool().schedule(this, delay, TimeUnit.MILLISECONDS);
                     submittedBuckets.add(this);
                 }
             }
@@ -327,6 +325,7 @@ public class BotRateLimiter extends RateLimiter
         @Override
         public void run()
         {
+            requester.setContext();
             try
             {
                 synchronized (requests)

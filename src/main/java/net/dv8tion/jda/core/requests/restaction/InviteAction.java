@@ -72,7 +72,7 @@ public class InviteAction extends AuditableRestAction<Invite>
     protected void handleResponse(final Response response, final Request<Invite> request)
     {
         if (response.isOk())
-            request.onSuccess(this.api.getEntityBuilder().createInvite(response.getObject()));
+            request.onSuccess(this.api.get().getEntityBuilder().createInvite(response.getObject()));
         else
             request.onFailure(response);
     }

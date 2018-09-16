@@ -41,7 +41,7 @@ public class ChannelCreateHandler extends SocketHandler
         if (type.isGuild())
         {
             guildId = content.getLong("guild_id");
-            if (api.getGuildLock().isLocked(guildId))
+            if (getJDA().getGuildSetupController().isLocked(guildId))
                 return guildId;
         }
 
@@ -49,48 +49,47 @@ public class ChannelCreateHandler extends SocketHandler
         {
             case TEXT:
             {
-                api.getEventManager().handle(
+                getJDA().getEventManager().handle(
                     new TextChannelCreateEvent(
-                        api, responseNumber,
-                        api.getEntityBuilder().createTextChannel(content, guildId)));
+                        getJDA(), responseNumber,
+                        getJDA().getEntityBuilder().createTextChannel(content, guildId)));
                 break;
             }
             case VOICE:
             {
-                api.getEventManager().handle(
+                getJDA().getEventManager().handle(
                     new VoiceChannelCreateEvent(
-                        api, responseNumber,
-                        api.getEntityBuilder().createVoiceChannel(content, guildId)));
+                        getJDA(), responseNumber,
+                        getJDA().getEntityBuilder().createVoiceChannel(content, guildId)));
                 break;
             }
             case CATEGORY:
             {
-                api.getEventManager().handle(
+                getJDA().getEventManager().handle(
                     new CategoryCreateEvent(
-                        api, responseNumber,
-                        api.getEntityBuilder().createCategory(content, guildId)));
+                        getJDA(), responseNumber,
+                        getJDA().getEntityBuilder().createCategory(content, guildId)));
                 break;
             }
             case PRIVATE:
             {
-                api.getEventManager().handle(
+                getJDA().getEventManager().handle(
                     new PrivateChannelCreateEvent(
-                        api, responseNumber,
-                        api.getEntityBuilder().createPrivateChannel(content)));
+                        getJDA(), responseNumber,
+                        getJDA().getEntityBuilder().createPrivateChannel(content)));
                 break;
             }
             case GROUP:
             {
-                api.getEventManager().handle(
+                getJDA().getEventManager().handle(
                     new GroupJoinEvent(
-                        api, responseNumber,
-                        api.getEntityBuilder().createGroup(content)));
+                        getJDA(), responseNumber,
+                        getJDA().getEntityBuilder().createGroup(content)));
                 break;
             }
             default:
                 throw new IllegalArgumentException("Discord provided an CREATE_CHANNEL event with an unknown channel type! JSON: " + content);
         }
-        api.getEventCache().playbackCache(EventCache.Type.CHANNEL, content.getLong("id"));
         return null;
     }
 }
