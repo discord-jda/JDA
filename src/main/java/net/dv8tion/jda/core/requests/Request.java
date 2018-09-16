@@ -71,7 +71,8 @@ public class Request<T>
     {
         api.getCallbackPool().execute(() ->
         {
-            try (ThreadLocalReason.Closable __ = ThreadLocalReason.closable(localReason))
+            try (ThreadLocalReason.Closable __ = ThreadLocalReason.closable(localReason);
+                 CallbackContext ___ = CallbackContext.getInstance())
             {
                 onSuccess.accept(successObj);
             }
@@ -101,7 +102,8 @@ public class Request<T>
     {
         api.getCallbackPool().execute(() ->
         {
-            try (ThreadLocalReason.Closable __ = ThreadLocalReason.closable(localReason))
+            try (ThreadLocalReason.Closable __ = ThreadLocalReason.closable(localReason);
+                 CallbackContext ___ = CallbackContext.getInstance())
             {
                 onFailure.accept(failException);
                 if (failException instanceof Error)
