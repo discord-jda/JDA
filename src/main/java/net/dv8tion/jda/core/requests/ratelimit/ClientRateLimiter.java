@@ -18,10 +18,7 @@ package net.dv8tion.jda.core.requests.ratelimit;
 
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ExceptionEvent;
-import net.dv8tion.jda.core.requests.RateLimiter;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Requester;
-import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.requests.Route.RateLimit;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -108,7 +105,7 @@ public class ClientRateLimiter extends RateLimiter
                 bucket = (Bucket) buckets.get(baseRoute);
                 if (bucket == null)
                 {
-                    bucket = new Bucket(baseRoute, route.getBaseRoute().getRatelimit());
+                    bucket = new Bucket(route.getMethod(), baseRoute, route.getBaseRoute().getRatelimit());
                     buckets.put(baseRoute, bucket);
                 }
             }
@@ -118,13 +115,15 @@ public class ClientRateLimiter extends RateLimiter
 
     private class Bucket implements IBucket, Runnable
     {
+        final Method method;
         final String route;
         final RateLimit rateLimit;
         final ConcurrentLinkedQueue<Request> requests = new ConcurrentLinkedQueue<>();
         volatile long retryAfter = 0;
 
-        public Bucket(String route, RateLimit rateLimit)
+        public Bucket(Method method, String route, RateLimit rateLimit)
         {
+            this.method = method;
             this.route = route;
             this.rateLimit = rateLimit;
         }
@@ -259,6 +258,12 @@ public class ClientRateLimiter extends RateLimiter
         public String getRoute()
         {
             return route;
+        }
+
+        @Override
+        public Method getMethod()
+        {
+            return method;
         }
 
         @Override

@@ -18,10 +18,7 @@ package net.dv8tion.jda.core.requests.ratelimit;
 
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ExceptionEvent;
-import net.dv8tion.jda.core.requests.RateLimiter;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Requester;
-import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.requests.Route.RateLimit;
 import okhttp3.Headers;
 import org.json.JSONObject;
@@ -130,7 +127,7 @@ public class BotRateLimiter extends RateLimiter
                 if (bucket == null)
                 {
                     Route baseRoute = route.getBaseRoute();
-                    bucket = new Bucket(rateLimitRoute, baseRoute.getRatelimit(), baseRoute.isMissingHeaders());
+                    bucket = new Bucket(route.getMethod(), rateLimitRoute, baseRoute.getRatelimit(), baseRoute.isMissingHeaders());
                     buckets.put(rateLimitRoute, bucket);
                 }
             }
@@ -171,6 +168,7 @@ public class BotRateLimiter extends RateLimiter
         int headerCount = 0;
         if (retryAfter > 0)
         {
+            Requester.LOG.warn("Encountered 429 on route {} /{}", bucket.getMethod(), bucket.getRoute());
             bucket.resetTime = getNow() + retryAfter;
             bucket.routeUsageRemaining = 0;
         }
@@ -233,6 +231,7 @@ public class BotRateLimiter extends RateLimiter
 
     private class Bucket implements IBucket, Runnable
     {
+        final Method method;
         final String route;
         final boolean missingHeaders;
         final RateLimit rateLimit;
@@ -241,8 +240,9 @@ public class BotRateLimiter extends RateLimiter
         volatile int routeUsageRemaining = 1;    //These are default values to only allow 1 request until we have properly
         volatile int routeUsageLimit = 1;        // ratelimit information.
 
-        public Bucket(String route, RateLimit rateLimit, boolean missingHeaders)
+        public Bucket(Method method, String route, RateLimit rateLimit, boolean missingHeaders)
         {
+            this.method = method;
             this.route = route;
             this.rateLimit = rateLimit;
             this.missingHeaders = missingHeaders;
@@ -394,6 +394,12 @@ public class BotRateLimiter extends RateLimiter
         public String getRoute()
         {
             return route;
+        }
+
+        @Override
+        public Method getMethod()
+        {
+            return method;
         }
 
         @Override
