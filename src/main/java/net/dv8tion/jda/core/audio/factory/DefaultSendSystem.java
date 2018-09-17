@@ -63,12 +63,14 @@ public class DefaultSendSystem implements IAudioSendSystem
             long lastFrameSent = System.currentTimeMillis();
             while (!udpSocket.isClosed() && !sendThread.isInterrupted())
             {
+                boolean sentPacket = true;
                 try
                 {
                     boolean changeTalking = (System.currentTimeMillis() - lastFrameSent) > OPUS_FRAME_TIME_AMOUNT;
                     DatagramPacket packet = packetProvider.getNextPacket(changeTalking);
 
-                    if (packet != null)
+                    sentPacket = packet != null;
+                    if (sentPacket)
                         udpSocket.send(packet);
                 }
                 catch (NoRouteToHostException e)
@@ -98,13 +100,16 @@ public class DefaultSendSystem implements IAudioSendSystem
                             Thread.currentThread().interrupt();
                         }
                     }
-                    if (System.currentTimeMillis() < lastFrameSent + 60) // If the sending didn't took longer than 60ms (3 times the time frame)
+                    if (sentPacket)
                     {
-                        lastFrameSent += OPUS_FRAME_TIME_AMOUNT; // increase lastFrameSent
-                    }
-                    else
-                    {
-                        lastFrameSent = System.currentTimeMillis(); // else reset lastFrameSent to current time
+                        if (System.currentTimeMillis() < lastFrameSent + 60) // If the sending didn't took longer than 60ms (3 times the time frame)
+                        {
+                            lastFrameSent += OPUS_FRAME_TIME_AMOUNT; // increase lastFrameSent
+                        }
+                        else
+                        {
+                            lastFrameSent = System.currentTimeMillis(); // else reset lastFrameSent to current time
+                        }
                     }
                 }
             }
