@@ -168,7 +168,7 @@ public class BotRateLimiter extends RateLimiter
         int headerCount = 0;
         if (retryAfter > 0)
         {
-            Requester.LOG.warn("Encountered 429 on route {} /{}", bucket.getMethod(), bucket.getRoute());
+            log.warn("Encountered 429 on route {} /{}", bucket.getMethod(), bucket.getRoute());
             bucket.resetTime = getNow() + retryAfter;
             bucket.routeUsageRemaining = 0;
         }
@@ -199,9 +199,8 @@ public class BotRateLimiter extends RateLimiter
         headerCount += parseInt(headers.get(REMAINING_HEADER), bucket, (remaining, b) -> b.routeUsageRemaining = remaining);
         if (!bucket.missingHeaders && headerCount < 3)
         {
-            Requester.LOG.debug("Encountered issue with headers when updating a bucket\n" +
-                                "Route: {}\nHeaders: {}",
-                                bucket.getRoute(), headers);
+            log.debug("Encountered issue with headers when updating a bucket\n" +
+                      "Route: {}\nHeaders: {}", bucket.getRoute(), headers);
         }
     }
 
@@ -269,7 +268,15 @@ public class BotRateLimiter extends RateLimiter
                     if (delay == null)
                         delay = 0L;
 
-                    requester.getJDA().getRateLimitPool().schedule(this, delay, TimeUnit.MILLISECONDS);
+                    if (delay > 0)
+                    {
+                        log.debug("Backing off {} milliseconds on route {} /{}", delay, getMethod(), getRoute());
+                        requester.getJDA().getRateLimitPool().schedule(this, delay, TimeUnit.MILLISECONDS);
+                    }
+                    else
+                    {
+                        requester.getJDA().getRateLimitPool().execute(this);
+                    }
                     submittedBuckets.add(this);
                 }
             }
@@ -349,7 +356,7 @@ public class BotRateLimiter extends RateLimiter
                         }
                         catch (Throwable t)
                         {
-                            Requester.LOG.error("Requester system encountered an internal error", t);
+                            log.error("Requester system encountered an internal error", t);
                             it.remove();
                             if (request != null)
                                 request.onFailure(t);
@@ -367,7 +374,7 @@ public class BotRateLimiter extends RateLimiter
                             }
                             catch (RejectedExecutionException e)
                             {
-                                Requester.LOG.debug("Caught RejectedExecutionException when re-queuing a ratelimited request. The requester is probably shutdown, thus, this can be ignored.");
+                                log.debug("Caught RejectedExecutionException when re-queuing a ratelimited request. The requester is probably shutdown, thus, this can be ignored.");
                             }
                         }
                     }
@@ -375,7 +382,7 @@ public class BotRateLimiter extends RateLimiter
             }
             catch (Throwable err)
             {
-                Requester.LOG.error("Requester system encountered an internal error from beyond the synchronized execution blocks. NOT GOOD!", err);
+                log.error("Requester system encountered an internal error from beyond the synchronized execution blocks. NOT GOOD!", err);
                 if (err instanceof Error)
                 {
                     JDAImpl api = requester.getJDA();

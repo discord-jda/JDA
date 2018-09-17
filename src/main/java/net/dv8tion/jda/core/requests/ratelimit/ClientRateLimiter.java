@@ -213,7 +213,7 @@ public class ClientRateLimiter extends RateLimiter
                         }
                         catch (Throwable t)
                         {
-                            Requester.LOG.error("Error executing REST request", t);
+                            log.error("Error executing REST request", t);
                             it.remove();
                             if (request != null)
                                 request.onFailure(t);
@@ -231,7 +231,7 @@ public class ClientRateLimiter extends RateLimiter
                             }
                             catch (RejectedExecutionException e)
                             {
-                                Requester.LOG.debug("Caught RejectedExecutionException when re-queuing a ratelimited request. The requester is probably shutdown, thus, this can be ignored.");
+                                log.debug("Caught RejectedExecutionException when re-queuing a ratelimited request. The requester is probably shutdown, thus, this can be ignored.");
                             }
                         }
                     }
@@ -239,7 +239,7 @@ public class ClientRateLimiter extends RateLimiter
             }
             catch (Throwable err)
             {
-                Requester.LOG.error("There was some exception in the ClientRateLimiter", err);
+                log.error("There was some exception in the ClientRateLimiter", err);
                 if (err instanceof Error)
                 {
                     JDAImpl api = requester.getJDA();
