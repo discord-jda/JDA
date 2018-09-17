@@ -54,10 +54,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.ref.SoftReference;
 import java.time.OffsetDateTime;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
@@ -74,6 +71,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public static final int ZLIB_SUFFIX = 0x0000FFFF;
 
     protected static final String INVALIDATE_REASON = "INVALIDATE_SESSION";
+    protected static final long IDENTIFY_BACKOFF = TimeUnit.SECONDS.toMillis(SessionController.IDENTIFY_DELAY); // same as 1000 * IDENTIFY_DELAY
 
     protected final JDAImpl api;
     protected final JDA.ShardInfo shardInfo;
@@ -488,7 +486,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public void onConnected(WebSocket websocket, Map<String, List<String>> headers)
     {
         api.setStatus(JDA.Status.IDENTIFYING_SESSION);
-        LOG.info("Connected to WebSocket");
+        if (sessionId == null) //no need to log for resume here
+            LOG.info("Connected to WebSocket");
+        else
+            LOG.debug("Connected to WebSocket");
         if (headers.containsKey("cf-ray"))
         {
             List<String> values = headers.get("cf-ray");
@@ -496,7 +497,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             {
                 String ray = values.get(0);
                 cfRays.add(ray);
-                LOG.debug("Received new CF-RAY: {}", ray);
+                LOG.trace("Received new CF-RAY: {}", ray);
             }
         }
         connected = true;
@@ -580,14 +581,30 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             api.getEventManager().handle(new DisconnectEvent(api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now()));
             try
             {
-                if (handleIdentifyRateLimit)
-                    Thread.sleep(5000);
-                else
-                    LOG.warn("Got disconnected from WebSocket (Internet?!)...{}", sessionId == null ? " Appending to reconnect queue" : " Attempting to resume");
                 if (sessionId == null)
+                {
+                    if (handleIdentifyRateLimit)
+                    {
+                        long backoff = calculateIdentifyBackoff();
+                        if (backoff > 0)
+                        {
+                            // it seems that most of the time this is already sub-0 when we reach this point
+                            LOG.error("Encountered IDENTIFY Rate Limit! Waiting {} milliseconds before trying again!", backoff);
+                            Thread.sleep(backoff);
+                        }
+                        else
+                        {
+                            LOG.error("Encountered IDENTIFY Rate Limit!");
+                        }
+                    }
+                    LOG.warn("Got disconnected from WebSocket. Appending to reconnect queue");
                     queueReconnect();
+                }
                 else // if resume is possible
+                {
+                    LOG.debug("Got disconnected from WebSocket. Attempting to resume session");
                     reconnect();
+                }
             }
             catch (InterruptedException e)
             {
@@ -598,6 +615,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
+    protected long calculateIdentifyBackoff()
+    {
+        long currentTime = System.currentTimeMillis();
+        // calculate remaining backoff time since identify
+        return currentTime - (identifyTime + IDENTIFY_BACKOFF);
+    }
 
     protected void queueReconnect()
     {
@@ -893,9 +916,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 break;
             case WebSocketCode.INVALIDATE_SESSION:
                 LOG.debug("Got Invalidate request (OP 9). Invalidating...");
-                handleIdentifyRateLimit = handleIdentifyRateLimit && System.currentTimeMillis() - identifyTime < 5000;
-                if (handleIdentifyRateLimit)
-                    LOG.error("Encountered IDENTIFY (OP {}) Rate Limit! Waiting {} seconds before trying again!", WebSocketCode.IDENTIFY, IDENTIFY_DELAY);
+                handleIdentifyRateLimit = handleIdentifyRateLimit && System.currentTimeMillis() - identifyTime < IDENTIFY_BACKOFF;
+
                 sentAuthInfo = false;
                 final boolean isResume = content.getBoolean("d");
                 // When d: true we can wait a bit and then try to resume again
@@ -972,13 +994,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     {
                         initiating = false;
                         ready();
-//                        jda.getGuildSetupController().onResume(false);
                     }
                     else
                     {
                         LOG.debug("Resumed while still processing initial ready");
                         jda.setStatus(JDA.Status.LOADING_SUBSYSTEMS);
-//                        jda.getGuildSetupController().onResume(true);
                     }
                     if (!content.isNull("_trace"))
                         updateTraces(content.getJSONArray("_trace"), "RESUMED", WebSocketCode.DISPATCH);
@@ -1447,7 +1467,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             connect();
             if (isLast)
                 return;
-            api.awaitStatus(JDA.Status.AWAITING_LOGIN_CONFIRMATION);
+            try
+            {
+                api.awaitStatus(JDA.Status.AWAITING_LOGIN_CONFIRMATION);
+            }
+            catch (IllegalStateException ex)
+            {
+                close();
+                LOG.debug("Shutdown while trying to connect");
+            }
         }
     }
 
@@ -1467,7 +1495,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             reconnect(true);
             if (isLast)
                 return;
-            api.awaitStatus(JDA.Status.AWAITING_LOGIN_CONFIRMATION);
+            try
+            {
+                api.awaitStatus(JDA.Status.AWAITING_LOGIN_CONFIRMATION);
+            }
+            catch (IllegalStateException ex)
+            {
+                close();
+                LOG.debug("Shutdown while trying to reconnect");
+            }
         }
     }
 }
