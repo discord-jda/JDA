@@ -97,10 +97,12 @@ public class BotRateLimiter extends RateLimiter
                 if (Boolean.parseBoolean(global))  //global ratelimit
                 {
                     //If it is global, lock down the threads.
+                    log.warn("Encountered global rate-limit! Retry-After: {}", retryAfter);
                     requester.getJDA().getSessionController().setGlobalRatelimit(getNow() + retryAfter);
                 }
                 else
                 {
+                    log.warn("Encountered 429 on route {} /{}", bucket.getMethod(), bucket.getRoute());
                     updateBucket(bucket, headers, retryAfter);
                 }
 
@@ -168,7 +170,6 @@ public class BotRateLimiter extends RateLimiter
         int headerCount = 0;
         if (retryAfter > 0)
         {
-            log.warn("Encountered 429 on route {} /{}", bucket.getMethod(), bucket.getRoute());
             bucket.resetTime = getNow() + retryAfter;
             bucket.routeUsageRemaining = 0;
         }
