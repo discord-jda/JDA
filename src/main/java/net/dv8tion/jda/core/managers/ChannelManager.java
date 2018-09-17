@@ -71,7 +71,13 @@ public class ChannelManager extends ManagerBase
     public static final long BITRATE    = 0x40;
     /** Used to reset the permission field */
     public static final long PERMISSION = 0x80;
-    /** Used to reset the rate-limit per user field */
+    /**
+     * Used to reset the rate-limit per user field
+     *
+     * @incubating
+     *         <b>Currently slowmode is an undocumented and unreleased feature.</b>
+     */
+    @Incubating
     public static final long SLOWMODE   = 0x100;
 
     protected final UpstreamReference<Channel> channel;
@@ -608,6 +614,9 @@ public class ChannelManager extends ManagerBase
      *         If the provided slowmode is negative or greater than {@code 120}
      *
      * @return ChannelManager for chaining convenience
+     *
+     * @incubating
+     *         <b>Currently slowmode is an undocumented and unreleased API feature.</b>
      */
     @Incubating
     @CheckReturnValue

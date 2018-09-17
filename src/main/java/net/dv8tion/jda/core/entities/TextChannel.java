@@ -54,7 +54,15 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
     */
     boolean isNSFW();
 
-    // TODO Docs
+    /**
+     * The slowmode set for this TextChannel.
+     * <br>If slowmode is set this returns an {@code int} between 1 and 120. If not set this returns {@code 0}.
+     *
+     * @return The slowmode for this TextChannel, between 1 and 120, or {@code 0} if no slowmode is set.
+     *
+     * @incubating
+     *         <b>Currently slowmode is an undocumented and unreleased API feature.</b>
+     */
     @Incubating
     int getSlowmode();
 
