@@ -581,30 +581,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             api.getEventManager().handle(new DisconnectEvent(api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now()));
             try
             {
-                if (sessionId == null)
-                {
-                    if (handleIdentifyRateLimit)
-                    {
-                        long backoff = calculateIdentifyBackoff();
-                        if (backoff > 0)
-                        {
-                            // it seems that most of the time this is already sub-0 when we reach this point
-                            LOG.error("Encountered IDENTIFY Rate Limit! Waiting {} milliseconds before trying again!", backoff);
-                            Thread.sleep(backoff);
-                        }
-                        else
-                        {
-                            LOG.error("Encountered IDENTIFY Rate Limit!");
-                        }
-                    }
-                    LOG.warn("Got disconnected from WebSocket. Appending to reconnect queue");
-                    queueReconnect();
-                }
-                else // if resume is possible
-                {
-                    LOG.debug("Got disconnected from WebSocket. Attempting to resume session");
-                    reconnect();
-                }
+                handleReconnect();
             }
             catch (InterruptedException e)
             {
@@ -612,6 +589,34 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 invalidate();
                 queueReconnect();
             }
+        }
+    }
+
+    private void handleReconnect() throws InterruptedException
+    {
+        if (sessionId == null)
+        {
+            if (handleIdentifyRateLimit)
+            {
+                long backoff = calculateIdentifyBackoff();
+                if (backoff > 0)
+                {
+                    // it seems that most of the time this is already sub-0 when we reach this point
+                    LOG.error("Encountered IDENTIFY Rate Limit! Waiting {} milliseconds before trying again!", backoff);
+                    Thread.sleep(backoff);
+                }
+                else
+                {
+                    LOG.error("Encountered IDENTIFY Rate Limit!");
+                }
+            }
+            LOG.warn("Got disconnected from WebSocket. Appending to reconnect queue");
+            queueReconnect();
+        }
+        else // if resume is possible
+        {
+            LOG.debug("Got disconnected from WebSocket. Attempting to resume session");
+            reconnect();
         }
     }
 
