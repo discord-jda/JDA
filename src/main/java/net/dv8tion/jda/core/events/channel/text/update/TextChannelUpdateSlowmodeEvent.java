@@ -21,33 +21,31 @@ import net.dv8tion.jda.core.entities.TextChannel;
 
 // TODO Docs
 @Incubating
-public class TextChannelUpdateUserRateLimitEvent extends GenericTextChannelUpdateEvent<Integer>
+public class TextChannelUpdateSlowmodeEvent extends GenericTextChannelUpdateEvent<Integer>
 {
-    // We have reached spring bootstrap levels of class name.
-
     public static final String IDENTIFIER = "rate_limit_per_user";
 
-    public TextChannelUpdateUserRateLimitEvent(JDA api, long responseNumber, TextChannel channel, int oldRateLimitPerUser)
+    public TextChannelUpdateSlowmodeEvent(JDA api, long responseNumber, TextChannel channel, int oldSlowmode)
     {
-        super(api, responseNumber, channel, oldRateLimitPerUser, channel.getRateLimitPerUser(), IDENTIFIER);
+        super(api, responseNumber, channel, oldSlowmode, channel.getSlowmode(), IDENTIFIER);
     }
 
     /**
-     * The old rate-limit per user.
+     * The old slowmode.
      *
-     * @return The old rate-limit per user.
+     * @return The old slowmode.
      */
-    public int getOldRateLimitPerUser()
+    public int getOldSlowmode()
     {
         return getOldValue();
     }
 
     /**
-     * The old rate-limit per user.
+     * The new slowmode.
      *
-     * @return The old rate-limit per user.
+     * @return The new slowmode.
      */
-    public int getNewRateLimitPerUser()
+    public int getNewSlowmode()
     {
         return getNewValue();
     }

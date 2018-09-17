@@ -180,7 +180,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
      *         The number of seconds required to wait between sending messages in the channel.
      *
      * @throws IllegalArgumentException
-     *         If the {@code rateLimitPerUser} is greater than 120, or less than 0
+     *         If the {@code slowmode} is greater than 120, or less than 0
      *
      * @return The current ChannelAction, for chaining convenience
      */

@@ -56,7 +56,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
 
     // TODO Docs
     @Incubating
-    int getRateLimitPerUser();
+    int getSlowmode();
 
     /**
      * Retrieves the {@link net.dv8tion.jda.core.entities.Webhook Webhooks} attached to this TextChannel.

@@ -41,7 +41,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     private String topic;
     private long lastMessageId;
     private boolean nsfw;
-    private int rateLimitPerUser;
+    private int slowmode;
 
     public TextChannelImpl(long id, GuildImpl guild)
     {
@@ -265,9 +265,9 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     }
 
     @Override
-    public int getRateLimitPerUser()
+    public int getSlowmode()
     {
-        return rateLimitPerUser;
+        return slowmode;
     }
 
     @Override
@@ -544,9 +544,9 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         return this;
     }
 
-    public TextChannelImpl setRateLimitPerUser(int rateLimitPerUser)
+    public TextChannelImpl setSlowmode(int slowmode)
     {
-        this.rateLimitPerUser = rateLimitPerUser;
+        this.slowmode = slowmode;
         return this;
     }
 
