@@ -239,36 +239,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     public void send(String message)
     {
-        try
-        {
-            queueLock.lockInterruptibly();
-            ratelimitQueue.add(message);
-        }
-        catch (InterruptedException e)
-        {
-            LOG.error("Interrupted while trying to add request to queue", e);
-        }
-        finally
-        {
-            maybeUnlock();
-        }
+        locked("Interrupted while trying to add request to queue", () -> ratelimitQueue.add(message));
     }
 
     public void chunkOrSyncRequest(JSONObject request)
     {
-        try
-        {
-            queueLock.lockInterruptibly();
-            chunkSyncQueue.add(request.toString());
-        }
-        catch (InterruptedException e)
-        {
-            LOG.error("Interrupted while trying to add chunk request", e);
-        }
-        finally
-        {
-            maybeUnlock();
-        }
+        locked("Interrupted while trying to add chunk request", () -> chunkSyncQueue.add(request.toString()));
     }
 
     protected boolean send(String message, boolean skipQueue)
@@ -777,21 +753,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         sessionId = null;
         sentAuthInfo = false;
 
-        try
-        {
-            queueLock.lockInterruptibly();
+        locked("Interrupted while trying to invalidate queue", () -> {
             chunkSyncQueue.clear();
             ratelimitQueue.clear();
             // we don't clear audio requests, those can still be processed after reconnecting
-        }
-        catch (InterruptedException e)
-        {
-            LOG.error("Interrupted while trying to invalidate queue", e);
-        }
-        finally
-        {
-            maybeUnlock();
-        }
+        });
 
         api.getTextChannelMap().clear();
         api.getVoiceChannelMap().clear();
