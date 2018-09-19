@@ -116,13 +116,15 @@ public class AudioConnection
     public void setSendingHandler(AudioSendHandler handler)
     {
         this.sendHandler = handler;
-        setupSendSystem();
+        if (webSocket.isReady())
+            setupSendSystem();
     }
 
     public void setReceivingHandler(AudioReceiveHandler handler)
     {
         this.receiveHandler = handler;
-        setupReceiveSystem();
+        if (webSocket.isReady())
+            setupReceiveSystem();
     }
 
     public void setSpeakingMode(EnumSet<SpeakingMode> mode)
