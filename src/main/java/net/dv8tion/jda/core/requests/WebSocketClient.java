@@ -88,6 +88,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     //this is a SoftReference in order to allow this resource to be freed to prevent resources starvation
     protected SoftReference<ByteArrayOutputStream> decompressBuffer;
 
+    protected final ReentrantLock queueLock = new ReentrantLock();
     protected final ScheduledExecutorService executor;
     protected volatile Future<?> ratelimitThread;
     protected volatile Future<?> keepAliveThread;
@@ -97,10 +98,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected int reconnectTimeoutS = 2;
     protected long heartbeatStartTime;
 
-    //GuildId, <TimeOfNextAttempt, ConnectionStage, AudioConnection>
     protected final TLongObjectMap<ConnectionRequest> queuedAudioConnections = MiscUtil.newLongMap();
-    protected final ReentrantLock audioQueueLock = new ReentrantLock();
-
     protected final Queue<String> chunkSyncQueue = new ConcurrentLinkedQueue<>();
     protected final Queue<String> ratelimitQueue = new ConcurrentLinkedQueue<>();
 
@@ -241,12 +239,36 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     public void send(String message)
     {
-        ratelimitQueue.add(message);
+        try
+        {
+            queueLock.lockInterruptibly();
+            ratelimitQueue.add(message);
+        }
+        catch (InterruptedException e)
+        {
+            LOG.error("Interrupted while trying to add request to queue", e);
+        }
+        finally
+        {
+            maybeUnlock();
+        }
     }
 
     public void chunkOrSyncRequest(JSONObject request)
     {
-        chunkSyncQueue.add(request.toString());
+        try
+        {
+            queueLock.lockInterruptibly();
+            chunkSyncQueue.add(request.toString());
+        }
+        catch (InterruptedException e)
+        {
+            LOG.error("Interrupted while trying to add chunk request", e);
+        }
+        finally
+        {
+            maybeUnlock();
+        }
     }
 
     protected boolean send(String message, boolean skipQueue)
@@ -297,14 +319,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 api.setContext();
                 attemptedToSend.set(false);
                 needRateLimit.set(false);
-                audioQueueLock.lockInterruptibly();
+                queueLock.lockInterruptibly();
 
                 ConnectionRequest audioRequest = getNextAudioConnectRequest();
                 String chunkOrSyncRequest = chunkSyncQueue.peek();
-
-                //if lock isn't needed we already unlock here
-                if (audioRequest == null || chunkOrSyncRequest != null)
-                    maybeUnlock();
                 if (chunkOrSyncRequest != null)
                 {
                     LOG.debug("Sending chunk/sync request {}", chunkOrSyncRequest);
@@ -353,7 +371,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         final GuildVoiceState voiceState = guild.getSelfMember().getVoiceState();
                         updateAudioConnection0(guild.getIdLong(), voiceState.getChannel());
                     }
-                    maybeUnlock();
                     attemptedToSend.set(true);
                 }
                 else
@@ -702,7 +719,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 ).toString();
 
         if (!send(keepAlivePacket, true))
-            ratelimitQueue.add(keepAlivePacket);
+            send(keepAlivePacket);
         heartbeatStartTime = System.currentTimeMillis();
     }
 
@@ -760,7 +777,22 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         sessionId = null;
         sentAuthInfo = false;
 
-        chunkSyncQueue.clear();
+        try
+        {
+            queueLock.lockInterruptibly();
+            chunkSyncQueue.clear();
+            ratelimitQueue.clear();
+            // we don't clear audio requests, those can still be processed after reconnecting
+        }
+        catch (InterruptedException e)
+        {
+            LOG.error("Interrupted while trying to invalidate queue", e);
+        }
+        finally
+        {
+            maybeUnlock();
+        }
+
         api.getTextChannelMap().clear();
         api.getVoiceChannelMap().clear();
         api.getCategoryMap().clear();
@@ -1095,15 +1127,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected void maybeUnlock()
     {
-        if (audioQueueLock.isHeldByCurrentThread())
-            audioQueueLock.unlock();
+        if (queueLock.isHeldByCurrentThread())
+            queueLock.unlock();
     }
 
     protected void locked(String comment, Runnable task)
     {
         try
         {
-            audioQueueLock.lockInterruptibly();
+            queueLock.lockInterruptibly();
             task.run();
         }
         catch (InterruptedException e)
@@ -1120,7 +1152,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         try
         {
-            audioQueueLock.lockInterruptibly();
+            queueLock.lockInterruptibly();
             return task.get();
         }
         catch (InterruptedException e)
