@@ -24,15 +24,15 @@ import net.dv8tion.jda.core.entities.TextChannel;
  *
  * <p>Can be used to detect when a TextChannel slowmode changes and get its previous value.
  *
- * <p>Identifier: {@code rate_limit_per_user}
+ * <p>Identifier: {@code slowmode}
  *
  * @incubating
- *         <b>Currently slowmode is an undocumented and unreleased API feature.</b>
+ *         Slowmode is currently only available through the API and might still be changed in the future.
  */
 @Incubating
 public class TextChannelUpdateSlowmodeEvent extends GenericTextChannelUpdateEvent<Integer>
 {
-    public static final String IDENTIFIER = "rate_limit_per_user";
+    public static final String IDENTIFIER = "slowmode";
 
     public TextChannelUpdateSlowmodeEvent(JDA api, long responseNumber, TextChannel channel, int oldSlowmode)
     {

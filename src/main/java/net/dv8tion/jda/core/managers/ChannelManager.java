@@ -75,7 +75,7 @@ public class ChannelManager extends ManagerBase
      * Used to reset the rate-limit per user field
      *
      * @incubating
-     *         <b>Currently slowmode is an undocumented and unreleased feature.</b>
+     *         Slowmode is currently only available through the API and might still be changed in the future.
      */
     @Incubating
     public static final long SLOWMODE   = 0x100;
@@ -605,6 +605,10 @@ public class ChannelManager extends ManagerBase
      * <p>A channel slowmode <b>must not</b> be negative nor greater than {@code 120}!
      * <br><b>This is only available to {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}</b>
      *
+     * <p>Note that only {@link net.dv8tion.jda.core.AccountType#CLIENT CLIENT} type accounts are
+     * affected by slowmode, and that {@link net.dv8tion.jda.core.AccountType#BOT BOT} accounts
+     * are immune to the restrictions.
+     *
      * @param  slowmode
      *         The new slowmode for the selected {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      *
@@ -616,7 +620,7 @@ public class ChannelManager extends ManagerBase
      * @return ChannelManager for chaining convenience
      *
      * @incubating
-     *         <b>Currently slowmode is an undocumented and unreleased API feature.</b>
+     *         Slowmode is currently only available through the API and might still be changed in the future.
      */
     @Incubating
     @CheckReturnValue

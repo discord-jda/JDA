@@ -162,7 +162,7 @@ public enum AuditLogKey
      * <p>Expected type: <b>Integer</b>
      *
      * @incubating
-     *         <b>Currently slowmode is an undocumented and unreleased API feature.</b>
+     *         Slowmode is currently only available through the API and might still be changed in the future.
      */
     @Incubating
     CHANNEL_SLOWMODE("rate_limit_per_user"),

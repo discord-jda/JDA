@@ -176,6 +176,10 @@ public class ChannelAction extends AuditableRestAction<Channel>
      * Sets the slowmode value, which limits the amount of time that individual users must wait
      * between sending messages in the new TextChannel. This is measured in seconds.
      *
+     * <p>Note that only {@link net.dv8tion.jda.core.AccountType#CLIENT CLIENT} type accounts are
+     * affected by slowmode, and that {@link net.dv8tion.jda.core.AccountType#BOT BOT} accounts
+     * are immune to the restrictions.
+     *
      * @param  slowmode
      *         The number of seconds required to wait between sending messages in the channel.
      *
@@ -183,6 +187,9 @@ public class ChannelAction extends AuditableRestAction<Channel>
      *         If the {@code slowmode} is greater than 120, or less than 0
      *
      * @return The current ChannelAction, for chaining convenience
+     *
+     * @incubating
+     *         Slowmode is currently only available through the API and might still be changed in the future.
      */
     @Incubating
     @CheckReturnValue
