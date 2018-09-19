@@ -62,7 +62,7 @@ public class DefaultShardManagerBuilder
     protected IntFunction<OnlineStatus> statusProvider = null;
     protected IntFunction<? extends Game> gameProvider = null;
     protected IntFunction<? extends ConcurrentMap<String, String>> contextProvider = null;
-    protected ThreadPoolProvider<? extends ScheduledThreadPoolExecutor> rateLimitPoolProvider = null;
+    protected ThreadPoolProvider<? extends ScheduledExecutorService> rateLimitPoolProvider = null;
     protected ThreadPoolProvider<? extends ExecutorService> callbackPoolProvider = null;
     protected Collection<Integer> shards = null;
     protected IEventManager eventManager = null;
@@ -421,7 +421,7 @@ public class DefaultShardManagerBuilder
      * {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} which is used
      * in various locations throughout the JDA instance created by this ShardManager. (Default: 5)
      * <br>Note: This has no effect if you set a pool using
-     * {@link #setRateLimitPool(ScheduledThreadPoolExecutor)} or {@link #setRateLimitPoolProvider(ThreadPoolProvider)}.
+     * {@link #setRateLimitPool(ScheduledExecutorService)} or {@link #setRateLimitPoolProvider(ThreadPoolProvider)}.
      *
      * @param  size
      *         The core pool size for the global JDA executor
@@ -653,25 +653,25 @@ public class DefaultShardManagerBuilder
     }
 
     /**
-     * Sets the {@link ScheduledThreadPoolExecutor ScheduledThreadPoolExecutor} that should be used in
+     * Sets the {@link ScheduledExecutorService ScheduledExecutorService} that should be used in
      * the JDA rate-limit handler. Changing this can drastically change the JDA behavior for RestAction execution
      * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
      * <br>This will override the rate-limit pool provider set from {@link #setRateLimitPoolProvider(ThreadPoolProvider)}.
      * <br><b>This automatically disables the automatic shutdown of the JDA pools, you can enable
-     * it using {@link #setRateLimitPool(ScheduledThreadPoolExecutor, boolean) setRateLimiPool(executor, true)}</b>
+     * it using {@link #setRateLimitPool(ScheduledExecutorService, boolean) setRateLimiPool(executor, true)}</b>
      *
      * @param  pool
      *         The thread-pool to use for rate-limit handling
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
-    public DefaultShardManagerBuilder setRateLimitPool(ScheduledThreadPoolExecutor pool)
+    public DefaultShardManagerBuilder setRateLimitPool(ScheduledExecutorService pool)
     {
         return setRateLimitPool(pool, pool == null);
     }
 
     /**
-     * Sets the {@link ScheduledThreadPoolExecutor ScheduledThreadPoolExecutor} that should be used in
+     * Sets the {@link ScheduledExecutorService ScheduledExecutorService} that should be used in
      * the JDA rate-limit handler. Changing this can drastically change the JDA behavior for RestAction execution
      * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
      * <br>This will override the rate-limit pool provider set from {@link #setRateLimitPoolProvider(ThreadPoolProvider)}.
@@ -683,13 +683,13 @@ public class DefaultShardManagerBuilder
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
-    public DefaultShardManagerBuilder setRateLimitPool(ScheduledThreadPoolExecutor pool, boolean automaticShutdown)
+    public DefaultShardManagerBuilder setRateLimitPool(ScheduledExecutorService pool, boolean automaticShutdown)
     {
         return setRateLimitPoolProvider(pool == null ? null : new ThreadPoolProviderImpl<>(pool, automaticShutdown));
     }
 
     /**
-     * Sets the {@link ScheduledThreadPoolExecutor ScheduledThreadPoolExecutor} provider that should be used in
+     * Sets the {@link ScheduledExecutorService ScheduledExecutorService} provider that should be used in
      * the JDA rate-limit handler. Changing this can drastically change the JDA behavior for RestAction execution
      * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
      *
@@ -698,7 +698,7 @@ public class DefaultShardManagerBuilder
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
-    public DefaultShardManagerBuilder setRateLimitPoolProvider(ThreadPoolProvider<? extends ScheduledThreadPoolExecutor> provider)
+    public DefaultShardManagerBuilder setRateLimitPoolProvider(ThreadPoolProvider<? extends ScheduledExecutorService> provider)
     {
         this.rateLimitPoolProvider = provider;
         return this;
