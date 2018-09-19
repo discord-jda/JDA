@@ -63,7 +63,7 @@ public class JDAImpl implements JDA
 {
     public static final Logger LOG = JDALogger.getLog(JDA.class);
 
-    protected final ScheduledThreadPoolExecutor rateLimitPool;
+    protected final ScheduledExecutorService rateLimitPool;
     protected final ExecutorService callbackPool;
     protected final boolean shutdownRateLimitPool;
     protected final boolean shutdownCallbackPool;
@@ -101,7 +101,7 @@ public class JDAImpl implements JDA
     protected Requester requester;
     protected IEventManager eventManager = new InterfacedEventManager();
     protected IAudioSendFactory audioSendFactory = new DefaultSendFactory();
-    protected ScheduledThreadPoolExecutor audioKeepAlivePool;
+    protected ScheduledExecutorService audioKeepAlivePool;
     protected Status status = Status.INITIALIZING;
     protected SelfUser selfUser;
     protected ShardInfo shardInfo;
@@ -115,7 +115,7 @@ public class JDAImpl implements JDA
 
     public JDAImpl(AccountType accountType, String token, SessionController controller,
                    OkHttpClient httpClient, WebSocketFactory wsFactory,
-                   ScheduledThreadPoolExecutor rateLimitPool, ExecutorService callbackPool,
+                   ScheduledExecutorService rateLimitPool, ExecutorService callbackPool,
                    boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook,
                    boolean bulkDeleteSplittingEnabled, boolean retryOnTimeout, boolean enableMDC,
                    boolean shutdownRateLimitPool, boolean shutdownCallbackPool,
@@ -582,8 +582,13 @@ public class JDAImpl implements JDA
         getRequester().shutdown();
         if (shutdownRateLimitPool)
         {
-            getRateLimitPool().setKeepAliveTime(time, unit);
-            getRateLimitPool().allowCoreThreadTimeOut(true);
+            ScheduledExecutorService rateLimitExecutor = getRateLimitPool();
+            if (rateLimitExecutor instanceof ScheduledThreadPoolExecutor)
+            {
+                ScheduledThreadPoolExecutor pool = (ScheduledThreadPoolExecutor) rateLimitExecutor;
+                pool.setKeepAliveTime(time, unit);
+                pool.allowCoreThreadTimeOut(true);
+            }
         }
         if (shutdownCallbackPool)
             getCallbackPool().shutdown();
@@ -837,9 +842,9 @@ public class JDAImpl implements JDA
         return httpClient;
     }
 
-    public ScheduledThreadPoolExecutor getAudioKeepAlivePool()
+    public ScheduledExecutorService getAudioKeepAlivePool()
     {
-        ScheduledThreadPoolExecutor akap = audioKeepAlivePool;
+        ScheduledExecutorService akap = audioKeepAlivePool;
         if (akap == null)
         {
             synchronized (akapLock)
@@ -862,7 +867,7 @@ public class JDAImpl implements JDA
         this.gatewayUrl = getGateway();
     }
 
-    public ScheduledThreadPoolExecutor getRateLimitPool()
+    public ScheduledExecutorService getRateLimitPool()
     {
         return rateLimitPool;
     }

@@ -149,9 +149,9 @@ public class DefaultShardManager implements ShardManager
     protected final OkHttpClient httpClient;
 
     /**
-     * The {@link ScheduledThreadPoolExecutor ScheduledThreadPoolExecutor} that will be used by JDAs rate-limit handler.
+     * The {@link ScheduledExecutorService ScheduledExecutorService} that will be used by JDAs rate-limit handler.
      */
-    protected final ThreadPoolProvider<? extends ScheduledThreadPoolExecutor> rateLimitPoolProvider;
+    protected final ThreadPoolProvider<? extends ScheduledExecutorService> rateLimitPoolProvider;
 
     /**
      * The {@link ExecutorService ExecutorService} that will be used by JDAs callback handler.
@@ -297,7 +297,7 @@ public class DefaultShardManager implements ShardManager
                                   final String token, final IEventManager eventManager, final IAudioSendFactory audioSendFactory,
                                   final IntFunction<? extends Game> gameProvider, final IntFunction<OnlineStatus> statusProvider,
                                   final OkHttpClient.Builder httpClientBuilder, final OkHttpClient httpClient,
-                                  final ThreadPoolProvider<? extends ScheduledThreadPoolExecutor> rateLimitPoolProvider,
+                                  final ThreadPoolProvider<? extends ScheduledExecutorService> rateLimitPoolProvider,
                                   final ThreadPoolProvider<? extends ExecutorService> callbackPoolProvider,
                                   final WebSocketFactory wsFactory, final ThreadFactory threadFactory,
                                   final int maxReconnectDelay, final int corePoolSize, final boolean enableVoice,
@@ -626,7 +626,7 @@ public class DefaultShardManager implements ShardManager
         OkHttpClient httpClient = this.httpClient;
         if (httpClient == null)
             httpClient = this.httpClientBuilder.build();
-        ScheduledThreadPoolExecutor rateLimitPool = null;
+        ScheduledExecutorService rateLimitPool = null;
         boolean shutdownRateLimitPool = true;
         if (rateLimitPoolProvider != null)
         {
