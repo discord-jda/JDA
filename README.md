@@ -57,7 +57,7 @@ JDA jda = new JDABuilder("token").build();
 ```
 
 **Note**: By default this will use the `AccountType.BOT` as that is the recommended type of account.
-You can change this to use `AccountType.CLIENT` however that is risking account termination.
+You can change this to use `AccountType.CLIENT`, however you will be risking account termination.
 Use `new JDABuilder(AccountType)` to change to a different account type.
 
 #### Examples:
