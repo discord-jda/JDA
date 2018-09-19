@@ -51,7 +51,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
     // --text only--
     protected String topic = null;
     protected Boolean nsfw = null;
-    protected Integer rateLimitPerUser = null;
+    protected Integer slowmode = null;
 
     // --voice only--
     protected Integer bitrate = null;
@@ -173,10 +173,10 @@ public class ChannelAction extends AuditableRestAction<Channel>
     }
 
     /**
-     * Sets the rate limit for which individual users can send messages in the
-     * new TextChannel. This is measured in seconds.
+     * Sets the slowmode value, which limits the amount of time that individual users must wait
+     * between sending messages in the new TextChannel. This is measured in seconds.
      *
-     * @param  rateLimitPerUser
+     * @param  slowmode
      *         The number of seconds required to wait between sending messages in the channel.
      *
      * @throws IllegalArgumentException
@@ -186,10 +186,10 @@ public class ChannelAction extends AuditableRestAction<Channel>
      */
     @Incubating
     @CheckReturnValue
-    public ChannelAction setRateLimitPerUser(int rateLimitPerUser)
+    public ChannelAction setSlowmode(int slowmode)
     {
-        Checks.check(rateLimitPerUser <= 120 && rateLimitPerUser >= 0, "RateLimit per user must be between 0 and 120 (seconds)!");
-        this.rateLimitPerUser = rateLimitPerUser;
+        Checks.check(slowmode <= 120 && slowmode >= 0, "Slowmode must be between 0 and 120 (seconds)!");
+        this.slowmode = slowmode;
         return this;
     }
 
@@ -366,8 +366,8 @@ public class ChannelAction extends AuditableRestAction<Channel>
                     object.put("topic", topic);
                 if (nsfw != null)
                     object.put("nsfw", nsfw);
-                if (rateLimitPerUser != null)
-                    object.put("rate_limit_per_user", rateLimitPerUser);
+                if (slowmode != null)
+                    object.put("rate_limit_per_user", slowmode);
         }
         if (type != ChannelType.CATEGORY && parent != null)
             object.put("parent_id", parent.getId());
