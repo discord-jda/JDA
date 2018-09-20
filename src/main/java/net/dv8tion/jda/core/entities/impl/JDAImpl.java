@@ -64,7 +64,7 @@ public class JDAImpl implements JDA
 {
     public static final Logger LOG = JDALogger.getLog(JDA.class);
 
-    protected final ScheduledThreadPoolExecutor rateLimitPool;
+    protected final ScheduledExecutorService rateLimitPool;
     protected final ScheduledExecutorService mainWsPool;
     protected final ExecutorService callbackPool;
     protected final boolean shutdownRateLimitPool;
@@ -119,7 +119,7 @@ public class JDAImpl implements JDA
     public JDAImpl(
             AccountType accountType, String token, SessionController controller,
             OkHttpClient httpClient, WebSocketFactory wsFactory,
-            ScheduledThreadPoolExecutor rateLimitPool, ScheduledExecutorService mainWsPool,
+            ScheduledExecutorService rateLimitPool, ScheduledExecutorService mainWsPool,
             ExecutorService callbackPool,
             boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook,
             boolean bulkDeleteSplittingEnabled, boolean retryOnTimeout, boolean enableMDC,
@@ -603,8 +603,17 @@ public class JDAImpl implements JDA
             getCallbackPool().shutdown();
         if (shutdownRateLimitPool)
         {
-            getRateLimitPool().setKeepAliveTime(5L, TimeUnit.SECONDS);
-            getRateLimitPool().allowCoreThreadTimeOut(true);
+            ScheduledExecutorService rateLimitPool = getRateLimitPool();
+            if (rateLimitPool instanceof ScheduledThreadPoolExecutor)
+            {
+                ScheduledThreadPoolExecutor executor = (ScheduledThreadPoolExecutor) rateLimitPool;
+                executor.setKeepAliveTime(5L, TimeUnit.SECONDS);
+                executor.allowCoreThreadTimeOut(true);
+            }
+            else
+            {
+                rateLimitPool.shutdown();
+            }
         }
 
         if (shutdownHook != null)
@@ -881,7 +890,7 @@ public class JDAImpl implements JDA
         this.gatewayUrl = getGateway();
     }
 
-    public ScheduledThreadPoolExecutor getRateLimitPool()
+    public ScheduledExecutorService getRateLimitPool()
     {
         return rateLimitPool;
     }

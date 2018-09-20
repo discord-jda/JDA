@@ -145,9 +145,9 @@ public class DefaultShardManager implements ShardManager
     protected final OkHttpClient httpClient;
 
     /**
-     * The {@link ScheduledThreadPoolExecutor ScheduledThreadPoolExecutor} that will be used by JDAs rate-limit handler.
+     * The {@link ScheduledExecutorService ScheduledExecutorService} that will be used by JDAs rate-limit handler.
      */
-    protected final ThreadPoolProvider<? extends ScheduledThreadPoolExecutor> rateLimitPoolProvider;
+    protected final ThreadPoolProvider<? extends ScheduledExecutorService> rateLimitPoolProvider;
 
     /**
      * The {@link ScheduledExecutorService ScheduledExecutorService} that will be used for JDAs main WebSocket workers.
@@ -309,7 +309,7 @@ public class DefaultShardManager implements ShardManager
             final String token, final IEventManager eventManager, final IAudioSendFactory audioSendFactory,
             final IntFunction<? extends Game> gameProvider, final IntFunction<OnlineStatus> statusProvider,
             final OkHttpClient.Builder httpClientBuilder, final OkHttpClient httpClient,
-            final ThreadPoolProvider<? extends ScheduledThreadPoolExecutor> rateLimitPoolProvider,
+            final ThreadPoolProvider<? extends ScheduledExecutorService> rateLimitPoolProvider,
             final ThreadPoolProvider<? extends ScheduledExecutorService> mainWsPoolProvider,
             final ThreadPoolProvider<? extends ExecutorService> callbackPoolProvider,
             final WebSocketFactory wsFactory, final ThreadFactory threadFactory,
@@ -642,8 +642,8 @@ public class DefaultShardManager implements ShardManager
             httpClient = this.httpClientBuilder.build();
 
         // imagine if we had macros or closures or destructuring :)
-        ExecutorPair<ScheduledThreadPoolExecutor> rateLimitPair = resolveExecutor(rateLimitPoolProvider, shardId);
-        ScheduledThreadPoolExecutor rateLimitPool = rateLimitPair.executor;
+        ExecutorPair<ScheduledExecutorService> rateLimitPair = resolveExecutor(rateLimitPoolProvider, shardId);
+        ScheduledExecutorService rateLimitPool = rateLimitPair.executor;
         boolean shutdownRateLimitPool = rateLimitPair.automaticShutdown;
 
         ExecutorPair<ScheduledExecutorService> mainWsPair = resolveExecutor(mainWsPoolProvider, shardId);
