@@ -316,8 +316,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     {
                         // race condition on guild delete, avoid NPE on DISCONNECT requests
                         queuedAudioConnections.remove(audioRequest.getGuildIdLong());
-
-                        maybeUnlock();
                         return;
                     }
                     ConnectionStage stage = audioRequest.getStage();
