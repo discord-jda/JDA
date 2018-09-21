@@ -97,9 +97,7 @@ public class EventCache
         {
             EventCache.LOG.debug("Replaying {} events from the EventCache for type {} with id: {}",
                 items.size(), type, triggerId);
-            List<CacheNode> itemsCopy = new LinkedList<>(items);
-            items.clear();
-            for (CacheNode item : itemsCopy)
+            for (CacheNode item : items)
                 item.execute();
         }
     }
