@@ -102,7 +102,7 @@ public class BotRateLimiter extends RateLimiter
                 }
                 else
                 {
-                    log.warn("Encountered 429 on route {} /{}", bucket.getMethod(), bucket.getRoute());
+                    log.warn("Encountered 429 on route /{}", bucket.getRoute());
                     updateBucket(bucket, headers, retryAfter);
                 }
 
@@ -129,7 +129,7 @@ public class BotRateLimiter extends RateLimiter
                 if (bucket == null)
                 {
                     Route baseRoute = route.getBaseRoute();
-                    bucket = new Bucket(route.getMethod(), rateLimitRoute, baseRoute.getRatelimit(), baseRoute.isMissingHeaders());
+                    bucket = new Bucket(rateLimitRoute, baseRoute.getRatelimit(), baseRoute.isMissingHeaders());
                     buckets.put(rateLimitRoute, bucket);
                 }
             }
@@ -231,7 +231,6 @@ public class BotRateLimiter extends RateLimiter
 
     private class Bucket implements IBucket, Runnable
     {
-        final Method method;
         final String route;
         final boolean missingHeaders;
         final RateLimit rateLimit;
@@ -240,9 +239,8 @@ public class BotRateLimiter extends RateLimiter
         volatile int routeUsageRemaining = 1;    //These are default values to only allow 1 request until we have properly
         volatile int routeUsageLimit = 1;        // ratelimit information.
 
-        public Bucket(Method method, String route, RateLimit rateLimit, boolean missingHeaders)
+        public Bucket(String route, RateLimit rateLimit, boolean missingHeaders)
         {
-            this.method = method;
             this.route = route;
             this.rateLimit = rateLimit;
             this.missingHeaders = missingHeaders;
@@ -271,7 +269,7 @@ public class BotRateLimiter extends RateLimiter
 
                     if (delay > 0)
                     {
-                        log.debug("Backing off {} milliseconds on route {} /{}", delay, getMethod(), getRoute());
+                        log.debug("Backing off {} milliseconds on route /{}", delay, getRoute());
                         requester.getJDA().getRateLimitPool().schedule(this, delay, TimeUnit.MILLISECONDS);
                     }
                     else
@@ -402,12 +400,6 @@ public class BotRateLimiter extends RateLimiter
         public String getRoute()
         {
             return route;
-        }
-
-        @Override
-        public Method getMethod()
-        {
-            return method;
         }
 
         @Override

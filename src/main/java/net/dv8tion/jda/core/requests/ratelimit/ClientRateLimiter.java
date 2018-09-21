@@ -80,7 +80,7 @@ public class ClientRateLimiter extends RateLimiter
                     else
                         bucket.retryAfter = now + retryAfter;
 
-                    return retryAfter;                    
+                    return retryAfter;
                 }
                 catch (IOException e)
                 {
@@ -105,7 +105,7 @@ public class ClientRateLimiter extends RateLimiter
                 bucket = (Bucket) buckets.get(baseRoute);
                 if (bucket == null)
                 {
-                    bucket = new Bucket(route.getMethod(), baseRoute, route.getBaseRoute().getRatelimit());
+                    bucket = new Bucket(baseRoute, route.getBaseRoute().getRatelimit());
                     buckets.put(baseRoute, bucket);
                 }
             }
@@ -115,15 +115,13 @@ public class ClientRateLimiter extends RateLimiter
 
     private class Bucket implements IBucket, Runnable
     {
-        final Method method;
         final String route;
         final RateLimit rateLimit;
         final ConcurrentLinkedQueue<Request> requests = new ConcurrentLinkedQueue<>();
         volatile long retryAfter = 0;
 
-        public Bucket(Method method, String route, RateLimit rateLimit)
+        public Bucket(String route, RateLimit rateLimit)
         {
-            this.method = method;
             this.route = route;
             this.rateLimit = rateLimit;
         }
@@ -258,12 +256,6 @@ public class ClientRateLimiter extends RateLimiter
         public String getRoute()
         {
             return route;
-        }
-
-        @Override
-        public Method getMethod()
-        {
-            return method;
         }
 
         @Override

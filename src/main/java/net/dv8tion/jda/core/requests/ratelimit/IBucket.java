@@ -26,9 +26,8 @@ public interface IBucket
 {
     Route.RateLimit getRatelimit();
     String getRoute();
-    Method getMethod();
     Queue<Request> getRequests();
-    
+
     default boolean hasRatelimit()
     {
         return getRatelimit() != null;
