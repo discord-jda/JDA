@@ -30,7 +30,6 @@ import net.dv8tion.jda.core.audio.ConnectionStage;
 import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.GuildVoiceState;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
@@ -55,7 +54,6 @@ import java.lang.ref.SoftReference;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
@@ -283,93 +281,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected void setupSendingThread()
     {
-        AtomicBoolean needRateLimit = new AtomicBoolean(false);
-        AtomicBoolean attemptedToSend = new AtomicBoolean(true);
-        ratelimitThread = executor.scheduleAtFixedRate(() ->
-        {
-            //Make sure that we don't send any packets before sending auth info.
-            if (!sentAuthInfo || needRateLimit.getAndSet(false) || !attemptedToSend.getAndSet(true))
-                return; // wait another 500 ms
-            try
-            {
-                api.setContext();
-                attemptedToSend.set(false);
-                needRateLimit.set(false);
-                queueLock.lockInterruptibly();
-
-                ConnectionRequest audioRequest = getNextAudioConnectRequest();
-                String chunkOrSyncRequest = chunkSyncQueue.peek();
-                if (chunkOrSyncRequest != null)
-                {
-                    LOG.debug("Sending chunk/sync request {}", chunkOrSyncRequest);
-                    needRateLimit.set(!send(chunkOrSyncRequest, false));
-                    if (!needRateLimit.get())
-                        chunkSyncQueue.remove();
-
-                    attemptedToSend.set(true);
-                }
-                else if (audioRequest != null)
-                {
-                    long channel = audioRequest.getChannelId();
-                    Guild guild = api.getGuildById(audioRequest.getGuildIdLong());
-                    if (guild == null)
-                    {
-                        // race condition on guild delete, avoid NPE on DISCONNECT requests
-                        queuedAudioConnections.remove(audioRequest.getGuildIdLong());
-                        return;
-                    }
-                    ConnectionStage stage = audioRequest.getStage();
-                    AudioManager audioManager = guild.getAudioManager();
-                    JSONObject packet;
-                    switch (stage)
-                    {
-                        case RECONNECT:
-                        case DISCONNECT:
-                            packet = newVoiceClose(audioRequest.getGuildIdLong());
-                            break;
-                        default:
-                        case CONNECT:
-                            packet = newVoiceOpen(audioManager, channel, guild.getIdLong());
-                    }
-                    LOG.debug("Sending voice request {}", packet);
-                    needRateLimit.set(!send(packet.toString(), false));
-                    if (!needRateLimit.get())
-                    {
-                        //If we didn't get RateLimited, Next request attempt will be 2 seconds from now
-                        // we remove it in VoiceStateUpdateHandler once we hear that it has updated our status
-                        // in 2 seconds we will attempt again in case we did not receive an update
-                        audioRequest.setNextAttemptEpoch(System.currentTimeMillis() + 2000);
-                        //If we are already in the correct state according to voice state
-                        // we will not receive a VOICE_STATE_UPDATE that would remove it
-                        // thus we update it here
-                        final GuildVoiceState voiceState = guild.getSelfMember().getVoiceState();
-                        updateAudioConnection0(guild.getIdLong(), voiceState.getChannel());
-                    }
-                    attemptedToSend.set(true);
-                }
-                else
-                {
-                    String message = ratelimitQueue.peek();
-                    if (message != null)
-                    {
-                        LOG.debug("Sending normal message {}", message);
-                        needRateLimit.set(!send(message, false));
-                        if (!needRateLimit.get())
-                            ratelimitQueue.remove();
-                        attemptedToSend.set(true);
-                    }
-                }
-            }
-            catch (InterruptedException ignored)
-            {
-                LOG.debug("Main WS send thread interrupted. Most likely JDA is disconnecting the websocket.");
-            }
-            finally
-            {
-                // on any exception that might cause this lock to not release
-                maybeUnlock();
-            }
-        }, 0, 500, TimeUnit.MILLISECONDS);
+        ratelimitThread = executor.scheduleAtFixedRate(new WebSocketSendingThread(this), 0, 500, TimeUnit.MILLISECONDS);
     }
 
     protected JSONObject newVoiceClose(long guildId)
@@ -1210,7 +1122,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         return locked("There was an error updating the audio connection", () -> updateAudioConnection0(guildId, connectedChannel));
     }
 
-
     public ConnectionRequest updateAudioConnection0(long guildId, VoiceChannel connectedChannel)
     {
         //Called by VoiceStateUpdateHandler when we receive a response from discord
@@ -1248,11 +1159,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         //If the channel is not the one we are looking for!
         return null;
     }
-
-//    public TLongObjectMap<ConnectionRequest> getQueuedAudioConnectionMap()
-//    {
-//        return queuedAudioConnections;
-//    }
 
     private SoftReference<ByteArrayOutputStream> newDecompressBuffer()
     {
