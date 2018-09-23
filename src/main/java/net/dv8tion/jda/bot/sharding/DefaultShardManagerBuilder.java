@@ -477,7 +477,7 @@ public class DefaultShardManagerBuilder
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
-     * @deprecated Use {@link DefaultShardManagerBuilder#setEventManagerProvider(IntFunction)} instead, as it is safer for use, because setEventManagerProvider overrides the set EventManager.
+     * @deprecated Use {@link #setEventManagerProvider(IntFunction)} instead
      */
     @Deprecated
     @DeprecatedSince("3.8.1")
@@ -509,10 +509,9 @@ public class DefaultShardManagerBuilder
      */
     public DefaultShardManagerBuilder setEventManagerProvider(final IntFunction<? extends IEventManager> eventManagerProvider)
     {
-    	Checks.notNull(eventManagerProvider, "eventManagerProvider");
-    	
-    	this.eventManagerProvider = eventManagerProvider;
-    	return this;
+        Checks.notNull(eventManagerProvider, "eventManagerProvider");
+        this.eventManagerProvider = eventManagerProvider;
+        return this;
     }
 
     /**

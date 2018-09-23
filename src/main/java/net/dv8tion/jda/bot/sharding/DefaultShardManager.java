@@ -251,7 +251,7 @@ public class DefaultShardManager implements ShardManager
      *         shard creation (including shard restarts) and must return an event listener
      * @param  token
      *         The token
-     * @param  eventManagerProvider 
+     * @param  eventManagerProvider
      *         The event manager provider
      * @param  audioSendFactory
      *         The {@link net.dv8tion.jda.core.audio.factory.IAudioSendFactory IAudioSendFactory}
