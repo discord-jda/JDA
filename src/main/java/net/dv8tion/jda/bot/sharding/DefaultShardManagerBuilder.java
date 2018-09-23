@@ -28,7 +28,9 @@ import okhttp3.OkHttpClient;
 import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.Function;
 import java.util.function.IntFunction;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -66,6 +68,7 @@ public class DefaultShardManagerBuilder
     protected ThreadPoolProvider<? extends ExecutorService> callbackPoolProvider = null;
     protected Collection<Integer> shards = null;
     protected IEventManager eventManager = null;
+    protected Supplier<IEventManager> eventManagerProvider = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
     protected OkHttpClient httpClient = null;
     protected WebSocketFactory wsFactory = null;
@@ -480,6 +483,31 @@ public class DefaultShardManagerBuilder
 
         this.eventManager = manager;
         return this;
+    }
+    
+    /**
+     * Sets a provider to change the internally used EventManager.
+     * <br>There are 2 provided Implementations:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventManager} which uses the Interface
+     *     {@link net.dv8tion.jda.core.hooks.EventListener EventListener} (tip: use the {@link net.dv8tion.jda.core.hooks.ListenerAdapter ListenerAdapter}).
+     *     <br>This is the default EventManager.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.hooks.AnnotatedEventManager AnnotatedEventManager} which uses the Annotation
+     *         {@link net.dv8tion.jda.core.hooks.SubscribeEvent @SubscribeEvent} to mark the methods that listen for events.</li>
+     * </ul>
+     * <br>You can also create your own EventManager (See {@link net.dv8tion.jda.core.hooks.IEventManager}).
+     *
+     * @param  eventManagerProvider
+     *         A supplier for the new {@link net.dv8tion.jda.core.hooks.IEventManager} to use.
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     */
+    public DefaultShardManagerBuilder setEventManagerProvider(final Supplier<IEventManager> eventManagerProvider) {
+    	Checks.notNull(eventManagerProvider, "eventManagerProvider");
+    	
+    	this.eventManagerProvider = eventManagerProvider;
+    	return this;
     }
 
     /**
@@ -984,7 +1012,7 @@ public class DefaultShardManagerBuilder
     {
         final DefaultShardManager manager = new DefaultShardManager(
             this.shardsTotal, this.shards, this.sessionController,
-            this.listeners, this.listenerProviders, this.token, this.eventManager,
+            this.listeners, this.listenerProviders, this.token, this.eventManager, this.eventManagerProvider,
             this.audioSendFactory, this.gameProvider, this.statusProvider,
             this.httpClientBuilder, this.httpClient, this.rateLimitPoolProvider, this.callbackPoolProvider, this.wsFactory, this.threadFactory,
             this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting,
