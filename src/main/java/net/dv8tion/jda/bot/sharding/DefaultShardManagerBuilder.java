@@ -68,7 +68,7 @@ public class DefaultShardManagerBuilder
     protected ThreadPoolProvider<? extends ExecutorService> callbackPoolProvider = null;
     protected Collection<Integer> shards = null;
     protected IEventManager eventManager = null;
-    protected Supplier<IEventManager> eventManagerProvider = null;
+    protected IntFunction<? extends IEventManager> eventManagerProvider = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
     protected OkHttpClient httpClient = null;
     protected WebSocketFactory wsFactory = null;
@@ -481,8 +481,7 @@ public class DefaultShardManagerBuilder
     {
         Checks.notNull(manager, "manager");
 
-        this.eventManager = manager;
-        return this;
+        return setEventManagerProvider((id) -> manager);
     }
     
     /**
@@ -503,7 +502,7 @@ public class DefaultShardManagerBuilder
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
-    public DefaultShardManagerBuilder setEventManagerProvider(final Supplier<IEventManager> eventManagerProvider) {
+    public DefaultShardManagerBuilder setEventManagerProvider(final IntFunction<? extends IEventManager> eventManagerProvider) {
     	Checks.notNull(eventManagerProvider, "eventManagerProvider");
     	
     	this.eventManagerProvider = eventManagerProvider;
@@ -1011,13 +1010,13 @@ public class DefaultShardManagerBuilder
     public ShardManager build() throws LoginException, IllegalArgumentException
     {
         final DefaultShardManager manager = new DefaultShardManager(
-            this.shardsTotal, this.shards, this.sessionController,
-            this.listeners, this.listenerProviders, this.token, this.eventManager, this.eventManagerProvider,
-            this.audioSendFactory, this.gameProvider, this.statusProvider,
-            this.httpClientBuilder, this.httpClient, this.rateLimitPoolProvider, this.callbackPoolProvider, this.wsFactory, this.threadFactory,
-            this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting,
-            this.autoReconnect, this.idleProvider, this.retryOnTimeout, this.useShutdownNow, this.enableContext,
-            this.contextProvider, this.cacheFlags, this.enableCompression);
+                this.shardsTotal, this.shards, this.sessionController,
+                this.listeners, this.listenerProviders, this.token, this.eventManagerProvider,
+                this.audioSendFactory, this.gameProvider, this.statusProvider,
+                this.httpClientBuilder, this.httpClient, this.rateLimitPoolProvider, this.callbackPoolProvider, this.wsFactory, this.threadFactory,
+                this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting,
+                this.autoReconnect, this.idleProvider, this.retryOnTimeout, this.useShutdownNow, this.enableContext,
+                this.contextProvider, this.cacheFlags, this.enableCompression);
 
         manager.login();
 
