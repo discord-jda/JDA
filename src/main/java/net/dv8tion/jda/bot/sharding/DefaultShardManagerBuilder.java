@@ -16,6 +16,8 @@
 package net.dv8tion.jda.bot.sharding;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Game;
@@ -28,9 +30,7 @@ import okhttp3.OkHttpClient;
 import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.function.Function;
 import java.util.function.IntFunction;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -460,7 +460,6 @@ public class DefaultShardManagerBuilder
     }
 
     /**
-     * @deprecated Use {@link DefaultShardManagerBuilder#setEventManagerProvider(IntFunction)} instead, as it is safer for use, because setEventManagerProvider overrides the set EventManager.
      * Changes the internally used EventManager.
      * <br>There are 2 provided Implementations:
      * <ul>
@@ -477,15 +476,19 @@ public class DefaultShardManagerBuilder
      *         The new {@link net.dv8tion.jda.core.hooks.IEventManager} to use.
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
-     */ 
+     *
+     * @deprecated Use {@link DefaultShardManagerBuilder#setEventManagerProvider(IntFunction)} instead, as it is safer for use, because setEventManagerProvider overrides the set EventManager.
+     */
     @Deprecated
+    @DeprecatedSince("3.8.1")
+    @ReplaceWith("setEventManagerProvider((id) -> manager)")
     public DefaultShardManagerBuilder setEventManager(final IEventManager manager)
     {
         Checks.notNull(manager, "manager");
 
         return setEventManagerProvider((id) -> manager);
     }
-    
+
     /**
      * Sets a provider to change the internally used EventManager.
      * <br>There are 2 provided Implementations:
@@ -1013,13 +1016,13 @@ public class DefaultShardManagerBuilder
     public ShardManager build() throws LoginException, IllegalArgumentException
     {
         final DefaultShardManager manager = new DefaultShardManager(
-                this.shardsTotal, this.shards, this.sessionController,
-                this.listeners, this.listenerProviders, this.token, this.eventManagerProvider,
-                this.audioSendFactory, this.gameProvider, this.statusProvider,
-                this.httpClientBuilder, this.httpClient, this.rateLimitPoolProvider, this.callbackPoolProvider, this.wsFactory, this.threadFactory,
-                this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting,
-                this.autoReconnect, this.idleProvider, this.retryOnTimeout, this.useShutdownNow, this.enableContext,
-                this.contextProvider, this.cacheFlags, this.enableCompression);
+            this.shardsTotal, this.shards, this.sessionController,
+            this.listeners, this.listenerProviders, this.token, this.eventManagerProvider,
+            this.audioSendFactory, this.gameProvider, this.statusProvider,
+            this.httpClientBuilder, this.httpClient, this.rateLimitPoolProvider, this.callbackPoolProvider, this.wsFactory, this.threadFactory,
+            this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting,
+            this.autoReconnect, this.idleProvider, this.retryOnTimeout, this.useShutdownNow, this.enableContext,
+            this.contextProvider, this.cacheFlags, this.enableCompression);
 
         manager.login();
 

@@ -43,7 +43,6 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.IntFunction;
-import java.util.function.Supplier;
 
 /**
  * JDA's default {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} implementation.
@@ -96,7 +95,7 @@ public class DefaultShardManager implements ShardManager
      * Whether or not Voice functionality is enabled.
      */
     protected final boolean enableVoice;
-    
+
     /**
      * The provider for {@link net.dv8tion.jda.core.hooks.IEventManager IEventManager} used by the ShardManager
      */
@@ -648,9 +647,9 @@ public class DefaultShardManager implements ShardManager
 
         jda.asBot().setShardManager(this);
 
-        if (this.eventManagerProvider != null) 
+        if (this.eventManagerProvider != null)
             jda.setEventManager(this.eventManagerProvider.apply(shardId));
-        
+
         if (this.audioSendFactory != null)
             jda.setAudioSendFactory(this.audioSendFactory);
 

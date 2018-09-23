@@ -986,11 +986,11 @@ public interface JDA
     {
         return getEmoteCache().getElementsByName(name, ignoreCase);
     }
-    
+
     /**
-     * Returns the instance of the EventManager used by this shard.
-     * 
-     * @return The {@link net.dv8tion.jda.core.hooks.IEventManager} of this shard or null if none set.
+     * The EventManager used by this JDA instance.
+     *
+     * @return The {@link net.dv8tion.jda.core.hooks.IEventManager}
      */
     IEventManager getEventManager();
 

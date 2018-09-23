@@ -637,7 +637,7 @@ public class JDAImpl implements JDA
     {
         return presence;
     }
-    
+
     @Override
     public IEventManager getEventManager()
     {
@@ -659,7 +659,7 @@ public class JDAImpl implements JDA
     @Override
     public void setEventManager(IEventManager eventManager)
     {
-        this.eventManager = eventManager;
+        this.eventManager = eventManager == null ? new InterfacedEventManager() : eventManager;
     }
 
     @Override
