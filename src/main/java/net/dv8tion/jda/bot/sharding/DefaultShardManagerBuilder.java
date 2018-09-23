@@ -460,6 +460,7 @@ public class DefaultShardManagerBuilder
     }
 
     /**
+     * @deprecated Use {@link DefaultShardManagerBuilder#setEventManagerProvider(IntFunction)} instead, as it is safer for use, because setEventManagerProvider overrides the set EventManager.
      * Changes the internally used EventManager.
      * <br>There are 2 provided Implementations:
      * <ul>
@@ -476,7 +477,8 @@ public class DefaultShardManagerBuilder
      *         The new {@link net.dv8tion.jda.core.hooks.IEventManager} to use.
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
-     */
+     */ 
+    @Deprecated
     public DefaultShardManagerBuilder setEventManager(final IEventManager manager)
     {
         Checks.notNull(manager, "manager");

@@ -252,9 +252,8 @@ public class DefaultShardManager implements ShardManager
      *         shard creation (including shard restarts) and must return an event listener
      * @param  token
      *         The token
-     * @param  eventManager
-     *         The event manager
-     * @param eventManagerProvider 
+     * @param  eventManagerProvider 
+     *         The event manager provider
      * @param  audioSendFactory
      *         The {@link net.dv8tion.jda.core.audio.factory.IAudioSendFactory IAudioSendFactory}
      * @param  gameProvider
@@ -649,8 +648,8 @@ public class DefaultShardManager implements ShardManager
 
         jda.asBot().setShardManager(this);
 
-        if(this.eventManagerProvider != null)
-        	jda.setEventManager(this.eventManagerProvider.apply(shardId));
+        if (this.eventManagerProvider != null) 
+            jda.setEventManager(this.eventManagerProvider.apply(shardId));
         
         if (this.audioSendFactory != null)
             jda.setAudioSendFactory(this.audioSendFactory);
