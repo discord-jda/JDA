@@ -989,6 +989,7 @@ public interface JDA
     
     /**
      * Returns the instance of the EventManager used by this shard.
+     * 
      * @return The {@link net.dv8tion.jda.core.hooks.IEventManager} of this shard or null if none set.
      */
     IEventManager getEventManager();
