@@ -502,7 +502,8 @@ public class DefaultShardManagerBuilder
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
-    public DefaultShardManagerBuilder setEventManagerProvider(final IntFunction<? extends IEventManager> eventManagerProvider) {
+    public DefaultShardManagerBuilder setEventManagerProvider(final IntFunction<? extends IEventManager> eventManagerProvider)
+    {
     	Checks.notNull(eventManagerProvider, "eventManagerProvider");
     	
     	this.eventManagerProvider = eventManagerProvider;
