@@ -28,6 +28,9 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import java.util.Queue;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -45,6 +48,10 @@ class WebSocketSendingThread implements Runnable
     private final Queue<String> chunkSyncQueue;
     private final Queue<String> ratelimitQueue;
     private final TLongObjectMap<ConnectionRequest> queuedAudioConnections;
+    private final ScheduledExecutorService executor;
+    private Future<?> handle;
+
+    private boolean shutdown = false;
 
     WebSocketSendingThread(WebSocketClient client)
     {
@@ -54,14 +61,53 @@ class WebSocketSendingThread implements Runnable
         this.chunkSyncQueue = client.chunkSyncQueue;
         this.ratelimitQueue = client.ratelimitQueue;
         this.queuedAudioConnections = client.queuedAudioConnections;
+        this.executor = client.executor;
+    }
+
+    public void shutdown()
+    {
+        shutdown = true;
+        if (handle != null)
+            handle.cancel(false);
+    }
+
+    public void start()
+    {
+        shutdown = false;
+        handle = executor.submit(this);
+    }
+
+    private void scheduleIdle()
+    {
+        if (shutdown)
+            return;
+        handle = executor.schedule(this, 500, TimeUnit.MILLISECONDS);
+    }
+
+    private void scheduleSentMessage()
+    {
+        if (shutdown)
+            return;
+        handle = executor.schedule(this, 10, TimeUnit.MILLISECONDS);
+    }
+
+    private void scheduleRateLimit()
+    {
+        if (shutdown)
+            return;
+        handle = executor.schedule(this, 1, TimeUnit.MINUTES);
     }
 
     @Override
     public void run()
     {
         //Make sure that we don't send any packets before sending auth info.
-        if (!client.sentAuthInfo || needRateLimit.getAndSet(false) || !attemptedToSend.getAndSet(true))
-            return; // wait another 500 ms
+        if (!client.sentAuthInfo)
+        {
+            scheduleIdle();
+            return;
+        }
+
         try
         {
             api.setContext();
@@ -77,6 +123,13 @@ class WebSocketSendingThread implements Runnable
                 handleAudioRequest(audioRequest);
             else
                 handleNormalRequest();
+
+            if (needRateLimit.get())
+                scheduleRateLimit();
+            else if (!attemptedToSend.get())
+                scheduleIdle();
+            else
+                scheduleSentMessage();
         }
         catch (InterruptedException ignored)
         {

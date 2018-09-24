@@ -385,7 +385,7 @@ public class JDABuilder
      * @param  pool
      *         The thread-pool to use for WebSocket workers
      *
-     * @return THre JDABuilder instance. Useful for chaining.
+     * @return The JDABuilder instance. Useful for chaining.
      */
     public JDABuilder setMainWsPool(ScheduledExecutorService pool)
     {
@@ -403,7 +403,7 @@ public class JDABuilder
      * @param  automaticShutdown
      *         Whether {@link JDA#shutdown()} should shutdown this pool
      *
-     * @return THre JDABuilder instance. Useful for chaining.
+     * @return The JDABuilder instance. Useful for chaining.
      */
     public JDABuilder setMainWsPool(ScheduledExecutorService pool, boolean automaticShutdown)
     {

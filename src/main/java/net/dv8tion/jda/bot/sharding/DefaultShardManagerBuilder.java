@@ -1038,7 +1038,7 @@ public class DefaultShardManagerBuilder
                 this.shardsTotal, this.shards, this.sessionController,
                 this.listeners, this.listenerProviders, this.token, this.eventManager,
                 this.audioSendFactory, this.gameProvider, this.statusProvider,
-                this.httpClientBuilder, this.httpClient, this.rateLimitPoolProvider, mainWsPoolProvider, this.callbackPoolProvider, this.wsFactory, this.threadFactory,
+                this.httpClientBuilder, this.httpClient, this.rateLimitPoolProvider, this.mainWsPoolProvider, this.callbackPoolProvider, this.wsFactory, this.threadFactory,
                 this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting,
                 this.autoReconnect, this.idleProvider, this.retryOnTimeout, this.useShutdownNow, this.enableContext,
                 this.contextProvider, this.cacheFlags, this.enableCompression);

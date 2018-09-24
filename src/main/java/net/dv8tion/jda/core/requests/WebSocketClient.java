@@ -88,7 +88,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected final ReentrantLock queueLock = new ReentrantLock();
     protected final ScheduledExecutorService executor;
-    protected volatile Future<?> ratelimitThread;
+    protected WebSocketSendingThread ratelimitThread;
     protected volatile Future<?> keepAliveThread;
 
     protected boolean initiating;
@@ -281,7 +281,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected void setupSendingThread()
     {
-        ratelimitThread = executor.scheduleAtFixedRate(new WebSocketSendingThread(this), 0, 500, TimeUnit.MILLISECONDS);
+        ratelimitThread = new WebSocketSendingThread(this);
+        ratelimitThread.start();
     }
 
     public void close()
@@ -421,7 +422,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             if (ratelimitThread != null)
             {
-                ratelimitThread.cancel(false);
+                ratelimitThread.shutdown();
                 ratelimitThread = null;
             }
 
