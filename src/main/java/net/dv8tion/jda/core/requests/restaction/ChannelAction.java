@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.core.requests.restaction;
 
-import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.requests.Request;
@@ -179,6 +178,9 @@ public class ChannelAction extends AuditableRestAction<Channel>
      * <p>Note that only {@link net.dv8tion.jda.core.AccountType#CLIENT CLIENT} type accounts are
      * affected by slowmode, and that {@link net.dv8tion.jda.core.AccountType#BOT BOT} accounts
      * are immune to the restrictions.
+     * <br>Having {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE MESSAGE_MANAGE} or
+     * {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} permission also
+     * grants immunity to slowmode.
      *
      * @param  slowmode
      *         The number of seconds required to wait between sending messages in the channel.
@@ -187,11 +189,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
      *         If the {@code slowmode} is greater than 120, or less than 0
      *
      * @return The current ChannelAction, for chaining convenience
-     *
-     * @incubating
-     *         Slowmode is currently only available through the API and might still be changed in the future.
      */
-    @Incubating
     @CheckReturnValue
     public ChannelAction setSlowmode(int slowmode)
     {

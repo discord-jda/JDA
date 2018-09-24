@@ -19,7 +19,6 @@ package net.dv8tion.jda.core.managers;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
-import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.AbstractChannelImpl;
@@ -71,13 +70,7 @@ public class ChannelManager extends ManagerBase
     public static final long BITRATE    = 0x40;
     /** Used to reset the permission field */
     public static final long PERMISSION = 0x80;
-    /**
-     * Used to reset the rate-limit per user field
-     *
-     * @incubating
-     *         Slowmode is currently only available through the API and might still be changed in the future.
-     */
-    @Incubating
+    /** Used to reset the rate-limit per user field */
     public static final long SLOWMODE   = 0x100;
 
     protected final UpstreamReference<Channel> channel;
@@ -608,6 +601,9 @@ public class ChannelManager extends ManagerBase
      * <p>Note that only {@link net.dv8tion.jda.core.AccountType#CLIENT CLIENT} type accounts are
      * affected by slowmode, and that {@link net.dv8tion.jda.core.AccountType#BOT BOT} accounts
      * are immune to the restrictions.
+     * <br>Having {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE MESSAGE_MANAGE} or
+     * {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} permission also
+     * grants immunity to slowmode.
      *
      * @param  slowmode
      *         The new slowmode for the selected {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
@@ -618,11 +614,7 @@ public class ChannelManager extends ManagerBase
      *         If the provided slowmode is negative or greater than {@code 120}
      *
      * @return ChannelManager for chaining convenience
-     *
-     * @incubating
-     *         Slowmode is currently only available through the API and might still be changed in the future.
      */
-    @Incubating
     @CheckReturnValue
     public ChannelManager setSlowmode(int slowmode)
     {
