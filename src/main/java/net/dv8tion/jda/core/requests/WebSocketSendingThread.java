@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.requests;
 
 import gnu.trove.map.TLongObjectMap;
+import net.dv8tion.jda.core.WebSocketCode;
 import net.dv8tion.jda.core.audio.ConnectionRequest;
 import net.dv8tion.jda.core.audio.ConnectionStage;
 import net.dv8tion.jda.core.entities.Guild;
@@ -117,11 +118,11 @@ class WebSocketSendingThread implements Runnable
         {
             case RECONNECT:
             case DISCONNECT:
-                packet = client.newVoiceClose(guildId);
+                packet = newVoiceClose(guildId);
                 break;
             default:
             case CONNECT:
-                packet = client.newVoiceOpen(audioManager, channelId, guild.getIdLong());
+                packet = newVoiceOpen(audioManager, channelId, guild.getIdLong());
         }
         LOG.debug("Sending voice request {}", packet);
         needRateLimit.set(!client.send(packet.toString(), false));
@@ -151,5 +152,27 @@ class WebSocketSendingThread implements Runnable
                 ratelimitQueue.remove();
             attemptedToSend.set(true);
         }
+    }
+
+    protected JSONObject newVoiceClose(long guildId)
+    {
+        return new JSONObject()
+            .put("op", WebSocketCode.VOICE_STATE)
+            .put("d", new JSONObject()
+                .put("guild_id", Long.toUnsignedString(guildId))
+                .put("channel_id", JSONObject.NULL)
+                .put("self_mute", false)
+                .put("self_deaf", false));
+    }
+
+    protected JSONObject newVoiceOpen(AudioManager manager, long channel, long guild)
+    {
+        return new JSONObject()
+            .put("op", WebSocketCode.VOICE_STATE)
+            .put("d", new JSONObject()
+                .put("guild_id", guild)
+                .put("channel_id", channel)
+                .put("self_mute", manager.isSelfMuted())
+                .put("self_deaf", manager.isSelfDeafened()));
     }
 }

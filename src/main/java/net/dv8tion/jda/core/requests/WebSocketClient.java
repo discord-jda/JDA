@@ -109,7 +109,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected boolean connected = false;
 
     protected volatile boolean printedRateLimitMessage = false;
-    protected boolean sentAuthInfo = false;
+    protected volatile boolean sentAuthInfo = false;
     protected boolean firstInit = true;
     protected boolean processingReady = true;
 
@@ -282,28 +282,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected void setupSendingThread()
     {
         ratelimitThread = executor.scheduleAtFixedRate(new WebSocketSendingThread(this), 0, 500, TimeUnit.MILLISECONDS);
-    }
-
-    protected JSONObject newVoiceClose(long guildId)
-    {
-        return new JSONObject()
-            .put("op", WebSocketCode.VOICE_STATE)
-            .put("d", new JSONObject()
-                .put("guild_id", Long.toUnsignedString(guildId))
-                .put("channel_id", JSONObject.NULL)
-                .put("self_mute", false)
-                .put("self_deaf", false));
-    }
-
-    protected JSONObject newVoiceOpen(AudioManager manager, long channel, long guild)
-    {
-        return new JSONObject()
-            .put("op", WebSocketCode.VOICE_STATE)
-            .put("d", new JSONObject()
-                .put("guild_id", guild)
-                .put("channel_id", channel)
-                .put("self_mute", manager.isSelfMuted())
-                .put("self_deaf", manager.isSelfDeafened()));
     }
 
     public void close()

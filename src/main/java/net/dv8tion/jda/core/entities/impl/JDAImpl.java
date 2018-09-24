@@ -46,9 +46,7 @@ import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import net.dv8tion.jda.core.utils.cache.impl.AbstractCacheView;
 import net.dv8tion.jda.core.utils.cache.impl.SnowflakeCacheViewImpl;
-import net.dv8tion.jda.core.utils.concurrent.AudioThreadFactory;
-import net.dv8tion.jda.core.utils.concurrent.MainWebSocketThreadFactory;
-import net.dv8tion.jda.core.utils.concurrent.RateLimitThreadFactory;
+import net.dv8tion.jda.core.utils.concurrent.CountingThreadFactory;
 import net.dv8tion.jda.core.utils.tuple.Pair;
 import okhttp3.OkHttpClient;
 import org.json.JSONObject;
@@ -136,8 +134,8 @@ public class JDAImpl implements JDA
         this.audioEnabled = audioEnabled;
         this.shutdownHook = useShutdownHook ? new Thread(this::shutdown, "JDA Shutdown Hook") : null;
         this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
-        this.rateLimitPool = rateLimitPool == null ? new ScheduledThreadPoolExecutor(poolSize, new RateLimitThreadFactory(this::getIdentifierString)) : rateLimitPool;
-        this.mainWsPool = mainWsPool == null ? Executors.newSingleThreadScheduledExecutor(new MainWebSocketThreadFactory(this::getIdentifierString)) : mainWsPool;
+        this.rateLimitPool = rateLimitPool == null ? newScheduler(poolSize, "RateLimit-Worker") : rateLimitPool;
+        this.mainWsPool = mainWsPool == null ? newScheduler(1, "MainWS-Worker") : mainWsPool;
         this.callbackPool = callbackPool == null ? ForkJoinPool.commonPool() : callbackPool;
         this.shutdownRateLimitPool = shutdownRateLimitPool;
         this.shutdownMainWsPool = shutdownMainWsPool;
@@ -157,6 +155,11 @@ public class JDAImpl implements JDA
         this.jdaBot = accountType == AccountType.BOT ? new JDABotImpl(this) : null;
         this.guildSetupController = new GuildSetupController(this);
         this.cacheFlags = cacheFlags;
+    }
+
+    private ScheduledThreadPoolExecutor newScheduler(int coreSize, String baseName)
+    {
+        return new ScheduledThreadPoolExecutor(coreSize, new CountingThreadFactory(this::getIdentifierString, baseName));
     }
 
     public boolean isCacheFlagSet(CacheFlag flag)
@@ -874,7 +877,7 @@ public class JDAImpl implements JDA
             {
                 akap = audioKeepAlivePool;
                 if (akap == null)
-                    akap = audioKeepAlivePool = new ScheduledThreadPoolExecutor(1, new AudioThreadFactory(this));
+                    akap = audioKeepAlivePool = newScheduler(1, "Audio-KeepAlive");
             }
         }
         return akap;
