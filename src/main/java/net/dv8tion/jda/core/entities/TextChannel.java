@@ -15,7 +15,6 @@
  */
 package net.dv8tion.jda.core.entities;
 
-import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.WebhookAction;
@@ -61,13 +60,12 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * <p>Note that only {@link net.dv8tion.jda.core.AccountType#CLIENT CLIENT} type accounts are
      * affected by slowmode, and that {@link net.dv8tion.jda.core.AccountType#BOT BOT} accounts
      * are immune to the restrictions.
+     * <br>Having {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE MESSAGE_MANAGE} or
+     * {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} permission also
+     * grants immunity to slowmode.
      *
      * @return The slowmode for this TextChannel, between 1 and 120, or {@code 0} if no slowmode is set.
-     *
-     * @incubating
-     *         Slowmode is currently only available through the API and might still be changed in the future.
      */
-    @Incubating
     int getSlowmode();
 
     /**

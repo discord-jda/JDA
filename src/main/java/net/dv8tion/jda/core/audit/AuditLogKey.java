@@ -16,8 +16,6 @@
 
 package net.dv8tion.jda.core.audit;
 
-import net.dv8tion.jda.annotations.Incubating;
-
 /**
  * Enum of possible/expected keys that can be provided
  * to {@link AuditLogEntry#getChangeByKey(AuditLogKey) AuditLogEntry.getChangeByKey(AuditLogEntry.AuditLogKey}.
@@ -160,11 +158,7 @@ public enum AuditLogKey
      * <br>Only for {@link net.dv8tion.jda.core.entities.ChannelType#TEXT ChannelType.Text}
      *
      * <p>Expected type: <b>Integer</b>
-     *
-     * @incubating
-     *         Slowmode is currently only available through the API and might still be changed in the future.
      */
-    @Incubating
     CHANNEL_SLOWMODE("rate_limit_per_user"),
 
     /**

@@ -15,7 +15,6 @@
  */
 package net.dv8tion.jda.core.events.channel.text.update;
 
-import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.TextChannel;
 
@@ -25,11 +24,7 @@ import net.dv8tion.jda.core.entities.TextChannel;
  * <p>Can be used to detect when a TextChannel slowmode changes and get its previous value.
  *
  * <p>Identifier: {@code slowmode}
- *
- * @incubating
- *         Slowmode is currently only available through the API and might still be changed in the future.
  */
-@Incubating
 public class TextChannelUpdateSlowmodeEvent extends GenericTextChannelUpdateEvent<Integer>
 {
     public static final String IDENTIFIER = "slowmode";
