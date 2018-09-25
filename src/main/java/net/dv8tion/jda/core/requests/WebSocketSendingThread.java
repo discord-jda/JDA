@@ -31,16 +31,12 @@ import java.util.Queue;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
 //Helper class delegated to WebSocketClient
 class WebSocketSendingThread implements Runnable
 {
     private static final Logger LOG = WebSocketClient.LOG;
-
-    private final AtomicBoolean needRateLimit = new AtomicBoolean(false);
-    private final AtomicBoolean attemptedToSend = new AtomicBoolean(true);
 
     private final WebSocketClient client;
     private final JDAImpl api;
@@ -51,6 +47,8 @@ class WebSocketSendingThread implements Runnable
     private final ScheduledExecutorService executor;
     private Future<?> handle;
 
+    private boolean needRateLimit = false;
+    private boolean attemptedToSend = false;
     private boolean shutdown = false;
 
     WebSocketSendingThread(WebSocketClient client)
@@ -111,8 +109,8 @@ class WebSocketSendingThread implements Runnable
         try
         {
             api.setContext();
-            attemptedToSend.set(false);
-            needRateLimit.set(false);
+            attemptedToSend = false;
+            needRateLimit = false;
             queueLock.lockInterruptibly();
 
             ConnectionRequest audioRequest = client.getNextAudioConnectRequest();
@@ -124,9 +122,9 @@ class WebSocketSendingThread implements Runnable
             else
                 handleNormalRequest();
 
-            if (needRateLimit.get())
+            if (needRateLimit)
                 scheduleRateLimit();
-            else if (!attemptedToSend.get())
+            else if (!attemptedToSend)
                 scheduleIdle();
             else
                 scheduleSentMessage();
@@ -145,11 +143,8 @@ class WebSocketSendingThread implements Runnable
     private void handleChunkSync(String chunkOrSyncRequest)
     {
         LOG.debug("Sending chunk/sync request {}", chunkOrSyncRequest);
-        needRateLimit.set(!client.send(chunkOrSyncRequest, false));
-        if (!needRateLimit.get())
+        if (send(chunkOrSyncRequest))
             chunkSyncQueue.remove();
-
-        attemptedToSend.set(true);
     }
 
     private void handleAudioRequest(ConnectionRequest audioRequest)
@@ -178,8 +173,7 @@ class WebSocketSendingThread implements Runnable
                 packet = newVoiceOpen(audioManager, channelId, guild.getIdLong());
         }
         LOG.debug("Sending voice request {}", packet);
-        needRateLimit.set(!client.send(packet.toString(), false));
-        if (!needRateLimit.get())
+        if (send(packet.toString()))
         {
             //If we didn't get RateLimited, Next request attempt will be 2 seconds from now
             // we remove it in VoiceStateUpdateHandler once we hear that it has updated our status
@@ -191,7 +185,6 @@ class WebSocketSendingThread implements Runnable
             final GuildVoiceState voiceState = guild.getSelfMember().getVoiceState();
             client.updateAudioConnection0(guild.getIdLong(), voiceState.getChannel());
         }
-        attemptedToSend.set(true);
     }
 
     private void handleNormalRequest()
@@ -200,11 +193,17 @@ class WebSocketSendingThread implements Runnable
         if (message != null)
         {
             LOG.debug("Sending normal message {}", message);
-            needRateLimit.set(!client.send(message, false));
-            if (!needRateLimit.get())
+            if (send(message))
                 ratelimitQueue.remove();
-            attemptedToSend.set(true);
         }
+    }
+
+    //returns true if send was successful
+    private boolean send(String request)
+    {
+        needRateLimit = !client.send(request, false);
+        attemptedToSend = true;
+        return !needRateLimit;
     }
 
     protected JSONObject newVoiceClose(long guildId)

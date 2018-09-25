@@ -583,8 +583,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     .put("d", api.getResponseTotal()
                 ).toString();
 
-        if (!send(keepAlivePacket, true))
-            send(keepAlivePacket);
+        send(keepAlivePacket, true);
         heartbeatStartTime = System.currentTimeMillis();
     }
 
@@ -642,11 +641,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         sessionId = null;
         sentAuthInfo = false;
 
-        locked("Interrupted while trying to invalidate queue", () -> {
-            chunkSyncQueue.clear();
-            ratelimitQueue.clear();
-            // we don't clear audio requests, those can still be processed after reconnecting
-        });
+        locked("Interrupted while trying to invalidate chunk/sync queue", chunkSyncQueue::clear);
 
         api.getTextChannelMap().clear();
         api.getVoiceChannelMap().clear();
