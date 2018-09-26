@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.core.requests.ratelimit;
 
-import net.dv8tion.jda.core.requests.Method;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Route;
 
