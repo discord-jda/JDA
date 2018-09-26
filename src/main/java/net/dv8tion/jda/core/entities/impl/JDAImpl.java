@@ -63,11 +63,14 @@ public class JDAImpl implements JDA
     public static final Logger LOG = JDALogger.getLog(JDA.class);
 
     protected final ScheduledExecutorService rateLimitPool;
-    protected final ScheduledExecutorService mainWsPool;
+    protected final ScheduledExecutorService gatewayPool;
     protected final ExecutorService callbackPool;
     protected final boolean shutdownRateLimitPool;
     protected final boolean shutdownMainWsPool;
     protected final boolean shutdownCallbackPool;
+
+    protected final Object audioLifecycleLock = new Object();
+    protected ScheduledThreadPoolExecutor audioLifecyclePool;
 
     protected final SnowflakeCacheViewImpl<User> userCache = new SnowflakeCacheViewImpl<>(User.class, User::getName);
     protected final SnowflakeCacheViewImpl<Guild> guildCache = new SnowflakeCacheViewImpl<>(Guild.class, Guild::getName);
@@ -92,7 +95,6 @@ public class JDAImpl implements JDA
     protected final Thread shutdownHook;
     protected final EntityBuilder entityBuilder = new EntityBuilder(this);
     protected final EventCache eventCache = new EventCache();
-    protected final Object akapLock = new Object();
     protected final EnumSet<CacheFlag> cacheFlags;
 
     protected final SessionController sessionController;
@@ -102,7 +104,6 @@ public class JDAImpl implements JDA
     protected Requester requester;
     protected IEventManager eventManager = new InterfacedEventManager();
     protected IAudioSendFactory audioSendFactory = new DefaultSendFactory();
-    protected ScheduledThreadPoolExecutor audioKeepAlivePool;
     protected Status status = Status.INITIALIZING;
     protected SelfUser selfUser;
     protected ShardInfo shardInfo;
@@ -117,7 +118,7 @@ public class JDAImpl implements JDA
     public JDAImpl(
             AccountType accountType, String token, SessionController controller,
             OkHttpClient httpClient, WebSocketFactory wsFactory,
-            ScheduledExecutorService rateLimitPool, ScheduledExecutorService mainWsPool,
+            ScheduledExecutorService rateLimitPool, ScheduledExecutorService gatewayPool,
             ExecutorService callbackPool,
             boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook,
             boolean bulkDeleteSplittingEnabled, boolean retryOnTimeout, boolean enableMDC,
@@ -134,8 +135,8 @@ public class JDAImpl implements JDA
         this.audioEnabled = audioEnabled;
         this.shutdownHook = useShutdownHook ? new Thread(this::shutdown, "JDA Shutdown Hook") : null;
         this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
-        this.rateLimitPool = rateLimitPool == null ? newScheduler(poolSize, "RateLimit-Worker") : rateLimitPool;
-        this.mainWsPool = mainWsPool == null ? newScheduler(1, "MainWS-Worker") : mainWsPool;
+        this.rateLimitPool = rateLimitPool == null ? newScheduler(poolSize, "RateLimit") : rateLimitPool;
+        this.gatewayPool = gatewayPool == null ? newScheduler(1, "Gateway") : gatewayPool;
         this.callbackPool = callbackPool == null ? ForkJoinPool.commonPool() : callbackPool;
         this.shutdownRateLimitPool = shutdownRateLimitPool;
         this.shutdownMainWsPool = shutdownMainWsPool;
@@ -568,7 +569,7 @@ public class JDAImpl implements JDA
         if (shutdownRateLimitPool)
             getRateLimitPool().shutdownNow();
         if (shutdownMainWsPool)
-            getMainWsPool().shutdownNow();
+            getGatewayPool().shutdownNow();
         if (shutdownCallbackPool)
             getCallbackPool().shutdownNow();
     }
@@ -596,12 +597,12 @@ public class JDAImpl implements JDA
         audioManagers.forEach(AudioManager::closeAudioConnection);
         audioManagers.clear();
 
-        if (audioKeepAlivePool != null)
-            audioKeepAlivePool.shutdownNow();
+        if (audioLifecyclePool != null)
+            audioLifecyclePool.shutdownNow();
 
         getRequester().shutdown();
         if (shutdownMainWsPool)
-            getMainWsPool().shutdown();
+            getGatewayPool().shutdown();
         if (shutdownCallbackPool)
             getCallbackPool().shutdown();
         if (shutdownRateLimitPool)
@@ -868,21 +869,6 @@ public class JDAImpl implements JDA
         return httpClient;
     }
 
-    public ScheduledThreadPoolExecutor getAudioKeepAlivePool()
-    {
-        ScheduledThreadPoolExecutor akap = audioKeepAlivePool;
-        if (akap == null)
-        {
-            synchronized (akapLock)
-            {
-                akap = audioKeepAlivePool;
-                if (akap == null)
-                    akap = audioKeepAlivePool = newScheduler(1, "Audio-KeepAlive");
-            }
-        }
-        return akap;
-    }
-
     public String getGatewayUrl()
     {
         return gatewayUrl;
@@ -893,14 +879,29 @@ public class JDAImpl implements JDA
         this.gatewayUrl = getGateway();
     }
 
+    public ScheduledThreadPoolExecutor getAudioLifecyclePool()
+    {
+        ScheduledThreadPoolExecutor akap = audioLifecyclePool;
+        if (akap == null)
+        {
+            synchronized (audioLifecycleLock)
+            {
+                akap = audioLifecyclePool;
+                if (akap == null)
+                    akap = audioLifecyclePool = newScheduler(1, "AudioLifecycle");
+            }
+        }
+        return akap;
+    }
+
     public ScheduledExecutorService getRateLimitPool()
     {
         return rateLimitPool;
     }
 
-    public ScheduledExecutorService getMainWsPool()
+    public ScheduledExecutorService getGatewayPool()
     {
-        return mainWsPool;
+        return gatewayPool;
     }
 
     public ExecutorService getCallbackPool()

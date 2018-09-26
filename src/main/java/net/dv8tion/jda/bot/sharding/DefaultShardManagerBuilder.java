@@ -63,7 +63,7 @@ public class DefaultShardManagerBuilder
     protected IntFunction<? extends Game> gameProvider = null;
     protected IntFunction<? extends ConcurrentMap<String, String>> contextProvider = null;
     protected ThreadPoolProvider<? extends ScheduledExecutorService> rateLimitPoolProvider = null;
-    protected ThreadPoolProvider<? extends ScheduledExecutorService> mainWsPoolProvider = null;
+    protected ThreadPoolProvider<? extends ScheduledExecutorService> gatewayPoolProvider = null;
     protected ThreadPoolProvider<? extends ExecutorService> callbackPoolProvider = null;
     protected Collection<Integer> shards = null;
     protected IEventManager eventManager = null;
@@ -708,25 +708,25 @@ public class DefaultShardManagerBuilder
      * Sets the {@link ScheduledExecutorService ScheduledExecutorService} that should be used for
      * the JDA main WebSocket workers.
      * <br><b>Only change this pool if you know what you're doing.</b>
-     * <br>This will override the worker pool provider set from {@link #setMainWsPoolProvider(ThreadPoolProvider)}.
+     * <br>This will override the worker pool provider set from {@link #setGatewayPoolProvider(ThreadPoolProvider)}.
      * <br><b>This automatically disables the automatic shutdown of the main-ws pools, you can enable
-     * it using {@link #setMainWsPool(ScheduledExecutorService, boolean) setMainWsPoolProvider(pool, true)}</b>
+     * it using {@link #setGatewayPool(ScheduledExecutorService, boolean) setGatewayPoolProvider(pool, true)}</b>
      *
      * @param  pool
      *         The thread-pool to use for main WebSocket workers
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
-    public DefaultShardManagerBuilder setMainWsPool(ScheduledExecutorService pool)
+    public DefaultShardManagerBuilder setGatewayPool(ScheduledExecutorService pool)
     {
-        return setMainWsPool(pool, pool == null);
+        return setGatewayPool(pool, pool == null);
     }
 
     /**
      * Sets the {@link ScheduledExecutorService ScheduledExecutorService} that should be used for
      * the JDA main WebSocket workers.
      * <br><b>Only change this pool if you know what you're doing.</b>
-     * <br>This will override the worker pool provider set from {@link #setMainWsPoolProvider(ThreadPoolProvider)}.
+     * <br>This will override the worker pool provider set from {@link #setGatewayPoolProvider(ThreadPoolProvider)}.
      *
      * @param  pool
      *         The thread-pool to use for main WebSocket workers
@@ -735,9 +735,9 @@ public class DefaultShardManagerBuilder
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
-    public DefaultShardManagerBuilder setMainWsPool(ScheduledExecutorService pool, boolean automaticShutdown)
+    public DefaultShardManagerBuilder setGatewayPool(ScheduledExecutorService pool, boolean automaticShutdown)
     {
-        return setMainWsPoolProvider(pool == null ? null : new ThreadPoolProviderImpl<>(pool, automaticShutdown));
+        return setGatewayPoolProvider(pool == null ? null : new ThreadPoolProviderImpl<>(pool, automaticShutdown));
     }
 
     /**
@@ -750,9 +750,9 @@ public class DefaultShardManagerBuilder
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
-    public DefaultShardManagerBuilder setMainWsPoolProvider(ThreadPoolProvider<? extends ScheduledExecutorService> provider)
+    public DefaultShardManagerBuilder setGatewayPoolProvider(ThreadPoolProvider<? extends ScheduledExecutorService> provider)
     {
-        this.mainWsPoolProvider = provider;
+        this.gatewayPoolProvider = provider;
         return this;
     }
 
@@ -1038,7 +1038,8 @@ public class DefaultShardManagerBuilder
                 this.shardsTotal, this.shards, this.sessionController,
                 this.listeners, this.listenerProviders, this.token, this.eventManager,
                 this.audioSendFactory, this.gameProvider, this.statusProvider,
-                this.httpClientBuilder, this.httpClient, this.rateLimitPoolProvider, this.mainWsPoolProvider, this.callbackPoolProvider, this.wsFactory, this.threadFactory,
+                this.httpClientBuilder, this.httpClient, this.rateLimitPoolProvider, this.gatewayPoolProvider,
+                this.callbackPoolProvider, this.wsFactory, this.threadFactory,
                 this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting,
                 this.autoReconnect, this.idleProvider, this.retryOnTimeout, this.useShutdownNow, this.enableContext,
                 this.contextProvider, this.cacheFlags, this.enableCompression);

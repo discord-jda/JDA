@@ -152,7 +152,7 @@ public class DefaultShardManager implements ShardManager
     /**
      * The {@link ScheduledExecutorService ScheduledExecutorService} that will be used for JDAs main WebSocket workers.
      */
-    protected final ThreadPoolProvider<? extends ScheduledExecutorService> mainWsPoolProvider;
+    protected final ThreadPoolProvider<? extends ScheduledExecutorService> gatewayPoolProvider;
 
     /**
      * The {@link ExecutorService ExecutorService} that will be used by JDAs callback handler.
@@ -266,7 +266,7 @@ public class DefaultShardManager implements ShardManager
      *         The {@link okhttp3.OkHttpClient OkHttpClient}
      * @param  rateLimitPoolProvider
      *         Provider for the rate-limit pool
-     * @param  mainWsPoolProvider
+     * @param  gatewayPoolProvider
      *         Provider for the main ws pool
      * @param  callbackPoolProvider
      *         Provider for the callback pool
@@ -310,7 +310,7 @@ public class DefaultShardManager implements ShardManager
             final IntFunction<? extends Game> gameProvider, final IntFunction<OnlineStatus> statusProvider,
             final OkHttpClient.Builder httpClientBuilder, final OkHttpClient httpClient,
             final ThreadPoolProvider<? extends ScheduledExecutorService> rateLimitPoolProvider,
-            final ThreadPoolProvider<? extends ScheduledExecutorService> mainWsPoolProvider,
+            final ThreadPoolProvider<? extends ScheduledExecutorService> gatewayPoolProvider,
             final ThreadPoolProvider<? extends ExecutorService> callbackPoolProvider,
             final WebSocketFactory wsFactory, final ThreadFactory threadFactory,
             final int maxReconnectDelay, final int corePoolSize, final boolean enableVoice,
@@ -334,7 +334,7 @@ public class DefaultShardManager implements ShardManager
         else
             this.httpClientBuilder = null;
         this.rateLimitPoolProvider = rateLimitPoolProvider;
-        this.mainWsPoolProvider = mainWsPoolProvider;
+        this.gatewayPoolProvider = gatewayPoolProvider;
         this.callbackPoolProvider = callbackPoolProvider;
         this.wsFactory = wsFactory == null ? new WebSocketFactory() : wsFactory;
         this.executor = createExecutor(threadFactory);
@@ -646,9 +646,9 @@ public class DefaultShardManager implements ShardManager
         ScheduledExecutorService rateLimitPool = rateLimitPair.executor;
         boolean shutdownRateLimitPool = rateLimitPair.automaticShutdown;
 
-        ExecutorPair<ScheduledExecutorService> mainWsPair = resolveExecutor(mainWsPoolProvider, shardId);
-        ScheduledExecutorService mainWsPool = mainWsPair.executor;
-        boolean shutdownMainWsPool = mainWsPair.automaticShutdown;
+        ExecutorPair<ScheduledExecutorService> gatewayPair = resolveExecutor(gatewayPoolProvider, shardId);
+        ScheduledExecutorService gatewayPool = gatewayPair.executor;
+        boolean shutdownGatewayPool = gatewayPair.automaticShutdown;
 
         ExecutorPair<ExecutorService> callbackPair = resolveExecutor(callbackPoolProvider, shardId);
         ExecutorService callbackPool = callbackPair.executor;
@@ -656,8 +656,8 @@ public class DefaultShardManager implements ShardManager
 
         final JDAImpl jda = new JDAImpl(
                 AccountType.BOT, this.token, this.controller, httpClient, this.wsFactory,
-                rateLimitPool, mainWsPool, callbackPool, this.autoReconnect, this.enableVoice, false, this.enableBulkDeleteSplitting,
-                this.retryOnTimeout, this.enableMDC, shutdownRateLimitPool, shutdownMainWsPool, shutdownCallbackPool, this.corePoolSize, this.maxReconnectDelay,
+                rateLimitPool, gatewayPool, callbackPool, this.autoReconnect, this.enableVoice, false, this.enableBulkDeleteSplitting,
+                this.retryOnTimeout, this.enableMDC, shutdownRateLimitPool, shutdownGatewayPool, shutdownCallbackPool, this.corePoolSize, this.maxReconnectDelay,
                 this.contextProvider == null || !this.enableMDC ? null : contextProvider.apply(shardId), this.cacheFlags);
 
         jda.asBot().setShardManager(this);

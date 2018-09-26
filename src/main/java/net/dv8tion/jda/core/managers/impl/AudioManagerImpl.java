@@ -141,7 +141,7 @@ public class AudioManagerImpl implements AudioManager
     public void closeAudioConnection(ConnectionStatus reason)
     {
         JDAImpl api = getJDA();
-        api.getAudioKeepAlivePool().execute(() -> MiscUtil.locked(CONNECTION_LOCK, () ->
+        api.getAudioLifecyclePool().execute(() -> MiscUtil.locked(CONNECTION_LOCK, () ->
         {
             api.setContext();
             this.queuedAudioConnection = null;

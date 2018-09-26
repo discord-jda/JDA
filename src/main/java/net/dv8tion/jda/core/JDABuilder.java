@@ -380,16 +380,16 @@ public class JDABuilder
      * sleeping because they only activate for sending messages over the gateway.
      * <br><b>Only change this pool if you know what you're doing.
      * <br>This automatically disables the automatic shutdown of the main-ws pool, you can enable
-     * it using {@link #setMainWsPool(ScheduledExecutorService, boolean) setMainWsPool(pool, true)}</b>
+     * it using {@link #setGatewayPool(ScheduledExecutorService, boolean) setGatewayPool(pool, true)}</b>
      *
      * @param  pool
      *         The thread-pool to use for WebSocket workers
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    public JDABuilder setMainWsPool(ScheduledExecutorService pool)
+    public JDABuilder setGatewayPool(ScheduledExecutorService pool)
     {
-        return setMainWsPool(pool, pool == null);
+        return setGatewayPool(pool, pool == null);
     }
 
     /**
@@ -405,7 +405,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    public JDABuilder setMainWsPool(ScheduledExecutorService pool, boolean automaticShutdown)
+    public JDABuilder setGatewayPool(ScheduledExecutorService pool, boolean automaticShutdown)
     {
         this.mainWsPool = pool;
         this.shutdownMainWsPool = automaticShutdown;

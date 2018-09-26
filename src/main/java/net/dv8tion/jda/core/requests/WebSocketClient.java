@@ -118,7 +118,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public WebSocketClient(JDAImpl api, boolean compression)
     {
         this.api = api;
-        this.executor = api.getMainWsPool();
+        this.executor = api.getGatewayPool();
         this.shardInfo = api.getShardInfo();
         this.compression = compression;
         this.shouldReconnect = api.isAutoReconnect();

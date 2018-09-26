@@ -33,7 +33,7 @@ public class CountingThreadFactory implements ThreadFactory
     @Override
     public Thread newThread(Runnable r)
     {
-        final Thread thread = new Thread(r, identifier.get() + "Thread " + count.getAndIncrement());
+        final Thread thread = new Thread(r, identifier.get() + "-Worker " + count.getAndIncrement());
         thread.setDaemon(true);
         return thread;
     }
