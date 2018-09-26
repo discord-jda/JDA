@@ -83,7 +83,7 @@ class AudioWebSocket extends WebSocketAdapter
         this.token = token;
         this.shouldReconnect = shouldReconnect;
 
-        keepAlivePool = getJDA().getAudioLifecyclePool();
+        keepAlivePool = getJDA().getAudioLifeCyclePool();
 
         //Append the Secure Websocket scheme so that our websocket library knows how to connect
         wssEndpoint = String.format("wss://%s/?v=%d", endpoint, JDAInfo.AUDIO_GATEWAY_VERSION);

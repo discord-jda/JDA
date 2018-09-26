@@ -69,8 +69,8 @@ public class JDAImpl implements JDA
     protected final boolean shutdownMainWsPool;
     protected final boolean shutdownCallbackPool;
 
-    protected final Object audioLifecycleLock = new Object();
-    protected ScheduledThreadPoolExecutor audioLifecyclePool;
+    protected final Object audioLifeCycleLock = new Object();
+    protected ScheduledThreadPoolExecutor audioLifeCyclePool;
 
     protected final SnowflakeCacheViewImpl<User> userCache = new SnowflakeCacheViewImpl<>(User.class, User::getName);
     protected final SnowflakeCacheViewImpl<Guild> guildCache = new SnowflakeCacheViewImpl<>(Guild.class, Guild::getName);
@@ -597,8 +597,8 @@ public class JDAImpl implements JDA
         audioManagers.forEach(AudioManager::closeAudioConnection);
         audioManagers.clear();
 
-        if (audioLifecyclePool != null)
-            audioLifecyclePool.shutdownNow();
+        if (audioLifeCyclePool != null)
+            audioLifeCyclePool.shutdownNow();
 
         getRequester().shutdown();
         if (shutdownMainWsPool)
@@ -879,19 +879,19 @@ public class JDAImpl implements JDA
         this.gatewayUrl = getGateway();
     }
 
-    public ScheduledThreadPoolExecutor getAudioLifecyclePool()
+    public ScheduledThreadPoolExecutor getAudioLifeCyclePool()
     {
-        ScheduledThreadPoolExecutor akap = audioLifecyclePool;
-        if (akap == null)
+        ScheduledThreadPoolExecutor pool = audioLifeCyclePool;
+        if (pool == null)
         {
-            synchronized (audioLifecycleLock)
+            synchronized (audioLifeCycleLock)
             {
-                akap = audioLifecyclePool;
-                if (akap == null)
-                    akap = audioLifecyclePool = newScheduler(1, "AudioLifecycle");
+                pool = audioLifeCyclePool;
+                if (pool == null)
+                    pool = audioLifeCyclePool = newScheduler(1, "AudioLifeCycle");
             }
         }
-        return akap;
+        return pool;
     }
 
     public ScheduledExecutorService getRateLimitPool()
