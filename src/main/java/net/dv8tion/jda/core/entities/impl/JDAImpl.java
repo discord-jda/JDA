@@ -66,7 +66,7 @@ public class JDAImpl implements JDA
     protected final ScheduledExecutorService gatewayPool;
     protected final ExecutorService callbackPool;
     protected final boolean shutdownRateLimitPool;
-    protected final boolean shutdownMainWsPool;
+    protected final boolean shutdownGatewayPool;
     protected final boolean shutdownCallbackPool;
 
     protected final Object audioLifeCycleLock = new Object();
@@ -116,18 +116,15 @@ public class JDAImpl implements JDA
     protected String gatewayUrl;
 
     public JDAImpl(
-            AccountType accountType, String token, SessionController controller,
-            OkHttpClient httpClient, WebSocketFactory wsFactory,
-            ScheduledExecutorService rateLimitPool, ScheduledExecutorService gatewayPool,
-            ExecutorService callbackPool,
-            boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook,
-            boolean bulkDeleteSplittingEnabled, boolean retryOnTimeout, boolean enableMDC,
-            boolean shutdownRateLimitPool, boolean shutdownMainWsPool, boolean shutdownCallbackPool,
-            int poolSize, int maxReconnectDelay,
-            ConcurrentMap<String, String> contextMap, EnumSet<CacheFlag> cacheFlags)
+        AccountType accountType, String token, SessionController controller, OkHttpClient httpClient, WebSocketFactory wsFactory,
+        ScheduledExecutorService rateLimitPool, ScheduledExecutorService gatewayPool, ExecutorService callbackPool,
+        boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook,
+        boolean bulkDeleteSplittingEnabled, boolean retryOnTimeout, boolean enableMDC,
+        boolean shutdownRateLimitPool, boolean shutdownGatewayPool, boolean shutdownCallbackPool,
+        int poolSize, int maxReconnectDelay,
+        ConcurrentMap<String, String> contextMap, EnumSet<CacheFlag> cacheFlags)
     {
         this.accountType = accountType;
-
         this.setToken(token);
         this.httpClient = httpClient;
         this.wsFactory = wsFactory;
@@ -139,7 +136,7 @@ public class JDAImpl implements JDA
         this.gatewayPool = gatewayPool == null ? newScheduler(1, "Gateway") : gatewayPool;
         this.callbackPool = callbackPool == null ? ForkJoinPool.commonPool() : callbackPool;
         this.shutdownRateLimitPool = shutdownRateLimitPool;
-        this.shutdownMainWsPool = shutdownMainWsPool;
+        this.shutdownGatewayPool = shutdownGatewayPool;
         this.shutdownCallbackPool = shutdownCallbackPool;
         this.maxReconnectDelay = maxReconnectDelay;
         this.sessionController = controller == null ? new SessionControllerAdapter() : controller;
@@ -568,7 +565,7 @@ public class JDAImpl implements JDA
         shutdown();
         if (shutdownRateLimitPool)
             getRateLimitPool().shutdownNow();
-        if (shutdownMainWsPool)
+        if (shutdownGatewayPool)
             getGatewayPool().shutdownNow();
         if (shutdownCallbackPool)
             getCallbackPool().shutdownNow();
@@ -601,7 +598,7 @@ public class JDAImpl implements JDA
             audioLifeCyclePool.shutdownNow();
 
         getRequester().shutdown();
-        if (shutdownMainWsPool)
+        if (shutdownGatewayPool)
             getGatewayPool().shutdown();
         if (shutdownCallbackPool)
             getCallbackPool().shutdown();
