@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.core.managers.impl;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.audio.AudioConnection;
 import net.dv8tion.jda.core.audio.AudioReceiveHandler;
@@ -40,6 +42,9 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class AudioManagerImpl implements AudioManager
 {
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("3.8.1")
     public static final ThreadGroup AUDIO_THREADS = new ThreadGroup("jda-audio");
 
     public final ReentrantLock CONNECTION_LOCK = new ReentrantLock();
@@ -140,15 +145,17 @@ public class AudioManagerImpl implements AudioManager
 
     public void closeAudioConnection(ConnectionStatus reason)
     {
-        MiscUtil.locked(CONNECTION_LOCK, () ->
+        JDAImpl api = getJDA();
+        api.getAudioLifeCyclePool().execute(() -> MiscUtil.locked(CONNECTION_LOCK, () ->
         {
+            api.setContext();
             this.queuedAudioConnection = null;
             if (audioConnection != null)
                 this.audioConnection.close(reason);
             else
                 this.getJDA().getClient().queueAudioDisconnect(getGuild());
             this.audioConnection = null;
-        });
+        }));
     }
 
     @Override

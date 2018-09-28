@@ -57,7 +57,7 @@ JDA jda = new JDABuilder("token").build();
 ```
 
 **Note**: By default this will use the `AccountType.BOT` as that is the recommended type of account.
-You can change this to use `AccountType.CLIENT` however that is risking account termination.
+You can change this to use `AccountType.CLIENT`, however you will be risking account termination.
 Use `new JDABuilder(AccountType)` to change to a different account type.
 
 #### Examples:
@@ -373,7 +373,7 @@ All dependencies are managed automatically by Gradle.
    * [Github](https://github.com/TakahikoKawasaki/nv-websocket-client)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/com.neovisionaries%3Anv-websocket-client/view)
  * OkHttp
-   * Version: **3.8.1**
+   * Version: **3.11.0**
    * [Github](https://github.com/square/okhttp)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/com.squareup.okhttp3:okhttp)
  * Apache Commons Collections4

@@ -30,7 +30,6 @@ import net.dv8tion.jda.core.audio.ConnectionStage;
 import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.GuildVoiceState;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
@@ -88,20 +87,21 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     //this is a SoftReference in order to allow this resource to be freed to prevent resources starvation
     protected SoftReference<ByteArrayOutputStream> decompressBuffer;
 
-    protected volatile Thread keepAliveThread;
+    protected final ReentrantLock queueLock = new ReentrantLock();
+    protected final ScheduledExecutorService executor;
+    protected WebSocketSendingThread ratelimitThread;
+    protected volatile Future<?> keepAliveThread;
+
     protected boolean initiating;
 
     protected int reconnectTimeoutS = 2;
     protected long heartbeatStartTime;
     protected long identifyTime = 0;
 
-    //GuildId, <TimeOfNextAttempt, ConnectionStage, AudioConnection>
     protected final TLongObjectMap<ConnectionRequest> queuedAudioConnections = MiscUtil.newLongMap();
-    protected final ReentrantLock audioQueueLock = new ReentrantLock();
-
     protected final Queue<String> chunkSyncQueue = new ConcurrentLinkedQueue<>();
     protected final Queue<String> ratelimitQueue = new ConcurrentLinkedQueue<>();
-    protected volatile Thread ratelimitThread = null;
+
     protected volatile long ratelimitResetTime;
     protected final AtomicInteger messagesSent = new AtomicInteger(0);
 
@@ -111,7 +111,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected boolean connected = false;
 
     protected volatile boolean printedRateLimitMessage = false;
-    protected boolean sentAuthInfo = false;
+    protected volatile boolean sentAuthInfo = false;
     protected boolean firstInit = true;
     protected boolean processingReady = true;
 
@@ -120,6 +120,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public WebSocketClient(JDAImpl api, boolean compression)
     {
         this.api = api;
+        this.executor = api.getGatewayPool();
         this.shardInfo = api.getShardInfo();
         this.compression = compression;
         this.shouldReconnect = api.isAutoReconnect();
@@ -238,12 +239,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     public void send(String message)
     {
-        ratelimitQueue.add(message);
+        locked("Interrupted while trying to add request to queue", () -> ratelimitQueue.add(message));
     }
 
     public void chunkOrSyncRequest(JSONObject request)
     {
-        chunkSyncQueue.add(request.toString());
+        locked("Interrupted while trying to add chunk request", () -> chunkSyncQueue.add(request.toString()));
     }
 
     protected boolean send(String message, boolean skipQueue)
@@ -282,136 +283,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected void setupSendingThread()
     {
-        ratelimitThread = new Thread(() ->
-        {
-            api.setContext();
-            boolean needRatelimit;
-            boolean attemptedToSend;
-            while (!Thread.currentThread().isInterrupted())
-            {
-                try
-                {
-                    //Make sure that we don't send any packets before sending auth info.
-                    if (!sentAuthInfo)
-                    {
-                        Thread.sleep(500);
-                        continue;
-                    }
-                    attemptedToSend = false;
-                    needRatelimit = false;
-                    audioQueueLock.lockInterruptibly();
-
-                    ConnectionRequest audioRequest = getNextAudioConnectRequest();
-                    String chunkOrSyncRequest = chunkSyncQueue.peek();
-
-                    //if lock isn't needed we already unlock here
-                    if (audioRequest == null || chunkOrSyncRequest != null)
-                        maybeUnlock();
-                    if (chunkOrSyncRequest != null)
-                    {
-                        needRatelimit = !send(chunkOrSyncRequest, false);
-                        if (!needRatelimit)
-                            chunkSyncQueue.remove();
-
-                        attemptedToSend = true;
-                    }
-                    else if (audioRequest != null)
-                    {
-                        long channel = audioRequest.getChannelId();
-                        Guild guild = api.getGuildById(audioRequest.getGuildIdLong());
-                        if (guild == null)
-                        {
-                            // race condition on guild delete, avoid NPE on DISCONNECT requests
-                            queuedAudioConnections.remove(audioRequest.getGuildIdLong());
-
-                            maybeUnlock();
-                            continue;
-                        }
-                        ConnectionStage stage = audioRequest.getStage();
-                        AudioManager audioManager = guild.getAudioManager();
-                        JSONObject packet;
-                        switch (stage)
-                        {
-                            case RECONNECT:
-                            case DISCONNECT:
-                                packet = newVoiceClose(audioRequest.getGuildIdLong());
-                                break;
-                            default:
-                            case CONNECT:
-                                packet = newVoiceOpen(audioManager, channel, guild.getIdLong());
-                        }
-                        needRatelimit = !send(packet.toString(), false);
-                        if (!needRatelimit)
-                        {
-                            //If we didn't get RateLimited, Next request attempt will be 2 seconds from now
-                            // we remove it in VoiceStateUpdateHandler once we hear that it has updated our status
-                            // in 2 seconds we will attempt again in case we did not receive an update
-                            audioRequest.setNextAttemptEpoch(System.currentTimeMillis() + 2000);
-                            //If we are already in the correct state according to voice state
-                            // we will not receive a VOICE_STATE_UPDATE that would remove it
-                            // thus we update it here
-                            final GuildVoiceState voiceState = guild.getSelfMember().getVoiceState();
-                            updateAudioConnection0(guild.getIdLong(), voiceState.getChannel());
-                        }
-                        maybeUnlock();
-                        attemptedToSend = true;
-                    }
-                    else
-                    {
-                        String message = ratelimitQueue.peek();
-                        if (message != null)
-                        {
-                            needRatelimit = !send(message, false);
-                            if (!needRatelimit)
-                                ratelimitQueue.remove();
-                            attemptedToSend = true;
-                        }
-                    }
-
-                    if (needRatelimit || !attemptedToSend)
-                        Thread.sleep(1000);
-                }
-                catch (InterruptedException ignored)
-                {
-                    LOG.debug("Main WS send thread interrupted. Most likely JDA is disconnecting the websocket.");
-                    break;
-                }
-                finally
-                {
-                    // on any exception that might cause this lock to not release
-                    maybeUnlock();
-                }
-            }
-        });
-        ratelimitThread.setUncaughtExceptionHandler((thread, throwable) ->
-        {
-            handleCallbackError(socket, throwable);
-            setupSendingThread();
-        });
-        ratelimitThread.setName(api.getIdentifierString() + " MainWS-Sending Thread");
+        ratelimitThread = new WebSocketSendingThread(this);
         ratelimitThread.start();
-    }
-
-    protected JSONObject newVoiceClose(long guildId)
-    {
-        return new JSONObject()
-            .put("op", WebSocketCode.VOICE_STATE)
-            .put("d", new JSONObject()
-                .put("guild_id", Long.toUnsignedString(guildId))
-                .put("channel_id", JSONObject.NULL)
-                .put("self_mute", false)
-                .put("self_deaf", false));
-    }
-
-    protected JSONObject newVoiceOpen(AudioManager manager, long channel, long guild)
-    {
-        return new JSONObject()
-            .put("op", WebSocketCode.VOICE_STATE)
-            .put("d", new JSONObject()
-                .put("guild_id", guild)
-                .put("channel_id", channel)
-                .put("self_mute", manager.isSelfMuted())
-                .put("self_deaf", manager.isSelfDeafened()));
     }
 
     public void close()
@@ -525,7 +398,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         if (keepAliveThread != null)
         {
-            keepAliveThread.interrupt();
+            keepAliveThread.cancel(false);
             keepAliveThread = null;
         }
         if (serverCloseFrame != null)
@@ -550,10 +423,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         // null is considered -reconnectable- as we do not know the close-code meaning
         boolean closeCodeIsReconnect = closeCode == null || closeCode.isReconnect();
-        if (!shouldReconnect || !closeCodeIsReconnect) //we should not reconnect
+        if (!shouldReconnect || !closeCodeIsReconnect || executor.isShutdown()) //we should not reconnect
         {
             if (ratelimitThread != null)
-                ratelimitThread.interrupt();
+            {
+                ratelimitThread.shutdown();
+                ratelimitThread = null;
+            }
 
             if (!closeCodeIsReconnect)
             {
@@ -563,7 +439,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 LOG.error("WebSocket connection was closed and cannot be recovered due to identification issues\n{}", closeCode);
             }
 
-            api.setStatus(JDA.Status.SHUTDOWN);
+            api.shutdownInternals();
             api.getEventManager().handle(new ShutdownEvent(api, OffsetDateTime.now(), rawCloseCode));
         }
         else
@@ -713,34 +589,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected void setupKeepAlive(long timeout)
     {
-        keepAliveThread = new Thread(() ->
+        keepAliveThread = executor.scheduleAtFixedRate(() ->
         {
             api.setContext();
-            while (connected)
-            {
-                try
-                {
-                    sendKeepAlive();
-
-                    //Sleep for heartbeat interval
-                    Thread.sleep(timeout);
-                }
-                catch (InterruptedException ex)
-                {
-                    //connection got cut... terminating keepAliveThread
-                    break;
-                }
-            }
-        });
-        keepAliveThread.setUncaughtExceptionHandler((thread, throwable) ->
-        {
-            handleCallbackError(socket, throwable);
-            setupKeepAlive(timeout);
-        });
-        keepAliveThread.setName(api.getIdentifierString() + " MainWS-KeepAlive Thread");
-        keepAliveThread.setPriority(Thread.MAX_PRIORITY);
-        keepAliveThread.setDaemon(true);
-        keepAliveThread.start();
+            if (connected)
+                sendKeepAlive();
+        }, 0, timeout, TimeUnit.MILLISECONDS);
     }
 
     protected void sendKeepAlive()
@@ -751,8 +605,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     .put("d", api.getResponseTotal()
                 ).toString();
 
-        if (!send(keepAlivePacket, true))
-            ratelimitQueue.add(keepAlivePacket);
+        send(keepAlivePacket, true);
         heartbeatStartTime = System.currentTimeMillis();
     }
 
@@ -811,7 +664,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         sessionId = null;
         sentAuthInfo = false;
 
-        chunkSyncQueue.clear();
+        locked("Interrupted while trying to invalidate chunk/sync queue", chunkSyncQueue::clear);
+
         api.getTextChannelMap().clear();
         api.getVoiceChannelMap().clear();
         api.getCategoryMap().clear();
@@ -1146,15 +1000,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected void maybeUnlock()
     {
-        if (audioQueueLock.isHeldByCurrentThread())
-            audioQueueLock.unlock();
+        if (queueLock.isHeldByCurrentThread())
+            queueLock.unlock();
     }
 
     protected void locked(String comment, Runnable task)
     {
         try
         {
-            audioQueueLock.lockInterruptibly();
+            queueLock.lockInterruptibly();
             task.run();
         }
         catch (InterruptedException e)
@@ -1171,7 +1025,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         try
         {
-            audioQueueLock.lockInterruptibly();
+            queueLock.lockInterruptibly();
             return task.get();
         }
         catch (InterruptedException e)
@@ -1265,7 +1119,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         return locked("There was an error updating the audio connection", () -> updateAudioConnection0(guildId, connectedChannel));
     }
 
-
     public ConnectionRequest updateAudioConnection0(long guildId, VoiceChannel connectedChannel)
     {
         //Called by VoiceStateUpdateHandler when we receive a response from discord
@@ -1303,11 +1156,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         //If the channel is not the one we are looking for!
         return null;
     }
-
-//    public TLongObjectMap<ConnectionRequest> getQueuedAudioConnectionMap()
-//    {
-//        return queuedAudioConnections;
-//    }
 
     private SoftReference<ByteArrayOutputStream> newDecompressBuffer()
     {
