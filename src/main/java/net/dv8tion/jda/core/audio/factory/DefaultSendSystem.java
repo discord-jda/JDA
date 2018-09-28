@@ -17,7 +17,6 @@
 package net.dv8tion.jda.core.audio.factory;
 
 import net.dv8tion.jda.core.audio.AudioConnection;
-import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.utils.JDALogger;
 import org.slf4j.MDC;
 
@@ -56,7 +55,7 @@ public class DefaultSendSystem implements IAudioSendSystem
     {
         final DatagramSocket udpSocket = packetProvider.getUdpSocket();
 
-        sendThread = new Thread(AudioManagerImpl.AUDIO_THREADS, () ->
+        sendThread = new Thread(() ->
         {
             if (contextMap != null)
                 MDC.setContextMap(contextMap);
