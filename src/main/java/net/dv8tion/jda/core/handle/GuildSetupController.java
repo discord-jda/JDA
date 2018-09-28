@@ -263,7 +263,10 @@ public class GuildSetupController
     public void onMemberChunk(long id, JSONArray chunk)
     {
         log.debug("Received member chunk for guild id: {} size: {}", id, chunk.length());
-        pendingChunks.remove(id);
+        synchronized (pendingChunks)
+        {
+            pendingChunks.remove(id);
+        }
         GuildSetupNode node = setupNodes.get(id);
         if (node != null)
             node.handleMemberChunk(chunk);
@@ -318,9 +321,12 @@ public class GuildSetupController
     {
         setupNodes.clear();
         chunkingGuilds.clear();
-        pendingChunks.clear();
         incompleteCount = 0;
         close();
+        synchronized (pendingChunks)
+        {
+            pendingChunks.clear();
+        }
     }
 
     public void close()
@@ -373,15 +379,18 @@ public class GuildSetupController
         log.debug("Sending chunking requests for {} guilds", obj instanceof JSONArray ? ((JSONArray) obj).length() : 1);
 
         long timeout = System.currentTimeMillis() + CHUNK_TIMEOUT;
-        if (obj instanceof JSONArray)
+        synchronized (pendingChunks)
         {
-            JSONArray arr = (JSONArray) obj;
-            for (Object o : arr)
-                pendingChunks.put((long) o, timeout);
-        }
-        else
-        {
-            pendingChunks.put((long) obj, timeout);
+            if (obj instanceof JSONArray)
+            {
+                JSONArray arr = (JSONArray) obj;
+                for (Object o : arr)
+                    pendingChunks.put((long) o, timeout);
+            }
+            else
+            {
+                pendingChunks.put((long) obj, timeout);
+            }
         }
 
         getJDA().getClient().chunkOrSyncRequest(
@@ -487,44 +496,27 @@ public class GuildSetupController
         {
             if (pendingChunks.isEmpty())
                 return;
-            TLongIterator it = new Generator();
-            JSONArray arr = new JSONArray();
-            while (it.hasNext())
+            synchronized (pendingChunks)
             {
-                arr.put(it.next());
-                if (arr.length() == 50)
-                {
-                    sendChunkRequest(arr);
-                    arr = new JSONArray();
-                }
-            }
-            if (arr.length() > 0)
-                sendChunkRequest(arr);
-        }
-
-        private class Generator implements TLongIterator
-        {
-            TLongLongIterator it = pendingChunks.iterator();
-            long current = 0;
-
-            public boolean hasNext()
-            {
-                current = 0;
+                TLongLongIterator it = pendingChunks.iterator();
+                JSONArray arr = new JSONArray();
                 while (it.hasNext())
                 {
+                    // key=guild_id, value=timeout
                     it.advance();
-                    if (System.currentTimeMillis() > it.value())
+                    if (System.currentTimeMillis() <= it.value())
+                        continue;
+                    arr.put(it.key());
+
+                    if (arr.length() == 50)
                     {
-                        current = it.key();
-                        return true;
+                        sendChunkRequest(arr);
+                        arr = new JSONArray();
                     }
                 }
-                return false;
+                if (arr.length() > 0)
+                    sendChunkRequest(arr);
             }
-
-            public long next() { return current; }
-
-            public void remove() {}
         }
     }
 }
