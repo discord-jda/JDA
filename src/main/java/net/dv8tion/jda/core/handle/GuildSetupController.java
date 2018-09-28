@@ -487,46 +487,44 @@ public class GuildSetupController
         {
             if (pendingChunks.isEmpty())
                 return;
-            TLongSet timedOut = fetchTimedOut();
-            if (!timedOut.isEmpty())
-            {
-                log.debug("Found {} timed out chunk requests", timedOut.size());
-                processTimedOut(timedOut);
-            }
-        }
-
-        private void processTimedOut(TLongSet timedOut)
-        {
-            TLongIterator it = timedOut.iterator();
-            while (timedOut.size() > 50)
-            {
-                JSONArray chunk = new JSONArray();
-                for (int i = 0; i < 50; i++)
-                {
-                    chunk.put(it.next());
-                    it.remove();
-                }
-                sendChunkRequest(chunk);
-            }
-            JSONArray chunk = new JSONArray();
+            TLongIterator it = new Generator();
+            JSONArray arr = new JSONArray();
             while (it.hasNext())
-                chunk.put(it.next());
-            sendChunkRequest(chunk);
+            {
+                arr.put(it.next());
+                if (arr.length() == 50)
+                {
+                    sendChunkRequest(arr);
+                    arr = new JSONArray();
+                }
+            }
+            if (arr.length() > 0)
+                sendChunkRequest(arr);
         }
 
-        private TLongSet fetchTimedOut()
+        private class Generator implements TLongIterator
         {
             TLongLongIterator it = pendingChunks.iterator();
-            TLongSet timedOut = new TLongHashSet();
-            while (it.hasNext())
+            long current = 0;
+
+            public boolean hasNext()
             {
-                it.advance();
-                long id = it.key();
-                long time = it.value();
-                if (System.currentTimeMillis() > time)
-                    timedOut.add(id);
+                current = 0;
+                while (it.hasNext())
+                {
+                    it.advance();
+                    if (System.currentTimeMillis() > it.value())
+                    {
+                        current = it.key();
+                        return true;
+                    }
+                }
+                return false;
             }
-            return timedOut;
+
+            public long next() { return current; }
+
+            public void remove() {}
         }
     }
 }
