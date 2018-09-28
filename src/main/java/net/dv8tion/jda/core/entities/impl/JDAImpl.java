@@ -24,7 +24,6 @@ import net.dv8tion.jda.bot.entities.impl.JDABotImpl;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.audio.KeepAliveThreadFactory;
 import net.dv8tion.jda.core.audio.factory.DefaultSendFactory;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.*;
@@ -47,6 +46,7 @@ import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.core.utils.cache.UpstreamReference;
 import net.dv8tion.jda.core.utils.cache.impl.AbstractCacheView;
 import net.dv8tion.jda.core.utils.cache.impl.SnowflakeCacheViewImpl;
+import net.dv8tion.jda.core.utils.concurrent.CountingThreadFactory;
 import net.dv8tion.jda.core.utils.tuple.Pair;
 import okhttp3.OkHttpClient;
 import org.json.JSONObject;
@@ -56,17 +56,21 @@ import org.slf4j.MDC;
 import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class JDAImpl implements JDA
 {
     public static final Logger LOG = JDALogger.getLog(JDA.class);
 
-    protected final ScheduledThreadPoolExecutor rateLimitPool;
+    protected final ScheduledExecutorService rateLimitPool;
+    protected final ScheduledExecutorService gatewayPool;
     protected final ExecutorService callbackPool;
     protected final boolean shutdownRateLimitPool;
+    protected final boolean shutdownGatewayPool;
     protected final boolean shutdownCallbackPool;
+
+    protected final Object audioLifeCycleLock = new Object();
+    protected ScheduledThreadPoolExecutor audioLifeCyclePool;
 
     protected final SnowflakeCacheViewImpl<User> userCache = new SnowflakeCacheViewImpl<>(User.class, User::getName);
     protected final SnowflakeCacheViewImpl<Guild> guildCache = new SnowflakeCacheViewImpl<>(Guild.class, Guild::getName);
@@ -91,7 +95,6 @@ public class JDAImpl implements JDA
     protected final Thread shutdownHook;
     protected final EntityBuilder entityBuilder = new EntityBuilder(this);
     protected final EventCache eventCache = new EventCache();
-    protected final Object akapLock = new Object();
     protected final EnumSet<CacheFlag> cacheFlags;
 
     protected final SessionController sessionController;
@@ -101,7 +104,6 @@ public class JDAImpl implements JDA
     protected Requester requester;
     protected IEventManager eventManager = new InterfacedEventManager();
     protected IAudioSendFactory audioSendFactory = new DefaultSendFactory();
-    protected ScheduledThreadPoolExecutor audioKeepAlivePool;
     protected Status status = Status.INITIALIZING;
     protected SelfUser selfUser;
     protected ShardInfo shardInfo;
@@ -113,14 +115,14 @@ public class JDAImpl implements JDA
     protected String token;
     protected String gatewayUrl;
 
-    public JDAImpl(AccountType accountType, String token, SessionController controller,
-                   OkHttpClient httpClient, WebSocketFactory wsFactory,
-                   ScheduledThreadPoolExecutor rateLimitPool, ExecutorService callbackPool,
-                   boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook,
-                   boolean bulkDeleteSplittingEnabled, boolean retryOnTimeout, boolean enableMDC,
-                   boolean shutdownRateLimitPool, boolean shutdownCallbackPool,
-                   int poolSize, int maxReconnectDelay,
-                   ConcurrentMap<String, String> contextMap, EnumSet<CacheFlag> cacheFlags)
+    public JDAImpl(
+        AccountType accountType, String token, SessionController controller, OkHttpClient httpClient, WebSocketFactory wsFactory,
+        ScheduledExecutorService rateLimitPool, ScheduledExecutorService gatewayPool, ExecutorService callbackPool,
+        boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook,
+        boolean bulkDeleteSplittingEnabled, boolean retryOnTimeout, boolean enableMDC,
+        boolean shutdownRateLimitPool, boolean shutdownGatewayPool, boolean shutdownCallbackPool,
+        int poolSize, int maxReconnectDelay,
+        ConcurrentMap<String, String> contextMap, EnumSet<CacheFlag> cacheFlags)
     {
         this.accountType = accountType;
         this.setToken(token);
@@ -130,9 +132,11 @@ public class JDAImpl implements JDA
         this.audioEnabled = audioEnabled;
         this.shutdownHook = useShutdownHook ? new Thread(this::shutdown, "JDA Shutdown Hook") : null;
         this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
-        this.rateLimitPool = rateLimitPool == null ? new ScheduledThreadPoolExecutor(poolSize, new RateLimitThreadFactory()) : rateLimitPool;
+        this.rateLimitPool = rateLimitPool == null ? newScheduler(poolSize, "RateLimit") : rateLimitPool;
+        this.gatewayPool = gatewayPool == null ? newScheduler(1, "Gateway") : gatewayPool;
         this.callbackPool = callbackPool == null ? ForkJoinPool.commonPool() : callbackPool;
         this.shutdownRateLimitPool = shutdownRateLimitPool;
+        this.shutdownGatewayPool = shutdownGatewayPool;
         this.shutdownCallbackPool = shutdownCallbackPool;
         this.maxReconnectDelay = maxReconnectDelay;
         this.sessionController = controller == null ? new SessionControllerAdapter() : controller;
@@ -149,6 +153,11 @@ public class JDAImpl implements JDA
         this.jdaBot = accountType == AccountType.BOT ? new JDABotImpl(this) : null;
         this.guildSetupController = new GuildSetupController(this);
         this.cacheFlags = cacheFlags;
+    }
+
+    private ScheduledThreadPoolExecutor newScheduler(int coreSize, String baseName)
+    {
+        return new ScheduledThreadPoolExecutor(coreSize, new CountingThreadFactory(this::getIdentifierString, baseName));
     }
 
     public boolean isCacheFlagSet(CacheFlag flag)
@@ -556,6 +565,8 @@ public class JDAImpl implements JDA
         shutdown();
         if (shutdownRateLimitPool)
             getRateLimitPool().shutdownNow();
+        if (shutdownGatewayPool)
+            getGatewayPool().shutdownNow();
         if (shutdownCallbackPool)
             getCallbackPool().shutdownNow();
     }
@@ -567,26 +578,44 @@ public class JDAImpl implements JDA
             return;
 
         setStatus(Status.SHUTTING_DOWN);
-        audioManagers.forEach(AudioManager::closeAudioConnection);
-        audioManagers.clear();
-
-        if (audioKeepAlivePool != null)
-            audioKeepAlivePool.shutdownNow();
 
         WebSocketClient client = getClient();
         if (client != null)
             client.shutdown();
 
-        final long time = 5L;
-        final TimeUnit unit = TimeUnit.SECONDS;
+        shutdownInternals();
+    }
+
+    public synchronized void shutdownInternals()
+    {
+        if (status == Status.SHUTDOWN)
+            return;
+        //so we can shutdown from WebSocketClient properly
+        audioManagers.forEach(AudioManager::closeAudioConnection);
+        audioManagers.clear();
+
+        if (audioLifeCyclePool != null)
+            audioLifeCyclePool.shutdownNow();
+
         getRequester().shutdown();
-        if (shutdownRateLimitPool)
-        {
-            getRateLimitPool().setKeepAliveTime(time, unit);
-            getRateLimitPool().allowCoreThreadTimeOut(true);
-        }
+        if (shutdownGatewayPool)
+            getGatewayPool().shutdown();
         if (shutdownCallbackPool)
             getCallbackPool().shutdown();
+        if (shutdownRateLimitPool)
+        {
+            ScheduledExecutorService rateLimitPool = getRateLimitPool();
+            if (rateLimitPool instanceof ScheduledThreadPoolExecutor)
+            {
+                ScheduledThreadPoolExecutor executor = (ScheduledThreadPoolExecutor) rateLimitPool;
+                executor.setKeepAliveTime(5L, TimeUnit.SECONDS);
+                executor.allowCoreThreadTimeOut(true);
+            }
+            else
+            {
+                rateLimitPool.shutdown();
+            }
+        }
 
         if (shutdownHook != null)
         {
@@ -838,21 +867,6 @@ public class JDAImpl implements JDA
         return httpClient;
     }
 
-    public ScheduledThreadPoolExecutor getAudioKeepAlivePool()
-    {
-        ScheduledThreadPoolExecutor akap = audioKeepAlivePool;
-        if (akap == null)
-        {
-            synchronized (akapLock)
-            {
-                akap = audioKeepAlivePool;
-                if (akap == null)
-                    akap = audioKeepAlivePool = new ScheduledThreadPoolExecutor(1, new KeepAliveThreadFactory(this));
-            }
-        }
-        return akap;
-    }
-
     public String getGatewayUrl()
     {
         return gatewayUrl;
@@ -863,33 +877,33 @@ public class JDAImpl implements JDA
         this.gatewayUrl = getGateway();
     }
 
-    public ScheduledThreadPoolExecutor getRateLimitPool()
+    public ScheduledThreadPoolExecutor getAudioLifeCyclePool()
+    {
+        ScheduledThreadPoolExecutor pool = audioLifeCyclePool;
+        if (pool == null)
+        {
+            synchronized (audioLifeCycleLock)
+            {
+                pool = audioLifeCyclePool;
+                if (pool == null)
+                    pool = audioLifeCyclePool = newScheduler(1, "AudioLifeCycle");
+            }
+        }
+        return pool;
+    }
+
+    public ScheduledExecutorService getRateLimitPool()
     {
         return rateLimitPool;
+    }
+
+    public ScheduledExecutorService getGatewayPool()
+    {
+        return gatewayPool;
     }
 
     public ExecutorService getCallbackPool()
     {
         return callbackPool;
-    }
-
-    private class RateLimitThreadFactory implements ThreadFactory
-    {
-        final String identifier;
-        final AtomicInteger threadCount = new AtomicInteger(1);
-
-        public RateLimitThreadFactory()
-        {
-            identifier = getIdentifierString() + " RateLimit-Queue Pool";
-        }
-
-        @Override
-        public Thread newThread(Runnable r)
-        {
-            Thread t = new Thread(r, identifier + " - Thread " + threadCount.getAndIncrement());
-            t.setDaemon(true);
-
-            return t;
-        }
     }
 }

@@ -60,7 +60,7 @@ dependencies {
 
     //Web Connection Support
     api 'com.neovisionaries:nv-websocket-client:2.5'
-    api 'com.squareup.okhttp3:okhttp:3.8.1'
+    api 'com.squareup.okhttp3:okhttp:3.11.0'
 
     //Opus library support
     api ('club.minnced:opus-java:1.0.4@pom') {
@@ -177,23 +177,25 @@ javadoc {
             'net/dv8tion/jda/core/audio/AudioWebSocket.java',
             'net/dv8tion/jda/core/audio/AudioPacket.java',
             'net/dv8tion/jda/core/audio/Decoder.java',
-            'net/dv8tion/jda/core/audio/hooks/ListenerProxy.java')
-    exclude('net/dv8tion/jda/core/entities/impl')
-    exclude('net/dv8tion/jda/core/entities/EntityBuilder.java')
-    exclude('net/dv8tion/jda/core/handle')
-    exclude('net/dv8tion/jda/core/managers/impl')
-    exclude('net/dv8tion/jda/core/requests/GuildLock.java',
+            'net/dv8tion/jda/core/audio/hooks/ListenerProxy.java',
+            'net/dv8tion/jda/core/entities/impl',
+            'net/dv8tion/jda/core/entities/EntityBuilder.java',
+            'net/dv8tion/jda/core/handle',
+            'net/dv8tion/jda/core/managers/impl',
+            'net/dv8tion/jda/core/requests/GuildLock.java',
             'net/dv8tion/jda/core/requests/WebSocketClient.java',
             'net/dv8tion/jda/core/requests/RateLimiter.java',
             'net/dv8tion/jda/core/requests/Request.java',
             'net/dv8tion/jda/core/requests/Route.java',
             'net/dv8tion/jda/core/requests/Requester.java',
             'net/dv8tion/jda/core/requests/Response.java',
-            'net/dv8tion/jda/core/requests/ratelimit')
-    exclude('net/dv8tion/jda/core/utils/cache/impl',
+            'net/dv8tion/jda/core/requests/ratelimit',
+            'net/dv8tion/jda/core/utils/cache/impl',
             'net/dv8tion/jda/core/utils/JDALogger.java',
             'net/dv8tion/jda/core/utils/Checks.java',
-            'net/dv8tion/jda/core/utils/Helpers.java')
+            'net/dv8tion/jda/core/utils/Helpers.java',
+            'net/dv8tion/jda/core/utils/concurrent',
+            'net/dv8tion/jda/core/utils/tuple')
 
     //voice crypto
     exclude('com/iwebpp/crypto')

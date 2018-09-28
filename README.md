@@ -373,7 +373,7 @@ All dependencies are managed automatically by Gradle.
    * [Github](https://github.com/TakahikoKawasaki/nv-websocket-client)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/com.neovisionaries%3Anv-websocket-client/view)
  * OkHttp
-   * Version: **3.8.1**
+   * Version: **3.11.0**
    * [Github](https://github.com/square/okhttp)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/com.squareup.okhttp3:okhttp)
  * Apache Commons Collections4

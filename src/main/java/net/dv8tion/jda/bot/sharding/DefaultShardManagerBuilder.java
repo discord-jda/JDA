@@ -64,7 +64,8 @@ public class DefaultShardManagerBuilder
     protected IntFunction<OnlineStatus> statusProvider = null;
     protected IntFunction<? extends Game> gameProvider = null;
     protected IntFunction<? extends ConcurrentMap<String, String>> contextProvider = null;
-    protected ThreadPoolProvider<? extends ScheduledThreadPoolExecutor> rateLimitPoolProvider = null;
+    protected ThreadPoolProvider<? extends ScheduledExecutorService> rateLimitPoolProvider = null;
+    protected ThreadPoolProvider<? extends ScheduledExecutorService> gatewayPoolProvider = null;
     protected ThreadPoolProvider<? extends ExecutorService> callbackPoolProvider = null;
     protected Collection<Integer> shards = null;
     protected IEventManager eventManager = null;
@@ -420,11 +421,10 @@ public class DefaultShardManagerBuilder
     }
 
     /**
-     * Sets the core pool size for the global JDA
-     * {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} which is used
-     * in various locations throughout the JDA instance created by this ShardManager. (Default: 5)
+     * Sets the core pool size for the global JDA {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService}
+     * which is used in various locations throughout the JDA instance created by this ShardManager. (Default: 5)
      * <br>Note: This has no effect if you set a pool using
-     * {@link #setRateLimitPool(ScheduledThreadPoolExecutor)} or {@link #setRateLimitPoolProvider(ThreadPoolProvider)}.
+     * {@link #setRateLimitPool(ScheduledExecutorService)} or {@link #setRateLimitPoolProvider(ThreadPoolProvider)}.
      *
      * @param  size
      *         The core pool size for the global JDA executor
@@ -685,25 +685,25 @@ public class DefaultShardManagerBuilder
     }
 
     /**
-     * Sets the {@link ScheduledThreadPoolExecutor ScheduledThreadPoolExecutor} that should be used in
+     * Sets the {@link ScheduledExecutorService ScheduledExecutorService} that should be used in
      * the JDA rate-limit handler. Changing this can drastically change the JDA behavior for RestAction execution
      * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
      * <br>This will override the rate-limit pool provider set from {@link #setRateLimitPoolProvider(ThreadPoolProvider)}.
-     * <br><b>This automatically disables the automatic shutdown of the JDA pools, you can enable
-     * it using {@link #setRateLimitPool(ScheduledThreadPoolExecutor, boolean) setRateLimiPool(executor, true)}</b>
+     * <br><b>This automatically disables the automatic shutdown of the rate-limit pool, you can enable
+     * it using {@link #setRateLimitPool(ScheduledExecutorService, boolean) setRateLimiPool(executor, true)}</b>
      *
      * @param  pool
      *         The thread-pool to use for rate-limit handling
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
-    public DefaultShardManagerBuilder setRateLimitPool(ScheduledThreadPoolExecutor pool)
+    public DefaultShardManagerBuilder setRateLimitPool(ScheduledExecutorService pool)
     {
         return setRateLimitPool(pool, pool == null);
     }
 
     /**
-     * Sets the {@link ScheduledThreadPoolExecutor ScheduledThreadPoolExecutor} that should be used in
+     * Sets the {@link ScheduledExecutorService ScheduledExecutorService} that should be used in
      * the JDA rate-limit handler. Changing this can drastically change the JDA behavior for RestAction execution
      * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
      * <br>This will override the rate-limit pool provider set from {@link #setRateLimitPoolProvider(ThreadPoolProvider)}.
@@ -715,13 +715,13 @@ public class DefaultShardManagerBuilder
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
-    public DefaultShardManagerBuilder setRateLimitPool(ScheduledThreadPoolExecutor pool, boolean automaticShutdown)
+    public DefaultShardManagerBuilder setRateLimitPool(ScheduledExecutorService pool, boolean automaticShutdown)
     {
         return setRateLimitPoolProvider(pool == null ? null : new ThreadPoolProviderImpl<>(pool, automaticShutdown));
     }
 
     /**
-     * Sets the {@link ScheduledThreadPoolExecutor ScheduledThreadPoolExecutor} provider that should be used in
+     * Sets the {@link ScheduledExecutorService ScheduledExecutorService} provider that should be used in
      * the JDA rate-limit handler. Changing this can drastically change the JDA behavior for RestAction execution
      * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
      *
@@ -730,9 +730,61 @@ public class DefaultShardManagerBuilder
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
-    public DefaultShardManagerBuilder setRateLimitPoolProvider(ThreadPoolProvider<? extends ScheduledThreadPoolExecutor> provider)
+    public DefaultShardManagerBuilder setRateLimitPoolProvider(ThreadPoolProvider<? extends ScheduledExecutorService> provider)
     {
         this.rateLimitPoolProvider = provider;
+        return this;
+    }
+
+    /**
+     * Sets the {@link ScheduledExecutorService ScheduledExecutorService} that should be used for
+     * the JDA main WebSocket workers.
+     * <br><b>Only change this pool if you know what you're doing.</b>
+     * <br>This will override the worker pool provider set from {@link #setGatewayPoolProvider(ThreadPoolProvider)}.
+     * <br><b>This automatically disables the automatic shutdown of the main-ws pools, you can enable
+     * it using {@link #setGatewayPool(ScheduledExecutorService, boolean) setGatewayPoolProvider(pool, true)}</b>
+     *
+     * @param  pool
+     *         The thread-pool to use for main WebSocket workers
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     */
+    public DefaultShardManagerBuilder setGatewayPool(ScheduledExecutorService pool)
+    {
+        return setGatewayPool(pool, pool == null);
+    }
+
+    /**
+     * Sets the {@link ScheduledExecutorService ScheduledExecutorService} that should be used for
+     * the JDA main WebSocket workers.
+     * <br><b>Only change this pool if you know what you're doing.</b>
+     * <br>This will override the worker pool provider set from {@link #setGatewayPoolProvider(ThreadPoolProvider)}.
+     *
+     * @param  pool
+     *         The thread-pool to use for main WebSocket workers
+     * @param  automaticShutdown
+     *         Whether {@link net.dv8tion.jda.core.JDA#shutdown()} should automatically shutdown this pool
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     */
+    public DefaultShardManagerBuilder setGatewayPool(ScheduledExecutorService pool, boolean automaticShutdown)
+    {
+        return setGatewayPoolProvider(pool == null ? null : new ThreadPoolProviderImpl<>(pool, automaticShutdown));
+    }
+
+    /**
+     * Sets the {@link ScheduledExecutorService ScheduledExecutorService} that should be used for
+     * the JDA main WebSocket workers.
+     * <br><b>Only change this pool if you know what you're doing.</b>
+     *
+     * @param  provider
+     *         The thread-pool provider to use for main WebSocket workers
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     */
+    public DefaultShardManagerBuilder setGatewayPoolProvider(ThreadPoolProvider<? extends ScheduledExecutorService> provider)
+    {
+        this.gatewayPoolProvider = provider;
         return this;
     }
 
@@ -741,7 +793,7 @@ public class DefaultShardManagerBuilder
      * the JDA callback handler which mostly consists of {@link net.dv8tion.jda.core.requests.RestAction RestAction} callbacks.
      * By default JDA will use {@link ForkJoinPool#commonPool()}
      * <br><b>Only change this pool if you know what you're doing.
-     * <br>This automatically disables the automatic shutdown of the JDA pools, you can enable
+     * <br>This automatically disables the automatic shutdown of the callback pools, you can enable
      * it using {@link #setCallbackPool(ExecutorService, boolean) setCallbackPool(executor, true)}</b>
      *
      * @param  executor
@@ -1015,13 +1067,14 @@ public class DefaultShardManagerBuilder
     public ShardManager build() throws LoginException, IllegalArgumentException
     {
         final DefaultShardManager manager = new DefaultShardManager(
-            this.shardsTotal, this.shards, this.sessionController,
-            this.listeners, this.listenerProviders, this.token, this.eventManagerProvider,
-            this.audioSendFactory, this.gameProvider, this.statusProvider,
-            this.httpClientBuilder, this.httpClient, this.rateLimitPoolProvider, this.callbackPoolProvider, this.wsFactory, this.threadFactory,
-            this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting,
-            this.autoReconnect, this.idleProvider, this.retryOnTimeout, this.useShutdownNow, this.enableContext,
-            this.contextProvider, this.cacheFlags, this.enableCompression);
+                this.shardsTotal, this.shards, this.sessionController,
+                this.listeners, this.listenerProviders, this.token, this.eventManagerProvider,
+                this.audioSendFactory, this.gameProvider, this.statusProvider,
+                this.httpClientBuilder, this.httpClient, this.rateLimitPoolProvider, this.gatewayPoolProvider,
+                this.callbackPoolProvider, this.wsFactory, this.threadFactory,
+                this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting,
+                this.autoReconnect, this.idleProvider, this.retryOnTimeout, this.useShutdownNow, this.enableContext,
+                this.contextProvider, this.cacheFlags, this.enableCompression);
 
         manager.login();
 
