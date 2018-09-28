@@ -17,8 +17,11 @@
 package net.dv8tion.jda.core.handle;
 
 import gnu.trove.iterator.TLongIterator;
+import gnu.trove.iterator.TLongLongIterator;
 import gnu.trove.iterator.TLongObjectIterator;
+import gnu.trove.map.TLongLongMap;
 import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongLongHashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
@@ -37,20 +40,28 @@ import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("WeakerAccess")
 public class GuildSetupController
 {
+    protected static final int CHUNK_TIMEOUT = 10000;
     protected static final Logger log = JDALogger.getLog(GuildSetupController.class);
+
     private final UpstreamReference<JDAImpl> api;
     private final TLongObjectMap<GuildSetupNode> setupNodes = new TLongObjectHashMap<>();
     private final TLongSet chunkingGuilds = new TLongHashSet();
+    private final TLongLongMap pendingChunks = new TLongLongHashMap();
     private final TLongSet syncingGuilds;
+
     private int incompleteCount = 0;
     private int syncingCount = 0;
 
     StatusListener listener = (id, oldStatus, newStatus) -> log.trace("[{}] Updated status {}->{}", id, oldStatus, newStatus);
+
+    private Future<?> timeoutHandle;
 
     public GuildSetupController(JDAImpl api)
     {
@@ -63,10 +74,7 @@ public class GuildSetupController
 
     JDAImpl getJDA()
     {
-        JDAImpl tmp = api.get();
-        if (tmp == null)
-            throw new IllegalStateException();
-        return tmp;
+        return api.get();
     }
 
     boolean isClient()
@@ -138,6 +146,8 @@ public class GuildSetupController
         boolean ready = count == 0;
         if (ready)
             getJDA().getClient().ready();
+        else
+            startTimeout();
         return !ready;
     }
 
@@ -253,6 +263,7 @@ public class GuildSetupController
     public void onMemberChunk(long id, JSONArray chunk)
     {
         log.debug("Received member chunk for guild id: {} size: {}", id, chunk.length());
+        pendingChunks.remove(id);
         GuildSetupNode node = setupNodes.get(id);
         if (node != null)
             node.handleMemberChunk(chunk);
@@ -307,7 +318,15 @@ public class GuildSetupController
     {
         setupNodes.clear();
         chunkingGuilds.clear();
+        pendingChunks.clear();
         incompleteCount = 0;
+        close();
+    }
+
+    public void close()
+    {
+        if (timeoutHandle != null)
+            timeoutHandle.cancel(false);
     }
 
     public boolean containsMember(long userId, @Nullable GuildSetupNode excludedNode)
@@ -353,6 +372,18 @@ public class GuildSetupController
     {
         log.debug("Sending chunking requests for {} guilds", obj instanceof JSONArray ? ((JSONArray) obj).length() : 1);
 
+        long timeout = System.currentTimeMillis() + CHUNK_TIMEOUT;
+        if (obj instanceof JSONArray)
+        {
+            JSONArray arr = (JSONArray) obj;
+            for (Object o : arr)
+                pendingChunks.put((long) o, timeout);
+        }
+        else
+        {
+            pendingChunks.put((long) obj, timeout);
+        }
+
         getJDA().getClient().chunkOrSyncRequest(
             new JSONObject()
                 .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
@@ -386,6 +417,11 @@ public class GuildSetupController
             chunkingGuilds.clear();
             sendChunkRequest(array);
         }
+    }
+
+    private void startTimeout()
+    {
+        timeoutHandle = getJDA().getGatewayPool().scheduleAtFixedRate(new ChunkTimeout(), CHUNK_TIMEOUT, CHUNK_TIMEOUT, TimeUnit.MILLISECONDS);
     }
 
     // Syncing
@@ -442,5 +478,55 @@ public class GuildSetupController
     public interface StatusListener
     {
         void onStatusChange(long guildId, Status oldStatus, Status newStatus);
+    }
+
+    private class ChunkTimeout implements Runnable
+    {
+        @Override
+        public void run()
+        {
+            if (pendingChunks.isEmpty())
+                return;
+            TLongSet timedOut = fetchTimedOut();
+            if (!timedOut.isEmpty())
+            {
+                log.debug("Found {} timed out chunk requests", timedOut.size());
+                processTimedOut(timedOut);
+            }
+        }
+
+        private void processTimedOut(TLongSet timedOut)
+        {
+            TLongIterator it = timedOut.iterator();
+            while (timedOut.size() > 50)
+            {
+                JSONArray chunk = new JSONArray();
+                for (int i = 0; i < 50; i++)
+                {
+                    chunk.put(it.next());
+                    it.remove();
+                }
+                sendChunkRequest(chunk);
+            }
+            JSONArray chunk = new JSONArray();
+            while (it.hasNext())
+                chunk.put(it.next());
+            sendChunkRequest(chunk);
+        }
+
+        private TLongSet fetchTimedOut()
+        {
+            TLongLongIterator it = pendingChunks.iterator();
+            TLongSet timedOut = new TLongHashSet();
+            while (it.hasNext())
+            {
+                it.advance();
+                long id = it.key();
+                long time = it.value();
+                if (System.currentTimeMillis() > time)
+                    timedOut.add(id);
+            }
+            return timedOut;
+        }
     }
 }
