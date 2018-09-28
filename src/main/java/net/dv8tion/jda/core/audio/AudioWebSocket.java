@@ -83,7 +83,7 @@ class AudioWebSocket extends WebSocketAdapter
         this.token = token;
         this.shouldReconnect = shouldReconnect;
 
-        keepAlivePool = getJDA().getAudioKeepAlivePool();
+        keepAlivePool = getJDA().getAudioLifeCyclePool();
 
         //Append the Secure Websocket scheme so that our websocket library knows how to connect
         wssEndpoint = String.format("wss://%s/?v=%d", endpoint, JDAInfo.AUDIO_GATEWAY_VERSION);
@@ -616,6 +616,7 @@ class AudioWebSocket extends WebSocketAdapter
 
         Runnable keepAliveRunnable = () ->
         {
+            getJDA().setContext();
             if (socket != null && socket.isOpen()) //TCP keep-alive
                 send(VoiceCode.HEARTBEAT, System.currentTimeMillis());
             if (audioConnection.udpSocket != null && !audioConnection.udpSocket.isClosed()) //UDP keep-alive

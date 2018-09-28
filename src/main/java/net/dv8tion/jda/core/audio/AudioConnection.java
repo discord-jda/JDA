@@ -202,7 +202,7 @@ public class AudioConnection
 
     protected void prepareReady()
     {
-        Thread readyThread = new Thread(AudioManagerImpl.AUDIO_THREADS, () ->
+        Thread readyThread = new Thread(() ->
         {
             getJDA().setContext();
             final long timeout = getGuild().getAudioManager().getConnectTimeout();
@@ -340,7 +340,7 @@ public class AudioConnection
     {
         if (receiveThread == null)
         {
-            receiveThread = new Thread(AudioManagerImpl.AUDIO_THREADS, () ->
+            receiveThread = new Thread(() ->
             {
                 getJDA().setContext();
                 try
@@ -475,7 +475,7 @@ public class AudioConnection
         {
             combinedAudioExecutor = Executors.newSingleThreadScheduledExecutor((task) ->
             {
-                final Thread t = new Thread(AudioManagerImpl.AUDIO_THREADS, task, threadIdentifier + " Combined Thread");
+                final Thread t = new Thread(task, threadIdentifier + " Combined Thread");
                 t.setDaemon(true);
                 t.setUncaughtExceptionHandler((thread, throwable) ->
                 {
