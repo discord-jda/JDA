@@ -491,7 +491,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         else // if resume is possible
         {
-            LOG.debug("Got disconnected from WebSocket. Attempting to resume session");
+            LOG.warn("Got disconnected from WebSocket. Attempting to resume session");
             reconnect();
         }
     }
