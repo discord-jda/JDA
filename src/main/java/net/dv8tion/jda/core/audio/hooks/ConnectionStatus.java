@@ -22,7 +22,7 @@ package net.dv8tion.jda.core.audio.hooks;
 public enum ConnectionStatus
 {
     /** Indicates that there is no open connection or that the connection was closed by choice, not by error.*/
-    NOT_CONNECTED,
+    NOT_CONNECTED(false),
     /** JDA is waiting on Discord to send a valid endpoint which to connect the audio websocket to.*/
     CONNECTING_AWAITING_ENDPOINT,
     /** JDA has received a valid endpoint and is attempting to setup and connect the audio websocket */
@@ -45,20 +45,22 @@ public enum ConnectionStatus
     /**
      * Indicates that the logged in account lost the {@link net.dv8tion.jda.core.Permission#VOICE_CONNECT Permission.VOICE_CONNECT}
      * and cannot connect to the channel.
-     * <br><b>This is a non-reconnectable error.</b>
      */
-    DISCONNECTED_LOST_PERMISSION,
+    DISCONNECTED_LOST_PERMISSION(false),
     /**
      * Indicates that the channel which the audio connection was connected to was deleted, thus the connection was severed.
-     * <br><b>This is a non-reconnectable error.</b>
      * */
-    DISCONNECTED_CHANNEL_DELETED,
+    DISCONNECTED_CHANNEL_DELETED(false),
     /**
      * Indicates that the logged in account was removed from the {@link net.dv8tion.jda.core.entities.Guild Guild}
      * that this audio connection was connected to, thus the connection was severed.
-     * <br><b>This is a non-reconnectable error.</b>
      */
-    DISCONNECTED_REMOVED_FROM_GUILD,
+    DISCONNECTED_REMOVED_FROM_GUILD(false),
+    /**
+     * Indicates that the logged in account was removed from the {@link net.dv8tion.jda.core.entities.Guild Guild}
+     * while reconnecting to the gateway
+     */
+    DISCONNECTED_REMOVED_DURING_RECONNECT(false),
     /**
      * Indicates that our token was not valid.
      */
@@ -107,5 +109,22 @@ public enum ConnectionStatus
      * the Websocket connection and setup the UDP connection.
      * <br>JDA automatically attempts to reconnect when this error occurs.
      */
-    ERROR_CONNECTION_TIMEOUT
+    ERROR_CONNECTION_TIMEOUT;
+
+    private final boolean shouldReconnect;
+
+    ConnectionStatus()
+    {
+        this(true);
+    }
+
+    ConnectionStatus(boolean shouldReconnect)
+    {
+        this.shouldReconnect = shouldReconnect;
+    }
+
+    public boolean shouldReconnect()
+    {
+        return shouldReconnect;
+    }
 }
