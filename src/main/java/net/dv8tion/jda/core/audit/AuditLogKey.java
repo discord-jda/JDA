@@ -155,7 +155,7 @@ public enum AuditLogKey
 
     /**
      * Change of the {@link net.dv8tion.jda.core.entities.TextChannel#getSlowmode() TextChannel.getSlowmode()} value.
-     * <br>Only for {@link net.dv8tion.jda.core.entities.ChannelType#TEXT ChannelType.Text}
+     * <br>Only for {@link net.dv8tion.jda.core.entities.ChannelType#TEXT ChannelType.TEXT}
      *
      * <p>Expected type: <b>Integer</b>
      */
