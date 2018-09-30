@@ -17,6 +17,8 @@
 package net.dv8tion.jda.core.requests;
 
 import net.dv8tion.jda.core.requests.ratelimit.IBucket;
+import net.dv8tion.jda.core.utils.JDALogger;
+import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,7 +31,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public abstract class RateLimiter
 {
     //Implementations of this class exist in the net.dv8tion.jda.core.requests.ratelimit package.
-
+    protected static final Logger log = JDALogger.getLog(RateLimiter.class);
     protected final Requester requester;
     protected volatile boolean isShutdown = false;
     protected final ConcurrentHashMap<String, IBucket> buckets = new ConcurrentHashMap<>();
