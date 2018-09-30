@@ -707,7 +707,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     //We no longer have access to the guild that this audio manager was for. Set the value to null.
                     queuedAudioConnections.remove(guildId);
                     mng.closeAudioConnection(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD);
-                    it.remove();
                 }
             }
         }
