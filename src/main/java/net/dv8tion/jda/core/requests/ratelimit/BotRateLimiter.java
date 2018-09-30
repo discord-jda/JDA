@@ -18,10 +18,7 @@ package net.dv8tion.jda.core.requests.ratelimit;
 
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ExceptionEvent;
-import net.dv8tion.jda.core.requests.RateLimiter;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Requester;
-import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.requests.Route.RateLimit;
 import okhttp3.Headers;
 import org.json.JSONObject;
@@ -100,10 +97,12 @@ public class BotRateLimiter extends RateLimiter
                 if (Boolean.parseBoolean(global))  //global ratelimit
                 {
                     //If it is global, lock down the threads.
+                    log.warn("Encountered global rate-limit! Retry-After: {}", retryAfter);
                     requester.getJDA().getSessionController().setGlobalRatelimit(getNow() + retryAfter);
                 }
                 else
                 {
+                    log.warn("Encountered 429 on route /{}", bucket.getRoute());
                     updateBucket(bucket, headers, retryAfter);
                 }
 
@@ -201,9 +200,8 @@ public class BotRateLimiter extends RateLimiter
         headerCount += parseInt(headers.get(REMAINING_HEADER), bucket, (remaining, b) -> b.routeUsageRemaining = remaining);
         if (!bucket.missingHeaders && headerCount < 3)
         {
-            Requester.LOG.debug("Encountered issue with headers when updating a bucket\n" +
-                                "Route: {}\nHeaders: {}",
-                                bucket.getRoute(), headers);
+            log.debug("Encountered issue with headers when updating a bucket\n" +
+                      "Route: {}\nHeaders: {}", bucket.getRoute(), headers);
         }
     }
 
@@ -269,7 +267,15 @@ public class BotRateLimiter extends RateLimiter
                     if (delay == null)
                         delay = 0L;
 
-                    requester.getJDA().getRateLimitPool().schedule(this, delay, TimeUnit.MILLISECONDS);
+                    if (delay > 0)
+                    {
+                        log.debug("Backing off {} milliseconds on route /{}", delay, getRoute());
+                        requester.getJDA().getRateLimitPool().schedule(this, delay, TimeUnit.MILLISECONDS);
+                    }
+                    else
+                    {
+                        requester.getJDA().getRateLimitPool().execute(this);
+                    }
                     submittedBuckets.add(this);
                 }
             }
@@ -349,7 +355,7 @@ public class BotRateLimiter extends RateLimiter
                         }
                         catch (Throwable t)
                         {
-                            Requester.LOG.error("Requester system encountered an internal error", t);
+                            log.error("Requester system encountered an internal error", t);
                             it.remove();
                             if (request != null)
                                 request.onFailure(t);
@@ -367,7 +373,7 @@ public class BotRateLimiter extends RateLimiter
                             }
                             catch (RejectedExecutionException e)
                             {
-                                Requester.LOG.debug("Caught RejectedExecutionException when re-queuing a ratelimited request. The requester is probably shutdown, thus, this can be ignored.");
+                                log.debug("Caught RejectedExecutionException when re-queuing a ratelimited request. The requester is probably shutdown, thus, this can be ignored.");
                             }
                         }
                     }
@@ -375,7 +381,7 @@ public class BotRateLimiter extends RateLimiter
             }
             catch (Throwable err)
             {
-                Requester.LOG.error("Requester system encountered an internal error from beyond the synchronized execution blocks. NOT GOOD!", err);
+                log.error("Requester system encountered an internal error from beyond the synchronized execution blocks. NOT GOOD!", err);
                 if (err instanceof Error)
                 {
                     JDAImpl api = requester.getJDA();

@@ -70,6 +70,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public static final int ZLIB_SUFFIX = 0x0000FFFF;
 
     protected static final String INVALIDATE_REASON = "INVALIDATE_SESSION";
+    protected static final long IDENTIFY_BACKOFF = TimeUnit.SECONDS.toMillis(SessionController.IDENTIFY_DELAY); // same as 1000 * IDENTIFY_DELAY
 
     protected final JDAImpl api;
     protected final JDA.ShardInfo shardInfo;
@@ -95,6 +96,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected int reconnectTimeoutS = 2;
     protected long heartbeatStartTime;
+    protected long identifyTime = 0;
 
     protected final TLongObjectMap<ConnectionRequest> queuedAudioConnections = MiscUtil.newLongMap();
     protected final Queue<String> chunkSyncQueue = new ConcurrentLinkedQueue<>();
@@ -357,7 +359,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public void onConnected(WebSocket websocket, Map<String, List<String>> headers)
     {
         api.setStatus(JDA.Status.IDENTIFYING_SESSION);
-        LOG.info("Connected to WebSocket");
+        if (sessionId == null) //no need to log for resume here
+            LOG.info("Connected to WebSocket");
+        else
+            LOG.debug("Connected to WebSocket");
         if (headers.containsKey("cf-ray"))
         {
             List<String> values = headers.get("cf-ray");
@@ -365,7 +370,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             {
                 String ray = values.get(0);
                 cfRays.add(ray);
-                LOG.debug("Received new CF-RAY: {}", ray);
+                LOG.trace("Received new CF-RAY: {}", ray);
             }
         }
         connected = true;
@@ -452,10 +457,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             api.getEventManager().handle(new DisconnectEvent(api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now()));
             try
             {
-                if (sessionId == null)
-                    queueReconnect();
-                else // if resume is possible
-                    reconnect();
+                handleReconnect();
             }
             catch (InterruptedException e)
             {
@@ -466,11 +468,43 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
+    private void handleReconnect() throws InterruptedException
+    {
+        if (sessionId == null)
+        {
+            if (handleIdentifyRateLimit)
+            {
+                long backoff = calculateIdentifyBackoff();
+                if (backoff > 0)
+                {
+                    // it seems that most of the time this is already sub-0 when we reach this point
+                    LOG.error("Encountered IDENTIFY Rate Limit! Waiting {} milliseconds before trying again!", backoff);
+                    Thread.sleep(backoff);
+                }
+                else
+                {
+                    LOG.error("Encountered IDENTIFY Rate Limit!");
+                }
+            }
+            LOG.warn("Got disconnected from WebSocket. Appending to reconnect queue");
+            queueReconnect();
+        }
+        else // if resume is possible
+        {
+            LOG.warn("Got disconnected from WebSocket. Attempting to resume session");
+            reconnect();
+        }
+    }
+
+    protected long calculateIdentifyBackoff()
+    {
+        long currentTime = System.currentTimeMillis();
+        // calculate remaining backoff time since identify
+        return currentTime - (identifyTime + IDENTIFY_BACKOFF);
+    }
 
     protected void queueReconnect()
     {
-        if (!handleIdentifyRateLimit)
-            LOG.warn("Got disconnected from WebSocket (Internet?!)... Appending session to reconnect queue");
         try
         {
             this.api.setStatus(JDA.Status.RECONNECT_QUEUED);
@@ -481,14 +515,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             LOG.error("Reconnect queue rejected session. Shutting down...");
             this.api.setStatus(JDA.Status.SHUTDOWN);
-            this.api.getEventManager().handle(
-                new ShutdownEvent(api, OffsetDateTime.now(), 1006));
+            this.api.getEventManager().handle(new ShutdownEvent(api, OffsetDateTime.now(), 1006));
         }
     }
 
     protected void reconnect() throws InterruptedException
     {
-        reconnect(false, true);
+        reconnect(false);
     }
 
     /**
@@ -497,10 +530,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
      *
      * @param  callFromQueue
      *         whether this was in SessionReconnectQueue and got polled
-     * @param  shouldHandleIdentify
-     *         whether SessionReconnectQueue already handled an IDENTIFY rate limit for this session
      */
-    public void reconnect(boolean callFromQueue, boolean shouldHandleIdentify) throws InterruptedException
+    public void reconnect(boolean callFromQueue) throws InterruptedException
     {
         Set<MDC.MDCCloseable> contextEntries = null;
         Map<String, String> previousContext = null;
@@ -520,27 +551,18 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             api.getEventManager().handle(new ShutdownEvent(api, OffsetDateTime.now(), 1000));
             return;
         }
-        if (!handleIdentifyRateLimit)
-        {
-            if (callFromQueue)
-                LOG.warn("Queue is attempting to reconnect a shard...{}",
-                    JDALogger.getLazyString(() -> shardInfo != null ? " Shard: " + shardInfo.getShardString() : ""));
-            else
-                LOG.warn("Got disconnected from WebSocket (Internet?!)...");
-            LOG.warn("Attempting to reconnect in {}s", reconnectTimeoutS);
-        }
+        String message = "";
+        if (callFromQueue)
+            message = String.format("Queue is attempting to reconnect a shard...%s ", shardInfo != null ? " Shard: " + shardInfo.getShardString() : "");
+        LOG.debug("{}Attempting to reconnect in {}s", message, reconnectTimeoutS);
         while (shouldReconnect)
         {
             api.setStatus(JDA.Status.WAITING_TO_RECONNECT);
-            int delay = IDENTIFY_DELAY;
-            if (handleIdentifyRateLimit && shouldHandleIdentify)
-                LOG.error("Encountered IDENTIFY (OP {}) Rate Limit! Waiting {} seconds before trying again!", WebSocketCode.IDENTIFY, IDENTIFY_DELAY);
-            else
-                delay = reconnectTimeoutS;
+            int delay = reconnectTimeoutS;
             Thread.sleep(delay * 1000);
             handleIdentifyRateLimit = false;
             api.setStatus(JDA.Status.ATTEMPTING_TO_RECONNECT);
-            LOG.warn("Attempting to reconnect!");
+            LOG.debug("Attempting to reconnect!");
             try
             {
                 connect();
@@ -618,6 +640,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         send(identify.toString(), true);
         handleIdentifyRateLimit = true;
+        identifyTime = System.currentTimeMillis();
         sentAuthInfo = true;
         api.setStatus(JDA.Status.AWAITING_LOGIN_CONFIRMATION);
     }
@@ -684,7 +707,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     //We no longer have access to the guild that this audio manager was for. Set the value to null.
                     queuedAudioConnections.remove(guildId);
                     mng.closeAudioConnection(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD);
-                    it.remove();
                 }
             }
         }
@@ -752,6 +774,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 break;
             case WebSocketCode.INVALIDATE_SESSION:
                 LOG.debug("Got Invalidate request (OP 9). Invalidating...");
+                handleIdentifyRateLimit = handleIdentifyRateLimit && System.currentTimeMillis() - identifyTime < IDENTIFY_BACKOFF;
+
                 sentAuthInfo = false;
                 final boolean isResume = content.getBoolean("d");
                 // When d: true we can wait a bit and then try to resume again
@@ -828,13 +852,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     {
                         initiating = false;
                         ready();
-//                        jda.getGuildSetupController().onResume(false);
                     }
                     else
                     {
                         LOG.debug("Resumed while still processing initial ready");
                         jda.setStatus(JDA.Status.LOADING_SUBSYSTEMS);
-//                        jda.getGuildSetupController().onResume(true);
                     }
                     if (!content.isNull("_trace"))
                         updateTraces(content.getJSONArray("_trace"), "RESUMED", WebSocketCode.DISPATCH);
@@ -1297,7 +1319,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             connect();
             if (isLast)
                 return;
-            api.awaitStatus(JDA.Status.AWAITING_LOGIN_CONFIRMATION);
+            try
+            {
+                api.awaitStatus(JDA.Status.AWAITING_LOGIN_CONFIRMATION);
+            }
+            catch (IllegalStateException ex)
+            {
+                close();
+                LOG.debug("Shutdown while trying to connect");
+            }
         }
     }
 
@@ -1314,10 +1344,18 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             if (shutdown)
                 return;
-            reconnect(true, !isLast);
+            reconnect(true);
             if (isLast)
                 return;
-            api.awaitStatus(JDA.Status.AWAITING_LOGIN_CONFIRMATION);
+            try
+            {
+                api.awaitStatus(JDA.Status.AWAITING_LOGIN_CONFIRMATION);
+            }
+            catch (IllegalStateException ex)
+            {
+                close();
+                LOG.debug("Shutdown while trying to reconnect");
+            }
         }
     }
 }
