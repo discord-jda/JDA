@@ -177,9 +177,7 @@ class AudioWebSocket extends WebSocketAdapter
 
             //decide if we reconnect.
             if (shouldReconnect
-                    && status != ConnectionStatus.NOT_CONNECTED    //indicated that the connection was purposely closed. don't reconnect.
-                    && status != ConnectionStatus.DISCONNECTED_CHANNEL_DELETED
-                    && status != ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD
+                    && status.shouldReconnect() //indicated that the connection was purposely closed. don't reconnect.
                     && status != ConnectionStatus.AUDIO_REGION_CHANGE) //Already handled.
             {
                 manager.setQueuedAudioConnection(disconnectedChannel);
