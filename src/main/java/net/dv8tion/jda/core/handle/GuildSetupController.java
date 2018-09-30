@@ -59,9 +59,9 @@ public class GuildSetupController
     private int incompleteCount = 0;
     private int syncingCount = 0;
 
-    StatusListener listener = (id, oldStatus, newStatus) -> log.trace("[{}] Updated status {}->{}", id, oldStatus, newStatus);
-
     private Future<?> timeoutHandle;
+
+    protected StatusListener listener = (id, oldStatus, newStatus) -> log.trace("[{}] Updated status {}->{}", id, oldStatus, newStatus);
 
     public GuildSetupController(JDAImpl api)
     {
@@ -123,10 +123,6 @@ public class GuildSetupController
         setupNodes.remove(id);
     }
 
-    // Called by:
-
-    // - ReadyHandler
-    // - GuildSetupNode
     public void ready(long id)
     {
         setupNodes.remove(id);
@@ -137,7 +133,6 @@ public class GuildSetupController
             tryChunking();
     }
 
-    // - ReadyHandler
     public boolean setIncompleteCount(int count)
     {
         log.debug("Setting incomplete count to {}", count);
@@ -151,7 +146,6 @@ public class GuildSetupController
         return !ready;
     }
 
-    // - ReadyHandler
     public void onReady(long id, JSONObject obj)
     {
         log.trace("Adding id to setup cache {}", id);
@@ -170,33 +164,6 @@ public class GuildSetupController
         }
     }
 
-//    // - WebSocketClient
-//    public void onResume(boolean isInit)
-//    {
-//        if (setupNodes.isEmpty())
-//            return;
-//        if (isInit && incompleteCount > 0)
-//        {
-//            //Override current chunking and syncing state - we were interrupted
-//            // this count will be adjusted by addGuildForX(id, join) later, we need to fix the displacement here
-//            Set<GuildSetupNode> joinedGuilds = setupNodes.valueCollection().stream().filter((node) -> node.join).collect(Collectors.toSet());
-//            long displacementChunking = joinedGuilds.stream().filter((node) -> node.requestedChunk).count();
-//            long displacementSyncing  = joinedGuilds.stream().filter((node) -> node.sync).count();
-//            this.incompleteCount -= (int) displacementChunking;
-//            this.syncingCount -= (int) displacementSyncing;
-//        }
-//
-//        setupNodes.forEachEntry((id, node) -> {
-//            if (node.sync)
-//                addGuildForSyncing(id, node.join);
-//            if (node.requestedChunk)
-//                addGuildForChunking(id, node.join);
-//            return true;
-//        });
-//    }
-
-    // - ReadyHandler (for client accounts)
-    // - GuildCreateHandler
     public void onCreate(long id, JSONObject obj)
     {
         boolean available = obj.isNull("unavailable") || !obj.getBoolean("unavailable");
@@ -220,7 +187,6 @@ public class GuildSetupController
         node.handleCreate(obj);
     }
 
-    // - GuildDeleteHandler
     public boolean onDelete(long id, JSONObject obj)
     {
         boolean available = obj.isNull("unavailable") || !obj.getBoolean("unavailable");
@@ -259,7 +225,6 @@ public class GuildSetupController
         return true;
     }
 
-    // - GuildMemberChunkHandler
     public void onMemberChunk(long id, JSONArray chunk)
     {
         log.debug("Received member chunk for guild id: {} size: {}", id, chunk.length());
@@ -272,7 +237,6 @@ public class GuildSetupController
             node.handleMemberChunk(chunk);
     }
 
-    // - GuildMemberAddHandler
     public boolean onAddMember(long id, JSONObject member)
     {
         GuildSetupNode node = setupNodes.get(id);
@@ -283,7 +247,6 @@ public class GuildSetupController
         return true;
     }
 
-    // - GuildMemberRemoveHandler
     public boolean onRemoveMember(long id, JSONObject member)
     {
         GuildSetupNode node = setupNodes.get(id);
@@ -300,8 +263,6 @@ public class GuildSetupController
         if (node != null)
             node.handleSync(obj);
     }
-
-    // Anywhere \\
 
     public boolean isLocked(long id)
     {
