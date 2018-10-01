@@ -37,9 +37,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -460,6 +458,7 @@ public class GuildSetupController
             synchronized (pendingChunks)
             {
                 TLongLongIterator it = pendingChunks.iterator();
+                List<JSONArray> requests = new LinkedList<>();
                 JSONArray arr = new JSONArray();
                 while (it.hasNext())
                 {
@@ -471,12 +470,13 @@ public class GuildSetupController
 
                     if (arr.length() == 50)
                     {
-                        sendChunkRequest(arr);
+                        requests.add(arr);
                         arr = new JSONArray();
                     }
                 }
                 if (arr.length() > 0)
-                    sendChunkRequest(arr);
+                    requests.add(arr);
+                requests.forEach(GuildSetupController.this::sendChunkRequest);
             }
         }
     }
