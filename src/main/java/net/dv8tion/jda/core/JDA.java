@@ -988,6 +988,13 @@ public interface JDA
     }
 
     /**
+     * The EventManager used by this JDA instance.
+     *
+     * @return The {@link net.dv8tion.jda.core.hooks.IEventManager}
+     */
+    IEventManager getEventManager();
+
+    /**
      * Returns the currently logged in account represented by {@link net.dv8tion.jda.core.entities.SelfUser SelfUser}.
      * <br>Account settings <b>cannot</b> be modified using this object. If you wish to modify account settings please
      * use the AccountManager which is accessible by {@link net.dv8tion.jda.core.entities.SelfUser#getManager()}.

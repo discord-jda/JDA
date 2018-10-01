@@ -16,6 +16,8 @@
 package net.dv8tion.jda.bot.sharding;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Game;
@@ -62,11 +64,11 @@ public class DefaultShardManagerBuilder
     protected IntFunction<OnlineStatus> statusProvider = null;
     protected IntFunction<? extends Game> gameProvider = null;
     protected IntFunction<? extends ConcurrentMap<String, String>> contextProvider = null;
+    protected IntFunction<? extends IEventManager> eventManagerProvider = null;
     protected ThreadPoolProvider<? extends ScheduledExecutorService> rateLimitPoolProvider = null;
     protected ThreadPoolProvider<? extends ScheduledExecutorService> gatewayPoolProvider = null;
     protected ThreadPoolProvider<? extends ExecutorService> callbackPoolProvider = null;
     protected Collection<Integer> shards = null;
-    protected IEventManager eventManager = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
     protected OkHttpClient httpClient = null;
     protected WebSocketFactory wsFactory = null;
@@ -198,7 +200,7 @@ public class DefaultShardManagerBuilder
      * Adds all provided listeners to the list of listeners that will be used to populate the {@link DefaultShardManager DefaultShardManager} object.
      * <br>This uses the {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventListener} by default.
      * <br>To switch to the {@link net.dv8tion.jda.core.hooks.AnnotatedEventManager AnnotatedEventManager},
-     * use {@link #setEventManager(net.dv8tion.jda.core.hooks.IEventManager) setEventManager(new AnnotatedEventManager())}.
+     * use {@link #setEventManagerProvider(IntFunction) setEventManagerProvider(id -> new AnnotatedEventManager())}.
      *
      * <p><b>Note:</b> When using the {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventListener} (default),
      * given listener(s) <b>must</b> be instance of {@link net.dv8tion.jda.core.hooks.EventListener EventListener}!
@@ -219,7 +221,7 @@ public class DefaultShardManagerBuilder
      * Adds all provided listeners to the list of listeners that will be used to populate the {@link DefaultShardManager DefaultShardManager} object.
      * <br>This uses the {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventListener} by default.
      * <br>To switch to the {@link net.dv8tion.jda.core.hooks.AnnotatedEventManager AnnotatedEventManager},
-     * use {@link #setEventManager(net.dv8tion.jda.core.hooks.IEventManager) setEventManager(new AnnotatedEventManager())}.
+     * use {@link #setEventManagerProvider(IntFunction) setEventManager(id -> new AnnotatedEventManager())}.
      *
      * <p><b>Note:</b> When using the {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventListener} (default),
      * given listener(s) <b>must</b> be instance of {@link net.dv8tion.jda.core.hooks.EventListener EventListener}!
@@ -279,7 +281,7 @@ public class DefaultShardManagerBuilder
      *
      * <br>This uses the {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventListener} by default.
      * <br>To switch to the {@link net.dv8tion.jda.core.hooks.AnnotatedEventManager AnnotatedEventManager},
-     * use {@link #setEventManager(net.dv8tion.jda.core.hooks.IEventManager) setEventManager(new AnnotatedEventManager())}.
+     * use {@link #setEventManagerProvider(IntFunction) setEventManager(id -> new AnnotatedEventManager())}.
      *
      * <p><b>Note:</b> When using the {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventListener} (default),
      * given listener(s) <b>must</b> be instance of {@link net.dv8tion.jda.core.hooks.EventListener EventListener}!
@@ -301,7 +303,7 @@ public class DefaultShardManagerBuilder
      *
      * <br>This uses the {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventListener} by default.
      * <br>To switch to the {@link net.dv8tion.jda.core.hooks.AnnotatedEventManager AnnotatedEventManager},
-     * use {@link #setEventManager(net.dv8tion.jda.core.hooks.IEventManager) setEventManager(new AnnotatedEventManager())}.
+     * use {@link #setEventManagerProvider(IntFunction) setEventManager(id -> new AnnotatedEventManager())}.
      *
      * <p><b>Note:</b> When using the {@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventListener} (default),
      * given listener(s) <b>must</b> be instance of {@link net.dv8tion.jda.core.hooks.EventListener EventListener}!
@@ -473,12 +475,41 @@ public class DefaultShardManagerBuilder
      *         The new {@link net.dv8tion.jda.core.hooks.IEventManager} to use.
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @deprecated Use {@link #setEventManagerProvider(IntFunction)} instead
      */
+    @Deprecated
+    @DeprecatedSince("3.8.1")
+    @ReplaceWith("setEventManagerProvider((id) -> manager)")
     public DefaultShardManagerBuilder setEventManager(final IEventManager manager)
     {
         Checks.notNull(manager, "manager");
 
-        this.eventManager = manager;
+        return setEventManagerProvider((id) -> manager);
+    }
+
+    /**
+     * Sets a provider to change the internally used EventManager.
+     * <br>There are 2 provided Implementations:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.core.hooks.InterfacedEventManager InterfacedEventManager} which uses the Interface
+     *     {@link net.dv8tion.jda.core.hooks.EventListener EventListener} (tip: use the {@link net.dv8tion.jda.core.hooks.ListenerAdapter ListenerAdapter}).
+     *     <br>This is the default EventManager.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.core.hooks.AnnotatedEventManager AnnotatedEventManager} which uses the Annotation
+     *         {@link net.dv8tion.jda.core.hooks.SubscribeEvent @SubscribeEvent} to mark the methods that listen for events.</li>
+     * </ul>
+     * <br>You can also create your own EventManager (See {@link net.dv8tion.jda.core.hooks.IEventManager}).
+     *
+     * @param  eventManagerProvider
+     *         A supplier for the new {@link net.dv8tion.jda.core.hooks.IEventManager} to use.
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     */
+    public DefaultShardManagerBuilder setEventManagerProvider(final IntFunction<? extends IEventManager> eventManagerProvider)
+    {
+        Checks.notNull(eventManagerProvider, "eventManagerProvider");
+        this.eventManagerProvider = eventManagerProvider;
         return this;
     }
 
@@ -1036,7 +1067,7 @@ public class DefaultShardManagerBuilder
     {
         final DefaultShardManager manager = new DefaultShardManager(
                 this.shardsTotal, this.shards, this.sessionController,
-                this.listeners, this.listenerProviders, this.token, this.eventManager,
+                this.listeners, this.listenerProviders, this.token, this.eventManagerProvider,
                 this.audioSendFactory, this.gameProvider, this.statusProvider,
                 this.httpClientBuilder, this.httpClient, this.rateLimitPoolProvider, this.gatewayPoolProvider,
                 this.callbackPoolProvider, this.wsFactory, this.threadFactory,

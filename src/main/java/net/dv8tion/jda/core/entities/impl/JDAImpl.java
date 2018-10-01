@@ -667,6 +667,12 @@ public class JDAImpl implements JDA
         return presence;
     }
 
+    @Override
+    public IEventManager getEventManager()
+    {
+        return eventManager;
+    }
+
     //@Override
     //public AuditableRestAction<Void> installAuxiliaryCable(int port) throws UnsupportedOperationException
     //{
@@ -682,7 +688,7 @@ public class JDAImpl implements JDA
     @Override
     public void setEventManager(IEventManager eventManager)
     {
-        this.eventManager = eventManager;
+        this.eventManager = eventManager == null ? new InterfacedEventManager() : eventManager;
     }
 
     @Override
@@ -776,11 +782,6 @@ public class JDAImpl implements JDA
     public Requester getRequester()
     {
         return requester;
-    }
-
-    public IEventManager getEventManager()
-    {
-        return eventManager;
     }
 
     public WebSocketFactory getWebSocketFactory()

@@ -93,9 +93,9 @@ public class DefaultShardManager implements ShardManager
     protected final boolean enableVoice;
 
     /**
-     * The {@link net.dv8tion.jda.core.hooks.IEventManager IEventManager} used by the ShardManager.
+     * The provider for {@link net.dv8tion.jda.core.hooks.IEventManager IEventManager} used by the ShardManager
      */
-    protected final IEventManager eventManager;
+    protected final IntFunction<? extends IEventManager> eventManagerProvider;
 
     /**
      * The event listeners for new JDA instances.
@@ -252,8 +252,8 @@ public class DefaultShardManager implements ShardManager
      *         shard creation (including shard restarts) and must return an event listener
      * @param  token
      *         The token
-     * @param  eventManager
-     *         The event manager
+     * @param  eventManagerProvider
+     *         The event manager provider
      * @param  audioSendFactory
      *         The {@link net.dv8tion.jda.core.audio.factory.IAudioSendFactory IAudioSendFactory}
      * @param  gameProvider
@@ -306,7 +306,7 @@ public class DefaultShardManager implements ShardManager
             final int shardsTotal, final Collection<Integer> shardIds,
             final SessionController controller, final List<Object> listeners,
             final List<IntFunction<Object>> listenerProviders,
-            final String token, final IEventManager eventManager, final IAudioSendFactory audioSendFactory,
+            final String token, final IntFunction<? extends IEventManager> eventManagerProvider, final IAudioSendFactory audioSendFactory,
             final IntFunction<? extends Game> gameProvider, final IntFunction<OnlineStatus> statusProvider,
             final OkHttpClient.Builder httpClientBuilder, final OkHttpClient httpClient,
             final ThreadPoolProvider<? extends ScheduledExecutorService> rateLimitPoolProvider,
@@ -324,7 +324,7 @@ public class DefaultShardManager implements ShardManager
         this.listeners = listeners;
         this.listenerProviders = listenerProviders;
         this.token = token;
-        this.eventManager = eventManager;
+        this.eventManagerProvider = eventManagerProvider;
         this.audioSendFactory = audioSendFactory;
         this.gameProvider = gameProvider;
         this.statusProvider = statusProvider;
@@ -662,8 +662,8 @@ public class DefaultShardManager implements ShardManager
 
         jda.asBot().setShardManager(this);
 
-        if (this.eventManager != null)
-            jda.setEventManager(this.eventManager);
+        if (this.eventManagerProvider != null)
+            jda.setEventManager(this.eventManagerProvider.apply(shardId));
 
         if (this.audioSendFactory != null)
             jda.setAudioSendFactory(this.audioSendFactory);
