@@ -196,6 +196,8 @@ javadoc {
             'net/dv8tion/jda/core/utils/Helpers.java',
             'net/dv8tion/jda/core/utils/concurrent',
             'net/dv8tion/jda/core/utils/tuple')
+    
+    exclude('net/dv8tion/jda/webhook/SendWebhookMessageFactory')
 
     //voice crypto
     exclude('com/iwebpp/crypto')

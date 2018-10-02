@@ -44,6 +44,7 @@ public class WebhookClientBuilder
     protected OkHttpClient client;
     protected ThreadFactory threadFactory;
     protected boolean isDaemon;
+    protected boolean isWait;
 
     /**
      * Creates a new WebhookClientBuilder with the provided id and token
@@ -195,6 +196,23 @@ public class WebhookClientBuilder
         return this;
     }
 
+    /**
+     * Whether we should wait for the {@link net.dv8tion.jda.webhook.WebhookClient WebhookClient} to return
+     * it's message after sending.
+     * <br><b>Default: false</b>
+     *
+     *
+     * @param  isWait
+     *         True, if we should wait for the message to return
+     *
+     * @return The current WebhookClientBuilder for chaining convenience
+     */
+    public WebhookClientBuilder setWait(boolean isWait)
+    {
+        this.isWait = isWait;
+        return this;
+    }
+
 
     /**
      * Builds a new {@link net.dv8tion.jda.webhook.WebhookClient WebhookClient} instance
@@ -219,7 +237,7 @@ public class WebhookClientBuilder
                 threadFactory = new DefaultWebhookThreadFactory();
             pool = Executors.newSingleThreadScheduledExecutor(threadFactory);
         }
-        return new WebhookClient(id, token, client, pool);
+        return new WebhookClient(id, token, client, pool, isWait);
     }
 
     public final class DefaultWebhookThreadFactory implements ThreadFactory
