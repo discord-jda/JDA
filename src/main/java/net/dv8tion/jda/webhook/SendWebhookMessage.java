@@ -1,6 +1,5 @@
 package net.dv8tion.jda.webhook;
 
-import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
@@ -396,10 +395,8 @@ public class SendWebhookMessage implements Message
      *
      * <p><b>This may include Roles from other {@link net.dv8tion.jda.core.entities.Guild Guilds}</b>
      *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.core.entities.MessageType#DEFAULT MessageType.DEFAULT}
-     *
      * @return immutable set of mentioned Role ids
+     * @throws java.lang.UnsupportedOperationException If this is not a Received Message from {@link net.dv8tion.jda.core.entities.MessageType#DEFAULT MessageType.DEFAULT}
      */
     public Set<Long> getMentionedRoleIds()
     {
