@@ -1405,7 +1405,7 @@ public class EntityBuilder
         return changesList.stream().collect(Collectors.toMap(AuditLogChange::getKey, UnaryOperator.identity()));
     }
 
-    public static <T> List<T> map(JSONObject jsonObject, String key, Function<JSONObject, T> convert)
+    private <T> List<T> map(JSONObject jsonObject, String key, Function<JSONObject, T> convert)
     {
         if (jsonObject.isNull(key))
             return Collections.emptyList();
