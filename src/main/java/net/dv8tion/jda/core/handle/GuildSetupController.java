@@ -17,8 +17,11 @@
 package net.dv8tion.jda.core.handle;
 
 import gnu.trove.iterator.TLongIterator;
+import gnu.trove.iterator.TLongLongIterator;
 import gnu.trove.iterator.TLongObjectIterator;
+import gnu.trove.map.TLongLongMap;
 import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongLongHashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
@@ -34,23 +37,29 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("WeakerAccess")
 public class GuildSetupController
 {
+    protected static final int CHUNK_TIMEOUT = 10000;
     protected static final Logger log = JDALogger.getLog(GuildSetupController.class);
+
     private final UpstreamReference<JDAImpl> api;
     private final TLongObjectMap<GuildSetupNode> setupNodes = new TLongObjectHashMap<>();
     private final TLongSet chunkingGuilds = new TLongHashSet();
+    private final TLongLongMap pendingChunks = new TLongLongHashMap();
     private final TLongSet syncingGuilds;
+
     private int incompleteCount = 0;
     private int syncingCount = 0;
 
-    StatusListener listener = (id, oldStatus, newStatus) -> log.trace("[{}] Updated status {}->{}", id, oldStatus, newStatus);
+    private Future<?> timeoutHandle;
+
+    protected StatusListener listener = (id, oldStatus, newStatus) -> log.trace("[{}] Updated status {}->{}", id, oldStatus, newStatus);
 
     public GuildSetupController(JDAImpl api)
     {
@@ -63,10 +72,7 @@ public class GuildSetupController
 
     JDAImpl getJDA()
     {
-        JDAImpl tmp = api.get();
-        if (tmp == null)
-            throw new IllegalStateException();
-        return tmp;
+        return api.get();
     }
 
     boolean isClient()
@@ -115,10 +121,6 @@ public class GuildSetupController
         setupNodes.remove(id);
     }
 
-    // Called by:
-
-    // - ReadyHandler
-    // - GuildSetupNode
     public void ready(long id)
     {
         setupNodes.remove(id);
@@ -129,7 +131,6 @@ public class GuildSetupController
             tryChunking();
     }
 
-    // - ReadyHandler
     public boolean setIncompleteCount(int count)
     {
         log.debug("Setting incomplete count to {}", count);
@@ -138,10 +139,11 @@ public class GuildSetupController
         boolean ready = count == 0;
         if (ready)
             getJDA().getClient().ready();
+        else
+            startTimeout();
         return !ready;
     }
 
-    // - ReadyHandler
     public void onReady(long id, JSONObject obj)
     {
         log.trace("Adding id to setup cache {}", id);
@@ -160,33 +162,6 @@ public class GuildSetupController
         }
     }
 
-//    // - WebSocketClient
-//    public void onResume(boolean isInit)
-//    {
-//        if (setupNodes.isEmpty())
-//            return;
-//        if (isInit && incompleteCount > 0)
-//        {
-//            //Override current chunking and syncing state - we were interrupted
-//            // this count will be adjusted by addGuildForX(id, join) later, we need to fix the displacement here
-//            Set<GuildSetupNode> joinedGuilds = setupNodes.valueCollection().stream().filter((node) -> node.join).collect(Collectors.toSet());
-//            long displacementChunking = joinedGuilds.stream().filter((node) -> node.requestedChunk).count();
-//            long displacementSyncing  = joinedGuilds.stream().filter((node) -> node.sync).count();
-//            this.incompleteCount -= (int) displacementChunking;
-//            this.syncingCount -= (int) displacementSyncing;
-//        }
-//
-//        setupNodes.forEachEntry((id, node) -> {
-//            if (node.sync)
-//                addGuildForSyncing(id, node.join);
-//            if (node.requestedChunk)
-//                addGuildForChunking(id, node.join);
-//            return true;
-//        });
-//    }
-
-    // - ReadyHandler (for client accounts)
-    // - GuildCreateHandler
     public void onCreate(long id, JSONObject obj)
     {
         boolean available = obj.isNull("unavailable") || !obj.getBoolean("unavailable");
@@ -210,7 +185,6 @@ public class GuildSetupController
         node.handleCreate(obj);
     }
 
-    // - GuildDeleteHandler
     public boolean onDelete(long id, JSONObject obj)
     {
         boolean available = obj.isNull("unavailable") || !obj.getBoolean("unavailable");
@@ -249,16 +223,18 @@ public class GuildSetupController
         return true;
     }
 
-    // - GuildMemberChunkHandler
     public void onMemberChunk(long id, JSONArray chunk)
     {
         log.debug("Received member chunk for guild id: {} size: {}", id, chunk.length());
+        synchronized (pendingChunks)
+        {
+            pendingChunks.remove(id);
+        }
         GuildSetupNode node = setupNodes.get(id);
         if (node != null)
             node.handleMemberChunk(chunk);
     }
 
-    // - GuildMemberAddHandler
     public boolean onAddMember(long id, JSONObject member)
     {
         GuildSetupNode node = setupNodes.get(id);
@@ -269,7 +245,6 @@ public class GuildSetupController
         return true;
     }
 
-    // - GuildMemberRemoveHandler
     public boolean onRemoveMember(long id, JSONObject member)
     {
         GuildSetupNode node = setupNodes.get(id);
@@ -286,8 +261,6 @@ public class GuildSetupController
         if (node != null)
             node.handleSync(obj);
     }
-
-    // Anywhere \\
 
     public boolean isLocked(long id)
     {
@@ -308,6 +281,17 @@ public class GuildSetupController
         setupNodes.clear();
         chunkingGuilds.clear();
         incompleteCount = 0;
+        close();
+        synchronized (pendingChunks)
+        {
+            pendingChunks.clear();
+        }
+    }
+
+    public void close()
+    {
+        if (timeoutHandle != null)
+            timeoutHandle.cancel(false);
     }
 
     public boolean containsMember(long userId, @Nullable GuildSetupNode excludedNode)
@@ -353,6 +337,21 @@ public class GuildSetupController
     {
         log.debug("Sending chunking requests for {} guilds", obj instanceof JSONArray ? ((JSONArray) obj).length() : 1);
 
+        long timeout = System.currentTimeMillis() + CHUNK_TIMEOUT;
+        synchronized (pendingChunks)
+        {
+            if (obj instanceof JSONArray)
+            {
+                JSONArray arr = (JSONArray) obj;
+                for (Object o : arr)
+                    pendingChunks.put((long) o, timeout);
+            }
+            else
+            {
+                pendingChunks.put((long) obj, timeout);
+            }
+        }
+
         getJDA().getClient().chunkOrSyncRequest(
             new JSONObject()
                 .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
@@ -386,6 +385,11 @@ public class GuildSetupController
             chunkingGuilds.clear();
             sendChunkRequest(array);
         }
+    }
+
+    private void startTimeout()
+    {
+        timeoutHandle = getJDA().getGatewayPool().scheduleAtFixedRate(new ChunkTimeout(), CHUNK_TIMEOUT, CHUNK_TIMEOUT, TimeUnit.MILLISECONDS);
     }
 
     // Syncing
@@ -442,5 +446,38 @@ public class GuildSetupController
     public interface StatusListener
     {
         void onStatusChange(long guildId, Status oldStatus, Status newStatus);
+    }
+
+    private class ChunkTimeout implements Runnable
+    {
+        @Override
+        public void run()
+        {
+            if (pendingChunks.isEmpty())
+                return;
+            synchronized (pendingChunks)
+            {
+                TLongLongIterator it = pendingChunks.iterator();
+                List<JSONArray> requests = new LinkedList<>();
+                JSONArray arr = new JSONArray();
+                while (it.hasNext())
+                {
+                    // key=guild_id, value=timeout
+                    it.advance();
+                    if (System.currentTimeMillis() <= it.value())
+                        continue;
+                    arr.put(it.key());
+
+                    if (arr.length() == 50)
+                    {
+                        requests.add(arr);
+                        arr = new JSONArray();
+                    }
+                }
+                if (arr.length() > 0)
+                    requests.add(arr);
+                requests.forEach(GuildSetupController.this::sendChunkRequest);
+            }
+        }
     }
 }

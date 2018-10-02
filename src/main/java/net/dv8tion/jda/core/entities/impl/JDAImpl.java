@@ -594,6 +594,8 @@ public class JDAImpl implements JDA
         audioManagers.forEach(AudioManager::closeAudioConnection);
         audioManagers.clear();
 
+        guildSetupController.close();
+
         if (audioLifeCyclePool != null)
             audioLifeCyclePool.shutdownNow();
 
