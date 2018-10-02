@@ -122,6 +122,7 @@ public class WebhookClient implements AutoCloseable
      * @param message The message to send
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      * this will be completed once the message was sent.
+     * If {@code isWait} is set to true this will have the message from discord, null otherwise
      * @throws IllegalArgumentException If the provided message is null
      */
     public RequestFuture<SendWebhookMessage> send(WebhookMessage message)
@@ -137,6 +138,7 @@ public class WebhookClient implements AutoCloseable
      * @param file The file to send
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      * this will be completed once the message was sent.
+     * If {@code isWait} is set to true this will have the message from discord, null otherwise
      * @throws java.lang.IllegalArgumentException              If the provided file is {@code null}, does not exist or is not readable
      * @throws java.util.concurrent.RejectedExecutionException If this client was closed
      */
@@ -154,6 +156,7 @@ public class WebhookClient implements AutoCloseable
      * @param fileName The name that should be used for this file
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      * this will be completed once the message was sent.
+     * If {@code isWait} is set to true this will have the message from discord, null otherwise
      * @throws java.lang.IllegalArgumentException              If the provided file is {@code null}, does not exist or is not readable
      * @throws java.util.concurrent.RejectedExecutionException If this client was closed
      */
@@ -170,6 +173,7 @@ public class WebhookClient implements AutoCloseable
      * @param fileName The name that should be used for this file
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      * this will be completed once the message was sent.
+     * If {@code isWait} is set to true this will have the message from discord, null otherwise
      * @throws java.lang.IllegalArgumentException              If the provided data is {@code null} or exceeds the limit of 8MB
      * @throws java.util.concurrent.RejectedExecutionException If this client was closed
      */
@@ -186,6 +190,7 @@ public class WebhookClient implements AutoCloseable
      * @param fileName The name that should be used for this file
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      * this will be completed once the message was sent.
+     * If {@code isWait} is set to true this will have the message from discord, null otherwise
      * @throws java.lang.IllegalArgumentException              If the provided data is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException If this client was closed
      */
@@ -204,6 +209,7 @@ public class WebhookClient implements AutoCloseable
      * @param message The message to send
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      * this will be completed once the message was sent.
+     * If {@code isWait} is set to true this will have the message from discord, null otherwise
      * @throws IllegalArgumentException If the provided message is null
      */
     public RequestFuture<SendWebhookMessage> send(Message message)
@@ -223,6 +229,7 @@ public class WebhookClient implements AutoCloseable
      * @param embeds The embeds to send
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      * this will be completed once the message was sent.
+     * If {@code isWait} is set to true this will have the message from discord, null otherwise
      * @throws java.lang.IllegalArgumentException              If any of the provided embeds is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException If this client was closed
      */
@@ -244,6 +251,7 @@ public class WebhookClient implements AutoCloseable
      * @param embeds The other embeds to send
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      * this will be completed once the message was sent.
+     * If {@code isWait} is set to true this will have the message from discord, null otherwise
      * @throws java.lang.IllegalArgumentException              If any of the provided embeds is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException If this client was closed
      */
@@ -264,6 +272,7 @@ public class WebhookClient implements AutoCloseable
      * @param embeds The embeds to send
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      * this will be completed once the message was sent.
+     * If {@code isWait} is set to true this will have the message from discord, null otherwise
      * @throws java.lang.IllegalArgumentException              If any of the provided embeds is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException If this client was closed
      */
@@ -278,6 +287,7 @@ public class WebhookClient implements AutoCloseable
      * @param content The text message to send
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      * this will be completed once the message was sent.
+     * If {@code isWait} is set to true this will have the message from discord, null otherwise
      * @throws java.lang.IllegalArgumentException              If any of the provided message is {@code null}, blank or exceeds 2000 characters in length
      * @throws java.util.concurrent.RejectedExecutionException If this client was closed
      */
