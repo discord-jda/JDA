@@ -472,7 +472,8 @@ public class WebhookClient implements AutoCloseable
                 backoffQueue();
                 return;
             }
-        } catch (IOException e) {
+        } catch (IOException e)
+        {
             LOG.error("There was some error while sending a webhook message", e);
             queue.poll().getRight().completeExceptionally(e);
         }

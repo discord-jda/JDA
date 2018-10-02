@@ -53,7 +53,6 @@ public class SentWebhookMessage extends AbstractMessage
         return mentionedUsers;
     }
 
-
     @Override
     public boolean mentionsEveryone()
     {
