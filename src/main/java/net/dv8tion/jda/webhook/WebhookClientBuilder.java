@@ -198,9 +198,8 @@ public class WebhookClientBuilder
 
     /**
      * Whether we should wait for the {@link net.dv8tion.jda.webhook.WebhookClient WebhookClient} to return
-     * it's message after sending.
+     * its message after sending.
      * <br><b>Default: false</b>
-     *
      *
      * @param  isWait
      *         True, if we should wait for the message to return

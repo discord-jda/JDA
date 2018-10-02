@@ -21,7 +21,7 @@ public class WebhookUser implements User
     protected final String avatarId;
     protected final boolean bot;
 
-    protected WebhookUser(long id, short discriminator, String name, String avatarId, boolean bot)
+    public WebhookUser(long id, short discriminator, String name, String avatarId, boolean bot)
     {
         this.id = id;
         this.discriminator = discriminator;
@@ -115,7 +115,7 @@ public class WebhookUser implements User
     @Override
     public String getAsMention()
     {
-        return "<@" + id + '>';
+        return "<@" + getId() + '>';
     }
 
     @Override

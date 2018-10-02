@@ -38,6 +38,8 @@ import net.dv8tion.jda.core.utils.Helpers;
 import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.cache.CacheFlag;
 import net.dv8tion.jda.core.utils.cache.UpstreamReference;
+import net.dv8tion.jda.webhook.SentWebhookMessage;
+import net.dv8tion.jda.webhook.WebhookUser;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.json.JSONArray;
@@ -866,6 +868,11 @@ public class EntityBuilder
 
     public Message.Attachment createMessageAttachment(JSONObject jsonObject)
     {
+        return createMessageAttachment(jsonObject, false);
+    }
+
+    public Message.Attachment createMessageAttachment(JSONObject jsonObject, boolean webhookMessage)
+    {
         final int width = Helpers.optInt(jsonObject, "width", -1);
         final int height = Helpers.optInt(jsonObject, "height", -1);
         final int size = jsonObject.getInt("size");
@@ -873,6 +880,12 @@ public class EntityBuilder
         final String proxyUrl = jsonObject.optString("proxy_url", null);
         final String filename = jsonObject.getString("filename");
         final long id = jsonObject.getLong("id");
+
+        if(webhookMessage)
+        {
+            return new SentWebhookMessage.Attachment(id, url, proxyUrl, filename, size, height, width);
+        }
+
         return new Message.Attachment(id, url, proxyUrl, filename, size, height, width, getJDA());
     }
 
@@ -1068,6 +1081,45 @@ public class EntityBuilder
                 .setToken(token)
                 .setOwner(owner == null ? null : channel.getGuild().getMember(owner))
                 .setUser(defaultUser);
+    }
+
+    private WebhookUser createWebhookUser(JSONObject jsonObject)
+    {
+        final long authorId = jsonObject.getLong("id");
+        final String username = jsonObject.getString("username");
+        final short discriminator = Short.parseShort(jsonObject.getString("discriminator"));
+        final String avatarId = jsonObject.getString("avatar");
+        final boolean isBot = jsonObject.getBoolean("bot");
+        return new WebhookUser(authorId, discriminator, username, avatarId, isBot);
+    }
+
+    public SentWebhookMessage createSentWebhookMessage(JSONObject jsonObject)
+    {
+        final long id = jsonObject.getLong("id");
+        final int type = jsonObject.getInt("type");
+        final long channelId = jsonObject.getLong("channel_id");
+        final long webhookId = jsonObject.getLong("webhook_id");
+        final String content = jsonObject.optString("content");
+        final String nonce = jsonObject.optString("nonce", null);
+
+        final WebhookUser author = createWebhookUser(jsonObject.getJSONObject("author"));
+
+        final boolean isTTS = Helpers.optBoolean(jsonObject, "tts");
+        final boolean mentionEveryone = Helpers.optBoolean(jsonObject, "mention_everyone");
+        final boolean pinned = Helpers.optBoolean(jsonObject, "pinned");
+
+        final List<MessageEmbed>       embeds         = map(jsonObject, "embeds", this::createMessageEmbed);
+        final List<Message.Attachment> attachments    = map(jsonObject, "attachments", (j) -> createMessageAttachment(j, true));
+        final List<User>               mentionedUsers = map(jsonObject, "mentions", this::createWebhookUser);
+
+        final Set<Long> mentionedRoles = new HashSet<>();
+
+        jsonObject.getJSONArray("mention_roles").forEach(
+            (roleId) -> mentionedRoles.add(Long.parseUnsignedLong(roleId.toString()))
+        );
+
+        return new SentWebhookMessage(id, channelId, webhookId, MessageType.fromId(type), mentionEveryone,
+            mentionedUsers, mentionedRoles, isTTS, pinned, content, nonce, author, attachments, embeds);
     }
 
     public Relationship createRelationship(JSONObject relationshipJson)
