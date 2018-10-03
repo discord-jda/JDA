@@ -158,7 +158,7 @@ public class SentWebhookMessage extends AbstractMessage
     }
 
     /**
-     * An immutable list of all mentioned {@link net.dv8tion.jda.core.entities.Role Roles} ids.
+     * An immutable {@link gnu.trove.list.TLongList TLongList} of all mentioned {@link net.dv8tion.jda.core.entities.Role Roles} ids.
      * <br>If none were mentioned, this list is empty.
      *
      * <p><b>This may include Roles from other {@link net.dv8tion.jda.core.entities.Guild Guilds}</b>
@@ -167,7 +167,7 @@ public class SentWebhookMessage extends AbstractMessage
      *         If this is not a Received Message from {@link net.dv8tion.jda.core.entities.MessageType#DEFAULT MessageType.DEFAULT}
      *
      *
-     * @return immutable list of mentioned Role ids
+     * @return immutable {@link gnu.trove.list.TLongList TLongList} of mentioned Role ids
      */
     public TLongList getMentionedRoleIds()
     {
