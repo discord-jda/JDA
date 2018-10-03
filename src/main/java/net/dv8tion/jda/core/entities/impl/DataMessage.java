@@ -16,9 +16,11 @@
 
 package net.dv8tion.jda.core.entities.impl;
 
+import net.dv8tion.jda.core.entities.MessageActivity;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.MessageType;
 
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -75,6 +77,13 @@ public class DataMessage extends AbstractMessage
     public List<MessageEmbed> getEmbeds()
     {
         return embed == null ? Collections.emptyList() : Collections.singletonList(embed);
+    }
+
+    @Nullable
+    @Override
+    public MessageActivity getActivity() {
+        unsupported();
+        return null;
     }
 
     // UNSUPPORTED OPERATIONS ON MESSAGE BUILDER OUTPUT

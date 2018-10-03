@@ -34,6 +34,7 @@ import net.dv8tion.jda.core.entities.MessageEmbed.*;
 import net.dv8tion.jda.core.entities.impl.*;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.handle.EventCache;
+import net.dv8tion.jda.core.requests.WebSocketClient;
 import net.dv8tion.jda.core.utils.Helpers;
 import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.cache.CacheFlag;
@@ -753,6 +754,8 @@ public class EntityBuilder
         final long id = jsonObject.getLong("id");
         String content = jsonObject.optString("content");
 
+        MessageActivity activity = null;
+
         JSONObject author = jsonObject.getJSONObject("author");
         final long authorId = author.getLong("id");
         final boolean fromWebhook = jsonObject.has("webhook_id");
@@ -765,6 +768,41 @@ public class EntityBuilder
         final List<Message.Attachment> attachments = map(jsonObject, "attachments", this::createMessageAttachment);
         final List<MessageEmbed>       embeds      = map(jsonObject, "embeds",      this::createMessageEmbed);
         final List<MessageReaction>    reactions   = map(jsonObject, "reactions",   (obj) -> createMessageReaction(chan, id, obj));
+
+        if (!jsonObject.isNull("activity"))
+        {
+            JSONObject activityData = jsonObject.getJSONObject("activity");
+            MessageActivity.ActivityType activityType = MessageActivity.ActivityType.fromId(activityData.getInt("type"));
+            final String partyId = activityData.optString("party_id", null);
+            MessageActivity.Application application = null;
+
+            switch (activityType)
+            {
+                case LISTENING:
+                    break;
+                case JOIN:
+                case SPECTATE:
+                case JOIN_REQUEST:
+                    if (!jsonObject.isNull("application"))
+                    {
+                        JSONObject applicationData = jsonObject.getJSONObject("application");
+
+                        final String name = applicationData.getString("name");
+                        final String description = applicationData.getString("description");
+                        final String iconId = applicationData.getString("icon");
+                        final String coverId = applicationData.getString("cover_image");
+                        final long applicationId = applicationData.getLong("id");
+
+                        application = new MessageActivity.Application(name, description, iconId, coverId, applicationId);
+                    }
+                    break;
+                default:
+                    WebSocketClient.LOG.debug("Received an unknown activity type in a message. JSON: {}", activityData);
+                    break;
+
+            }
+            activity = new MessageActivity(activityType, partyId, application);
+        }
 
         User user;
         switch (chan.getType())
@@ -828,13 +866,13 @@ public class EntityBuilder
             case DEFAULT:
                 return new ReceivedMessage(id, chan, type, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
-                    content, nonce, user, editTime, reactions, attachments, embeds);
+                    content, nonce, user, activity, editTime, reactions, attachments, embeds);
             case UNKNOWN:
                 throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
             default:
                 return new SystemMessage(id, chan, type, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
-                    content, nonce, user, editTime, reactions, attachments, embeds);
+                    content, nonce, user, activity, editTime, reactions, attachments, embeds);
         }
 
     }
