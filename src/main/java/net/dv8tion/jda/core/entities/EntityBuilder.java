@@ -868,10 +868,12 @@ public class EntityBuilder
 
     public Message.Attachment createMessageAttachment(JSONObject jsonObject)
     {
-        return createMessageAttachment(jsonObject, getJDA());
+        SentWebhookMessage.Attachment attachment = createWebhookMessageAttachment(jsonObject);
+        return new Message.Attachment(attachment.getIdLong(), attachment.getUrl(), attachment.getProxyUrl(),
+            attachment.getFileName(), attachment.getSize(), attachment.getHeight(), attachment.getWidth(), getJDA());
     }
 
-    public static Message.Attachment createMessageAttachment(JSONObject jsonObject, JDAImpl jda)
+    public static SentWebhookMessage.Attachment createWebhookMessageAttachment(JSONObject jsonObject)
     {
         final int width = Helpers.optInt(jsonObject, "width", -1);
         final int height = Helpers.optInt(jsonObject, "height", -1);
@@ -880,13 +882,7 @@ public class EntityBuilder
         final String proxyUrl = jsonObject.optString("proxy_url", null);
         final String filename = jsonObject.getString("filename");
         final long id = jsonObject.getLong("id");
-
-        if(jda == null)
-        {
-            return new SentWebhookMessage.Attachment(id, url, proxyUrl, filename, size, height, width);
-        }
-
-        return new Message.Attachment(id, url, proxyUrl, filename, size, height, width, jda);
+        return new SentWebhookMessage.Attachment(id, url, proxyUrl, filename, size, height, width);
     }
 
     public static MessageEmbed createMessageEmbed(JSONObject content)
@@ -1109,7 +1105,7 @@ public class EntityBuilder
         final boolean pinned = Helpers.optBoolean(jsonObject, "pinned");
 
         final List<MessageEmbed>       embeds         = map(jsonObject, "embeds", EntityBuilder::createMessageEmbed);
-        final List<Message.Attachment> attachments    = map(jsonObject, "attachments", (j) -> createMessageAttachment(j, null));
+        final List<Message.Attachment> attachments    = map(jsonObject, "attachments", EntityBuilder::createWebhookMessageAttachment);
         final List<User>               mentionedUsers = map(jsonObject, "mentions", EntityBuilder::createWebhookUser);
 
         final List<Long> mentionedRoles = new ArrayList<>();
