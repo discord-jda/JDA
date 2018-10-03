@@ -16,8 +16,6 @@
 
 package net.dv8tion.jda.core.entities;
 
-import gnu.trove.list.TLongList;
-import gnu.trove.list.array.TLongArrayList;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
@@ -1110,7 +1108,7 @@ public class EntityBuilder
         final List<Message.Attachment> attachments    = map(jsonObject, "attachments", EntityBuilder::createWebhookMessageAttachment);
         final List<User>               mentionedUsers = map(jsonObject, "mentions", EntityBuilder::createWebhookUser);
 
-        final TLongList mentionedRoles = new TLongArrayList();
+        final List<Long> mentionedRoles = new ArrayList<>();
 
         jsonObject.getJSONArray("mention_roles").forEach(
             (roleId) -> mentionedRoles.add(Long.parseUnsignedLong(roleId.toString()))
