@@ -27,7 +27,6 @@ public class MessageActivity
     private final ActivityType type;
     private final String partyId;
     private final Application application;
-    private String sessionId = null;
 
     /**
      *
@@ -54,36 +53,6 @@ public class MessageActivity
     }
 
     /**
-     *
-     * @param  type the {@link net.dv8tion.jda.core.entities.MessageActivity.ActivityType}
-     *         for the {@link MessageActivity}.
-     *
-     * @param  partyId the partyId for the {@link net.dv8tion.jda.core.entities.MessageActivity}.
-     *
-     * @param  sessionId the send-able sessionId for the {@link net.dv8tion.jda.core.entities.MessageActivity}.
-     *
-     * @param  application the {@link net.dv8tion.jda.core.entities.MessageActivity.Application}
-     *         for the {@link MessageActivity}.
-     *
-     * @throws IllegalArgumentException
-     *         if the arguments match following expressions:
-     *         <ul>
-     *             <li>{@link net.dv8tion.jda.core.entities.MessageActivity.ActivityType ActivityType} requires a not null {@link net.dv8tion.jda.core.entities.MessageActivity.Application Application}.</li>
-     *             <li>{@link net.dv8tion.jda.core.entities.MessageActivity.ActivityType ActivityType} gets a not required not null {@link net.dv8tion.jda.core.entities.MessageActivity.Application Application}.</li>
-     *             <li>The {@code sessionId} is {@code null}.</li>
-     *             <li>The {@code sessionId} {@link String#matches(String) sessionId#matches()} an party id.</li>
-     *         </ul>
-     */
-    MessageActivity(ActivityType type, String partyId, String sessionId, Application application)
-    {
-        this(type, partyId, application);
-        Checks.notBlank(sessionId, "The provided sessionId");
-        Checks.check(!sessionId.matches("(spotify:\\d{17,20}|\\d{4,5}\\|[0-9a-f]{32})"),
-            "The provided session id may not be a party id. Provided string: %s", sessionId);
-        this.sessionId = sessionId;
-    }
-
-    /**
      * The current {@link net.dv8tion.jda.core.entities.MessageActivity.ActivityType ActivityType}
      *
      * @return the type of the activity.
@@ -102,18 +71,6 @@ public class MessageActivity
     public String getPartyId()
     {
         return partyId;
-    }
-
-    /**
-     * The session id that is required for sending the {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity}.
-     * <br>Its default value is {@code null}
-     *
-     * @return the session id and {@code null} if it is not set.
-     */
-    @Nullable
-    public String getSessionId()
-    {
-        return sessionId;
     }
 
     /**
