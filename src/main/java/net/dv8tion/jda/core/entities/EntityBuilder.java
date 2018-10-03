@@ -764,7 +764,7 @@ public class EntityBuilder
         final String nonce = jsonObject.isNull("nonce") ? null : jsonObject.get("nonce").toString();
 
         final List<Message.Attachment> attachments = map(jsonObject, "attachments", this::createMessageAttachment);
-        final List<MessageEmbed>       embeds      = map(jsonObject, "embeds",      this::createMessageEmbed);
+        final List<MessageEmbed>       embeds      = map(jsonObject, "embeds",      EntityBuilder::createMessageEmbed);
         final List<MessageReaction>    reactions   = map(jsonObject, "reactions",   (obj) -> createMessageReaction(chan, id, obj));
 
         User user;
@@ -868,10 +868,10 @@ public class EntityBuilder
 
     public Message.Attachment createMessageAttachment(JSONObject jsonObject)
     {
-        return createMessageAttachment(jsonObject, false);
+        return createMessageAttachment(jsonObject, getJDA());
     }
 
-    public Message.Attachment createMessageAttachment(JSONObject jsonObject, boolean webhookMessage)
+    public static Message.Attachment createMessageAttachment(JSONObject jsonObject, JDAImpl jda)
     {
         final int width = Helpers.optInt(jsonObject, "width", -1);
         final int height = Helpers.optInt(jsonObject, "height", -1);
@@ -881,15 +881,15 @@ public class EntityBuilder
         final String filename = jsonObject.getString("filename");
         final long id = jsonObject.getLong("id");
 
-        if(webhookMessage)
+        if(jda == null)
         {
             return new SentWebhookMessage.Attachment(id, url, proxyUrl, filename, size, height, width);
         }
 
-        return new Message.Attachment(id, url, proxyUrl, filename, size, height, width, getJDA());
+        return new Message.Attachment(id, url, proxyUrl, filename, size, height, width, jda);
     }
 
-    public MessageEmbed createMessageEmbed(JSONObject content)
+    public static MessageEmbed createMessageEmbed(JSONObject content)
     {
         if (content.isNull("type"))
             throw new JSONException("Encountered embed object with missing/null type field for Json: " + content);
@@ -1083,7 +1083,7 @@ public class EntityBuilder
                 .setUser(defaultUser);
     }
 
-    private WebhookUser createWebhookUser(JSONObject jsonObject)
+    private static WebhookUser createWebhookUser(JSONObject jsonObject)
     {
         final long authorId = jsonObject.getLong("id");
         final String username = jsonObject.getString("username");
@@ -1093,7 +1093,7 @@ public class EntityBuilder
         return new WebhookUser(authorId, discriminator, username, avatarId, isBot);
     }
 
-    public SentWebhookMessage createSentWebhookMessage(JSONObject jsonObject)
+    public static SentWebhookMessage createSentWebhookMessage(JSONObject jsonObject)
     {
         final long id = jsonObject.getLong("id");
         final int type = jsonObject.getInt("type");
@@ -1108,9 +1108,9 @@ public class EntityBuilder
         final boolean mentionEveryone = Helpers.optBoolean(jsonObject, "mention_everyone");
         final boolean pinned = Helpers.optBoolean(jsonObject, "pinned");
 
-        final List<MessageEmbed>       embeds         = map(jsonObject, "embeds", this::createMessageEmbed);
-        final List<Message.Attachment> attachments    = map(jsonObject, "attachments", (j) -> createMessageAttachment(j, true));
-        final List<User>               mentionedUsers = map(jsonObject, "mentions", this::createWebhookUser);
+        final List<MessageEmbed>       embeds         = map(jsonObject, "embeds", EntityBuilder::createMessageEmbed);
+        final List<Message.Attachment> attachments    = map(jsonObject, "attachments", (j) -> createMessageAttachment(j, null));
+        final List<User>               mentionedUsers = map(jsonObject, "mentions", EntityBuilder::createWebhookUser);
 
         final List<Long> mentionedRoles = new ArrayList<>();
 
@@ -1405,7 +1405,7 @@ public class EntityBuilder
         return changesList.stream().collect(Collectors.toMap(AuditLogChange::getKey, UnaryOperator.identity()));
     }
 
-    private <T> List<T> map(JSONObject jsonObject, String key, Function<JSONObject, T> convert)
+    private static <T> List<T> map(JSONObject jsonObject, String key, Function<JSONObject, T> convert)
     {
         if (jsonObject.isNull(key))
             return Collections.emptyList();

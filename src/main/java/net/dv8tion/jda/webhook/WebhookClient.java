@@ -71,8 +71,6 @@ public class WebhookClient implements AutoCloseable
     protected boolean isShutdown;
     protected boolean isWait;
 
-    private final EntityBuilder entityBuilder = new EntityBuilder(null);
-
     protected WebhookClient(final long id, final String token, final OkHttpClient client, final ScheduledExecutorService pool, final boolean isWait)
     {
         this.client = client;
@@ -464,7 +462,7 @@ public class WebhookClient implements AutoCloseable
             if (isWait)
             {
                 JSONObject messageJson = new JSONObject(new JSONTokener(Requester.getBody(response)));
-                returnedMessage = entityBuilder.createSentWebhookMessage(messageJson);
+                returnedMessage = EntityBuilder.createSentWebhookMessage(messageJson);
             }
 
             queue.poll().getRight().complete(returnedMessage);
