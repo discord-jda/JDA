@@ -1,3 +1,19 @@
+/*
+ *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package net.dv8tion.jda.webhook;
 
 import net.dv8tion.jda.core.JDA;
@@ -7,7 +23,6 @@ import net.dv8tion.jda.core.entities.impl.AbstractMessage;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Represents a message that has been send from a webhook
@@ -24,10 +39,10 @@ public class SentWebhookMessage extends AbstractMessage
     protected final List<Message.Attachment> attachments;
     protected final List<MessageEmbed> embeds;
     protected final List<User> mentionedUsers;
-    protected final Set<Long> mentionedRoles;
+    protected final List<Long> mentionedRoles;
 
     public SentWebhookMessage(long id, long channelId, long webhookId, MessageType type,
-                                 boolean mentionsEveryone, List<User> mentionedUsers, Set<Long> mentionedRoles,
+                                 boolean mentionsEveryone, List<User> mentionedUsers, List<Long> mentionedRoles,
                                  boolean tts, boolean pinned,
                                  String content, String nonce, User author,
                                  List<Message.Attachment> attachments, List<MessageEmbed> embeds)
@@ -38,7 +53,7 @@ public class SentWebhookMessage extends AbstractMessage
         this.channelId = channelId;
         this.webhookId = webhookId;
         this.mentionedUsers = mentionedUsers;
-        this.mentionedRoles = Collections.unmodifiableSet(mentionedRoles);
+        this.mentionedRoles = Collections.unmodifiableList(mentionedRoles);
         this.author = author;
         this.type = type;
         this.pinned = pinned;
@@ -125,7 +140,7 @@ public class SentWebhookMessage extends AbstractMessage
      *
      * @return Long containing the Id.
      */
-    public long getChannelId()
+    public long getChannelIdLong()
     {
         return channelId;
     }
@@ -135,7 +150,7 @@ public class SentWebhookMessage extends AbstractMessage
      *
      * @return Long containing the Id.
      */
-    public long getWebhookId()
+    public long getWebhookIdLong()
     {
         return webhookId;
     }
@@ -152,7 +167,7 @@ public class SentWebhookMessage extends AbstractMessage
      *
      * @return immutable set of mentioned Role ids
      */
-    public Set<Long> getMentionedRoleIds()
+    public List<Long> getMentionedRoleIds()
     {
         return mentionedRoles;
     }

@@ -294,7 +294,7 @@ public class WebhookClient implements AutoCloseable
      * @throws java.lang.IllegalArgumentException
      *         If any of the provided embeds is {@code null}
      * @throws java.util.concurrent.RejectedExecutionException
-     *          If this client was closed
+     *         If this client was closed
      *
      * @return {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the execution task,
      *         this will be completed once the message was sent.
@@ -450,7 +450,8 @@ public class WebhookClient implements AutoCloseable
             {
                 backoffQueue();
                 return;
-            } else if (!response.isSuccessful())
+            }
+            else if (!response.isSuccessful())
             {
                 final HttpException exception = failure(response);
                 LOG.error("Sending a webhook message failed with non-OK http response", exception);
@@ -472,7 +473,8 @@ public class WebhookClient implements AutoCloseable
                 backoffQueue();
                 return;
             }
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             LOG.error("There was some error while sending a webhook message", e);
             queue.poll().getRight().completeExceptionally(e);
@@ -506,7 +508,8 @@ public class WebhookClient implements AutoCloseable
             {
                 final JSONObject body = new JSONObject(new JSONTokener(Requester.getBody(response)));
                 delay = body.getLong("retry_after");
-            } else
+            }
+            else
             {
                 delay = Long.parseLong(retryAfter);
             }
@@ -520,7 +523,8 @@ public class WebhookClient implements AutoCloseable
             if (is429)
             {
                 handleRatelimit(response, current);
-            } else if (!response.isSuccessful())
+            }
+            else if (!response.isSuccessful())
             {
                 LOG.debug("Failed to update buckets due to unsuccessful response with code: {} and body: \n{}",
                     response.code(), JDALogger.getLazyString(() -> new String(IOUtil.readFully(Requester.getBody(response)))));
@@ -544,7 +548,8 @@ public class WebhookClient implements AutoCloseable
             try
             {
                 update0(response);
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 LOG.error("Could not read http response", ex);
             }

@@ -1112,7 +1112,7 @@ public class EntityBuilder
         final List<Message.Attachment> attachments    = map(jsonObject, "attachments", (j) -> createMessageAttachment(j, true));
         final List<User>               mentionedUsers = map(jsonObject, "mentions", this::createWebhookUser);
 
-        final Set<Long> mentionedRoles = new HashSet<>();
+        final List<Long> mentionedRoles = new ArrayList<>();
 
         jsonObject.getJSONArray("mention_roles").forEach(
             (roleId) -> mentionedRoles.add(Long.parseUnsignedLong(roleId.toString()))
