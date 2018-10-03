@@ -34,7 +34,7 @@ import net.dv8tion.jda.core.entities.MessageEmbed.*;
 import net.dv8tion.jda.core.entities.impl.*;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.handle.EventCache;
-import net.dv8tion.jda.core.requests.WebSocketClient;
+import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.Helpers;
 import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.cache.CacheFlag;
@@ -754,8 +754,6 @@ public class EntityBuilder
         final long id = jsonObject.getLong("id");
         String content = jsonObject.optString("content");
 
-        MessageActivity activity = null;
-
         JSONObject author = jsonObject.getJSONObject("author");
         final long authorId = author.getLong("id");
         final boolean fromWebhook = jsonObject.has("webhook_id");
@@ -769,17 +767,17 @@ public class EntityBuilder
         final List<MessageEmbed>       embeds      = map(jsonObject, "embeds",      this::createMessageEmbed);
         final List<MessageReaction>    reactions   = map(jsonObject, "reactions",   (obj) -> createMessageReaction(chan, id, obj));
 
+        MessageActivity activity = null;
+
         if (!jsonObject.isNull("activity"))
         {
             JSONObject activityData = jsonObject.getJSONObject("activity");
-            MessageActivity.ActivityType activityType = MessageActivity.ActivityType.fromId(activityData.getInt("type"));
+            final MessageActivity.ActivityType activityType = MessageActivity.ActivityType.fromId(activityData.getInt("type"));
             final String partyId = activityData.optString("party_id", null);
             MessageActivity.Application application = null;
 
             switch (activityType)
             {
-                case LISTENING:
-                    break;
                 case JOIN:
                 case SPECTATE:
                 case JOIN_REQUEST:
@@ -797,10 +795,10 @@ public class EntityBuilder
                     }
                     break;
                 default:
-                    WebSocketClient.LOG.debug("Received an unknown activity type in a message. JSON: {}", activityData);
                     break;
-
             }
+
+            Checks.check(!(activityType != MessageActivity.ActivityType.LISTENING && application == null), "Either the ActivityType is wrong or the Application is null!");
             activity = new MessageActivity(activityType, partyId, application);
         }
 

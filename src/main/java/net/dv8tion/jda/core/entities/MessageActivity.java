@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.entities;
 import net.dv8tion.jda.core.utils.Checks;
 
 import javax.annotation.Nullable;
+import java.time.OffsetDateTime;
 
 /**
  * Represents a {@link net.dv8tion.jda.core.entities.Message} activity.
@@ -28,27 +29,10 @@ public class MessageActivity
     private final String partyId;
     private final Application application;
 
-    /**
-     *
-     * @param  type the {@link net.dv8tion.jda.core.entities.MessageActivity.ActivityType}
-     *         for the {@link MessageActivity}.
-     *
-     * @param  partyId the partyId for the {@link MessageActivity}.
-     *
-     * @param  application the {@link net.dv8tion.jda.core.entities.MessageActivity.Application}
-     *         for the {@link MessageActivity}.
-     *
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If {@link net.dv8tion.jda.core.entities.MessageActivity.ActivityType ActivityType} requires a not null {@link net.dv8tion.jda.core.entities.MessageActivity.Application Application}.</li>
-     *             <li>If {@link net.dv8tion.jda.core.entities.MessageActivity.ActivityType ActivityType} gets a not required not null {@link net.dv8tion.jda.core.entities.MessageActivity.Application Application}.</li>
-     *         </ul>
-     */
     MessageActivity(ActivityType type, String partyId, Application application)
     {
         this.type = type;
         this.partyId = partyId;
-        Checks.check(!(type != ActivityType.LISTENING && application == null), "Either the ActivityType is wrong or the Application is null!");
         this.application = application;
     }
 
@@ -76,7 +60,7 @@ public class MessageActivity
     /**
      * The {@link net.dv8tion.jda.core.entities.MessageActivity.Application Application} this {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity} may have.
      *
-     * @return A possibly {@code null} {@link net.dv8tion.jda.core.entities.MessageActivity.Application}.
+     * @return A possibly-null {@link net.dv8tion.jda.core.entities.MessageActivity.Application}.
      */
     public MessageActivity.Application getApplication()
     {
@@ -92,7 +76,7 @@ public class MessageActivity
      * <br>Many applications can be found at:
      * <a href="https://discordapp.com/api/v7/games" target="_blank">https://discordapp.com/api/v7/games</a>.
      */
-    public static class Application
+    public static class Application implements ISnowflake
     {
         private final String name;
         private final String description;
@@ -146,7 +130,7 @@ public class MessageActivity
          */
         public String getIconUrl()
         {
-            return "https://cdn.discordapp.com/application/" + id + "/" + iconId + ".png";
+            return "https://cdn.discordapp.com/application/" + getId() + "/" + iconId + ".png";
         }
 
         /**
@@ -166,24 +150,10 @@ public class MessageActivity
          */
         public String getCoverUrl()
         {
-            return "https://cdn.discordapp.com/application/" + id + "/" + coverId + ".png";
+            return "https://cdn.discordapp.com/application/" + getId() + "/" + coverId + ".png";
         }
 
-        /**
-         * The id of the current {@link net.dv8tion.jda.core.entities.MessageActivity.Application} as a {@link String}.
-         *
-         * @return the applications id.
-         */
-        public String getId()
-        {
-            return Long.toUnsignedString(id);
-        }
-
-        /**
-         * The id of the current {@link net.dv8tion.jda.core.entities.MessageActivity.Application}.
-         *
-         * @return the applications id.
-         */
+        @Override
         public long getIdLong()
         {
             return id;

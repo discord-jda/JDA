@@ -79,19 +79,19 @@ public class DataMessage extends AbstractMessage
         return embed == null ? Collections.emptyList() : Collections.singletonList(embed);
     }
 
-    @Nullable
-    @Override
-    public MessageActivity getActivity() {
-        unsupported();
-        return null;
-    }
-
     // UNSUPPORTED OPERATIONS ON MESSAGE BUILDER OUTPUT
 
     @Override
     protected void unsupported()
     {
         throw new UnsupportedOperationException("This operation is not supported for Messages that were created by a MessageBuilder!");
+    }
+
+    @Nullable
+    @Override
+    public MessageActivity getActivity() {
+        unsupported();
+        return null;
     }
 
     @Override
