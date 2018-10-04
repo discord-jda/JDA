@@ -611,9 +611,10 @@ public class EntityBuilder
             .setParent(Helpers.optLong(json, "parent_id", 0))
             .setLastMessageId(Helpers.optLong(json, "last_message_id", 0))
             .setName(json.getString("name"))
-            .setTopic(json.optString("topic"))
+            .setTopic(json.optString("topic", null))
             .setPosition(json.getInt("position"))
-            .setNSFW(Helpers.optBoolean(json, "nsfw"));
+            .setNSFW(Helpers.optBoolean(json, "nsfw"))
+            .setSlowmode(Helpers.optInt(json, "rate_limit_per_user", 0));
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
         return channel;

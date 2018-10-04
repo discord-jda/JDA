@@ -54,6 +54,21 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
     boolean isNSFW();
 
     /**
+     * The slowmode set for this TextChannel.
+     * <br>If slowmode is set this returns an {@code int} between 1 and 120. If not set this returns {@code 0}.
+     *
+     * <p>Note that only {@link net.dv8tion.jda.core.AccountType#CLIENT CLIENT} type accounts are
+     * affected by slowmode, and that {@link net.dv8tion.jda.core.AccountType#BOT BOT} accounts
+     * are immune to the restrictions.
+     * <br>Having {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE MESSAGE_MANAGE} or
+     * {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} permission also
+     * grants immunity to slowmode.
+     *
+     * @return The slowmode for this TextChannel, between 1 and 120, or {@code 0} if no slowmode is set.
+     */
+    int getSlowmode();
+
+    /**
      * Retrieves the {@link net.dv8tion.jda.core.entities.Webhook Webhooks} attached to this TextChannel.
      *
      * <p>Possible ErrorResponses include:
