@@ -54,6 +54,7 @@ import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class GuildImpl implements Guild
@@ -318,6 +319,35 @@ public class GuildImpl implements Guild
     public SnowflakeCacheView<VoiceChannel> getVoiceChannelCache()
     {
         return voiceChannelCache;
+    }
+
+    @Override
+    public List<Channel> getChannels(boolean includeHidden)
+    {
+        List<Channel> channels = new ArrayList<>((int) getCategoryCache().size() + (int) getVoiceChannelCache().size() + (int) getTextChannelCache().size());
+        List<Category> categories = getCategories();
+
+        Member self = getSelfMember();
+        Predicate<Channel> filterHidden = it -> includeHidden || self.hasPermission(it, Permission.VIEW_CHANNEL);
+        getTextChannelCache().stream()
+                             .filter(filterHidden)
+                             .filter(it -> it.getParent() == null)
+                             .forEach(channels::add);
+        getVoiceChannelCache().stream()
+                              .filter(filterHidden)
+                              .filter(it -> it.getParent() == null)
+                              .forEach(channels::add);
+
+        for (Category category : categories)
+        {
+            if (!filterHidden.test(category))
+                continue;
+            channels.add(category);
+            category.getTextChannels().stream().filter(filterHidden).forEach(channels::add);
+            category.getVoiceChannels().stream().filter(filterHidden).forEach(channels::add);
+        }
+
+        return Collections.unmodifiableList(channels);
     }
 
     @Override
