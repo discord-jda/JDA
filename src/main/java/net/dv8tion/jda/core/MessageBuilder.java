@@ -332,6 +332,20 @@ public class MessageBuilder implements Appendable
         builder.append("```").append(language).append('\n').append(text).append("\n```");
         return this;
     }
+    
+        /**
+     * Appends a line of code to the Message.
+     *
+     * @param  text
+     *         the code to append
+     *
+     * @return The MessageBuilder instance. Useful for chaining.
+     */
+    public MessageBuilder appendCodeLine(CharSequence text)
+    {
+        builder.append("`").append(text).append("`");
+        return this;
+    }
 
     /**
      * Returns the current length of the content that will be built into a {@link net.dv8tion.jda.core.entities.Message Message}
