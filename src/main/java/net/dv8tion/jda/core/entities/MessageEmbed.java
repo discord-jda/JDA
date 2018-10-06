@@ -479,7 +479,80 @@ public class MessageEmbed
             return json = obj;
         }
     }
+    
+    /**
+     * Creates a new MessageEmbed from a string JSON.
+     *
+     * @param embed a JSON describing the MessageEmbed
+     *
+     * @return MessageEmbed from the given JSON.
+     */
+    public static MessageEmbed fromJSONObject(JSONObject embed)
+    {
 
+        String url = null;
+        String title = null;
+        String description = null;
+        EmbedType type = null;
+        OffsetDateTime timestamp = null;
+        Integer color = null;
+        Thumbnail thumbnail = null;
+        Provider siteProvider = null;
+        AuthorInfo author = null;
+        VideoInfo videoInfo = null;
+        Footer footer = null;
+        ImageInfo image = null;
+        List<Field> fields = null;
+
+        if(embed.has("url"))
+            url = embed.getString("url");
+        if(embed.has("title"))
+            title = embed.getString("title");
+        if(embed.has("description"))
+            description = embed.getString("description");
+
+        if(embed.has("timestamp"))
+            timestamp = OffsetDateTime.parse(embed.getString("timestamp"));
+
+        if(embed.has("color"))
+           color = embed.getInt("color");
+
+        if(embed.has("thumbnail"))
+        thumbnail = new Thumbnail(embed.getJSONObject("thumbnail").getString("url"),null,0,0);
+
+        if(embed.has("provider")) {
+            JSONObject jsonProvider = embed.getJSONObject("provider");
+            siteProvider = new Provider(jsonProvider.getString("name"), jsonProvider.getString("url"));
+        }
+
+        if(embed.has("author")) {
+            JSONObject jsonAuthor = embed.getJSONObject("author");
+            author = new AuthorInfo(jsonAuthor.getString("name"), jsonAuthor.getString("url"), jsonAuthor.getString("icon_url"), null);
+        }
+
+        if(embed.has("video")) {
+            JSONObject jsonVideo = embed.getJSONObject("video");
+            videoInfo = new VideoInfo(jsonVideo.getString("url"),0,0);
+        }
+
+        if(embed.has("footer")) {
+            JSONObject jsonFooter = embed.getJSONObject("footer");
+            footer = new Footer(jsonFooter.getString("text"),jsonFooter.getString("icon_url"), null);
+        }
+
+        if(embed.has("image"))
+            image = new ImageInfo(embed.getJSONObject("image").getString("url"),null,0,0);
+
+        fields = new ArrayList<>();
+        if(embed.getJSONArray("fields").length() != 0){
+            for(Object field : embed.getJSONArray("fields")){
+                fields.add(new Field(((JSONObject)field).getString("name"),((JSONObject)field).getString("value"),((JSONObject)field).getBoolean("inline")));
+            }
+        }
+
+        return new MessageEmbed(url,title,description,type,timestamp,color,thumbnail,siteProvider,author,videoInfo,footer,image,fields);
+    }
+    
     /**
      * Represents the information Discord provided about a thumbnail image that should be
      * displayed with an embed message.
