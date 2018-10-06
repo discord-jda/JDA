@@ -798,8 +798,8 @@ public class EntityBuilder
                     break;
             }
 
-            Checks.check(!(activityType != MessageActivity.ActivityType.LISTENING && application == null), "Either the ActivityType is wrong or the Application is null!");
-            activity = new MessageActivity(activityType, partyId, application);
+            if (!(activityType != MessageActivity.ActivityType.LISTENING && application == null))
+                activity = new MessageActivity(activityType, partyId, application);
         }
 
         User user;
