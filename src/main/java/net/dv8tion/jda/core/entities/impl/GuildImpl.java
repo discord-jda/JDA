@@ -340,11 +340,13 @@ public class GuildImpl implements Guild
 
         for (Category category : categories)
         {
-            if (!filterHidden.test(category))
+            List<TextChannel> textChannels = category.getTextChannels().stream().filter(filterHidden).collect(Collectors.toList());
+            List<VoiceChannel> voiceChannels = category.getVoiceChannels().stream().filter(filterHidden).collect(Collectors.toList());
+            if (textChannels.isEmpty() && voiceChannels.isEmpty())
                 continue;
             channels.add(category);
-            category.getTextChannels().stream().filter(filterHidden).forEach(channels::add);
-            category.getVoiceChannels().stream().filter(filterHidden).forEach(channels::add);
+            channels.addAll(textChannels);
+            channels.addAll(voiceChannels);
         }
 
         return Collections.unmodifiableList(channels);
