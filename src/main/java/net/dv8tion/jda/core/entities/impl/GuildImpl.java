@@ -342,7 +342,7 @@ public class GuildImpl implements Guild
         {
             List<TextChannel> textChannels = category.getTextChannels().stream().filter(filterHidden).collect(Collectors.toList());
             List<VoiceChannel> voiceChannels = category.getVoiceChannels().stream().filter(filterHidden).collect(Collectors.toList());
-            if (textChannels.isEmpty() && voiceChannels.isEmpty())
+            if (!includeHidden && textChannels.isEmpty() && voiceChannels.isEmpty())
                 continue;
             channels.add(category);
             channels.addAll(textChannels);
