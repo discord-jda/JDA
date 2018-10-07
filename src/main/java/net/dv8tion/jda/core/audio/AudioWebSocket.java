@@ -180,6 +180,11 @@ class AudioWebSocket extends WebSocketAdapter
                     && status.shouldReconnect() //indicated that the connection was purposely closed. don't reconnect.
                     && status != ConnectionStatus.AUDIO_REGION_CHANGE) //Already handled.
             {
+                if (disconnectedChannel == null)
+                {
+                    LOG.debug("Cannot reconnect due to null voice channel");
+                    return;
+                }
                 manager.setQueuedAudioConnection(disconnectedChannel);
                 api.getClient().queueAudioReconnect(disconnectedChannel);
             }
