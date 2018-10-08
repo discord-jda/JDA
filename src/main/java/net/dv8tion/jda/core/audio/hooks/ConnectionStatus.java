@@ -23,6 +23,8 @@ public enum ConnectionStatus
 {
     /** Indicates that there is no open connection or that the connection was closed by choice, not by error.*/
     NOT_CONNECTED(false),
+    /** Indicates that JDA was shutdown and no further connections should be established */
+    SHUTTING_DOWN(false),
     /** JDA is waiting on Discord to send a valid endpoint which to connect the audio websocket to.*/
     CONNECTING_AWAITING_ENDPOINT,
     /** JDA has received a valid endpoint and is attempting to setup and connect the audio websocket */
