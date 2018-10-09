@@ -869,12 +869,12 @@ public class EntityBuilder
 
     public Message.Attachment createMessageAttachment(JSONObject jsonObject)
     {
-        final SentWebhookMessage.Attachment attachment = createWebhookMessageAttachment(jsonObject);
+        final SentWebhookMessage.Attachment attachment = createGenericAttachment(jsonObject);
         return new Message.Attachment(attachment.getIdLong(), attachment.getUrl(), attachment.getProxyUrl(),
             attachment.getFileName(), attachment.getSize(), attachment.getHeight(), attachment.getWidth(), getJDA());
     }
 
-    public static SentWebhookMessage.Attachment createWebhookMessageAttachment(JSONObject jsonObject)
+    public static SentWebhookMessage.Attachment createGenericAttachment(JSONObject jsonObject)
     {
         final int width = Helpers.optInt(jsonObject, "width", -1);
         final int height = Helpers.optInt(jsonObject, "height", -1);
@@ -1093,7 +1093,6 @@ public class EntityBuilder
     public static SentWebhookMessage createSentWebhookMessage(JSONObject jsonObject)
     {
         final long id = jsonObject.getLong("id");
-        final int type = jsonObject.getInt("type");
         final long channelId = jsonObject.getLong("channel_id");
         final long webhookId = jsonObject.getLong("webhook_id");
         final String content = jsonObject.optString("content");
@@ -1103,20 +1102,25 @@ public class EntityBuilder
 
         final boolean isTTS = Helpers.optBoolean(jsonObject, "tts");
         final boolean mentionEveryone = Helpers.optBoolean(jsonObject, "mention_everyone");
-        final boolean pinned = Helpers.optBoolean(jsonObject, "pinned");
 
         final List<MessageEmbed>       embeds         = map(jsonObject, "embeds", EntityBuilder::createMessageEmbed);
-        final List<Message.Attachment> attachments    = map(jsonObject, "attachments", EntityBuilder::createWebhookMessageAttachment);
+        final List<Message.Attachment> attachments    = map(jsonObject, "attachments", EntityBuilder::createGenericAttachment);
         final List<User>               mentionedUsers = map(jsonObject, "mentions", EntityBuilder::createWebhookUser);
 
         final List<Long> mentionedRoles = new ArrayList<>();
+        final List<String> mentionedRolesString = new ArrayList<>();
 
         jsonObject.getJSONArray("mention_roles").forEach(
-            (roleId) -> mentionedRoles.add(Long.parseUnsignedLong(roleId.toString()))
+            (roleId) ->
+            {
+                String roleIdString = roleId.toString();
+                mentionedRoles.add(Long.parseUnsignedLong(roleIdString));
+                mentionedRolesString.add(roleIdString);
+            }
         );
 
-        return new SentWebhookMessage(id, channelId, webhookId, MessageType.fromId(type), mentionEveryone,
-            mentionedUsers, mentionedRoles, isTTS, pinned, content, nonce, author, attachments, embeds);
+        return new SentWebhookMessage(id, channelId, webhookId, mentionEveryone,
+            mentionedUsers, mentionedRoles, mentionedRolesString, isTTS, content, nonce, author, attachments, embeds);
     }
 
     public Relationship createRelationship(JSONObject relationshipJson)

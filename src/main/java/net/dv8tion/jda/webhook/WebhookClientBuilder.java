@@ -44,7 +44,7 @@ public class WebhookClientBuilder
     protected OkHttpClient client;
     protected ThreadFactory threadFactory;
     protected boolean isDaemon;
-    protected boolean isWait;
+    protected boolean isWait = true;
 
     /**
      * Creates a new WebhookClientBuilder with the provided id and token
@@ -199,7 +199,8 @@ public class WebhookClientBuilder
     /**
      * Whether we should wait for the {@link net.dv8tion.jda.webhook.WebhookClient WebhookClient} to return
      * its message after sending.
-     * <br><b>Default: false</b>
+     * <br>If this is set to {@code false} the futures from sending messages will contain {@code null}
+     * <br><b>Default: true</b>
      *
      * @param  isWait
      *         True, if we should wait for the message to return

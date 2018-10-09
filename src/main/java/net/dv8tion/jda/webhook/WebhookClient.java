@@ -34,6 +34,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.jetbrains.annotations.Async;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.slf4j.Logger;
@@ -461,8 +462,15 @@ public class WebhookClient implements AutoCloseable
 
             if (isWait)
             {
-                JSONObject messageJson = new JSONObject(new JSONTokener(Requester.getBody(response)));
-                returnedMessage = EntityBuilder.createSentWebhookMessage(messageJson);
+                try
+                {
+                    JSONObject messageJson = new JSONObject(new JSONTokener(Requester.getBody(response)));
+                    returnedMessage = EntityBuilder.createSentWebhookMessage(messageJson);
+                }
+                catch (JSONException jsonEx)
+                {
+                    queue.poll().getRight().completeExceptionally(jsonEx);
+                }
             }
 
             queue.poll().getRight().complete(returnedMessage);

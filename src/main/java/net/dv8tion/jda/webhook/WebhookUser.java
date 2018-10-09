@@ -27,6 +27,11 @@ import java.util.List;
 
 /**
  * Represents a user from a webhook, this can be a user that was mentioned or the webhook user itself
+ *
+ * <h2>Important notice:</h2>
+ * Any JDA related methods such as {@link net.dv8tion.jda.core.entities.User#getMutualGuilds() #getMutualGuilds()} and
+ * {@link net.dv8tion.jda.core.entities.User#openPrivateChannel() #openPrivateChannel()} are not available from this class
+ * and will throw an {@link java.lang.UnsupportedOperationException UnsupportedOperationException}.
  */
 public class WebhookUser implements User
 {
@@ -143,10 +148,12 @@ public class WebhookUser implements User
     @Override
     public boolean equals(Object o)
     {
+        if (this == o)
+            return true;
         if (!(o instanceof WebhookUser))
             return false;
         WebhookUser oUser = (WebhookUser) o;
-        return this == oUser || this.id == oUser.id;
+        return this.id == oUser.id;
     }
 
     @Override

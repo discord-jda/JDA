@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.webhook;
 
-import gnu.trove.list.TLongList;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.AbstractMessage;
@@ -26,26 +25,24 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Represents a message that has been send from a webhook
+ * Represents a message that has been sent from a webhook
  */
 public class SentWebhookMessage extends AbstractMessage
 {
     protected final long id;
-    protected final MessageType type;
     protected final long channelId;
     protected final long webhookId;
     protected final boolean mentionsEveryone;
-    protected final boolean pinned;
     protected final User author;
     protected final List<Message.Attachment> attachments;
     protected final List<MessageEmbed> embeds;
     protected final List<User> mentionedUsers;
-    protected final List<Long> mentionedRoles;
+    protected final List<Long> mentionedRolesLong;
+    protected final List<String> mentionedRolesString;
 
-    public SentWebhookMessage(long id, long channelId, long webhookId, MessageType type,
-                                 boolean mentionsEveryone, List<User> mentionedUsers, List<Long> mentionedRoles,
-                                 boolean tts, boolean pinned,
-                                 String content, String nonce, User author,
+    public SentWebhookMessage(long id, long channelId, long webhookId, boolean mentionsEveryone,
+                              List<User> mentionedUsers, List<Long> mentionedRolesLong, List<String> mentionedRolesString,
+                                 boolean tts, String content, String nonce, User author,
                                  List<Message.Attachment> attachments, List<MessageEmbed> embeds)
     {
         super(content, nonce, tts);
@@ -54,10 +51,9 @@ public class SentWebhookMessage extends AbstractMessage
         this.channelId = channelId;
         this.webhookId = webhookId;
         this.mentionedUsers = mentionedUsers;
-        this.mentionedRoles = Collections.unmodifiableList(mentionedRoles);
+        this.mentionedRolesLong = Collections.unmodifiableList(mentionedRolesLong);
+        this.mentionedRolesString = Collections.unmodifiableList(mentionedRolesString);
         this.author = author;
-        this.type = type;
-        this.pinned = pinned;
         this.mentionsEveryone = mentionsEveryone;
         this.attachments = Collections.unmodifiableList(attachments);
         this.embeds = Collections.unmodifiableList(embeds);
@@ -93,7 +89,6 @@ public class SentWebhookMessage extends AbstractMessage
         return author;
     }
 
-
     @Override
     public boolean isFromType(ChannelType type)
     {
@@ -121,13 +116,13 @@ public class SentWebhookMessage extends AbstractMessage
     @Override
     public boolean isPinned()
     {
-        return pinned;
+        return false;
     }
 
     @Override
     public MessageType getType()
     {
-        return type;
+        return MessageType.DEFAULT;
     }
 
     @Override
@@ -139,7 +134,7 @@ public class SentWebhookMessage extends AbstractMessage
     /**
      * The Snowflake id of the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} that this message was send to.
      *
-     * @return Long containing the Id.
+     * @return the Snowflake id of the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} that this message was send to.
      */
     public long getChannelIdLong()
     {
@@ -147,13 +142,33 @@ public class SentWebhookMessage extends AbstractMessage
     }
 
     /**
+     * The Snowflake id of the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} that this message was send to.
+     *
+     * @return Never-null String containing the Id of the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} that this message was send to.
+     */
+    public String getChannelId()
+    {
+        return Long.toUnsignedString(getChannelIdLong());
+    }
+
+    /**
      * The Snowflake id of the webhook that send this message.
      *
-     * @return Long containing the Id.
+     * @return the snowflake id of the webhook that send this message.
      */
     public long getWebhookIdLong()
     {
         return webhookId;
+    }
+
+    /**
+     * The Snowflake id of the webhook that send this message.
+     *
+     * @return Never-null String containing the Id of this webhook.
+     */
+    public String getWebhookId()
+    {
+        return Long.toUnsignedString(getWebhookIdLong());
     }
 
     /**
@@ -168,18 +183,37 @@ public class SentWebhookMessage extends AbstractMessage
      *
      * @return immutable list of mentioned Role ids
      */
-    public List<Long> getMentionedRoleIds()
+    public List<Long> getMentionedRoleIdsLong()
     {
-        return mentionedRoles;
+        return mentionedRolesLong;
+    }
+
+    /**
+     * An immutable list of all mentioned {@link net.dv8tion.jda.core.entities.Role Roles} ids.
+     * <br>If none were mentioned, this list is empty.
+     *
+     * <p><b>This may include Roles from other {@link net.dv8tion.jda.core.entities.Guild Guilds}</b>
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.core.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *
+     *
+     * @return immutable list of mentioned Role ids
+     */
+    public List<String> getMentionedRoleIds()
+    {
+        return mentionedRolesString;
     }
 
     @Override
     public boolean equals(Object o)
     {
+        if (this == o)
+            return true;
         if (!(o instanceof SentWebhookMessage))
             return false;
         SentWebhookMessage oMsg = (SentWebhookMessage) o;
-        return this == oMsg || this.id == oMsg.id;
+        return this.id == oMsg.id;
     }
 
     @Override
@@ -201,7 +235,10 @@ public class SentWebhookMessage extends AbstractMessage
     }
 
     /**
-     * Represents an attachment on a {@link SentWebhookMessage WebhookMessage}
+     * Represents an attachment on a {@link net.dv8tion.jda.webhook.SentWebhookMessage WebhookMessage}
+     *
+     * <p>JDA methods such as {@link net.dv8tion.jda.core.entities.Message.Attachment#getJDA() getJDA()} are not available
+     * and will throw an {@link java.lang.UnsupportedOperationException UnsupportedOperationException}
      */
     public static class Attachment extends Message.Attachment
     {
