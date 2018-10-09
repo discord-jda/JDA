@@ -1108,19 +1108,13 @@ public class EntityBuilder
         final List<User>               mentionedUsers = map(jsonObject, "mentions", EntityBuilder::createWebhookUser);
 
         final List<Long> mentionedRoles = new ArrayList<>();
-        final List<String> mentionedRolesString = new ArrayList<>();
 
         jsonObject.getJSONArray("mention_roles").forEach(
-            (roleId) ->
-            {
-                String roleIdString = roleId.toString();
-                mentionedRoles.add(Long.parseUnsignedLong(roleIdString));
-                mentionedRolesString.add(roleIdString);
-            }
+            (roleId) -> mentionedRoles.add(Long.parseUnsignedLong(roleId.toString()))
         );
 
         return new SentWebhookMessage(id, channelId, webhookId, mentionEveryone,
-            mentionedUsers, mentionedRoles, mentionedRolesString, isTTS, content, nonce, author, attachments, embeds);
+            mentionedUsers, mentionedRoles, isTTS, content, nonce, author, attachments, embeds);
     }
 
     public Relationship createRelationship(JSONObject relationshipJson)

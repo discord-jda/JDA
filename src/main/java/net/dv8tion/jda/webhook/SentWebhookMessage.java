@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.entities.impl.AbstractMessage;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Represents a message that has been sent from a webhook
@@ -38,12 +39,11 @@ public class SentWebhookMessage extends AbstractMessage
     protected final List<MessageEmbed> embeds;
     protected final List<User> mentionedUsers;
     protected final List<Long> mentionedRolesLong;
-    protected final List<String> mentionedRolesString;
+    protected List<String> mentionedRolesString;
 
     public SentWebhookMessage(long id, long channelId, long webhookId, boolean mentionsEveryone,
-                              List<User> mentionedUsers, List<Long> mentionedRolesLong, List<String> mentionedRolesString,
-                                 boolean tts, String content, String nonce, User author,
-                                 List<Message.Attachment> attachments, List<MessageEmbed> embeds)
+                              List<User> mentionedUsers, List<Long> mentionedRolesLong, boolean tts, String content,
+                              String nonce, User author, List<Message.Attachment> attachments, List<MessageEmbed> embeds)
     {
         super(content, nonce, tts);
 
@@ -52,7 +52,6 @@ public class SentWebhookMessage extends AbstractMessage
         this.webhookId = webhookId;
         this.mentionedUsers = mentionedUsers;
         this.mentionedRolesLong = Collections.unmodifiableList(mentionedRolesLong);
-        this.mentionedRolesString = Collections.unmodifiableList(mentionedRolesString);
         this.author = author;
         this.mentionsEveryone = mentionsEveryone;
         this.attachments = Collections.unmodifiableList(attachments);
@@ -202,6 +201,12 @@ public class SentWebhookMessage extends AbstractMessage
      */
     public List<String> getMentionedRoleIds()
     {
+        if (mentionedRolesString == null)
+        {
+            mentionedRolesString = Collections.unmodifiableList(mentionedRolesLong.stream()
+                .map(Long::toUnsignedString).collect(Collectors.toList()));
+        }
+
         return mentionedRolesString;
     }
 
