@@ -470,6 +470,7 @@ public class WebhookClient implements AutoCloseable
                 catch (JSONException jsonEx)
                 {
                     queue.poll().getRight().completeExceptionally(jsonEx);
+                    return;
                 }
             }
 
