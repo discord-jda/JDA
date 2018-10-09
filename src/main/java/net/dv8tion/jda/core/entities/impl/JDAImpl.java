@@ -26,6 +26,7 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.audio.factory.DefaultSendFactory;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
+import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.StatusChangeEvent;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
@@ -36,6 +37,7 @@ import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.InterfacedEventManager;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.Presence;
+import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.requests.restaction.GuildAction;
@@ -560,7 +562,7 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public void shutdownNow()
+    public synchronized void shutdownNow()
     {
         shutdown();
         if (shutdownRateLimitPool)
@@ -572,7 +574,7 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public void shutdown()
+    public synchronized void shutdown()
     {
         if (status == Status.SHUTDOWN || status == Status.SHUTTING_DOWN)
             return;
@@ -591,15 +593,28 @@ public class JDAImpl implements JDA
         if (status == Status.SHUTDOWN)
             return;
         //so we can shutdown from WebSocketClient properly
-        audioManagers.forEach(AudioManager::closeAudioConnection);
-        audioManagers.clear();
-
+        closeAudioConnections();
         guildSetupController.close();
 
+        getRequester().shutdown();
+        shutdownPools();
+
+        if (shutdownHook != null)
+        {
+            try
+            {
+                Runtime.getRuntime().removeShutdownHook(shutdownHook);
+            }
+            catch (Exception ignored) {}
+        }
+
+        setStatus(Status.SHUTDOWN);
+    }
+
+    private void shutdownPools()
+    {
         if (audioLifeCyclePool != null)
             audioLifeCyclePool.shutdownNow();
-
-        getRequester().shutdown();
         if (shutdownGatewayPool)
             getGatewayPool().shutdown();
         if (shutdownCallbackPool)
@@ -618,17 +633,18 @@ public class JDAImpl implements JDA
                 rateLimitPool.shutdown();
             }
         }
+    }
 
-        if (shutdownHook != null)
+    private void closeAudioConnections()
+    {
+        TLongObjectMap<AudioManager> managerMap = getAudioManagerMap();
+        synchronized (managerMap)
         {
-            try
-            {
-                Runtime.getRuntime().removeShutdownHook(shutdownHook);
-            }
-            catch (Exception ignored) {}
+            managerMap.valueCollection().stream()
+                      .map(AudioManagerImpl.class::cast)
+                      .forEach(m -> m.closeAudioConnection(ConnectionStatus.SHUTTING_DOWN));
+            managerMap.clear();
         }
-
-        setStatus(Status.SHUTDOWN);
     }
 
     @Override

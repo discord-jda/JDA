@@ -140,22 +140,23 @@ public class AudioManagerImpl implements AudioManager
     @Override
     public void closeAudioConnection()
     {
-        closeAudioConnection(ConnectionStatus.NOT_CONNECTED);
+        getJDA().getAudioLifeCyclePool().execute(() -> {
+            getJDA().setContext();
+            closeAudioConnection(ConnectionStatus.NOT_CONNECTED);
+        });
     }
 
     public void closeAudioConnection(ConnectionStatus reason)
     {
-        JDAImpl api = getJDA();
-        api.getAudioLifeCyclePool().execute(() -> MiscUtil.locked(CONNECTION_LOCK, () ->
+        MiscUtil.locked(CONNECTION_LOCK, () ->
         {
-            api.setContext();
             this.queuedAudioConnection = null;
             if (audioConnection != null)
                 this.audioConnection.close(reason);
             else
-                this.getJDA().getClient().queueAudioDisconnect(getGuild());
+                getJDA().getClient().queueAudioDisconnect(getGuild());
             this.audioConnection = null;
-        }));
+        });
     }
 
     @Override
