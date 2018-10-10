@@ -448,7 +448,22 @@ public class JDAImpl implements JDA
         WebSocketClient client = getClient();
         return client == null ? Collections.emptyList() : Collections.unmodifiableList(new LinkedList<>(client.getTraces()));
     }
-
+ 
+    @Override
+    public List<User> getUsersByPrefix(String prefix, boolean ignoreCase)
+    {
+        Checks.notNull(name, "name");
+        List<User> out = new ArrayList<>();
+        for(User user : userCache)
+        {
+            if((ignoreCase ? user.getName().toLowerCase().startsWith(prefix.toLowerCase()) : user.getName().startsWith(prefix)))
+            {
+                out.add(user);
+            }
+        }
+        return Collections.unmodifiableList(out);
+    }
+    
     @Override
     public List<Guild> getMutualGuilds(User... users)
     {

@@ -492,6 +492,21 @@ public interface JDA
     @CheckReturnValue
     RestAction<User> retrieveUserById(long id);
 
+     /**
+     * This unmodifiable returns all {@link net.dv8tion.jda.core.entities.User Users} whose usernames start with the given prefix.
+     * <br>If there are no {@link net.dv8tion.jda.core.entities.User Users} with the provided prefix, then this returns an empty list.
+     *
+     * <p><b>Note: </b> This does **not** consider nicknames, it only considers {@link net.dv8tion.jda.core.entities.User#getName()}
+     *
+     * @param  prefix
+     *         The prefix to check each {@link net.dv8tion.jda.core.entities.User User} for.
+     * @param  ignoreCase
+     *         Whether to ignore case or not when comparing the provided prefix to each {@link net.dv8tion.jda.core.entities.User#getName()}.
+     *
+     * @return Possibly-empty list of {@link net.dv8tion.jda.core.entities.User Users} whose usernames start with the given prefix.
+     */
+    List<User> getUsersByPrefix(String prefix, boolean ignoreCase);
+    
     /**
      * {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
      * all cached {@link net.dv8tion.jda.core.entities.Guild Guilds} visible to this JDA session.
