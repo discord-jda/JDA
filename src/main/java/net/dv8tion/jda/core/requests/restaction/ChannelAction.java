@@ -50,6 +50,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
     // --text only--
     protected String topic = null;
     protected Boolean nsfw = null;
+    protected Integer slowmode = null;
 
     // --voice only--
     protected Integer bitrate = null;
@@ -167,6 +168,33 @@ public class ChannelAction extends AuditableRestAction<Channel>
         if (type != ChannelType.TEXT)
             throw new UnsupportedOperationException("Can only set nsfw for a TextChannel!");
         this.nsfw = nsfw;
+        return this;
+    }
+
+    /**
+     * Sets the slowmode value, which limits the amount of time that individual users must wait
+     * between sending messages in the new TextChannel. This is measured in seconds.
+     *
+     * <p>Note that only {@link net.dv8tion.jda.core.AccountType#CLIENT CLIENT} type accounts are
+     * affected by slowmode, and that {@link net.dv8tion.jda.core.AccountType#BOT BOT} accounts
+     * are immune to the restrictions.
+     * <br>Having {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE MESSAGE_MANAGE} or
+     * {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} permission also
+     * grants immunity to slowmode.
+     *
+     * @param  slowmode
+     *         The number of seconds required to wait between sending messages in the channel.
+     *
+     * @throws IllegalArgumentException
+     *         If the {@code slowmode} is greater than 120, or less than 0
+     *
+     * @return The current ChannelAction, for chaining convenience
+     */
+    @CheckReturnValue
+    public ChannelAction setSlowmode(int slowmode)
+    {
+        Checks.check(slowmode <= 120 && slowmode >= 0, "Slowmode must be between 0 and 120 (seconds)!");
+        this.slowmode = slowmode;
         return this;
     }
 
@@ -343,6 +371,8 @@ public class ChannelAction extends AuditableRestAction<Channel>
                     object.put("topic", topic);
                 if (nsfw != null)
                     object.put("nsfw", nsfw);
+                if (slowmode != null)
+                    object.put("rate_limit_per_user", slowmode);
         }
         if (type != ChannelType.CATEGORY && parent != null)
             object.put("parent_id", parent.getId());

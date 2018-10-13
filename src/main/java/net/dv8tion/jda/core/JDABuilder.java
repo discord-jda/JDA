@@ -37,7 +37,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * Used to create new {@link net.dv8tion.jda.core.JDA} instances. This is also useful for making sure all of
@@ -54,8 +54,10 @@ public class JDABuilder
     protected final List<Object> listeners;
     protected final AccountType accountType;
 
-    protected ScheduledThreadPoolExecutor rateLimitPool = null;
+    protected ScheduledExecutorService rateLimitPool = null;
     protected boolean shutdownRateLimitPool = true;
+    protected ScheduledExecutorService mainWsPool = null;
+    protected boolean shutdownMainWsPool = true;
     protected ExecutorService callbackPool = null;
     protected boolean shutdownCallbackPool = true;
     protected EnumSet<CacheFlag> cacheFlags = EnumSet.allOf(CacheFlag.class);
@@ -319,7 +321,7 @@ public class JDABuilder
      * Sets the core pool size for the global JDA
      * {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} which is used
      * in various locations throughout the JDA instance created by this builder. (Default: 5)
-     * <br>Note: This has no effect if you set a pool using {@link #setRateLimitPool(ScheduledThreadPoolExecutor)}.
+     * <br>Note: This has no effect if you set a pool using {@link #setRateLimitPool(ScheduledExecutorService)}.
      *
      * @param  size
      *         The core pool size for the global JDA executor
@@ -337,24 +339,24 @@ public class JDABuilder
     }
 
     /**
-     * Sets the {@link ScheduledThreadPoolExecutor ScheduledThreadPoolExecutor} that should be used in
+     * Sets the {@link ScheduledExecutorService ScheduledExecutorService} that should be used in
      * the JDA rate-limit handler. Changing this can drastically change the JDA behavior for RestAction execution
      * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
-     * <br><b>This automatically disables the automatic shutdown of the JDA pools, you can enable
-     * it using {@link #setRateLimitPool(ScheduledThreadPoolExecutor, boolean) setRateLimitPool(executor, true)}</b>
+     * <br><b>This automatically disables the automatic shutdown of the rate-limit pool, you can enable
+     * it using {@link #setRateLimitPool(ScheduledExecutorService, boolean) setRateLimitPool(executor, true)}</b>
      *
      * @param  pool
      *         The thread-pool to use for rate-limit handling
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    public JDABuilder setRateLimitPool(ScheduledThreadPoolExecutor pool)
+    public JDABuilder setRateLimitPool(ScheduledExecutorService pool)
     {
         return setRateLimitPool(pool, pool == null);
     }
 
     /**
-     * Sets the {@link ScheduledThreadPoolExecutor ScheduledThreadPoolExecutor} that should be used in
+     * Sets the {@link ScheduledExecutorService ScheduledExecutorService} that should be used in
      * the JDA rate-limit handler. Changing this can drastically change the JDA behavior for RestAction execution
      * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
      *
@@ -365,10 +367,48 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    public JDABuilder setRateLimitPool(ScheduledThreadPoolExecutor pool, boolean automaticShutdown)
+    public JDABuilder setRateLimitPool(ScheduledExecutorService pool, boolean automaticShutdown)
     {
         this.rateLimitPool = pool;
         this.shutdownRateLimitPool = automaticShutdown;
+        return this;
+    }
+
+    /**
+     * Sets the {@link ScheduledExecutorService ScheduledExecutorService} used by
+     * the main WebSocket connection for workers. These workers spend most of their lifetime
+     * sleeping because they only activate for sending messages over the gateway.
+     * <br><b>Only change this pool if you know what you're doing.
+     * <br>This automatically disables the automatic shutdown of the main-ws pool, you can enable
+     * it using {@link #setGatewayPool(ScheduledExecutorService, boolean) setGatewayPool(pool, true)}</b>
+     *
+     * @param  pool
+     *         The thread-pool to use for WebSocket workers
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     */
+    public JDABuilder setGatewayPool(ScheduledExecutorService pool)
+    {
+        return setGatewayPool(pool, pool == null);
+    }
+
+    /**
+     * Sets the {@link ScheduledExecutorService ScheduledExecutorService} used by
+     * the main WebSocket connection for workers. These workers spend most of their lifetime
+     * sleeping because they only activate for sending messages over the gateway.
+     * <br><b>Only change this pool if you know what you're doing.</b>
+     *
+     * @param  pool
+     *         The thread-pool to use for WebSocket workers
+     * @param  automaticShutdown
+     *         Whether {@link JDA#shutdown()} should shutdown this pool
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     */
+    public JDABuilder setGatewayPool(ScheduledExecutorService pool, boolean automaticShutdown)
+    {
+        this.mainWsPool = pool;
+        this.shutdownMainWsPool = automaticShutdown;
         return this;
     }
 
@@ -377,7 +417,7 @@ public class JDABuilder
      * the JDA callback handler which mostly consists of {@link net.dv8tion.jda.core.requests.RestAction RestAction} callbacks.
      * By default JDA will use {@link ForkJoinPool#commonPool()}
      * <br><b>Only change this pool if you know what you're doing.
-     * <br>This automatically disables the automatic shutdown of the JDA pools, you can enable
+     * <br>This automatically disables the automatic shutdown of the callback pool, you can enable
      * it using {@link #setCallbackPool(ExecutorService, boolean) setCallbackPool(executor, true)}</b>
      *
      * @param  executor
@@ -847,9 +887,11 @@ public class JDABuilder
         if (controller == null && shardInfo != null)
             controller = new SessionControllerAdapter();
 
-        JDAImpl jda = new JDAImpl(accountType, token, controller, httpClient, wsFactory, rateLimitPool, callbackPool,
+        JDAImpl jda = new JDAImpl(accountType, token, controller, httpClient, wsFactory, rateLimitPool, mainWsPool,
+                                  callbackPool,
                                   autoReconnect, enableVoice, enableShutdownHook, enableBulkDeleteSplitting,
-                                  requestTimeoutRetry, enableContext, shutdownRateLimitPool, shutdownCallbackPool,
+                                  requestTimeoutRetry, enableContext,
+                                  shutdownRateLimitPool, shutdownMainWsPool, shutdownCallbackPool,
                                   corePoolSize, maxReconnectDelay, contextMap, cacheFlags);
 
         if (eventManager != null)

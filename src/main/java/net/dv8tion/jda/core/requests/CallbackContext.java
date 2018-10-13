@@ -14,21 +14,32 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.requests.ratelimit;
+package net.dv8tion.jda.core.requests;
 
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Route;
-
-import java.util.Queue;
-
-public interface IBucket
+class CallbackContext implements AutoCloseable
 {
-    Route.RateLimit getRatelimit();
-    String getRoute();
-    Queue<Request> getRequests();
+    private static final ThreadLocal<Boolean> callback = ThreadLocal.withInitial(() -> false);
+    private static final CallbackContext instance = new CallbackContext();
 
-    default boolean hasRatelimit()
+    static CallbackContext getInstance()
     {
-        return getRatelimit() != null;
+        startCallback();
+        return instance;
+    }
+
+    static boolean isCallbackContext()
+    {
+        return callback.get();
+    }
+
+    private static void startCallback()
+    {
+        callback.set(true);
+    }
+
+    @Override
+    public void close()
+    {
+        callback.set(false);
     }
 }

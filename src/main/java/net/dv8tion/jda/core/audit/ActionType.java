@@ -51,6 +51,7 @@ public enum ActionType
      *     <li>{@link net.dv8tion.jda.core.audit.AuditLogKey#CHANNEL_BITRATE CHANNEL_BITRATE} (VoiceChannel only)</li>
      *     <li>{@link net.dv8tion.jda.core.audit.AuditLogKey#CHANNEL_USER_LIMIT CHANNEL_USER_LIMIT} (VoiceChannel only)</li>
      *     <li>{@link net.dv8tion.jda.core.audit.AuditLogKey#CHANNEL_TOPIC CHANNEL_TOPIC} (TextChannel only)</li>
+     *     <li>{@link net.dv8tion.jda.core.audit.AuditLogKey#CHANNEL_SLOWMODE CHANNEL_SLOWMODE} (TextChannel only)</li>
      *     <li>{@link net.dv8tion.jda.core.audit.AuditLogKey#CHANNEL_NSFW CHANNEL_NSFW} (TextChannel only)</li>
      *     <li>{@link net.dv8tion.jda.core.audit.AuditLogKey#CHANNEL_OVERRIDES CHANNEL_OVERRIDES}</li>
      *     <li>{@link net.dv8tion.jda.core.audit.AuditLogKey#CHANNEL_NAME CHANNEL_NAME}</li>
@@ -68,6 +69,7 @@ public enum ActionType
      *     <li>{@link net.dv8tion.jda.core.audit.AuditLogKey#CHANNEL_BITRATE CHANNEL_BITRATE} (VoiceChannel only)</li>
      *     <li>{@link net.dv8tion.jda.core.audit.AuditLogKey#CHANNEL_USER_LIMIT CHANNEL_USER_LIMIT} (VoiceChannel only)</li>
      *     <li>{@link net.dv8tion.jda.core.audit.AuditLogKey#CHANNEL_TOPIC CHANNEL_TOPIC} (TextChannel only)</li>
+     *     <li>{@link net.dv8tion.jda.core.audit.AuditLogKey#CHANNEL_SLOWMODE CHANNEL_SLOWMODE} (TextChannel only)</li>
      *     <li>{@link net.dv8tion.jda.core.audit.AuditLogKey#CHANNEL_NSFW CHANNEL_NSFW} (TextChannel only)</li>
      *     <li>{@link net.dv8tion.jda.core.audit.AuditLogKey#CHANNEL_NAME CHANNEL_NAME}</li>
      *     <li>{@link net.dv8tion.jda.core.audit.AuditLogKey#CHANNEL_TYPE CHANNEL_TYPE}</li>
@@ -83,6 +85,7 @@ public enum ActionType
      *     <li>{@link net.dv8tion.jda.core.audit.AuditLogKey#CHANNEL_BITRATE CHANNEL_BITRATE} (VoiceChannel only)</li>
      *     <li>{@link net.dv8tion.jda.core.audit.AuditLogKey#CHANNEL_USER_LIMIT CHANNEL_USER_LIMIT} (VoiceChannel only)</li>
      *     <li>{@link net.dv8tion.jda.core.audit.AuditLogKey#CHANNEL_TOPIC CHANNEL_TOPIC} (TextChannel only)</li>
+     *     <li>{@link net.dv8tion.jda.core.audit.AuditLogKey#CHANNEL_SLOWMODE CHANNEL_SLOWMODE} (TextChannel only)</li>
      *     <li>{@link net.dv8tion.jda.core.audit.AuditLogKey#CHANNEL_NSFW CHANNEL_NSFW} (TextChannel only)</li>
      *     <li>{@link net.dv8tion.jda.core.audit.AuditLogKey#CHANNEL_OVERRIDES CHANNEL_OVERRIDES}</li>
      *     <li>{@link net.dv8tion.jda.core.audit.AuditLogKey#CHANNEL_NAME CHANNEL_NAME}</li>

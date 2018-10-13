@@ -18,10 +18,7 @@ package net.dv8tion.jda.core.requests.ratelimit;
 
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ExceptionEvent;
-import net.dv8tion.jda.core.requests.RateLimiter;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Requester;
-import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.requests.Route.RateLimit;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -83,7 +80,7 @@ public class ClientRateLimiter extends RateLimiter
                     else
                         bucket.retryAfter = now + retryAfter;
 
-                    return retryAfter;                    
+                    return retryAfter;
                 }
                 catch (IOException e)
                 {
@@ -214,7 +211,7 @@ public class ClientRateLimiter extends RateLimiter
                         }
                         catch (Throwable t)
                         {
-                            Requester.LOG.error("Error executing REST request", t);
+                            log.error("Error executing REST request", t);
                             it.remove();
                             if (request != null)
                                 request.onFailure(t);
@@ -232,7 +229,7 @@ public class ClientRateLimiter extends RateLimiter
                             }
                             catch (RejectedExecutionException e)
                             {
-                                Requester.LOG.debug("Caught RejectedExecutionException when re-queuing a ratelimited request. The requester is probably shutdown, thus, this can be ignored.");
+                                log.debug("Caught RejectedExecutionException when re-queuing a ratelimited request. The requester is probably shutdown, thus, this can be ignored.");
                             }
                         }
                     }
@@ -240,7 +237,7 @@ public class ClientRateLimiter extends RateLimiter
             }
             catch (Throwable err)
             {
-                Requester.LOG.error("There was some exception in the ClientRateLimiter", err);
+                log.error("There was some exception in the ClientRateLimiter", err);
                 if (err instanceof Error)
                 {
                     JDAImpl api = requester.getJDA();

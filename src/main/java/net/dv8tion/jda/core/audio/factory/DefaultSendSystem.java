@@ -17,7 +17,6 @@
 package net.dv8tion.jda.core.audio.factory;
 
 import net.dv8tion.jda.core.audio.AudioConnection;
-import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.utils.JDALogger;
 import org.slf4j.MDC;
 
@@ -56,17 +55,17 @@ public class DefaultSendSystem implements IAudioSendSystem
     {
         final DatagramSocket udpSocket = packetProvider.getUdpSocket();
 
-        sendThread = new Thread(AudioManagerImpl.AUDIO_THREADS, () ->
+        sendThread = new Thread(() ->
         {
             if (contextMap != null)
                 MDC.setContextMap(contextMap);
             long lastFrameSent = System.currentTimeMillis();
+            boolean sentPacket = true;
             while (!udpSocket.isClosed() && !sendThread.isInterrupted())
             {
-                boolean sentPacket = true;
                 try
                 {
-                    boolean changeTalking = (System.currentTimeMillis() - lastFrameSent) > OPUS_FRAME_TIME_AMOUNT;
+                    boolean changeTalking = !sentPacket || (System.currentTimeMillis() - lastFrameSent) > OPUS_FRAME_TIME_AMOUNT;
                     DatagramPacket packet = packetProvider.getNextPacket(changeTalking);
 
                     sentPacket = packet != null;
@@ -100,16 +99,15 @@ public class DefaultSendSystem implements IAudioSendSystem
                             Thread.currentThread().interrupt();
                         }
                     }
-                    if (sentPacket)
+                    if (System.currentTimeMillis() < lastFrameSent + 60)
                     {
-                        if (System.currentTimeMillis() < lastFrameSent + 60) // If the sending didn't took longer than 60ms (3 times the time frame)
-                        {
-                            lastFrameSent += OPUS_FRAME_TIME_AMOUNT; // increase lastFrameSent
-                        }
-                        else
-                        {
-                            lastFrameSent = System.currentTimeMillis(); // else reset lastFrameSent to current time
-                        }
+                        // If the sending didn't took longer than 60ms (3 times the time frame)
+                        lastFrameSent += OPUS_FRAME_TIME_AMOUNT;
+                    }
+                    else
+                    {
+                        // else reset lastFrameSent to current time
+                        lastFrameSent = System.currentTimeMillis();
                     }
                 }
             }

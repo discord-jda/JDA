@@ -35,6 +35,7 @@ import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.requests.WebSocketClient;
 import net.dv8tion.jda.core.utils.Helpers;
+import net.dv8tion.jda.core.utils.MiscUtil;
 import org.json.JSONObject;
 
 public class GuildDeleteHandler extends SocketHandler
@@ -89,9 +90,15 @@ public class GuildDeleteHandler extends SocketHandler
         {
             final AudioManagerImpl manager = (AudioManagerImpl) audioManagerMap.get(id);
             if (manager != null) // close existing audio connection if needed
-                manager.closeAudioConnection(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD);
-            // remove manager from central map to avoid old guild references
-            audioManagerMap.remove(id);
+            {
+                MiscUtil.locked(manager.CONNECTION_LOCK, () ->
+                {
+                    if (manager.isConnected() || manager.isAttemptingToConnect())
+                        manager.closeAudioConnection(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD);
+                    else
+                        audioManagerMap.remove(id);
+                });
+            }
         }
 
         //cleaning up all users that we do not share a guild with anymore

@@ -88,24 +88,16 @@ public class EventCache
 
     public synchronized void playbackCache(Type type, long triggerId)
     {
-        List<CacheNode> items;
-        try
-        {
-            items = eventCache.get(type).remove(triggerId);
-        }
-        catch (NullPointerException e)
-        {
-            //If we encounter an NPE that means something didn't exist.
+        TLongObjectMap<List<CacheNode>> typeCache = this.eventCache.get(type);
+        if (typeCache == null)
             return;
-        }
 
+        List<CacheNode> items = typeCache.remove(triggerId);
         if (items != null && !items.isEmpty())
         {
             EventCache.LOG.debug("Replaying {} events from the EventCache for type {} with id: {}",
                 items.size(), type, triggerId);
-            List<CacheNode> itemsCopy = new LinkedList<>(items);
-            items.clear();
-            for (CacheNode item : itemsCopy)
+            for (CacheNode item : items)
                 item.execute();
         }
     }
@@ -125,12 +117,13 @@ public class EventCache
 
     public synchronized void clear(Type type, long id)
     {
-        try
-        {
-            List<CacheNode> events = eventCache.get(type).remove(id);
+        TLongObjectMap<List<CacheNode>> typeCache = this.eventCache.get(type);
+        if (typeCache == null)
+            return;
+
+        List<CacheNode> events = typeCache.remove(id);
+        if (events != null)
             LOG.debug("Clearing cache for type {} with ID {} (Size: {})", type, id, events.size());
-        }
-        catch (NullPointerException ignored) {}
     }
 
     public enum Type

@@ -41,6 +41,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     private String topic;
     private long lastMessageId;
     private boolean nsfw;
+    private int slowmode;
 
     public TextChannelImpl(long id, GuildImpl guild)
     {
@@ -261,6 +262,12 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     @Override
     public boolean isNSFW() {
         return nsfw || name.equals("nsfw") || name.startsWith("nsfw-");
+    }
+
+    @Override
+    public int getSlowmode()
+    {
+        return slowmode;
     }
 
     @Override
@@ -534,6 +541,12 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     public TextChannelImpl setNSFW(boolean nsfw)
     {
         this.nsfw = nsfw;
+        return this;
+    }
+
+    public TextChannelImpl setSlowmode(int slowmode)
+    {
+        this.slowmode = slowmode;
         return this;
     }
 

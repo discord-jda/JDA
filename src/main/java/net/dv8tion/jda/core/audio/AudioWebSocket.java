@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.audio;
 
 import com.neovisionaries.ws.client.*;
+import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.core.JDAInfo;
 import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
@@ -25,6 +26,7 @@ import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ExceptionEvent;
+import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.MiscUtil;
@@ -83,7 +85,7 @@ class AudioWebSocket extends WebSocketAdapter
         this.token = token;
         this.shouldReconnect = shouldReconnect;
 
-        keepAlivePool = getJDA().getAudioKeepAlivePool();
+        keepAlivePool = getJDA().getAudioLifeCyclePool();
 
         //Append the Secure Websocket scheme so that our websocket library knows how to connect
         wssEndpoint = String.format("wss://%s/?v=%d", endpoint, JDAInfo.AUDIO_GATEWAY_VERSION);
@@ -175,13 +177,25 @@ class AudioWebSocket extends WebSocketAdapter
 
             //decide if we reconnect.
             if (shouldReconnect
-                    && status != ConnectionStatus.NOT_CONNECTED    //indicated that the connection was purposely closed. don't reconnect.
-                    && status != ConnectionStatus.DISCONNECTED_CHANNEL_DELETED
-                    && status != ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD
+                    && status.shouldReconnect() //indicated that the connection was purposely closed. don't reconnect.
                     && status != ConnectionStatus.AUDIO_REGION_CHANGE) //Already handled.
             {
+                if (disconnectedChannel == null)
+                {
+                    LOG.debug("Cannot reconnect due to null voice channel");
+                    return;
+                }
                 manager.setQueuedAudioConnection(disconnectedChannel);
                 api.getClient().queueAudioReconnect(disconnectedChannel);
+            }
+            else if (status == ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD)
+            {
+                //Remove audio manager as we are no longer in the guild
+                TLongObjectMap<AudioManager> audioManagerMap = api.getAudioManagerMap();
+                synchronized (audioManagerMap)
+                {
+                    audioManagerMap.remove(guild.getIdLong());
+                }
             }
             else if (status != ConnectionStatus.AUDIO_REGION_CHANGE)
             {
@@ -250,8 +264,7 @@ class AudioWebSocket extends WebSocketAdapter
         else
             identify();
         changeStatus(ConnectionStatus.CONNECTING_AWAITING_AUTHENTICATION);
-        if (!reconnecting)
-            audioConnection.prepareReady();
+        audioConnection.prepareReady();
         reconnecting = false;
     }
 
@@ -617,6 +630,7 @@ class AudioWebSocket extends WebSocketAdapter
 
         Runnable keepAliveRunnable = () ->
         {
+            getJDA().setContext();
             if (socket != null && socket.isOpen()) //TCP keep-alive
                 send(VoiceCode.HEARTBEAT, System.currentTimeMillis());
             if (audioConnection.udpSocket != null && !audioConnection.udpSocket.isClosed()) //UDP keep-alive

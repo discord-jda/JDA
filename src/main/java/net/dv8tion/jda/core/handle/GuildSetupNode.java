@@ -29,6 +29,7 @@ import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.guild.GuildReadyEvent;
+import net.dv8tion.jda.core.events.guild.UnavailableGuildJoinedEvent;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.utils.Helpers;
@@ -55,6 +56,7 @@ public class GuildSetupNode
 
     final boolean join;
     final boolean sync;
+    boolean firedUnavailableJoin = false;
     boolean markedUnavailable = false;
     GuildSetupController.Status status = GuildSetupController.Status.INIT;
 
@@ -219,7 +221,15 @@ public class GuildSetupNode
         boolean wasMarkedUnavailable = this.markedUnavailable;
         this.markedUnavailable = unavailable;
         if (unavailable)
+        {
+            if (!firedUnavailableJoin && join)
+            {
+                firedUnavailableJoin = true;
+                JDAImpl api = getController().getJDA();
+                api.getEventManager().handle(new UnavailableGuildJoinedEvent(api, api.getResponseTotal(), id));
+            }
             return;
+        }
         if (wasMarkedUnavailable && sync && !requestedSync)
         {
             // We are using a client-account and joined a guild
