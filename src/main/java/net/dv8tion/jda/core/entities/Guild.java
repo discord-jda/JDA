@@ -733,6 +733,58 @@ public interface Guild extends ISnowflake
     SnowflakeCacheView<VoiceChannel> getVoiceChannelCache();
 
     /**
+     * Populated list of {@link net.dv8tion.jda.core.entities.Channel channels} for this guild.
+     * This includes all types of channels, such as category/voice/text.
+     * <br>This includes hidden channels by default.
+     *
+     * <p>The returned list is ordered in the same fashion as it would be by the official discord client.
+     * <ol>
+     *     <li>TextChannel without parent</li>
+     *     <li>VoiceChannel without parent</li>
+     *     <li>Categories
+     *         <ol>
+     *             <li>TextChannel with category as parent</li>
+     *             <li>VoiceChannel with category as parent</li>
+     *         </ol>
+     *     </li>
+     * </ol>
+     *
+     * @return Immutable list of channels for this guild
+     *
+     * @see    #getChannels(boolean)
+     */
+    default List<Channel> getChannels()
+    {
+        return getChannels(true);
+    }
+
+    /**
+     * Populated list of {@link net.dv8tion.jda.core.entities.Channel channels} for this guild.
+     * This includes all types of channels, such as category/voice/text.
+     *
+     * <p>The returned list is ordered in the same fashion as it would be by the official discord client.
+     * <ol>
+     *     <li>TextChannel without parent</li>
+     *     <li>VoiceChannel without parent</li>
+     *     <li>Categories
+     *         <ol>
+     *             <li>TextChannel with category as parent</li>
+     *             <li>VoiceChannel with category as parent</li>
+     *         </ol>
+     *     </li>
+     * </ol>
+     *
+     *
+     * @param  includeHidden
+     *         Whether to include channels with denied {@link Permission#VIEW_CHANNEL View Channel Permission}
+     *
+     * @return Immutable list of channels for this guild
+     *
+     * @see    #getChannels()
+     */
+    List<Channel> getChannels(boolean includeHidden);
+
+    /**
      * Gets a {@link net.dv8tion.jda.core.entities.Role Role} from this guild that has the same id as the
      * one provided.
      * <br>If there is no {@link net.dv8tion.jda.core.entities.Role Role} with an id that matches the provided
