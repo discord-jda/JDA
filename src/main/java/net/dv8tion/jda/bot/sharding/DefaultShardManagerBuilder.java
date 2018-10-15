@@ -82,6 +82,18 @@ public class DefaultShardManagerBuilder
      * before calling {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder#build() build()}.
      */
     public DefaultShardManagerBuilder() {}
+    
+    /**
+     * Creates a nearly empty DefaultShardManagerBuilder with the given token.
+     * <br>This is equivelent to using the constuctor
+     * {@link net.dv8tion.jda.bot.sharding#DefaultShardManagerBuilder() DefaultShardManager()}
+     * and calling {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder#setToken(String) setToken(String)}
+     * directly afterward.
+     */
+    public DefaultShardManagerBuilder(String token)
+    {
+        this.setToken(token);
+    }
 
     /**
      * Flags used to enable parts of the JDA cache to reduce the runtime memory footprint.
