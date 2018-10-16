@@ -84,11 +84,12 @@ public class DefaultShardManagerBuilder
     public DefaultShardManagerBuilder() {}
     
     /**
-     * Creates a nearly empty DefaultShardManagerBuilder with the given token.
-     * <br>This is equivelent to using the constuctor
+     * Creates a DefaultShardManagerBuilder with the given token.
+     * <br>This is equivalent to using the constuctor
      * {@link net.dv8tion.jda.bot.sharding#DefaultShardManagerBuilder() DefaultShardManager()}
      * and calling {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder#setToken(String) setToken(String)}
-     * directly afterward.
+     * directly afterward. You can always change the token later with 
+     * {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder#setToken(String) setToken(String)}.
      */
     public DefaultShardManagerBuilder(String token)
     {
