@@ -1042,7 +1042,7 @@ public interface ShardManager
      * @see    net.dv8tion.jda.core.entities.Game#playing(String)
      * @see    net.dv8tion.jda.core.entities.Game#streaming(String, String)
      */
-    default void setPresenceProvider(final IntFunction<OnlineStatus> statusProvider, final IntFunction<Game> gameProvider)
+    default void setPresenceProvider(final IntFunction<OnlineStatus> statusProvider, final IntFunction<? extends Game> gameProvider)
     {
         this.getShardCache().forEach(jda -> jda.getPresence().setPresence(statusProvider.apply(jda.getShardInfo().getShardId()), gameProvider.apply(jda.getShardInfo().getShardId())));
     }
