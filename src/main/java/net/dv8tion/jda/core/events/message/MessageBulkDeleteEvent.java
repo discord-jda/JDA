@@ -25,9 +25,9 @@ import java.util.List;
 
 /**
  * Indicates that a bulk deletion is executed in a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
- * <br>Use {@link net.dv8tion.jda.core.JDABuilder#setBulkDeleteSplittingEnabled(boolean)} to true in order to enable this event.
+ * <br>Use {@link net.dv8tion.jda.core.JDABuilder#setBulkDeleteSplittingEnabled(boolean)} to false in order to enable this event.
  * 
- * <p>Can be used to detect tha a large chunk of Messages is deleted in a TextChannel. Providing a list of Message IDs and the specific TextChannel.
+ * <p>Can be used to detect that a large chunk of Messages is deleted in a TextChannel. Providing a list of Message IDs and the specific TextChannel.
  */
 public class MessageBulkDeleteEvent extends Event
 {
