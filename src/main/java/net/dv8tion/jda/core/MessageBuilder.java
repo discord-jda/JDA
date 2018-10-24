@@ -314,6 +314,21 @@ public class MessageBuilder implements Appendable
         this.append(String.format(format, args));
         return this;
     }
+    
+    /**
+     * Appends a code-line to the Message.
+     * Code Lines are similar to code-blocks, however they are displayed in-line and do not support language specific highlighting.
+     *
+     * @param  text
+     *         the code to append
+     *
+     * @return The MessageBuilder instance. Useful for chaining.
+     */
+    public MessageBuilder appendCodeLine(CharSequence text)
+    {
+        this.append(text, Formatting.BLOCK);
+        return this;
+    }
 
     /**
      * Appends a code-block to the Message.
