@@ -1085,7 +1085,7 @@ public class EntityBuilder
         final long authorId = jsonObject.getLong("id");
         final String username = jsonObject.getString("username");
         final short discriminator = Short.parseShort(jsonObject.getString("discriminator"));
-        final String avatarId = jsonObject.getString("avatar");
+        final String avatarId = jsonObject.optString("avatar", null);
         final boolean isBot = jsonObject.getBoolean("bot");
         return new WebhookUser(authorId, discriminator, username, avatarId, isBot);
     }
