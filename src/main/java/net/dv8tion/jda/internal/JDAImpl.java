@@ -18,8 +18,6 @@ package net.dv8tion.jda.internal;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
 import gnu.trove.map.TLongObjectMap;
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.bot.entities.impl.JDABotImpl;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.core.AccountType;
@@ -35,7 +33,6 @@ import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.hooks.InterfacedEventManager;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.Presence;
-import net.dv8tion.jda.core.requests.GuildLock;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
@@ -181,14 +178,6 @@ public class JDAImpl implements JDA
     public SessionController getSessionController()
     {
         return sessionController;
-    }
-
-    @Deprecated
-    @DeprecatedSince("3.8.0")
-    @ReplaceWith("getGuildSetupController()")
-    public GuildLock getGuildLock()
-    {
-        return new GuildLock(this);
     }
 
     public GuildSetupController getGuildSetupController()
