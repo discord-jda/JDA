@@ -17,13 +17,13 @@
 package net.dv8tion.jda.client.requests.restaction.pagination;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction;
+import net.dv8tion.jda.internal.entities.EntityBuilder;
+import net.dv8tion.jda.internal.requests.Response;
+import net.dv8tion.jda.internal.requests.Route;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -32,7 +32,7 @@ import java.util.List;
 
 /**
  * {@link net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction PaginationAction}
- * that paginates the endpoint {@link net.dv8tion.jda.core.requests.Route.Self#GET_RECENT_MENTIONS Route.Self.GET_RECENT_MENTIONS}.
+ * that paginates the endpoint {@link net.dv8tion.jda.internal.requests.Route.Self#GET_RECENT_MENTIONS Route.Self.GET_RECENT_MENTIONS}.
  *
  * <p><b>Must provide not-null {@link net.dv8tion.jda.core.entities.Guild Guild} to compile a valid guild mentions
  * pagination route.</b>, else it uses the global pagination route.

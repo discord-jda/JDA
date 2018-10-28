@@ -16,13 +16,11 @@
 
 package net.dv8tion.jda.webhook;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.requests.Requester;
-import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.internal.requests.Requester;
+import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import org.json.JSONArray;

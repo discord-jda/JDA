@@ -129,7 +129,7 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      *
      * @return True, if this role can interact with the specified role
      *
-     * @see    net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Role, Role)
+     * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Role, Role)
      */
     boolean canInteract(Role role);
 

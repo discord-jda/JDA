@@ -20,13 +20,13 @@
  *
  * <p>List of utilities:
  * <ul>
- *     <li>{@link net.dv8tion.jda.core.utils.IOUtil IOUtil}
+ *     <li>{@link net.dv8tion.jda.internal.utils.IOUtil IOUtil}
  *     <br>Allows to read from files (use case: sending files)</li>
  *
  *     <li>{@link net.dv8tion.jda.core.utils.MiscUtil MiscUtil}
  *     <br>Various operations that don't have specific utility classes yet, mostly internals that are accessible from JDA entities</li>
  *
- *     <li>{@link net.dv8tion.jda.core.utils.PermissionUtil PermissionUtil}
+ *     <li>{@link net.dv8tion.jda.internal.utils.PermissionUtil PermissionUtil}
  *     <br>Focused all around the {@link net.dv8tion.jda.core.Permission Permissions enum},
  *         used to check whether a certain entity has case-by-case permissions</li>
  *

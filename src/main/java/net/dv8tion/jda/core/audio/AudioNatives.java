@@ -17,9 +17,8 @@
 package net.dv8tion.jda.core.audio;
 
 import club.minnced.opus.util.OpusLibrary;
-import net.dv8tion.jda.core.utils.JDALogger;
+import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 

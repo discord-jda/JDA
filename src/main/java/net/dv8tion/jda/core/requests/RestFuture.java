@@ -16,8 +16,9 @@
 
 package net.dv8tion.jda.core.requests;
 
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.utils.Promise;
+import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.utils.Promise;
 import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 

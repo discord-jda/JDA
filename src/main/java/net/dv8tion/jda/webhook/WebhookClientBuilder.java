@@ -17,8 +17,8 @@
 package net.dv8tion.jda.webhook;
 
 import net.dv8tion.jda.core.entities.Webhook;
-import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.OkHttpClient;
 
 import javax.annotation.Nonnull;

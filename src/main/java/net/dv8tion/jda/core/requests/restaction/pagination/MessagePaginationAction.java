@@ -17,11 +17,15 @@
 package net.dv8tion.jda.core.requests.restaction.pagination;
 
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.ChannelType;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.internal.entities.EntityBuilder;
+import net.dv8tion.jda.internal.requests.Response;
+import net.dv8tion.jda.internal.requests.Route;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -30,7 +34,7 @@ import java.util.List;
 
 /**
  * {@link net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction PaginationAction}
- * that paginates the endpoints {@link net.dv8tion.jda.core.requests.Route.Messages#GET_MESSAGE_HISTORY Route.Messages.GET_MESSAGE_HISTORY}.
+ * that paginates the endpoints {@link net.dv8tion.jda.internal.requests.Route.Messages#GET_MESSAGE_HISTORY Route.Messages.GET_MESSAGE_HISTORY}.
  *
  * <p><b>Must provide not-null {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel} to compile a valid
  * pagination route.</b>

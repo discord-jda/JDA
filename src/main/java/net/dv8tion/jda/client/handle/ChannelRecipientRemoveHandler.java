@@ -20,9 +20,9 @@ import net.dv8tion.jda.client.entities.impl.CallImpl;
 import net.dv8tion.jda.client.entities.impl.GroupImpl;
 import net.dv8tion.jda.client.events.group.GroupUserLeaveEvent;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.handle.EventCache;
-import net.dv8tion.jda.core.handle.SocketHandler;
+import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.handle.EventCache;
+import net.dv8tion.jda.internal.handle.SocketHandler;
 import org.json.JSONObject;
 
 public class ChannelRecipientRemoveHandler extends SocketHandler

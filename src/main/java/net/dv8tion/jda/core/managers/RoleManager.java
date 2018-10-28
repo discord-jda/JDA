@@ -22,11 +22,11 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.exceptions.HierarchyException;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.core.managers.impl.ManagerBase;
-import net.dv8tion.jda.core.requests.Route;
-import net.dv8tion.jda.core.utils.Checks;
-import net.dv8tion.jda.core.utils.PermissionUtil;
 import net.dv8tion.jda.core.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.managers.ManagerBase;
+import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.PermissionUtil;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
 

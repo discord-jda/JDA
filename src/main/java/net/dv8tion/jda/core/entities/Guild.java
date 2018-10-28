@@ -25,9 +25,9 @@ import net.dv8tion.jda.core.managers.GuildManager;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.MemberAction;
 import net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAction;
-import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.cache.MemberCacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;

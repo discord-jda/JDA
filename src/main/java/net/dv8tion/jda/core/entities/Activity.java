@@ -16,9 +16,12 @@
 package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.annotations.Incubating;
-import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.internal.entities.EntityBuilder;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nullable;
+import java.time.Instant;
+import java.time.temporal.TemporalUnit;
 import java.util.Objects;
 
 /**
@@ -28,46 +31,15 @@ import java.util.Objects;
  * @since  2.1
  * @author John A. Grosh
  */
-public class Activity
+public interface Activity
 {
-    protected final String name;
-    protected final String url;
-    protected final ActivityType type;
-    protected final RichPresence.Timestamps timestamps;
-
-    protected Activity(String name)
-    {
-        this(name, null, ActivityType.DEFAULT);
-    }
-
-    protected Activity(String name, String url)
-    {
-        this(name, url, ActivityType.STREAMING);
-    }
-
-    protected Activity(String name, String url, ActivityType type)
-    {
-        this(name, url, type, null);
-    }
-
-    protected Activity(String name, String url, ActivityType type, RichPresence.Timestamps timestamps)
-    {
-        this.name = name;
-        this.url = url;
-        this.type = type;
-        this.timestamps = timestamps;
-    }
-
     /**
      * Whether this is a <a href="https://discordapp.com/developers/docs/rich-presence/best-practices" target="_blank">Rich Presence</a>
      * <br>If {@code false} the result of {@link #asRichPresence()} is {@code null}
      *
      * @return {@code true} if this is a {@link net.dv8tion.jda.core.entities.RichPresence RichPresence}
      */
-    public boolean isRich()
-    {
-        return false;
-    }
+    boolean isRich();
 
     /**
      * {@link net.dv8tion.jda.core.entities.RichPresence RichPresence} representation of
@@ -75,20 +47,14 @@ public class Activity
      *
      * @return RichPresence or {@code null} if {@link #isRich()} returns {@code false}
      */
-    public RichPresence asRichPresence()
-    {
-        return null;
-    }
+    RichPresence asRichPresence();
 
     /**
      * The displayed name of the {@link Activity Activity}. If no name has been set, this returns null.
      *
      * @return Possibly-null String containing the Activity's name.
      */
-    public String getName()
-    {
-        return name;
-    }
+    String getName();
 
     /**
      * The URL of the {@link Activity Activity} if the game is actually a Stream.
@@ -96,61 +62,22 @@ public class Activity
      *
      * @return Possibly-null String containing the Activity's URL.
      */
-    public String getUrl()
-    {
-        return url;
-    }
+    String getUrl();
 
     /**
      * The type of {@link Activity Activity}.
      *
      * @return Never-null {@link net.dv8tion.jda.core.entities.Activity.ActivityType ActivityType} representing the type of Activity
      */
-    public ActivityType getType()
-    {
-        return type;
-    }
+    ActivityType getType();
 
     /**
      * Information on the match duration, start, and end.
      *
-     * @return {@link net.dv8tion.jda.core.entities.RichPresence.Timestamps Timestamps} wrapper of {@code null} if unset
+     * @return {@link net.dv8tion.jda.core.entities.Activity.Timestamps Timestamps} wrapper of {@code null} if unset
      */
     @Nullable
-    public RichPresence.Timestamps getTimestamps()
-    {
-        return timestamps;
-    }
-
-    @Override
-    public boolean equals(Object o)
-    {
-        if (!(o instanceof Activity))
-            return false;
-        if (o == this)
-            return true;
-
-        Activity oGame = (Activity) o;
-        return oGame.getType() == type
-            && Objects.equals(name, oGame.getName())
-            && Objects.equals(url, oGame.getUrl())
-            && Objects.equals(timestamps, oGame.timestamps);
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return Objects.hash(name, type, url, timestamps);
-    }
-
-    @Override
-    public String toString()
-    {
-        if (url != null)
-            return String.format("Activity(%s | %s)", name, url);
-        else
-            return String.format("Activity(%s)", name);
-    }
+    Timestamps getTimestamps();
 
     /**
      * Creates a new Activity instance with the specified name.
@@ -165,10 +92,10 @@ public class Activity
      *
      * @return A valid Activity instance with the provided name with {@link net.dv8tion.jda.core.entities.Activity.ActivityType#DEFAULT}
      */
-    public static Activity playing(String name)
+    static Activity playing(String name)
     {
         Checks.notBlank(name, "Name");
-        return new Activity(name, null, ActivityType.DEFAULT);
+        return EntityBuilder.createAcitvity(name, null, ActivityType.DEFAULT);
     }
 
     /**
@@ -188,7 +115,7 @@ public class Activity
      *
      * @see    #isValidStreamingUrl(String)
      */
-    public static Activity streaming(String name, String url)
+    static Activity streaming(String name, String url)
     {
         Checks.notEmpty(name, "Provided game name");
         ActivityType type;
@@ -196,7 +123,7 @@ public class Activity
             type = ActivityType.STREAMING;
         else
             type = ActivityType.DEFAULT;
-        return new Activity(name, url, type);
+        return EntityBuilder.createAcitvity(name, url, type);
     }
 
     /**
@@ -211,10 +138,10 @@ public class Activity
      *
      * @return A valid Activity instance with the provided name with {@link net.dv8tion.jda.core.entities.Activity.ActivityType#LISTENING}
      */
-    public static Activity listening(String name)
+    static Activity listening(String name)
     {
         Checks.notBlank(name, "Name");
-        return new Activity(name, null, ActivityType.LISTENING);
+        return EntityBuilder.createAcitvity(name, null, ActivityType.LISTENING);
     }
 
     /**
@@ -232,10 +159,10 @@ public class Activity
      * @incubating This feature is not yet confirmed for the official bot API
      */
     @Incubating
-    public static Activity watching(String name)
+    static Activity watching(String name)
     {
         Checks.notBlank(name, "Name");
-        return new Activity(name, null, ActivityType.WATCHING);
+        return EntityBuilder.createAcitvity(name, null, ActivityType.WATCHING);
     }
 
     /**
@@ -251,7 +178,7 @@ public class Activity
      *
      * @return A valid Activity instance with the provided name and url
      */
-    public static Activity of(ActivityType type, String name)
+    static Activity of(ActivityType type, String name)
     {
         return of(type, name, null);
     }
@@ -275,7 +202,7 @@ public class Activity
      *
      * @see    #isValidStreamingUrl(String)
      */
-    public static Activity of(ActivityType type, String name, String url)
+    static Activity of(ActivityType type, String name, String url)
     {
         Checks.notNull(type, "Type");
         switch (type)
@@ -301,7 +228,7 @@ public class Activity
      *
      * @return True if the provided url is valid for triggering Discord's streaming status
      */
-    public static boolean isValidStreamingUrl(String url)
+    static boolean isValidStreamingUrl(String url)
     {
         return url != null && url.matches("https?://(www\\.)?twitch\\.tv/.+");
     }
@@ -309,7 +236,7 @@ public class Activity
     /**
      * The type game being played, differentiating between a game and stream types.
      */
-    public enum ActivityType
+    enum ActivityType
     {
         /**
          * The ActivityType used to represent a normal {@link Activity Activity} status.
@@ -374,6 +301,141 @@ public class Activity
                 case 3:
                     return WATCHING;
             }
+        }
+    }
+
+    /**
+     * Represents the start and end timestamps for a running match
+     */
+    class Timestamps
+    {
+        protected final long start;
+
+        protected final long end;
+
+        public Timestamps(long start, long end)
+        {
+            this.start = start;
+            this.end = end;
+        }
+
+        /**
+         * Epoch second timestamp of match start, or {@code 0} of unset.
+         *
+         * @return Epoch second timestamp of match start, or {@code 0} of unset.
+         */
+        public long getStart()
+        {
+            return start;
+        }
+
+        /**
+         * Shortcut for {@code Instant.ofEpochSecond(start)}
+         *
+         * @return Instant of match start, or {@code null} if unset
+         */
+        @Nullable
+        public Instant getStartTime()
+        {
+            return start <= 0 ? null : Instant.ofEpochMilli(start);
+        }
+
+        /**
+         * Epoch second timestamp of match end, or {@code 0} of unset.
+         *
+         * @return Epoch second timestamp of match end, or {@code 0} of unset.
+         */
+        public long getEnd()
+        {
+            return end;
+        }
+
+        /**
+         * Shortcut for {@code Instant.ofEpochSecond(start)}
+         *
+         * @return Instant of match start, or {@code null} if unset
+         */
+        @Nullable
+        public Instant getEndTime()
+        {
+            return end <= 0 ? null : Instant.ofEpochMilli(end);
+        }
+
+        /**
+         * Calculates the amount of time until {@link #getEndTime()} in terms of the specified unit.
+         * <br>If {@link #getEndTime()} is {@code null} this will be negative.
+         *
+         * @param  unit
+         *         The {@link java.time.temporal.TemporalUnit TemporalUnit} to return
+         *
+         * @throws IllegalArgumentException
+         *         If the provided unit is {@code null}
+         * @throws ArithmeticException
+         *         If a numeric overflow occurs
+         * @throws java.time.DateTimeException
+         *         If the amount cannot be calculated
+         * @throws java.time.temporal.UnsupportedTemporalTypeException
+         *         If the provided unit is not supported
+         *
+         * @return Remaining time in the provided {@link java.time.temporal.TemporalUnit TemporalUnit} or {@code -1} if unset
+         *
+         * @see    java.time.Instant#until(java.time.temporal.Temporal, java.time.temporal.TemporalUnit) Instant.until(Temporal, TemporalUnit)
+         * @see    java.time.temporal.TemporalUnit
+         */
+        public long getRemainingTime(TemporalUnit unit)
+        {
+            Checks.notNull(unit, "TemporalUnit");
+            Instant end = getEndTime();
+            return end != null ? Instant.now().until(end, unit) : -1;
+        }
+
+        /**
+         * Calculates the elapsed time from {@link #getStartTime()} to now in terms of the specified unit.
+         * <br>If {@link #getStartTime()} is {@code null} this will be negative.
+         *
+         * @param  unit
+         *         The {@link java.time.temporal.TemporalUnit TemporalUnit} to return
+         *
+         * @throws IllegalArgumentException
+         *         If the provided unit is {@code null}
+         * @throws ArithmeticException
+         *         If a numeric overflow occurs
+         * @throws java.time.DateTimeException
+         *         If the amount cannot be calculated
+         * @throws java.time.temporal.UnsupportedTemporalTypeException
+         *         If the provided unit is not supported
+         *
+         * @return Elapsed time in the provided {@link java.time.temporal.TemporalUnit TemporalUnit} or {@code -1} if unset
+         *
+         * @see    java.time.Instant#until(java.time.temporal.Temporal, java.time.temporal.TemporalUnit) Instant.until(Temporal, TemporalUnit)
+         * @see    java.time.temporal.TemporalUnit
+         */
+        public long getElapsedTime(TemporalUnit unit)
+        {
+            Checks.notNull(unit, "TemporalUnit");
+            Instant start = getStartTime();
+            return start != null ? start.until(Instant.now(), unit) : -1;
+        }
+
+        @Override
+        public String toString()
+        {
+            return String.format("RichPresenceTimestamp(%d-%d)", start, end);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (!(obj instanceof Timestamps))
+                return false;
+            Timestamps t = (Timestamps) obj;
+            return start == t.start && end == t.end;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(start, end);
         }
     }
 }

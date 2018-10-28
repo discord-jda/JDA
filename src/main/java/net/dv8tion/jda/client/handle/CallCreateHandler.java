@@ -25,11 +25,11 @@ import net.dv8tion.jda.client.entities.impl.CallUserImpl;
 import net.dv8tion.jda.client.entities.impl.CallVoiceStateImpl;
 import net.dv8tion.jda.client.entities.impl.GroupImpl;
 import net.dv8tion.jda.core.Region;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.entities.impl.PrivateChannelImpl;
-import net.dv8tion.jda.core.handle.EventCache;
-import net.dv8tion.jda.core.handle.SocketHandler;
-import net.dv8tion.jda.core.requests.WebSocketClient;
+import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.PrivateChannelImpl;
+import net.dv8tion.jda.internal.handle.EventCache;
+import net.dv8tion.jda.internal.handle.SocketHandler;
+import net.dv8tion.jda.internal.requests.WebSocketClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

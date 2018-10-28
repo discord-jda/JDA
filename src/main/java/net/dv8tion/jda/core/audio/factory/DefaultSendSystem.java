@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.core.audio.factory;
 
-import net.dv8tion.jda.core.audio.AudioConnection;
-import net.dv8tion.jda.core.utils.JDALogger;
+import net.dv8tion.jda.internal.audio.AudioConnection;
+import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.MDC;
 
 import javax.annotation.CheckForNull;
@@ -27,7 +27,7 @@ import java.net.NoRouteToHostException;
 import java.net.SocketException;
 import java.util.concurrent.ConcurrentMap;
 
-import static net.dv8tion.jda.core.audio.AudioConnection.OPUS_FRAME_TIME_AMOUNT;
+import static net.dv8tion.jda.internal.audio.AudioConnection.OPUS_FRAME_TIME_AMOUNT;
 
 /**
  * The default implementation of the {@link net.dv8tion.jda.core.audio.factory.IAudioSendSystem IAudioSendSystem}.

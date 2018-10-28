@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.core.entities;
 
-import net.dv8tion.jda.core.utils.IOUtil;
-import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.IOUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -66,7 +66,7 @@ public class Icon
      *
      * @return An Icon instance representing the specified File
      *
-     * @see    net.dv8tion.jda.core.utils.IOUtil#readFully(File)
+     * @see    net.dv8tion.jda.internal.utils.IOUtil#readFully(File)
      */
     public static Icon from(File file) throws IOException
     {
@@ -91,7 +91,7 @@ public class Icon
      *
      * @return An Icon instance representing the specified InputStream
      *
-     * @see    net.dv8tion.jda.core.utils.IOUtil#readFully(InputStream)
+     * @see    net.dv8tion.jda.internal.utils.IOUtil#readFully(InputStream)
      */
     public static Icon from(InputStream stream) throws IOException
     {

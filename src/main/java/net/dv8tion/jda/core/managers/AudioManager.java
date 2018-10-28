@@ -25,8 +25,8 @@ import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
-import net.dv8tion.jda.core.utils.Checks;
-import net.dv8tion.jda.core.utils.JDALogger;
+import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
 
 import java.util.Arrays;

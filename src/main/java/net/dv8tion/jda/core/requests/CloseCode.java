@@ -17,7 +17,7 @@
 package net.dv8tion.jda.core.requests;
 
 /**
- * Constants representing {@link net.dv8tion.jda.core.requests.WebSocketClient WebSocketClient} close codes
+ * Constants representing {@link net.dv8tion.jda.internal.requests.WebSocketClient WebSocketClient} close codes
  * with association to an explaining message.
  * <br>This was inspired from the <a target="_blank" href="https://discordapp.com/developers/docs/topics/gateway#disconnections">official documentation</a>
  */
@@ -76,7 +76,7 @@ public enum CloseCode
     }
 
     /**
-     * Whether the {@link net.dv8tion.jda.core.requests.WebSocketClient WebSocketClient}
+     * Whether the {@link net.dv8tion.jda.internal.requests.WebSocketClient WebSocketClient}
      * will attempt to reconnect when this close code appears
      *
      * @return Whether the WebSocketClient will attempt to reconnect

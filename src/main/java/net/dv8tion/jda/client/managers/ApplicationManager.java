@@ -19,9 +19,9 @@ package net.dv8tion.jda.client.managers;
 import net.dv8tion.jda.client.entities.Application;
 import net.dv8tion.jda.client.entities.impl.ApplicationImpl;
 import net.dv8tion.jda.core.entities.Icon;
-import net.dv8tion.jda.core.managers.impl.ManagerBase;
-import net.dv8tion.jda.core.requests.Route;
-import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.internal.managers.ManagerBase;
+import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
 

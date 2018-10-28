@@ -18,9 +18,9 @@ package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild.VerificationLevel;
-import net.dv8tion.jda.core.entities.impl.InviteImpl;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.internal.entities.InviteImpl;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;

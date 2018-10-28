@@ -18,8 +18,8 @@ package net.dv8tion.jda.core.requests;
 
 import net.dv8tion.jda.annotations.DeprecatedSince;
 import net.dv8tion.jda.annotations.ReplaceWith;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.utils.JDALogger;
+import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.utils.JDALogger;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 

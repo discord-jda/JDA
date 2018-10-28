@@ -24,13 +24,13 @@ import net.dv8tion.jda.client.events.relationship.FriendRequestCanceledEvent;
 import net.dv8tion.jda.client.events.relationship.FriendRequestIgnoredEvent;
 import net.dv8tion.jda.client.events.relationship.UserUnblockedEvent;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.entities.impl.GuildImpl;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.entities.impl.PrivateChannelImpl;
-import net.dv8tion.jda.core.entities.impl.UserImpl;
-import net.dv8tion.jda.core.handle.EventCache;
-import net.dv8tion.jda.core.handle.SocketHandler;
-import net.dv8tion.jda.core.requests.WebSocketClient;
+import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.internal.entities.PrivateChannelImpl;
+import net.dv8tion.jda.internal.entities.UserImpl;
+import net.dv8tion.jda.internal.handle.EventCache;
+import net.dv8tion.jda.internal.handle.SocketHandler;
+import net.dv8tion.jda.internal.requests.WebSocketClient;
 import org.json.JSONObject;
 
 public class RelationshipRemoveHandler extends SocketHandler

@@ -21,7 +21,7 @@
  * as java classes. They contain information about the specific entity and
  * have operations to interact with them.
  *
- * <p>The {@link net.dv8tion.jda.core.entities.EntityBuilder EntityBuilder} can be used
+ * <p>The {@link net.dv8tion.jda.internal.entities.EntityBuilder EntityBuilder} can be used
  * to create entities from this package by creating {@link net.dv8tion.jda.core.entities.impl entities.impl} instances
  * for the specific entity.
  */

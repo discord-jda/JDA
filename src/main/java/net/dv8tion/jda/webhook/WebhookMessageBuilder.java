@@ -16,13 +16,11 @@
 
 package net.dv8tion.jda.webhook;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.utils.Checks;
-import net.dv8tion.jda.core.utils.Helpers;
+import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import java.io.File;
 import java.io.IOException;

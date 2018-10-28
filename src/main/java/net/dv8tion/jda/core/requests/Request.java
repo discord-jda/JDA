@@ -17,12 +17,14 @@
 package net.dv8tion.jda.core.requests;
 
 import net.dv8tion.jda.core.audit.ThreadLocalReason;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.events.http.HttpRequestEvent;
 import net.dv8tion.jda.core.exceptions.ContextException;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
+import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.requests.Response;
+import net.dv8tion.jda.internal.requests.Route;
 import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 

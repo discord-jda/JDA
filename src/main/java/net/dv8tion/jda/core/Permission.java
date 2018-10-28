@@ -15,7 +15,7 @@
  */
 package net.dv8tion.jda.core;
 
-import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -214,11 +214,11 @@ public enum Permission
     /**
      * A list of all {@link net.dv8tion.jda.core.Permission Permissions} that are specified by this raw long representation of
      * permissions. The is best used with the getRaw methods in {@link net.dv8tion.jda.core.entities.Role Role},
-     * {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} or {@link net.dv8tion.jda.core.utils.PermissionUtil}.
+     * {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} or {@link net.dv8tion.jda.internal.utils.PermissionUtil}.
      *
      * <p>Examples:
      * <br>{@link net.dv8tion.jda.core.entities.Role#getPermissionsRaw() Role.getPermissionsRaw()}
-     * <br>{@link net.dv8tion.jda.core.utils.PermissionUtil#getEffectivePermission(net.dv8tion.jda.core.entities.GuildChannel, net.dv8tion.jda.core.entities.Member)
+     * <br>{@link net.dv8tion.jda.internal.utils.PermissionUtil#getEffectivePermission(net.dv8tion.jda.core.entities.GuildChannel, net.dv8tion.jda.core.entities.Member)
      * PermissionUtil.getEffectivePermission(GuildChannel, Member)}
      *
      * @param  permissions

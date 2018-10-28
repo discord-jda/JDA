@@ -21,9 +21,9 @@ import net.dv8tion.jda.client.managers.ApplicationManager;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.internal.requests.Response;
+import net.dv8tion.jda.internal.requests.Route;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

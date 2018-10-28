@@ -17,7 +17,7 @@
 package net.dv8tion.jda.core.exceptions;
 
 import net.dv8tion.jda.core.requests.ErrorResponse;
-import net.dv8tion.jda.core.requests.Response;
+import net.dv8tion.jda.internal.requests.Response;
 import org.json.JSONObject;
 
 import java.util.Optional;
@@ -100,7 +100,7 @@ public class ErrorResponseException extends RuntimeException
     /**
      * The Discord Response causing the ErrorResponse
      *
-     * @return {@link net.dv8tion.jda.core.requests.Response Response}
+     * @return {@link net.dv8tion.jda.internal.requests.Response Response}
      */
     public Response getResponse()
     {

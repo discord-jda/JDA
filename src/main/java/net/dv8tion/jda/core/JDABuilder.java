@@ -22,14 +22,14 @@ import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.core.JDA.Status;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Activity;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.hooks.IEventManager;
-import net.dv8tion.jda.core.managers.impl.PresenceImpl;
-import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.SessionController;
 import net.dv8tion.jda.core.utils.SessionControllerAdapter;
 import net.dv8tion.jda.core.utils.cache.CacheFlag;
+import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.managers.PresenceImpl;
+import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.OkHttpClient;
 
 import javax.security.auth.login.LoginException;

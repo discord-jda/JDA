@@ -21,16 +21,16 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.audit.ActionType;
 import net.dv8tion.jda.core.audit.AuditLogEntry;
-import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.Route;
-import net.dv8tion.jda.core.utils.Checks;
-import net.dv8tion.jda.core.utils.Helpers;
+import net.dv8tion.jda.internal.entities.EntityBuilder;
+import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.internal.requests.Response;
+import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,7 +40,7 @@ import java.util.List;
 
 /**
  * {@link net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction PaginationAction}
- * that paginates the endpoint {@link net.dv8tion.jda.core.requests.Route.Guilds#GET_AUDIT_LOGS Route.Guilds.GET_AUDIT_LOGS}.
+ * that paginates the endpoint {@link net.dv8tion.jda.internal.requests.Route.Guilds#GET_AUDIT_LOGS Route.Guilds.GET_AUDIT_LOGS}.
  *
  * <p><b>Must provide not-null {@link net.dv8tion.jda.core.entities.Guild Guild} to compile a valid guild audit logs
  * pagination route</b>

@@ -15,7 +15,7 @@
  */
 package net.dv8tion.jda.core.requests;
 
-import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;

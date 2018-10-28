@@ -22,9 +22,9 @@ import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.entities.Activity;
 import net.dv8tion.jda.core.hooks.IEventManager;
-import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.SessionController;
 import net.dv8tion.jda.core.utils.cache.CacheFlag;
+import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.OkHttpClient;
 
 import javax.security.auth.login.LoginException;

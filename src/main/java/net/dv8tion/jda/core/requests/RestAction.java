@@ -18,13 +18,16 @@ package net.dv8tion.jda.core.requests;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.audit.ThreadLocalReason;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
-import net.dv8tion.jda.core.utils.Checks;
-import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.requests.Requester;
+import net.dv8tion.jda.internal.requests.Response;
+import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.JDALogger;
 import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.json.JSONArray;
@@ -217,7 +220,7 @@ public abstract class RestAction<T>
      * @param  api
      *         The current JDA instance
      * @param  route
-     *         The {@link net.dv8tion.jda.core.requests.Route.CompiledRoute Route.CompiledRoute}
+     *         The {@link net.dv8tion.jda.internal.requests.Route.CompiledRoute Route.CompiledRoute}
      *         to be used for rate limit handling
      */
     public RestAction(JDA api, Route.CompiledRoute route)
@@ -231,7 +234,7 @@ public abstract class RestAction<T>
      * @param  api
      *         The current JDA instance
      * @param  route
-     *         The {@link net.dv8tion.jda.core.requests.Route.CompiledRoute Route.CompiledRoute}
+     *         The {@link net.dv8tion.jda.internal.requests.Route.CompiledRoute Route.CompiledRoute}
      *         to be used for rate limit handling
      * @param  data
      *         The data that should be sent to the specified route. (can be null)
@@ -251,7 +254,7 @@ public abstract class RestAction<T>
      * @param  api
      *         The current JDA instance
      * @param  route
-     *         The {@link net.dv8tion.jda.core.requests.Route.CompiledRoute Route.CompiledRoute}
+     *         The {@link net.dv8tion.jda.internal.requests.Route.CompiledRoute Route.CompiledRoute}
      *         to be used for rate limit handling
      * @param  data
      *         The data that should be sent to the specified route. (can be null)

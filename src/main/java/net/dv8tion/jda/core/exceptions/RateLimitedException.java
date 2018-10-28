@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.core.exceptions;
 
-import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.internal.requests.Route;
 
 /**
  * Indicates that we received a {@code 429: Too Many Requests} response
@@ -40,7 +40,7 @@ public class RateLimitedException extends Exception
 
     /**
      * The route responsible for the rate limit bucket that is used in
-     * the responsible {@link net.dv8tion.jda.core.requests.RateLimiter RateLimiter}
+     * the responsible {@link net.dv8tion.jda.internal.requests.RateLimiter RateLimiter}
      *
      * @return The corresponding route
      */

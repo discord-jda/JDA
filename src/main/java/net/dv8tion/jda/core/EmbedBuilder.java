@@ -16,11 +16,11 @@
 package net.dv8tion.jda.core;
 
 import net.dv8tion.jda.core.entities.EmbedType;
-import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.utils.Checks;
-import net.dv8tion.jda.core.utils.Helpers;
+import net.dv8tion.jda.internal.entities.EntityBuilder;
+import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import java.awt.Color;
 import java.time.*;

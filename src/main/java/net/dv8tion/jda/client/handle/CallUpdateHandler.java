@@ -23,9 +23,9 @@ import net.dv8tion.jda.client.entities.impl.CallUserImpl;
 import net.dv8tion.jda.client.events.call.update.CallUpdateRegionEvent;
 import net.dv8tion.jda.client.events.call.update.CallUpdateRingingUsersEvent;
 import net.dv8tion.jda.core.Region;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.handle.EventCache;
-import net.dv8tion.jda.core.handle.SocketHandler;
+import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.handle.EventCache;
+import net.dv8tion.jda.internal.handle.SocketHandler;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

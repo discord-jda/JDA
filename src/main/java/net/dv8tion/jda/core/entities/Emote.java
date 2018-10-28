@@ -21,7 +21,7 @@ import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.client.managers.EmoteManager;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.core.utils.PermissionUtil;
+import net.dv8tion.jda.internal.utils.PermissionUtil;
 
 import javax.annotation.CheckReturnValue;
 import java.util.List;
@@ -203,8 +203,8 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      *
      * @return True, if the provided Member can use this Emote
      *
-     * @see    net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Emote)
-     * @see    net.dv8tion.jda.core.utils.PermissionUtil#canInteract(User, Emote, MessageChannel)
+     * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Emote)
+     * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(User, Emote, MessageChannel)
      */
     default boolean canInteract(Member issuer)
     {
@@ -222,8 +222,8 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      *
      * @return True, if the provided Member can use this Emote
      *
-     * @see    net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Emote)
-     * @see    net.dv8tion.jda.core.utils.PermissionUtil#canInteract(User, Emote, MessageChannel)
+     * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Emote)
+     * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(User, Emote, MessageChannel)
      */
     default boolean canInteract(User issuer, MessageChannel channel)
     {
@@ -243,8 +243,8 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      *
      * @return True, if the provided Member can use this Emote
      *
-     * @see    net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Emote)
-     * @see    net.dv8tion.jda.core.utils.PermissionUtil#canInteract(User, Emote, MessageChannel, boolean)
+     * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Emote)
+     * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(User, Emote, MessageChannel, boolean)
      */
     default boolean canInteract(User issuer, MessageChannel channel, boolean botOverride)
     {

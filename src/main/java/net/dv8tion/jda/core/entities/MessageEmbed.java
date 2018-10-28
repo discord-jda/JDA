@@ -17,8 +17,8 @@ package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.utils.Checks;
-import net.dv8tion.jda.core.utils.Helpers;
+import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -110,7 +110,7 @@ public class MessageEmbed
     protected volatile int length = -1;
     protected volatile JSONObject json = null;
 
-    protected MessageEmbed(
+    public MessageEmbed(
         String url, String title, String description, EmbedType type, OffsetDateTime timestamp,
         int color, Thumbnail thumbnail, Provider siteProvider, AuthorInfo author,
         VideoInfo videoInfo, Footer footer, ImageInfo image, List<Field> fields)
@@ -888,7 +888,7 @@ public class MessageEmbed
         protected final String value;
         protected final boolean inline;
 
-        protected Field(String name, String value, boolean inline, boolean checked)
+        public Field(String name, String value, boolean inline, boolean checked)
         {
             if (checked)
             {

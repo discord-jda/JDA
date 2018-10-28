@@ -16,13 +16,13 @@
 
 package net.dv8tion.jda.core.requests.restaction.pagination;
 
-import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.MessageReaction;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.internal.entities.EntityBuilder;
+import net.dv8tion.jda.internal.requests.Response;
+import net.dv8tion.jda.internal.requests.Route;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -31,7 +31,7 @@ import java.util.List;
 
 /**
  * {@link net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction PaginationAction}
- * that paginates the endpoint {@link net.dv8tion.jda.core.requests.Route.Messages#GET_REACTION_USERS Route.Messages.GET_REACTION_USERS}.
+ * that paginates the endpoint {@link net.dv8tion.jda.internal.requests.Route.Messages#GET_REACTION_USERS Route.Messages.GET_REACTION_USERS}.
  *
  * <p><b>Must provide not-null {@link net.dv8tion.jda.core.entities.MessageReaction MessageReaction} to compile a valid
  * pagination route.</b>

@@ -16,8 +16,8 @@
 package net.dv8tion.jda.core.events;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.handle.GuildSetupController;
+import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.handle.GuildSetupController;
 
 /**
  * Indicates that JDA finished loading all entities.

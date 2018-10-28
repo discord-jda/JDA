@@ -17,9 +17,9 @@
 package net.dv8tion.jda.core.requests.restaction.order;
 
 import net.dv8tion.jda.core.entities.Category;
-import net.dv8tion.jda.core.entities.GuildChannel;
 import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.entities.GuildChannel;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;

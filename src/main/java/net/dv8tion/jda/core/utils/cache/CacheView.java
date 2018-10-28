@@ -19,9 +19,9 @@ package net.dv8tion.jda.core.utils.cache;
 import net.dv8tion.jda.bot.utils.cache.ShardCacheView;
 import net.dv8tion.jda.bot.utils.cache.impl.ShardCacheViewImpl;
 import net.dv8tion.jda.core.entities.ISnowflake;
-import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.cache.impl.AbstractCacheView;
 import net.dv8tion.jda.core.utils.cache.impl.UnifiedCacheViewImpl;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import java.util.Collection;
 import java.util.List;

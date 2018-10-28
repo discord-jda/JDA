@@ -22,11 +22,11 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.internal.requests.Response;
+import net.dv8tion.jda.internal.requests.Route;
 
 import javax.annotation.CheckReturnValue;
 import java.util.Objects;

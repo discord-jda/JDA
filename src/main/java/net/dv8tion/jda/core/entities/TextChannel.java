@@ -18,8 +18,8 @@ package net.dv8tion.jda.core.entities;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.WebhookAction;
-import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import java.util.Collection;
@@ -32,7 +32,7 @@ import java.util.List;
  * {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel} for more information.
  *
  * <p>Internal implementation of this class is available at
- * {@link net.dv8tion.jda.core.entities.impl.TextChannelImpl TextChannelImpl}.
+ * {@link net.dv8tion.jda.internal.entities.TextChannelImpl TextChannelImpl}.
  * <br>Note: Internal implementation should not be used directly.
  */
 public interface TextChannel extends GuildChannel, MessageChannel, Comparable<TextChannel>, IMentionable

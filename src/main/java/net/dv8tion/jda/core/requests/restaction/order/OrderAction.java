@@ -18,10 +18,10 @@ package net.dv8tion.jda.core.requests.restaction.order;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.requests.Route;
-import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.internal.requests.Response;
+import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,7 +60,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      *        JDA instance which is associated with the entities contained
      *        in the order list
      * @param route
-     *        The {@link net.dv8tion.jda.core.requests.Route.CompiledRoute CompiledRoute}
+     *        The {@link net.dv8tion.jda.internal.requests.Route.CompiledRoute CompiledRoute}
      *        which is provided to the {@link RestAction#RestAction(JDA, Route.CompiledRoute, okhttp3.RequestBody) RestAction Constructor}
      */
     public OrderAction(JDA api, Route.CompiledRoute route)
@@ -77,7 +77,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      * @param ascendingOrder
      *        Whether or not the order of items should be ascending
      * @param route
-     *        The {@link net.dv8tion.jda.core.requests.Route.CompiledRoute CompiledRoute}
+     *        The {@link net.dv8tion.jda.internal.requests.Route.CompiledRoute CompiledRoute}
      *        which is provided to the {@link RestAction#RestAction(JDA, Route.CompiledRoute, okhttp3.RequestBody) RestAction Constructor}
      */
     public OrderAction(JDA api, boolean ascendingOrder, Route.CompiledRoute route)

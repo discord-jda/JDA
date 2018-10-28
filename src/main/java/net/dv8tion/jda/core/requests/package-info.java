@@ -19,10 +19,10 @@
  * Includes REST and WebSocket connections
  *
  * <p><u><b>REST API</b></u>
- * <br>The {@link net.dv8tion.jda.core.requests.Requester Requester}
- * is used to create HTTPs requests with the Discord API through {@link net.dv8tion.jda.core.requests.Route Routes}.
+ * <br>The {@link net.dv8tion.jda.internal.requests.Requester Requester}
+ * is used to create HTTPs requests with the Discord API through {@link net.dv8tion.jda.internal.requests.Route Routes}.
  * <br>This automatically handles rate limitations (429) that restrict our request rates. For that it uses an implementation
- * of {@link net.dv8tion.jda.core.requests.RateLimiter RateLimiter} specific for a certain {@link net.dv8tion.jda.core.AccountType AccountType}.
+ * of {@link net.dv8tion.jda.internal.requests.RateLimiter RateLimiter} specific for a certain {@link net.dv8tion.jda.core.AccountType AccountType}.
  * <br>{@link net.dv8tion.jda.core.requests.restaction Learn More}
  *
  * <p>The {@link net.dv8tion.jda.core.requests.RestAction RestAction} can be found throughout JDA and allows
@@ -33,7 +33,7 @@
  * which contains a {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponse} representing the failure cause!
  *
  * <p><u><b>WebSocket API</b></u>
- * <br>The {@link net.dv8tion.jda.core.requests.WebSocketClient WebSocketClient} is used to
+ * <br>The {@link net.dv8tion.jda.internal.requests.WebSocketClient WebSocketClient} is used to
  * handle the {@link net.dv8tion.jda.core.events.Event Event} flow and connection to the Discord gateway.
  * <br>It can send {@link net.dv8tion.jda.core.managers.Presence Presence} updates that will determine how
  * the Discord Client will display the currently connected account (Online Status / Activity)

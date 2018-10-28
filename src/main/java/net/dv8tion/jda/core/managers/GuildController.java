@@ -19,26 +19,26 @@ package net.dv8tion.jda.core.managers;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.entities.impl.EmoteImpl;
-import net.dv8tion.jda.core.entities.impl.GuildImpl;
-import net.dv8tion.jda.core.entities.impl.MemberImpl;
 import net.dv8tion.jda.core.exceptions.HierarchyException;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.ChannelAction;
 import net.dv8tion.jda.core.requests.restaction.RoleAction;
 import net.dv8tion.jda.core.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.core.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.core.requests.restaction.order.RoleOrderAction;
-import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
-import net.dv8tion.jda.core.utils.PermissionUtil;
 import net.dv8tion.jda.core.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.entities.EmoteImpl;
+import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.internal.entities.MemberImpl;
+import net.dv8tion.jda.internal.requests.Response;
+import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.PermissionUtil;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
@@ -214,7 +214,7 @@ public class GuildController
      *         </ul>
      * @throws net.dv8tion.jda.core.exceptions.HierarchyException
      *         If attempting to set nickname for another member and the logged in account cannot manipulate the other user due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -342,7 +342,7 @@ public class GuildController
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#KICK_MEMBERS} permission.
      * @throws net.dv8tion.jda.core.exceptions.HierarchyException
      *         If the logged in account cannot kick the other member due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         Kicks the provided Member from the current Guild
@@ -404,7 +404,7 @@ public class GuildController
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#KICK_MEMBERS} permission.
      * @throws net.dv8tion.jda.core.exceptions.HierarchyException
      *         If the logged in account cannot kick the other member due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
      * @throws java.lang.IllegalArgumentException
      *         If the userId provided does not correspond to a Member in this Guild or the provided {@code userId} is blank/null.
      *
@@ -447,7 +447,7 @@ public class GuildController
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#KICK_MEMBERS} permission.
      * @throws net.dv8tion.jda.core.exceptions.HierarchyException
      *         If the logged in account cannot kick the other member due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
      *         Kicks the provided Member from the current Guild
@@ -484,7 +484,7 @@ public class GuildController
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#KICK_MEMBERS} permission.
      * @throws net.dv8tion.jda.core.exceptions.HierarchyException
      *         If the logged in account cannot kick the other member due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
      * @throws java.lang.IllegalArgumentException
      *         If the userId provided does not correspond to a Member in this Guild or the provided {@code userId} is blank/null.
      *
@@ -530,7 +530,7 @@ public class GuildController
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
      * @throws net.dv8tion.jda.core.exceptions.HierarchyException
      *         If the logged in account cannot ban the other user due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the provided amount of days (delDays) is less than 0.</li>
@@ -583,7 +583,7 @@ public class GuildController
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
      * @throws net.dv8tion.jda.core.exceptions.HierarchyException
      *         If the logged in account cannot ban the other user due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the provided amount of days (delDays) is less than 0.</li>
@@ -658,7 +658,7 @@ public class GuildController
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
      * @throws net.dv8tion.jda.core.exceptions.HierarchyException
      *         If the logged in account cannot ban the other user due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
      * @throws IllegalArgumentException
      *         If the provided amount of days (delDays) is less than 0.
      *
@@ -726,7 +726,7 @@ public class GuildController
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
      * @throws net.dv8tion.jda.core.exceptions.HierarchyException
      *         If the logged in account cannot ban the other user due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the provided amount of days (delDays) is less than 0.</li>
@@ -773,7 +773,7 @@ public class GuildController
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
      * @throws net.dv8tion.jda.core.exceptions.HierarchyException
      *         If the logged in account cannot ban the other user due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the provided amount of days (delDays) is less than 0.</li>
@@ -820,7 +820,7 @@ public class GuildController
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
      * @throws net.dv8tion.jda.core.exceptions.HierarchyException
      *         If the logged in account cannot ban the other user due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
      * @throws IllegalArgumentException
      *         If the provided amount of days (delDays) is less than 0.
      *

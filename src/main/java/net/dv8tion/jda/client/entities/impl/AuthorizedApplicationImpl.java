@@ -19,9 +19,9 @@ package net.dv8tion.jda.client.entities.impl;
 import net.dv8tion.jda.client.entities.AuthorizedApplication;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.internal.requests.Response;
+import net.dv8tion.jda.internal.requests.Route;
 
 import java.util.Collections;
 import java.util.List;

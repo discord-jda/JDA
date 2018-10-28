@@ -17,12 +17,9 @@
 package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.annotations.Incubating;
-import net.dv8tion.jda.core.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.time.Instant;
-import java.time.temporal.TemporalUnit;
 import java.util.EnumSet;
 import java.util.Objects;
 
@@ -32,57 +29,14 @@ import java.util.Objects;
  *
  * @since  3.4.0
  */
-public class RichPresence extends Activity
+public interface RichPresence extends Activity
 {
-    protected final long applicationId;
-
-    protected final Party party;
-    protected final String details;
-    protected final String state;
-    protected final Image largeImage;
-    protected final Image smallImage;
-    protected final String sessionId;
-    protected final String syncId;
-    protected final int flags;
-
-    protected RichPresence(
-        ActivityType type, String name, String url, long applicationId,
-        Party party, String details, String state, Timestamps timestamps, String syncId, String sessionId, int flags,
-        String largeImageKey, String largeImageText, String smallImageKey, String smallImageText)
-    {
-        super(name, url, type, timestamps);
-        this.applicationId = applicationId;
-        this.party = party;
-        this.details = details;
-        this.state = state;
-        this.sessionId = sessionId;
-        this.syncId = syncId;
-        this.flags = flags;
-        this.largeImage = largeImageKey != null ? new Image(largeImageKey, largeImageText) : null;
-        this.smallImage = smallImageKey != null ? new Image(smallImageKey, smallImageText) : null;
-    }
-
-    @Override
-    public boolean isRich()
-    {
-        return true;
-    }
-
-    @Override
-    public RichPresence asRichPresence()
-    {
-        return this;
-    }
-
     /**
      * The ID for the responsible application.
      *
      * @return The ID for the application
      */
-    public long getApplicationIdLong()
-    {
-        return applicationId;
-    }
+    long getApplicationIdLong();
 
     /**
      * The ID for the responsible application.
@@ -90,10 +44,7 @@ public class RichPresence extends Activity
      * @return The ID for the application
      */
     @Nonnull
-    public String getApplicationId()
-    {
-        return Long.toUnsignedString(applicationId);
-    }
+    String getApplicationId();
 
     /**
      * Session ID for this presence.
@@ -102,10 +53,7 @@ public class RichPresence extends Activity
      * @return Session ID
      */
     @Nullable
-    public String getSessionId()
-    {
-        return sessionId;
-    }
+    String getSessionId();
 
     /**
      * Sync ID for this presence.
@@ -114,10 +62,7 @@ public class RichPresence extends Activity
      * @return Sync ID
      */
     @Nullable
-    public String getSyncId()
-    {
-        return syncId;
-    }
+    String getSyncId();
 
     /**
      * Flags for this presence
@@ -127,10 +72,7 @@ public class RichPresence extends Activity
      * @see    ActivityFlag
      * @see    ActivityFlag#getFlags(int)
      */
-    public int getFlags()
-    {
-        return flags;
-    }
+    int getFlags();
 
     /**
      * Flags for this presence in an enum set
@@ -140,10 +82,7 @@ public class RichPresence extends Activity
      * @see    ActivityFlag
      * @see    ActivityFlag#getFlags(int)
      */
-    public EnumSet<ActivityFlag> getFlagSet()
-    {
-        return ActivityFlag.getFlags(getFlags());
-    }
+    EnumSet<ActivityFlag> getFlagSet();
 
     /**
      * The user's current party status
@@ -152,10 +91,7 @@ public class RichPresence extends Activity
      * @return The user's current party status
      */
     @Nullable
-    public String getState()
-    {
-        return state;
-    }
+    String getState();
 
     /**
      * What the player is currently doing
@@ -164,10 +100,7 @@ public class RichPresence extends Activity
      * @return What the player is currently doing
      */
     @Nullable
-    public String getDetails()
-    {
-        return details;
-    }
+    String getDetails();
 
     /**
      * Information on the active party of the player
@@ -175,10 +108,7 @@ public class RichPresence extends Activity
      * @return {@link net.dv8tion.jda.core.entities.RichPresence.Party Party} wrapper or {@code null} if unset
      */
     @Nullable
-    public Party getParty()
-    {
-        return party;
-    }
+    Party getParty();
 
     /**
      * Information on the large image displayed in the profile view
@@ -186,10 +116,7 @@ public class RichPresence extends Activity
      * @return {@link net.dv8tion.jda.core.entities.RichPresence.Image Image} wrapper or {@code null} if unset
      */
     @Nullable
-    public Image getLargeImage()
-    {
-        return largeImage;
-    }
+    Image getLargeImage();
 
     /**
      * Information on the small corner image displayed in the profile view
@@ -197,56 +124,20 @@ public class RichPresence extends Activity
      * @return {@link net.dv8tion.jda.core.entities.RichPresence.Image Image} wrapper or {@code null} if unset
      */
     @Nullable
-    public Image getSmallImage()
-    {
-        return smallImage;
-    }
-
-    @Override
-    public String toString()
-    {
-        return String.format("RichPresence(%s / %s)", name, getApplicationId());
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return Objects.hash(applicationId, state, details, party, sessionId, syncId, flags, timestamps, largeImage, smallImage);
-    }
-
-    @Override
-    public boolean equals(Object o)
-    {
-        if (this == o)
-            return true;
-        if (!(o instanceof RichPresence))
-            return false;
-        RichPresence p = (RichPresence) o;
-        return applicationId == p.applicationId
-            && Objects.equals(name, p.name)
-            && Objects.equals(url, p.url)
-            && Objects.equals(type, p.type)
-            && Objects.equals(state, p.state)
-            && Objects.equals(details, p.details)
-            && Objects.equals(party, p.party)
-            && Objects.equals(sessionId, p.sessionId)
-            && Objects.equals(syncId, p.syncId)
-            && Objects.equals(flags, p.flags)
-            && Objects.equals(timestamps, p.timestamps)
-            && Objects.equals(largeImage, p.largeImage)
-            && Objects.equals(smallImage, p.smallImage);
-    }
+    Image getSmallImage();
 
     /**
      * Used to hold information on images within a Rich Presence profile
      */
-    public class Image
+    class Image
     {
         protected final String key;
         protected final String text;
+        protected final String applicationId;
 
-        public Image(String key, String text)
+        public Image(long applicationId, String key, String text)
         {
+            this.applicationId = Long.toUnsignedString(applicationId);
             this.key = key;
             this.text = text;
         }
@@ -311,144 +202,9 @@ public class RichPresence extends Activity
     }
 
     /**
-     * Represents the start and end timestamps for a running match
-     */
-    public static class Timestamps
-    {
-        protected final long start;
-
-        protected final long end;
-
-        public Timestamps(long start, long end)
-        {
-            this.start = start;
-            this.end = end;
-        }
-
-        /**
-         * Epoch second timestamp of match start, or {@code 0} of unset.
-         *
-         * @return Epoch second timestamp of match start, or {@code 0} of unset.
-         */
-        public long getStart()
-        {
-            return start;
-        }
-
-        /**
-         * Shortcut for {@code Instant.ofEpochSecond(start)}
-         *
-         * @return Instant of match start, or {@code null} if unset
-         */
-        @Nullable
-        public Instant getStartTime()
-        {
-            return start <= 0 ? null : Instant.ofEpochMilli(start);
-        }
-
-        /**
-         * Epoch second timestamp of match end, or {@code 0} of unset.
-         *
-         * @return Epoch second timestamp of match end, or {@code 0} of unset.
-         */
-        public long getEnd()
-        {
-            return end;
-        }
-
-        /**
-         * Shortcut for {@code Instant.ofEpochSecond(start)}
-         *
-         * @return Instant of match start, or {@code null} if unset
-         */
-        @Nullable
-        public Instant getEndTime()
-        {
-            return end <= 0 ? null : Instant.ofEpochMilli(end);
-        }
-
-        /**
-         * Calculates the amount of time until {@link #getEndTime()} in terms of the specified unit.
-         * <br>If {@link #getEndTime()} is {@code null} this will be negative.
-         *
-         * @param  unit
-         *         The {@link java.time.temporal.TemporalUnit TemporalUnit} to return
-         *
-         * @throws IllegalArgumentException
-         *         If the provided unit is {@code null}
-         * @throws ArithmeticException
-         *         If a numeric overflow occurs
-         * @throws java.time.DateTimeException
-         *         If the amount cannot be calculated
-         * @throws java.time.temporal.UnsupportedTemporalTypeException
-         *         If the provided unit is not supported
-         *
-         * @return Remaining time in the provided {@link java.time.temporal.TemporalUnit TemporalUnit} or {@code -1} if unset
-         *
-         * @see    java.time.Instant#until(java.time.temporal.Temporal, java.time.temporal.TemporalUnit) Instant.until(Temporal, TemporalUnit)
-         * @see    java.time.temporal.TemporalUnit
-         */
-        public long getRemainingTime(TemporalUnit unit)
-        {
-            Checks.notNull(unit, "TemporalUnit");
-            Instant end = getEndTime();
-            return end != null ? Instant.now().until(end, unit) : -1;
-        }
-
-        /**
-         * Calculates the elapsed time from {@link #getStartTime()} to now in terms of the specified unit.
-         * <br>If {@link #getStartTime()} is {@code null} this will be negative.
-         *
-         * @param  unit
-         *         The {@link java.time.temporal.TemporalUnit TemporalUnit} to return
-         *
-         * @throws IllegalArgumentException
-         *         If the provided unit is {@code null}
-         * @throws ArithmeticException
-         *         If a numeric overflow occurs
-         * @throws java.time.DateTimeException
-         *         If the amount cannot be calculated
-         * @throws java.time.temporal.UnsupportedTemporalTypeException
-         *         If the provided unit is not supported
-         *
-         * @return Elapsed time in the provided {@link java.time.temporal.TemporalUnit TemporalUnit} or {@code -1} if unset
-         *
-         * @see    java.time.Instant#until(java.time.temporal.Temporal, java.time.temporal.TemporalUnit) Instant.until(Temporal, TemporalUnit)
-         * @see    java.time.temporal.TemporalUnit
-         */
-        public long getElapsedTime(TemporalUnit unit)
-        {
-            Checks.notNull(unit, "TemporalUnit");
-            Instant start = getStartTime();
-            return start != null ? start.until(Instant.now(), unit) : -1;
-        }
-
-        @Override
-        public String toString()
-        {
-            return String.format("RichPresenceTimestamp(%d-%d)", start, end);
-        }
-
-        @Override
-        public boolean equals(Object obj)
-        {
-            if (!(obj instanceof Timestamps))
-                return false;
-            Timestamps t = (Timestamps) obj;
-            return start == t.start && end == t.end;
-        }
-
-        @Override
-        public int hashCode()
-        {
-            return Objects.hash(start, end);
-        }
-    }
-
-    /**
      * Holds information on a player's party
      */
-    public static class Party
+    class Party
     {
         protected final String id;
         protected final long size;

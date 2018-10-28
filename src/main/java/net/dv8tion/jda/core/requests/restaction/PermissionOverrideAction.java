@@ -22,12 +22,12 @@ import net.dv8tion.jda.core.entities.GuildChannel;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.PermissionOverride;
 import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.impl.AbstractChannelImpl;
-import net.dv8tion.jda.core.entities.impl.PermissionOverrideImpl;
 import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.Route;
-import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.internal.entities.AbstractChannelImpl;
+import net.dv8tion.jda.internal.entities.PermissionOverrideImpl;
+import net.dv8tion.jda.internal.requests.Response;
+import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
 
@@ -61,7 +61,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      * @param api
      *        The current JDA instance
      * @param route
-     *        The {@link net.dv8tion.jda.core.requests.Route.CompiledRoute Route.CompiledRoute} to be used for rate limit handling
+     *        The {@link net.dv8tion.jda.internal.requests.Route.CompiledRoute Route.CompiledRoute} to be used for rate limit handling
      * @param channel
      *        The target {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel} for the PermissionOverride
      * @param member
@@ -81,7 +81,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      * @param api
      *        The current JDA instance
      * @param route
-     *        The {@link net.dv8tion.jda.core.requests.Route.CompiledRoute Route.CompiledRoute} to be used for rate limit handling
+     *        The {@link net.dv8tion.jda.internal.requests.Route.CompiledRoute Route.CompiledRoute} to be used for rate limit handling
      * @param channel
      *        The target {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel} for the PermissionOverride
      * @param role

@@ -167,7 +167,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return True, if this Member is able to interact with the specified Member
      *
-     * @see    net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member)
+     * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member)
      */
     boolean canInteract(Member member);
 
@@ -185,7 +185,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return True, if this member is able to interact with the specified Role
      *
-     * @see    net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Role)
+     * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Role)
      */
     boolean canInteract(Role role);
 
@@ -203,7 +203,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return True, if this Member is able to interact with the specified Emote
      *
-     * @see    net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Emote)
+     * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Emote)
      */
     boolean canInteract(Emote emote);
 

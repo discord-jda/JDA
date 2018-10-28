@@ -17,14 +17,14 @@
 package net.dv8tion.jda.core.managers;
 
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.GuildChannel;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.GuildChannel;
 import net.dv8tion.jda.core.entities.PermissionOverride;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.core.managers.impl.ManagerBase;
-import net.dv8tion.jda.core.requests.Route;
-import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.managers.ManagerBase;
+import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
 

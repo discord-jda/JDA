@@ -82,7 +82,7 @@ public interface SessionController
     int IDENTIFY_DELAY = 5;
 
     /**
-     * Called by {@link net.dv8tion.jda.core.requests.WebSocketClient WebSocketClient} when
+     * Called by {@link net.dv8tion.jda.internal.requests.WebSocketClient WebSocketClient} when
      * a WebSocket should be started. (Connecting and Reconnecting)
      * <br>This should only add the node to a queue and execute the queue with respect to the {@link #IDENTIFY_DELAY}.
      *
@@ -92,7 +92,7 @@ public interface SessionController
     void appendSession(SessionConnectNode node);
 
     /**
-     * Called by {@link net.dv8tion.jda.core.requests.WebSocketClient WebSocketClient} when
+     * Called by {@link net.dv8tion.jda.internal.requests.WebSocketClient WebSocketClient} when
      * a JDA session has been shutdown.
      * <br>When this happened the {@link net.dv8tion.jda.core.utils.SessionController.SessionConnectNode#run(boolean) SessionConnectNode.run(boolean)}
      * will be a no-op and does not contribute to the {@link #IDENTIFY_DELAY}.
@@ -110,7 +110,7 @@ public interface SessionController
     long getGlobalRatelimit();
 
     /**
-     * Called by the {@link net.dv8tion.jda.core.requests.RateLimiter RateLimiter} if the global rest ratelimit
+     * Called by the {@link net.dv8tion.jda.internal.requests.RateLimiter RateLimiter} if the global rest ratelimit
      * has changed.
      *
      * @param ratelimit
@@ -119,7 +119,7 @@ public interface SessionController
     void setGlobalRatelimit(long ratelimit);
 
     /**
-     * Called by {@link net.dv8tion.jda.core.requests.WebSocketClient WebSocketClient}
+     * Called by {@link net.dv8tion.jda.internal.requests.WebSocketClient WebSocketClient}
      * when a new session starts (Connecting, Reconnecting).
      * <br>Should provide the gateway endpoint (wss) to connect to.
      *

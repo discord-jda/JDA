@@ -17,10 +17,14 @@
 package net.dv8tion.jda.core.requests.restaction.pagination;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.requests.*;
-import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.requests.Request;
+import net.dv8tion.jda.core.requests.RequestFuture;
+import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.Procedure;
-import net.dv8tion.jda.core.utils.Promise;
+import net.dv8tion.jda.internal.requests.Response;
+import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Promise;
 
 import javax.annotation.Nonnull;
 import java.util.*;

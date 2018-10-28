@@ -21,13 +21,13 @@ import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.entities.impl.AbstractChannelImpl;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.core.managers.impl.ManagerBase;
-import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.PermOverrideData;
-import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.entities.AbstractChannelImpl;
+import net.dv8tion.jda.internal.managers.ManagerBase;
+import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
 

@@ -19,12 +19,12 @@ package net.dv8tion.jda.core.requests.restaction;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.Route;
-import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.internal.requests.Response;
+import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
 
@@ -54,7 +54,7 @@ public class RoleAction extends AuditableRestAction<Role>
      * Creates a new RoleAction instance
      *
      * @param  route
-     *         A {@link net.dv8tion.jda.core.requests.Route.CompiledRoute CompiledRoute}
+     *         A {@link net.dv8tion.jda.internal.requests.Route.CompiledRoute CompiledRoute}
      *         Which will be used for the Role creation.
      * @param  guild
      *         The {@link net.dv8tion.jda.core.entities.Guild Guild} for which the Role should be created.

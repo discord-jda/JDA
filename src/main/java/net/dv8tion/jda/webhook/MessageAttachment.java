@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.webhook;
 
-import net.dv8tion.jda.core.utils.IOUtil;
+import net.dv8tion.jda.internal.utils.IOUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

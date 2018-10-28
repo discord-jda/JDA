@@ -21,10 +21,10 @@ import net.dv8tion.jda.client.events.relationship.FriendAddedEvent;
 import net.dv8tion.jda.client.events.relationship.FriendRequestReceivedEvent;
 import net.dv8tion.jda.client.events.relationship.FriendRequestSentEvent;
 import net.dv8tion.jda.client.events.relationship.UserBlockedEvent;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.handle.EventCache;
-import net.dv8tion.jda.core.handle.SocketHandler;
-import net.dv8tion.jda.core.requests.WebSocketClient;
+import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.handle.EventCache;
+import net.dv8tion.jda.internal.handle.SocketHandler;
+import net.dv8tion.jda.internal.requests.WebSocketClient;
 import org.json.JSONObject;
 
 public class RelationshipAddHandler extends SocketHandler

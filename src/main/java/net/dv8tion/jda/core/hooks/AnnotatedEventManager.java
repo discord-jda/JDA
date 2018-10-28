@@ -15,8 +15,8 @@
  */
 package net.dv8tion.jda.core.hooks;
 
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.internal.JDAImpl;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

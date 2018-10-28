@@ -19,9 +19,10 @@ package net.dv8tion.jda.core.requests.restaction;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.Route;
-import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.internal.entities.EntityBuilder;
+import net.dv8tion.jda.internal.requests.Response;
+import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -60,7 +61,7 @@ public class ChannelAction extends AuditableRestAction<GuildChannel>
      * Creates a new ChannelAction instance
      *
      * @param  route
-     *         The {@link net.dv8tion.jda.core.requests.Route.CompiledRoute CompileRoute}
+     *         The {@link net.dv8tion.jda.internal.requests.Route.CompiledRoute CompileRoute}
      *         to use for this action
      * @param  name
      *         The name for the new {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel}
