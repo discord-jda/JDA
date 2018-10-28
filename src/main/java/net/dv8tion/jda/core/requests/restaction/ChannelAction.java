@@ -34,12 +34,12 @@ import java.util.function.BooleanSupplier;
 
 /**
  * Extension of {@link net.dv8tion.jda.core.requests.RestAction RestAction} specifically
- * designed to create a {@link net.dv8tion.jda.core.entities.Channel Channel}.
+ * designed to create a {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel}.
  * This extension allows setting properties before executing the action.
  *
  * @since  3.0
  */
-public class ChannelAction extends AuditableRestAction<Channel>
+public class ChannelAction extends AuditableRestAction<GuildChannel>
 {
     protected final Set<PermOverrideData> overrides = new HashSet<>();
     protected final Guild guild;
@@ -63,7 +63,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
      *         The {@link net.dv8tion.jda.core.requests.Route.CompiledRoute CompileRoute}
      *         to use for this action
      * @param  name
-     *         The name for the new {@link net.dv8tion.jda.core.entities.Channel Channel}
+     *         The name for the new {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel}
      * @param  guild
      *         The {@link net.dv8tion.jda.core.entities.Guild Guild} the channel should be created in
      * @param  type
@@ -84,10 +84,10 @@ public class ChannelAction extends AuditableRestAction<Channel>
     }
 
     /**
-     * Sets the name for the new Channel
+     * Sets the name for the new GuildChannel
      *
      * @param  name
-     *         The not-null name for the new Channel (1-100 chars long)
+     *         The not-null name for the new GuildChannel (1-100 chars long)
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided name is null or not between 1-100 chars long
@@ -106,10 +106,10 @@ public class ChannelAction extends AuditableRestAction<Channel>
     }
 
     /**
-     * Sets the {@link net.dv8tion.jda.core.entities.Category Category} for the new Channel
+     * Sets the {@link net.dv8tion.jda.core.entities.Category Category} for the new GuildChannel
      *
      * @param  category
-     *         The parent for the new Channel
+     *         The parent for the new GuildChannel
      *
      * @throws UnsupportedOperationException
      *         If this ChannelAction is for a Category
@@ -131,7 +131,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
      * Sets the topic for the new TextChannel
      *
      * @param  topic
-     *         The topic for the new Channel (max 1024 chars)
+     *         The topic for the new GuildChannel (max 1024 chars)
      *
      * @throws UnsupportedOperationException
      *         If this ChannelAction is not for a TextChannel
@@ -155,7 +155,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
      * Sets the NSFW flag for the new TextChannel
      *
      * @param  nsfw
-     *         The NSFW flag for the new Channel
+     *         The NSFW flag for the new GuildChannel
      *
      * @throws UnsupportedOperationException
      *         If this ChannelAction is not for a TextChannel
@@ -200,7 +200,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
 
     /**
      * Adds a new Role or Member {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
-     * for the new Channel.
+     * for the new GuildChannel.
      *
      * <p>Example:
      * <pre>{@code
@@ -237,7 +237,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
 
     /**
      * Adds a new Role or Member {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
-     * for the new Channel.
+     * for the new GuildChannel.
      *
      * <p>Example:
      * <pre>{@code
@@ -299,7 +299,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
      * Sets the bitrate for the new VoiceChannel
      *
      * @param  bitrate
-     *         The bitrate for the new Channel (min {@code 8000}; max {@code 96000}/{@code 128000}
+     *         The bitrate for the new GuildChannel (min {@code 8000}; max {@code 96000}/{@code 128000}
      *         (for {@link net.dv8tion.jda.core.entities.Guild#getFeatures() VIP Guilds})) or null to use default ({@code 64000})
      *
      * @throws UnsupportedOperationException
@@ -381,7 +381,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
     }
 
     @Override
-    protected void handleResponse(Response response, Request<Channel> request)
+    protected void handleResponse(Response response, Request<GuildChannel> request)
     {
         if (!response.isOk())
         {
@@ -390,7 +390,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
         }
 
         EntityBuilder builder = api.get().getEntityBuilder();
-        Channel channel;
+        GuildChannel channel;
         switch (type)
         {
             case VOICE:

@@ -218,8 +218,8 @@ public enum Permission
      *
      * <p>Examples:
      * <br>{@link net.dv8tion.jda.core.entities.Role#getPermissionsRaw() Role.getPermissionsRaw()}
-     * <br>{@link net.dv8tion.jda.core.utils.PermissionUtil#getEffectivePermission(net.dv8tion.jda.core.entities.Channel, net.dv8tion.jda.core.entities.Member)
-     * PermissionUtil.getEffectivePermission(Channel, Member)}
+     * <br>{@link net.dv8tion.jda.core.utils.PermissionUtil#getEffectivePermission(net.dv8tion.jda.core.entities.GuildChannel, net.dv8tion.jda.core.entities.Member)
+     * PermissionUtil.getEffectivePermission(GuildChannel, Member)}
      *
      * @param  permissions
      *         The raw {@code long} representation of permissions.

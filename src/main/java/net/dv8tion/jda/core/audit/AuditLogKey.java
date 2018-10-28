@@ -131,14 +131,14 @@ public enum AuditLogKey
 
     // CHANNEL
     /**
-     * Change of the {@link net.dv8tion.jda.core.entities.Channel#getName() Channel.getName()} value.
+     * Change of the {@link net.dv8tion.jda.core.entities.GuildChannel#getName() GuildChannel.getName()} value.
      *
      * <p>Expected type: <b>String</b>
      */
     CHANNEL_NAME("name"),
 
     /**
-     * Change of the {@link net.dv8tion.jda.core.entities.Channel#getParent() Channel.getParent()} value.
+     * Change of the {@link net.dv8tion.jda.core.entities.GuildChannel#getParent() GuildChannel.getParent()} value.
      * <br>Use with {@link net.dv8tion.jda.core.entities.Guild#getCategoryById(String) Guild.getCategoryById(String)}
      *
      * <p>Expected type: <b>String</b>

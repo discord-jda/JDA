@@ -289,7 +289,7 @@ public class ChannelUpdateHandler extends SocketHandler
         //Check if any overrides were deleted because of this event.
         //Get the current overrides. (we copy them to a new list because the Set returned is backed by the Map, meaning our removes would remove from the Map. Not good.
         //Loop through all of the json defined overrides. If we find a match, remove the User or Role from our lists.
-        //Any entries remaining in these lists after this for loop is over will be removed from the Channel's overrides.
+        //Any entries remaining in these lists after this for loop is over will be removed from the GuildChannel's overrides.
         final TLongList toRemove = new TLongLinkedList();
         final TLongObjectMap<PermissionOverride> overridesMap = channel.getOverrideMap();
 

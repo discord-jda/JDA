@@ -17,7 +17,7 @@
 package net.dv8tion.jda.core.requests.restaction.order;
 
 import net.dv8tion.jda.core.entities.Category;
-import net.dv8tion.jda.core.entities.Channel;
+import net.dv8tion.jda.core.entities.GuildChannel;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.utils.Checks;
 
@@ -30,16 +30,16 @@ import java.util.Collection;
  * <br>To apply the changes you must finish the {@link net.dv8tion.jda.core.requests.RestAction RestAction}.
  *
  * <p>Before you can use any of the {@code move} methods
- * you must use either {@link #selectPosition(Object) selectPosition(Channel)} or {@link #selectPosition(int)}!
+ * you must use either {@link #selectPosition(Object) selectPosition(GuildChannel)} or {@link #selectPosition(int)}!
  *
  * @param  <T>
- *         The type of {@link net.dv8tion.jda.core.entities.Channel Channel} to move
+ *         The type of {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel} to move
  *         using this CategoryOrderAction, either {@link net.dv8tion.jda.core.entities.TextChannel TextChannel},
  *         or {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}.
  *
  * @author Kaidan Gustave
  */
-public class CategoryOrderAction<T extends Channel> extends ChannelOrderAction<T>
+public class CategoryOrderAction<T extends GuildChannel> extends ChannelOrderAction<T>
 {
     protected final Category category;
 
@@ -51,8 +51,8 @@ public class CategoryOrderAction<T extends Channel> extends ChannelOrderAction<T
      *         which the new CategoryOrderAction will order channels from.
      * @param  type
      *         The {@link net.dv8tion.jda.core.entities.ChannelType ChannelType} that
-     *         matches the returning value of {@link net.dv8tion.jda.core.entities.Channel#getType() Channel#getType()}
-     *         for the generic {@link net.dv8tion.jda.core.entities.Channel Channel} type {@code T}.
+     *         matches the returning value of {@link net.dv8tion.jda.core.entities.GuildChannel#getType() GuildChannel#getType()}
+     *         for the generic {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel} type {@code T}.
      *
      * @throws java.lang.IllegalArgumentException
      *         If the {@code ChannelType} is not one that can be retrieved from a {@code Category}.
@@ -87,7 +87,7 @@ public class CategoryOrderAction<T extends Channel> extends ChannelOrderAction<T
     }
 
     @Nonnull
-    private static Collection<? extends Channel> getChannelsOfType(Category category, ChannelType type)
+    private static Collection<? extends GuildChannel> getChannelsOfType(Category category, ChannelType type)
     {
         Checks.notNull(type, "ChannelType");
         Checks.notNull(category, "Category");

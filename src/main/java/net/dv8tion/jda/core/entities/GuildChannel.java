@@ -29,74 +29,74 @@ import java.util.List;
 /**
  * Represents a {@link net.dv8tion.jda.core.entities.Guild Guild} channel.
  */
-public interface Channel extends ISnowflake
+public interface GuildChannel extends ISnowflake
 {
     /**
-     * The {@link net.dv8tion.jda.core.entities.ChannelType ChannelType} for this Channel
+     * The {@link net.dv8tion.jda.core.entities.ChannelType ChannelType} for this GuildChannel
      *
      * @return The channel type
      */
     ChannelType getType();
 
     /**
-     * The human readable name of the  Channel.
+     * The human readable name of the  GuildChannel.
      * <br>If no name has been set, this returns null.
      *
-     * @return The name of this Channel
+     * @return The name of this GuildChannel
      */
     String getName();
 
     /**
-     * Returns the {@link net.dv8tion.jda.core.entities.Guild Guild} that this Channel is part of.
+     * Returns the {@link net.dv8tion.jda.core.entities.Guild Guild} that this GuildChannel is part of.
      *
-     * @return Never-null {@link net.dv8tion.jda.core.entities.Guild Guild} that this Channel is part of.
+     * @return Never-null {@link net.dv8tion.jda.core.entities.Guild Guild} that this GuildChannel is part of.
      */
     Guild getGuild();
 
     /**
      * Parent {@link net.dv8tion.jda.core.entities.Category Category} of this
-     * Channel. Channels need not have a parent Category.
+     * GuildChannel. Channels need not have a parent Category.
      * <br>Note that an {@link net.dv8tion.jda.core.entities.Category Category} will
      * always return {@code null} for this method as nested categories are not supported.
      *
-     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Category Category} for this Channel
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Category Category} for this GuildChannel
      */
     Category getParent();
 
     /**
-     * A List of all {@link net.dv8tion.jda.core.entities.Member Members} that are in this Channel
+     * A List of all {@link net.dv8tion.jda.core.entities.Member Members} that are in this GuildChannel
      * For {@link net.dv8tion.jda.core.entities.TextChannel TextChannels},
      * this returns all Members with the {@link net.dv8tion.jda.core.Permission#MESSAGE_READ} Permission.
      * In {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels},
      * this returns all Members that joined that VoiceChannel.
      *
-     * @return A List of {@link net.dv8tion.jda.core.entities.Member Members} that are in this Channel.
+     * @return A List of {@link net.dv8tion.jda.core.entities.Member Members} that are in this GuildChannel.
      */
     List<Member> getMembers();
 
     /**
-     * The position this Channel is displayed at.
-     * <br>Higher values mean they are displayed lower in the Client. Position 0 is the top most Channel
+     * The position this GuildChannel is displayed at.
+     * <br>Higher values mean they are displayed lower in the Client. Position 0 is the top most GuildChannel
      * Channels of a {@link net.dv8tion.jda.core.entities.Guild Guild} do not have to have continuous positions
      *
-     * @return Zero-based int of position of the Channel.
+     * @return Zero-based int of position of the GuildChannel.
      */
     int getPosition();
 
     /**
-     * The actual position of the {@link net.dv8tion.jda.core.entities.Channel Channel} as stored and given by Discord.
+     * The actual position of the {@link GuildChannel GuildChannel} as stored and given by Discord.
      * Role positions are actually based on a pairing of the creation time (as stored in the snowflake id)
      * and the position. If 2 or more roles share the same position then they are sorted based on their creation date.
      * The more recent a role was created, the lower it is in the hierarchy. This is handled by {@link #getPosition()}
      * and it is most likely the method you want. If, for some reason, you want the actual position of the
      * Role then this method will give you that value.
      *
-     * @return The true, Discord stored, position of the {@link net.dv8tion.jda.core.entities.Channel Channel}.
+     * @return The true, Discord stored, position of the {@link GuildChannel GuildChannel}.
      */
     int getPositionRaw();
 
     /**
-     * Returns the {@link net.dv8tion.jda.core.JDA JDA} instance of this Channel
+     * Returns the {@link net.dv8tion.jda.core.JDA JDA} instance of this GuildChannel
      *
      * @return the corresponding JDA instance
      */
@@ -104,7 +104,7 @@ public interface Channel extends ISnowflake
 
     /**
      * The {@link PermissionOverride} relating to the specified {@link net.dv8tion.jda.core.entities.Member Member}.
-     * If there is no {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} for this {@link net.dv8tion.jda.core.entities.Channel Channel}
+     * If there is no {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} for this {@link GuildChannel GuildChannel}
      * relating to the provided {@link net.dv8tion.jda.core.entities.Member Member}, then this returns {@code null}.
      *
      * @param  member
@@ -118,7 +118,7 @@ public interface Channel extends ISnowflake
 
     /**
      * The {@link PermissionOverride} relating to the specified {@link net.dv8tion.jda.core.entities.Role Role}.
-     * If there is no {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} for this {@link net.dv8tion.jda.core.entities.Channel Channel}
+     * If there is no {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} for this {@link GuildChannel GuildChannel}
      * relating to the provided {@link net.dv8tion.jda.core.entities.Role Role}, then this returns {@code null}.
      *
      * @param  role
@@ -131,38 +131,38 @@ public interface Channel extends ISnowflake
 
     /**
      * Gets all of the {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides} that are part
-     * of this {@link net.dv8tion.jda.core.entities.Channel Channel}.
+     * of this {@link GuildChannel GuildChannel}.
      * <br>This combines {@link net.dv8tion.jda.core.entities.Member Member} and {@link net.dv8tion.jda.core.entities.Role Role} overrides.
      * If you would like only {@link net.dv8tion.jda.core.entities.Member Member} overrides or only {@link net.dv8tion.jda.core.entities.Role Role}
      * overrides, use {@link #getMemberPermissionOverrides()} or {@link #getRolePermissionOverrides()} respectively.
      *
      * @return Possibly-empty list of all {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides}
-     *         for this {@link net.dv8tion.jda.core.entities.Channel Channel}.
+     *         for this {@link GuildChannel GuildChannel}.
      */
     List<PermissionOverride> getPermissionOverrides();
 
     /**
      * Gets all of the {@link net.dv8tion.jda.core.entities.Member Member} {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides}
-     * that are part of this {@link net.dv8tion.jda.core.entities.Channel Channel}.
+     * that are part of this {@link GuildChannel GuildChannel}.
      *
      * @return Possibly-empty list of all {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides}
      *         for {@link net.dv8tion.jda.core.entities.Member Member}
-     *         for this {@link net.dv8tion.jda.core.entities.Channel Channel}.
+     *         for this {@link GuildChannel GuildChannel}.
      */
     List<PermissionOverride> getMemberPermissionOverrides();
 
     /**
      * Gets all of the {@link net.dv8tion.jda.core.entities.Role Role} {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides}
-     * that are part of this {@link net.dv8tion.jda.core.entities.Channel Channel}.
+     * that are part of this {@link GuildChannel GuildChannel}.
      *
      * @return Possibly-empty list of all {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides}
      *         for {@link net.dv8tion.jda.core.entities.Role Roles}
-     *         for this {@link net.dv8tion.jda.core.entities.Channel Channel}.
+     *         for this {@link GuildChannel GuildChannel}.
      */
     List<PermissionOverride> getRolePermissionOverrides();
 
     /**
-     * Creates a copy of the specified {@link net.dv8tion.jda.core.entities.Channel Channel}
+     * Creates a copy of the specified {@link GuildChannel GuildChannel}
      * in the specified {@link net.dv8tion.jda.core.entities.Guild Guild}.
      * <br>If the provided target guild is not the same Guild this channel is in then
      * the parent category and permissions will not be copied due to technical difficulty and ambiguity.
@@ -195,13 +195,13 @@ public interface Channel extends ISnowflake
      *         If the currently logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission
      *
      * @return A specific {@link net.dv8tion.jda.core.requests.restaction.ChannelAction ChannelAction}
-     *         <br>This action allows to set fields for the new Channel before creating it!
+     *         <br>This action allows to set fields for the new GuildChannel before creating it!
      */
     @CheckReturnValue
     ChannelAction createCopy(Guild guild);
 
     /**
-     * Creates a copy of the specified {@link net.dv8tion.jda.core.entities.Channel Channel}.
+     * Creates a copy of the specified {@link GuildChannel GuildChannel}.
      *
      * <p>This copies the following elements:
      * <ol>
@@ -226,7 +226,7 @@ public interface Channel extends ISnowflake
      *         If the currently logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission
      *
      * @return A specific {@link net.dv8tion.jda.core.requests.restaction.ChannelAction ChannelAction}
-     *         <br>This action allows to set fields for the new Channel before creating it!
+     *         <br>This action allows to set fields for the new GuildChannel before creating it!
      */
     @CheckReturnValue
     default ChannelAction createCopy()
@@ -235,19 +235,19 @@ public interface Channel extends ISnowflake
     }
 
     /**
-     * Returns the {@link net.dv8tion.jda.core.managers.ChannelManager ChannelManager} for this Channel.
-     * <br>In the ChannelManager, you can modify the name, topic and position of this Channel.
+     * Returns the {@link net.dv8tion.jda.core.managers.ChannelManager ChannelManager} for this GuildChannel.
+     * <br>In the ChannelManager, you can modify the name, topic and position of this GuildChannel.
      * You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.core.requests.RestAction#queue() RestAction.queue()}.
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL Permission.MANAGE_CHANNEL}
      *
-     * @return The ChannelManager of this Channel
+     * @return The ChannelManager of this GuildChannel
      */
     ChannelManager getManager();
 
     /**
-     * Deletes this Channel.
+     * Deletes this GuildChannel.
      *
      * <p>Possible ErrorResponses include:
      * <ul>
@@ -273,7 +273,7 @@ public interface Channel extends ISnowflake
 
     /**
      * Creates a {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
-     * for the specified {@link net.dv8tion.jda.core.entities.Member Member} in this Channel.
+     * for the specified {@link net.dv8tion.jda.core.entities.Member Member} in this GuildChannel.
      * You can use {@link #putPermissionOverride(Member)} to replace existing overrides.
      *
      * <p>Possible ErrorResponses include:
@@ -307,7 +307,7 @@ public interface Channel extends ISnowflake
 
     /**
      * Creates a {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
-     * for the specified {@link net.dv8tion.jda.core.entities.Role Role} in this Channel.
+     * for the specified {@link net.dv8tion.jda.core.entities.Role Role} in this GuildChannel.
      * You can use {@link #putPermissionOverride(Role)} to replace existing overrides.
      *
      * <p>Possible ErrorResponses include:
@@ -341,7 +341,7 @@ public interface Channel extends ISnowflake
 
     /**
      * Creates a {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
-     * for the specified {@link net.dv8tion.jda.core.entities.Member Member} in this Channel.
+     * for the specified {@link net.dv8tion.jda.core.entities.Member Member} in this GuildChannel.
      * <br>If the member already has an existing override it will be replaced.
      *
      * @param  member
@@ -362,7 +362,7 @@ public interface Channel extends ISnowflake
 
     /**
      * Creates a {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
-     * for the specified {@link net.dv8tion.jda.core.entities.Role Role} in this Channel.
+     * for the specified {@link net.dv8tion.jda.core.entities.Role Role} in this GuildChannel.
      * <br>If the role already has an existing override it will be replaced.
      *
      * @param  role

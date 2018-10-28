@@ -71,9 +71,9 @@ public enum ChannelType
     }
 
     /**
-     * Whether this ChannelType is present for a Guild {@link net.dv8tion.jda.core.entities.Channel Channel}
+     * Whether this ChannelType is present for a {@link GuildChannel GuildChannel}
      *
-     * @return Whether or not this a Guild Channel
+     * @return Whether or not this a GuildChannel
      */
     public boolean isGuild()
     {

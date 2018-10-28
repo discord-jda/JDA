@@ -254,7 +254,7 @@ public interface Invite
      * Whether this Invite is expanded or not. Expanded invites contain more information, but they can only be
      * obtained be {@link net.dv8tion.jda.core.entities.Guild#getInvites() Guild#getInvites()} (requires
      * {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL Permission.MANAGE_CHANNEL}) or
-     * {@link net.dv8tion.jda.core.entities.Channel#getInvites() Channel#getInvites()} (requires
+     * {@link GuildChannel#getInvites() Channel#getInvites()} (requires
      * {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER Permission.MANAGE_SERVER}).
      *
      * <p>There is a convenience method {@link #expand()} to get the expanded invite for an unexpanded one.

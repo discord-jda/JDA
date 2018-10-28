@@ -17,7 +17,7 @@
 package net.dv8tion.jda.core.requests.restaction.order;
 
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Channel;
+import net.dv8tion.jda.core.entities.GuildChannel;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
@@ -32,19 +32,19 @@ import java.util.Collection;
 
 /**
  * Implementation of {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction OrderAction}
- * to modify the order of {@link net.dv8tion.jda.core.entities.Channel Channels} for a {@link net.dv8tion.jda.core.entities.Guild Guild}.
+ * to modify the order of {@link net.dv8tion.jda.core.entities.GuildChannel Channels} for a {@link net.dv8tion.jda.core.entities.Guild Guild}.
  * <br>To apply the changes you must finish the {@link net.dv8tion.jda.core.requests.RestAction RestAction}.
  *
  * <p>Before you can use any of the {@code move} methods
- * you must use either {@link #selectPosition(Object) selectPosition(Channel)} or {@link #selectPosition(int)}!
+ * you must use either {@link #selectPosition(Object) selectPosition(GuildChannel)} or {@link #selectPosition(int)}!
  *
  * @param <T>
- *        The type of {@link net.dv8tion.jda.core.entities.Channel Channel} defining
+ *        The type of {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel} defining
  *        which channels to order
  *
  * @since 3.0
  */
-public class ChannelOrderAction<T extends Channel> extends OrderAction<T, ChannelOrderAction<T>>
+public class ChannelOrderAction<T extends GuildChannel> extends OrderAction<T, ChannelOrderAction<T>>
 {
     protected final Guild guild;
     protected final ChannelType type;
@@ -57,7 +57,7 @@ public class ChannelOrderAction<T extends Channel> extends OrderAction<T, Channe
      *         of which to order the channels defined by the specified type
      * @param  type
      *         The {@link net.dv8tion.jda.core.entities.ChannelType ChannelType} corresponding
-     *         to the generic type of {@link net.dv8tion.jda.core.entities.Channel Channel} which
+     *         to the generic type of {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel} which
      *         defines the type of channel that will be ordered.
      *
      * @throws java.lang.IllegalArgumentException
@@ -72,18 +72,18 @@ public class ChannelOrderAction<T extends Channel> extends OrderAction<T, Channe
     /**
      * Creates a new ChannelOrderAction instance using the provided
      * {@link net.dv8tion.jda.core.entities.Guild Guild}, as well as the provided
-     * list of {@link net.dv8tion.jda.core.entities.Channel Channels}.
+     * list of {@link net.dv8tion.jda.core.entities.GuildChannel Channels}.
      *
      * @param  guild
      *         The target {@link net.dv8tion.jda.core.entities.Guild Guild}
      *         of which to order the channels defined by the specified type
      * @param  type
      *         The {@link net.dv8tion.jda.core.entities.ChannelType ChannelType} corresponding
-     *         to the generic type of {@link net.dv8tion.jda.core.entities.Channel Channel} which
+     *         to the generic type of {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel} which
      *         defines the type of channel that will be ordered.
      * @param  channels
-     *         The {@link net.dv8tion.jda.core.entities.Channel Channels} to order, all of which
-     *         are on the same Guild specified, and all of which are of the same generic type of Channel
+     *         The {@link net.dv8tion.jda.core.entities.GuildChannel Channels} to order, all of which
+     *         are on the same Guild specified, and all of which are of the same generic type of GuildChannel
      *         corresponding to the the ChannelType specified.
      *
      * @throws java.lang.IllegalArgumentException
@@ -138,7 +138,7 @@ public class ChannelOrderAction<T extends Channel> extends OrderAction<T, Channe
         JSONArray array = new JSONArray();
         for (int i = 0; i < orderList.size(); i++)
         {
-            Channel chan = orderList.get(i);
+            GuildChannel chan = orderList.get(i);
             array.put(new JSONObject()
                     .put("id", chan.getId())
                     .put("position", i));
@@ -154,7 +154,7 @@ public class ChannelOrderAction<T extends Channel> extends OrderAction<T, Channe
         Checks.check(orderList.contains(entity), "Provided channel is not in the list of orderable channels!");
     }
 
-    private static Collection<? extends Channel> getChannelsOfType(Guild guild, ChannelType type)
+    private static Collection<? extends GuildChannel> getChannelsOfType(Guild guild, ChannelType type)
     {
         switch(type)
         {

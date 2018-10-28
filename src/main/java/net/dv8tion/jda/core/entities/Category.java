@@ -28,17 +28,17 @@ import java.util.List;
  *
  * @since 3.4.0
  */
-public interface Category extends Channel, Comparable<Category>
+public interface Category extends GuildChannel, Comparable<Category>
 {
     /**
-     * All {@link net.dv8tion.jda.core.entities.Channel Channels} listed
+     * All {@link GuildChannel Channels} listed
      * for this Category
      * <br>This may contain both {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels}
      * and {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}!
      *
      * @return Immutable list of all child channels
      */
-    List<Channel> getChannels();
+    List<GuildChannel> getChannels();
 
     /**
      * All {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}

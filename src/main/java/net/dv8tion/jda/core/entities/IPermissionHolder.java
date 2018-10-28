@@ -67,29 +67,29 @@ public interface IPermissionHolder
     boolean hasPermission(Collection<Permission> permissions);
 
     /**
-     * Checks whether or not this PermissionHolder has the given {@link net.dv8tion.jda.core.Permission Permissions} in the specified Channel.
+     * Checks whether or not this PermissionHolder has the given {@link net.dv8tion.jda.core.Permission Permissions} in the specified GuildChannel.
      *
      * @param  channel
-     *         The {@link net.dv8tion.jda.core.entities.Channel Channel} in which to check.
+     *         The {@link GuildChannel GuildChannel} in which to check.
      * @param  permissions
      *         Permissions to check for.
      *
-     * @return True, if all of the specified Permissions are granted to this PermissionHolder in the provided Channel.
+     * @return True, if all of the specified Permissions are granted to this PermissionHolder in the provided GuildChannel.
      *
      * @see    java.util.EnumSet EnumSet
      */
-    boolean hasPermission(Channel channel, Permission... permissions);
+    boolean hasPermission(GuildChannel channel, Permission... permissions);
 
     /**
      * Checks whether or not this PermissionHolder has the {@link net.dv8tion.jda.core.Permission Permissions} in the provided
-     * {@code Collection<Permission>} in the specified Channel.
+     * {@code Collection<Permission>} in the specified GuildChannel.
      *
      * @param  channel
-     *         The {@link net.dv8tion.jda.core.entities.Channel Channel} in which to check.
+     *         The {@link GuildChannel GuildChannel} in which to check.
      * @param  permissions
      *         Permissions to check for.
      *
-     * @return True, if all of the specified Permissions are granted to this PermissionHolder in the provided Channel.
+     * @return True, if all of the specified Permissions are granted to this PermissionHolder in the provided GuildChannel.
      */
-    boolean hasPermission(Channel channel, Collection<Permission> permissions);
+    boolean hasPermission(GuildChannel channel, Collection<Permission> permissions);
 }

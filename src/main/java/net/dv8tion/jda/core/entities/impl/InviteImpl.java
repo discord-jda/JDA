@@ -133,7 +133,7 @@ public class InviteImpl implements Invite
 
         Route.CompiledRoute route;
 
-        final net.dv8tion.jda.core.entities.Channel channel = this.channel.getType() == ChannelType.TEXT
+        final GuildChannel channel = this.channel.getType() == ChannelType.TEXT
                 ? guild.getTextChannelById(this.channel.getIdLong())
                 : guild.getVoiceChannelById(this.channel.getIdLong());
 

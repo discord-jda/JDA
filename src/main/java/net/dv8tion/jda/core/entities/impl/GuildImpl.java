@@ -62,9 +62,9 @@ public class GuildImpl implements Guild
     private final long id;
     private final UpstreamReference<JDAImpl> api;
 
-    private final SortedSnowflakeCacheView<Category> categoryCache = new SortedSnowflakeCacheView<>(Category.class, Channel::getName, Comparator.naturalOrder());
-    private final SortedSnowflakeCacheView<VoiceChannel> voiceChannelCache = new SortedSnowflakeCacheView<>(VoiceChannel.class, Channel::getName, Comparator.naturalOrder());
-    private final SortedSnowflakeCacheView<TextChannel> textChannelCache = new SortedSnowflakeCacheView<>(TextChannel.class, Channel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheView<Category> categoryCache = new SortedSnowflakeCacheView<>(Category.class, GuildChannel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheView<VoiceChannel> voiceChannelCache = new SortedSnowflakeCacheView<>(VoiceChannel.class, GuildChannel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheView<TextChannel> textChannelCache = new SortedSnowflakeCacheView<>(TextChannel.class, GuildChannel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheView<Role> roleCache = new SortedSnowflakeCacheView<>(Role.class, Role::getName, Comparator.reverseOrder());
     private final SnowflakeCacheViewImpl<Emote> emoteCache = new SnowflakeCacheViewImpl<>(Emote.class, Emote::getName);
     private final MemberCacheViewImpl memberCache = new MemberCacheViewImpl();
@@ -322,13 +322,13 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public List<Channel> getChannels(boolean includeHidden)
+    public List<GuildChannel> getChannels(boolean includeHidden)
     {
-        List<Channel> channels = new ArrayList<>((int) getCategoryCache().size() + (int) getVoiceChannelCache().size() + (int) getTextChannelCache().size());
+        List<GuildChannel> channels = new ArrayList<>((int) getCategoryCache().size() + (int) getVoiceChannelCache().size() + (int) getTextChannelCache().size());
         List<Category> categories = getCategories();
 
         Member self = getSelfMember();
-        Predicate<Channel> filterHidden = it -> includeHidden || self.hasPermission(it, Permission.VIEW_CHANNEL);
+        Predicate<GuildChannel> filterHidden = it -> includeHidden || self.hasPermission(it, Permission.VIEW_CHANNEL);
         getTextChannelCache().stream()
                              .filter(filterHidden)
                              .filter(it -> it.getParent() == null)

@@ -733,7 +733,7 @@ public interface Guild extends ISnowflake
     SnowflakeCacheView<VoiceChannel> getVoiceChannelCache();
 
     /**
-     * Populated list of {@link net.dv8tion.jda.core.entities.Channel channels} for this guild.
+     * Populated list of {@link GuildChannel channels} for this guild.
      * This includes all types of channels, such as category/voice/text.
      * <br>This includes hidden channels by default.
      *
@@ -753,13 +753,13 @@ public interface Guild extends ISnowflake
      *
      * @see    #getChannels(boolean)
      */
-    default List<Channel> getChannels()
+    default List<GuildChannel> getChannels()
     {
         return getChannels(true);
     }
 
     /**
-     * Populated list of {@link net.dv8tion.jda.core.entities.Channel channels} for this guild.
+     * Populated list of {@link GuildChannel channels} for this guild.
      * This includes all types of channels, such as category/voice/text.
      *
      * <p>The returned list is ordered in the same fashion as it would be by the official discord client.
@@ -782,7 +782,7 @@ public interface Guild extends ISnowflake
      *
      * @see    #getChannels()
      */
-    List<Channel> getChannels(boolean includeHidden);
+    List<GuildChannel> getChannels(boolean includeHidden);
 
     /**
      * Gets a {@link net.dv8tion.jda.core.entities.Role Role} from this guild that has the same id as the
@@ -1369,8 +1369,8 @@ public interface Guild extends ISnowflake
      * <br>Requires {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER MANAGE_SERVER} in this guild.
      * Will throw a {@link net.dv8tion.jda.core.exceptions.InsufficientPermissionException InsufficientPermissionException} otherwise.
      *
-     * <p>To get all invites for a {@link net.dv8tion.jda.core.entities.Channel Channel}
-     * use {@link net.dv8tion.jda.core.entities.Channel#getInvites() Channel.getInvites()}
+     * <p>To get all invites for a {@link GuildChannel GuildChannel}
+     * use {@link GuildChannel#getInvites() GuildChannel.getInvites()}
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         if the account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER MANAGE_SERVER} in this Guild.
@@ -1378,7 +1378,7 @@ public interface Guild extends ISnowflake
      * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.core.entities.Invite Invite}{@literal >}
      *         <br>The list of expanded Invite objects
      *
-     * @see     net.dv8tion.jda.core.entities.Channel#getInvites()
+     * @see     GuildChannel#getInvites()
      */
     @CheckReturnValue
     RestAction<List<Invite>> getInvites();

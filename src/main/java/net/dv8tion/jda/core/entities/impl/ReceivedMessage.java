@@ -792,7 +792,7 @@ public class ReceivedMessage extends AbstractMessage
     {
         if (channel.getType() == ChannelType.TEXT)
         {
-            Channel location = (Channel) channel;
+            GuildChannel location = (GuildChannel) channel;
             if (!location.getGuild().getSelfMember().hasPermission(location, permission))
                 throw new InsufficientPermissionException(permission);
         }

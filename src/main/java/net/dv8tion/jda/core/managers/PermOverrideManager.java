@@ -17,7 +17,7 @@
 package net.dv8tion.jda.core.managers;
 
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Channel;
+import net.dv8tion.jda.core.entities.GuildChannel;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.PermissionOverride;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
@@ -91,7 +91,7 @@ public class PermOverrideManager extends ManagerBase
 
     /**
      * The {@link net.dv8tion.jda.core.entities.Guild Guild} this Manager's
-     * {@link net.dv8tion.jda.core.entities.Channel Channel} is in.
+     * {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel} is in.
      * <br>This is logically the same as calling {@code getPermissionOverride().getGuild()}
      *
      * @return The parent {@link net.dv8tion.jda.core.entities.Guild Guild}
@@ -102,13 +102,13 @@ public class PermOverrideManager extends ManagerBase
     }
 
     /**
-     * The {@link net.dv8tion.jda.core.entities.Channel Channel} this Manager's
+     * The {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel} this Manager's
      * {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} is in.
      * <br>This is logically the same as calling {@code getPermissionOverride().getChannel()}
      *
-     * @return The parent {@link net.dv8tion.jda.core.entities.Channel Channel}
+     * @return The parent {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel}
      */
-    public Channel getChannel()
+    public GuildChannel getChannel()
     {
         return getPermissionOverride().getChannel();
     }

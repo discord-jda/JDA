@@ -44,7 +44,7 @@ public enum ActionType
 
 
     /**
-     * An Administrator created a {@link net.dv8tion.jda.core.entities.Channel Channel}
+     * An Administrator created a {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel}
      *
      * <h2>Possible Keys</h2>
      * <ul>
@@ -62,7 +62,7 @@ public enum ActionType
     CHANNEL_CREATE(10, TargetType.CHANNEL),
 
     /**
-     * An Administrator updated {@link net.dv8tion.jda.core.entities.Channel Channel} information.
+     * An Administrator updated {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel} information.
      *
      * <h2>Possible Keys</h2>
      * <ul>
@@ -78,7 +78,7 @@ public enum ActionType
     CHANNEL_UPDATE(11, TargetType.CHANNEL),
 
     /**
-     * An Administrator deleted a {@link net.dv8tion.jda.core.entities.Channel Channel}.
+     * An Administrator deleted a {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel}.
      *
      * <h2>Possible Keys</h2>
      * <ul>

@@ -18,7 +18,7 @@ package net.dv8tion.jda.core.requests.restaction;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Channel;
+import net.dv8tion.jda.core.entities.GuildChannel;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.PermissionOverride;
 import net.dv8tion.jda.core.entities.Role;
@@ -40,7 +40,7 @@ import java.util.function.BooleanSupplier;
 /**
  * Extension of {@link net.dv8tion.jda.core.requests.RestAction RestAction} specifically
  * designed to create a {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
- * for a {@link net.dv8tion.jda.core.entities.Channel Channel}.
+ * for a {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel}.
  * This extension allows setting properties before executing the action.
  *
  * @since  3.0
@@ -50,7 +50,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
 
     private long allow = 0;
     private long deny = 0;
-    private final Channel channel;
+    private final GuildChannel channel;
 
     private final Member member;
     private final Role role;
@@ -63,11 +63,11 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      * @param route
      *        The {@link net.dv8tion.jda.core.requests.Route.CompiledRoute Route.CompiledRoute} to be used for rate limit handling
      * @param channel
-     *        The target {@link net.dv8tion.jda.core.entities.Channel Channel} for the PermissionOverride
+     *        The target {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel} for the PermissionOverride
      * @param member
      *        The target {@link net.dv8tion.jda.core.entities.Member Member} that will be affected by the PermissionOverride
      */
-    public PermissionOverrideAction(JDA api, Route.CompiledRoute route, Channel channel, Member member)
+    public PermissionOverrideAction(JDA api, Route.CompiledRoute route, GuildChannel channel, Member member)
     {
         super(api, route);
         this.channel = channel;
@@ -83,11 +83,11 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      * @param route
      *        The {@link net.dv8tion.jda.core.requests.Route.CompiledRoute Route.CompiledRoute} to be used for rate limit handling
      * @param channel
-     *        The target {@link net.dv8tion.jda.core.entities.Channel Channel} for the PermissionOverride
+     *        The target {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel} for the PermissionOverride
      * @param role
      *        The target {@link net.dv8tion.jda.core.entities.Role Role} that will be affected by the PermissionOverride
      */
-    public PermissionOverrideAction(JDA api, Route.CompiledRoute route, Channel channel, Role role)
+    public PermissionOverrideAction(JDA api, Route.CompiledRoute route, GuildChannel channel, Role role)
     {
         super(api, route);
         this.channel = channel;

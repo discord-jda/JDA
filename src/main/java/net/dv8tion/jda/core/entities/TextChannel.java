@@ -28,14 +28,14 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * Represents a Discord Text Channel. See {@link net.dv8tion.jda.core.entities.Channel Channel} and
+ * Represents a Discord Text GuildChannel. See {@link GuildChannel GuildChannel} and
  * {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel} for more information.
  *
  * <p>Internal implementation of this class is available at
  * {@link net.dv8tion.jda.core.entities.impl.TextChannelImpl TextChannelImpl}.
  * <br>Note: Internal implementation should not be used directly.
  */
-public interface TextChannel extends Channel, MessageChannel, Comparable<TextChannel>, IMentionable
+public interface TextChannel extends GuildChannel, MessageChannel, Comparable<TextChannel>, IMentionable
 {
     /**
      * The topic set for this TextChannel.

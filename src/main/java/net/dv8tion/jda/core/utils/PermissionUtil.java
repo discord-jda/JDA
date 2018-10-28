@@ -268,7 +268,7 @@ public class PermissionUtil
 
     /**
      * Checks to see if the {@link net.dv8tion.jda.core.entities.Member Member} has the specified {@link net.dv8tion.jda.core.Permission Permissions}
-     * in the specified {@link net.dv8tion.jda.core.entities.Channel Channel}. This method properly deals with
+     * in the specified {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel}. This method properly deals with
      * {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides} and Owner status.
      *
      * <p><b>Note:</b> this is based on effective permissions, not literal permissions. If a member has permissions that would
@@ -279,7 +279,7 @@ public class PermissionUtil
      * @param  member
      *         The {@link net.dv8tion.jda.core.entities.Member Member} whose permissions are being checked.
      * @param  channel
-     *         The {@link net.dv8tion.jda.core.entities.Channel Channel} being checked.
+     *         The {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel} being checked.
      * @param  permissions
      *         The {@link net.dv8tion.jda.core.Permission Permissions} being checked for.
      *
@@ -290,7 +290,7 @@ public class PermissionUtil
      * @return True -
      *         if the {@link net.dv8tion.jda.core.entities.Member Member} effectively has the specified {@link net.dv8tion.jda.core.Permission Permissions}.
      */
-    public static boolean checkPermission(Channel channel, Member member, Permission... permissions)
+    public static boolean checkPermission(GuildChannel channel, Member member, Permission... permissions)
     {
         Checks.notNull(channel, "Channel");
         Checks.notNull(member, "Member");
@@ -347,13 +347,13 @@ public class PermissionUtil
 
     /**
      * Gets the {@code long} representation of the effective permissions allowed for this {@link net.dv8tion.jda.core.entities.Member Member}
-     * in this {@link net.dv8tion.jda.core.entities.Channel Channel}. This can be used in conjunction with
+     * in this {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel}. This can be used in conjunction with
      * {@link net.dv8tion.jda.core.Permission#getPermissions(long) Permission.getPermissions(long)} to easily get a list of all
-     * {@link net.dv8tion.jda.core.Permission Permissions} that this member can use in this {@link net.dv8tion.jda.core.entities.Channel Channel}.
+     * {@link net.dv8tion.jda.core.Permission Permissions} that this member can use in this {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel}.
      * <br>This functions very similarly to how {@link net.dv8tion.jda.core.entities.Role#getPermissionsRaw() Role.getPermissionsRaw()}.
      *
      * @param  channel
-     *         The {@link net.dv8tion.jda.core.entities.Channel Channel} being checked.
+     *         The {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel} being checked.
      * @param  member
      *         The {@link net.dv8tion.jda.core.entities.Member Member} whose permissions are being checked.
      *
@@ -362,9 +362,9 @@ public class PermissionUtil
      *         or the provided entities are not from the same guild
      *
      * @return The {@code long} representation of the effective permissions that this {@link net.dv8tion.jda.core.entities.Member Member}
-     *         has in this {@link net.dv8tion.jda.core.entities.Channel Channel}.
+     *         has in this {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel}.
      */
-    public static long getEffectivePermission(Channel channel, Member member)
+    public static long getEffectivePermission(GuildChannel channel, Member member)
     {
         Checks.notNull(channel, "Channel");
         Checks.notNull(member, "Member");
@@ -411,12 +411,12 @@ public class PermissionUtil
 
     /**
      * Gets the {@code long} representation of the effective permissions allowed for this {@link net.dv8tion.jda.core.entities.Role Role}
-     * in this {@link net.dv8tion.jda.core.entities.Channel Channel}. This can be used in conjunction with
+     * in this {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel}. This can be used in conjunction with
      * {@link net.dv8tion.jda.core.Permission#getPermissions(long) Permission.getPermissions(long)} to easily get a list of all
-     * {@link net.dv8tion.jda.core.Permission Permissions} that this role can use in this {@link net.dv8tion.jda.core.entities.Channel Channel}.
+     * {@link net.dv8tion.jda.core.Permission Permissions} that this role can use in this {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel}.
      *
      * @param  channel
-     *         The {@link net.dv8tion.jda.core.entities.Channel Channel} in which permissions are being checked.
+     *         The {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel} in which permissions are being checked.
      * @param  role
      *         The {@link net.dv8tion.jda.core.entities.Role Role} whose permissions are being checked.
      *
@@ -425,9 +425,9 @@ public class PermissionUtil
      *         or the provided entities are not from the same guild
      *
      * @return The {@code long} representation of the effective permissions that this {@link net.dv8tion.jda.core.entities.Role Role}
-     *         has in this {@link net.dv8tion.jda.core.entities.Channel Channel}
+     *         has in this {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel}
      */
-    public static long getEffectivePermission(Channel channel, Role role)
+    public static long getEffectivePermission(GuildChannel channel, Role role)
     {
         Checks.notNull(channel, "Channel");
         Checks.notNull(role, "Role");
@@ -490,7 +490,7 @@ public class PermissionUtil
 
     /**
      * Retrieves the explicit permissions of the specified {@link net.dv8tion.jda.core.entities.Member Member}
-     * in its hosting {@link net.dv8tion.jda.core.entities.Guild Guild} and specific {@link net.dv8tion.jda.core.entities.Channel Channel}.
+     * in its hosting {@link net.dv8tion.jda.core.entities.Guild Guild} and specific {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel}.
      * <br>This method does not calculate the owner in.
      * <b>Allowed permissions override denied permissions of {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides}!</b>
      *
@@ -513,7 +513,7 @@ public class PermissionUtil
      *
      * @since  3.1
      */
-    public static long getExplicitPermission(Channel channel, Member member)
+    public static long getExplicitPermission(GuildChannel channel, Member member)
     {
         Checks.notNull(channel, "Channel");
         Checks.notNull(member, "Member");
@@ -534,7 +534,7 @@ public class PermissionUtil
 
     /**
      * Retrieves the explicit permissions of the specified {@link net.dv8tion.jda.core.entities.Role Role}
-     * in its hosting {@link net.dv8tion.jda.core.entities.Guild Guild} and specific {@link net.dv8tion.jda.core.entities.Channel Channel}.
+     * in its hosting {@link net.dv8tion.jda.core.entities.Guild Guild} and specific {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel}.
      * <br><b>Allowed permissions override denied permissions of {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides}!</b>
      *
      * <p>All permissions returned are explicitly granted to this Role.
@@ -555,7 +555,7 @@ public class PermissionUtil
      *
      * @since  3.1
      */
-    public static long getExplicitPermission(Channel channel, Role role)
+    public static long getExplicitPermission(GuildChannel channel, Role role)
     {
         Checks.notNull(channel, "Channel");
         Checks.notNull(role, "Role");
@@ -581,7 +581,7 @@ public class PermissionUtil
      * Pushes all deny/allow values to the specified BiConsumer
      * <br>First parameter is allow, second is deny
      */
-    private static void getExplicitOverrides(Channel channel, Member member, AtomicLong allow, AtomicLong deny)
+    private static void getExplicitOverrides(GuildChannel channel, Member member, AtomicLong allow, AtomicLong deny)
     {
         PermissionOverride override = channel.getPermissionOverride(member.getGuild().getPublicRole());
         long allowRaw = 0;

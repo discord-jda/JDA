@@ -182,12 +182,12 @@ public class GuildAction extends RestAction<Void>
     // Channels
 
     /**
-     * Adds a {@link net.dv8tion.jda.core.entities.Channel Channel} to the resulting
+     * Adds a {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel} to the resulting
      * Guild. This cannot be of type {@link net.dv8tion.jda.core.entities.ChannelType#CATEGORY CATEGORY}!
      *
      * @param  channel
      *         The {@link net.dv8tion.jda.core.requests.restaction.GuildAction.ChannelData ChannelData}
-     *         to use for the construction of the Channel
+     *         to use for the construction of the GuildChannel
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided channel is {@code null}!
@@ -259,7 +259,7 @@ public class GuildAction extends RestAction<Void>
      * instance and adds it to this GuildAction.
      *
      * @param  type
-     *         The {@link net.dv8tion.jda.core.entities.ChannelType ChannelType} of the resulting Channel
+     *         The {@link net.dv8tion.jda.core.entities.ChannelType ChannelType} of the resulting GuildChannel
      *         <br>This may be of type {@link net.dv8tion.jda.core.entities.ChannelType#TEXT TEXT} or {@link net.dv8tion.jda.core.entities.ChannelType#VOICE VOICE}!
      * @param  name
      *         The name of the channel. This must be alphanumeric with underscores for type TEXT
@@ -587,7 +587,7 @@ public class GuildAction extends RestAction<Void>
     }
 
     /**
-     * Channel information used for the creation of {@link net.dv8tion.jda.core.entities.Channel Channels} within
+     * GuildChannel information used for the creation of {@link net.dv8tion.jda.core.entities.GuildChannel Channels} within
      * the construction of a {@link net.dv8tion.jda.core.entities.Guild Guild} via GuildAction.
      *
      * <p>Use with {@link net.dv8tion.jda.core.requests.restaction.GuildAction#addChannel(GuildAction.ChannelData) GuildAction.addChannel(ChannelData)}.
@@ -609,11 +609,11 @@ public class GuildAction extends RestAction<Void>
 
         /**
          * Constructs a data object containing information on
-         * a {@link net.dv8tion.jda.core.entities.Channel Channel} to be used in the construction
+         * a {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel} to be used in the construction
          * of a {@link net.dv8tion.jda.core.entities.Guild Guild}!
          *
          * @param  type
-         *         The {@link net.dv8tion.jda.core.entities.ChannelType ChannelType} of the resulting Channel
+         *         The {@link net.dv8tion.jda.core.entities.ChannelType ChannelType} of the resulting GuildChannel
          *         <br>This may be of type {@link net.dv8tion.jda.core.entities.ChannelType#TEXT TEXT} or {@link net.dv8tion.jda.core.entities.ChannelType#VOICE VOICE}!
          * @param  name
          *         The name of the channel. This must be alphanumeric with underscores for type TEXT

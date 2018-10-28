@@ -18,7 +18,7 @@ package net.dv8tion.jda.core.entities.impl;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Channel;
+import net.dv8tion.jda.core.entities.GuildChannel;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.exceptions.HierarchyException;
@@ -163,7 +163,7 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public boolean hasPermission(Channel channel, Permission... permissions)
+    public boolean hasPermission(GuildChannel channel, Permission... permissions)
     {
         long effectivePerms = PermissionUtil.getEffectivePermission(channel, this);
         for (Permission perm : permissions)
@@ -176,7 +176,7 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public boolean hasPermission(Channel channel, Collection<Permission> permissions)
+    public boolean hasPermission(GuildChannel channel, Collection<Permission> permissions)
     {
         Checks.notNull(permissions, "Permission Collection");
 

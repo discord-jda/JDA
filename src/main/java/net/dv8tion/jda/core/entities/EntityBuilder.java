@@ -987,7 +987,7 @@ public class EntityBuilder
             color, thumbnail, siteProvider, author, videoInfo, footer, image, fields);
     }
 
-    public PermissionOverride createPermissionOverride(JSONObject override, Channel chan)
+    public PermissionOverride createPermissionOverride(JSONObject override, GuildChannel chan)
     {
         PermissionOverrideImpl permOverride;
         final long id = override.getLong("id");

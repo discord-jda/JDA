@@ -348,7 +348,7 @@ public class MessageReaction
         {
             if (channel.getType() == ChannelType.TEXT)
             {
-                Channel channel = (Channel) this.channel;
+                GuildChannel channel = (GuildChannel) this.channel;
                 if (!channel.getGuild().getSelfMember().hasPermission(channel, Permission.MESSAGE_MANAGE))
                     throw new InsufficientPermissionException(Permission.MESSAGE_MANAGE);
             }

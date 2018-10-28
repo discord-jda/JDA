@@ -105,14 +105,14 @@ public interface PermissionOverride
     Role getRole();
 
     /**
-     * The {@link net.dv8tion.jda.core.entities.Channel Channel} that this {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} affects.
+     * The {@link GuildChannel GuildChannel} that this {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} affects.
      *
-     * @return Never-null related {@link net.dv8tion.jda.core.entities.Channel Channel} that this override is part of.
+     * @return Never-null related {@link GuildChannel GuildChannel} that this override is part of.
      */
-    Channel getChannel();
+    GuildChannel getChannel();
 
     /**
-     * The {@link net.dv8tion.jda.core.entities.Guild Guild} that the {@link net.dv8tion.jda.core.entities.Channel Channel}
+     * The {@link net.dv8tion.jda.core.entities.Guild Guild} that the {@link GuildChannel GuildChannel}
      * returned from {@link net.dv8tion.jda.core.entities.PermissionOverride#getChannel()} is a part of.
      * By inference, this is the {@link net.dv8tion.jda.core.entities.Guild Guild} that this
      * {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} is part of.

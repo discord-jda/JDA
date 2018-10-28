@@ -83,7 +83,7 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
 
     /**
      * The {@code long} representation of the literal permissions that this {@link net.dv8tion.jda.core.entities.Role Role} has.
-     * <br><b>NOTE:</b> these do not necessarily represent the permissions this role will have in a {@link net.dv8tion.jda.core.entities.Channel Channel}.
+     * <br><b>NOTE:</b> these do not necessarily represent the permissions this role will have in a {@link GuildChannel GuildChannel}.
      *
      * @return Never-negative long containing offset permissions of this role.
      */

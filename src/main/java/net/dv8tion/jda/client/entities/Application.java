@@ -138,7 +138,7 @@ public interface Application extends ISnowflake
      * <br>In the ApplicationManager, you can modify things like the name and icon of this Application.
      * You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.core.requests.RestAction#queue() RestAction.queue()}.
      *
-     * @return The ApplicationManager of this Channel
+     * @return The ApplicationManager of this Application
      */
     ApplicationManager getManager();
 

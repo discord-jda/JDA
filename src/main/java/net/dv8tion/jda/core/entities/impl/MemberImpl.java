@@ -145,7 +145,7 @@ public class MemberImpl implements Member
     }
 
     @Override
-    public List<Permission> getPermissions(Channel channel)
+    public List<Permission> getPermissions(GuildChannel channel)
     {
         if (!getGuild().equals(channel.getGuild()))
             throw new IllegalArgumentException("Provided channel is not in the same guild as this member!");
@@ -170,13 +170,13 @@ public class MemberImpl implements Member
     }
 
     @Override
-    public boolean hasPermission(Channel channel, Permission... permissions)
+    public boolean hasPermission(GuildChannel channel, Permission... permissions)
     {
         return PermissionUtil.checkPermission(channel, this, permissions);
     }
 
     @Override
-    public boolean hasPermission(Channel channel, Collection<Permission> permissions)
+    public boolean hasPermission(GuildChannel channel, Collection<Permission> permissions)
     {
         Checks.notNull(permissions, "Permission Collection");
 

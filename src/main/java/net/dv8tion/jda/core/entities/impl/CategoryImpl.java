@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 
 public class CategoryImpl extends AbstractChannelImpl<CategoryImpl> implements Category
 {
-    protected final TLongObjectMap<Channel> channels = MiscUtil.newLongMap();
+    protected final TLongObjectMap<GuildChannel> channels = MiscUtil.newLongMap();
 
     public CategoryImpl(long id, GuildImpl guild)
     {
@@ -67,7 +67,7 @@ public class CategoryImpl extends AbstractChannelImpl<CategoryImpl> implements C
     public List<Member> getMembers()
     {
         return Collections.unmodifiableList(getChannels().stream()
-                    .map(Channel::getMembers)
+                    .map(GuildChannel::getMembers)
                     .flatMap(List::stream)
                     .distinct()
                     .collect(Collectors.toList()));
@@ -118,9 +118,9 @@ public class CategoryImpl extends AbstractChannelImpl<CategoryImpl> implements C
     }
 
     @Override
-    public List<Channel> getChannels()
+    public List<GuildChannel> getChannels()
     {
-        List<Channel> channels = new ArrayList<>();
+        List<GuildChannel> channels = new ArrayList<>();
         channels.addAll(getTextChannels());
         channels.addAll(getVoiceChannels());
         return Collections.unmodifiableList(channels);

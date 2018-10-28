@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
-public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> implements Channel
+public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> implements GuildChannel
 {
     protected final long id;
     protected final UpstreamReference<GuildImpl> guild;
@@ -259,11 +259,11 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     @Override
     public boolean equals(Object obj)
     {
-        if (!(obj instanceof Channel))
+        if (!(obj instanceof GuildChannel))
             return false;
         if (obj == this)
             return true;
-        Channel channel = (Channel) obj;
+        GuildChannel channel = (GuildChannel) obj;
         return channel.getIdLong() == getIdLong();
     }
 

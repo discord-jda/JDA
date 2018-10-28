@@ -16,13 +16,13 @@
 package net.dv8tion.jda.core.entities;
 
 /**
- * Represents a Discord Voice Channel. A specification of {@link net.dv8tion.jda.core.entities.AudioChannel}.
- * <br>As a VoiceChannel has no extra functionality as its {@link net.dv8tion.jda.core.entities.Channel Channel} parent,
+ * Represents a Discord Voice GuildChannel. A specification of {@link net.dv8tion.jda.core.entities.AudioChannel}.
+ * <br>As a VoiceChannel has no extra functionality as its {@link GuildChannel GuildChannel} parent,
  * this interface is empty.
- * This interface only exists to distinct {@link net.dv8tion.jda.core.entities.Channel Channels} into
+ * This interface only exists to distinct {@link GuildChannel Channels} into
  * VoiceChannels and {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}.
  */
-public interface VoiceChannel extends Channel, AudioChannel, Comparable<VoiceChannel>
+public interface VoiceChannel extends GuildChannel, AudioChannel, Comparable<VoiceChannel>
 {
     /**
      * The maximum amount of {@link net.dv8tion.jda.core.entities.Member Members} that can be in this

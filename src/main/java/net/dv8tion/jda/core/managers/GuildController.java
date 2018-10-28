@@ -1827,7 +1827,7 @@ public class GuildController
     }
 
     /**
-     * Creates a copy of the specified {@link net.dv8tion.jda.core.entities.Channel Channel}
+     * Creates a copy of the specified {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel}
      * in this {@link net.dv8tion.jda.core.entities.Guild Guild}.
      * <br>The provided channel need not be in the same Guild for this to work!
      *
@@ -1851,7 +1851,7 @@ public class GuildController
      * </ul>
      *
      * @param  channel
-     *         The {@link net.dv8tion.jda.core.entities.Channel Channel} to use for the copy template
+     *         The {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel} to use for the copy template
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided channel is {@code null}
@@ -1859,7 +1859,7 @@ public class GuildController
      *         If the currently logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission
      *
      * @return A specific {@link net.dv8tion.jda.core.requests.restaction.ChannelAction ChannelAction}
-     *         <br>This action allows to set fields for the new Channel before creating it!
+     *         <br>This action allows to set fields for the new GuildChannel before creating it!
      *
      * @since  3.1
      *
@@ -1868,7 +1868,7 @@ public class GuildController
      * @see    net.dv8tion.jda.core.requests.restaction.ChannelAction ChannelAction
      */
     @CheckReturnValue
-    public ChannelAction createCopyOfChannel(Channel channel)
+    public ChannelAction createCopyOfChannel(GuildChannel channel)
     {
         Checks.notNull(channel, "Channel");
         return channel.createCopy(getGuild());

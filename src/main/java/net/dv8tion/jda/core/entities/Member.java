@@ -142,16 +142,16 @@ public interface Member extends IMentionable, IPermissionHolder
     int getColorRaw();
 
     /**
-     * The Permissions this Member holds in the specified {@link net.dv8tion.jda.core.entities.Channel Channel}.
+     * The Permissions this Member holds in the specified {@link GuildChannel GuildChannel}.
      * <br>Permissions returned by this may be different from {@link #getPermissions()}
-     * due to the Channel's {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides}.
+     * due to the GuildChannel's {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides}.
      *
      * @param  channel
-     *         The {@link net.dv8tion.jda.core.entities.Channel Channel} of which to get Permissions for
+     *         The {@link GuildChannel GuildChannel} of which to get Permissions for
      *
      * @return An immutable List of Permissions granted to this Member.
      */
-    List<Permission> getPermissions(Channel channel);
+    List<Permission> getPermissions(GuildChannel channel);
 
     /**
      * Whether this Member can interact with the provided Member

@@ -35,7 +35,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class PermissionOverrideImpl implements PermissionOverride
 {
     private final long id;
-    private final UpstreamReference<Channel> channel;
+    private final UpstreamReference<GuildChannel> channel;
     private final IPermissionHolder permissionHolder;
 
     protected final ReentrantLock mngLock = new ReentrantLock();
@@ -44,7 +44,7 @@ public class PermissionOverrideImpl implements PermissionOverride
     private long allow;
     private long deny;
 
-    public PermissionOverrideImpl(Channel channel, long id, IPermissionHolder permissionHolder)
+    public PermissionOverrideImpl(GuildChannel channel, long id, IPermissionHolder permissionHolder)
     {
         this.channel = new UpstreamReference<>(channel);
         this.id = id;
@@ -106,7 +106,7 @@ public class PermissionOverrideImpl implements PermissionOverride
     }
 
     @Override
-    public Channel getChannel()
+    public GuildChannel getChannel()
     {
         return channel.get();
     }
