@@ -18,7 +18,10 @@ package net.dv8tion.jda.core.requests.restaction;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.audit.ThreadLocalReason;
-import net.dv8tion.jda.core.requests.*;
+import net.dv8tion.jda.core.requests.Request;
+import net.dv8tion.jda.core.requests.Response;
+import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.core.requests.RestFuture;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.internal.requests.Route;
 import okhttp3.RequestBody;
@@ -27,6 +30,7 @@ import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
@@ -159,7 +163,7 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
         }
 
         @Override
-        public RequestFuture<T> submit(boolean shouldQueue)
+        public CompletableFuture<T> submit(boolean shouldQueue)
         {
             return new RestFuture<>(content);
         }

@@ -347,32 +347,28 @@ public abstract class RestAction<T>
     }
 
     /**
-     * Submits a Request for execution and provides a {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture}
+     * Submits a Request for execution and provides a {@link java.util.concurrent.CompletableFuture CompletableFuture}
      * representing its completion task.
      * <br>Cancelling the returned Future will result in the cancellation of the Request!
      *
-     * <p>Note: The usage of {@link java.util.concurrent.CompletionStage#toCompletableFuture() CompletionStage.toCompletableFuture()} is not supported.
-     *
-     * @return Never-null {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} representing the completion promise
+     * @return Never-null {@link java.util.concurrent.CompletableFuture CompletableFuture} representing the completion promise
      */
-    public RequestFuture<T> submit()
+    public CompletableFuture<T> submit()
     {
         return submit(true);
     }
 
     /**
-     * Submits a Request for execution and provides a {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture}
+     * Submits a Request for execution and provides a {@link java.util.concurrent.CompletableFuture CompletableFuture}
      * representing its completion task.
      * <br>Cancelling the returned Future will result in the cancellation of the Request!
-     *
-     * <p>Note: The usage of {@link java.util.concurrent.CompletionStage#toCompletableFuture() CompletionStage.toCompletableFuture()} is not supported.
      *
      * @param  shouldQueue
      *         Whether the Request should automatically handle rate limitations. (default true)
      *
-     * @return Never-null {@link net.dv8tion.jda.core.requests.RequestFuture RequestFuture} task representing the completion promise
+     * @return Never-null {@link java.util.concurrent.CompletableFuture CompletableFuture} task representing the completion promise
      */
-    public RequestFuture<T> submit(boolean shouldQueue)
+    public CompletableFuture<T> submit(boolean shouldQueue)
     {
         Route.CompiledRoute route = finalizeRoute();
         Checks.notNull(route, "Route");
@@ -787,7 +783,7 @@ public abstract class RestAction<T>
         }
 
         @Override
-        public RequestFuture<T> submit(boolean shouldQueue)
+        public CompletableFuture<T> submit(boolean shouldQueue)
         {
             return new RestFuture<>(returnObj);
         }

@@ -18,13 +18,13 @@ package net.dv8tion.jda.core.requests;
 
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.utils.Promise;
 import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BooleanSupplier;
 
-public class RestFuture<T> extends Promise<T>
+public class RestFuture<T> extends CompletableFuture<T>
 {
     final Request<T> request;
 
@@ -39,13 +39,13 @@ public class RestFuture<T> extends Promise<T>
 
     public RestFuture(final T t)
     {
-        super(t);
+        complete(t);
         this.request = null;
     }
 
     public RestFuture(final Throwable t)
     {
-        super(t);
+        completeExceptionally(t);
         this.request = null;
     }
 

@@ -22,7 +22,6 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.RequestFuture;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
@@ -39,6 +38,7 @@ import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implements TextChannel
@@ -172,7 +172,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     }
 
     @Override
-    public List<RequestFuture<Void>> purgeMessages(List<? extends Message> messages)
+    public List<CompletableFuture<Void>> purgeMessages(List<? extends Message> messages)
     {
         if (messages == null || messages.isEmpty())
             return Collections.emptyList();
@@ -191,7 +191,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
 
     @Override
     @SuppressWarnings("ConstantConditions")
-    public List<RequestFuture<Void>> purgeMessagesById(long... messageIds)
+    public List<CompletableFuture<Void>> purgeMessagesById(long... messageIds)
     {
         if (messageIds == null || messageIds.length == 0)
             return Collections.emptyList();
@@ -200,7 +200,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
             return TextChannel.super.purgeMessagesById(messageIds);
 
         // remove duplicates and sort messages
-        List<RequestFuture<Void>> list = new LinkedList<>();
+        List<CompletableFuture<Void>> list = new LinkedList<>();
         TreeSet<Long> bulk = new TreeSet<>(Comparator.reverseOrder());
         TreeSet<Long> norm = new TreeSet<>(Comparator.reverseOrder());
         long twoWeeksAgo = MiscUtil.getDiscordTimestamp(System.currentTimeMillis() - (14 * 24 * 60 * 60 * 1000) + 10000);

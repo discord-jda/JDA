@@ -19,7 +19,6 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.RequestFuture;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
@@ -34,6 +33,7 @@ import org.json.JSONArray;
 import javax.annotation.CheckReturnValue;
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 /**
@@ -98,9 +98,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return List of futures representing all deletion tasks
      *
-     * @see    RequestFuture#allOf(Collection)
+     * @see    CompletableFuture#allOf(java.util.concurrent.CompletableFuture[])
      */
-    default List<RequestFuture<Void>> purgeMessagesById(List<String> messageIds)
+    default List<CompletableFuture<Void>> purgeMessagesById(List<String> messageIds)
     {
         if (messageIds == null || messageIds.isEmpty())
             return Collections.emptyList();
@@ -123,9 +123,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return List of futures representing all deletion tasks
      *
-     * @see    RequestFuture#allOf(Collection)
+     * @see    CompletableFuture#allOf(java.util.concurrent.CompletableFuture[])
      */
-    default List<RequestFuture<Void>> purgeMessagesById(String... messageIds)
+    default List<CompletableFuture<Void>> purgeMessagesById(String... messageIds)
     {
         if (messageIds == null || messageIds.length == 0)
             return Collections.emptyList();
@@ -150,9 +150,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return List of futures representing all deletion tasks
      *
-     * @see    RequestFuture#allOf(Collection)
+     * @see    CompletableFuture#allOf(java.util.concurrent.CompletableFuture[])
      */
-    default List<RequestFuture<Void>> purgeMessages(Message... messages)
+    default List<CompletableFuture<Void>> purgeMessages(Message... messages)
     {
         if (messages == null || messages.length == 0)
             return Collections.emptyList();
@@ -177,9 +177,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return List of futures representing all deletion tasks
      *
-     * @see    RequestFuture#allOf(Collection)
+     * @see    CompletableFuture#allOf(java.util.concurrent.CompletableFuture[])
      */
-    default List<RequestFuture<Void>> purgeMessages(List<? extends Message> messages)
+    default List<CompletableFuture<Void>> purgeMessages(List<? extends Message> messages)
     {
         if (messages == null || messages.isEmpty())
             return Collections.emptyList();
@@ -216,13 +216,13 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return List of futures representing all deletion tasks
      *
-     * @see    RequestFuture#allOf(Collection)
+     * @see    CompletableFuture#allOf(java.util.concurrent.CompletableFuture[])
      */
-    default List<RequestFuture<Void>> purgeMessagesById(long... messageIds)
+    default List<CompletableFuture<Void>> purgeMessagesById(long... messageIds)
     {
         if (messageIds == null || messageIds.length == 0)
             return Collections.emptyList();
-        List<RequestFuture<Void>> list = new ArrayList<>(messageIds.length);
+        List<CompletableFuture<Void>> list = new ArrayList<>(messageIds.length);
         TreeSet<Long> sortedIds = new TreeSet<>(Comparator.reverseOrder());
         for (long messageId : messageIds)
             sortedIds.add(messageId);

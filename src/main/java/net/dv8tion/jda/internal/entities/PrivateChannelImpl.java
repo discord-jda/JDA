@@ -21,7 +21,6 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.RequestFuture;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.MessageAction;
@@ -31,6 +30,7 @@ import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class PrivateChannelImpl implements PrivateChannel
 {
@@ -104,7 +104,7 @@ public class PrivateChannelImpl implements PrivateChannel
     }
 
     @Override
-    public List<RequestFuture<Void>> purgeMessages(List<? extends Message> messages)
+    public List<CompletableFuture<Void>> purgeMessages(List<? extends Message> messages)
     {
         if (messages == null || messages.isEmpty())
             return Collections.emptyList();

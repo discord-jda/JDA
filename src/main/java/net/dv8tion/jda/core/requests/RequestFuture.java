@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+//TODO: Remove
 package net.dv8tion.jda.core.requests;
 
 import net.dv8tion.jda.internal.utils.Checks;
