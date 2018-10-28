@@ -19,7 +19,7 @@ package net.dv8tion.jda.core.managers.impl;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.WebSocketCode;
-import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.entities.Activity;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.utils.Checks;
@@ -37,7 +37,7 @@ public class PresenceImpl implements Presence
 
     private final UpstreamReference<JDAImpl> api;
     private boolean idle = false;
-    private Game game = null;
+    private Activity game = null;
     private OnlineStatus status = OnlineStatus.ONLINE;
 
     /**
@@ -68,7 +68,7 @@ public class PresenceImpl implements Presence
     }
 
     @Override
-    public Game getGame()
+    public Activity getGame()
     {
         return game;
     }
@@ -90,7 +90,7 @@ public class PresenceImpl implements Presence
     }
 
     @Override
-    public void setGame(Game game)
+    public void setGame(Activity game)
     {
         setPresence(status, game);
     }
@@ -102,7 +102,7 @@ public class PresenceImpl implements Presence
     }
 
     @Override
-    public void setPresence(OnlineStatus status, Game game, boolean idle)
+    public void setPresence(OnlineStatus status, Activity game, boolean idle)
     {
         JSONObject gameObj = getGameJson(game);
 
@@ -127,7 +127,7 @@ public class PresenceImpl implements Presence
     }
 
     @Override
-    public void setPresence(OnlineStatus status, Game game)
+    public void setPresence(OnlineStatus status, Activity game)
     {
         setPresence(status, game, idle);
     }
@@ -139,7 +139,7 @@ public class PresenceImpl implements Presence
     }
 
     @Override
-    public void setPresence(Game game, boolean idle)
+    public void setPresence(Activity game, boolean idle)
     {
         setPresence(status, game, idle);
     }
@@ -158,7 +158,7 @@ public class PresenceImpl implements Presence
         return this;
     }
 
-    public PresenceImpl setCacheGame(Game game)
+    public PresenceImpl setCacheGame(Activity game)
     {
         this.game = game;
         return this;
@@ -184,7 +184,7 @@ public class PresenceImpl implements Presence
               .put("status", getStatus().getKey());
     }
 
-    private JSONObject getGameJson(Game game)
+    private JSONObject getGameJson(Activity game)
     {
         if (game == null || game.getName() == null || game.getType() == null)
             return null;

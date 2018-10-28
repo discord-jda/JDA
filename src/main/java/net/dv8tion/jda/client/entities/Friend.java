@@ -17,7 +17,7 @@
 package net.dv8tion.jda.client.entities;
 
 import net.dv8tion.jda.core.OnlineStatus;
-import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.entities.Activity;
 import net.dv8tion.jda.core.requests.RestAction;
 
 import java.time.OffsetDateTime;
@@ -29,7 +29,7 @@ public interface Friend extends Relationship
 
     OffsetDateTime getOnlineStatusModifiedTime();
 
-    Game getGame();
+    Activity getGame();
 
     @CheckReturnValue
     RestAction removeFriend();

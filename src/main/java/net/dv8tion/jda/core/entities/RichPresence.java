@@ -27,12 +27,12 @@ import java.util.EnumSet;
 import java.util.Objects;
 
 /**
- * Used to hold additional information about a users {@link net.dv8tion.jda.core.entities.Game Game}
+ * Used to hold additional information about a users {@link Activity Activity}
  * relevant to <a href="https://discordapp.com/developers/docs/rich-presence/best-practices" target="_blank">Rich Presence</a>.
  *
  * @since  3.4.0
  */
-public class RichPresence extends Game
+public class RichPresence extends Activity
 {
     protected final long applicationId;
 
@@ -46,7 +46,7 @@ public class RichPresence extends Game
     protected final int flags;
 
     protected RichPresence(
-        GameType type, String name, String url, long applicationId,
+        ActivityType type, String name, String url, long applicationId,
         Party party, String details, String state, Timestamps timestamps, String syncId, String sessionId, int flags,
         String largeImageKey, String largeImageText, String smallImageKey, String smallImageText)
     {

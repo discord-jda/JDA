@@ -42,7 +42,7 @@ public class MemberImpl implements Member
 
     private String nickname;
     private long joinDate;
-    private Game game;
+    private Activity game;
     private OnlineStatus onlineStatus = OnlineStatus.OFFLINE;
 
     public MemberImpl(GuildImpl guild, User user)
@@ -85,7 +85,7 @@ public class MemberImpl implements Member
     }
 
     @Override
-    public Game getGame()
+    public Activity getActivity()
     {
         return game;
     }
@@ -218,7 +218,7 @@ public class MemberImpl implements Member
         return this;
     }
 
-    public MemberImpl setGame(Game game)
+    public MemberImpl setGame(Activity game)
     {
         this.game = game;
         return this;

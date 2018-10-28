@@ -36,6 +36,6 @@
  * <br>The {@link net.dv8tion.jda.core.requests.WebSocketClient WebSocketClient} is used to
  * handle the {@link net.dv8tion.jda.core.events.Event Event} flow and connection to the Discord gateway.
  * <br>It can send {@link net.dv8tion.jda.core.managers.Presence Presence} updates that will determine how
- * the Discord Client will display the currently connected account (Online Status / Game)
+ * the Discord Client will display the currently connected account (Online Status / Activity)
  */
 package net.dv8tion.jda.core.requests;

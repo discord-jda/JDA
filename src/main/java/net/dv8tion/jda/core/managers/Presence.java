@@ -18,7 +18,7 @@ package net.dv8tion.jda.core.managers;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
-import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.entities.Activity;
 
 /**
  * The Presence associated with the provided JDA instance
@@ -45,13 +45,13 @@ public interface Presence
     OnlineStatus getStatus();
 
     /**
-     * The current Game for this session.
+     * The current Activity for this session.
      * <br>This might not be what the Discord Client displays due to session clashing!
      *
-     * @return The {@link net.dv8tion.jda.core.entities.Game Game}
+     * @return The {@link net.dv8tion.jda.core.entities.Activity Activity}
      *         of the current session or null if no game is set
      */
-    Game getGame();
+    Activity getGame();
 
     /**
      * Whether the current session is marked as afk or not.
@@ -76,21 +76,21 @@ public interface Presence
     void setStatus(OnlineStatus status);
 
     /**
-     * Sets the {@link net.dv8tion.jda.core.entities.Game Game} for this session.
-     * <br>A Game can be retrieved via {@link net.dv8tion.jda.core.entities.Game#playing(String)}.
+     * Sets the {@link net.dv8tion.jda.core.entities.Activity Activity} for this session.
+     * <br>A Activity can be retrieved via {@link net.dv8tion.jda.core.entities.Activity#playing(String)}.
      * For streams you provide a valid streaming url as second parameter
      *
      * <p>Examples:
-     * <br>{@code presence.setGame(Game.playing("Thrones"));}
-     * <br>{@code presence.setGame(Game.streaming("Thrones", "https://twitch.tv/EasterEggs"));}
+     * <br>{@code presence.setGame(Activity.playing("Thrones"));}
+     * <br>{@code presence.setGame(Activity.streaming("Thrones", "https://twitch.tv/EasterEggs"));}
      *
      * @param  game
-     *         A {@link net.dv8tion.jda.core.entities.Game Game} instance or null to reset
+     *         A {@link net.dv8tion.jda.core.entities.Activity Activity} instance or null to reset
      *
-     * @see    net.dv8tion.jda.core.entities.Game#playing(String)
-     * @see    net.dv8tion.jda.core.entities.Game#streaming(String, String)
+     * @see    net.dv8tion.jda.core.entities.Activity#playing(String)
+     * @see    net.dv8tion.jda.core.entities.Activity#streaming(String, String)
      */
-    void setGame(Game game);
+    void setGame(Activity game);
 
     /**
      * Sets whether this session should be marked as afk or not
@@ -110,15 +110,15 @@ public interface Presence
      *         The {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} for this session
      *         (See {@link #setStatus(OnlineStatus)})
      * @param  game
-     *         The {@link net.dv8tion.jda.core.entities.Game Game} for this session
-     *         (See {@link #setGame(Game)} for more info)
+     *         The {@link net.dv8tion.jda.core.entities.Activity Activity} for this session
+     *         (See {@link #setGame(net.dv8tion.jda.core.entities.Activity)} for more info)
      * @param  idle
      *         Whether to mark this session as idle (useful for client accounts {@link #setIdle(boolean)})
      *
      * @throws java.lang.IllegalArgumentException
      *         If the specified OnlineStatus is {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}
      */
-    void setPresence(OnlineStatus status, Game game, boolean idle);
+    void setPresence(OnlineStatus status, Activity game, boolean idle);
 
     /**
      * Sets two presence fields of this session.
@@ -128,13 +128,13 @@ public interface Presence
      *         The {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} for this session
      *         (See {@link #setStatus(OnlineStatus)})
      * @param  game
-     *         The {@link net.dv8tion.jda.core.entities.Game Game} for this session
-     *         (See {@link #setGame(Game)} for more info)
+     *         The {@link net.dv8tion.jda.core.entities.Activity Activity} for this session
+     *         (See {@link #setGame(net.dv8tion.jda.core.entities.Activity)} for more info)
      *
      * @throws java.lang.IllegalArgumentException
      *         If the specified OnlineStatus is {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}
      */
-    void setPresence(OnlineStatus status, Game game);
+    void setPresence(OnlineStatus status, Activity game);
 
     /**
      * Sets two presence fields of this session.
@@ -156,10 +156,10 @@ public interface Presence
      * <br>The third field stays untouched.
      *
      * @param  game
-     *         The {@link net.dv8tion.jda.core.entities.Game Game} for this session
-     *         (See {@link #setGame(Game)} for more info)
+     *         The {@link net.dv8tion.jda.core.entities.Activity Activity} for this session
+     *         (See {@link #setGame(net.dv8tion.jda.core.entities.Activity)} for more info)
      * @param  idle
      *         Whether to mark this session as idle (useful for client accounts {@link #setIdle(boolean)})
      */
-    void setPresence(Game game, boolean idle);
+    void setPresence(Activity game, boolean idle);
 }

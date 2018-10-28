@@ -20,7 +20,7 @@ import net.dv8tion.jda.annotations.DeprecatedSince;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
-import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.entities.Activity;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.SessionController;
@@ -62,7 +62,7 @@ public class DefaultShardManagerBuilder
     protected String token = null;
     protected IntFunction<Boolean> idleProvider = null;
     protected IntFunction<OnlineStatus> statusProvider = null;
-    protected IntFunction<? extends Game> gameProvider = null;
+    protected IntFunction<? extends Activity> gameProvider = null;
     protected IntFunction<? extends ConcurrentMap<String, String>> contextProvider = null;
     protected IntFunction<? extends IEventManager> eventManagerProvider = null;
     protected ThreadPoolProvider<? extends ScheduledExecutorService> rateLimitPoolProvider = null;
@@ -514,41 +514,41 @@ public class DefaultShardManagerBuilder
     }
 
     /**
-     * Sets the {@link net.dv8tion.jda.core.entities.Game Game} for our session.
+     * Sets the {@link net.dv8tion.jda.core.entities.Activity Activity} for our session.
      * <br>This value can be changed at any time in the {@link net.dv8tion.jda.core.managers.Presence Presence} from a JDA instance.
      *
-     * <p><b>Hint:</b> You can create a {@link net.dv8tion.jda.core.entities.Game Game} object using
-     * {@link net.dv8tion.jda.core.entities.Game#playing(String) Game.playing(String)} or
-     * {@link net.dv8tion.jda.core.entities.Game#streaming(String, String)} Game.streaming(String, String)}.
+     * <p><b>Hint:</b> You can create a {@link net.dv8tion.jda.core.entities.Activity Activity} object using
+     * {@link net.dv8tion.jda.core.entities.Activity#playing(String) Activity.playing(String)} or
+     * {@link net.dv8tion.jda.core.entities.Activity#streaming(String, String)} Activity.streaming(String, String)}.
      *
      * @param  game
-     *         An instance of {@link net.dv8tion.jda.core.entities.Game Game} (null allowed)
+     *         An instance of {@link net.dv8tion.jda.core.entities.Activity Activity} (null allowed)
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
-     * @see    net.dv8tion.jda.core.managers.Presence#setGame(Game)
+     * @see    net.dv8tion.jda.core.managers.Presence#setGame(net.dv8tion.jda.core.entities.Activity)
      */
-    public DefaultShardManagerBuilder setGame(final Game game)
+    public DefaultShardManagerBuilder setGame(final Activity game)
     {
         return this.setGameProvider(id -> game);
     }
 
     /**
-     * Sets the {@link net.dv8tion.jda.core.entities.Game Game} for our session.
+     * Sets the {@link net.dv8tion.jda.core.entities.Activity Activity} for our session.
      * <br>This value can be changed at any time in the {@link net.dv8tion.jda.core.managers.Presence Presence} from a JDA instance.
      *
-     * <p><b>Hint:</b> You can create a {@link net.dv8tion.jda.core.entities.Game Game} object using
-     * {@link net.dv8tion.jda.core.entities.Game#playing(String) Game.playing(String)} or
-     * {@link net.dv8tion.jda.core.entities.Game#streaming(String, String) Game.streaming(String, String)}.
+     * <p><b>Hint:</b> You can create a {@link net.dv8tion.jda.core.entities.Activity Activity} object using
+     * {@link net.dv8tion.jda.core.entities.Activity#playing(String) Activity.playing(String)} or
+     * {@link net.dv8tion.jda.core.entities.Activity#streaming(String, String) Activity.streaming(String, String)}.
      *
      * @param  gameProvider
-     *         An instance of {@link net.dv8tion.jda.core.entities.Game Game} (null allowed)
+     *         An instance of {@link net.dv8tion.jda.core.entities.Activity Activity} (null allowed)
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
-     * @see    net.dv8tion.jda.core.managers.Presence#setGame(Game)
+     * @see    net.dv8tion.jda.core.managers.Presence#setGame(net.dv8tion.jda.core.entities.Activity)
      */
-    public DefaultShardManagerBuilder setGameProvider(final IntFunction<? extends Game> gameProvider)
+    public DefaultShardManagerBuilder setGameProvider(final IntFunction<? extends Activity> gameProvider)
     {
         this.gameProvider = gameProvider;
         return this;

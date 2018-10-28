@@ -76,10 +76,10 @@ public interface Member extends IMentionable, IPermissionHolder
      * The game that the user is currently playing.
      * <br>If the user is not currently playing a game, this will return null.
      *
-     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Game Game} containing the game
+     * @return Possibly-null {@link Activity Activity} containing the game
      *         that the {@link net.dv8tion.jda.core.entities.User User} is currently playing.
      */
-    Game getGame();
+    Activity getActivity(); //TODO: getActivities()
 
     /**
      * Returns the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} of the User.

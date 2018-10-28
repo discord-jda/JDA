@@ -17,44 +17,44 @@
 package net.dv8tion.jda.core.events.user.update;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.entities.Activity;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 
 /**
- * Indicates that the {@link net.dv8tion.jda.core.entities.Game Game} of a {@link net.dv8tion.jda.core.entities.User User} changes.
+ * Indicates that the {@link net.dv8tion.jda.core.entities.Activity Activity} of a {@link net.dv8tion.jda.core.entities.User User} changes.
  * <br>As with any presence updates this either happened for a {@link net.dv8tion.jda.core.entities.Member Member} in a Guild or a {@link net.dv8tion.jda.client.entities.Friend Friend}!
  *
- * <p>Can be used to retrieve the User who changed their Game and their previous Game.
+ * <p>Can be used to retrieve the User who changed their Activity and their previous Activity.
  *
  * <p>Identifier: {@code game}
  */
-public class UserUpdateGameEvent extends GenericUserPresenceEvent<Game>
+public class UserUpdateGameEvent extends GenericUserPresenceEvent<Activity>
 {
     public static final String IDENTIFIER = "game";
 
-    public UserUpdateGameEvent(JDA api, long responseNumber, User user, Guild guild, Game previousGame)
+    public UserUpdateGameEvent(JDA api, long responseNumber, User user, Guild guild, Activity previousGame)
     {
         super(api, responseNumber, user, guild, previousGame,
-            guild == null ? api.asClient().getFriend(user).getGame() : guild.getMember(user).getGame(), IDENTIFIER);
+            guild == null ? api.asClient().getFriend(user).getGame() : guild.getMember(user).getActivity(), IDENTIFIER);
     }
 
     /**
-     * The previous {@link net.dv8tion.jda.core.entities.Game Game}
+     * The previous {@link net.dv8tion.jda.core.entities.Activity Activity}
      *
-     * @return The previous {@link net.dv8tion.jda.core.entities.Game Game}
+     * @return The previous {@link net.dv8tion.jda.core.entities.Activity Activity}
      */
-    public Game getOldGame()
+    public Activity getOldGame()
     {
         return getOldValue();
     }
 
     /**
-     * The new {@link net.dv8tion.jda.core.entities.Game Game}
+     * The new {@link net.dv8tion.jda.core.entities.Activity Activity}
      *
-     * @return The new {@link net.dv8tion.jda.core.entities.Game Game}
+     * @return The new {@link net.dv8tion.jda.core.entities.Activity Activity}
      */
-    public Game getNewGame()
+    public Activity getNewGame()
     {
         return getNewValue();
     }

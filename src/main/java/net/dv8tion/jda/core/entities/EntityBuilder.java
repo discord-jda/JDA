@@ -120,9 +120,9 @@ public class EntityBuilder
         return selfUser;
     }
 
-    public Game createGame(String name, String url, Game.GameType type)
+    public Activity createGame(String name, String url, Activity.ActivityType type)
     {
-        return new Game(name, url, type);
+        return new Activity(name, url, type);
     }
 
     private void createGuildEmotePass(GuildImpl guildObj, JSONArray array)
@@ -394,11 +394,11 @@ public class EntityBuilder
     {
         if (memberOrFriend == null)
             throw new NullPointerException("Provided memberOrFriend was null!");
-        boolean cacheGame = getJDA().isCacheFlagSet(CacheFlag.GAME);
+        boolean cacheGame = getJDA().isCacheFlagSet(CacheFlag.PRESENCE);
 
         JSONObject gameJson = !cacheGame || presenceJson.isNull("game") ? null : presenceJson.getJSONObject("game");
         OnlineStatus onlineStatus = OnlineStatus.fromKey(presenceJson.getString("status"));
-        Game game = null;
+        Activity game = null;
         boolean parsedGame = false;
 
         if (cacheGame && gameJson != null && !gameJson.isNull("name"))
@@ -447,20 +447,20 @@ public class EntityBuilder
             throw new IllegalArgumentException("An object was provided to EntityBuilder#createPresence that wasn't a Member or Friend. JSON: " + presenceJson);
     }
 
-    public static Game createGame(JSONObject gameJson)
+    public static Activity createGame(JSONObject gameJson)
     {
         String name = String.valueOf(gameJson.get("name"));
         String url = gameJson.isNull("url") ? null : String.valueOf(gameJson.get("url"));
-        Game.GameType type;
+        Activity.ActivityType type;
         try
         {
             type = gameJson.isNull("type")
-                ? Game.GameType.DEFAULT
-                : Game.GameType.fromKey(Integer.parseInt(gameJson.get("type").toString()));
+                ? Activity.ActivityType.DEFAULT
+                : Activity.ActivityType.fromKey(Integer.parseInt(gameJson.get("type").toString()));
         }
         catch (NumberFormatException e)
         {
-            type = Game.GameType.DEFAULT;
+            type = Activity.ActivityType.DEFAULT;
         }
 
         RichPresence.Timestamps timestamps = null;
@@ -474,7 +474,7 @@ public class EntityBuilder
         }
 
         if (!CollectionUtils.containsAny(gameJson.keySet(), richGameFields))
-            return new Game(name, url, type, timestamps);
+            return new Activity(name, url, type, timestamps);
 
         // data for spotify
         long id = Helpers.optLong(gameJson, "application_id", 0);

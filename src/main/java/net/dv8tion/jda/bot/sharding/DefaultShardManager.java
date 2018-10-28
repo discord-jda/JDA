@@ -23,7 +23,7 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
-import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.entities.Activity;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.hooks.IEventManager;
@@ -204,7 +204,7 @@ public class DefaultShardManager implements ShardManager
     /**
      * The gameProvider new JDA instances should have on startup.
      */
-    protected IntFunction<? extends Game> gameProvider;
+    protected IntFunction<? extends Activity> gameProvider;
 
     /**
      * Whether or not new JDA instances should be marked as afk on startup.
@@ -303,22 +303,22 @@ public class DefaultShardManager implements ShardManager
      *         Whether to enable transport compression
      */
     protected DefaultShardManager(
-            final int shardsTotal, final Collection<Integer> shardIds,
-            final SessionController controller, final List<Object> listeners,
-            final List<IntFunction<Object>> listenerProviders,
-            final String token, final IntFunction<? extends IEventManager> eventManagerProvider, final IAudioSendFactory audioSendFactory,
-            final IntFunction<? extends Game> gameProvider, final IntFunction<OnlineStatus> statusProvider,
-            final OkHttpClient.Builder httpClientBuilder, final OkHttpClient httpClient,
-            final ThreadPoolProvider<? extends ScheduledExecutorService> rateLimitPoolProvider,
-            final ThreadPoolProvider<? extends ScheduledExecutorService> gatewayPoolProvider,
-            final ThreadPoolProvider<? extends ExecutorService> callbackPoolProvider,
-            final WebSocketFactory wsFactory, final ThreadFactory threadFactory,
-            final int maxReconnectDelay, final int corePoolSize, final boolean enableVoice,
-            final boolean enableShutdownHook, final boolean enableBulkDeleteSplitting,
-            final boolean autoReconnect, final IntFunction<Boolean> idleProvider,
-            final boolean retryOnTimeout, final boolean useShutdownNow,
-            final boolean enableMDC, final IntFunction<? extends ConcurrentMap<String, String>> contextProvider,
-            final EnumSet<CacheFlag> cacheFlags, final boolean enableCompression)
+        final int shardsTotal, final Collection<Integer> shardIds,
+        final SessionController controller, final List<Object> listeners,
+        final List<IntFunction<Object>> listenerProviders,
+        final String token, final IntFunction<? extends IEventManager> eventManagerProvider, final IAudioSendFactory audioSendFactory,
+        final IntFunction<? extends Activity> gameProvider, final IntFunction<OnlineStatus> statusProvider,
+        final OkHttpClient.Builder httpClientBuilder, final OkHttpClient httpClient,
+        final ThreadPoolProvider<? extends ScheduledExecutorService> rateLimitPoolProvider,
+        final ThreadPoolProvider<? extends ScheduledExecutorService> gatewayPoolProvider,
+        final ThreadPoolProvider<? extends ExecutorService> callbackPoolProvider,
+        final WebSocketFactory wsFactory, final ThreadFactory threadFactory,
+        final int maxReconnectDelay, final int corePoolSize, final boolean enableVoice,
+        final boolean enableShutdownHook, final boolean enableBulkDeleteSplitting,
+        final boolean autoReconnect, final IntFunction<Boolean> idleProvider,
+        final boolean retryOnTimeout, final boolean useShutdownNow,
+        final boolean enableMDC, final IntFunction<? extends ConcurrentMap<String, String>> contextProvider,
+        final EnumSet<CacheFlag> cacheFlags, final boolean enableCompression)
     {
         this.shardsTotal = shardsTotal;
         this.listeners = listeners;
@@ -727,7 +727,7 @@ public class DefaultShardManager implements ShardManager
     }
 
     @Override
-    public void setGameProvider(IntFunction<? extends Game> gameProvider)
+    public void setGameProvider(IntFunction<? extends Activity> gameProvider)
     {
         ShardManager.super.setGameProvider(gameProvider);
 

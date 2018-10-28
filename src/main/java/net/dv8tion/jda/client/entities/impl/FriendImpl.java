@@ -19,7 +19,7 @@ package net.dv8tion.jda.client.entities.impl;
 import net.dv8tion.jda.client.entities.Friend;
 import net.dv8tion.jda.client.entities.RelationshipType;
 import net.dv8tion.jda.core.OnlineStatus;
-import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.entities.Activity;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.requests.RestAction;
 
@@ -31,7 +31,7 @@ public class FriendImpl implements Friend
 
     private OnlineStatus onlineStatus = OnlineStatus.OFFLINE;
     private OffsetDateTime lastModifiedTime;
-    private Game game;
+    private Activity game;
 
     public FriendImpl(User user)
     {
@@ -69,7 +69,7 @@ public class FriendImpl implements Friend
     }
 
     @Override
-    public Game getGame()
+    public Activity getGame()
     {
         return game;
     }
@@ -102,7 +102,7 @@ public class FriendImpl implements Friend
         return this;
     }
 
-    public FriendImpl setGame(Game game)
+    public FriendImpl setGame(Activity game)
     {
         this.game = game;
         return this;

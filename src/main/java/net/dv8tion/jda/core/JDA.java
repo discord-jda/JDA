@@ -1005,7 +1005,7 @@ public interface JDA
 
     /**
      * The {@link net.dv8tion.jda.core.managers.Presence Presence} controller for the current session.
-     * <br>Used to set {@link net.dv8tion.jda.core.entities.Game} and {@link net.dv8tion.jda.core.OnlineStatus} information.
+     * <br>Used to set {@link net.dv8tion.jda.core.entities.Activity} and {@link net.dv8tion.jda.core.OnlineStatus} information.
      *
      * @return The never-null {@link net.dv8tion.jda.core.managers.Presence Presence} for this session.
      */

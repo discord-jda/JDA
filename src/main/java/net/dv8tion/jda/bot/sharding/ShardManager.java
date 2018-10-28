@@ -924,37 +924,37 @@ public interface ShardManager
     void restart(int id);
 
     /**
-     * Sets the {@link net.dv8tion.jda.core.entities.Game Game} for all shards.
-     * <br>A Game can be retrieved via {@link net.dv8tion.jda.core.entities.Game#playing(String)}.
+     * Sets the {@link net.dv8tion.jda.core.entities.Activity Activity} for all shards.
+     * <br>A Activity can be retrieved via {@link net.dv8tion.jda.core.entities.Activity#playing(String)}.
      * For streams you provide a valid streaming url as second parameter.
      *
      * <p>This will also change the game for shards that are created in the future.
      *
      * @param  game
-     *         A {@link net.dv8tion.jda.core.entities.Game Game} instance or null to reset
+     *         A {@link net.dv8tion.jda.core.entities.Activity Activity} instance or null to reset
      *
-     * @see    net.dv8tion.jda.core.entities.Game#playing(String)
-     * @see    net.dv8tion.jda.core.entities.Game#streaming(String, String)
+     * @see    net.dv8tion.jda.core.entities.Activity#playing(String)
+     * @see    net.dv8tion.jda.core.entities.Activity#streaming(String, String)
      */
-    default void setGame(final Game game)
+    default void setGame(final Activity game)
     {
         this.setGameProvider(id -> game);
     }
 
     /**
-     * Sets provider that provider the {@link net.dv8tion.jda.core.entities.Game Game} for all shards.
-     * <br>A Game can be retrieved via {@link net.dv8tion.jda.core.entities.Game#playing(String)}.
+     * Sets provider that provider the {@link net.dv8tion.jda.core.entities.Activity Activity} for all shards.
+     * <br>A Activity can be retrieved via {@link net.dv8tion.jda.core.entities.Activity#playing(String)}.
      * For streams you provide a valid streaming url as second parameter.
      *
      * <p>This will also change the provider for shards that are created in the future.
      *
      * @param  gameProvider
-     *         A {@link net.dv8tion.jda.core.entities.Game Game} instance or null to reset
+     *         A {@link net.dv8tion.jda.core.entities.Activity Activity} instance or null to reset
      *
-     * @see    net.dv8tion.jda.core.entities.Game#playing(String)
-     * @see    net.dv8tion.jda.core.entities.Game#streaming(String, String)
+     * @see    net.dv8tion.jda.core.entities.Activity#playing(String)
+     * @see    net.dv8tion.jda.core.entities.Activity#streaming(String, String)
      */
-    default void setGameProvider(final IntFunction<? extends Game> gameProvider)
+    default void setGameProvider(final IntFunction<? extends Activity> gameProvider)
     {
         this.getShardCache().forEach(jda -> jda.getPresence().setGame(gameProvider.apply(jda.getShardInfo().getShardId())));
     }

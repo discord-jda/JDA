@@ -21,7 +21,7 @@ import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.core.JDA.Status;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
-import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.entities.Activity;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.hooks.IEventManager;
@@ -70,7 +70,7 @@ public class JDABuilder
     protected IEventManager eventManager = null;
     protected IAudioSendFactory audioSendFactory = null;
     protected JDA.ShardInfo shardInfo = null;
-    protected Game game = null;
+    protected Activity game = null;
     protected OnlineStatus status = OnlineStatus.ONLINE;
     protected int maxReconnectDelay = 900;
     protected int corePoolSize = 5;
@@ -579,20 +579,20 @@ public class JDABuilder
     }
 
     /**
-     * Sets the {@link net.dv8tion.jda.core.entities.Game Game} for our session.
+     * Sets the {@link net.dv8tion.jda.core.entities.Activity Activity} for our session.
      * <br>This value can be changed at any time in the {@link net.dv8tion.jda.core.managers.Presence Presence} from a JDA instance.
      *
-     * <p><b>Hint:</b> You can create a {@link net.dv8tion.jda.core.entities.Game Game} object using
-     * {@link net.dv8tion.jda.core.entities.Game#playing(String)} or {@link net.dv8tion.jda.core.entities.Game#streaming(String, String)}.
+     * <p><b>Hint:</b> You can create a {@link net.dv8tion.jda.core.entities.Activity Activity} object using
+     * {@link net.dv8tion.jda.core.entities.Activity#playing(String)} or {@link net.dv8tion.jda.core.entities.Activity#streaming(String, String)}.
      *
      * @param  game
-     *         An instance of {@link net.dv8tion.jda.core.entities.Game Game} (null allowed)
+     *         An instance of {@link net.dv8tion.jda.core.entities.Activity Activity} (null allowed)
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
-     * @see    net.dv8tion.jda.core.managers.Presence#setGame(Game)  Presence.setGame(Game)
+     * @see    net.dv8tion.jda.core.managers.Presence#setGame(net.dv8tion.jda.core.entities.Activity)  Presence.setGame(Activity)
      */
-    public JDABuilder setGame(Game game)
+    public JDABuilder setGame(Activity game)
     {
         this.game = game;
         return this;

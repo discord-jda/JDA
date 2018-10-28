@@ -25,9 +25,9 @@ import net.dv8tion.jda.core.entities.Member;
 public enum CacheFlag
 {
     /**
-     * Enables cache for {@link Member#getGame()}
+     * Enables cache for {@link Member#getActivity()}
      */
-    GAME,
+    PRESENCE,
     /**
      * Enables cache for {@link Member#getVoiceState()}
      * <br>This will always be cached for self member.

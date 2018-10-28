@@ -22,35 +22,35 @@ import javax.annotation.Nullable;
 import java.util.Objects;
 
 /**
- * Represents a Discord {@link net.dv8tion.jda.core.entities.Game Game}.
- * <br>This should contain all information provided from Discord about a Game.
+ * Represents a Discord {@link Activity Activity}.
+ * <br>This should contain all information provided from Discord about a Activity.
  *
  * @since  2.1
  * @author John A. Grosh
  */
-public class Game
+public class Activity
 {
     protected final String name;
     protected final String url;
-    protected final Game.GameType type;
+    protected final ActivityType type;
     protected final RichPresence.Timestamps timestamps;
 
-    protected Game(String name)
+    protected Activity(String name)
     {
-        this(name, null, GameType.DEFAULT);
+        this(name, null, ActivityType.DEFAULT);
     }
 
-    protected Game(String name, String url)
+    protected Activity(String name, String url)
     {
-        this(name, url, GameType.STREAMING);
+        this(name, url, ActivityType.STREAMING);
     }
 
-    protected Game(String name, String url, GameType type)
+    protected Activity(String name, String url, ActivityType type)
     {
         this(name, url, type, null);
     }
 
-    protected Game(String name, String url, GameType type, RichPresence.Timestamps timestamps)
+    protected Activity(String name, String url, ActivityType type, RichPresence.Timestamps timestamps)
     {
         this.name = name;
         this.url = url;
@@ -71,7 +71,7 @@ public class Game
 
     /**
      * {@link net.dv8tion.jda.core.entities.RichPresence RichPresence} representation of
-     * this Game.
+     * this Activity.
      *
      * @return RichPresence or {@code null} if {@link #isRich()} returns {@code false}
      */
@@ -81,9 +81,9 @@ public class Game
     }
 
     /**
-     * The displayed name of the {@link net.dv8tion.jda.core.entities.Game Game}. If no name has been set, this returns null.
+     * The displayed name of the {@link Activity Activity}. If no name has been set, this returns null.
      *
-     * @return Possibly-null String containing the Game's name.
+     * @return Possibly-null String containing the Activity's name.
      */
     public String getName()
     {
@@ -91,10 +91,10 @@ public class Game
     }
 
     /**
-     * The URL of the {@link net.dv8tion.jda.core.entities.Game Game} if the game is actually a Stream.
+     * The URL of the {@link Activity Activity} if the game is actually a Stream.
      * <br>This will return null for regular games.
      *
-     * @return Possibly-null String containing the Game's URL.
+     * @return Possibly-null String containing the Activity's URL.
      */
     public String getUrl()
     {
@@ -102,11 +102,11 @@ public class Game
     }
 
     /**
-     * The type of {@link net.dv8tion.jda.core.entities.Game Game}.
+     * The type of {@link Activity Activity}.
      *
-     * @return Never-null {@link net.dv8tion.jda.core.entities.Game.GameType GameType} representing the type of Game
+     * @return Never-null {@link net.dv8tion.jda.core.entities.Activity.ActivityType ActivityType} representing the type of Activity
      */
-    public GameType getType()
+    public ActivityType getType()
     {
         return type;
     }
@@ -125,12 +125,12 @@ public class Game
     @Override
     public boolean equals(Object o)
     {
-        if (!(o instanceof Game))
+        if (!(o instanceof Activity))
             return false;
         if (o == this)
             return true;
 
-        Game oGame = (Game) o;
+        Activity oGame = (Activity) o;
         return oGame.getType() == type
             && Objects.equals(name, oGame.getName())
             && Objects.equals(url, oGame.getUrl())
@@ -147,15 +147,15 @@ public class Game
     public String toString()
     {
         if (url != null)
-            return String.format("Game(%s | %s)", name, url);
+            return String.format("Activity(%s | %s)", name, url);
         else
-            return String.format("Game(%s)", name);
+            return String.format("Activity(%s)", name);
     }
 
     /**
-     * Creates a new Game instance with the specified name.
+     * Creates a new Activity instance with the specified name.
      * <br>In order to appear as "streaming" in the official client you must
-     * provide a valid (see documentation of method) streaming URL in {@link #streaming(String, String) Game.streaming(String, String)}.
+     * provide a valid (see documentation of method) streaming URL in {@link #streaming(String, String) Activity.streaming(String, String)}.
      *
      * @param  name
      *         The not-null name of the newly created game
@@ -163,16 +163,16 @@ public class Game
      * @throws IllegalArgumentException
      *         if the specified name is null, empty or blank
      *
-     * @return A valid Game instance with the provided name with {@link GameType#DEFAULT}
+     * @return A valid Activity instance with the provided name with {@link net.dv8tion.jda.core.entities.Activity.ActivityType#DEFAULT}
      */
-    public static Game playing(String name)
+    public static Activity playing(String name)
     {
         Checks.notBlank(name, "Name");
-        return new Game(name, null, GameType.DEFAULT);
+        return new Activity(name, null, ActivityType.DEFAULT);
     }
 
     /**
-     * Creates a new Game instance with the specified name and url.
+     * Creates a new Activity instance with the specified name and url.
      * <br>The specified URL must be valid according to discord standards in order to display as "streaming" in the official client.
      * A valid streaming URL must be derived from {@code https://twitch.tv/} and can be verified using {@link #isValidStreamingUrl(String)}. (see documentation)
      *
@@ -184,23 +184,23 @@ public class Game
      * @throws IllegalArgumentException
      *         If the specified name is null or empty
      *
-     * @return A valid Game instance with the provided name and url
+     * @return A valid Activity instance with the provided name and url
      *
      * @see    #isValidStreamingUrl(String)
      */
-    public static Game streaming(String name, String url)
+    public static Activity streaming(String name, String url)
     {
         Checks.notEmpty(name, "Provided game name");
-        GameType type;
+        ActivityType type;
         if (isValidStreamingUrl(url))
-            type = GameType.STREAMING;
+            type = ActivityType.STREAMING;
         else
-            type = GameType.DEFAULT;
-        return new Game(name, url, type);
+            type = ActivityType.DEFAULT;
+        return new Activity(name, url, type);
     }
 
     /**
-     * Creates a new Game instance with the specified name.
+     * Creates a new Activity instance with the specified name.
      * <br>This will display as {@code Listening name} in the official client
      *
      * @param  name
@@ -209,16 +209,16 @@ public class Game
      * @throws IllegalArgumentException
      *         if the specified name is null, empty or blank
      *
-     * @return A valid Game instance with the provided name with {@link GameType#LISTENING}
+     * @return A valid Activity instance with the provided name with {@link net.dv8tion.jda.core.entities.Activity.ActivityType#LISTENING}
      */
-    public static Game listening(String name)
+    public static Activity listening(String name)
     {
         Checks.notBlank(name, "Name");
-        return new Game(name, null, GameType.LISTENING);
+        return new Activity(name, null, ActivityType.LISTENING);
     }
 
     /**
-     * Creates a new Game instance with the specified name.
+     * Creates a new Activity instance with the specified name.
      * <br>This will display as {@code Watching name} in the official client
      *
      * @param  name
@@ -227,42 +227,42 @@ public class Game
      * @throws IllegalArgumentException
      *         if the specified name is null, empty or blank
      *
-     * @return A valid Game instance with the provided name with {@link GameType#WATCHING}
+     * @return A valid Activity instance with the provided name with {@link net.dv8tion.jda.core.entities.Activity.ActivityType#WATCHING}
      *
      * @incubating This feature is not yet confirmed for the official bot API
      */
     @Incubating
-    public static Game watching(String name)
+    public static Activity watching(String name)
     {
         Checks.notBlank(name, "Name");
-        return new Game(name, null, GameType.WATCHING);
+        return new Activity(name, null, ActivityType.WATCHING);
     }
 
     /**
-     * Creates a new Game instance with the specified name and url.
+     * Creates a new Activity instance with the specified name and url.
      *
      * @param  type
-     *         The {@link net.dv8tion.jda.core.entities.Game.GameType GameType} to use
+     *         The {@link net.dv8tion.jda.core.entities.Activity.ActivityType ActivityType} to use
      * @param  name
      *         The not-null name of the newly created game
      *
      * @throws IllegalArgumentException
      *         If the specified name is null or empty
      *
-     * @return A valid Game instance with the provided name and url
+     * @return A valid Activity instance with the provided name and url
      */
-    public static Game of(GameType type, String name)
+    public static Activity of(ActivityType type, String name)
     {
         return of(type, name, null);
     }
 
     /**
-     * Creates a new Game instance with the specified name and url.
-     * <br>The provided url would only be used for {@link net.dv8tion.jda.core.entities.Game.GameType#STREAMING GameType.STREAMING}
+     * Creates a new Activity instance with the specified name and url.
+     * <br>The provided url would only be used for {@link net.dv8tion.jda.core.entities.Activity.ActivityType#STREAMING ActivityType.STREAMING}
      * and should be a twitch url.
      *
      * @param  type
-     *         The {@link net.dv8tion.jda.core.entities.Game.GameType GameType} to use
+     *         The {@link net.dv8tion.jda.core.entities.Activity.ActivityType ActivityType} to use
      * @param  name
      *         The not-null name of the newly created game
      * @param  url
@@ -271,11 +271,11 @@ public class Game
      * @throws IllegalArgumentException
      *         If the specified name is null or empty
      *
-     * @return A valid Game instance with the provided name and url
+     * @return A valid Activity instance with the provided name and url
      *
      * @see    #isValidStreamingUrl(String)
      */
-    public static Game of(GameType type, String name, String url)
+    public static Activity of(ActivityType type, String name, String url)
     {
         Checks.notNull(type, "Type");
         switch (type)
@@ -289,7 +289,7 @@ public class Game
             case WATCHING:
                 return watching(name);
             default:
-                throw new IllegalArgumentException("GameType " + type + " is not supported!");
+                throw new IllegalArgumentException("ActivityType " + type + " is not supported!");
         }
     }
 
@@ -309,24 +309,24 @@ public class Game
     /**
      * The type game being played, differentiating between a game and stream types.
      */
-    public enum GameType
+    public enum ActivityType
     {
         /**
-         * The GameType used to represent a normal {@link net.dv8tion.jda.core.entities.Game Game} status.
+         * The ActivityType used to represent a normal {@link Activity Activity} status.
          */
         DEFAULT(0),
         /**
-         * Used to indicate that the {@link net.dv8tion.jda.core.entities.Game Game} is a stream
+         * Used to indicate that the {@link Activity Activity} is a stream
          * <br>This type is displayed as "Streaming" in the discord client.
          */
         STREAMING(1),
         /**
-         * Used to indicate that the {@link net.dv8tion.jda.core.entities.Game Game} should display
+         * Used to indicate that the {@link Activity Activity} should display
          * as {@code Listening...} in the official client.
          */
         LISTENING(2),
         /**
-         * Used to indicate that the {@link net.dv8tion.jda.core.entities.Game Game} should display
+         * Used to indicate that the {@link Activity Activity} should display
          * as {@code Watching...} in the official client.
          *
          * @incubating This feature is not yet confirmed for the official bot API
@@ -336,13 +336,13 @@ public class Game
 
         private final int key;
 
-        GameType(int key)
+        ActivityType(int key)
         {
             this.key = key;
         }
 
         /**
-         * The Discord defined id key for this GameType.
+         * The Discord defined id key for this ActivityType.
          *
          * @return the id key.
          */
@@ -352,15 +352,15 @@ public class Game
         }
 
         /**
-         * Gets the GameType related to the provided key.
+         * Gets the ActivityType related to the provided key.
          * <br>If an unknown key is provided, this returns {@link #DEFAULT}
          *
          * @param  key
-         *         The Discord key referencing a GameType.
+         *         The Discord key referencing a ActivityType.
          *
-         * @return The GameType that has the key provided, or {@link #DEFAULT} for unknown key.
+         * @return The ActivityType that has the key provided, or {@link #DEFAULT} for unknown key.
          */
-        public static GameType fromKey(int key)
+        public static ActivityType fromKey(int key)
         {
             switch (key)
             {

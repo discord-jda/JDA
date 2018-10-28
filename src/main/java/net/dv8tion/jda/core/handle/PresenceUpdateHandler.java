@@ -19,8 +19,8 @@ import net.dv8tion.jda.client.JDAClient;
 import net.dv8tion.jda.client.entities.impl.FriendImpl;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.OnlineStatus;
+import net.dv8tion.jda.core.entities.Activity;
 import net.dv8tion.jda.core.entities.EntityBuilder;
-import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.entities.impl.MemberImpl;
@@ -65,7 +65,7 @@ public class PresenceUpdateHandler extends SocketHandler
 
         //If we do know about the user, lets update the user's specific info.
         // Afterwards, we will see if we already have them cached in the specific guild
-        // or Relation. If not, we'll cache the OnlineStatus and Game for later handling
+        // or Relation. If not, we'll cache the OnlineStatus and Activity for later handling
         // unless OnlineStatus is OFFLINE, in which case we probably received this event
         // due to a User leaving a guild or no longer being a relation.
         if (user != null)
@@ -108,8 +108,8 @@ public class PresenceUpdateHandler extends SocketHandler
 
             //Now that we've update the User's info, lets see if we need to set the specific Presence information.
             // This is stored in the Member or Relation objects.
-            final JSONObject game = !getJDA().isCacheFlagSet(CacheFlag.GAME) || content.isNull("game") ? null : content.optJSONObject("game");
-            Game nextGame = null;
+            final JSONObject game = !getJDA().isCacheFlagSet(CacheFlag.PRESENCE) || content.isNull("game") ? null : content.optJSONObject("game");
+            Activity nextGame = null;
             boolean parsedGame = false;
             try
             {
@@ -158,9 +158,9 @@ public class PresenceUpdateHandler extends SocketHandler
                                 getJDA(), responseNumber,
                                 user, guild, oldStatus));
                     }
-                    if (parsedGame && !Objects.equals(member.getGame(), nextGame))
+                    if (parsedGame && !Objects.equals(member.getActivity(), nextGame))
                     {
-                        Game oldGame = member.getGame();
+                        Activity oldGame = member.getActivity();
                         member.setGame(nextGame);
                         getJDA().getEventManager().handle(
                             new UserUpdateGameEvent(
@@ -190,7 +190,7 @@ public class PresenceUpdateHandler extends SocketHandler
                     }
                     if (parsedGame && !Objects.equals(friend.getGame(), nextGame))
                     {
-                        Game oldGame = friend.getGame();
+                        Activity oldGame = friend.getGame();
                         friend.setGame(nextGame);
                         getJDA().getEventManager().handle(
                             new UserUpdateGameEvent(

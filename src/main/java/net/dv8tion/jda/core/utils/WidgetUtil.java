@@ -532,7 +532,7 @@ public class WidgetUtil
             private final String avatar;
             private final String nickname;
             private final OnlineStatus status;
-            private final Game game;
+            private final Activity game;
             private final Widget widget;
             private VoiceState state;
             
@@ -693,10 +693,10 @@ public class WidgetUtil
             * <br>This game cannot be a stream.
             * If the user is not currently playing a game, this will return null.
             *
-            * @return Possibly-null {@link net.dv8tion.jda.core.entities.Game Game} containing the game
+            * @return Possibly-null {@link net.dv8tion.jda.core.entities.Activity Activity} containing the game
             *         that the member is currently playing.
             */
-            public Game getGame()
+            public Activity getGame()
             {
                 return game;
             }
