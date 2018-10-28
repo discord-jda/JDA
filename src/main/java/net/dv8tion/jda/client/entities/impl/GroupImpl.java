@@ -28,8 +28,8 @@ import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.requests.RequestFuture;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
-import net.dv8tion.jda.core.utils.cache.UpstreamReference;
-import net.dv8tion.jda.core.utils.cache.impl.SnowflakeCacheViewImpl;
+import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.JDAImpl;
 
 import java.util.ArrayList;

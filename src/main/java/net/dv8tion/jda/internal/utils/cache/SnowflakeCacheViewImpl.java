@@ -14,31 +14,23 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.utils.tuple;
+package net.dv8tion.jda.internal.utils.cache;
 
-public class MutableTriple<LEFT, MIDDLE, RIGHT> extends MutablePair<LEFT, RIGHT>
+import net.dv8tion.jda.core.entities.ISnowflake;
+import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
+
+import java.util.function.Function;
+
+public class SnowflakeCacheViewImpl<T extends ISnowflake> extends AbstractCacheView<T> implements SnowflakeCacheView<T>
 {
-    // public because it is also public in pair
-    public MIDDLE middle;
-
-    private MutableTriple(LEFT left, MIDDLE middle, RIGHT right)
+    public SnowflakeCacheViewImpl(Class<T> type, Function<T, String> nameMapper)
     {
-        super(left, right);
-        this.middle = middle;
+        super(type, nameMapper);
     }
 
-    public static <LEFT, MIDDLE, RIGHT> MutableTriple<LEFT, MIDDLE, RIGHT> of(LEFT left, MIDDLE middle, RIGHT right)
+    @Override
+    public T getElementById(long id)
     {
-        return new MutableTriple<>(left, middle, right);
-    }
-
-    public MIDDLE getMiddle()
-    {
-        return middle;
-    }
-
-    public void setMiddle(MIDDLE middle)
-    {
-        this.middle = middle;
+        return elements.get(id);
     }
 }

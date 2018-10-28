@@ -35,10 +35,10 @@ import net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAct
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.cache.MemberCacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
-import net.dv8tion.jda.core.utils.cache.UpstreamReference;
-import net.dv8tion.jda.core.utils.cache.impl.MemberCacheViewImpl;
-import net.dv8tion.jda.core.utils.cache.impl.SnowflakeCacheViewImpl;
-import net.dv8tion.jda.core.utils.cache.impl.SortedSnowflakeCacheView;
+import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
+import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheView;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.requests.Response;

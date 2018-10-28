@@ -17,7 +17,7 @@
 package net.dv8tion.jda.core.utils;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.utils.tuple.Pair;
+import net.dv8tion.jda.internal.utils.tuple.Pair;
 
 /**
  * Controls states and behaviour of one or multiple {@link net.dv8tion.jda.core.JDA JDA} instances.
@@ -133,7 +133,7 @@ public interface SessionController
     /**
      * Called by {@link net.dv8tion.jda.bot.sharding.DefaultShardManager DefaultShardManager}
      * when a new shards is starting.
-     * <br>Should provide a {@link net.dv8tion.jda.core.utils.tuple.Pair Pair} with {@code (gateway, shardTotal)}.
+     * <br>Should provide a {@link net.dv8tion.jda.internal.utils.tuple.Pair Pair} with {@code (gateway, shardTotal)}.
      *
      * @param  api
      *         The current JDA instance (used for RestActions and ShardInfo)

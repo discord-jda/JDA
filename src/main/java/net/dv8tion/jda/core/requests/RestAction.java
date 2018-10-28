@@ -21,7 +21,7 @@ import net.dv8tion.jda.core.audit.ThreadLocalReason;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
-import net.dv8tion.jda.core.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.Response;

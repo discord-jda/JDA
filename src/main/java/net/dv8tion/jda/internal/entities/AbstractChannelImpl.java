@@ -28,7 +28,7 @@ import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.InviteAction;
 import net.dv8tion.jda.core.requests.restaction.PermissionOverrideAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
-import net.dv8tion.jda.core.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import net.dv8tion.jda.internal.requests.Response;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;

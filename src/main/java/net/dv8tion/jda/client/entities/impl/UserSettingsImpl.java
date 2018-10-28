@@ -20,7 +20,7 @@ import net.dv8tion.jda.client.entities.UserSettings;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 
 import java.util.List;
 import java.util.Locale;

@@ -27,7 +27,7 @@ import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.utils.MiscUtil;
-import net.dv8tion.jda.core.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.requests.WebSocketCode;

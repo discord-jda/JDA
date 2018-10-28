@@ -30,7 +30,7 @@ import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.SessionController;
 import net.dv8tion.jda.core.utils.SessionControllerAdapter;
 import net.dv8tion.jda.core.utils.cache.CacheFlag;
-import net.dv8tion.jda.core.utils.tuple.Pair;
+import net.dv8tion.jda.internal.utils.tuple.Pair;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
 import net.dv8tion.jda.internal.utils.Checks;

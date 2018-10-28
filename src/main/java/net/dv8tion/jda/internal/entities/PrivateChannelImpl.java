@@ -24,7 +24,7 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.RequestFuture;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.MessageAction;
-import net.dv8tion.jda.core.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import net.dv8tion.jda.internal.requests.Response;
 import net.dv8tion.jda.internal.requests.Route;
 

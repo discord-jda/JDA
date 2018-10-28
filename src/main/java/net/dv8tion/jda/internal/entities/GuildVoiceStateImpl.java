@@ -20,7 +20,7 @@ import net.dv8tion.jda.core.entities.AudioChannel;
 import net.dv8tion.jda.core.entities.GuildVoiceState;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.VoiceChannel;
-import net.dv8tion.jda.core.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import net.dv8tion.jda.internal.JDAImpl;
 
 public class GuildVoiceStateImpl implements GuildVoiceState

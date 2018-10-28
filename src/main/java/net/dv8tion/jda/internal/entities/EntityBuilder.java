@@ -34,7 +34,7 @@ import net.dv8tion.jda.core.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.core.entities.MessageEmbed.*;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.utils.cache.CacheFlag;
-import net.dv8tion.jda.core.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.utils.Helpers;

@@ -19,8 +19,8 @@ package net.dv8tion.jda.core.utils.cache;
 import net.dv8tion.jda.bot.utils.cache.ShardCacheView;
 import net.dv8tion.jda.bot.utils.cache.impl.ShardCacheViewImpl;
 import net.dv8tion.jda.core.entities.ISnowflake;
-import net.dv8tion.jda.core.utils.cache.impl.AbstractCacheView;
-import net.dv8tion.jda.core.utils.cache.impl.UnifiedCacheViewImpl;
+import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
+import net.dv8tion.jda.internal.utils.cache.UnifiedCacheViewImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import java.util.Collection;
@@ -44,7 +44,7 @@ public interface CacheView<T> extends Iterable<T>
     /**
      * Creates an immutable snapshot of the current cache state.
      * <br>This will copy all elements contained in this cache into a list.
-     * <br>This will be sorted for a {@link net.dv8tion.jda.core.utils.cache.impl.SortedSnowflakeCacheView SortedSnowflakeCacheView}.
+     * <br>This will be sorted for a {@link net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}.
      *
      * @return Immutable list of cached elements
      */
@@ -119,7 +119,7 @@ public interface CacheView<T> extends Iterable<T>
 
     /**
      * Creates a {@link java.util.stream.Stream Stream} of all cached elements.
-     * <br>This will be sorted for a {@link net.dv8tion.jda.core.utils.cache.impl.SortedSnowflakeCacheView SortedSnowflakeCacheView}.
+     * <br>This will be sorted for a {@link net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}.
      *
      * @return Stream of elements
      */
@@ -127,7 +127,7 @@ public interface CacheView<T> extends Iterable<T>
 
     /**
      * Creates a parallel {@link java.util.stream.Stream Stream} of all cached elements.
-     * <br>This will be sorted for a {@link net.dv8tion.jda.core.utils.cache.impl.SortedSnowflakeCacheView SortedSnowflakeCacheView}.
+     * <br>This will be sorted for a {@link net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}.
      *
      * @return Parallel Stream of elements
      */

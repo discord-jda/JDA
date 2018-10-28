@@ -29,7 +29,7 @@ import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.core.events.guild.UnavailableGuildJoinedEvent;
 import net.dv8tion.jda.core.managers.AudioManager;
-import net.dv8tion.jda.core.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;

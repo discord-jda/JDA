@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.utils.cache;
+package net.dv8tion.jda.internal.utils.cache;
 
 import javax.annotation.Nonnull;
 import java.lang.ref.ReferenceQueue;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.utils.tuple;
+package net.dv8tion.jda.internal.utils.tuple;
 
 import java.io.Serializable;
 import java.util.Objects;

@@ -31,7 +31,7 @@ import net.dv8tion.jda.core.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.core.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.core.requests.restaction.order.RoleOrderAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
-import net.dv8tion.jda.core.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import net.dv8tion.jda.internal.entities.EmoteImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
