@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.requests;
+package net.dv8tion.jda.core.requests;
 
 import net.dv8tion.jda.core.utils.IOFunction;
+import net.dv8tion.jda.internal.requests.Requester;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
