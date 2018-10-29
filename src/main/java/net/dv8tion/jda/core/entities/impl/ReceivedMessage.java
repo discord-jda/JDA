@@ -117,8 +117,8 @@ public class ReceivedMessage extends AbstractMessage
     {
         Checks.notNull(emote, "Emote");
 
-        MessageReaction reaction = reactions.parallelStream()
-                .filter(r -> Objects.equals(r.getReactionEmote().getId(), emote.getId()))
+        MessageReaction reaction = reactions.stream()
+                .filter(r -> r.getReactionEmote().getIdLong() == emote.getIdLong())
                 .findFirst().orElse(null);
 
         if (reaction == null)
@@ -139,7 +139,7 @@ public class ReceivedMessage extends AbstractMessage
     {
         Checks.notEmpty(unicode, "Provided Unicode");
 
-        MessageReaction reaction = reactions.parallelStream()
+        MessageReaction reaction = reactions.stream()
                 .filter(r -> Objects.equals(r.getReactionEmote().getName(), unicode))
                 .findFirst().orElse(null);
 
@@ -154,8 +154,8 @@ public class ReceivedMessage extends AbstractMessage
     {
         Checks.notNull(emote, "Emote");
 
-        MessageReaction reaction = reactions.parallelStream()
-            .filter(r -> Objects.equals(r.getReactionEmote().getId(), emote.getId()))
+        MessageReaction reaction = reactions.stream()
+            .filter(r -> r.getReactionEmote().getIdLong() == emote.getIdLong())
             .findFirst().orElse(null);
 
         if (reaction == null || !reaction.isSelf())
@@ -169,7 +169,7 @@ public class ReceivedMessage extends AbstractMessage
     {
         Checks.notEmpty(unicode, "Provided Unicode");
 
-        MessageReaction reaction = reactions.parallelStream()
+        MessageReaction reaction = reactions.stream()
             .filter(r -> Objects.equals(r.getReactionEmote().getName(), unicode))
             .findFirst().orElse(null);
 
@@ -184,8 +184,8 @@ public class ReceivedMessage extends AbstractMessage
     {
         Checks.notNull(emote, "Emote");
 
-        MessageReaction reaction = reactions.parallelStream()
-            .filter(r -> Objects.equals(r.getReactionEmote().getId(), emote.getId()))
+        MessageReaction reaction = reactions.stream()
+            .filter(r -> r.getReactionEmote().getIdLong() == emote.getIdLong())
             .findFirst().orElse(null);
 
         if (reaction == null)
@@ -199,7 +199,7 @@ public class ReceivedMessage extends AbstractMessage
     {
         Checks.notEmpty(unicode, "Provided Unicode");
 
-        MessageReaction reaction = reactions.parallelStream()
+        MessageReaction reaction = reactions.stream()
             .filter(r -> Objects.equals(r.getReactionEmote().getName(), unicode))
             .findFirst().orElse(null);
 
