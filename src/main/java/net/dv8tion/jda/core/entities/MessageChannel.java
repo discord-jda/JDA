@@ -1848,11 +1848,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      * Attempts to react to a message represented by the specified {@code messageId}
      * in this MessageChannel.
      *
-     * <p>The unicode provided has to be a unicode representation of the emoji
-     * that is supposed to be represented by the Reaction.
-     * <br>To retrieve the characters needed you can use an api or
-     * the official discord client by escaping the emoji (\:emoji-name:)
-     * and copying the resulting emoji from the sent message.
+     * <p>A reference of UTF8 emojis can be found here:
+     * <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a>.
+     * You can also retrieve the characters needed by escaping the emoji (\:emoji-name:)
+     * in the official Discord client and copying the resulting emoji from the sent message.
      *
      * <p>This method encodes the provided unicode for you.
      * <b>Do not encode the emoji before providing the unicode.</b>
@@ -1931,11 +1930,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      * Attempts to react to a message represented by the specified {@code messageId}
      * in this MessageChannel.
      *
-     * <p>The unicode provided has to be a unicode representation of the emoji
-     * that is supposed to be represented by the Reaction.
-     * <br>To retrieve the characters needed you can use an api or
-     * the official discord client by escaping the emoji (\:emoji-name:)
-     * and copying the resulting emoji from the sent message.
+     * <p>A reference of UTF8 emojis can be found here:
+     * <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a>.
+     * You can also retrieve the characters needed by escaping the emoji (\:emoji-name:)
+     * in the official Discord client and copying the resulting emoji from the sent message.
      *
      * <p>This method encodes the provided unicode for you.
      * <b>Do not encode the emoji before providing the unicode.</b>
@@ -2133,14 +2131,13 @@ public interface MessageChannel extends ISnowflake, Formattable
     }
 
     /**
-     * Attempts to remove the reaction from a message represented by the specified {@code messageId}
+     * Attempts to remove the UTF8 emoji reaction from a message represented by the specified {@code messageId}
      * in this MessageChannel.
      *
-     * <p>The unicode provided has to be a unicode representation of the emoji
-     * that is supposed to be represented by the Reaction.
-     * <br>To retrieve the characters needed you can use an api or
-     * the official discord client by escaping the emoji (\:emoji-name:)
-     * and copying the resulting emoji from the sent message.
+     * <p>A reference of UTF8 emojis can be found here:
+     * <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a>.
+     * You can also retrieve the characters needed by escaping the emoji (\:emoji-name:)
+     * in the official Discord client and copying the resulting emoji from the sent message.
      *
      * <p>This method encodes the provided unicode for you.
      * <b>Do not encode the emoji before providing the unicode.</b>
@@ -2208,14 +2205,13 @@ public interface MessageChannel extends ISnowflake, Formattable
     }
 
     /**
-     * Attempts to remove the reaction from a message represented by the specified {@code messageId}
+     * Attempts to remove the UTF8 emoji reaction from a message represented by the specified {@code messageId}
      * in this MessageChannel.
      *
-     * <p>The unicode provided has to be a unicode representation of the emoji
-     * that is supposed to be represented by the Reaction.
-     * <br>To retrieve the characters needed you can use an api or
-     * the official discord client by escaping the emoji (\:emoji-name:)
-     * and copying the resulting emoji from the sent message.
+     * <p>A reference of UTF8 emojis can be found here:
+     * <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a>.
+     * You can also retrieve the characters needed by escaping the emoji (\:emoji-name:)
+     * in the official Discord client and copying the resulting emoji from the sent message.
      *
      * <p>This method encodes the provided unicode for you.
      * <b>Do not encode the emoji before providing the unicode.</b>

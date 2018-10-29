@@ -150,6 +150,66 @@ public class ReceivedMessage extends AbstractMessage
     }
 
     @Override
+    public RestAction<Void> removeReaction(Emote emote)
+    {
+        Checks.notNull(emote, "Emote");
+
+        MessageReaction reaction = reactions.parallelStream()
+            .filter(r -> Objects.equals(r.getReactionEmote().getId(), emote.getId()))
+            .findFirst().orElse(null);
+
+        if (reaction == null || !reaction.isSelf())
+            return new RestAction.EmptyRestAction<>(getJDA(), null);
+
+        return reaction.removeReaction();
+    }
+
+    @Override
+    public RestAction<Void> removeReaction(String unicode)
+    {
+        Checks.notEmpty(unicode, "Provided Unicode");
+
+        MessageReaction reaction = reactions.parallelStream()
+            .filter(r -> Objects.equals(r.getReactionEmote().getName(), unicode))
+            .findFirst().orElse(null);
+
+        if (reaction == null || !reaction.isSelf())
+            return new RestAction.EmptyRestAction<>(getJDA(), null);
+
+        return reaction.removeReaction();
+    }
+
+    @Override
+    public RestAction<Void> removeReaction(Emote emote, User user)
+    {
+        Checks.notNull(emote, "Emote");
+
+        MessageReaction reaction = reactions.parallelStream()
+            .filter(r -> Objects.equals(r.getReactionEmote().getId(), emote.getId()))
+            .findFirst().orElse(null);
+
+        if (reaction == null)
+            return new RestAction.EmptyRestAction<>(getJDA(), null);
+
+        return reaction.removeReaction(user);
+    }
+
+    @Override
+    public RestAction<Void> removeReaction(String unicode, User user)
+    {
+        Checks.notEmpty(unicode, "Provided Unicode");
+
+        MessageReaction reaction = reactions.parallelStream()
+            .filter(r -> Objects.equals(r.getReactionEmote().getName(), unicode))
+            .findFirst().orElse(null);
+
+        if (reaction == null)
+            return new RestAction.EmptyRestAction<>(getJDA(), null);
+
+        return reaction.removeReaction(user);
+    }
+
+    @Override
     public RestAction<Void> clearReactions()
     {
         if (!isFromType(ChannelType.TEXT))

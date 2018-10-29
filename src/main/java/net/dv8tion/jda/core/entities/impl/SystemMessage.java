@@ -62,6 +62,30 @@ public class SystemMessage extends ReceivedMessage
     }
 
     @Override
+    public RestAction<Void> removeReaction(Emote emote)
+    {
+        throw new UnsupportedOperationException("Cannot remove reactions from message of this Message Type. MessageType: " + getType());
+    }
+
+    @Override
+    public RestAction<Void> removeReaction(String unicode)
+    {
+        throw new UnsupportedOperationException("Cannot remove reactions from message of this Message Type. MessageType: " + getType());
+    }
+
+    @Override
+    public RestAction<Void> removeReaction(Emote emote, User user)
+    {
+        throw new UnsupportedOperationException("Cannot remove reactions from message of this Message Type. MessageType: " + getType());
+    }
+
+    @Override
+    public RestAction<Void> removeReaction(String unicode, User user)
+    {
+        throw new UnsupportedOperationException("Cannot remove reactions from message of this Message Type. MessageType: " + getType());
+    }
+
+    @Override
     public RestAction<Void> clearReactions()
     {
         throw new UnsupportedOperationException("Cannot clear reactions for message of this Message Type. MessageType: " + getType());

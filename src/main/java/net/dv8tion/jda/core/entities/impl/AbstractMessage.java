@@ -382,6 +382,32 @@ public abstract class AbstractMessage implements Message
     }
 
     @Override
+    public RestAction<Void> removeReaction(Emote emote)
+    {
+        unsupported();
+        return null;
+    }
+
+    @Override
+    public RestAction<Void> removeReaction(String unicode)
+    {
+        unsupported();
+        return null;
+    }
+
+    @Override
+    public RestAction<Void> removeReaction(Emote emote, User user) {
+        unsupported();
+        return null;
+    }
+
+    @Override
+    public RestAction<Void> removeReaction(String unicode, User user) {
+        unsupported();
+        return null;
+    }
+
+    @Override
     public RestAction<Void> clearReactions()
     {
         unsupported();

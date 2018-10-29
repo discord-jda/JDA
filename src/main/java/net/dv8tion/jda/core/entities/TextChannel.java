@@ -44,11 +44,11 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * @return Possibly-null String containing the topic of this TextChannel.
      */
     String getTopic();
-    
+
     /**
     * Whether or not this channel is considered as "NSFW" (Not-Safe-For-Work)
     * <br>This will check whether the name of this TextChannel begins with {@code nsfw-} or is equal to {@code nsfw}!
-    * 
+    *
     * @return True, If this TextChannel is considered NSFW by the official Discord Client
     */
     boolean isNSFW();
@@ -314,14 +314,13 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
     }
 
     /**
-     * Attempts to remove the reaction from a message represented by the specified {@code messageId}
+     * Attempts to remove a UTF8 emoji reaction from a message represented by the specified {@code messageId}
      * in this MessageChannel.
      *
-     * <p>The unicode provided has to be a unicode representation of the emoji
-     * that is supposed to be represented by the Reaction.
-     * <br>To retrieve the characters needed you can use an api or
-     * the official discord client by escaping the emoji (\:emoji-name:)
-     * and copying the resulting emoji from the sent message.
+     * <p>A reference of UTF8 emojis can be found here:
+     * <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a>.
+     * You can also retrieve the characters needed by escaping the emoji (\:emoji-name:)
+     * in the official Discord client and copying the resulting emoji from the sent message.
      *
      * <p>This method encodes the provided unicode for you.
      * <b>Do not encode the emoji before providing the unicode.</b>
@@ -376,14 +375,13 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
     RestAction<Void> removeReactionById(String messageId, String unicode, User user);
 
     /**
-     * Attempts to remove the reaction from a message represented by the specified {@code messageId}
+     * Attempts to remove a UTF8 emoji reaction from a message represented by the specified {@code messageId}
      * in this MessageChannel.
      *
-     * <p>The unicode provided has to be a unicode representation of the emoji
-     * that is supposed to be represented by the Reaction.
-     * <br>To retrieve the characters needed you can use an api or
-     * the official discord client by escaping the emoji (\:emoji-name:)
-     * and copying the resulting emoji from the sent message.
+     * <p>A reference of UTF8 emojis can be found here:
+     * <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a>.
+     * You can also retrieve the characters needed by escaping the emoji (\:emoji-name:)
+     * in the official Discord client and copying the resulting emoji from the sent message.
      *
      * <p>This method encodes the provided unicode for you.
      * <b>Do not encode the emoji before providing the unicode.</b>
@@ -456,7 +454,6 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      *         was revoked in the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *
-     *
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The request was attempted after the account lost
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION} in the
@@ -478,9 +475,9 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * @param  messageId
      *         The messageId to remove the reaction from
      * @param  emote
-     *         The emote to remove
+     *         The {@link net.dv8tion.jda.core.entities.Emote Emote} to remove
      * @param  user
-     *         The target user of which to remove from
+     *         The target {@link net.dv8tion.jda.core.entities.User User} of which to remove from
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
