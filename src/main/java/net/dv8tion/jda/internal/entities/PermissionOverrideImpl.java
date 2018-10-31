@@ -28,8 +28,7 @@ import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.EnumSet;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class PermissionOverrideImpl implements PermissionOverride
@@ -70,21 +69,21 @@ public class PermissionOverrideImpl implements PermissionOverride
     }
 
     @Override
-    public List<Permission> getAllowed()
+    public EnumSet<Permission> getAllowed()
     {
-        return Collections.unmodifiableList(Permission.getPermissions(allow));
+        return Permission.getPermissions(allow);
     }
 
     @Override
-    public List<Permission> getInherit()
+    public EnumSet<Permission> getInherit()
     {
-        return Collections.unmodifiableList(Permission.getPermissions(getInheritRaw()));
+        return Permission.getPermissions(getInheritRaw());
     }
 
     @Override
-    public List<Permission> getDenied()
+    public EnumSet<Permission> getDenied()
     {
-        return Collections.unmodifiableList(Permission.getPermissions(deny));
+        return Permission.getPermissions(deny);
     }
 
     @Override

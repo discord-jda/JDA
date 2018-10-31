@@ -19,7 +19,7 @@ package net.dv8tion.jda.core.entities;
 import net.dv8tion.jda.core.Permission;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.EnumSet;
 
 /**
  * Marker for entities that hold Permissions within JDA
@@ -38,10 +38,11 @@ public interface IPermissionHolder
 
     /**
      * The Guild-Wide Permissions this PermissionHolder holds.
+     * <br><u>Changes to the returned set do not affect this entity directly.</u>
      *
-     * @return An immutable List of Permissions granted to this PermissionHolder.
+     * @return An EnumSet of Permissions granted to this PermissionHolder.
      */
-    List<Permission> getPermissions();
+    EnumSet<Permission> getPermissions();
 
     /**
      * Checks whether or not this PermissionHolder has the given {@link net.dv8tion.jda.core.Permission Permissions} in the Guild.

@@ -22,11 +22,11 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.exceptions.HierarchyException;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import net.dv8tion.jda.internal.managers.ManagerBase;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
+import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
 
@@ -34,7 +34,7 @@ import javax.annotation.CheckReturnValue;
 import java.awt.Color;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
+import java.util.EnumSet;
 
 /**
  * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.core.entities.Role Role}.
@@ -234,9 +234,9 @@ public class RoleManager extends ManagerBase
         // if any permissions remain, we have an issue
         if (missingPerms != 0 && isPermissionChecksEnabled())
         {
-            List<Permission> permissionList = Permission.getPermissions(missingPerms);
+            EnumSet<Permission> permissionList = Permission.getPermissions(missingPerms);
             if (!permissionList.isEmpty())
-                throw new InsufficientPermissionException(permissionList.get(0));
+                throw new InsufficientPermissionException(permissionList.iterator().next());
         }
         this.permissions = perms;
         set |= PERMISSION;
@@ -495,18 +495,6 @@ public class RoleManager extends ManagerBase
         if (!selfMember.canInteract(getRole()))
             throw new HierarchyException("Cannot modify a role that is higher or equal in hierarchy");
         return super.checkPermissions();
-        /*
-        //we can't reliably check the permissions of the role here
-        long missingRaw = permissions;
-        missingRaw &= ~selfPermissions; // exclude own perms
-        missingRaw &= ~role.getPermissionsRaw(); // exclude role perms
-        if (missingRaw != 0)
-        {
-            List<Permission> missingPermissions = Permission.getPermissions(missingRaw);
-            if (!missingPermissions.isEmpty())
-                throw new InsufficientPermissionException(missingPermissions.get(0));
-        }
-        */
     }
 
     private void setupPermissions()

@@ -23,6 +23,7 @@ import net.dv8tion.jda.core.Permission;
 import javax.annotation.Nullable;
 import java.awt.Color;
 import java.time.OffsetDateTime;
+import java.util.EnumSet;
 import java.util.List;
 
 /**
@@ -145,13 +146,14 @@ public interface Member extends IMentionable, IPermissionHolder
      * The Permissions this Member holds in the specified {@link GuildChannel GuildChannel}.
      * <br>Permissions returned by this may be different from {@link #getPermissions()}
      * due to the GuildChannel's {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides}.
+     * <br><u>Changes to the returned set do not affect this entity directly.</u>
      *
      * @param  channel
      *         The {@link GuildChannel GuildChannel} of which to get Permissions for
      *
-     * @return An immutable List of Permissions granted to this Member.
+     * @return Set of Permissions granted to this Member.
      */
-    List<Permission> getPermissions(GuildChannel channel);
+    EnumSet<Permission> getPermissions(GuildChannel channel);
 
     /**
      * Whether this Member can interact with the provided Member

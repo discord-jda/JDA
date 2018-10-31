@@ -21,10 +21,10 @@ import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.utils.cache.CacheFlag;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
+import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 
 import javax.annotation.Nullable;
 import java.awt.Color;
@@ -138,22 +138,18 @@ public class MemberImpl implements Member
     }
 
     @Override
-    public List<Permission> getPermissions()
+    public EnumSet<Permission> getPermissions()
     {
-        return Collections.unmodifiableList(
-                Permission.getPermissions(
-                        PermissionUtil.getEffectivePermission(this)));
+        return Permission.getPermissions(PermissionUtil.getEffectivePermission(this));
     }
 
     @Override
-    public List<Permission> getPermissions(GuildChannel channel)
+    public EnumSet<Permission> getPermissions(GuildChannel channel)
     {
         if (!getGuild().equals(channel.getGuild()))
             throw new IllegalArgumentException("Provided channel is not in the same guild as this member!");
 
-        return Collections.unmodifiableList(
-                Permission.getPermissions(
-                        PermissionUtil.getEffectivePermission(channel, this)));
+        return Permission.getPermissions(PermissionUtil.getEffectivePermission(channel, this));
     }
 
     @Override

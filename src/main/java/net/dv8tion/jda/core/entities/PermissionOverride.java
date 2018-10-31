@@ -21,7 +21,7 @@ import net.dv8tion.jda.core.managers.PermOverrideManager;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
 import javax.annotation.CheckReturnValue;
-import java.util.List;
+import java.util.EnumSet;
 
 /**
  * Represents the specific {@link net.dv8tion.jda.core.entities.Member Member} or {@link net.dv8tion.jda.core.entities.Role Role}
@@ -54,25 +54,28 @@ public interface PermissionOverride
     long getDeniedRaw();
 
     /**
-     * An unmodifiable list of all {@link net.dv8tion.jda.core.Permission Permissions} that are specifically allowed by this override.
+     * EnumSet of all {@link net.dv8tion.jda.core.Permission Permissions} that are specifically allowed by this override.
+     * <br><u>Changes to the returned set do not affect this entity directly.</u>
      *
-     * @return Possibly-empty unmodifiable list of allowed {@link net.dv8tion.jda.core.Permission Permissions}.
+     * @return Possibly-empty set of allowed {@link net.dv8tion.jda.core.Permission Permissions}.
      */
-    List<Permission> getAllowed();
+    EnumSet<Permission> getAllowed();
 
     /**
-     * An unmodifiable list of all {@link net.dv8tion.jda.core.Permission Permission} that are unaffected by this override.
+     * EnumSet of all {@link net.dv8tion.jda.core.Permission Permission} that are unaffected by this override.
+     * <br><u>Changes to the returned set do not affect this entity directly.</u>
      *
-     * @return Possibly-empty unmodifiable list of unaffected {@link net.dv8tion.jda.core.Permission Permissions}.
+     * @return Possibly-empty set of unaffected {@link net.dv8tion.jda.core.Permission Permissions}.
      */
-    List<Permission> getInherit();
+    EnumSet<Permission> getInherit();
 
     /**
-     * An unmodifiable list of all {@link net.dv8tion.jda.core.Permission Permissions} that are denied by this override.
+     * EnumSet of all {@link net.dv8tion.jda.core.Permission Permissions} that are denied by this override.
+     * <br><u>Changes to the returned set do not affect this entity directly.</u>
      *
-     * @return Possibly-empty unmodifiable list of denied {@link net.dv8tion.jda.core.Permission Permissions}.
+     * @return Possibly-empty set of denied {@link net.dv8tion.jda.core.Permission Permissions}.
      */
-    List<Permission> getDenied();
+    EnumSet<Permission> getDenied();
 
     /**
      * The {@link net.dv8tion.jda.core.JDA JDA} instance that this {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}

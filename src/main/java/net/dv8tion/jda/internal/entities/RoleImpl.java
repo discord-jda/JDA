@@ -37,8 +37,7 @@ import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import java.awt.Color;
 import java.time.OffsetDateTime;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.EnumSet;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class RoleImpl implements Role
@@ -117,10 +116,9 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public List<Permission> getPermissions()
+    public EnumSet<Permission> getPermissions()
     {
-        return Collections.unmodifiableList(
-                Permission.getPermissions(rawPermissions));
+        return Permission.getPermissions(rawPermissions);
     }
 
     @Override

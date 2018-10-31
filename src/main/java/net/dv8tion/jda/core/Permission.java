@@ -17,7 +17,9 @@ package net.dv8tion.jda.core;
 
 import net.dv8tion.jda.internal.utils.Checks;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.EnumSet;
 import java.util.stream.Collectors;
 
 /**
@@ -212,7 +214,7 @@ public enum Permission
     }
 
     /**
-     * A list of all {@link net.dv8tion.jda.core.Permission Permissions} that are specified by this raw long representation of
+     * A set of all {@link net.dv8tion.jda.core.Permission Permissions} that are specified by this raw long representation of
      * permissions. The is best used with the getRaw methods in {@link net.dv8tion.jda.core.entities.Role Role},
      * {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride} or {@link net.dv8tion.jda.internal.utils.PermissionUtil}.
      *
@@ -224,43 +226,20 @@ public enum Permission
      * @param  permissions
      *         The raw {@code long} representation of permissions.
      *
-     * @return Possibly-empty list of {@link net.dv8tion.jda.core.Permission Permissions}.
+     * @return Possibly-empty EnumSet of {@link net.dv8tion.jda.core.Permission Permissions}.
      *
-     * @see    #toEnumSet(long)
      */
-    public static List<Permission> getPermissions(long permissions)
+    public static EnumSet<Permission> getPermissions(long permissions)
     {
         if (permissions == 0)
-            return Collections.emptyList();
-        List<Permission> perms = new LinkedList<>();
+            return EnumSet.noneOf(Permission.class);
+        EnumSet<Permission> perms = EnumSet.noneOf(Permission.class);
         for (Permission perm : Permission.values())
         {
             if (perm != UNKNOWN && (permissions & perm.raw) == perm.raw)
                 perms.add(perm);
         }
         return perms;
-    }
-
-    /**
-     * Constructs an {@link java.util.EnumSet EnumSet} from the provided permissions bitmask.
-     * <br>If provided with {@code 0} this will fast-fail with an empty set.
-     *
-     * @param  permissions
-     *         The permission bitmask
-     *
-     * @return Possibly-empty {@link java.util.EnumSet EnumSet} containing the constants for this permission bitmask
-     */
-    public static EnumSet<Permission> toEnumSet(long permissions)
-    {
-        EnumSet<Permission> set = EnumSet.noneOf(Permission.class);
-        if (permissions == 0)
-            return set;
-        for (Permission perm : values())
-        {
-            if (perm != UNKNOWN && (permissions & perm.raw) == perm.raw)
-                set.add(perm);
-        }
-        return set;
     }
 
     /**

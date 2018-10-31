@@ -33,8 +33,7 @@ import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.EnumSet;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -117,14 +116,15 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
     }
 
     /**
-     * Immutable list of {@link net.dv8tion.jda.core.Permission Permissions}
+     * Set of {@link net.dv8tion.jda.core.Permission Permissions}
      * that would be <b>granted</b> by the PermissionOverride that is created by this action.
+     * <br><u>Changes to the returned set do not affect this entity directly.</u>
      *
-     * @return immutable list of granted {@link net.dv8tion.jda.core.Permission Permissions}
+     * @return set of granted {@link net.dv8tion.jda.core.Permission Permissions}
      */
-    public List<Permission> getAllowedPermissions()
+    public EnumSet<Permission> getAllowedPermissions()
     {
-        return Collections.unmodifiableList(Permission.getPermissions(allow));
+        return Permission.getPermissions(allow);
     }
 
 
@@ -144,14 +144,15 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
     }
 
     /**
-     * Immutable list of {@link net.dv8tion.jda.core.Permission Permissions}
+     * Set of {@link net.dv8tion.jda.core.Permission Permissions}
      * that would be <b>denied</b> by the PermissionOverride that is created by this action.
+     * <br><u>Changes to the returned set do not affect this entity directly.</u>
      *
-     * @return immutable list of denied {@link net.dv8tion.jda.core.Permission Permissions}
+     * @return set of denied {@link net.dv8tion.jda.core.Permission Permissions}
      */
-    public List<Permission> getDeniedPermissions()
+    public EnumSet<Permission> getDeniedPermissions()
     {
-        return Collections.unmodifiableList(Permission.getPermissions(deny));
+        return Permission.getPermissions(deny);
     }
 
 
@@ -173,17 +174,18 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
     }
 
     /**
-     * Immutable list of {@link net.dv8tion.jda.core.Permission Permissions}
+     * Set of {@link net.dv8tion.jda.core.Permission Permissions}
      * that would be <b>inherited</b> from other permission holders.
      * <br>Permissions returned are not explicitly granted or denied!
+     * <br><u>Changes to the returned set do not affect this entity directly.</u>
      *
-     * @return immutable list of inherited {@link net.dv8tion.jda.core.Permission Permissions}
+     * @return set of inherited {@link net.dv8tion.jda.core.Permission Permissions}
      *
      * @see    #getInherited()
      */
-    public List<Permission> getInheritedPermissions()
+    public EnumSet<Permission> getInheritedPermissions()
     {
-        return Collections.unmodifiableList(Permission.getPermissions(getInherited()));
+        return Permission.getPermissions(getInherited());
     }
 
 
