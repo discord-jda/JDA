@@ -25,7 +25,6 @@ import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.webhook.WebhookClientBuilder;
 
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -137,15 +136,6 @@ public class WebhookImpl implements Webhook
             });
         }
         return mng;
-    }
-
-    @Override
-    public WebhookClientBuilder newClient()
-    {
-        if (isFake())
-            throw new IllegalStateException("Fake Webhooks (such as those retrieved from Audit Logs) "
-                    + "cannot be used to create a WebhookClient!");
-        return new WebhookClientBuilder(id, token);
     }
 
     @Override

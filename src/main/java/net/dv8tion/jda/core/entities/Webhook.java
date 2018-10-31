@@ -19,7 +19,6 @@ package net.dv8tion.jda.core.entities;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.managers.WebhookManager;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.webhook.WebhookClientBuilder;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
@@ -149,17 +148,4 @@ public interface Webhook extends ISnowflake, IFakeable
      * @return The {@link net.dv8tion.jda.core.managers.WebhookManager WebhookManager} for this Webhook
      */
     WebhookManager getManager();
-
-    /**
-     * Creates a new {@link net.dv8tion.jda.webhook.WebhookClientBuilder WebhookClientBuilder} instance
-     * for this Webhook instance.
-     *
-     * <p><b><u>Remember to close the WebhookClient once you don't need it anymore to free resources!</u></b>
-     *
-     * @throws IllegalStateException 
-     *         if the Webhook is fake, such as the Webhooks retrieved from Audit Logs
-     * 
-     * @return The new WebhookClientBuilder
-     */
-    WebhookClientBuilder newClient();
 }
