@@ -34,11 +34,11 @@ import net.dv8tion.jda.core.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.core.entities.MessageEmbed.*;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.utils.cache.CacheFlag;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.JDALogger;
+import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.json.JSONArray;
@@ -397,46 +397,49 @@ public class EntityBuilder
             throw new NullPointerException("Provided memberOrFriend was null!");
         boolean cacheGame = getJDA().isCacheFlagSet(CacheFlag.PRESENCE);
 
-        JSONObject gameJson = !cacheGame || presenceJson.isNull("game") ? null : presenceJson.getJSONObject("game");
+        JSONArray activityArray = !cacheGame || presenceJson.isNull("activities") ? null : presenceJson.getJSONArray("activities");
         OnlineStatus onlineStatus = OnlineStatus.fromKey(presenceJson.getString("status"));
-        Activity game = null;
-        boolean parsedGame = false;
+        List<Activity> activities = new ArrayList<>();
+        boolean parsedActivity = false;
 
-        if (cacheGame && gameJson != null && !gameJson.isNull("name"))
+        if (cacheGame && activityArray != null)
         {
-            try
+            for (int i = 0; i < activityArray.length(); i++)
             {
-                game = createAcitvity(gameJson);
-                parsedGame = true;
-            }
-            catch (Exception ex)
-            {
-                String userId;
-                if (memberOrFriend instanceof Member)
-                    userId = ((Member) memberOrFriend).getUser().getId();
-                else if (memberOrFriend instanceof Friend)
-                    userId = ((Friend) memberOrFriend).getUser().getId();
-                else
-                    userId = "unknown";
-                if (LOG.isDebugEnabled())
-                    LOG.warn("Encountered exception trying to parse a presence! UserId: {} JSON: {}", userId, gameJson, ex);
-                else
-                    LOG.warn("Encountered exception trying to parse a presence! UserId: {} Message: {} Enable debug for details", userId, ex.getMessage());
+                try
+                {
+                    activities.add(createAcitvity(activityArray.getJSONObject(i)));
+                    parsedActivity = true;
+                }
+                catch (Exception ex)
+                {
+                    String userId;
+                    if (memberOrFriend instanceof Member)
+                        userId = ((Member) memberOrFriend).getUser().getId();
+                    else if (memberOrFriend instanceof Friend)
+                        userId = ((Friend) memberOrFriend).getUser().getId();
+                    else
+                        userId = "unknown";
+                    if (LOG.isDebugEnabled())
+                        LOG.warn("Encountered exception trying to parse a presence! UserId: {} JSON: {}", userId, activityArray, ex);
+                    else
+                        LOG.warn("Encountered exception trying to parse a presence! UserId: {} Message: {} Enable debug for details", userId, ex.getMessage());
+                }
             }
         }
         if (memberOrFriend instanceof Member)
         {
             MemberImpl member = (MemberImpl) memberOrFriend;
             member.setOnlineStatus(onlineStatus);
-            if (cacheGame && parsedGame)
-                member.setGame(game);
+            if (cacheGame && parsedActivity)
+                member.setActivities(activities);
         }
         else if (memberOrFriend instanceof Friend)
         {
             FriendImpl friend = (FriendImpl) memberOrFriend;
             friend.setOnlineStatus(onlineStatus);
-            if (cacheGame && parsedGame)
-                friend.setGame(game);
+            if (cacheGame && parsedActivity)
+                friend.setActivities(activities);
 
             OffsetDateTime lastModified = OffsetDateTime.ofInstant(
                     Instant.ofEpochMilli(presenceJson.getLong("last_modified")),

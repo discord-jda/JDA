@@ -30,11 +30,11 @@ import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.SessionController;
 import net.dv8tion.jda.core.utils.SessionControllerAdapter;
 import net.dv8tion.jda.core.utils.cache.CacheFlag;
-import net.dv8tion.jda.internal.utils.tuple.Pair;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
+import net.dv8tion.jda.internal.utils.tuple.Pair;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 
@@ -679,7 +679,7 @@ public class DefaultShardManager implements ShardManager
         // Set the presence information before connecting to have the correct information ready when sending IDENTIFY
         PresenceImpl presence = ((PresenceImpl) jda.getPresence());
         if (gameProvider != null)
-            presence.setCacheGame(this.gameProvider.apply(shardId));
+            presence.setCacheActivity(this.gameProvider.apply(shardId));
         if (idleProvider != null)
             presence.setCacheIdle(this.idleProvider.apply(shardId));
         if (statusProvider != null)

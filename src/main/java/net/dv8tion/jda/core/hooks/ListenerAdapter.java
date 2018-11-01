@@ -130,7 +130,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onUserUpdateDiscriminator(UserUpdateDiscriminatorEvent event) {}
     public void onUserUpdateAvatar(UserUpdateAvatarEvent event) {}
     public void onUserUpdateOnlineStatus(UserUpdateOnlineStatusEvent event) {}
-    public void onUserUpdateGame(UserUpdateGameEvent event) {}
+    public void onUserUpdateActivities(UserUpdateActivitiesEvent event) {}
     public void onUserTyping(UserTypingEvent event) {}
 
     //Self Events. Fires only in relation to the currently logged in account.
@@ -431,8 +431,8 @@ public abstract class ListenerAdapter implements EventListener
             onUserUpdateDiscriminator((UserUpdateDiscriminatorEvent) event);
         else if (event instanceof UserUpdateAvatarEvent)
             onUserUpdateAvatar((UserUpdateAvatarEvent) event);
-        else if (event instanceof UserUpdateGameEvent)
-            onUserUpdateGame((UserUpdateGameEvent) event);
+        else if (event instanceof UserUpdateActivitiesEvent)
+            onUserUpdateActivities((UserUpdateActivitiesEvent) event);
         else if (event instanceof UserUpdateOnlineStatusEvent)
             onUserUpdateOnlineStatus((UserUpdateOnlineStatusEvent) event);
         else if (event instanceof UserTypingEvent)

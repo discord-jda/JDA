@@ -116,7 +116,7 @@ public class AudioManagerImpl implements AudioManager
 
     private void checkChannel(VoiceChannel channel, Member self)
     {
-        EnumSet<Permission> perms = Permission.toEnumSet(PermissionUtil.getEffectivePermission(channel, self));
+        EnumSet<Permission> perms = Permission.getPermissions(PermissionUtil.getEffectivePermission(channel, self));
         if (!perms.contains(Permission.VOICE_CONNECT))
             throw new InsufficientPermissionException(Permission.VOICE_CONNECT);
         final int userLimit = channel.getUserLimit(); // userLimit is 0 if no limit is set!

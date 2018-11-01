@@ -20,10 +20,10 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Activity;
 import net.dv8tion.jda.core.managers.Presence;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.WebSocketCode;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import org.json.JSONObject;
 
 /**
@@ -37,7 +37,7 @@ public class PresenceImpl implements Presence
 
     private final UpstreamReference<JDAImpl> api;
     private boolean idle = false;
-    private Activity game = null;
+    private Activity activity = null;
     private OnlineStatus status = OnlineStatus.ONLINE;
 
     /**
@@ -68,9 +68,9 @@ public class PresenceImpl implements Presence
     }
 
     @Override
-    public Activity getGame()
+    public Activity getActivity()
     {
-        return game;
+        return activity;
     }
 
     @Override
@@ -86,11 +86,11 @@ public class PresenceImpl implements Presence
     @Override
     public void setStatus(OnlineStatus status)
     {
-        setPresence(status, game, idle);
+        setPresence(status, activity, idle);
     }
 
     @Override
-    public void setGame(Activity game)
+    public void setActivity(Activity game)
     {
         setPresence(status, game);
     }
@@ -102,9 +102,9 @@ public class PresenceImpl implements Presence
     }
 
     @Override
-    public void setPresence(OnlineStatus status, Activity game, boolean idle)
+    public void setPresence(OnlineStatus status, Activity activity, boolean idle)
     {
-        JSONObject gameObj = getGameJson(game);
+        JSONObject gameObj = getGameJson(activity);
 
         Checks.check(status != OnlineStatus.UNKNOWN,
                 "Cannot set the presence status to an unknown OnlineStatus!");
@@ -123,19 +123,19 @@ public class PresenceImpl implements Presence
         update(object);
         this.idle = idle;
         this.status = status;
-        this.game = gameObj == null ? null : game;
+        this.activity = gameObj == null ? null : activity;
     }
 
     @Override
-    public void setPresence(OnlineStatus status, Activity game)
+    public void setPresence(OnlineStatus status, Activity activity)
     {
-        setPresence(status, game, idle);
+        setPresence(status, activity, idle);
     }
 
     @Override
     public void setPresence(OnlineStatus status, boolean idle)
     {
-        setPresence(status, game, idle);
+        setPresence(status, activity, idle);
     }
 
     @Override
@@ -158,9 +158,9 @@ public class PresenceImpl implements Presence
         return this;
     }
 
-    public PresenceImpl setCacheGame(Activity game)
+    public PresenceImpl setCacheActivity(Activity game)
     {
-        this.game = game;
+        this.activity = game;
         return this;
     }
 
@@ -176,23 +176,23 @@ public class PresenceImpl implements Presence
 
     public JSONObject getFullPresence()
     {
-        JSONObject game = getGameJson(this.game);
+        JSONObject activity = getGameJson(this.activity);
         return new JSONObject()
               .put("afk", idle)
               .put("since", System.currentTimeMillis())
-              .put("game", game == null ? JSONObject.NULL : game)
+              .put("game", activity == null ? JSONObject.NULL : activity)
               .put("status", getStatus().getKey());
     }
 
-    private JSONObject getGameJson(Activity game)
+    private JSONObject getGameJson(Activity activity)
     {
-        if (game == null || game.getName() == null || game.getType() == null)
+        if (activity == null || activity.getName() == null || activity.getType() == null)
             return null;
         JSONObject gameObj = new JSONObject();
-        gameObj.put("name", game.getName());
-        gameObj.put("type", game.getType().getKey());
-        if (game.getUrl() != null)
-            gameObj.put("url", game.getUrl());
+        gameObj.put("name", activity.getName());
+        gameObj.put("type", activity.getType().getKey());
+        if (activity.getUrl() != null)
+            gameObj.put("url", activity.getUrl());
 
         return gameObj;
     }

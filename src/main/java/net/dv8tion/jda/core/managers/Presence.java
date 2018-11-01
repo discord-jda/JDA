@@ -49,9 +49,9 @@ public interface Presence
      * <br>This might not be what the Discord Client displays due to session clashing!
      *
      * @return The {@link net.dv8tion.jda.core.entities.Activity Activity}
-     *         of the current session or null if no game is set
+     *         of the current session or null if no activity is set
      */
-    Activity getGame();
+    Activity getActivity();
 
     /**
      * Whether the current session is marked as afk or not.
@@ -81,16 +81,16 @@ public interface Presence
      * For streams you provide a valid streaming url as second parameter
      *
      * <p>Examples:
-     * <br>{@code presence.setGame(Activity.playing("Thrones"));}
-     * <br>{@code presence.setGame(Activity.streaming("Thrones", "https://twitch.tv/EasterEggs"));}
+     * <br>{@code presence.setActivity(Activity.playing("Thrones"));}
+     * <br>{@code presence.setActivity(Activity.streaming("Thrones", "https://twitch.tv/EasterEggs"));}
      *
-     * @param  game
+     * @param  activity
      *         A {@link net.dv8tion.jda.core.entities.Activity Activity} instance or null to reset
      *
      * @see    net.dv8tion.jda.core.entities.Activity#playing(String)
      * @see    net.dv8tion.jda.core.entities.Activity#streaming(String, String)
      */
-    void setGame(Activity game);
+    void setActivity(Activity activity);
 
     /**
      * Sets whether this session should be marked as afk or not
@@ -109,16 +109,16 @@ public interface Presence
      * @param  status
      *         The {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} for this session
      *         (See {@link #setStatus(OnlineStatus)})
-     * @param  game
+     * @param  activity
      *         The {@link net.dv8tion.jda.core.entities.Activity Activity} for this session
-     *         (See {@link #setGame(net.dv8tion.jda.core.entities.Activity)} for more info)
+     *         (See {@link #setActivity(net.dv8tion.jda.core.entities.Activity)} for more info)
      * @param  idle
      *         Whether to mark this session as idle (useful for client accounts {@link #setIdle(boolean)})
      *
      * @throws java.lang.IllegalArgumentException
      *         If the specified OnlineStatus is {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}
      */
-    void setPresence(OnlineStatus status, Activity game, boolean idle);
+    void setPresence(OnlineStatus status, Activity activity, boolean idle);
 
     /**
      * Sets two presence fields of this session.
@@ -127,14 +127,14 @@ public interface Presence
      * @param  status
      *         The {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} for this session
      *         (See {@link #setStatus(OnlineStatus)})
-     * @param  game
+     * @param  activity
      *         The {@link net.dv8tion.jda.core.entities.Activity Activity} for this session
-     *         (See {@link #setGame(net.dv8tion.jda.core.entities.Activity)} for more info)
+     *         (See {@link #setActivity(net.dv8tion.jda.core.entities.Activity)} for more info)
      *
      * @throws java.lang.IllegalArgumentException
      *         If the specified OnlineStatus is {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}
      */
-    void setPresence(OnlineStatus status, Activity game);
+    void setPresence(OnlineStatus status, Activity activity);
 
     /**
      * Sets two presence fields of this session.
@@ -155,11 +155,11 @@ public interface Presence
      * Sets two presence fields of this session.
      * <br>The third field stays untouched.
      *
-     * @param  game
+     * @param  activity
      *         The {@link net.dv8tion.jda.core.entities.Activity Activity} for this session
-     *         (See {@link #setGame(net.dv8tion.jda.core.entities.Activity)} for more info)
+     *         (See {@link #setActivity(net.dv8tion.jda.core.entities.Activity)} for more info)
      * @param  idle
      *         Whether to mark this session as idle (useful for client accounts {@link #setIdle(boolean)})
      */
-    void setPresence(Activity game, boolean idle);
+    void setPresence(Activity activity, boolean idle);
 }

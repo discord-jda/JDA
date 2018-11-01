@@ -21,22 +21,24 @@ import net.dv8tion.jda.core.entities.Activity;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 
+import java.util.List;
+
 /**
  * Indicates that the {@link net.dv8tion.jda.core.entities.Activity Activity} of a {@link net.dv8tion.jda.core.entities.User User} changes.
  * <br>As with any presence updates this either happened for a {@link net.dv8tion.jda.core.entities.Member Member} in a Guild or a {@link net.dv8tion.jda.client.entities.Friend Friend}!
  *
- * <p>Can be used to retrieve the User who changed their Activity and their previous Activity.
+ * <p>Can be used to retrieve the User who changed their Activities and their previous Activities.
  *
- * <p>Identifier: {@code game}
+ * <p>Identifier: {@code activity}
  */
-public class UserUpdateGameEvent extends GenericUserPresenceEvent<Activity>
+public class UserUpdateActivitiesEvent extends GenericUserPresenceEvent<List<Activity>>
 {
-    public static final String IDENTIFIER = "game";
+    public static final String IDENTIFIER = "activity";
 
-    public UserUpdateGameEvent(JDA api, long responseNumber, User user, Guild guild, Activity previousGame)
+    public UserUpdateActivitiesEvent(JDA api, long responseNumber, User user, Guild guild, List<Activity> previousActivities)
     {
-        super(api, responseNumber, user, guild, previousGame,
-            guild == null ? api.asClient().getFriend(user).getGame() : guild.getMember(user).getActivity(), IDENTIFIER);
+        super(api, responseNumber, user, guild, previousActivities,
+            guild == null ? api.asClient().getFriend(user).getActivities() : guild.getMember(user).getActivities(), IDENTIFIER);
     }
 
     /**
@@ -44,7 +46,7 @@ public class UserUpdateGameEvent extends GenericUserPresenceEvent<Activity>
      *
      * @return The previous {@link net.dv8tion.jda.core.entities.Activity Activity}
      */
-    public Activity getOldGame()
+    public List<Activity> getOldActivities()
     {
         return getOldValue();
     }
@@ -54,7 +56,7 @@ public class UserUpdateGameEvent extends GenericUserPresenceEvent<Activity>
      *
      * @return The new {@link net.dv8tion.jda.core.entities.Activity Activity}
      */
-    public Activity getNewGame()
+    public List<Activity> getNewActivities()
     {
         return getNewValue();
     }

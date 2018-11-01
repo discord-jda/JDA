@@ -242,7 +242,7 @@ public class RoleAction extends AuditableRestAction<Role>
         {
             Checks.notNegative(permissions, "Raw Permissions");
             Checks.check(permissions <= Permission.ALL_PERMISSIONS, "Provided permissions may not be greater than a full permission set!");
-            for (Permission p : Permission.toEnumSet(permissions))
+            for (Permission p : Permission.getPermissions(permissions))
                 checkPermission(p);
         }
         this.permissions = permissions;

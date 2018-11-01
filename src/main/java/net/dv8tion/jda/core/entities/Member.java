@@ -74,13 +74,12 @@ public interface Member extends IMentionable, IPermissionHolder
     GuildVoiceState getVoiceState();
 
     /**
-     * The game that the user is currently playing.
-     * <br>If the user is not currently playing a game, this will return null.
+     * The activities of the user.
+     * <br>If the user does not currently have any activity, this returns an empty list.
      *
-     * @return Possibly-null {@link Activity Activity} containing the game
-     *         that the {@link net.dv8tion.jda.core.entities.User User} is currently playing.
+     * @return Immutable list of {@link Activity Activities} for the user
      */
-    Activity getActivity(); //TODO: getActivities()
+    List<Activity> getActivities();
 
     /**
      * Returns the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} of the User.

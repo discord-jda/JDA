@@ -70,7 +70,7 @@ public class JDABuilder
     protected IEventManager eventManager = null;
     protected IAudioSendFactory audioSendFactory = null;
     protected JDA.ShardInfo shardInfo = null;
-    protected Activity game = null;
+    protected Activity activity = null;
     protected OnlineStatus status = OnlineStatus.ONLINE;
     protected int maxReconnectDelay = 900;
     protected int corePoolSize = 5;
@@ -585,16 +585,16 @@ public class JDABuilder
      * <p><b>Hint:</b> You can create a {@link net.dv8tion.jda.core.entities.Activity Activity} object using
      * {@link net.dv8tion.jda.core.entities.Activity#playing(String)} or {@link net.dv8tion.jda.core.entities.Activity#streaming(String, String)}.
      *
-     * @param  game
+     * @param  activity
      *         An instance of {@link net.dv8tion.jda.core.entities.Activity Activity} (null allowed)
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
-     * @see    net.dv8tion.jda.core.managers.Presence#setGame(net.dv8tion.jda.core.entities.Activity)  Presence.setGame(Activity)
+     * @see    net.dv8tion.jda.core.managers.Presence#setActivity(net.dv8tion.jda.core.entities.Activity)  Presence.setActivity(Activity)
      */
-    public JDABuilder setGame(Activity game)
+    public JDABuilder setActivity(Activity activity)
     {
-        this.game = game;
+        this.activity = activity;
         return this;
     }
 
@@ -907,7 +907,7 @@ public class JDABuilder
 
         // Set the presence information before connecting to have the correct information ready when sending IDENTIFY
         ((PresenceImpl) jda.getPresence())
-                .setCacheGame(game)
+                .setCacheActivity(activity)
                 .setCacheIdle(idle)
                 .setCacheStatus(status);
         jda.login(gateway, shardInfo, enableCompression, true);

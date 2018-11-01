@@ -956,7 +956,7 @@ public interface ShardManager
      */
     default void setGameProvider(final IntFunction<? extends Activity> gameProvider)
     {
-        this.getShardCache().forEach(jda -> jda.getPresence().setGame(gameProvider.apply(jda.getShardInfo().getShardId())));
+        this.getShardCache().forEach(jda -> jda.getPresence().setActivity(gameProvider.apply(jda.getShardInfo().getShardId())));
     }
 
     /**

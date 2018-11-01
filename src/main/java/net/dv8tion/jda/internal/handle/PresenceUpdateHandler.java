@@ -27,8 +27,12 @@ import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.entities.UserImpl;
+import net.dv8tion.jda.internal.utils.Helpers;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class PresenceUpdateHandler extends SocketHandler
@@ -108,18 +112,22 @@ public class PresenceUpdateHandler extends SocketHandler
 
             //Now that we've update the User's info, lets see if we need to set the specific Presence information.
             // This is stored in the Member or Relation objects.
-            final JSONObject game = !getJDA().isCacheFlagSet(CacheFlag.PRESENCE) || content.isNull("game") ? null : content.optJSONObject("game");
-            Activity nextGame = null;
+            final JSONArray activityArray = !getJDA().isCacheFlagSet(CacheFlag.PRESENCE) || content.isNull("activities") ? null : content.getJSONArray("activities");
+            List<Activity> newActivities = new ArrayList<>();
             boolean parsedGame = false;
             try
             {
-                nextGame = game == null ? null : EntityBuilder.createAcitvity(game);
-                parsedGame = true;
+                if (activityArray != null)
+                {
+                    for (int i = 0; i < activityArray.length(); i++)
+                        newActivities.add(EntityBuilder.createAcitvity(activityArray.getJSONObject(i)));
+                    parsedGame = true;
+                }
             }
             catch (Exception ex)
             {
                 if (EntityBuilder.LOG.isDebugEnabled())
-                    EntityBuilder.LOG.warn("Encountered exception trying to parse a presence! UserID: {} JSON: {}", userId, game, ex);
+                    EntityBuilder.LOG.warn("Encountered exception trying to parse a presence! UserID: {} JSON: {}", userId, activityArray, ex);
                 else
                     EntityBuilder.LOG.warn("Encountered exception trying to parse a presence! UserID: {} Message: {} Enable debug for details", userId, ex.getMessage());
             }
@@ -158,14 +166,14 @@ public class PresenceUpdateHandler extends SocketHandler
                                 getJDA(), responseNumber,
                                 user, guild, oldStatus));
                     }
-                    if (parsedGame && !Objects.equals(member.getActivity(), nextGame))
+                    if (parsedGame && !Helpers.deepEquals(member.getActivities(), newActivities))
                     {
-                        Activity oldGame = member.getActivity();
-                        member.setGame(nextGame);
+                        List<Activity> oldActivities = member.getActivities();
+                        member.setActivities(newActivities);
                         getJDA().getEventManager().handle(
-                            new UserUpdateGameEvent(
+                            new UserUpdateActivitiesEvent(
                                 getJDA(), responseNumber,
-                                user, guild, oldGame));
+                                user, guild, oldActivities));
                     }
                 }
             }
@@ -188,14 +196,14 @@ public class PresenceUpdateHandler extends SocketHandler
                                 getJDA(), responseNumber,
                                 user, null, oldStatus));
                     }
-                    if (parsedGame && !Objects.equals(friend.getGame(), nextGame))
+                    if (parsedGame && !Helpers.deepEquals(friend.getActivities(), newActivities))
                     {
-                        Activity oldGame = friend.getGame();
-                        friend.setGame(nextGame);
+                        List<Activity> oldActivities = friend.getActivities();
+                        friend.setActivities(newActivities);
                         getJDA().getEventManager().handle(
-                            new UserUpdateGameEvent(
+                            new UserUpdateActivitiesEvent(
                                 getJDA(), responseNumber,
-                                user, null, oldGame));
+                                user, null, oldActivities));
                     }
                 }
             }

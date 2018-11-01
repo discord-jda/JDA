@@ -25,7 +25,7 @@ import net.dv8tion.jda.core.entities.Member;
 public enum CacheFlag
 {
     /**
-     * Enables cache for {@link Member#getActivity()}
+     * Enables cache for {@link Member#getActivities()}
      */
     PRESENCE,
     /**

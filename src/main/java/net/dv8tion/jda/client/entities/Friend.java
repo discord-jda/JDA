@@ -20,8 +20,9 @@ import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Activity;
 import net.dv8tion.jda.core.requests.RestAction;
 
-import java.time.OffsetDateTime;
 import javax.annotation.CheckReturnValue;
+import java.time.OffsetDateTime;
+import java.util.List;
 
 public interface Friend extends Relationship
 {
@@ -29,7 +30,7 @@ public interface Friend extends Relationship
 
     OffsetDateTime getOnlineStatusModifiedTime();
 
-    Activity getGame();
+    List<Activity> getActivities();
 
     @CheckReturnValue
     RestAction removeFriend();

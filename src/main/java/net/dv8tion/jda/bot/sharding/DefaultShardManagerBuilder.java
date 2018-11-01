@@ -526,7 +526,7 @@ public class DefaultShardManagerBuilder
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
-     * @see    net.dv8tion.jda.core.managers.Presence#setGame(net.dv8tion.jda.core.entities.Activity)
+     * @see    net.dv8tion.jda.core.managers.Presence#setActivity(net.dv8tion.jda.core.entities.Activity)
      */
     public DefaultShardManagerBuilder setGame(final Activity game)
     {
@@ -546,7 +546,7 @@ public class DefaultShardManagerBuilder
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
-     * @see    net.dv8tion.jda.core.managers.Presence#setGame(net.dv8tion.jda.core.entities.Activity)
+     * @see    net.dv8tion.jda.core.managers.Presence#setActivity(net.dv8tion.jda.core.entities.Activity)
      */
     public DefaultShardManagerBuilder setGameProvider(final IntFunction<? extends Activity> gameProvider)
     {

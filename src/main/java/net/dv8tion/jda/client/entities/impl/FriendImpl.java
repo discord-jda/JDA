@@ -24,6 +24,8 @@ import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.requests.RestAction;
 
 import java.time.OffsetDateTime;
+import java.util.Collections;
+import java.util.List;
 
 public class FriendImpl implements Friend
 {
@@ -31,7 +33,7 @@ public class FriendImpl implements Friend
 
     private OnlineStatus onlineStatus = OnlineStatus.OFFLINE;
     private OffsetDateTime lastModifiedTime;
-    private Activity game;
+    private List<Activity> activities = null;
 
     public FriendImpl(User user)
     {
@@ -69,9 +71,9 @@ public class FriendImpl implements Friend
     }
 
     @Override
-    public Activity getGame()
+    public List<Activity> getActivities()
     {
-        return game;
+        return activities == null || activities.isEmpty() ? Collections.emptyList() : Collections.unmodifiableList(activities);
     }
 
     @Override
@@ -102,9 +104,9 @@ public class FriendImpl implements Friend
         return this;
     }
 
-    public FriendImpl setGame(Activity game)
+    public FriendImpl setActivities(List<Activity> activities)
     {
-        this.game = game;
+        this.activities = activities;
         return this;
     }
 
