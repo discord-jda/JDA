@@ -29,6 +29,7 @@ import org.json.JSONArray;
 import javax.annotation.CheckReturnValue;
 import java.io.*;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -182,6 +183,88 @@ public interface MessageChannel extends ISnowflake, Formattable
         for (int i = 0; i < ids.length; i++)
             ids[i] = messages.get(i).getIdLong();
         return purgeMessagesById(ids);
+    }
+
+    /**
+     * Convenience method to delete messages in the most efficient way available.
+     * <br>This combines both {@link TextChannel#deleteMessagesByIds(Collection)} as well as {@link Message#delete()}
+     * to delete all messages provided. No checks will be done to prevent failures.
+     * <br>This takes the last {@code amount} messages and purges them.
+     *
+     * <p>This method itself does not throw any Exceptions. However, the other {@link #purgeMessages(List) purgeMessages}
+     * used in a callback here, does. To handle Exceptions and such, refer to
+     * {@link #purgeMessages(int, Consumer, Consumer)}.
+     *
+     * <p>For possible ErrorResponses see {@link #purgeMessagesById(long...)}.
+     *
+     * @param  amount
+     *         The amount of messages to delete
+     *
+     * @see    #purgeMessages(int, Consumer)
+     */
+    default void purgeMessages(int amount)
+    {
+        this.purgeMessages(amount, (v) -> {});
+    }
+
+    /**
+     * Convenience method to delete messages in the most efficient way available.
+     * <br>This combines both {@link TextChannel#deleteMessagesByIds(Collection)} as well as {@link Message#delete()}
+     * to delete all messages provided. No checks will be done to prevent failures.
+     * <br>This takes the last {@code amount} messages, purges them and accepts the callback afterwards.
+     *
+     * <p>This method itself does not throw any exceptions. However, the other {@link #purgeMessages(List) purgeMessages}
+     * used in a callback here, does. To handle Exceptions and such, refer to
+     * {@link #purgeMessages(int, Consumer, Consumer)}.
+     *
+     * <p>For possible ErrorResponses see {@link #purgeMessagesById(long...)}.
+     *
+     * @param  amount
+     *         The amount of messages to delete
+     *
+     * @param  callback
+     *         The action to run after all of the messages have been deleted
+     *
+     * @see    #purgeMessages(int, Consumer, Consumer)
+     */
+    default void purgeMessages(int amount, Consumer<? super Void> callback)
+    {
+        this.purgeMessages(amount, callback, (t) -> {});
+    }
+
+    /**
+     * Convenience method to delete messages in the most efficient way available.
+     * <br>This combines both {@link TextChannel#deleteMessagesByIds(Collection)} as well as {@link Message#delete()}
+     * to delete all messages provided. No checks will be done to prevent failures. Use the {@code exceptionally}
+     * parameter to handle Exceptions.
+     * <br>This takes the last {@code amount} messages, purges them and accepts the callback afterwards.
+     * If any Exceptions occur while purging, the {@code exceptionally} Consumer is accepted.
+     *
+     * <p>This method itself does not throw any exceptions. However, the other {@link #purgeMessages(List) purgeMessages}
+     * used in a callback here, does. To handle this, provide the {@code Consumer<Throwable> exceptionally}.
+     *
+     * <p>For possible ErrorResponses see {@link #purgeMessagesById(long...)}.
+     *
+     * @param  amount
+     *         The amount of messages to delete
+     *
+     * @param  callback
+     *         The action to run after all of the messages have been deleted
+     *
+     * @param  exceptionally
+     *         A {@link java.util.function.Consumer<java.lang.Throwable>} that will accept any Exceptions
+     *         occurring while purging the messages.
+     *
+     * @see    #purgeMessages(List)
+     */
+    default void purgeMessages(int amount, Consumer<? super Void> callback, Consumer<Throwable> exceptionally)
+    {
+        this.getIterableHistory().takeAsync(amount).thenAccept((messages) ->
+            RequestFuture.allOf(this.purgeMessages(messages)).thenAccept(callback))
+            .exceptionally((throwable) -> {
+                exceptionally.accept(throwable);
+                return null;
+            });
     }
 
     /**
