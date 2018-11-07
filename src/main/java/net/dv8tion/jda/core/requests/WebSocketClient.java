@@ -935,6 +935,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         catch (IOException e)
         {
             decompressBuffer.reset();
+            close(4000, "MALFORMED_PACKAGE");
             throw (DataFormatException) new DataFormatException("Malformed").initCause(e);
         }
         finally { readBuffer = null; }
