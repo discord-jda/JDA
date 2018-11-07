@@ -711,7 +711,8 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nullable
     @Override
-    public MessageActivity getActivity() {
+    public MessageActivity getActivity()
+    {
         return activity;
     }
 

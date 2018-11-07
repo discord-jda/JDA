@@ -794,12 +794,14 @@ public class EntityBuilder
                         application = new MessageActivity.Application(name, description, iconId, coverId, applicationId);
                     }
                     break;
+                case UNKNOWN:
+                    LOG.debug("Received an unknown ActivityType, Activity: {}", activityData);
+                    break;
                 default:
                     break;
             }
 
-            if (!(activityType != MessageActivity.ActivityType.LISTENING && application == null))
-                activity = new MessageActivity(activityType, partyId, application);
+            activity = new MessageActivity(activityType, partyId, application);
         }
 
         User user;

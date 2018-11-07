@@ -89,7 +89,8 @@ public class DataMessage extends AbstractMessage
 
     @Nullable
     @Override
-    public MessageActivity getActivity() {
+    public MessageActivity getActivity()
+    {
         unsupported();
         return null;
     }

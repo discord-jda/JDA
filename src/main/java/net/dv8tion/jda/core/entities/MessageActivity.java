@@ -49,7 +49,7 @@ public class MessageActivity
     /**
      * The party id discord uses internally, it may be {@code null}.
      *
-     * @return the parties id.
+     * @return Possibly-null party id.
      */
     @Nullable
     public String getPartyId()
@@ -62,6 +62,7 @@ public class MessageActivity
      *
      * @return A possibly-null {@link net.dv8tion.jda.core.entities.MessageActivity.Application}.
      */
+    @Nullable
     public MessageActivity.Application getApplication()
     {
         return application;
@@ -70,7 +71,7 @@ public class MessageActivity
     /**
      * Represents the {@link net.dv8tion.jda.core.entities.Message} application if the
      * {@link net.dv8tion.jda.core.entities.MessageActivity.ActivityType ActivityType} of the
-     * {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity} not equals
+     * {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity} does not equal
      * {@link net.dv8tion.jda.core.entities.MessageActivity.ActivityType#LISTENING ActivityType.LISTENING}.
      *
      * <br>Many applications can be found at:
@@ -161,7 +162,7 @@ public class MessageActivity
     }
 
     /**
-     * An enum containing {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity} types.
+     * An enum representing {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity} types.
      */
     public enum ActivityType
     {
@@ -182,8 +183,7 @@ public class MessageActivity
          */
         JOIN_REQUEST(5),
         /**
-         * Unknown Discord {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity} type. Should never happen and would only possibly happen if Discord implemented a new
-         * {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity} type and JDA had yet to implement support for it.
+         * The {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity} type handling all unsupported types.
          */
         UNKNOWN(-1);
 
@@ -206,7 +206,8 @@ public class MessageActivity
 
         public static ActivityType fromId(int id)
         {
-            for (ActivityType activityType : values()) {
+            for (ActivityType activityType : values())
+            {
                 if (activityType.id == id)
                     return activityType;
             }
