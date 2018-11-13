@@ -14,35 +14,30 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.events.user.update;
+package net.dv8tion.jda.core.events.user;
 
 import net.dv8tion.jda.client.entities.Friend;
+import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Activity;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.core.events.user.update.GenericUserPresenceEvent;
 
-import java.util.List;
-
-/**
- * Indicates that the {@link net.dv8tion.jda.core.entities.Activity Activity} order of a {@link net.dv8tion.jda.core.entities.User User} changes.
- * <br>As with any presence updates this either happened for a {@link net.dv8tion.jda.core.entities.Member Member} in a Guild or a {@link net.dv8tion.jda.client.entities.Friend Friend}!
- *
- * <p>Can be used to retrieve the User who changed their Activities and their previous Activities.
- *
- * <p>Identifier: {@code activity_order}
- */
-//TODO: Keep client support?
-public class UserUpdateActivityOrderEvent extends GenericUserUpdateEvent<List<Activity>> implements GenericUserPresenceEvent
+public class UserActivityEndEvent extends GenericUserEvent implements GenericUserPresenceEvent // TODO: Docs, client support?
 {
-    public static final String IDENTIFIER = "activity_order";
-
+    private final Activity oldActivity;
     private final Member member;
 
-    public UserUpdateActivityOrderEvent(JDAImpl api, long responseNumber, List<Activity> previous, Member member)
+    public UserActivityEndEvent(JDA api, long responseNumber, Member member, Activity oldActivity)
     {
-        super(api, responseNumber, member.getUser(), previous, member.getActivities(), IDENTIFIER);
+        super(api, responseNumber, member.getUser());
+        this.oldActivity = oldActivity;
         this.member = member;
+    }
+
+    public Activity getOldActivity()
+    {
+        return oldActivity;
     }
 
     @Override
@@ -58,8 +53,7 @@ public class UserUpdateActivityOrderEvent extends GenericUserUpdateEvent<List<Ac
     }
 
     @Override
-    public Friend getFriend()
-    {
+    public Friend getFriend() {
         return null;
     }
 }

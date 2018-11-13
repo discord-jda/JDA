@@ -17,10 +17,8 @@
 package net.dv8tion.jda.core.events.user.update;
 
 import net.dv8tion.jda.client.entities.Friend;
-import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.User;
 
 /**
  * Indicates that the presence of a {@link net.dv8tion.jda.core.entities.User User} has changed.
@@ -29,54 +27,35 @@ import net.dv8tion.jda.core.entities.User;
  *
  * <p>Can be used to track the presence updates of members/friends.
  */
-public abstract class GenericUserPresenceEvent<T> extends GenericUserUpdateEvent<T>
+public interface GenericUserPresenceEvent
 {
-    protected final Guild guild;
-
-    public GenericUserPresenceEvent(
-        JDA api, long responseNumber, User user, Guild guild,
-        T previous, T next, String identifier)
-    {
-        super(api, responseNumber, user, previous, next, identifier);
-        this.guild = guild;
-    }
-
     /**
      * Possibly-null guild in which the presence has changed.
      *
      * @return The guild, or null if this is related to a {@link net.dv8tion.jda.client.entities.Friend Friend}
      */
-    public Guild getGuild()
-    {
-        return guild;
-    }
+    Guild getGuild();
 
     /**
      * Possibly-null member who changed their presence.
      *
      * @return The member, or null if this is related to a {@link net.dv8tion.jda.client.entities.Friend Friend}
      */
-    public Member getMember()
-    {
-        return !isRelationshipUpdate() ? getGuild().getMember(getUser()) : null;
-    }
+    Member getMember();
 
     /**
      * Possibly-null friend who changed their presence.
      *
      * @return The friend, or null if this is related to a {@link net.dv8tion.jda.core.entities.Member Member}
      */
-    public Friend getFriend()
-    {
-        return isRelationshipUpdate() ? getJDA().asClient().getFriend(getUser()) : null;
-    }
+    Friend getFriend();
 
     /**
      * Whether this is a change for a friend presence.
      *
      * @return True, if this was the presence update for a {@link net.dv8tion.jda.client.entities.Friend Friend}
      */
-    public boolean isRelationshipUpdate()
+    default boolean isRelationshipUpdate()
     {
         return getGuild() == null;
     }

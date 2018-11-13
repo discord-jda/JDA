@@ -16,9 +16,11 @@
 
 package net.dv8tion.jda.core.events.user.update;
 
+import net.dv8tion.jda.client.entities.Friend;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
 
 /**
@@ -29,14 +31,35 @@ import net.dv8tion.jda.core.entities.User;
  *
  * <p>Identifier: {@code status}
  */
-public class UserUpdateOnlineStatusEvent extends GenericUserPresenceEvent<OnlineStatus>
+public class UserUpdateOnlineStatusEvent extends GenericUserUpdateEvent<OnlineStatus> implements GenericUserPresenceEvent
 {
     public static final String IDENTIFIER = "status";
 
+    private final Guild guild;
+
     public UserUpdateOnlineStatusEvent(JDA api, long responseNumber, User user, Guild guild, OnlineStatus oldOnlineStatus)
     {
-        super(api, responseNumber, user, guild, oldOnlineStatus,
+        super(api, responseNumber, user, oldOnlineStatus,
             guild == null ? api.asClient().getFriend(user).getOnlineStatus() : guild.getMember(user).getOnlineStatus(), IDENTIFIER);
+        this.guild = guild;
+    }
+
+    @Override
+    public Guild getGuild()
+    {
+        return guild;
+    }
+
+    @Override
+    public Member getMember()
+    {
+        return !isRelationshipUpdate() ? guild.getMember(getUser()) : null;
+    }
+
+    @Override
+    public Friend getFriend()
+    {
+        return isRelationshipUpdate() ? getJDA().asClient().getFriend(getUser()) : null;
     }
 
     /**

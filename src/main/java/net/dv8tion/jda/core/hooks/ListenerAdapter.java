@@ -83,6 +83,8 @@ import net.dv8tion.jda.core.events.role.RoleDeleteEvent;
 import net.dv8tion.jda.core.events.role.update.*;
 import net.dv8tion.jda.core.events.self.*;
 import net.dv8tion.jda.core.events.user.GenericUserEvent;
+import net.dv8tion.jda.core.events.user.UserActivityEndEvent;
+import net.dv8tion.jda.core.events.user.UserActivityStartEvent;
 import net.dv8tion.jda.core.events.user.UserTypingEvent;
 import net.dv8tion.jda.core.events.user.update.*;
 
@@ -130,8 +132,10 @@ public abstract class ListenerAdapter implements EventListener
     public void onUserUpdateDiscriminator(UserUpdateDiscriminatorEvent event) {}
     public void onUserUpdateAvatar(UserUpdateAvatarEvent event) {}
     public void onUserUpdateOnlineStatus(UserUpdateOnlineStatusEvent event) {}
-    public void onUserUpdateActivities(UserUpdateActivitiesEvent event) {}
+    public void onUserUpdateActivityOrder(UserUpdateActivityOrderEvent event) {}
     public void onUserTyping(UserTypingEvent event) {}
+    public void onUserActivityStart(UserActivityStartEvent event) {}
+    public void onUserActivityEnd(UserActivityEndEvent event) {}
 
     //Self Events. Fires only in relation to the currently logged in account.
     public void onSelfUpdateAvatar(SelfUpdateAvatarEvent event) {}
@@ -431,12 +435,16 @@ public abstract class ListenerAdapter implements EventListener
             onUserUpdateDiscriminator((UserUpdateDiscriminatorEvent) event);
         else if (event instanceof UserUpdateAvatarEvent)
             onUserUpdateAvatar((UserUpdateAvatarEvent) event);
-        else if (event instanceof UserUpdateActivitiesEvent)
-            onUserUpdateActivities((UserUpdateActivitiesEvent) event);
+        else if (event instanceof UserUpdateActivityOrderEvent)
+            onUserUpdateActivityOrder((UserUpdateActivityOrderEvent) event);
         else if (event instanceof UserUpdateOnlineStatusEvent)
             onUserUpdateOnlineStatus((UserUpdateOnlineStatusEvent) event);
         else if (event instanceof UserTypingEvent)
             onUserTyping((UserTypingEvent) event);
+        else if (event instanceof UserActivityStartEvent)
+            onUserActivityStart((UserActivityStartEvent) event);
+        else if (event instanceof UserActivityEndEvent)
+            onUserActivityEnd((UserActivityEndEvent) event);
 
         //Self Events
         else if (event instanceof SelfUpdateAvatarEvent)

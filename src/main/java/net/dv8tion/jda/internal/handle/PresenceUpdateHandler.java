@@ -20,6 +20,8 @@ import net.dv8tion.jda.client.entities.impl.FriendImpl;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Activity;
+import net.dv8tion.jda.core.events.user.UserActivityEndEvent;
+import net.dv8tion.jda.core.events.user.UserActivityStartEvent;
 import net.dv8tion.jda.core.events.user.update.*;
 import net.dv8tion.jda.core.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -185,10 +187,29 @@ public class PresenceUpdateHandler extends SocketHandler
                         else
                         {
                             member.setActivities(newActivities);
-                            getJDA().getEventManager().handle(
-                                new UserUpdateActivitiesEvent(
-                                    getJDA(), responseNumber,
-                                    user, guild, oldActivities));
+                            oldActivities = new ArrayList<>(oldActivities); // create modifiable copy
+                            List<Activity> startedActivities = new ArrayList<>();
+                            for (Activity activity : newActivities)
+                            {
+                                if (!oldActivities.remove(activity))
+                                    startedActivities.add(activity);
+                            }
+
+                            for (Activity activity : startedActivities)
+                            {
+                                getJDA().getEventManager().handle(
+                                    new UserActivityStartEvent(
+                                        getJDA(), responseNumber,
+                                        member, activity));
+                            }
+
+                            for (Activity activity : oldActivities)
+                            {
+                                getJDA().getEventManager().handle(
+                                    new UserActivityEndEvent(
+                                        getJDA(), responseNumber,
+                                        member, activity));
+                            }
                         }
                     }
                 }
@@ -216,10 +237,11 @@ public class PresenceUpdateHandler extends SocketHandler
                     {
                         List<Activity> oldActivities = friend.getActivities();
                         friend.setActivities(newActivities);
-                        getJDA().getEventManager().handle(
-                            new UserUpdateActivitiesEvent(
-                                getJDA(), responseNumber,
-                                user, null, oldActivities));
+                        //TODO: Decide on client support
+//                        getJDA().getEventManager().handle(
+//                            new UserUpdateActivitiesEvent(
+//                                getJDA(), responseNumber,
+//                                user, null, oldActivities));
                     }
                 }
             }
