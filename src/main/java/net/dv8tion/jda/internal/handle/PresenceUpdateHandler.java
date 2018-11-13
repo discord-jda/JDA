@@ -169,21 +169,26 @@ public class PresenceUpdateHandler extends SocketHandler
                     if (parsedGame)
                     {
                         List<Activity> oldActivities = member.getActivities();
-                        if (!Helpers.deepEquals(oldActivities, newActivities)) //TODO: Make this actually logical
+                        boolean unorderedEquals = Helpers.deepEqualsUnordered(oldActivities, newActivities);
+                        if (unorderedEquals)
+                        {
+                            boolean deepEquals = Helpers.deepEquals(oldActivities, newActivities);
+                            if (!deepEquals)
+                            {
+                                member.setActivities(newActivities);
+                                getJDA().getEventManager().handle(
+                                    new UserUpdateActivityOrderEvent(
+                                        getJDA(), responseNumber,
+                                        oldActivities, member));
+                            }
+                        }
+                        else
                         {
                             member.setActivities(newActivities);
                             getJDA().getEventManager().handle(
                                 new UserUpdateActivitiesEvent(
                                     getJDA(), responseNumber,
                                     user, guild, oldActivities));
-                        }
-                        else if (!Helpers.deepEqualsUnordered(oldActivities, newActivities))
-                        {
-                            member.setActivities(newActivities);
-                            getJDA().getEventManager().handle(
-                                new UserUpdateActivityOrderEvent(
-                                    getJDA(), responseNumber,
-                                    oldActivities, member));
                         }
                     }
                 }
