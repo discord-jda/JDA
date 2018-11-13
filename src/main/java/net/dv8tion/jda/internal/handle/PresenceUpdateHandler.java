@@ -169,7 +169,7 @@ public class PresenceUpdateHandler extends SocketHandler
                     if (parsedGame)
                     {
                         List<Activity> oldActivities = member.getActivities();
-                        if (!Helpers.deepEquals(oldActivities, newActivities))
+                        if (!Helpers.deepEquals(oldActivities, newActivities)) //TODO: Make this actually logical
                         {
                             member.setActivities(newActivities);
                             getJDA().getEventManager().handle(
