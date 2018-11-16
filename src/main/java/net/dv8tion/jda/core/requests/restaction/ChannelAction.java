@@ -133,7 +133,11 @@ public class ChannelAction extends AuditableRestAction<Channel>
      * This refers to the raw position value, not the computed (relative) position.
      * <p>
      * By default (or by providing this method with {@code null}),
-     * the position will automatically be computed based on the other channels.
+     * the position will automatically be computed based on the other Channels (inserted last in its respective group).
+     * <p>
+     * Note: This does not shift the position values of existing Channels if the values collide.
+     * <br>As a reminder: The ordering of Channels is determined first by its Category's position, then by its raw
+     * position value and finally by its id (younger Channels are below older ones)
      *
      * @param  position
      *         The raw position value that should be used for the new Channel
