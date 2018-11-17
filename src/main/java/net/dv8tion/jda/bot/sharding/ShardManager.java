@@ -110,9 +110,9 @@ public interface ShardManager
      * The provider takes shard ids, and returns a collection of listeners that shall be removed from the respective
      * shards.
      *
-     * @param eventListenerProvider
-     *        gets shard ids applied and is expected to return a collection of listeners that shall be removed from
-     *        the respective shards
+     * @param  eventListenerProvider
+     *         Gets shard ids applied and is expected to return a collection of listeners that shall be removed from
+     *         the respective shards
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided event listeners provider is {@code null}.
@@ -224,9 +224,11 @@ public interface ShardManager
      *         The name to check
      * @param  ignoreCase
      *         Whether to ignore case on name checking
-     * @return Immutable list of all categories matching the provided name
+     *
      * @throws java.lang.IllegalArgumentException
      *         If the provided name is {@code null}
+     *
+     * @return Immutable list of all categories matching the provided name
      */
     default List<Category> getCategoriesByName(final String name, final boolean ignoreCase)
     {
@@ -252,9 +254,11 @@ public interface ShardManager
      *
      * @param  id
      *         The snowflake ID of the wanted Category
-     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Category Category} for the provided ID.
+     *
      * @throws java.lang.IllegalArgumentException
      *         If the provided ID is not a valid {@code long}
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Category Category} for the provided ID.
      */
     default Category getCategoryById(final String id)
     {
@@ -279,8 +283,9 @@ public interface ShardManager
      *
      * @param  id
      *         The id of the requested {@link net.dv8tion.jda.core.entities.Emote}.
+     *
      * @return An {@link net.dv8tion.jda.core.entities.Emote Emote} represented by this id or null if none is found in
-     * our cache.
+     *         our cache.
      */
     default Emote getEmoteById(final long id)
     {
@@ -294,10 +299,12 @@ public interface ShardManager
      *
      * @param  id
      *         The id of the requested {@link net.dv8tion.jda.core.entities.Emote}.
-     * @return An {@link net.dv8tion.jda.core.entities.Emote Emote} represented by this id or null if none is found in
-     *         our cache.
+     *
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
+     * @return An {@link net.dv8tion.jda.core.entities.Emote Emote} represented by this id or null if none is found in
+     *         our cache.
      */
     default Emote getEmoteById(final String id)
     {
@@ -343,6 +350,7 @@ public interface ShardManager
      * @param  ignoreCase
      *         Whether to ignore case or not when comparing the provided name to each {@link
      *         net.dv8tion.jda.core.entities.Emote#getName()}.
+     *
      * @return Possibly-empty list of all the {@link net.dv8tion.jda.core.entities.Emote Emotes} that all have the same
      *         name as the provided name.
      */
@@ -421,7 +429,7 @@ public interface ShardManager
      * Gets all {@link net.dv8tion.jda.core.entities.Guild Guilds} that contain all given users as their members.
      *
      * @param  users
-     *        The users which all the returned {@link net.dv8tion.jda.core.entities.Guild Guilds} must contain.
+     *         The users which all the returned {@link net.dv8tion.jda.core.entities.Guild Guilds} must contain.
      *
      * @return Unmodifiable list of all {@link net.dv8tion.jda.core.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.core.entities.User Users} in them.
      */
@@ -553,6 +561,7 @@ public interface ShardManager
      *
      * @param  id
      *         The id of the {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}.
+     *
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      *
@@ -591,6 +600,7 @@ public interface ShardManager
      *
      * @param  id
      *         The id of the searched Role
+     *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.Role Role} for the specified ID
      */
     default Role getRoleById(final long id)
@@ -605,9 +615,11 @@ public interface ShardManager
      *
      * @param  id
      *         The id of the searched Role
-     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Role Role} for the specified ID
+     *
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.core.entities.Role Role} for the specified ID
      */
     default Role getRoleById(final String id)
     {
@@ -646,6 +658,7 @@ public interface ShardManager
      *         The name for the Roles
      * @param  ignoreCase
      *         Whether to use {@link String#equalsIgnoreCase(String)}
+     *
      * @return Immutable List of all Roles matching the parameters provided.
      */
     default List<Role> getRolesByName(final String name, final boolean ignoreCase)
@@ -708,7 +721,7 @@ public interface ShardManager
      * @param  shardId
      *         The id of the shard.
      *
-     * @return The  {@link net.dv8tion.jda.core.JDA.Status JDA.Status} of the shard with the given shardId or
+     * @return The {@link net.dv8tion.jda.core.JDA.Status JDA.Status} of the shard with the given shardId or
      *         {@code null} if no shard has the given id
      */
     default JDA.Status getStatus(final int shardId)
@@ -858,7 +871,8 @@ public interface ShardManager
      * <br>If there is no known {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} with an id that matches the provided
      * one, then this returns {@code null}.
      *
-     * @param  id The id of the {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}.
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}.
      *
      * @return Possibly-null {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} with matching id.
      */
@@ -918,8 +932,8 @@ public interface ShardManager
      * @param  id
      *         The id of the target shard
      *
-     * @throws IllegalArgumentException
-     *         if shardId is negative or higher than maxShardId
+     * @throws java.lang.IllegalArgumentException
+     *         If shardId is negative or higher than maxShardId
      */
     void restart(int id);
 
@@ -967,7 +981,7 @@ public interface ShardManager
      *
      * <p>This will also change the value for shards that are created in the future.
      *
-     * @param  idle
+     * @param idle
      *        boolean
      */
     default void setIdle(final boolean idle)
@@ -980,7 +994,7 @@ public interface ShardManager
      *
      * <p>This will also change the provider for shards that are created in the future.
      *
-     * @param  idleProvider
+     * @param idleProvider
      *        boolean
      */
     default void setIdleProvider(final IntFunction<Boolean> idleProvider)
@@ -989,16 +1003,61 @@ public interface ShardManager
     }
 
     /**
+     * Sets the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} and {@link net.dv8tion.jda.core.entities.Game Game} for all shards.
+     *
+     * <p>This will also change the status for shards that are created in the future.
+     *
+     * @param  status
+     *         The {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus}
+     *         to be used (OFFLINE/null {@literal ->} INVISIBLE)
+     * @param  game
+     *         A {@link net.dv8tion.jda.core.entities.Game Game} instance or null to reset
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided OnlineStatus is {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}
+     *
+     * @see    net.dv8tion.jda.core.entities.Game#playing(String)
+     * @see    net.dv8tion.jda.core.entities.Game#streaming(String, String)
+     */
+    default void setPresence(final OnlineStatus status, final Game game)
+    {
+        this.setPresenceProvider(id -> status, id -> game);
+    }
+
+    /**
+     * Sets the provider that provides the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} and
+     * {@link net.dv8tion.jda.core.entities.Game Game} for all shards.
+     *
+     * <p>This will also change the status for shards that are created in the future.
+     *
+     * @param  statusProvider
+     *         The {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus}
+     *         to be used (OFFLINE/null {@literal ->} INVISIBLE)
+     * @param  gameProvider
+     *         A {@link net.dv8tion.jda.core.entities.Game Game} instance or null to reset
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided OnlineStatus is {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}
+     *
+     * @see    net.dv8tion.jda.core.entities.Game#playing(String)
+     * @see    net.dv8tion.jda.core.entities.Game#streaming(String, String)
+     */
+    default void setPresenceProvider(final IntFunction<OnlineStatus> statusProvider, final IntFunction<? extends Game> gameProvider)
+    {
+        this.getShardCache().forEach(jda -> jda.getPresence().setPresence(statusProvider.apply(jda.getShardInfo().getShardId()), gameProvider.apply(jda.getShardInfo().getShardId())));
+    }
+
+    /**
      * Sets the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} for all shards.
      *
      * <p>This will also change the status for shards that are created in the future.
      *
-     * @throws IllegalArgumentException
-     *         if the provided OnlineStatus is {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}
-     *
      * @param  status
-     *         the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus}
+     *         The {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus}
      *         to be used (OFFLINE/null {@literal ->} INVISIBLE)
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided OnlineStatus is {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}
      */
     default void setStatus(final OnlineStatus status)
     {
@@ -1010,12 +1069,12 @@ public interface ShardManager
      *
      * <p>This will also change the provider for shards that are created in the future.
      *
-     * @throws IllegalArgumentException
-     *         if the provided OnlineStatus is {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}
-     *
      * @param  statusProvider
-     *         the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus}
+     *         The {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus}
      *         to be used (OFFLINE/null {@literal ->} INVISIBLE)
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided OnlineStatus is {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}
      */
     default void setStatusProvider(final IntFunction<OnlineStatus> statusProvider)
     {
@@ -1032,7 +1091,7 @@ public interface ShardManager
      * Shuts down the shard with the given id only.
      * <br> This does nothing if there is no shard with the given id.
      *
-     * @param  shardId
+     * @param shardId
      *        The id of the shard that should be stopped
      */
     void shutdown(int shardId);
@@ -1040,7 +1099,7 @@ public interface ShardManager
     /**
      * Adds a new shard with the given id to this ShardManager and starts it.
      *
-     * @param  shardId
+     * @param shardId
      *        The id of the shard that should be started
      */
     void start(int shardId);
