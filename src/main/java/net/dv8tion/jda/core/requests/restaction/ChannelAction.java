@@ -47,6 +47,7 @@ public class ChannelAction extends AuditableRestAction<GuildChannel>
     protected final ChannelType type;
     protected String name;
     protected Category parent;
+    protected Integer position;
 
     // --text only--
     protected String topic = null;
@@ -125,6 +126,33 @@ public class ChannelAction extends AuditableRestAction<GuildChannel>
     {
         Checks.check(category == null || category.getGuild().equals(guild), "Category is not from same guild!");
         this.parent = category;
+        return this;
+    }
+
+    /**
+     * Sets the position where the new Channel should be inserted into.
+     * This refers to the raw position value, not the computed (relative) position.
+     * <p>
+     * By default (or by providing this method with {@code null}),
+     * the position will automatically be computed based on the other Channels (inserted last in its respective group).
+     * <p>
+     * Note: This does not shift the position values of existing Channels if the values collide.
+     * <br>As a reminder: The ordering of Channels is determined first by its Category's position, then by its raw
+     * position value and finally by its id (younger Channels are below older ones)
+     *
+     * @param  position
+     *         The raw position value that should be used for the new Channel
+     *
+     * @throws IllegalArgumentException
+     *         If the provided position value is {@code <0}
+     *
+     * @return The current ChannelAction, for chaining convenience
+     */
+    @CheckReturnValue
+    public ChannelAction setPosition(Integer position)
+    {
+        Checks.check(position == null || position >= 0, "Position must be >= 0!");
+        this.position = position;
         return this;
     }
 
@@ -359,6 +387,8 @@ public class ChannelAction extends AuditableRestAction<GuildChannel>
         object.put("name", name);
         object.put("type", type.getId());
         object.put("permission_overwrites", new JSONArray(overrides));
+        if (position != null)
+            object.put("position", position);
         switch (type)
         {
             case VOICE:
