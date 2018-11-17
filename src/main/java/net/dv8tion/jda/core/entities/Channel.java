@@ -172,7 +172,7 @@ public interface Channel extends ISnowflake
      *     <li>Name</li>
      *     <li>Parent Category (if present)</li>
      *     <li>Voice Elements (Bitrate, Userlimit)</li>
-     *     <li>Text Elements (Topic, NSFW)</li>
+     *     <li>Text Elements (Topic, NSFW, Slowmode)</li>
      *     <li>All permission overrides for Members/Roles</li>
      * </ol>
      *

@@ -296,7 +296,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     public ChannelAction createCopy(Guild guild)
     {
         Checks.notNull(guild, "Guild");
-        ChannelAction action = guild.getController().createTextChannel(name).setNSFW(nsfw).setTopic(topic);
+        ChannelAction action = guild.getController().createTextChannel(name).setNSFW(nsfw).setTopic(topic).setSlowmode(slowmode);
         if (guild.equals(getGuild()))
         {
             Category parent = getParent();
