@@ -747,7 +747,7 @@ public class DefaultShardManager implements ShardManager
     }
 
     @Override
-    public void setPresenceProvider(IntFunction<OnlineStatus> statusProvider, IntFunction<? extends Game> gameProvider)
+    public void setPresenceProvider(IntFunction<OnlineStatus> statusProvider, IntFunction<? extends Activity> gameProvider)
     {
         ShardManager.super.setPresenceProvider(statusProvider, gameProvider);
 

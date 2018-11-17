@@ -1003,7 +1003,7 @@ public interface ShardManager
     }
 
     /**
-     * Sets the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} and {@link net.dv8tion.jda.core.entities.Game Game} for all shards.
+     * Sets the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} and {@link net.dv8tion.jda.core.entities.Activity Activity} for all shards.
      *
      * <p>This will also change the status for shards that are created in the future.
      *
@@ -1011,22 +1011,22 @@ public interface ShardManager
      *         The {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus}
      *         to be used (OFFLINE/null {@literal ->} INVISIBLE)
      * @param  game
-     *         A {@link net.dv8tion.jda.core.entities.Game Game} instance or null to reset
+     *         A {@link net.dv8tion.jda.core.entities.Activity Activity} instance or null to reset
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided OnlineStatus is {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}
      *
-     * @see    net.dv8tion.jda.core.entities.Game#playing(String)
-     * @see    net.dv8tion.jda.core.entities.Game#streaming(String, String)
+     * @see    net.dv8tion.jda.core.entities.Activity#playing(String)
+     * @see    net.dv8tion.jda.core.entities.Activity#streaming(String, String)
      */
-    default void setPresence(final OnlineStatus status, final Game game)
+    default void setPresence(final OnlineStatus status, final Activity game)
     {
         this.setPresenceProvider(id -> status, id -> game);
     }
 
     /**
      * Sets the provider that provides the {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus} and
-     * {@link net.dv8tion.jda.core.entities.Game Game} for all shards.
+     * {@link net.dv8tion.jda.core.entities.Activity Activity} for all shards.
      *
      * <p>This will also change the status for shards that are created in the future.
      *
@@ -1034,15 +1034,15 @@ public interface ShardManager
      *         The {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus}
      *         to be used (OFFLINE/null {@literal ->} INVISIBLE)
      * @param  gameProvider
-     *         A {@link net.dv8tion.jda.core.entities.Game Game} instance or null to reset
+     *         A {@link net.dv8tion.jda.core.entities.Activity Activity} instance or null to reset
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided OnlineStatus is {@link net.dv8tion.jda.core.OnlineStatus#UNKNOWN UNKNOWN}
      *
-     * @see    net.dv8tion.jda.core.entities.Game#playing(String)
-     * @see    net.dv8tion.jda.core.entities.Game#streaming(String, String)
+     * @see    net.dv8tion.jda.core.entities.Activity#playing(String)
+     * @see    net.dv8tion.jda.core.entities.Activity#streaming(String, String)
      */
-    default void setPresenceProvider(final IntFunction<OnlineStatus> statusProvider, final IntFunction<? extends Game> gameProvider)
+    default void setPresenceProvider(final IntFunction<OnlineStatus> statusProvider, final IntFunction<? extends Activity> gameProvider)
     {
         this.getShardCache().forEach(jda -> jda.getPresence().setPresence(statusProvider.apply(jda.getShardInfo().getShardId()), gameProvider.apply(jda.getShardInfo().getShardId())));
     }
