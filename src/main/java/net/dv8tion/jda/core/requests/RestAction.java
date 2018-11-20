@@ -173,7 +173,7 @@ public abstract class RestAction<T>
 
     private static final Consumer FALLBACK_CONSUMER = o -> {};
 
-    protected static boolean passContext = false;
+    protected static boolean passContext = true;
 
     protected final UpstreamReference<JDAImpl> api;
 
@@ -186,7 +186,6 @@ public abstract class RestAction<T>
     /**
      * If enabled this will pass a {@link net.dv8tion.jda.core.exceptions.ContextException ContextException}
      * as root-cause to all failure consumers.
-     * Note that the {@link #DEFAULT_FAILURE} does not print a stack-trace at all unless specified!
      * <br>This might cause performance decrease due to the creation of exceptions for <b>every</b> execution.
      *
      * <p>It is recommended to pass a context consumer as failure manually using {@code queue(success, ContextException.here(failure))}
