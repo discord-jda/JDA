@@ -6,7 +6,7 @@
 [FAQ]: https://img.shields.io/badge/Wiki-FAQ-blue.svg
 [Troubleshooting]: https://img.shields.io/badge/Wiki-Troubleshooting-red.svg
 [ ![version][] ][download]
-[ ![jenkins][] ](http://home.dv8tion.net:8080/job/JDA/lastSuccessfulBuild/)
+[ ![jenkins][] ](https://ci.dv8tion.net/job/JDA)
 [ ![license][] ](https://github.com/DV8FromTheWorld/JDA/tree/master/LICENSE)
 [ ![Discord](https://discordapp.com/api/guilds/125227483518861312/widget.png) ][discord-invite]
 [ ![FAQ] ](https://github.com/DV8FromTheWorld/JDA/wiki/10\)-FAQ)
@@ -142,7 +142,7 @@ To use sharding in JDA you will need to use `JDABuilder.useSharding(int shardId,
 has the ID 0. The **shardTotal** is the total amount of shards (not 0-based) which can be seen similar to the length of an array, the last shard has the ID of
 `shardTotal - 1`.
 
-The [`SessionController`](http://home.dv8tion.net:8080/job/JDA/javadoc/net/dv8tion/jda/core/utils/SessionController.html) is a tool of the JDABuilder
+The [`SessionController`](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/core/utils/SessionController.html) is a tool of the JDABuilder
 that allows to control state and behaviour between shards (sessions). When using multiple builders to build shards you have to create one instance
 of this controller and add the same instance to each builder: `builder.setSessionController(controller)`
 
@@ -265,7 +265,7 @@ We strongly recommend to use one though, as that can improve speed and allows yo
 The most popular implementations are [Log4j 2](https://logging.apache.org/log4j/2.x/) and [Logback](https://logback.qos.ch/)
 
 ## Documentation
-Docs can be found on the [Jenkins](http://home.dv8tion.net:8080/) or directly [here](http://home.dv8tion.net:8080/job/JDA/javadoc/)
+Docs can be found on the [Jenkins](https://ci.dv8tion.net/job/JDA) or directly [here](https://ci.dv8tion.net/job/JDA/javadoc/)
 <br>A simple Wiki can also be found in this repository's [Wiki section](https://github.com/DV8FromTheWorld/JDA/wiki)
 
 ### Annotations
