@@ -47,6 +47,8 @@ public class ErrorResponseException extends RuntimeException
         super(code + ": " + meaning);
 
         this.response = response;
+        if (response != null && response.getException() != null)
+            initCause(response.getException());
         this.errorResponse = errorResponse;
         this.code = code;
         this.meaning = meaning;
@@ -105,12 +107,6 @@ public class ErrorResponseException extends RuntimeException
     public Response getResponse()
     {
         return response;
-    }
-
-    @Override
-    public synchronized Throwable getCause()
-    {
-        return response != null ? response.getException() : null;
     }
 
     public static ErrorResponseException create(ErrorResponse errorResponse, Response response)
