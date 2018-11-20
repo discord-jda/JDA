@@ -85,7 +85,7 @@ public class PermissionUtil
         List<Role> issuerRoles = issuer.getRoles();
         return !issuerRoles.isEmpty() && canInteract(issuerRoles.get(0), target);
     }
-    
+
     /**
      * Checks if one given Role can interact with a 2nd given Role - in a permission sense (kick/ban/modify perms).
      * This only checks the Role-Position and does not check the actual permission (kick/ban/manage_role/...)
@@ -299,14 +299,8 @@ public class PermissionUtil
         GuildImpl guild = (GuildImpl) channel.getGuild();
         checkGuild(guild, member.getGuild(), "Member");
 
-//        if (guild.getOwner().equals(member) // Admin or owner? If yes: no need to iterate
-//                || guild.getPublicRole().hasPermission(Permission.ADMINISTRATOR)
-//                || member.getRoles().stream().anyMatch(role -> role.hasPermission(Permission.ADMINISTRATOR)))
-//            return true; // can be removed as getEffectivePermissions calculates these cases in
-
         long effectivePerms = getEffectivePermission(channel, member);
-        return isApplied(effectivePerms, Permission.ADMINISTRATOR.getRawValue())
-                || isApplied(effectivePerms, Permission.getRaw(permissions));
+        return isApplied(effectivePerms, Permission.getRaw(permissions));
     }
 
     /**
