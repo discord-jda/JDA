@@ -208,7 +208,6 @@ public interface RichPresence extends Activity
     {
         protected final String id;
         protected final long size;
-
         protected final long max;
 
         public Party(String id, long size, long max)
@@ -233,21 +232,8 @@ public interface RichPresence extends Activity
          * The current size of this party, or {@code 0} if unset
          *
          * @return The current size of this party, or {@code 0} if unset
-         *
-         * @incubating The return type for this method will change to {@code long} for compatibility
          */
-        @Incubating
-        public int getSize()
-        {
-            return (int)size;
-        }
-
-        /**
-         * The current size of this party, or {@code 0} if unset
-         *
-         * @return The current size of this party, or {@code 0} if unset
-         */
-        public long getSizeAsLong()
+        public long getSize()
         {
             return size;
         }
@@ -256,21 +242,8 @@ public interface RichPresence extends Activity
          * The maximum size of this party, or {@code 0} if unset
          *
          * @return The maximum size of this party, or {@code 0} if unset
-         *
-         * @incubating The return type for this method will change to {@code long} for compatibility
          */
-        @Incubating
-        public int getMax()
-        {
-            return (int)max;
-        }
-
-        /**
-         * The maximum size of this party, or {@code 0} if unset
-         *
-         * @return The maximum size of this party, or {@code 0} if unset
-         */
-        public long getMaxAsLong()
+        public long getMax()
         {
             return max;
         }
