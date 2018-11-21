@@ -29,23 +29,10 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
  *
  * @see net.dv8tion.jda.core.events.guild.voice.GuildVoiceUpdateEvent GuildVoiceUpdateEvent
  */
-public class GuildVoiceMoveEvent extends GuildVoiceUpdateEvent
+public class GuildVoiceMoveEvent extends GenericGuildVoiceUpdateEvent
 {
-    protected final VoiceChannel channelJoined;
-
     public GuildVoiceMoveEvent(JDA api, long responseNumber, Member member, VoiceChannel channelLeft)
     {
-        super(api, responseNumber, member, channelLeft);
-        this.channelJoined = member.getVoiceState().getChannel();
-    }
-
-    /**
-     * The {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} that the {@link net.dv8tion.jda.core.entities.Member Member} is moved to
-     *
-     * @return the {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
-     */
-    public VoiceChannel getChannelJoined()
-    {
-        return channelJoined;
+        super(api, responseNumber, member, member.getVoiceState().getChannel(), channelLeft);
     }
 }

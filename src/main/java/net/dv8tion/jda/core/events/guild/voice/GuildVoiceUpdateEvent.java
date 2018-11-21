@@ -16,34 +16,36 @@
 
 package net.dv8tion.jda.core.events.guild.voice;
 
-import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.events.UpdateEvent;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.core.entities.Member Member} that was previously connected
- * to a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} left the previously connected Channel.
- * <br>Generic event that combines {@link net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent GuildVoiceLeaveEvent}
- * and {@link net.dv8tion.jda.core.events.guild.voice.GuildVoiceMoveEvent GuildVoiceMoveEvent} for convenience.
+ * Indicates that a {@link net.dv8tion.jda.core.entities.Member Member} joined or left a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}.
+ * <br>Generic event that combines
+ * {@link net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent GuildVoiceLeaveEvent},
+ * {@link net.dv8tion.jda.core.events.guild.voice.GuildVoiceJoinEvent GuildVoiceJoinEvent}, and
+ * {@link net.dv8tion.jda.core.events.guild.voice.GuildVoiceMoveEvent GuildVoiceMoveEvent} for convenience.
  *
- * <p>Can be used to detect when a Member leaves a channel in any way
+ * <p>Can be used to detect when a Member leaves/joins a channel
+ *
+ * <p>Identifier: {@code voice-channel}
  */
-public class GuildVoiceUpdateEvent extends GenericGuildVoiceEvent
+public interface GuildVoiceUpdateEvent extends UpdateEvent<Member, VoiceChannel>
 {
-    protected final VoiceChannel oldChannel;
-
-    public GuildVoiceUpdateEvent(JDA api, long responseNumber, Member member, VoiceChannel oldChannel) {
-        super(api, responseNumber, member);
-        this.oldChannel = oldChannel;
-    }
+    String IDENTIFIER = "voice-channel";
 
     /**
      * The {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} that the {@link net.dv8tion.jda.core.entities.Member Member} is moved from
      *
      * @return The {@link net.dv8tion.jda.core.entities.VoiceChannel}
      */
-    public VoiceChannel getChannelLeft()
-    {
-        return oldChannel;
-    }
+    VoiceChannel getChannelLeft();
+
+    /**
+     * The {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} that was joined
+     *
+     * @return The {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel}
+     */
+    VoiceChannel getChannelJoined();
 }
