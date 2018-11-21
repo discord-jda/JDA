@@ -84,6 +84,22 @@ public class DefaultShardManagerBuilder
     public DefaultShardManagerBuilder() {}
 
     /**
+     * Creates a DefaultShardManagerBuilder with the given token.
+     * <br>This is equivalent to using the constuctor
+     * {@link #DefaultShardManagerBuilder() DefaultShardManagerBuilder()}
+     * and calling {@link #setToken(String) setToken(String)}
+     * directly afterward. You can always change the token later with
+     * {@link #setToken(String) setToken(String)}.
+     *
+     * @param token
+     *        The login token
+     */
+    public DefaultShardManagerBuilder(String token)
+    {
+        this.setToken(token);
+    }
+
+    /**
      * Flags used to enable parts of the JDA cache to reduce the runtime memory footprint.
      * <br><b>It is highly recommended to use {@link #setDisabledCacheFlags(EnumSet)} instead
      * for backwards compatibility</b>. We might add more flags in the future which you then effectively disable
