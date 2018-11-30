@@ -16,13 +16,13 @@
 
 package net.dv8tion.jda.core;
 
-import net.dv8tion.jda.bot.JDABot;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.GuildAction;
+import net.dv8tion.jda.core.sharding.ShardManager;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 
@@ -35,7 +35,6 @@ import java.util.List;
  */
 public interface JDA
 {
-
     /**
      * Represents the connection status of JDA and its Main WebSocket.
      */
@@ -1129,14 +1128,53 @@ public interface JDA
     AccountType getAccountType();
 
     /**
-     * Used to access Bot specific functions like OAuth information.
+     * Retrieves the {@link ApplicationInfo ApplicationInfo} for
+     * the application that owns the logged in Bot-Account.
+     * <br>This contains information about the owner of the currently logged in bot account!
      *
-     * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
-     *         Thrown if the currently logged in account is {@link net.dv8tion.jda.core.AccountType#CLIENT}
-     *
-     * @return The {@link net.dv8tion.jda.bot.JDABot} registry for this instance of JDA.
+     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link ApplicationInfo ApplicationInfo}
+     *         <br>The {@link ApplicationInfo ApplicationInfo} of the bot's application.
      */
-    JDABot asBot();
+    @CheckReturnValue
+    RestAction<ApplicationInfo> getApplicationInfo();
+
+    /**
+     * Creates an authorization invite url for the currently logged in Bot-Account.
+     * <br>Example Format:
+     * {@code https://discordapp.com/oauth2/authorize?scope=bot&client_id=288202953599221761&permissions=8}
+     *
+     * <p><b>Hint:</b> To enable a pre-selected Guild of choice append the parameter {@code &guild_id=YOUR_GUILD_ID}
+     *
+     * @param  permissions
+     *         The permissions to use in your invite, these can be changed by the link user.
+     *         <br>If no permissions are provided the {@code permissions} parameter is omitted
+     *
+     * @return A valid OAuth2 invite url for the currently logged in Bot-Account
+     */
+    String getInviteUrl(Permission... permissions);
+
+    /**
+     * Creates an authorization invite url for the currently logged in Bot-Account.
+     * <br>Example Format:
+     * {@code https://discordapp.com/oauth2/authorize?scope=bot&client_id=288202953599221761&permissions=8}
+     *
+     * <p><b>Hint:</b> To enable a pre-selected Guild of choice append the parameter {@code &guild_id=YOUR_GUILD_ID}
+     *
+     * @param  permissions
+     *         The permissions to use in your invite, these can be changed by the link user.
+     *         <br>If no permissions are provided the {@code permissions} parameter is omitted
+     *
+     * @return A valid OAuth2 invite url for the currently logged in Bot-Account
+     */
+    String getInviteUrl(Collection<Permission> permissions);
+
+    /**
+     * Returns the {@link net.dv8tion.jda.core.sharding.ShardManager ShardManager} that manages this JDA instances or null if this instance is not managed
+     * by any {@link net.dv8tion.jda.core.sharding.ShardManager ShardManager}.
+     *
+     * @return The corresponding ShardManager or {@code null} if there is no such manager
+     */
+    ShardManager getShardManager();
 
     /**
      * Retrieves a {@link net.dv8tion.jda.core.entities.Webhook Webhook} by its id.

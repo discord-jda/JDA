@@ -53,13 +53,13 @@ import net.dv8tion.jda.internal.utils.tuple.Pair;
  *         super.appendSession(node);
  *     }
  * });
- * builder.addEventListener(myListener);
+ * builder.addEventListeners(myListener);
  * for (int i = 0; i {@literal <} 10; i++) {
  *     builder.useSharding(i, 10).buildAsync();
  * }
  * </code></pre>
  *
- * <p><b>Using {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager}</b>
+ * <p><b>Using {@link net.dv8tion.jda.core.sharding.ShardManager ShardManager}</b>
  * <br>
  * <pre><code>
  * DefaultShardManagerBuilder builder = new DefaultShardManagerBuilder();
@@ -70,7 +70,7 @@ import net.dv8tion.jda.internal.utils.tuple.Pair;
  *         return Pair.of(getGateway(), 10);
  *     }
  * });
- * builder.addEventListener(myListener);
+ * builder.addEventListeners(myListener);
  * builder.build();
  * </code></pre>
  */
@@ -131,7 +131,7 @@ public interface SessionController
     String getGateway(JDA api);
 
     /**
-     * Called by {@link net.dv8tion.jda.bot.sharding.DefaultShardManager DefaultShardManager}
+     * Called by {@link net.dv8tion.jda.core.sharding.DefaultShardManager DefaultShardManager}
      * when a new shards is starting.
      * <br>Should provide a {@link net.dv8tion.jda.internal.utils.tuple.Pair Pair} with {@code (gateway, shardTotal)}.
      *

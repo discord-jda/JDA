@@ -640,9 +640,9 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
-     * @see    net.dv8tion.jda.core.JDA#addEventListener(Object...) JDA.addEventListener(Object...)
+     * @see    net.dv8tion.jda.core.JDA#addEventListener(Object...) JDA.addEventListeners(Object...)
      */
-    public JDABuilder addEventListener(Object... listeners)
+    public JDABuilder addEventListeners(Object... listeners)
     {
         Checks.noneNull(listeners, "listeners");
 
@@ -661,9 +661,9 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
-     * @see    net.dv8tion.jda.core.JDA#removeEventListener(Object...) JDA.removeEventListener(Object...)
+     * @see    net.dv8tion.jda.core.JDA#removeEventListener(Object...) JDA.removeEventListeners(Object...)
      */
-    public JDABuilder removeEventListener(Object... listeners)
+    public JDABuilder removeEventListeners(Object... listeners)
     {
         Checks.noneNull(listeners, "listeners");
 
@@ -715,7 +715,7 @@ public class JDABuilder
      * @return The JDABuilder instance. Useful for chaining.
      *
      * @see    net.dv8tion.jda.core.JDA#getShardInfo() JDA.getShardInfo()
-     * @see    net.dv8tion.jda.bot.sharding.ShardManager ShardManager
+     * @see    net.dv8tion.jda.core.sharding.ShardManager ShardManager
      */
     public JDABuilder useSharding(int shardId, int shardTotal)
     {

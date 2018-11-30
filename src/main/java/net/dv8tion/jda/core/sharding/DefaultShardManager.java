@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.bot.sharding;
+package net.dv8tion.jda.core.sharding;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
 import gnu.trove.map.TIntObjectMap;
-import net.dv8tion.jda.bot.utils.cache.ShardCacheView;
-import net.dv8tion.jda.bot.utils.cache.impl.ShardCacheViewImpl;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
@@ -30,10 +28,12 @@ import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.SessionController;
 import net.dv8tion.jda.core.utils.SessionControllerAdapter;
 import net.dv8tion.jda.core.utils.cache.CacheFlag;
+import net.dv8tion.jda.core.utils.cache.ShardCacheView;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
+import net.dv8tion.jda.internal.utils.cache.ShardCacheViewImpl;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
@@ -45,8 +45,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.IntFunction;
 
 /**
- * JDA's default {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} implementation.
- * To create new instances use the {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder}.
+ * JDA's default {@link net.dv8tion.jda.core.sharding.ShardManager ShardManager} implementation.
+ * To create new instances use the {@link net.dv8tion.jda.core.sharding.DefaultShardManagerBuilder DefaultShardManagerBuilder}.
  *
  * @since  3.4
  * @author Aljoscha Grebe
@@ -127,7 +127,7 @@ public class DefaultShardManager implements ShardManager
     protected final Queue<Integer> queue = new ConcurrentLinkedQueue<>();
 
     /**
-     * The {@link net.dv8tion.jda.bot.utils.cache.ShardCacheView ShardCacheView} that holds all shards.
+     * The {@link ShardCacheView ShardCacheView} that holds all shards.
      */
     protected ShardCacheViewImpl shards;
 
@@ -287,7 +287,7 @@ public class DefaultShardManager implements ShardManager
      * @param  enableShutdownHook
      *         Whether or not the shutdown hook should be enabled
      * @param  enableBulkDeleteSplitting
-     *         Whether or not {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder#setBulkDeleteSplittingEnabled(boolean)
+     *         Whether or not {@link net.dv8tion.jda.core.sharding.DefaultShardManagerBuilder#setBulkDeleteSplittingEnabled(boolean)
      *         bulk delete splitting} should be enabled
      * @param  autoReconnect
      *         Whether or not auto reconnect should be enabled
@@ -664,7 +664,7 @@ public class DefaultShardManager implements ShardManager
                 this.retryOnTimeout, this.enableMDC, shutdownRateLimitPool, shutdownGatewayPool, shutdownCallbackPool, this.corePoolSize, this.maxReconnectDelay,
                 this.contextProvider == null || !this.enableMDC ? null : contextProvider.apply(shardId), this.cacheFlags);
 
-        jda.asBot().setShardManager(this);
+        jda.setShardManager(this);
 
         if (this.eventManagerProvider != null)
             jda.setEventManager(this.eventManagerProvider.apply(shardId));

@@ -18,9 +18,9 @@ package net.dv8tion.jda.internal;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
 import gnu.trove.map.TLongObjectMap;
-import net.dv8tion.jda.bot.entities.impl.JDABotImpl;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.audio.factory.DefaultSendFactory;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
@@ -36,6 +36,7 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.GuildAction;
+import net.dv8tion.jda.core.sharding.ShardManager;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.SessionController;
 import net.dv8tion.jda.core.utils.SessionControllerAdapter;
@@ -98,7 +99,6 @@ public class JDAImpl implements JDA
     protected final WebSocketFactory wsFactory;
     protected final AccountType accountType;
     protected final PresenceImpl presence;
-    protected final JDABotImpl jdaBot;
     protected final int maxReconnectDelay;
     protected final Thread shutdownHook;
     protected final EntityBuilder entityBuilder = new EntityBuilder(this);
@@ -122,6 +122,9 @@ public class JDAImpl implements JDA
     protected long ping = -1;
     protected String token;
     protected String gatewayUrl;
+
+    protected String clientId = null;
+    protected ShardManager shardManager = null;
 
     public JDAImpl(
         AccountType accountType, String token, SessionController controller, OkHttpClient httpClient, WebSocketFactory wsFactory,
@@ -156,8 +159,6 @@ public class JDAImpl implements JDA
         this.presence = new PresenceImpl(this);
         this.requester = new Requester(this);
         this.requester.setRetryOnTimeout(retryOnTimeout);
-
-        this.jdaBot = accountType == AccountType.BOT ? new JDABotImpl(this) : null;
         this.guildSetupController = new GuildSetupController(this);
         this.cacheFlags = cacheFlags;
     }
@@ -645,13 +646,6 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public JDABotImpl asBot()
-    {
-        AccountTypeException.check(getAccountType(), AccountType.BOT);
-        return jdaBot;
-    }
-
-    @Override
     public long getResponseTotal()
     {
         return responseTotal;
@@ -764,6 +758,66 @@ public class JDAImpl implements JDA
                 request.onSuccess(webhook);
             }
         };
+    }
+
+    @Override
+    public RestAction<ApplicationInfo> getApplicationInfo()
+    {
+        Route.CompiledRoute route = Route.Applications.GET_BOT_APPLICATION.compile();
+        return new RestAction<ApplicationInfo>(this, route)
+        {
+            @Override
+            protected void handleResponse(Response response, Request<ApplicationInfo> request)
+            {
+                if (!response.isOk())
+                {
+                    request.onFailure(response);
+                    return;
+                }
+
+                ApplicationInfo info = api.get().getEntityBuilder().createApplicationInfo(response.getObject());
+                JDAImpl.this.clientId = info.getId();
+                request.onSuccess(info);
+            }
+        };
+    }
+
+    @Override
+    public String getInviteUrl(Permission... permissions)
+    {
+        StringBuilder builder = buildBaseInviteUrl();
+        if (permissions != null && permissions.length > 0)
+            builder.append("&permissions=").append(Permission.getRaw(permissions));
+        return builder.toString();
+    }
+
+    @Override
+    public String getInviteUrl(Collection<Permission> permissions)
+    {
+        StringBuilder builder = buildBaseInviteUrl();
+        if (permissions != null && !permissions.isEmpty())
+            builder.append("&permissions=").append(Permission.getRaw(permissions));
+        return builder.toString();
+    }
+
+    private StringBuilder buildBaseInviteUrl()
+    {
+        if (clientId == null)
+            getApplicationInfo().complete();
+        StringBuilder builder = new StringBuilder("https://discordapp.com/oauth2/authorize?scope=bot&client_id=");
+        builder.append(clientId);
+        return builder;
+    }
+
+    public void setShardManager(ShardManager shardManager)
+    {
+        this.shardManager = shardManager;
+    }
+
+    @Override
+    public ShardManager getShardManager()
+    {
+        return shardManager;
     }
 
     public EntityBuilder getEntityBuilder()

@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.bot.sharding;
+package net.dv8tion.jda.core.sharding;
 
-import net.dv8tion.jda.bot.entities.ApplicationInfo;
-import net.dv8tion.jda.bot.utils.cache.ShardCacheView;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDA.Status;
 import net.dv8tion.jda.core.OnlineStatus;
@@ -26,6 +24,7 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.cache.CacheView;
+import net.dv8tion.jda.core.utils.cache.ShardCacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -160,7 +159,7 @@ public interface ShardManager
     }
 
     /**
-     * Returns the amount of shards managed by this {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager}.
+     * Returns the amount of shards managed by this {@link net.dv8tion.jda.core.sharding.ShardManager ShardManager}.
      * This includes shards currently queued for a restart.
      *
      * @return The managed amount of shards.
@@ -171,19 +170,19 @@ public interface ShardManager
     }
 
     /**
-     * Used to access Bot specific functions like OAuth information.
+     * Used to access application details of this bot.
+     * <br>Since this is the same for every shard it picks {@link JDA#getApplicationInfo()} from any shard.
      *
      * @throws java.lang.IllegalStateException
      *         If there is no running shard
      *
-     * @return The {@link net.dv8tion.jda.bot.JDABot} registry for this instance of JDA.
+     * @return The Application registry for this bot.
      */
     default RestAction<ApplicationInfo> getApplicationInfo()
     {
         return this.getShardCache().stream()
                 .findAny()
                 .orElseThrow(() -> new IllegalStateException("no active shards"))
-                .asBot()
                 .getApplicationInfo();
     }
 
@@ -697,10 +696,10 @@ public interface ShardManager
     }
 
     /**
-     * Unified {@link net.dv8tion.jda.bot.utils.cache.ShardCacheView ShardCacheView} of
+     * Unified {@link ShardCacheView ShardCacheView} of
      * all cached {@link net.dv8tion.jda.core.JDA JDA} bound to this ShardManager instance.
      *
-     * @return Unified {@link net.dv8tion.jda.bot.utils.cache.ShardCacheView ShardCacheView}
+     * @return Unified {@link ShardCacheView ShardCacheView}
      */
     ShardCacheView getShardCache();
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.bot.sharding;
+package net.dv8tion.jda.core.sharding;
 
 import java.util.concurrent.ExecutorService;
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.bot.sharding;
+package net.dv8tion.jda.core.sharding;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
 import net.dv8tion.jda.annotations.DeprecatedSince;
@@ -34,15 +34,15 @@ import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 
 /**
- * Used to create new instances of JDA's default {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} implementation.
+ * Used to create new instances of JDA's default {@link net.dv8tion.jda.core.sharding.ShardManager ShardManager} implementation.
  *
  * <p>A single DefaultShardManagerBuilder can be reused multiple times. Each call to {@link #build()}
- * creates a new {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} instance using the same information.
+ * creates a new {@link net.dv8tion.jda.core.sharding.ShardManager ShardManager} instance using the same information.
  *
  * @since  3.4
  * @author Aljoscha Grebe
  */
-public class DefaultShardManagerBuilder
+public class  DefaultShardManagerBuilder
 {
     protected final List<Object> listeners = new ArrayList<>();
     protected final List<IntFunction<Object>> listenerProviders = new ArrayList<>();
@@ -78,8 +78,8 @@ public class DefaultShardManagerBuilder
     /**
      * Creates a completely empty DefaultShardManagerBuilder.
      * <br>You need to set the token using
-     * {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder#setToken(String) setToken(String)}
-     * before calling {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder#build() build()}.
+     * {@link net.dv8tion.jda.core.sharding.DefaultShardManagerBuilder#setToken(String) setToken(String)}
+     * before calling {@link net.dv8tion.jda.core.sharding.DefaultShardManagerBuilder#build() build()}.
      */
     public DefaultShardManagerBuilder() {}
 
@@ -226,7 +226,7 @@ public class DefaultShardManagerBuilder
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
-     * @see    DefaultShardManager#addEventListener(Object...) JDA.addEventListener(Object...)
+     * @see    DefaultShardManager#addEventListener(Object...) JDA.addEventListeners(Object...)
      */
     public DefaultShardManagerBuilder addEventListeners(final Object... listeners)
     {
@@ -247,7 +247,7 @@ public class DefaultShardManagerBuilder
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
-     * @see    DefaultShardManager#addEventListener(Object...) JDA.addEventListener(Object...)
+     * @see    DefaultShardManager#addEventListener(Object...) JDA.addEventListeners(Object...)
      */
     public DefaultShardManagerBuilder addEventListeners(final Collection<Object> listeners)
     {
@@ -265,7 +265,7 @@ public class DefaultShardManagerBuilder
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
-     * @see    net.dv8tion.jda.core.JDA#removeEventListener(Object...) JDA.removeEventListener(Object...)
+     * @see    net.dv8tion.jda.core.JDA#removeEventListener(Object...) JDA.removeEventListeners(Object...)
      */
     public DefaultShardManagerBuilder removeEventListeners(final Object... listeners)
     {
@@ -280,7 +280,7 @@ public class DefaultShardManagerBuilder
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
-     * @see    net.dv8tion.jda.core.JDA#removeEventListener(Object...) JDA.removeEventListener(Object...)
+     * @see    net.dv8tion.jda.core.JDA#removeEventListener(Object...) JDA.removeEventListeners(Object...)
      */
     public DefaultShardManagerBuilder removeEventListeners(final Collection<Object> listeners)
     {
@@ -544,9 +544,9 @@ public class DefaultShardManagerBuilder
      *
      * @see    net.dv8tion.jda.core.managers.Presence#setActivity(net.dv8tion.jda.core.entities.Activity)
      */
-    public DefaultShardManagerBuilder setGame(final Activity game)
+    public DefaultShardManagerBuilder setActivity(final Activity game)
     {
-        return this.setGameProvider(id -> game);
+        return this.setActivityProvider(id -> game);
     }
 
     /**
@@ -564,7 +564,7 @@ public class DefaultShardManagerBuilder
      *
      * @see    net.dv8tion.jda.core.managers.Presence#setActivity(net.dv8tion.jda.core.entities.Activity)
      */
-    public DefaultShardManagerBuilder setGameProvider(final IntFunction<? extends Activity> gameProvider)
+    public DefaultShardManagerBuilder setActivityProvider(final IntFunction<? extends Activity> gameProvider)
     {
         this.gameProvider = gameProvider;
         return this;
@@ -1000,8 +1000,8 @@ public class DefaultShardManagerBuilder
     }
 
     /**
-     * Sets the token that will be used by the {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} instance to log in when
-     * {@link net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder#build() build()} is called.
+     * Sets the token that will be used by the {@link net.dv8tion.jda.core.sharding.ShardManager ShardManager} instance to log in when
+     * {@link net.dv8tion.jda.core.sharding.DefaultShardManagerBuilder#build() build()} is called.
      *
      * <p>To get a bot token:
      * <ol>
@@ -1028,7 +1028,7 @@ public class DefaultShardManagerBuilder
     }
 
     /**
-     * Whether the {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} should use
+     * Whether the {@link net.dv8tion.jda.core.sharding.ShardManager ShardManager} should use
      * {@link net.dv8tion.jda.core.JDA#shutdownNow() JDA#shutdownNow()} instead of
      * {@link net.dv8tion.jda.core.JDA#shutdown() JDA#shutdown()} to shutdown it's shards.
      * <br><b>Default</b>: {@code false}
@@ -1063,9 +1063,9 @@ public class DefaultShardManagerBuilder
     }
 
     /**
-     * Builds a new {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} instance and uses the provided token to start the login process.
-     * <br>The login process runs in a different thread, so while this will return immediately, {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} has not
-     * finished loading, thus many {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} methods have the chance to return incorrect information.
+     * Builds a new {@link net.dv8tion.jda.core.sharding.ShardManager ShardManager} instance and uses the provided token to start the login process.
+     * <br>The login process runs in a different thread, so while this will return immediately, {@link net.dv8tion.jda.core.sharding.ShardManager ShardManager} has not
+     * finished loading, thus many {@link net.dv8tion.jda.core.sharding.ShardManager ShardManager} methods have the chance to return incorrect information.
      * <br>The main use of this method is to start the JDA connect process and do other things in parallel while startup is
      * being performed like database connection or local resource loading.
      *
@@ -1076,7 +1076,7 @@ public class DefaultShardManagerBuilder
      * @throws  IllegalArgumentException
      *          If the provided token is empty or null.
      *
-     * @return A {@link net.dv8tion.jda.bot.sharding.ShardManager ShardManager} instance that has started the login process. It is unknown as
+     * @return A {@link net.dv8tion.jda.core.sharding.ShardManager ShardManager} instance that has started the login process. It is unknown as
      *         to whether or not loading has finished when this returns.
      */
     public ShardManager build() throws LoginException, IllegalArgumentException
