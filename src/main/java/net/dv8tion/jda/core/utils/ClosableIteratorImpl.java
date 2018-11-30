@@ -44,12 +44,6 @@ public class ClosableIteratorImpl<T> implements ClosableIterator<T>
     }
 
     @Override
-    public void remove()
-    {
-        throw new IllegalStateException("Cannot remove from this iterator!");
-    }
-
-    @Override
     public boolean hasNext()
     {
         if (lock == null)
