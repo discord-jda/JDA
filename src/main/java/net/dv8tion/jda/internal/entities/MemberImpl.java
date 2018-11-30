@@ -264,7 +264,7 @@ public class MemberImpl implements Member
     @Override
     public TextChannel getDefaultChannel()
     {
-        return getGuild().getTextChannelsMap().valueCollection().stream()
+        return getGuild().getTextChannelsMap().stream()
                 .sorted(Comparator.reverseOrder())
                 .filter(c -> hasPermission(c, Permission.MESSAGE_READ))
                 .findFirst().orElse(null);

@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.utils.cache.MemberCacheView;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.UnlockHook;
 
 import java.util.*;
 
@@ -33,55 +34,73 @@ public class MemberCacheViewImpl extends AbstractCacheView<Member> implements Me
     @Override
     public Member getElementById(long id)
     {
-        return elements.get(id);
+        try (UnlockHook hook = readLock())
+        {
+            return elements.get(id);
+        }
     }
 
     @Override
     public List<Member> getElementsByUsername(String name, boolean ignoreCase)
     {
         Checks.notEmpty(name, "Name");
-        List<Member> members = new ArrayList<>();
-        for (Member member : this)
+        if (isEmpty())
+            return Collections.emptyList();
+        try (UnlockHook hook = readLock())
         {
-            final String nick = member.getUser().getName();
-            if (equals(ignoreCase, nick, name))
-                members.add(member);
+            List<Member> members = new ArrayList<>();
+            for (Member member : elements.valueCollection())
+            {
+                final String nick = member.getUser().getName();
+                if (equals(ignoreCase, nick, name))
+                    members.add(member);
+            }
+            return Collections.unmodifiableList(members);
         }
-        return Collections.unmodifiableList(members);
     }
 
     @Override
     public List<Member> getElementsByNickname(String name, boolean ignoreCase)
     {
-        List<Member> members = new ArrayList<>();
-        for (Member member : this)
+        if (isEmpty())
+            return Collections.emptyList();
+        try (UnlockHook hook = readLock())
         {
-            final String nick = member.getNickname();
-            if (nick == null)
+            List<Member> members = new ArrayList<>();
+            for (Member member : elements.valueCollection())
             {
-                if (name == null)
-                    members.add(member);
-                continue;
-            }
+                final String nick = member.getNickname();
+                if (nick == null)
+                {
+                    if (name == null)
+                        members.add(member);
+                    continue;
+                }
 
-            if (equals(ignoreCase, nick, name))
-                members.add(member);
+                if (equals(ignoreCase, nick, name))
+                    members.add(member);
+            }
+            return Collections.unmodifiableList(members);
         }
-        return Collections.unmodifiableList(members);
     }
 
     @Override
     public List<Member> getElementsByName(String name, boolean ignoreCase)
     {
         Checks.notEmpty(name, "Name");
-        List<Member> members = new ArrayList<>();
-        for (Member member : this)
+        if (isEmpty())
+            return Collections.emptyList();
+        try (UnlockHook hook = readLock())
         {
-            final String nick = member.getEffectiveName();
-            if (equals(ignoreCase, nick, name))
-                members.add(member);
+            List<Member> members = new ArrayList<>();
+            for (Member member : elements.valueCollection())
+            {
+                final String nick = member.getEffectiveName();
+                if (equals(ignoreCase, nick, name))
+                    members.add(member);
+            }
+            return Collections.unmodifiableList(members);
         }
-        return Collections.unmodifiableList(members);
     }
 
     @Override
@@ -90,26 +109,36 @@ public class MemberCacheViewImpl extends AbstractCacheView<Member> implements Me
         Checks.notNull(roles, "Roles");
         for (Role role : roles)
             Checks.notNull(role, "Roles");
-        List<Member> members = new ArrayList<>();
-        List<Role> match = Arrays.asList(roles);
-        for (Member member : this)
+        if (isEmpty())
+            return Collections.emptyList();
+        try (UnlockHook hook = readLock())
         {
-            if (member.getRoles().containsAll(match))
-                members.add(member);
+            List<Member> members = new ArrayList<>();
+            List<Role> match = Arrays.asList(roles);
+            for (Member member : elements.valueCollection())
+            {
+                if (member.getRoles().containsAll(match))
+                    members.add(member);
+            }
+            return members;
         }
-        return members;
     }
 
     @Override
     public List<Member> getElementsWithRoles(Collection<Role> roles)
     {
         Checks.noneNull(roles, "Roles");
-        List<Member> members = new ArrayList<>();
-        for (Member member : this)
+        if (isEmpty())
+            return Collections.emptyList();
+        try (UnlockHook hook = readLock())
         {
-            if (member.getRoles().containsAll(roles))
-                members.add(member);
+            List<Member> members = new ArrayList<>();
+            for (Member member : elements.valueCollection())
+            {
+                if (member.getRoles().containsAll(roles))
+                    members.add(member);
+            }
+            return members;
         }
-        return members;
     }
 }

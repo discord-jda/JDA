@@ -39,10 +39,8 @@ import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
-import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
-import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
-import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheView;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.utils.UnlockHook;
+import net.dv8tion.jda.internal.utils.cache.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -520,7 +518,7 @@ public class GuildImpl implements Guild
     public TextChannel getDefaultChannel()
     {
         final Role role = getPublicRole();
-        return getTextChannelsMap().valueCollection().stream()
+        return getTextChannelsMap().stream()
                 .filter(c -> role.hasPermission(c, Permission.MESSAGE_READ))
                 .sorted(Comparator.naturalOrder())
                 .findFirst().orElse(null);
@@ -626,12 +624,12 @@ public class GuildImpl implements Guild
         if (!getJDA().isAudioEnabled())
             throw new IllegalStateException("Audio is disabled. Cannot retrieve an AudioManager while audio is disabled.");
 
-        final TLongObjectMap<AudioManager> managerMap = getJDA().getAudioManagerMap();
+        final AbstractCacheView<AudioManager> managerMap = getJDA().getAudioManagerMap();
         AudioManager mng = managerMap.get(id);
         if (mng == null)
         {
             // No previous manager found -> create one
-            synchronized (managerMap)
+            try (UnlockHook hook = managerMap.writeLock())
             {
                 GuildImpl cachedGuild = (GuildImpl) getJDA().getGuildById(id);
                 if (cachedGuild == null)
@@ -640,7 +638,7 @@ public class GuildImpl implements Guild
                 if (mng == null)
                 {
                     mng = new AudioManagerImpl(cachedGuild);
-                    managerMap.put(id, mng);
+                    managerMap.getMap().put(id, mng);
                 }
             }
         }
@@ -656,8 +654,7 @@ public class GuildImpl implements Guild
     @Override
     public List<GuildVoiceState> getVoiceStates()
     {
-        return Collections.unmodifiableList(
-                getMembersMap().valueCollection().stream().map(Member::getVoiceState).filter(Objects::nonNull).collect(Collectors.toList()));
+        return Collections.unmodifiableList(getMembersMap().stream().map(Member::getVoiceState).filter(Objects::nonNull).collect(Collectors.toList()));
     }
 
     @Override
@@ -830,34 +827,34 @@ public class GuildImpl implements Guild
 
     // -- Map getters --
 
-    public TLongObjectMap<Category> getCategoriesMap()
+    public SnowflakeCacheViewImpl<Category> getCategoriesMap()
     {
-        return categoryCache.getMap();
+        return categoryCache;
     }
 
-    public TLongObjectMap<TextChannel> getTextChannelsMap()
+    public SnowflakeCacheViewImpl<TextChannel> getTextChannelsMap()
     {
-        return textChannelCache.getMap();
+        return textChannelCache;
     }
 
-    public TLongObjectMap<VoiceChannel> getVoiceChannelsMap()
+    public SnowflakeCacheViewImpl<VoiceChannel> getVoiceChannelsMap()
     {
-        return voiceChannelCache.getMap();
+        return voiceChannelCache;
     }
 
-    public TLongObjectMap<Member> getMembersMap()
+    public MemberCacheViewImpl getMembersMap()
     {
-        return memberCache.getMap();
+        return memberCache;
     }
 
-    public TLongObjectMap<Role> getRolesMap()
+    public SnowflakeCacheViewImpl<Role> getRolesMap()
     {
-        return roleCache.getMap();
+        return roleCache;
     }
 
-    public TLongObjectMap<Emote> getEmoteMap()
+    public SnowflakeCacheViewImpl<Emote> getEmoteMap()
     {
-        return emoteCache.getMap();
+        return emoteCache;
     }
 
     public TLongObjectMap<JSONObject> getCachedPresenceMap()

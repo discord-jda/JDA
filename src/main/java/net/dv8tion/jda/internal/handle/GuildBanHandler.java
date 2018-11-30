@@ -41,7 +41,7 @@ public class GuildBanHandler extends SocketHandler
             return id;
 
         JSONObject userJson = content.getJSONObject("user");
-        GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(id);
+        GuildImpl guild = (GuildImpl) getJDA().getGuildById(id);
         if (guild == null)
         {
             getJDA().getEventCache().cache(EventCache.Type.GUILD, id, responseNumber, allContent, this::handle);

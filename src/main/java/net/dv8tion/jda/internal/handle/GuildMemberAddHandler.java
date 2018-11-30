@@ -37,7 +37,7 @@ public class GuildMemberAddHandler extends SocketHandler
         if (setup)
             return null;
 
-        GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(id);
+        GuildImpl guild = (GuildImpl) getJDA().getGuildById(id);
         if (guild == null)
         {
             getJDA().getEventCache().cache(EventCache.Type.GUILD, id, responseNumber, allContent, this::handle);

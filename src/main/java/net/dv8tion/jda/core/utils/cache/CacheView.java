@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.utils.cache;
 
 import net.dv8tion.jda.core.entities.ISnowflake;
+import net.dv8tion.jda.core.utils.ClosableIterator;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
 import net.dv8tion.jda.internal.utils.cache.ShardCacheViewImpl;
@@ -56,6 +57,15 @@ public interface CacheView<T> extends Iterable<T>
      * @return Immutable set of cached elements
      */
     Set<T> asSet();
+
+    /**
+     * Returns an iterator with direct access to the underlying data store.
+     * This iterator does not support removing elements.
+     * <br>After usage this iterator should be closed to allow modifications by the library internals.
+     *
+     * @return {@link ClosableIterator} holding a read-lock on the data structure.
+     */
+    ClosableIterator<T> lockedIterator();
 
     /**
      * The current size of this cache

@@ -51,7 +51,7 @@ public class GuildUpdateHandler extends SocketHandler
         //  WARNING //
         //Do not rely on allContent past this point, this method is also called from GuildCreateHandler!
         //////////////
-        GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(id);
+        GuildImpl guild = (GuildImpl) getJDA().getGuildById(id);
         long ownerId = content.getLong("owner_id");
         String name = content.getString("name");
         String iconId = content.optString("icon", null);

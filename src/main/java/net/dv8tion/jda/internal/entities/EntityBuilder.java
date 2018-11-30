@@ -33,6 +33,9 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.JDALogger;
+import net.dv8tion.jda.internal.utils.UnlockHook;
+import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
@@ -94,8 +97,12 @@ public class EntityBuilder
             getJDA().setSelfUser(selfUser);
         }
 
-        if (!getJDA().getUserMap().containsKey(selfUser.getIdLong()))
-            getJDA().getUserMap().put(selfUser.getIdLong(), selfUser);
+        SnowflakeCacheViewImpl<User> userView = getJDA().getUserMap();
+        try (UnlockHook hook = userView.writeLock())
+        {
+            if (userView.getElementById(selfUser.getIdLong()) == null)
+                userView.getMap().put(selfUser.getIdLong(), selfUser);
+        }
 
         selfUser.setVerified(self.getBoolean("verified"))
                 .setMfaEnabled(self.getBoolean("mfa_enabled"))
@@ -125,17 +132,21 @@ public class EntityBuilder
     {
         if (!getJDA().isCacheFlagSet(CacheFlag.EMOTE))
             return;
-        TLongObjectMap<Emote> emoteMap = guildObj.getEmoteMap();
-        for (int i = 0; i < array.length(); i++)
+        SnowflakeCacheViewImpl<Emote> emoteView = guildObj.getEmoteMap();
+        try (UnlockHook hook = emoteView.writeLock())
         {
-            JSONObject object = array.getJSONObject(i);
-            if (object.isNull("id"))
+            TLongObjectMap<Emote> emoteMap = emoteView.getMap();
+            for (int i = 0; i < array.length(); i++)
             {
-                LOG.error("Received GUILD_CREATE with an emoji with a null ID. JSON: {}", object);
-                continue;
+                JSONObject object = array.getJSONObject(i);
+                if (object.isNull("id"))
+                {
+                    LOG.error("Received GUILD_CREATE with an emoji with a null ID. JSON: {}", object);
+                    continue;
+                }
+                final long emoteId = object.getLong("id");
+                emoteMap.put(emoteId, createEmote(guildObj, object, false));
             }
-            final long emoteId = object.getLong("id");
-            emoteMap.put(emoteId, createEmote(guildObj, object, false));
         }
     }
 
@@ -185,13 +196,18 @@ public class EntityBuilder
                                  .collect(Collectors.toSet()));
         }
 
-        for (int i = 0; i < roleArray.length(); i++)
+        SnowflakeCacheViewImpl<Role> roleView = guildObj.getRolesMap();
+        try (UnlockHook hook = roleView.writeLock())
         {
-            JSONObject obj = roleArray.getJSONObject(i);
-            Role role = createRole(guildObj, obj, guildId);
-            guildObj.getRolesMap().put(role.getIdLong(), role);
-            if (role.getIdLong() == guildObj.getIdLong())
-                guildObj.setPublicRole(role);
+            TLongObjectMap<Role> map = roleView.getMap();
+            for (int i = 0; i < roleArray.length(); i++)
+            {
+                JSONObject obj = roleArray.getJSONObject(i);
+                Role role = createRole(guildObj, obj, guildId);
+                map.put(role.getIdLong(), role);
+                if (role.getIdLong() == guildObj.getIdLong())
+                    guildObj.setPublicRole(role);
+            }
         }
 
         for (JSONObject memberJson : members.valueCollection())
@@ -224,7 +240,11 @@ public class EntityBuilder
                 createPresence(member, presence);
         }
 
-        getJDA().getGuildMap().put(guildId, guildObj);
+        SnowflakeCacheViewImpl<Guild> guildView = getJDA().getGuildMap();
+        try (UnlockHook hook = guildView.writeLock())
+        {
+            guildView.getMap().put(guildId, guildObj);
+        }
         return guildObj;
     }
 
@@ -291,35 +311,43 @@ public class EntityBuilder
         final long id = user.getLong("id");
         UserImpl userObj;
 
-        userObj = (UserImpl) getJDA().getUserMap().get(id);
-        if (userObj == null)
+        SnowflakeCacheViewImpl<User> userView = getJDA().getUserMap();
+        try (UnlockHook hook = userView.writeLock())
         {
-            userObj = (UserImpl) getJDA().getFakeUserMap().get(id);
-            if (userObj != null)
+            userObj = (UserImpl) userView.getElementById(id);
+            if (userObj == null)
             {
-                if (!fake && modifyCache)
+                userObj = (UserImpl) getJDA().getFakeUserMap().get(id);
+                if (userObj != null)
                 {
-                    getJDA().getFakeUserMap().remove(id);
-                    userObj.setFake(false);
-                    getJDA().getUserMap().put(userObj.getIdLong(), userObj);
-                    if (userObj.hasPrivateChannel())
+                    if (!fake && modifyCache)
                     {
-                        PrivateChannelImpl priv = (PrivateChannelImpl) userObj.getPrivateChannel();
-                        priv.setFake(false);
-                        getJDA().getFakePrivateChannelMap().remove(priv.getIdLong());
-                        getJDA().getPrivateChannelMap().put(priv.getIdLong(), priv);
+                        getJDA().getFakeUserMap().remove(id);
+                        userObj.setFake(false);
+                        userView.getMap().put(userObj.getIdLong(), userObj);
+                        if (userObj.hasPrivateChannel())
+                        {
+                            PrivateChannelImpl priv = (PrivateChannelImpl) userObj.getPrivateChannel();
+                            priv.setFake(false);
+                            getJDA().getFakePrivateChannelMap().remove(priv.getIdLong());
+                            SnowflakeCacheViewImpl<PrivateChannel> channelView = getJDA().getPrivateChannelMap();
+                            try (UnlockHook hook2 = channelView.writeLock())
+                            {
+                                channelView.getMap().put(priv.getIdLong(), priv);
+                            }
+                        }
                     }
                 }
-            }
-            else
-            {
-                userObj = new UserImpl(id, getJDA()).setFake(fake);
-                if (modifyCache)
+                else
                 {
-                    if (fake)
-                        getJDA().getFakeUserMap().put(id, userObj);
-                    else
-                        getJDA().getUserMap().put(id, userObj);
+                    userObj = new UserImpl(id, getJDA()).setFake(fake);
+                    if (modifyCache)
+                    {
+                        if (fake)
+                            getJDA().getFakeUserMap().put(id, userObj);
+                        else
+                            userView.getMap().put(id, userObj);
+                    }
                 }
             }
         }
@@ -341,8 +369,12 @@ public class EntityBuilder
         MemberImpl member = (MemberImpl) guild.getMember(user);
         if (member == null)
         {
-            member = new MemberImpl(guild, user);
-            playbackCache = guild.getMembersMap().put(user.getIdLong(), member) == null;
+            MemberCacheViewImpl memberView = guild.getMembersMap();
+            try (UnlockHook hook = memberView.writeLock())
+            {
+                member = new MemberImpl(guild, user);
+                playbackCache = memberView.getMap().put(user.getIdLong(), member) == null;
+            }
             if (guild.getOwnerIdLong() == user.getIdLong())
             {
                 LOG.trace("Found owner of guild with id {}", guild.getId());
@@ -535,9 +567,17 @@ public class EntityBuilder
         {
             if (guild == null)
                 guild = (GuildImpl) getJDA().getGuildMap().get(guildId);
-            channel = new CategoryImpl(id, guild);
-            guild.getCategoriesMap().put(id, channel);
-            playbackCache = getJDA().getCategoryMap().put(id, channel) == null;
+            SnowflakeCacheViewImpl<Category>
+                    guildCategoryView = guild.getCategoriesMap(),
+                    categoryView = getJDA().getCategoryMap();
+            try (
+                UnlockHook glock = guildCategoryView.writeLock();
+                UnlockHook jlock = categoryView.writeLock())
+            {
+                channel = new CategoryImpl(id, guild);
+                guildCategoryView.getMap().put(id, channel);
+                playbackCache = categoryView.getMap().put(id, channel) == null;
+            }
         }
 
         if (!json.isNull("permission_overwrites"))
@@ -569,9 +609,17 @@ public class EntityBuilder
         {
             if (guildObj == null)
                 guildObj = (GuildImpl) getJDA().getGuildMap().get(guildId);
-            channel = new TextChannelImpl(id, guildObj);
-            guildObj.getTextChannelsMap().put(id, channel);
-            playbackCache = getJDA().getTextChannelMap().put(id, channel) == null;
+            SnowflakeCacheViewImpl<TextChannel>
+                    guildTextView = guildObj.getTextChannelsMap(),
+                    textView = getJDA().getTextChannelMap();
+            try (
+                UnlockHook glock = guildTextView.writeLock();
+                UnlockHook jlock = textView.writeLock())
+            {
+                channel = new TextChannelImpl(id, guildObj);
+                guildTextView.getMap().put(id, channel);
+                playbackCache = textView.getMap().put(id, channel) == null;
+            }
         }
 
         if (!json.isNull("permission_overwrites"))
@@ -607,9 +655,17 @@ public class EntityBuilder
         {
             if (guild == null)
                 guild = (GuildImpl) getJDA().getGuildMap().get(guildId);
-            channel = new VoiceChannelImpl(id, guild);
-            guild.getVoiceChannelsMap().put(id, channel);
-            playbackCache = getJDA().getVoiceChannelMap().put(id, channel) == null;
+            SnowflakeCacheViewImpl<VoiceChannel>
+                    guildVoiceView = guild.getVoiceChannelsMap(),
+                    voiceView = getJDA().getVoiceChannelMap();
+            try (
+                UnlockHook vlock = guildVoiceView.writeLock();
+                UnlockHook jlock = voiceView.writeLock())
+            {
+                channel = new VoiceChannelImpl(id, guild);
+                guildVoiceView.getMap().put(id, channel);
+                playbackCache = voiceView.getMap().put(id, channel) == null;
+            }
         }
 
         if (!json.isNull("permission_overwrites"))
@@ -654,7 +710,11 @@ public class EntityBuilder
         }
         else
         {
-            getJDA().getPrivateChannelMap().put(channelId, priv);
+            SnowflakeCacheViewImpl<PrivateChannel> privateView = getJDA().getPrivateChannelMap();
+            try (UnlockHook hook = privateView.writeLock())
+            {
+                privateView.getMap().put(channelId, priv);
+            }
             getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, channelId);
         }
         return priv;
@@ -690,8 +750,12 @@ public class EntityBuilder
         RoleImpl role = (RoleImpl) guild.getRolesMap().get(id);
         if (role == null)
         {
-            role = new RoleImpl(id, guild);
-            playbackCache = guild.getRolesMap().put(id, role) == null;
+            SnowflakeCacheViewImpl<Role> roleView = guild.getRolesMap();
+            try (UnlockHook hook = roleView.writeLock())
+            {
+                role = new RoleImpl(id, guild);
+                playbackCache = roleView.getMap().put(id, role) == null;
+            }
         }
         final int color = roleJson.getInt("color");
         role.setName(roleJson.getString("name"))

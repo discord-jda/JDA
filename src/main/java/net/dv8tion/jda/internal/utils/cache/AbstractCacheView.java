@@ -17,24 +17,31 @@
 package net.dv8tion.jda.internal.utils.cache;
 
 import gnu.trove.map.TLongObjectMap;
-import net.dv8tion.jda.core.utils.MiscUtil;
+import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
+import net.dv8tion.jda.core.utils.ClosableIteratorImpl;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.UnlockHook;
 import org.apache.commons.collections4.iterators.ObjectArrayIterator;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.Array;
 import java.util.*;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public abstract class AbstractCacheView<T> implements CacheView<T>
 {
-    protected final TLongObjectMap<T> elements = MiscUtil.newLongMap();
+    protected final TLongObjectMap<T> elements = new TLongObjectHashMap<>();
     protected final T[] emptyArray;
     protected final Function<T, String> nameMapper;
     protected final Class<T> type;
+    protected final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     @SuppressWarnings("unchecked")
     protected AbstractCacheView(Class<T> type, Function<T, String> nameMapper)
@@ -49,25 +56,105 @@ public abstract class AbstractCacheView<T> implements CacheView<T>
         elements.clear();
     }
 
+    public UnlockHook writeLock()
+    {
+        ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
+        writeLock.lock();
+        return new UnlockHook(writeLock);
+    }
+
     public TLongObjectMap<T> getMap()
     {
+        if (!lock.writeLock().isHeldByCurrentThread())
+            throw new IllegalStateException("Cannot access map directly without holding write lock!");
         return elements;
+    }
+
+    public T get(long id)
+    {
+        try (UnlockHook hook = readLock())
+        {
+            return elements.get(id);
+        }
+    }
+
+    public T remove(long id)
+    {
+        try (UnlockHook hook = writeLock())
+        {
+            return elements.remove(id);
+        }
+    }
+
+    public TLongSet keySet()
+    {
+        try (UnlockHook hook = readLock())
+        {
+            return new TLongHashSet(elements.keySet());
+        }
+    }
+
+    @Override
+    public void forEach(Consumer<? super T> action)
+    {
+        Objects.requireNonNull(action);
+        try (UnlockHook hook = readLock())
+        {
+            for (T elem : elements.valueCollection())
+            {
+                action.accept(elem);
+            }
+        }
+    }
+
+    public UnlockHook readLock()
+    {
+        ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
+        readLock.lock();
+        return new UnlockHook(readLock);
+    }
+
+    @Override
+    public ClosableIteratorImpl<T> lockedIterator()
+    {
+        ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
+        readLock.lock();
+        try
+        {
+            Iterator<T> directIterator = elements.valueCollection().iterator();
+            return new ClosableIteratorImpl<>(directIterator, readLock);
+        }
+        catch (Throwable t)
+        {
+            readLock.unlock();
+            throw t;
+        }
     }
 
     @Override
     public List<T> asList()
     {
-        ArrayList<T> list = new ArrayList<>(elements.size());
-        elements.forEachValue(list::add);
-        return Collections.unmodifiableList(list);
+        if (isEmpty())
+            return Collections.emptyList();
+        try (UnlockHook hook = readLock())
+        {
+            ArrayList<T> list = new ArrayList<>(elements.size());
+            elements.forEachValue(list::add);
+            return Collections.unmodifiableList(list);
+        }
     }
 
     @Override
     public Set<T> asSet()
     {
-        HashSet<T> set = new HashSet<>(elements.size());
-        elements.forEachValue(set::add);
-        return Collections.unmodifiableSet(set);
+        if (isEmpty())
+            return Collections.emptySet();
+        try (UnlockHook hook = readLock())
+        {
+            HashSet<T> set = new HashSet<>(elements.size());
+            elements.forEachValue(set::add);
+            return Collections.unmodifiableSet(set);
+        }
     }
 
     @Override
@@ -90,22 +177,25 @@ public abstract class AbstractCacheView<T> implements CacheView<T>
             return Collections.emptyList();
         if (nameMapper == null) // no getName method available
             throw new UnsupportedOperationException("The contained elements are not assigned with names.");
-
+        if (isEmpty())
+            return Collections.emptyList();
         List<T> list = new ArrayList<>();
-        for (T elem : this)
+        forEach(elem ->
         {
             String elementName = nameMapper.apply(elem);
             if (elementName != null && equals(ignoreCase, elementName, name))
                 list.add(elem);
-        }
-
+        });
         return list;
     }
 
     @Override
     public Spliterator<T> spliterator()
     {
-        return Spliterators.spliterator(elements.values(), Spliterator.IMMUTABLE);
+        try (UnlockHook hook = readLock())
+        {
+            return Spliterators.spliterator(elements.values(), Spliterator.IMMUTABLE);
+        }
     }
 
     @Override
@@ -122,15 +212,16 @@ public abstract class AbstractCacheView<T> implements CacheView<T>
 
     @Nonnull
     @Override
-    @SuppressWarnings("unchecked")
     public Iterator<T> iterator()
     {
-        return new ObjectArrayIterator<>(elements.values(emptyArray));
+        try (UnlockHook hook = readLock())
+        {
+            return new ObjectArrayIterator<>(elements.values(emptyArray));
+        }
     }
 
-    @SuppressWarnings("StringEquality")
     protected boolean equals(boolean ignoreCase, String first, String second)
     {
-        return first == second || ignoreCase ? first.equalsIgnoreCase(second) : first.equals(second);
+        return ignoreCase ? first.equalsIgnoreCase(second) : first.equals(second);
     }
 }

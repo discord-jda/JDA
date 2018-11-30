@@ -44,7 +44,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
 
         JSONObject userJson = content.getJSONObject("user");
         final long userId = userJson.getLong("id");
-        GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(id);
+        GuildImpl guild = (GuildImpl) getJDA().getGuildById(id);
         if (guild == null)
         {
             //Do not cache this here, it will be outdated once we receive the GUILD_CREATE and could cause invalid cache

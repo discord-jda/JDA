@@ -15,17 +15,24 @@
  */
 package net.dv8tion.jda.internal.utils.cache;
 
-import gnu.trove.impl.sync.TSynchronizedIntObjectMap;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.utils.ClosableIterator;
+import net.dv8tion.jda.core.utils.ClosableIteratorImpl;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.core.utils.cache.ShardCacheView;
+import net.dv8tion.jda.internal.utils.ChainedClosableIterator;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.UnlockHook;
 import org.apache.commons.collections4.iterators.ObjectArrayIterator;
 
 import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -36,14 +43,16 @@ public class ShardCacheViewImpl implements ShardCacheView
     protected static final JDA[] EMPTY_ARRAY = new JDA[0];
     protected final TIntObjectMap<JDA> elements;
 
+    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+
     public ShardCacheViewImpl()
     {
-        this.elements = new TSynchronizedIntObjectMap<>(new TIntObjectHashMap<>(), new Object());
+        this.elements = new TIntObjectHashMap<>();
     }
 
     public ShardCacheViewImpl(int initialCapacity)
     {
-        this.elements = new TSynchronizedIntObjectMap<>(new TIntObjectHashMap<>(initialCapacity), new Object());
+        this.elements = new TIntObjectHashMap<>(initialCapacity);
     }
 
     public void clear()
@@ -51,21 +60,85 @@ public class ShardCacheViewImpl implements ShardCacheView
         elements.clear();
     }
 
+    public UnlockHook writeLock()
+    {
+        ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
+        writeLock.lock();
+        return new UnlockHook(writeLock);
+    }
+
     public TIntObjectMap<JDA> getMap()
     {
+        if (!lock.writeLock().isHeldByCurrentThread())
+            throw new IllegalStateException("Cannot access map without holding write lock!");
         return elements;
+    }
+
+    public UnlockHook readLock()
+    {
+        ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
+        readLock.lock();
+        return new UnlockHook(readLock);
+    }
+
+    public TIntSet keySet()
+    {
+        try (UnlockHook hook = readLock())
+        {
+            return new TIntHashSet(elements.keySet());
+        }
+    }
+
+    @Override
+    public void forEach(Consumer<? super JDA> action)
+    {
+        Objects.requireNonNull(action);
+        try (UnlockHook hook = readLock())
+        {
+            for (JDA shard : elements.valueCollection())
+            {
+                action.accept(shard);
+            }
+        }
     }
 
     @Override
     public List<JDA> asList()
     {
-        return Collections.unmodifiableList(new ArrayList<>(elements.valueCollection()));
+        if (isEmpty())
+            return Collections.emptyList();
+        try (UnlockHook hook = readLock())
+        {
+            return Collections.unmodifiableList(new ArrayList<>(elements.valueCollection()));
+        }
     }
 
     @Override
     public Set<JDA> asSet()
     {
-        return Collections.unmodifiableSet(new HashSet<>(elements.valueCollection()));
+        if (isEmpty())
+            return Collections.emptySet();
+        try (UnlockHook hook = readLock())
+        {
+            return Collections.unmodifiableSet(new HashSet<>(elements.valueCollection()));
+        }
+    }
+
+    @Override
+    public ClosableIteratorImpl<JDA> lockedIterator()
+    {
+        ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
+        readLock.lock();
+        try
+        {
+            Iterator<JDA> directIterator = elements.valueCollection().iterator();
+            return new ClosableIteratorImpl<>(directIterator, readLock);
+        }
+        catch (Throwable t)
+        {
+            readLock.unlock();
+            throw t;
+        }
     }
 
     @Override
@@ -87,26 +160,38 @@ public class ShardCacheViewImpl implements ShardCacheView
         if (elements.isEmpty())
             return Collections.emptyList();
 
-        List<JDA> list = new LinkedList<>();
-        for (JDA elem : elements.valueCollection())
+        try (UnlockHook hook = readLock())
         {
-            String elementName = elem.getShardInfo().getShardString();
-            if (elementName != null)
+            List<JDA> list = new LinkedList<>();
+            for (JDA elem : elements.valueCollection())
             {
-                if (ignoreCase)
+                String elementName = elem.getShardInfo().getShardString();
+                if (elementName != null)
                 {
-                    if (elementName.equalsIgnoreCase(name))
-                        list.add(elem);
-                }
-                else
-                {
-                    if (elementName.equals(name))
-                        list.add(elem);
+                    if (ignoreCase)
+                    {
+                        if (elementName.equalsIgnoreCase(name))
+                            list.add(elem);
+                    }
+                    else
+                    {
+                        if (elementName.equals(name))
+                            list.add(elem);
+                    }
                 }
             }
-        }
 
-        return list;
+            return list;
+        }
+    }
+
+    @Override
+    public Spliterator<JDA> spliterator()
+    {
+        try (UnlockHook hook = readLock())
+        {
+            return Spliterators.spliterator(iterator(), size(), Spliterator.IMMUTABLE | Spliterator.NONNULL);
+        }
     }
 
     @Override
@@ -125,8 +210,11 @@ public class ShardCacheViewImpl implements ShardCacheView
     @Override
     public Iterator<JDA> iterator()
     {
-        JDA[] arr = elements.values(EMPTY_ARRAY);
-        return new ObjectArrayIterator<>(arr);
+        try (UnlockHook hook = readLock())
+        {
+            JDA[] arr = elements.values(EMPTY_ARRAY);
+            return new ObjectArrayIterator<>(arr);
+        }
     }
 
     @Override
@@ -170,6 +258,13 @@ public class ShardCacheViewImpl implements ShardCacheView
             Set<JDA> set = new HashSet<>();
             generator.get().flatMap(CacheView::stream).forEach(set::add);
             return Collections.unmodifiableSet(set);
+        }
+
+        @Override
+        public ClosableIterator<JDA> lockedIterator()
+        {
+            Iterator<ShardCacheView> gen = this.generator.get().iterator();
+            return new ChainedClosableIterator<>(gen);
         }
 
         @Override

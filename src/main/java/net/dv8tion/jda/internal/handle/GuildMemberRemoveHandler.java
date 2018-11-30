@@ -15,12 +15,15 @@
  */
 package net.dv8tion.jda.internal.handle;
 
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.*;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
+import net.dv8tion.jda.internal.utils.UnlockHook;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import org.json.JSONObject;
 
 public class GuildMemberRemoveHandler extends SocketHandler
@@ -73,25 +76,30 @@ public class GuildMemberRemoveHandler extends SocketHandler
         }
 
         //The user is not in a different guild that we share
-        if (userId != getJDA().getSelfUser().getIdLong() // don't remove selfUser from cache
-            && getJDA().getGuildMap().valueCollection().stream()
-                       .noneMatch(g -> ((GuildImpl) g).getMembersMap().containsKey(userId)))
+        SnowflakeCacheViewImpl<User> userView = getJDA().getUserMap();
+        try (UnlockHook hook = userView.writeLock())
         {
-            UserImpl user = (UserImpl) getJDA().getUserMap().remove(userId);
-            if (user.hasPrivateChannel())
+            if (userId != getJDA().getSelfUser().getIdLong() // don't remove selfUser from cache
+                    && getJDA().getGuildMap().stream()
+                               .map(GuildImpl.class::cast)
+                               .noneMatch(g -> g.getMembersMap().get(userId) != null))
             {
-                PrivateChannelImpl priv = (PrivateChannelImpl) user.getPrivateChannel();
-                user.setFake(true);
-                priv.setFake(true);
-                getJDA().getFakeUserMap().put(user.getIdLong(), user);
-                getJDA().getFakePrivateChannelMap().put(priv.getIdLong(), priv);
+                UserImpl user = (UserImpl) userView.getMap().remove(userId);
+                if (user.hasPrivateChannel())
+                {
+                    PrivateChannelImpl priv = (PrivateChannelImpl) user.getPrivateChannel();
+                    user.setFake(true);
+                    priv.setFake(true);
+                    getJDA().getFakeUserMap().put(user.getIdLong(), user);
+                    getJDA().getFakePrivateChannelMap().put(priv.getIdLong(), priv);
+                }
+                getJDA().getEventCache().clear(EventCache.Type.USER, userId);
             }
-            getJDA().getEventCache().clear(EventCache.Type.USER, userId);
         }
         getJDA().getEventManager().handle(
-                new GuildMemberLeaveEvent(
-                        getJDA(), responseNumber,
-                        member));
+            new GuildMemberLeaveEvent(
+                getJDA(), responseNumber,
+                member));
         return null;
     }
 }

@@ -36,7 +36,7 @@ public class GuildRoleCreateHandler extends SocketHandler
         if (getJDA().getGuildSetupController().isLocked(guildId))
             return guildId;
 
-        GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(guildId);
+        GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
         if (guild == null)
         {
             getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);

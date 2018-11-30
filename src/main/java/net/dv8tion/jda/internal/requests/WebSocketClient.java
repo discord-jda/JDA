@@ -39,6 +39,8 @@ import net.dv8tion.jda.internal.handle.*;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
 import net.dv8tion.jda.internal.utils.JDALogger;
+import net.dv8tion.jda.internal.utils.UnlockHook;
+import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -678,12 +680,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected void updateAudioManagerReferences()
     {
-        final TLongObjectMap<AudioManager> managerMap = api.getAudioManagerMap();
-        if (managerMap.size() > 0)
-            LOG.trace("Updating AudioManager references");
-
-        synchronized (managerMap)
+        AbstractCacheView<AudioManager> managerView = api.getAudioManagerMap();
+        try (UnlockHook hook = managerView.writeLock())
         {
+            final TLongObjectMap<AudioManager> managerMap = managerView.getMap();
+            if (managerMap.size() > 0)
+                LOG.trace("Updating AudioManager references");
+
             for (TLongObjectIterator<AudioManager> it = managerMap.iterator(); it.hasNext(); )
             {
                 it.advance();

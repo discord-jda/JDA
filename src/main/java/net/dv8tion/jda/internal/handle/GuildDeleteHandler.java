@@ -18,8 +18,8 @@ package net.dv8tion.jda.internal.handle;
 
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.set.TLongSet;
-import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.guild.GuildUnavailableEvent;
 import net.dv8tion.jda.core.managers.AudioManager;
@@ -31,6 +31,9 @@ import net.dv8tion.jda.internal.entities.UserImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.utils.Helpers;
+import net.dv8tion.jda.internal.utils.UnlockHook;
+import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import org.json.JSONObject;
 
 public class GuildDeleteHandler extends SocketHandler
@@ -48,12 +51,15 @@ public class GuildDeleteHandler extends SocketHandler
         if (wasInit)
             return null;
 
-        GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(id);
+        GuildImpl guild = (GuildImpl) getJDA().getGuildById(id);
         boolean unavailable = Helpers.optBoolean(content, "unavailable");
         if (guild == null)
         {
             //getJDA().getEventCache().cache(EventCache.Type.GUILD, id, () -> handle(responseNumber, allContent));
-            WebSocketClient.LOG.debug("Received GUILD_DELETE for a Guild that is not currently cached. ID: {} unavailable: {}", id, unavailable);
+            WebSocketClient.LOG
+                    .debug("Received GUILD_DELETE for a Guild that is not currently cached. ID: {} unavailable: {}", id,
+                           unavailable
+                    );
             return null;
         }
 
@@ -66,23 +72,40 @@ public class GuildDeleteHandler extends SocketHandler
         {
             guild.setAvailable(false);
             getJDA().getEventManager().handle(
-                new GuildUnavailableEvent(
-                    getJDA(), responseNumber,
-                    guild));
+                    new GuildUnavailableEvent(
+                            getJDA(), responseNumber,
+                            guild
+                    ));
             return null;
         }
 
         //Remove everything from global cache
         // this prevents some race-conditions for getting audio managers from guilds
-        getJDA().getGuildMap().remove(id);
-        guild.getTextChannelCache().forEach(chan -> getJDA().getTextChannelMap().remove(chan.getIdLong()));
-        guild.getVoiceChannelCache().forEach(chan -> getJDA().getVoiceChannelMap().remove(chan.getIdLong()));
-        guild.getCategoryCache().forEach(chan -> getJDA().getCategoryMap().remove(chan.getIdLong()));
-
-        getJDA().getClient().removeAudioConnection(id);
-        final TLongObjectMap<AudioManager> audioManagerMap = getJDA().getAudioManagerMap();
-        synchronized (audioManagerMap)
+        SnowflakeCacheViewImpl<Guild> guildView = getJDA().getGuildMap();
+        SnowflakeCacheViewImpl<TextChannel> textView = getJDA().getTextChannelMap();
+        SnowflakeCacheViewImpl<VoiceChannel> voiceView = getJDA().getVoiceChannelMap();
+        SnowflakeCacheViewImpl<Category> categoryView = getJDA().getCategoryMap();
+        guildView.remove(id);
+        try (UnlockHook hook = textView.writeLock())
         {
+            guild.getTextChannelCache()
+                 .forEach(chan -> textView.getMap().remove(chan.getIdLong()));
+        }
+        try (UnlockHook hook = voiceView.writeLock())
+        {
+            guild.getVoiceChannelCache()
+                 .forEach(chan -> voiceView.getMap().remove(chan.getIdLong()));
+        }
+        try (UnlockHook hook = categoryView.writeLock())
+        {
+            guild.getCategoryCache()
+                 .forEach(chan -> categoryView.getMap().remove(chan.getIdLong()));
+        }
+        getJDA().getClient().removeAudioConnection(id);
+        final AbstractCacheView<AudioManager> audioManagerView = getJDA().getAudioManagerMap();
+        try (UnlockHook hook = audioManagerView.writeLock())
+        {
+            final TLongObjectMap<AudioManager> audioManagerMap = audioManagerView.getMap();
             final AudioManagerImpl manager = (AudioManagerImpl) audioManagerMap.get(id);
             if (manager != null) // close existing audio connection if needed
             {
@@ -99,29 +122,31 @@ public class GuildDeleteHandler extends SocketHandler
         //cleaning up all users that we do not share a guild with anymore
         // Anything left in memberIds will be removed from the main userMap
         //Use a new HashSet so that we don't actually modify the Member map so it doesn't affect Guild#getMembers for the leave event.
-        TLongSet memberIds = new TLongHashSet(guild.getMembersMap().keySet());
+        TLongSet memberIds = guild.getMembersMap().keySet(); // copies keys
         getJDA().getGuildCache().stream()
                 .map(GuildImpl.class::cast)
                 .forEach(g -> memberIds.removeAll(g.getMembersMap().keySet()));
-
         // Remember, everything left in memberIds is removed from the userMap
-        long selfId = getJDA().getSelfUser().getIdLong();
-        memberIds.forEach(memberId ->
+        SnowflakeCacheViewImpl<User> userView = getJDA().getUserMap();
+        try (UnlockHook hook = userView.writeLock())
         {
-            if (memberId == selfId)
-                return true; // don't remove selfUser from cache
-            UserImpl user = (UserImpl) getJDA().getUserMap().remove(memberId);
-            if (user.hasPrivateChannel())
-            {
-                PrivateChannelImpl priv = (PrivateChannelImpl) user.getPrivateChannel();
-                user.setFake(true);
-                priv.setFake(true);
-                getJDA().getFakeUserMap().put(user.getIdLong(), user);
-                getJDA().getFakePrivateChannelMap().put(priv.getIdLong(), priv);
-            }
-            getJDA().getEventCache().clear(EventCache.Type.USER, memberId);
-            return true;
-        });
+            long selfId = getJDA().getSelfUser().getIdLong();
+            memberIds.forEach(memberId -> {
+                if (memberId == selfId)
+                    return true; // don't remove selfUser from cache
+                UserImpl user = (UserImpl) userView.getMap().remove(memberId);
+                if (user.hasPrivateChannel())
+                {
+                    PrivateChannelImpl priv = (PrivateChannelImpl) user.getPrivateChannel();
+                    user.setFake(true);
+                    priv.setFake(true);
+                    getJDA().getFakeUserMap().put(user.getIdLong(), user);
+                    getJDA().getFakePrivateChannelMap().put(priv.getIdLong(), priv);
+                }
+                getJDA().getEventCache().clear(EventCache.Type.USER, memberId);
+                return true;
+            });
+        }
 
         getJDA().getEventManager().handle(
             new GuildLeaveEvent(

@@ -55,7 +55,7 @@ public class MessageBulkDeleteHandler extends SocketHandler
         }
         else
         {
-            TextChannel channel = getJDA().getTextChannelMap().get(channelId);
+            TextChannel channel = getJDA().getTextChannelById(channelId);
             if (channel == null)
             {
                 getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);

@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.utils.cache;
 
 import net.dv8tion.jda.core.entities.ISnowflake;
+import net.dv8tion.jda.internal.utils.UnlockHook;
 import org.apache.commons.collections4.iterators.ObjectArrayIterator;
 
 import javax.annotation.Nonnull;
@@ -44,24 +45,37 @@ public class SortedSnowflakeCacheView<T extends ISnowflake & Comparable<T>> exte
     @Override
     public List<T> asList()
     {
-        List<T> list = new ArrayList<>(elements.size());
-        elements.forEachValue(list::add);
-        list.sort(comparator);
-        return Collections.unmodifiableList(list);
+        if (isEmpty())
+            return Collections.emptyList();
+        try (UnlockHook hook = readLock())
+        {
+            List<T> list = new ArrayList<>(elements.size());
+            elements.forEachValue(list::add);
+            list.sort(comparator);
+            return Collections.unmodifiableList(list);
+        }
     }
 
     @Override
     public SortedSet<T> asSet()
     {
-        SortedSet<T> set = new TreeSet<>(comparator);
-        elements.forEachValue(set::add);
-        return Collections.unmodifiableSortedSet(set);
+        if (isEmpty())
+            return Collections.emptySortedSet();
+        try (UnlockHook hook = readLock())
+        {
+            SortedSet<T> set = new TreeSet<>(comparator);
+            elements.forEachValue(set::add);
+            return Collections.unmodifiableSortedSet(set);
+        }
     }
 
     @Override
     public Spliterator<T> spliterator()
     {
-        return Spliterators.spliterator(iterator(), elements.size(), SPLIT_CHARACTERISTICS);
+        try (UnlockHook hook = readLock())
+        {
+            return Spliterators.spliterator(iterator(), elements.size(), SPLIT_CHARACTERISTICS);
+        }
     }
 
     @Override
@@ -81,8 +95,11 @@ public class SortedSnowflakeCacheView<T extends ISnowflake & Comparable<T>> exte
     @SuppressWarnings("unchecked")
     public Iterator<T> iterator()
     {
-        T[] arr = elements.values(emptyArray);
-        Arrays.sort(arr, comparator);
-        return new ObjectArrayIterator<>(arr);
+        try (UnlockHook hook = readLock())
+        {
+            T[] arr = elements.values(emptyArray);
+            Arrays.sort(arr, comparator);
+            return new ObjectArrayIterator<>(arr);
+        }
     }
 }
