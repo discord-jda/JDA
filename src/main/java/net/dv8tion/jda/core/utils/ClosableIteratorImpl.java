@@ -51,7 +51,10 @@ public class ClosableIteratorImpl<T> implements ClosableIterator<T>
     @Override
     public boolean hasNext()
     {
-        return it.hasNext();
+        boolean hasNext = it.hasNext();
+        if (!hasNext)
+            close();
+        return hasNext;
     }
 
     @Override
