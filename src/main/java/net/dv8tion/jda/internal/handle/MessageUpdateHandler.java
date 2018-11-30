@@ -15,10 +15,6 @@
  */
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.client.entities.Group;
-import net.dv8tion.jda.client.events.message.group.GroupMessageEmbedEvent;
-import net.dv8tion.jda.client.events.message.group.GroupMessageUpdateEvent;
-import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.MessageEmbedEvent;
 import net.dv8tion.jda.core.events.message.MessageUpdateEvent;
@@ -135,10 +131,7 @@ public class MessageUpdateHandler extends SocketHandler
             }
             case GROUP:
             {
-                getJDA().getEventManager().handle(
-                        new GroupMessageUpdateEvent(
-                                getJDA(), responseNumber,
-                                message));
+                WebSocketClient.LOG.warn("Received a MESSAGE_UPDATE for a group which is not supported");
                 break;
             }
 
@@ -166,8 +159,6 @@ public class MessageUpdateHandler extends SocketHandler
             channel = getJDA().getPrivateChannelMap().get(channelId);
         if (channel == null)
             channel = getJDA().getFakePrivateChannelMap().get(channelId);
-        if (channel == null && getJDA().getAccountType() == AccountType.CLIENT)
-            channel = getJDA().asClient().getGroupById(channelId);
         if (channel == null)
         {
             getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
@@ -181,29 +172,29 @@ public class MessageUpdateHandler extends SocketHandler
             embeds.add(builder.createMessageEmbed(embedsJson.getJSONObject(i)));
         }
 
-        if (channel instanceof TextChannel)
+        switch (channel.getType())
         {
-            TextChannel tChannel = (TextChannel) channel;
-            if (getJDA().getGuildSetupController().isLocked(tChannel.getGuild().getIdLong()))
-                return tChannel.getGuild().getIdLong();
-            getJDA().getEventManager().handle(
+            case TEXT:
+                TextChannel tChannel = (TextChannel) channel;
+                if (getJDA().getGuildSetupController().isLocked(tChannel.getGuild().getIdLong()))
+                    return tChannel.getGuild().getIdLong();
+                getJDA().getEventManager().handle(
                     new GuildMessageEmbedEvent(
-                            getJDA(), responseNumber,
-                            messageId, tChannel, embeds));
-        }
-        else if (channel instanceof PrivateChannel)
-        {
-            getJDA().getEventManager().handle(
+                        getJDA(), responseNumber,
+                        messageId, tChannel, embeds));
+                break;
+            case PRIVATE:
+                getJDA().getEventManager().handle(
                     new PrivateMessageEmbedEvent(
-                            getJDA(), responseNumber,
-                            messageId, (PrivateChannel) channel, embeds));
-        }
-        else
-        {
-            getJDA().getEventManager().handle(
-                    new GroupMessageEmbedEvent(
-                            getJDA(), responseNumber,
-                            messageId, (Group) channel, embeds));
+                        getJDA(), responseNumber,
+                        messageId, (PrivateChannel) channel, embeds));
+                break;
+            case GROUP:
+                WebSocketClient.LOG.error("Rceived a message update for a group which should not be possible");
+                return null;
+            default:
+                WebSocketClient.LOG.warn("No event handled for message update of type {}", channel.getType());
+
         }
         //Combo event
         getJDA().getEventManager().handle(

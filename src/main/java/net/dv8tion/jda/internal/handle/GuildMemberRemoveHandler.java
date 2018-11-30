@@ -15,8 +15,6 @@
  */
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.client.entities.Group;
-import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent;
@@ -75,10 +73,9 @@ public class GuildMemberRemoveHandler extends SocketHandler
         }
 
         //The user is not in a different guild that we share
-        // The user also is not a friend of this account in the case that the logged in account is a client account.
         if (userId != getJDA().getSelfUser().getIdLong() // don't remove selfUser from cache
-            && getJDA().getGuildMap().valueCollection().stream().noneMatch(g -> ((GuildImpl) g).getMembersMap().containsKey(userId))
-            && !(getJDA().getAccountType() == AccountType.CLIENT && getJDA().asClient().getFriendById(userId) != null))
+            && getJDA().getGuildMap().valueCollection().stream()
+                       .noneMatch(g -> ((GuildImpl) g).getMembersMap().containsKey(userId)))
         {
             UserImpl user = (UserImpl) getJDA().getUserMap().remove(userId);
             if (user.hasPrivateChannel())
@@ -88,21 +85,6 @@ public class GuildMemberRemoveHandler extends SocketHandler
                 priv.setFake(true);
                 getJDA().getFakeUserMap().put(user.getIdLong(), user);
                 getJDA().getFakePrivateChannelMap().put(priv.getIdLong(), priv);
-            }
-            else if (getJDA().getAccountType() == AccountType.CLIENT)
-            {
-                //While the user might not have a private channel, if this is a client account then the user
-                // could be in a Group, and if so we need to change the User object to be fake and
-                // place it in the FakeUserMap
-                for (Group grp : getJDA().asClient().getGroups())
-                {
-                    if (grp.getNonFriendUsers().contains(user))
-                    {
-                        user.setFake(true);
-                        getJDA().getFakeUserMap().put(user.getIdLong(), user);
-                        break; //Breaks from groups loop
-                    }
-                }
             }
             getJDA().getEventCache().clear(EventCache.Type.USER, userId);
         }

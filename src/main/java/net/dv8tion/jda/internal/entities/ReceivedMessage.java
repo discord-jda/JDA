@@ -18,7 +18,6 @@ package net.dv8tion.jda.internal.entities;
 
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
-import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.Permission;
@@ -620,12 +619,6 @@ public class ReceivedMessage extends AbstractMessage
     }
 
     @Override
-    public Group getGroup()
-    {
-        return isFromType(ChannelType.GROUP) ? (Group) channel : null;
-    }
-
-    @Override
     public TextChannel getTextChannel()
     {
         return isFromType(ChannelType.TEXT) ? (TextChannel) channel : null;
@@ -740,8 +733,8 @@ public class ReceivedMessage extends AbstractMessage
     {
         if (!getJDA().getSelfUser().equals(getAuthor()))
         {
-            if (isFromType(ChannelType.PRIVATE) || isFromType(ChannelType.GROUP))
-                throw new IllegalStateException("Cannot delete another User's messages in a Group or PrivateChannel.");
+            if (isFromType(ChannelType.PRIVATE))
+                throw new IllegalStateException("Cannot delete another User's messages in a PrivateChannel.");
             else if (!getGuild().getSelfMember()
                     .hasPermission((TextChannel) getChannel(), Permission.MESSAGE_MANAGE))
                 throw new InsufficientPermissionException(Permission.MESSAGE_MANAGE);

@@ -15,9 +15,6 @@
  */
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.client.JDAClient;
-import net.dv8tion.jda.client.entities.impl.FriendImpl;
-import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Activity;
 import net.dv8tion.jda.core.events.user.UserActivityEndEvent;
@@ -214,37 +211,12 @@ public class PresenceUpdateHandler extends SocketHandler
                     }
                 }
             }
+            /*
             else
             {
                 //In this case, this PRESENCE_UPDATE is for a Relation.
-                if (getJDA().getAccountType() != AccountType.CLIENT)
-                    return null;
-                JDAClient client = getJDA().asClient();
-                FriendImpl friend = (FriendImpl) client.getFriendById(userId);
-
-                if (friend != null)
-                {
-                    if (!friend.getOnlineStatus().equals(status))
-                    {
-                        OnlineStatus oldStatus = friend.getOnlineStatus();
-                        friend.setOnlineStatus(status);
-                        getJDA().getEventManager().handle(
-                            new UserUpdateOnlineStatusEvent(
-                                getJDA(), responseNumber,
-                                user, null, oldStatus));
-                    }
-                    if (parsedGame && !Helpers.deepEquals(friend.getActivities(), newActivities))
-                    {
-                        List<Activity> oldActivities = friend.getActivities();
-                        friend.setActivities(newActivities);
-                        //TODO: Decide on client support
-//                        getJDA().getEventManager().handle(
-//                            new UserUpdateActivitiesEvent(
-//                                getJDA(), responseNumber,
-//                                user, null, oldActivities));
-                    }
-                }
             }
+            */
         }
         else
         {

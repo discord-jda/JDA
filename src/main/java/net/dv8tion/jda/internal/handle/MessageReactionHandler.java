@@ -16,9 +16,6 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.client.events.message.group.react.GroupMessageReactionAddEvent;
-import net.dv8tion.jda.client.events.message.group.react.GroupMessageReactionRemoveEvent;
-import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.MessageReaction;
@@ -99,10 +96,6 @@ public class MessageReactionHandler extends SocketHandler
         {
             channel = getJDA().getFakePrivateChannelMap().get(channelId);
         }
-        if (channel == null && getJDA().getAccountType() == AccountType.CLIENT)
-        {
-            channel = getJDA().asClient().getGroupById(channelId);
-        }
         if (channel == null)
         {
             getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
@@ -153,17 +146,15 @@ public class MessageReactionHandler extends SocketHandler
                             getJDA(), responseNumber,
                             user, reaction));
                 break;
-            case GROUP:
-                manager.handle(
-                    new GroupMessageReactionAddEvent(
-                            getJDA(), responseNumber,
-                            user, reaction));
-                break;
             case PRIVATE:
                 manager.handle(
                     new PrivateMessageReactionAddEvent(
                             getJDA(), responseNumber,
                             user, reaction));
+                break;
+            case GROUP:
+                WebSocketClient.LOG.error("Received a reaction add for a group which should not be possible");
+                return;
         }
 
         manager.handle(
@@ -183,17 +174,15 @@ public class MessageReactionHandler extends SocketHandler
                             getJDA(), responseNumber,
                             user, reaction));
                 break;
-            case GROUP:
-                manager.handle(
-                    new GroupMessageReactionRemoveEvent(
-                            getJDA(), responseNumber,
-                            user, reaction));
-                break;
             case PRIVATE:
                 manager.handle(
                     new PrivateMessageReactionRemoveEvent(
                             getJDA(), responseNumber,
                             user, reaction));
+                break;
+            case GROUP:
+                WebSocketClient.LOG.error("Received a reaction add for a group which should not be possible");
+                return;
         }
 
         manager.handle(

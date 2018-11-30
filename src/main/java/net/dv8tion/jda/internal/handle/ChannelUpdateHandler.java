@@ -20,10 +20,6 @@ import gnu.trove.TDecorators;
 import gnu.trove.list.TLongList;
 import gnu.trove.list.linked.TLongLinkedList;
 import gnu.trove.map.TLongObjectMap;
-import net.dv8tion.jda.client.entities.impl.GroupImpl;
-import net.dv8tion.jda.client.events.group.update.GroupUpdateIconEvent;
-import net.dv8tion.jda.client.events.group.update.GroupUpdateNameEvent;
-import net.dv8tion.jda.client.events.group.update.GroupUpdateOwnerEvent;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.channel.category.update.CategoryUpdateNameEvent;
 import net.dv8tion.jda.core.events.channel.category.update.CategoryUpdatePermissionsEvent;
@@ -32,6 +28,7 @@ import net.dv8tion.jda.core.events.channel.text.update.*;
 import net.dv8tion.jda.core.events.channel.voice.update.*;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.*;
+import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.utils.Helpers;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -53,7 +50,7 @@ public class ChannelUpdateHandler extends SocketHandler
         ChannelType type = ChannelType.fromId(content.getInt("type"));
         if (type == ChannelType.GROUP)
         {
-            handleGroup(content);
+            WebSocketClient.LOG.warn("Ignoring CHANNEL_UPDATE for a group which we don't support");
             return null;
         }
 
@@ -370,59 +367,5 @@ public class ChannelUpdateHandler extends SocketHandler
             changedPermHolders.add(permHolder);
         }
         containedPermHolders.add(permHolder);
-    }
-
-    private void handleGroup(JSONObject content)
-    {
-        final long groupId = content.getLong("id");
-        final long ownerId = content.getLong("owner_id");
-        final String name   = content.optString("name", null);
-        final String iconId = content.optString("icon", null);
-
-        GroupImpl group = (GroupImpl) getJDA().asClient().getGroupById(groupId);
-        if (group == null)
-        {
-            getJDA().getEventCache().cache(EventCache.Type.CHANNEL, groupId, responseNumber, allContent, this::handle);
-            EventCache.LOG.debug("Received CHANNEL_UPDATE for a group that was not yet cached. JSON: {}", content);
-            return;
-        }
-
-        final User owner = group.getUserMap().get(ownerId);
-        final User oldOwner = group.getOwner();
-        final String oldName = group.getName();
-        final String oldIconId = group.getIconId();
-
-        if (owner == null)
-        {
-            EventCache.LOG.warn("Received CHANNEL_UPDATE for a group with an owner_id for a user that is not cached. owner_id: {}", ownerId);
-        }
-        else
-        {
-            if (!Objects.equals(owner, oldOwner))
-            {
-                group.setOwner(owner);
-                getJDA().getEventManager().handle(
-                        new GroupUpdateOwnerEvent(
-                                getJDA(), responseNumber,
-                                group, oldOwner));
-            }
-        }
-
-        if (!Objects.equals(name, oldName))
-        {
-            group.setName(name);
-            getJDA().getEventManager().handle(
-                    new GroupUpdateNameEvent(
-                            getJDA(), responseNumber,
-                            group, oldName));
-        }
-        if (!Objects.equals(iconId, oldIconId))
-        {
-            group.setIconId(iconId);
-            getJDA().getEventManager().handle(
-                    new GroupUpdateIconEvent(
-                            getJDA(), responseNumber,
-                            group, oldIconId));
-        }
     }
 }

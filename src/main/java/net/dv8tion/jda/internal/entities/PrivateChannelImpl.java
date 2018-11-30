@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.internal.entities;
 
-import net.dv8tion.jda.client.entities.Call;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
@@ -38,7 +37,6 @@ public class PrivateChannelImpl implements PrivateChannel
     private final UpstreamReference<User> user;
 
     private long lastMessageId;
-    private Call currentCall = null;
     private boolean fake = false;
 
     public PrivateChannelImpl(long id, User user)
@@ -130,18 +128,6 @@ public class PrivateChannelImpl implements PrivateChannel
     }
 
     @Override
-    public RestAction<Call> startCall()
-    {
-        return null;
-    }
-
-    @Override
-    public Call getCurrentCall()
-    {
-        return currentCall;
-    }
-
-    @Override
     public MessageAction sendMessage(CharSequence text)
     {
         checkBot();
@@ -172,12 +158,6 @@ public class PrivateChannelImpl implements PrivateChannel
     public PrivateChannelImpl setFake(boolean fake)
     {
         this.fake = fake;
-        return this;
-    }
-
-    public PrivateChannelImpl setCurrentCall(Call currentCall)
-    {
-        this.currentCall = currentCall;
         return this;
     }
 

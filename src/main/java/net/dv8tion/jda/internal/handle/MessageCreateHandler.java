@@ -15,8 +15,6 @@
  */
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.client.entities.impl.GroupImpl;
-import net.dv8tion.jda.client.events.message.group.GroupMessageReceivedEvent;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageType;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -109,15 +107,8 @@ public class MessageCreateHandler extends SocketHandler
                 break;
             }
             case GROUP:
-            {
-                GroupImpl channel = (GroupImpl) message.getGroup();
-                channel.setLastMessageId(message.getIdLong());
-                manager.handle(
-                    new GroupMessageReceivedEvent(
-                        getJDA(), responseNumber,
-                        message));
-                break;
-            }
+                WebSocketClient.LOG.error("Received a MESSAGE_CREATE for a group channel which should not be possible");
+                return null;
             default:
                 WebSocketClient.LOG.warn("Received a MESSAGE_CREATE with a unknown MessageChannel ChannelType. JSON: {}", content);
                 return null;

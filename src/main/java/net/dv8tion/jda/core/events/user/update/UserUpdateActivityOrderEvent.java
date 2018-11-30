@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.core.events.user.update;
 
-import net.dv8tion.jda.client.entities.Friend;
 import net.dv8tion.jda.core.entities.Activity;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
@@ -26,13 +25,12 @@ import java.util.List;
 
 /**
  * Indicates that the {@link net.dv8tion.jda.core.entities.Activity Activity} order of a {@link net.dv8tion.jda.core.entities.User User} changes.
- * <br>As with any presence updates this either happened for a {@link net.dv8tion.jda.core.entities.Member Member} in a Guild or a {@link net.dv8tion.jda.client.entities.Friend Friend}!
+ * <br>As with any presence updates this either happened for a {@link net.dv8tion.jda.core.entities.Member Member} in a Guild!
  *
  * <p>Can be used to retrieve the User who changed their Activities and their previous Activities.
  *
  * <p>Identifier: {@code activity_order}
  */
-//TODO: Keep client support?
 public class UserUpdateActivityOrderEvent extends GenericUserUpdateEvent<List<Activity>> implements GenericUserPresenceEvent
 {
     public static final String IDENTIFIER = "activity_order";
@@ -55,11 +53,5 @@ public class UserUpdateActivityOrderEvent extends GenericUserUpdateEvent<List<Ac
     public Member getMember()
     {
         return member;
-    }
-
-    @Override
-    public Friend getFriend()
-    {
-        return null;
     }
 }

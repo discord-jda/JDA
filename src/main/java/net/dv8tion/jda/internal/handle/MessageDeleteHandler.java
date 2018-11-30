@@ -15,11 +15,7 @@
  */
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.client.entities.impl.GroupImpl;
-import net.dv8tion.jda.client.events.message.group.GroupMessageDeleteEvent;
-import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent;
@@ -52,10 +48,6 @@ public class MessageDeleteHandler extends SocketHandler
         {
             channel = getJDA().getFakePrivateChannelMap().get(channelId);
         }
-        if (channel == null && getJDA().getAccountType() == AccountType.CLIENT)
-        {
-            channel = getJDA().asClient().getGroupById(channelId);
-        }
         if (channel == null)
         {
             getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
@@ -75,7 +67,7 @@ public class MessageDeleteHandler extends SocketHandler
                             getJDA(), responseNumber,
                             messageId, tChan));
         }
-        else if (channel instanceof PrivateChannel)
+        else
         {
             PrivateChannelImpl pChan = (PrivateChannelImpl) channel;
             if (channel.hasLatestMessage() && messageId == channel.getLatestMessageIdLong())
@@ -84,16 +76,6 @@ public class MessageDeleteHandler extends SocketHandler
                     new PrivateMessageDeleteEvent(
                             getJDA(), responseNumber,
                             messageId, pChan));
-        }
-        else
-        {
-            GroupImpl group = (GroupImpl) channel;
-            if (channel.hasLatestMessage() && messageId == channel.getLatestMessageIdLong())
-                group.setLastMessageId(0); // Reset latest message id as it was deleted.
-            getJDA().getEventManager().handle(
-                    new GroupMessageDeleteEvent(
-                            getJDA(), responseNumber,
-                            messageId, group));
         }
 
         //Combo event

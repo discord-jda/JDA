@@ -16,14 +16,12 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.client.entities.Group;
-import net.dv8tion.jda.client.events.message.group.react.GroupMessageReactionRemoveAllEvent;
-import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionRemoveAllEvent;
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveAllEvent;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.requests.WebSocketClient;
 import org.json.JSONObject;
 
 public class MessageReactionBulkRemoveHandler extends SocketHandler
@@ -38,7 +36,7 @@ public class MessageReactionBulkRemoveHandler extends SocketHandler
     {
         final long messageId = content.getLong("message_id");
         final long channelId = content.getLong("channel_id");
-        MessageChannel channel = getJDA().getTextChannelById(channelId);
+        TextChannel channel = getJDA().getTextChannelById(channelId);
         if (channel == null)
         {
             getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
@@ -53,13 +51,11 @@ public class MessageReactionBulkRemoveHandler extends SocketHandler
                manager.handle(
                    new GuildMessageReactionRemoveAllEvent(
                            getJDA(), responseNumber,
-                           messageId, (TextChannel) channel));
+                           messageId, channel));
                break;
             case GROUP:
-                manager.handle(
-                    new GroupMessageReactionRemoveAllEvent(
-                            getJDA(), responseNumber,
-                            messageId, (Group) channel));
+                WebSocketClient.LOG.error("Received a reaction bulk delete for a group which should not be possible");
+                return null;
         }
 
         manager.handle(

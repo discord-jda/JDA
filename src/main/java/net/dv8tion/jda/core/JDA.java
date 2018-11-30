@@ -17,7 +17,6 @@
 package net.dv8tion.jda.core;
 
 import net.dv8tion.jda.bot.JDABot;
-import net.dv8tion.jda.client.JDAClient;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.AudioManager;
@@ -1128,16 +1127,6 @@ public interface JDA
      * @return The current AccountType.
      */
     AccountType getAccountType();
-
-    /**
-     * Used to access Client specific functions like Groups, Calls, and Friends.
-     *
-     * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
-     *         Thrown if the currently logged in account is {@link net.dv8tion.jda.core.AccountType#BOT}
-     *
-     * @return The {@link net.dv8tion.jda.client.JDAClient} registry for this instance of JDA.
-     */
-    JDAClient asClient();
 
     /**
      * Used to access Bot specific functions like OAuth information.

@@ -16,47 +16,29 @@
 
 package net.dv8tion.jda.core.events.user.update;
 
-import net.dv8tion.jda.client.entities.Friend;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 
 /**
  * Indicates that the presence of a {@link net.dv8tion.jda.core.entities.User User} has changed.
- * <br>Users don't have presences directly, this is fired when either a {@link net.dv8tion.jda.core.entities.Member Member} from a {@link net.dv8tion.jda.core.entities.Guild Guild}
- * or one of the client's {@link net.dv8tion.jda.client.entities.Friend Friends} changes their presence.
+ * <br>Users don't have presences directly, this is fired when a {@link net.dv8tion.jda.core.entities.Member Member} from a {@link net.dv8tion.jda.core.entities.Guild Guild}
+ * changes their presence.
  *
- * <p>Can be used to track the presence updates of members/friends.
+ * <p>Can be used to track the presence updates of members.
  */
 public interface GenericUserPresenceEvent
 {
     /**
      * Possibly-null guild in which the presence has changed.
      *
-     * @return The guild, or null if this is related to a {@link net.dv8tion.jda.client.entities.Friend Friend}
+     * @return The guild
      */
     Guild getGuild();
 
     /**
      * Possibly-null member who changed their presence.
      *
-     * @return The member, or null if this is related to a {@link net.dv8tion.jda.client.entities.Friend Friend}
+     * @return The member
      */
     Member getMember();
-
-    /**
-     * Possibly-null friend who changed their presence.
-     *
-     * @return The friend, or null if this is related to a {@link net.dv8tion.jda.core.entities.Member Member}
-     */
-    Friend getFriend();
-
-    /**
-     * Whether this is a change for a friend presence.
-     *
-     * @return True, if this was the presence update for a {@link net.dv8tion.jda.client.entities.Friend Friend}
-     */
-    default boolean isRelationshipUpdate()
-    {
-        return getGuild() == null;
-    }
 }

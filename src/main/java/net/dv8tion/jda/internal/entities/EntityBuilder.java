@@ -21,8 +21,6 @@ import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.bot.entities.ApplicationInfo;
 import net.dv8tion.jda.bot.entities.impl.ApplicationInfoImpl;
-import net.dv8tion.jda.client.entities.*;
-import net.dv8tion.jda.client.entities.impl.*;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
@@ -32,7 +30,6 @@ import net.dv8tion.jda.core.audit.AuditLogEntry;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.core.entities.MessageEmbed.*;
-import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.handle.EventCache;
@@ -391,10 +388,10 @@ public class EntityBuilder
     }
 
     //Effectively the same as createFriendPresence
-    public void createPresence(Object memberOrFriend, JSONObject presenceJson)
+    public void createPresence(MemberImpl member, JSONObject presenceJson)
     {
-        if (memberOrFriend == null)
-            throw new NullPointerException("Provided memberOrFriend was null!");
+        if (member == null)
+            throw new NullPointerException("Provided member was null!");
         boolean cacheGame = getJDA().isCacheFlagSet(CacheFlag.PRESENCE);
 
         JSONArray activityArray = !cacheGame || presenceJson.isNull("activities") ? null : presenceJson.getJSONArray("activities");
@@ -414,12 +411,7 @@ public class EntityBuilder
                 catch (Exception ex)
                 {
                     String userId;
-                    if (memberOrFriend instanceof Member)
-                        userId = ((Member) memberOrFriend).getUser().getId();
-                    else if (memberOrFriend instanceof Friend)
-                        userId = ((Friend) memberOrFriend).getUser().getId();
-                    else
-                        userId = "unknown";
+                    userId = member.getUser().getId();
                     if (LOG.isDebugEnabled())
                         LOG.warn("Encountered exception trying to parse a presence! UserId: {} JSON: {}", userId, activityArray, ex);
                     else
@@ -427,28 +419,9 @@ public class EntityBuilder
                 }
             }
         }
-        if (memberOrFriend instanceof Member)
-        {
-            MemberImpl member = (MemberImpl) memberOrFriend;
-            member.setOnlineStatus(onlineStatus);
-            if (cacheGame && parsedActivity)
-                member.setActivities(activities);
-        }
-        else if (memberOrFriend instanceof Friend)
-        {
-            FriendImpl friend = (FriendImpl) memberOrFriend;
-            friend.setOnlineStatus(onlineStatus);
-            if (cacheGame && parsedActivity)
-                friend.setActivities(activities);
-
-            OffsetDateTime lastModified = OffsetDateTime.ofInstant(
-                    Instant.ofEpochMilli(presenceJson.getLong("last_modified")),
-                    TimeZone.getTimeZone("GMT").toZoneId());
-
-            friend.setOnlineStatusModifiedTime(lastModified);
-        }
-        else
-            throw new IllegalArgumentException("An object was provided to EntityBuilder#createPresence that wasn't a Member or Friend. JSON: " + presenceJson);
+        member.setOnlineStatus(onlineStatus);
+        if (cacheGame && parsedActivity)
+            member.setActivities(activities);
     }
 
     public static Activity createAcitvity(JSONObject gameJson)
@@ -745,8 +718,6 @@ public class EntityBuilder
             chan = getJDA().getPrivateChannelById(channelId);
         if (chan == null)
             chan = getJDA().getFakePrivateChannelMap().get(channelId);
-        if (chan == null && getJDA().getAccountType() == AccountType.CLIENT)
-            chan = getJDA().asClient().getGroupById(channelId);
         if (chan == null)
             throw new IllegalArgumentException(MISSING_CHANNEL);
 
@@ -780,28 +751,7 @@ public class EntityBuilder
                     user = ((PrivateChannel) chan).getUser();
                 break;
             case GROUP:
-                user = getJDA().getUserById(authorId);
-                if (user == null)
-                    user = getJDA().getFakeUserMap().get(authorId);
-                if (user == null && fromWebhook)
-                    user = createFakeUser(author, false);
-                if (user == null)
-                {
-                    if (exceptionOnMissingUser)
-                        throw new IllegalArgumentException(MISSING_USER); // Specifically for MESSAGE_CREATE
-                    else
-                        user = createFakeUser(author, false); // Any other message creation
-                }
-
-                if (user.isFake() && !fromWebhook)
-                {
-                    UserImpl impl = (UserImpl) user;
-                    impl.setName(author.getString("username"))
-                        .setDiscriminator(author.get("discriminator").toString())
-                        .setAvatarId(author.optString("avatar", null))
-                        .setBot(Helpers.optBoolean(author, "bot"));
-                }
-                break;
+                throw new IllegalStateException("Cannot build a message for a group channel, how did this even get here?");
             case TEXT:
                 Guild guild = ((TextChannel) chan).getGuild();
                 Member member = guild.getMemberById(authorId);
@@ -1075,88 +1025,6 @@ public class EntityBuilder
                 .setUser(defaultUser);
     }
 
-    public Relationship createRelationship(JSONObject relationshipJson)
-    {
-        if (getJDA().getAccountType() != AccountType.CLIENT)
-            throw new AccountTypeException(AccountType.CLIENT, "Attempted to create a Relationship but the logged in account is not a CLIENT!");
-
-        RelationshipType type = RelationshipType.fromKey(relationshipJson.getInt("type"));
-        User user;
-        if (type == RelationshipType.FRIEND)
-            user = createUser(relationshipJson.getJSONObject("user"));
-        else
-            user = createFakeUser(relationshipJson.getJSONObject("user"), true);
-
-        Relationship relationship = getJDA().asClient().getRelationshipById(user.getIdLong(), type);
-        if (relationship == null)
-        {
-            switch (type)
-            {
-                case FRIEND:
-                    relationship = new FriendImpl(user);
-                    break;
-                case BLOCKED:
-                    relationship = new BlockedUserImpl(user);
-                    break;
-                case INCOMING_FRIEND_REQUEST:
-                    relationship = new IncomingFriendRequestImpl(user);
-                    break;
-                case OUTGOING_FRIEND_REQUEST:
-                    relationship = new OutgoingFriendRequestImpl(user);
-                    break;
-                default:
-                    return null;
-            }
-            getJDA().asClient().getRelationshipMap().put(user.getIdLong(), relationship);
-        }
-        return relationship;
-    }
-
-    public Group createGroup(JSONObject groupJson)
-    {
-        if (getJDA().getAccountType() != AccountType.CLIENT)
-            throw new AccountTypeException(AccountType.CLIENT, "Attempted to create a Group but the logged in account is not a CLIENT!");
-
-        boolean playbackCache = false;
-        final long groupId = groupJson.getLong("id");
-        JSONArray recipients = groupJson.getJSONArray("recipients");
-        final long ownerId = groupJson.getLong("owner_id");
-        final String name = groupJson.optString("name", null);
-        final String iconId = groupJson.optString("icon", null);
-        final long lastMessage = Helpers.optLong(groupJson, "last_message_id", 0);
-
-        GroupImpl group = (GroupImpl) getJDA().asClient().getGroupById(groupId);
-        if (group == null)
-        {
-            group = new GroupImpl(groupId, getJDA());
-            playbackCache = getJDA().asClient().getGroupMap().put(groupId, group) == null;
-        }
-
-        TLongObjectMap<User> groupUsers = group.getUserMap();
-        groupUsers.put(getJDA().getSelfUser().getIdLong(), getJDA().getSelfUser());
-        for (int i = 0; i < recipients.length(); i++)
-        {
-            JSONObject groupUser = recipients.getJSONObject(i);
-            groupUsers.put(groupUser.getLong("id"), createFakeUser(groupUser, true));
-        }
-
-        User owner = getJDA().getUserMap().get(ownerId);
-        if (owner == null)
-            owner = getJDA().getFakeUserMap().get(ownerId);
-        if (owner == null)
-            throw new IllegalArgumentException("Attempted to build a Group, but could not find user by provided owner id." +
-                    "This should not be possible because the owner should be IN the group!");
-
-        group
-            .setOwner(owner)
-            .setLastMessageId(lastMessage)
-            .setName(name)
-            .setIconId(iconId);
-        if (playbackCache)
-            getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, groupId);
-        return group;
-    }
-
     public Invite createInvite(JSONObject object)
     {
         final String code = object.getString("code");
@@ -1269,31 +1137,6 @@ public class EntityBuilder
         final User owner = createFakeUser(object.getJSONObject("owner"), false);
 
         return new ApplicationInfoImpl(getJDA(), description, doesBotRequireCodeGrant, iconId, id, isBotPublic, name, owner);
-    }
-
-    public Application createApplication(JSONObject object)
-    {
-        return new ApplicationImpl(getJDA(), object);
-    }
-
-    public AuthorizedApplication createAuthorizedApplication(JSONObject object)
-    {
-        final long authId = object.getLong("id");
-
-        JSONArray scopeArray = object.getJSONArray("scopes");
-        List<String> scopes = new ArrayList<>(scopeArray.length());
-        for (int i = 0; i < scopeArray.length(); i++)
-        {
-            scopes.add(scopeArray.getString(i));
-        }
-        JSONObject application = object.getJSONObject("application");
-
-        final String description = application.getString("description");
-        final String iconId = application.has("icon") ? application.getString("icon") : null;
-        final long id = application.getLong("id");
-        final String name = application.getString("name");
-
-        return new AuthorizedApplicationImpl(getJDA(), authId, description, iconId, id, name, scopes);
     }
 
     public AuditLogEntry createAuditLogEntry(GuildImpl guild, JSONObject entryJson, JSONObject userJson, JSONObject webhookJson)

@@ -16,14 +16,13 @@
 
 package net.dv8tion.jda.core.events.user;
 
-import net.dv8tion.jda.client.entities.Friend;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Activity;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.user.update.GenericUserPresenceEvent;
 
-public class UserActivityEndEvent extends GenericUserEvent implements GenericUserPresenceEvent // TODO: Docs, client support?
+public class UserActivityEndEvent extends GenericUserEvent implements GenericUserPresenceEvent // TODO: Docs
 {
     private final Activity oldActivity;
     private final Member member;
@@ -50,10 +49,5 @@ public class UserActivityEndEvent extends GenericUserEvent implements GenericUse
     public Member getMember()
     {
         return member;
-    }
-
-    @Override
-    public Friend getFriend() {
-        return null;
     }
 }

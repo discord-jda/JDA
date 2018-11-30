@@ -19,8 +19,6 @@ package net.dv8tion.jda.internal.requests;
 import com.neovisionaries.ws.client.*;
 import gnu.trove.iterator.TLongObjectIterator;
 import gnu.trove.map.TLongObjectMap;
-import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
-import net.dv8tion.jda.client.handle.*;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
@@ -676,15 +674,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         api.getFakePrivateChannelMap().clear();
         api.getEventCache().clear();
         api.getGuildSetupController().clearCache();
-
-        if (api.getAccountType() == AccountType.CLIENT)
-        {
-            JDAClientImpl client = api.asClient();
-
-            client.getRelationshipMap().clear();
-            client.getGroupMap().clear();
-            client.getCallUserMap().clear();
-        }
     }
 
     protected void updateAudioManagerReferences()
@@ -1276,13 +1265,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         if (api.getAccountType() == AccountType.CLIENT)
         {
-            handlers.put("CALL_CREATE",              new CallCreateHandler(api));
-            handlers.put("CALL_DELETE",              new CallDeleteHandler(api));
-            handlers.put("CALL_UPDATE",              new CallUpdateHandler(api));
-            handlers.put("CHANNEL_RECIPIENT_ADD",    new ChannelRecipientAddHandler(api));
-            handlers.put("CHANNEL_RECIPIENT_REMOVE", new ChannelRecipientRemoveHandler(api));
-            handlers.put("RELATIONSHIP_ADD",         new RelationshipAddHandler(api));
-            handlers.put("RELATIONSHIP_REMOVE",      new RelationshipRemoveHandler(api));
+            handlers.put("CALL_CREATE",              nopHandler);
+            handlers.put("CALL_DELETE",              nopHandler);
+            handlers.put("CALL_UPDATE",              nopHandler);
+            handlers.put("CHANNEL_RECIPIENT_ADD",    nopHandler);
+            handlers.put("CHANNEL_RECIPIENT_REMOVE", nopHandler);
+            handlers.put("RELATIONSHIP_ADD",         nopHandler);
+            handlers.put("RELATIONSHIP_REMOVE",      nopHandler);
 
             // Unused client events
             handlers.put("MESSAGE_ACK", nopHandler);

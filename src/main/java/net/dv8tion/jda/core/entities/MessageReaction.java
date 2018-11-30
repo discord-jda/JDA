@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.core.entities;
 
-import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
@@ -168,17 +167,6 @@ public class MessageReaction
     public PrivateChannel getPrivateChannel()
     {
         return getChannel() instanceof PrivateChannel ? (PrivateChannel) getChannel() : null;
-    }
-
-    /**
-     * The {@link net.dv8tion.jda.client.entities.Group Group} this Reaction was used in
-     * or {@code null} if this is not from type {@link net.dv8tion.jda.core.entities.ChannelType#GROUP ChannelType.GROUP}!
-     *
-     * @return The {@link net.dv8tion.jda.client.entities.Group Group} or {@code null}
-     */
-    public Group getGroup()
-    {
-        return getChannel() instanceof Group ? (Group) getChannel() : null;
     }
 
     /**

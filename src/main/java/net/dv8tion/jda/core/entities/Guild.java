@@ -15,7 +15,6 @@
  */
 package net.dv8tion.jda.core.entities;
 
-import net.dv8tion.jda.client.requests.restaction.pagination.MentionPaginationAction;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.Region;
@@ -1243,24 +1242,6 @@ public interface Guild extends ISnowflake
      * @return The controller for this Guild.
      */
     GuildController getController();
-
-    /**
-     * Retrieves the recent mentions for the currently logged in
-     * client account in this Guild.
-     *
-     * <p>The returned {@link net.dv8tion.jda.client.requests.restaction.pagination.MentionPaginationAction MentionPaginationAction}
-     * allows to filter by whether the messages mention everyone or a role.
-     *
-     * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
-     *         If the currently logged in account is not from {@link net.dv8tion.jda.core.AccountType#CLIENT AccountType.CLIENT}
-     *
-     * @return {@link net.dv8tion.jda.client.requests.restaction.pagination.MentionPaginationAction MentionPaginationAction}
-     *
-     * @see    net.dv8tion.jda.core.JDA#asClient()
-     * @see    net.dv8tion.jda.client.JDAClient#getRecentMentions(Guild)
-     */
-    @CheckReturnValue
-    MentionPaginationAction getRecentMentions();
 
     /**
      * A {@link net.dv8tion.jda.core.requests.restaction.pagination.PaginationAction PaginationAction} implementation

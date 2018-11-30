@@ -15,13 +15,8 @@
  */
 package net.dv8tion.jda.core.events.message;
 
-import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.PrivateChannel;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.Event;
 
 /**
@@ -135,19 +130,5 @@ public abstract class GenericMessageEvent extends Event
     public PrivateChannel getPrivateChannel()
     {
         return isFromType(ChannelType.PRIVATE) ? (PrivateChannel) channel : null;
-    }
-
-    /**
-     * The {@link net.dv8tion.jda.client.entities.Group Group} the Message was received in.
-     * <br>If this Message was not received in a {@link net.dv8tion.jda.client.entities.Group Group},
-     * this will return {@code null}.
-     *
-     * @return The Group the Message was received in or null if not from a Group
-     *
-     * @see    net.dv8tion.jda.core.events.message.GenericMessageEvent#isFromType(ChannelType)
-     */
-    public Group getGroup()
-    {
-        return isFromType(ChannelType.GROUP) ? (Group) channel : null;
     }
 }

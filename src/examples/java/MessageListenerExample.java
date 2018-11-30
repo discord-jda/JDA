@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.Permission;
@@ -125,15 +124,6 @@ public class MessageListenerExample extends ListenerAdapter
 
             System.out.printf("[PRIV]<%s>: %s\n", author.getName(), msg);
         }
-        else if (event.isFromType(ChannelType.GROUP))   //If this message was sent to a Group. This is CLIENT only!
-        {
-            //The message was sent in a Group. It should be noted that Groups are CLIENT only.
-            Group group = event.getGroup();
-            String groupName = group.getName() != null ? group.getName() : "";  //A group name can be null due to it being unnamed.
-
-            System.out.printf("[GRP: %s]<%s>: %s\n", groupName, author.getName(), msg);
-        }
-
 
         //Now that you have a grasp on the things that you might see in an event, specifically MessageReceivedEvent,
         // we will look at sending / responding to messages!

@@ -16,13 +16,13 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.client.events.group.GroupJoinEvent;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.events.channel.category.CategoryCreateEvent;
 import net.dv8tion.jda.core.events.channel.priv.PrivateChannelCreateEvent;
 import net.dv8tion.jda.core.events.channel.text.TextChannelCreateEvent;
 import net.dv8tion.jda.core.events.channel.voice.VoiceChannelCreateEvent;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.requests.WebSocketClient;
 import org.json.JSONObject;
 
 public class ChannelCreateHandler extends SocketHandler
@@ -80,13 +80,8 @@ public class ChannelCreateHandler extends SocketHandler
                 break;
             }
             case GROUP:
-            {
-                getJDA().getEventManager().handle(
-                    new GroupJoinEvent(
-                        getJDA(), responseNumber,
-                        getJDA().getEntityBuilder().createGroup(content)));
-                break;
-            }
+                WebSocketClient.LOG.warn("Received a CREATE_CHANNEL for a group which is not supported");
+                return null;
             default:
                 throw new IllegalArgumentException("Discord provided an CREATE_CHANNEL event with an unknown channel type! JSON: " + content);
         }

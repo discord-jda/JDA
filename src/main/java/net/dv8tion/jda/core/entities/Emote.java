@@ -18,8 +18,8 @@ package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.annotations.DeprecatedSince;
 import net.dv8tion.jda.annotations.ReplaceWith;
-import net.dv8tion.jda.client.managers.EmoteManager;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.managers.EmoteManager;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 
@@ -148,7 +148,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
     AuditableRestAction<Void> delete();
 
     /**
-     * The {@link net.dv8tion.jda.client.managers.EmoteManager Manager} for this emote, used to modify
+     * The {@link EmoteManager Manager} for this emote, used to modify
      * properties of the emote like name and role restrictions.
      * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.core.requests.RestAction#queue() RestAction.queue()}.
      *

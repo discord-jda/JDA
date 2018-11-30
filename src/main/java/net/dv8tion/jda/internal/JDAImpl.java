@@ -19,7 +19,6 @@ package net.dv8tion.jda.internal;
 import com.neovisionaries.ws.client.WebSocketFactory;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.bot.entities.impl.JDABotImpl;
-import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.audio.factory.DefaultSendFactory;
@@ -99,7 +98,6 @@ public class JDAImpl implements JDA
     protected final WebSocketFactory wsFactory;
     protected final AccountType accountType;
     protected final PresenceImpl presence;
-    protected final JDAClientImpl jdaClient;
     protected final JDABotImpl jdaBot;
     protected final int maxReconnectDelay;
     protected final Thread shutdownHook;
@@ -159,7 +157,6 @@ public class JDAImpl implements JDA
         this.requester = new Requester(this);
         this.requester.setRetryOnTimeout(retryOnTimeout);
 
-        this.jdaClient = accountType == AccountType.CLIENT ? new JDAClientImpl(this) : null;
         this.jdaBot = accountType == AccountType.BOT ? new JDABotImpl(this) : null;
         this.guildSetupController = new GuildSetupController(this);
         this.cacheFlags = cacheFlags;
@@ -645,13 +642,6 @@ public class JDAImpl implements JDA
                       .forEach(m -> m.closeAudioConnection(ConnectionStatus.SHUTTING_DOWN));
             managerMap.clear();
         }
-    }
-
-    @Override
-    public JDAClientImpl asClient()
-    {
-        AccountTypeException.check(getAccountType(), AccountType.CLIENT);
-        return jdaClient;
     }
 
     @Override

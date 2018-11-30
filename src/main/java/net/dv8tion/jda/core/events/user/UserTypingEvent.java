@@ -15,7 +15,6 @@
  */
 package net.dv8tion.jda.core.events.user;
 
-import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 
@@ -101,17 +100,6 @@ public class UserTypingEvent extends GenericUserEvent
     public TextChannel getTextChannel()
     {
         return isFromType(ChannelType.TEXT) ? (TextChannel) channel : null;
-    }
-
-    /**
-     * {@link net.dv8tion.jda.client.entities.Group Group} in which this users started typing,
-     * or {@code null} if this was not in a Group.
-     *
-     * @return Possibly-null {@link net.dv8tion.jda.client.entities.Group Group}
-     */
-    public Group getGroup()
-    {
-        return isFromType(ChannelType.GROUP) ? (Group) channel : null;
     }
 
     /**

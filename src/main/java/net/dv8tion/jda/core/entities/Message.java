@@ -15,7 +15,6 @@
  */
 package net.dv8tion.jda.core.entities;
 
-import net.dv8tion.jda.client.entities.Group;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
@@ -446,22 +445,6 @@ public interface Message extends ISnowflake, Formattable
      * @return The PrivateChannel this message was sent in, or {@code null} if it was not sent from a PrivateChannel.
      */
     PrivateChannel getPrivateChannel();
-
-    /**
-     * Returns the {@link net.dv8tion.jda.client.entities.Group Group} that this message was sent in.
-     * <br><b>This is only valid if the Message was actually sent in a Group.</b> This will return {@code null}
-     * if it was not sent from a Group.
-     * <br>You can check the type of channel this message was sent from using {@link #isFromType(ChannelType)} or {@link #getChannelType()}.
-     *
-     * <p>Use {@link #getChannel()} for an ambiguous {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}
-     * if you do not need functionality specific to {@link net.dv8tion.jda.client.entities.Group Group}.
-     *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.core.entities.MessageType#DEFAULT MessageType.DEFAULT}
-     *
-     * @return The Group this message was sent in, or {@code null} if it was not sent from a Group.
-     */
-    Group getGroup();
 
     /**
      * Returns the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} that this message was sent in.

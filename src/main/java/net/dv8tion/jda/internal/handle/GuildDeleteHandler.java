@@ -16,14 +16,9 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import gnu.trove.iterator.TLongIterator;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
-import net.dv8tion.jda.client.entities.Group;
-import net.dv8tion.jda.client.entities.Relationship;
-import net.dv8tion.jda.client.entities.RelationshipType;
-import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.guild.GuildUnavailableEvent;
@@ -109,19 +104,7 @@ public class GuildDeleteHandler extends SocketHandler
                 .map(GuildImpl.class::cast)
                 .forEach(g -> memberIds.removeAll(g.getMembersMap().keySet()));
 
-        //If we are a client account, be sure to not remove any users from the cache that are Friends.
         // Remember, everything left in memberIds is removed from the userMap
-        if (getJDA().getAccountType() == AccountType.CLIENT)
-        {
-            TLongObjectMap<Relationship> relationships = getJDA().asClient().getRelationshipMap();
-            for (TLongIterator it = memberIds.iterator(); it.hasNext();)
-            {
-                Relationship rel = relationships.get(it.next());
-                if (rel != null && rel.getType() == RelationshipType.FRIEND)
-                    it.remove();
-            }
-        }
-
         long selfId = getJDA().getSelfUser().getIdLong();
         memberIds.forEach(memberId ->
         {
@@ -135,21 +118,6 @@ public class GuildDeleteHandler extends SocketHandler
                 priv.setFake(true);
                 getJDA().getFakeUserMap().put(user.getIdLong(), user);
                 getJDA().getFakePrivateChannelMap().put(priv.getIdLong(), priv);
-            }
-            else if (getJDA().getAccountType() == AccountType.CLIENT)
-            {
-                //While the user might not have a private channel, if this is a client account then the user
-                // could be in a Group, and if so we need to change the User object to be fake and
-                // place it in the FakeUserMap
-                for (Group grp : getJDA().asClient().getGroups())
-                {
-                    if (grp.getNonFriendUsers().contains(user))
-                    {
-                        user.setFake(true);
-                        getJDA().getFakeUserMap().put(user.getIdLong(), user);
-                        break; //Breaks from groups loop, not memberIds loop
-                    }
-                }
             }
             getJDA().getEventCache().clear(EventCache.Type.USER, memberId);
             return true;

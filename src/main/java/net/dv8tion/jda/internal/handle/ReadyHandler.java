@@ -16,15 +16,9 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.client.entities.Relationship;
-import net.dv8tion.jda.client.entities.impl.FriendImpl;
-import net.dv8tion.jda.client.entities.impl.UserSettingsImpl;
-import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
-import net.dv8tion.jda.internal.managers.PresenceImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -47,20 +41,6 @@ public class ReadyHandler extends SocketHandler
         JSONObject selfJson = content.getJSONObject("user");
 
         builder.createSelfUser(selfJson);
-
-        if (getJDA().getAccountType() == AccountType.CLIENT && !content.isNull("user_settings"))
-        {
-            // handle user settings
-            JSONObject userSettingsJson = content.getJSONObject("user_settings");
-            UserSettingsImpl userSettingsObj = (UserSettingsImpl) getJDA().asClient().getSettings();
-            userSettingsObj
-                    // TODO: set all information and handle updates
-                    .setStatus(userSettingsJson.isNull("status") ? OnlineStatus.ONLINE : OnlineStatus.fromKey(userSettingsJson.getString("status")));
-            // update presence information unless the status is ONLINE
-            if (userSettingsObj.getStatus() != OnlineStatus.ONLINE)
-                ((PresenceImpl) getJDA().getPresence()).setCacheStatus(userSettingsObj.getStatus());
-        }
-
         if (getJDA().getGuildSetupController().setIncompleteCount(guilds.length()))
         {
             for (int i = 0; i < guilds.length(); i++)
@@ -79,31 +59,6 @@ public class ReadyHandler extends SocketHandler
         EntityBuilder builder = getJDA().getEntityBuilder();
         JSONArray privateChannels = content.getJSONArray("private_channels");
 
-        if (getJDA().getAccountType() == AccountType.CLIENT)
-        {
-            JSONArray relationships = content.getJSONArray("relationships");
-            JSONArray presences = content.getJSONArray("presences");
-
-            for (int i = 0; i < relationships.length(); i++)
-            {
-                JSONObject relationship = relationships.getJSONObject(i);
-                Relationship r = builder.createRelationship(relationship);
-                if (r == null)
-                    JDAImpl.LOG.warn("Provided relationship in READY with an unknown type! JSON: {}", relationship);
-            }
-
-            for (int i = 0; i < presences.length(); i++)
-            {
-                JSONObject presence = presences.getJSONObject(i);
-                long userId = presence.getJSONObject("user").getLong("id");
-                FriendImpl friend = (FriendImpl) getJDA().asClient().getFriendById(userId);
-                if (friend == null)
-                    WebSocketClient.LOG.debug("Received a presence in the Presences array in READY that did not correspond to a cached Friend! JSON: {}", presence);
-                else
-                    builder.createPresence(friend, presence);
-            }
-        }
-
         for (int i = 0; i < privateChannels.length(); i++)
         {
             JSONObject chan = privateChannels.getJSONObject(i);
@@ -114,11 +69,8 @@ public class ReadyHandler extends SocketHandler
                 case PRIVATE:
                     builder.createPrivateChannel(chan);
                     break;
-                case GROUP:
-                    builder.createGroup(chan);
-                    break;
                 default:
-                    WebSocketClient.LOG.warn("Received a Channel in the private_channels array in READY of an unknown type! JSON: {}", type);
+                    WebSocketClient.LOG.warn("Received a Channel in the private_channels array in READY of an unknown type! Type: {}", type);
             }
         }
     }

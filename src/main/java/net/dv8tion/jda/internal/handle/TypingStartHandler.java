@@ -15,9 +15,6 @@
  */
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.client.entities.Group;
-import net.dv8tion.jda.client.entities.impl.GroupImpl;
-import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.User;
@@ -53,8 +50,6 @@ public class TypingStartHandler extends SocketHandler
             channel = getJDA().getPrivateChannelMap().get(channelId);
         if (channel == null)
             channel = getJDA().getFakePrivateChannelMap().get(channelId);
-        if (channel == null && getJDA().getAccountType() == AccountType.CLIENT)
-            channel = getJDA().asClient().getGroupById(channelId);
         if (channel == null)
             return null;    //We don't have the channel cached yet. We chose not to cache this event
                             // because that happen very often and could easily fill up the EventCache if
@@ -71,8 +66,6 @@ public class TypingStartHandler extends SocketHandler
         User user;
         if (channel instanceof PrivateChannel)
             user = ((PrivateChannel) channel).getUser();
-        else if (channel instanceof Group)
-            user = ((GroupImpl) channel).getUserMap().get(userId);
         else
             user = getJDA().getUserMap().get(userId);
 
