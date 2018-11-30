@@ -278,8 +278,8 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     public List<Member> getMembers()
     {
         return Collections.unmodifiableList(getGuild().getMembersView().stream()
-                                                      .filter(m -> m.hasPermission(this, Permission.MESSAGE_READ))
-                                                      .collect(Collectors.toList()));
+                  .filter(m -> m.hasPermission(this, Permission.MESSAGE_READ))
+                  .collect(Collectors.toList()));
     }
 
     @Override
