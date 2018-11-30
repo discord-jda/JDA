@@ -20,6 +20,7 @@ import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.concurrent.locks.Lock;
 
 public class ClosableIteratorImpl<T> implements ClosableIterator<T>
@@ -51,6 +52,8 @@ public class ClosableIteratorImpl<T> implements ClosableIterator<T>
     @Override
     public boolean hasNext()
     {
+        if (lock == null)
+            return false;
         boolean hasNext = it.hasNext();
         if (!hasNext)
             close();
@@ -60,6 +63,8 @@ public class ClosableIteratorImpl<T> implements ClosableIterator<T>
     @Override
     public T next()
     {
+        if (lock == null)
+            throw new NoSuchElementException();
         return it.next();
     }
 
