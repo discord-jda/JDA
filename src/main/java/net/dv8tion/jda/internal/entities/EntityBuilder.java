@@ -97,7 +97,7 @@ public class EntityBuilder
             getJDA().setSelfUser(selfUser);
         }
 
-        SnowflakeCacheViewImpl<User> userView = getJDA().getUserMap();
+        SnowflakeCacheViewImpl<User> userView = getJDA().getUsersView();
         try (UnlockHook hook = userView.writeLock())
         {
             if (userView.getElementById(selfUser.getIdLong()) == null)
@@ -132,7 +132,7 @@ public class EntityBuilder
     {
         if (!getJDA().isCacheFlagSet(CacheFlag.EMOTE))
             return;
-        SnowflakeCacheViewImpl<Emote> emoteView = guildObj.getEmoteMap();
+        SnowflakeCacheViewImpl<Emote> emoteView = guildObj.getEmotesView();
         try (UnlockHook hook = emoteView.writeLock())
         {
             TLongObjectMap<Emote> emoteMap = emoteView.getMap();
@@ -196,7 +196,7 @@ public class EntityBuilder
                                  .collect(Collectors.toSet()));
         }
 
-        SnowflakeCacheViewImpl<Role> roleView = guildObj.getRolesMap();
+        SnowflakeCacheViewImpl<Role> roleView = guildObj.getRolesView();
         try (UnlockHook hook = roleView.writeLock())
         {
             TLongObjectMap<Role> map = roleView.getMap();
@@ -232,7 +232,7 @@ public class EntityBuilder
         {
             JSONObject presence = presencesArray.getJSONObject(i);
             final long userId = presence.getJSONObject("user").getLong("id");
-            MemberImpl member = (MemberImpl) guildObj.getMembersMap().get(userId);
+            MemberImpl member = (MemberImpl) guildObj.getMembersView().get(userId);
 
             if (member == null)
                 LOG.debug("Received a ghost presence in GuildFirstPass! UserId: {} Guild: {}", userId, guildObj);
@@ -240,7 +240,7 @@ public class EntityBuilder
                 createPresence(member, presence);
         }
 
-        SnowflakeCacheViewImpl<Guild> guildView = getJDA().getGuildMap();
+        SnowflakeCacheViewImpl<Guild> guildView = getJDA().getGuildsView();
         try (UnlockHook hook = guildView.writeLock())
         {
             guildView.getMap().put(guildId, guildObj);
@@ -273,7 +273,7 @@ public class EntityBuilder
         {
             JSONObject voiceStateJson = voiceStates.getJSONObject(i);
             final long userId = voiceStateJson.getLong("user_id");
-            Member member = guildObj.getMembersMap().get(userId);
+            Member member = guildObj.getMembersView().get(userId);
             if (member == null)
             {
                 LOG.error("Received a VoiceState for a unknown Member! GuildId: "
@@ -286,7 +286,7 @@ public class EntityBuilder
                 continue;
             final long channelId = voiceStateJson.getLong("channel_id");
             VoiceChannelImpl voiceChannel =
-                    (VoiceChannelImpl) guildObj.getVoiceChannelsMap().get(channelId);
+                    (VoiceChannelImpl) guildObj.getVoiceChannelsView().get(channelId);
             if (voiceChannel != null)
                 voiceChannel.getConnectedMembersMap().put(member.getUser().getIdLong(), member);
             else
@@ -311,7 +311,7 @@ public class EntityBuilder
         final long id = user.getLong("id");
         UserImpl userObj;
 
-        SnowflakeCacheViewImpl<User> userView = getJDA().getUserMap();
+        SnowflakeCacheViewImpl<User> userView = getJDA().getUsersView();
         try (UnlockHook hook = userView.writeLock())
         {
             userObj = (UserImpl) userView.getElementById(id);
@@ -330,7 +330,7 @@ public class EntityBuilder
                             PrivateChannelImpl priv = (PrivateChannelImpl) userObj.getPrivateChannel();
                             priv.setFake(false);
                             getJDA().getFakePrivateChannelMap().remove(priv.getIdLong());
-                            SnowflakeCacheViewImpl<PrivateChannel> channelView = getJDA().getPrivateChannelMap();
+                            SnowflakeCacheViewImpl<PrivateChannel> channelView = getJDA().getPrivateChannelsView();
                             try (UnlockHook hook2 = channelView.writeLock())
                             {
                                 channelView.getMap().put(priv.getIdLong(), priv);
@@ -369,7 +369,7 @@ public class EntityBuilder
         MemberImpl member = (MemberImpl) guild.getMember(user);
         if (member == null)
         {
-            MemberCacheViewImpl memberView = guild.getMembersMap();
+            MemberCacheViewImpl memberView = guild.getMembersView();
             try (UnlockHook hook = memberView.writeLock())
             {
                 member = new MemberImpl(guild, user);
@@ -397,7 +397,7 @@ public class EntityBuilder
         for (int k = 0; k < rolesJson.length(); k++)
         {
             final long roleId = rolesJson.getLong(k);
-            Role r = guild.getRolesMap().get(roleId);
+            Role r = guild.getRolesView().get(roleId);
             if (r == null)
             {
                 LOG.debug("Received a Member with an unknown Role. MemberId: {} GuildId: {} roleId: {}",
@@ -562,14 +562,14 @@ public class EntityBuilder
     {
         boolean playbackCache = false;
         final long id = json.getLong("id");
-        CategoryImpl channel = (CategoryImpl) getJDA().getCategoryMap().get(id);
+        CategoryImpl channel = (CategoryImpl) getJDA().getCategoriesView().get(id);
         if (channel == null)
         {
             if (guild == null)
-                guild = (GuildImpl) getJDA().getGuildMap().get(guildId);
+                guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
             SnowflakeCacheViewImpl<Category>
-                    guildCategoryView = guild.getCategoriesMap(),
-                    categoryView = getJDA().getCategoryMap();
+                    guildCategoryView = guild.getCategoriesView(),
+                    categoryView = getJDA().getCategoriesView();
             try (
                 UnlockHook glock = guildCategoryView.writeLock();
                 UnlockHook jlock = categoryView.writeLock())
@@ -604,14 +604,14 @@ public class EntityBuilder
     {
         boolean playbackCache = false;
         final long id = json.getLong("id");
-        TextChannelImpl channel = (TextChannelImpl) getJDA().getTextChannelMap().get(id);
+        TextChannelImpl channel = (TextChannelImpl) getJDA().getTextChannelsView().get(id);
         if (channel == null)
         {
             if (guildObj == null)
-                guildObj = (GuildImpl) getJDA().getGuildMap().get(guildId);
+                guildObj = (GuildImpl) getJDA().getGuildsView().get(guildId);
             SnowflakeCacheViewImpl<TextChannel>
-                    guildTextView = guildObj.getTextChannelsMap(),
-                    textView = getJDA().getTextChannelMap();
+                    guildTextView = guildObj.getTextChannelsView(),
+                    textView = getJDA().getTextChannelsView();
             try (
                 UnlockHook glock = guildTextView.writeLock();
                 UnlockHook jlock = textView.writeLock())
@@ -650,14 +650,14 @@ public class EntityBuilder
     {
         boolean playbackCache = false;
         final long id = json.getLong("id");
-        VoiceChannelImpl channel = ((VoiceChannelImpl) getJDA().getVoiceChannelMap().get(id));
+        VoiceChannelImpl channel = ((VoiceChannelImpl) getJDA().getVoiceChannelsView().get(id));
         if (channel == null)
         {
             if (guild == null)
-                guild = (GuildImpl) getJDA().getGuildMap().get(guildId);
+                guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
             SnowflakeCacheViewImpl<VoiceChannel>
-                    guildVoiceView = guild.getVoiceChannelsMap(),
-                    voiceView = getJDA().getVoiceChannelMap();
+                    guildVoiceView = guild.getVoiceChannelsView(),
+                    voiceView = getJDA().getVoiceChannelsView();
             try (
                 UnlockHook vlock = guildVoiceView.writeLock();
                 UnlockHook jlock = voiceView.writeLock())
@@ -691,7 +691,7 @@ public class EntityBuilder
             privatechat.getJSONArray("recipients").getJSONObject(0) :
             privatechat.getJSONObject("recipient");
         final long userId = recipient.getLong("id");
-        UserImpl user = (UserImpl) getJDA().getUserMap().get(userId);
+        UserImpl user = (UserImpl) getJDA().getUsersView().get(userId);
         if (user == null)
         {   //The getJDA() can give us private channels connected to Users that we can no longer communicate with.
             // As such, make a fake user and fake private channel.
@@ -710,7 +710,7 @@ public class EntityBuilder
         }
         else
         {
-            SnowflakeCacheViewImpl<PrivateChannel> privateView = getJDA().getPrivateChannelMap();
+            SnowflakeCacheViewImpl<PrivateChannel> privateView = getJDA().getPrivateChannelsView();
             try (UnlockHook hook = privateView.writeLock())
             {
                 privateView.getMap().put(channelId, priv);
@@ -746,11 +746,11 @@ public class EntityBuilder
         boolean playbackCache = false;
         final long id = roleJson.getLong("id");
         if (guild == null)
-            guild = (GuildImpl) getJDA().getGuildMap().get(guildId);
-        RoleImpl role = (RoleImpl) guild.getRolesMap().get(id);
+            guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
+        RoleImpl role = (RoleImpl) guild.getRolesView().get(id);
         if (role == null)
         {
-            SnowflakeCacheViewImpl<Role> roleView = guild.getRolesMap();
+            SnowflakeCacheViewImpl<Role> roleView = guild.getRolesView();
             try (UnlockHook hook = roleView.writeLock())
             {
                 role = new RoleImpl(id, guild);
@@ -1027,7 +1027,7 @@ public class EntityBuilder
                 }
                 break;
             case "role":
-                Role role = ((GuildImpl) chan.getGuild()).getRolesMap().get(id);
+                Role role = ((GuildImpl) chan.getGuild()).getRolesView().get(id);
                 if (role == null)
                     throw new NoSuchElementException("Attempted to create a PermissionOverride for a non-existent role! JSON: " + override);
 

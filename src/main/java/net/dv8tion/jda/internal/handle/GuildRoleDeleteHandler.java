@@ -48,7 +48,7 @@ public class GuildRoleDeleteHandler extends SocketHandler
         }
 
         final long roleId = content.getLong("role_id");
-        Role removedRole = guild.getRolesMap().remove(roleId);
+        Role removedRole = guild.getRolesView().remove(roleId);
         if (removedRole == null)
         {
             //getJDA().getEventCache().cache(EventCache.Type.ROLE, roleId, () -> handle(responseNumber, allContent));
@@ -57,7 +57,7 @@ public class GuildRoleDeleteHandler extends SocketHandler
         }
 
         //Now that the role is removed from the Guild, remove it from all users and emotes.
-        guild.getMembersMap().forEach(m ->
+        guild.getMembersView().forEach(m ->
         {
             MemberImpl member = (MemberImpl) m;
             member.getRoleSet().remove(removedRole);

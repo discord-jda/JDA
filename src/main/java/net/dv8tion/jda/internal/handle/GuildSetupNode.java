@@ -429,7 +429,7 @@ public class GuildSetupNode
     private void updateAudioManagerReference(GuildImpl guild)
     {
         JDAImpl api = getController().getJDA();
-        AbstractCacheView<AudioManager> managerView = api.getAudioManagerMap();
+        AbstractCacheView<AudioManager> managerView = api.getAudioManagersView();
         try (UnlockHook hook = managerView.writeLock())
         {
             TLongObjectMap<AudioManager> audioManagerMap = managerView.getMap();

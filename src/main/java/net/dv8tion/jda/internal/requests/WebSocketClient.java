@@ -666,12 +666,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         locked("Interrupted while trying to invalidate chunk/sync queue", chunkSyncQueue::clear);
 
-        api.getTextChannelMap().clear();
-        api.getVoiceChannelMap().clear();
-        api.getCategoryMap().clear();
-        api.getGuildMap().clear();
-        api.getUserMap().clear();
-        api.getPrivateChannelMap().clear();
+        api.getTextChannelsView().clear();
+        api.getVoiceChannelsView().clear();
+        api.getCategoriesView().clear();
+        api.getGuildsView().clear();
+        api.getUsersView().clear();
+        api.getPrivateChannelsView().clear();
         api.getFakeUserMap().clear();
         api.getFakePrivateChannelMap().clear();
         api.getEventCache().clear();
@@ -680,7 +680,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected void updateAudioManagerReferences()
     {
-        AbstractCacheView<AudioManager> managerView = api.getAudioManagerMap();
+        AbstractCacheView<AudioManager> managerView = api.getAudioManagersView();
         try (UnlockHook hook = managerView.writeLock())
         {
             final TLongObjectMap<AudioManager> managerMap = managerView.getMap();

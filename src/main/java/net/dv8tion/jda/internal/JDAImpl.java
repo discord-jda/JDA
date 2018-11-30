@@ -636,7 +636,7 @@ public class JDAImpl implements JDA
 
     private void closeAudioConnections()
     {
-        AbstractCacheView<AudioManager> view = getAudioManagerMap();
+        AbstractCacheView<AudioManager> view = getAudioManagersView();
         try (UnlockHook hook = view.writeLock())
         {
             TLongObjectMap<AudioManager> map = view.getMap();
@@ -858,34 +858,39 @@ public class JDAImpl implements JDA
         return client == null ? null : client.get();
     }
 
-    public SnowflakeCacheViewImpl<User> getUserMap()
+    public SnowflakeCacheViewImpl<User> getUsersView()
     {
         return userCache;
     }
 
-    public SnowflakeCacheViewImpl<Guild> getGuildMap()
+    public SnowflakeCacheViewImpl<Guild> getGuildsView()
     {
         return guildCache;
     }
 
-    public SnowflakeCacheViewImpl<Category> getCategoryMap()
+    public SnowflakeCacheViewImpl<Category> getCategoriesView()
     {
         return categories;
     }
 
-    public SnowflakeCacheViewImpl<TextChannel> getTextChannelMap()
+    public SnowflakeCacheViewImpl<TextChannel> getTextChannelsView()
     {
         return textChannelCache;
     }
 
-    public SnowflakeCacheViewImpl<VoiceChannel> getVoiceChannelMap()
+    public SnowflakeCacheViewImpl<VoiceChannel> getVoiceChannelsView()
     {
         return voiceChannelCache;
     }
 
-    public SnowflakeCacheViewImpl<PrivateChannel> getPrivateChannelMap()
+    public SnowflakeCacheViewImpl<PrivateChannel> getPrivateChannelsView()
     {
         return privateChannelCache;
+    }
+
+    public AbstractCacheView<AudioManager> getAudioManagersView()
+    {
+        return audioManagers;
     }
 
     public TLongObjectMap<User> getFakeUserMap()
@@ -896,11 +901,6 @@ public class JDAImpl implements JDA
     public TLongObjectMap<PrivateChannel> getFakePrivateChannelMap()
     {
         return fakePrivateChannels;
-    }
-
-    public AbstractCacheView<AudioManager> getAudioManagerMap()
-    {
-        return audioManagers;
     }
 
     public void setSelfUser(SelfUser selfUser)

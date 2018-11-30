@@ -518,10 +518,10 @@ public class GuildImpl implements Guild
     public TextChannel getDefaultChannel()
     {
         final Role role = getPublicRole();
-        return getTextChannelsMap().stream()
-                .filter(c -> role.hasPermission(c, Permission.MESSAGE_READ))
-                .sorted(Comparator.naturalOrder())
-                .findFirst().orElse(null);
+        return getTextChannelsView().stream()
+                                    .filter(c -> role.hasPermission(c, Permission.MESSAGE_READ))
+                                    .sorted(Comparator.naturalOrder())
+                                    .findFirst().orElse(null);
     }
 
     @Override
@@ -624,7 +624,7 @@ public class GuildImpl implements Guild
         if (!getJDA().isAudioEnabled())
             throw new IllegalStateException("Audio is disabled. Cannot retrieve an AudioManager while audio is disabled.");
 
-        final AbstractCacheView<AudioManager> managerMap = getJDA().getAudioManagerMap();
+        final AbstractCacheView<AudioManager> managerMap = getJDA().getAudioManagersView();
         AudioManager mng = managerMap.get(id);
         if (mng == null)
         {
@@ -654,7 +654,8 @@ public class GuildImpl implements Guild
     @Override
     public List<GuildVoiceState> getVoiceStates()
     {
-        return Collections.unmodifiableList(getMembersMap().stream().map(Member::getVoiceState).filter(Objects::nonNull).collect(Collectors.toList()));
+        return Collections.unmodifiableList(
+                getMembersView().stream().map(Member::getVoiceState).filter(Objects::nonNull).collect(Collectors.toList()));
     }
 
     @Override
@@ -827,34 +828,34 @@ public class GuildImpl implements Guild
 
     // -- Map getters --
 
-    public SnowflakeCacheViewImpl<Category> getCategoriesMap()
+    public SnowflakeCacheViewImpl<Category> getCategoriesView()
     {
         return categoryCache;
     }
 
-    public SnowflakeCacheViewImpl<TextChannel> getTextChannelsMap()
+    public SnowflakeCacheViewImpl<TextChannel> getTextChannelsView()
     {
         return textChannelCache;
     }
 
-    public SnowflakeCacheViewImpl<VoiceChannel> getVoiceChannelsMap()
+    public SnowflakeCacheViewImpl<VoiceChannel> getVoiceChannelsView()
     {
         return voiceChannelCache;
     }
 
-    public MemberCacheViewImpl getMembersMap()
-    {
-        return memberCache;
-    }
-
-    public SnowflakeCacheViewImpl<Role> getRolesMap()
+    public SnowflakeCacheViewImpl<Role> getRolesView()
     {
         return roleCache;
     }
 
-    public SnowflakeCacheViewImpl<Emote> getEmoteMap()
+    public SnowflakeCacheViewImpl<Emote> getEmotesView()
     {
         return emoteCache;
+    }
+
+    public MemberCacheViewImpl getMembersView()
+    {
+        return memberCache;
     }
 
     public TLongObjectMap<JSONObject> getCachedPresenceMap()

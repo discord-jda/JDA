@@ -42,7 +42,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
         if (setup)
             return null;
 
-        GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(id);
+        GuildImpl guild = (GuildImpl) getJDA().getGuildsView().get(id);
         if (guild == null)
         {
             //We probably just left the guild and this event is trying to remove us from the guild, therefore ignore
@@ -55,7 +55,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
             //We probably just left the guild and this event is trying to remove us from the guild, therefore ignore
             return null;
         }
-        MemberImpl member = (MemberImpl) guild.getMembersMap().remove(userId);
+        MemberImpl member = (MemberImpl) guild.getMembersView().remove(userId);
 
         if (member == null)
         {
@@ -76,13 +76,13 @@ public class GuildMemberRemoveHandler extends SocketHandler
         }
 
         //The user is not in a different guild that we share
-        SnowflakeCacheViewImpl<User> userView = getJDA().getUserMap();
+        SnowflakeCacheViewImpl<User> userView = getJDA().getUsersView();
         try (UnlockHook hook = userView.writeLock())
         {
             if (userId != getJDA().getSelfUser().getIdLong() // don't remove selfUser from cache
-                    && getJDA().getGuildMap().stream()
+                    && getJDA().getGuildsView().stream()
                                .map(GuildImpl.class::cast)
-                               .noneMatch(g -> g.getMembersMap().get(userId) != null))
+                               .noneMatch(g -> g.getMembersView().get(userId) != null))
             {
                 UserImpl user = (UserImpl) userView.getMap().remove(userId);
                 if (user.hasPrivateChannel())

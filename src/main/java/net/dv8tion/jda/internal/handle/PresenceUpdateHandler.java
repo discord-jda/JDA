@@ -64,7 +64,7 @@ public class PresenceUpdateHandler extends SocketHandler
 
         JSONObject jsonUser = content.getJSONObject("user");
         final long userId = jsonUser.getLong("id");
-        UserImpl user = (UserImpl) getJDA().getUserMap().get(userId);
+        UserImpl user = (UserImpl) getJDA().getUsersView().get(userId);
 
         //If we do know about the user, lets update the user's specific info.
         // Afterwards, we will see if we already have them cached in the specific guild

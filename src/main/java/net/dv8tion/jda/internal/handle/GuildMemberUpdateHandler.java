@@ -53,7 +53,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
             return null;
         }
 
-        MemberImpl member = (MemberImpl) guild.getMembersMap().get(userId);
+        MemberImpl member = (MemberImpl) guild.getMembersView().get(userId);
         if (member == null)
         {
             long hashId = id ^ userId;
@@ -126,7 +126,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
         for(int i = 0; i < array.length(); i++)
         {
             final long id = array.getLong(i);
-            Role r = guild.getRolesMap().get(id);
+            Role r = guild.getRolesView().get(id);
             if (r != null)
             {
                 roles.add(r);

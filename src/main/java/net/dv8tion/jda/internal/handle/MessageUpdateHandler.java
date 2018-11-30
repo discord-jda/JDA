@@ -154,9 +154,9 @@ public class MessageUpdateHandler extends SocketHandler
         final long messageId = content.getLong("id");
         final long channelId = content.getLong("channel_id");
         LinkedList<MessageEmbed> embeds = new LinkedList<>();
-        MessageChannel channel = getJDA().getTextChannelMap().get(channelId);
+        MessageChannel channel = getJDA().getTextChannelsView().get(channelId);
         if (channel == null)
-            channel = getJDA().getPrivateChannelMap().get(channelId);
+            channel = getJDA().getPrivateChannelsView().get(channelId);
         if (channel == null)
             channel = getJDA().getFakePrivateChannelMap().get(channelId);
         if (channel == null)

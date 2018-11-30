@@ -48,7 +48,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
         }
 
         final long roleId = rolejson.getLong("id");
-        RoleImpl role = (RoleImpl) guild.getRolesMap().get(roleId);
+        RoleImpl role = (RoleImpl) guild.getRolesView().get(roleId);
         if (role == null)
         {
             getJDA().getEventCache().cache(EventCache.Type.ROLE, roleId, responseNumber, allContent, this::handle);

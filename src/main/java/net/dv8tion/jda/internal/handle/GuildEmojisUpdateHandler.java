@@ -60,7 +60,7 @@ public class GuildEmojisUpdateHandler extends SocketHandler
 
         JSONArray array = content.getJSONArray("emojis");
         List<Emote> oldEmotes, newEmotes;
-        SnowflakeCacheViewImpl<Emote> emoteView = guild.getEmoteMap();
+        SnowflakeCacheViewImpl<Emote> emoteView = guild.getEmotesView();
         try (UnlockHook hook = emoteView.writeLock())
         {
             TLongObjectMap<Emote> emoteMap = emoteView.getMap();
