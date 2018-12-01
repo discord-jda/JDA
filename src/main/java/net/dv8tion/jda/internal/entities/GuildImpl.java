@@ -279,7 +279,7 @@ public class GuildImpl implements Guild
     @Override
     public boolean isMember(User user)
     {
-        return memberCache.getMap().containsKey(user.getIdLong());
+        return memberCache.get(user.getIdLong()) != null;
     }
 
     @Override
