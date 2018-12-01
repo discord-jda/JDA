@@ -55,11 +55,6 @@ public class ShardCacheViewImpl implements ShardCacheView
         this.elements = new TIntObjectHashMap<>(initialCapacity);
     }
 
-    public void clear()
-    {
-        elements.clear();
-    }
-
     public UnlockHook writeLock()
     {
         ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
@@ -67,18 +62,26 @@ public class ShardCacheViewImpl implements ShardCacheView
         return new UnlockHook(writeLock);
     }
 
-    public TIntObjectMap<JDA> getMap()
-    {
-        if (!lock.writeLock().isHeldByCurrentThread())
-            throw new IllegalStateException("Cannot access map without holding write lock!");
-        return elements;
-    }
-
     public UnlockHook readLock()
     {
         ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
         readLock.lock();
         return new UnlockHook(readLock);
+    }
+
+    public void clear()
+    {
+        try (UnlockHook hook = writeLock())
+        {
+            elements.clear();
+        }
+    }
+
+    public TIntObjectMap<JDA> getMap()
+    {
+        if (!lock.writeLock().isHeldByCurrentThread())
+            throw new IllegalStateException("Cannot access map without holding write lock!");
+        return elements;
     }
 
     public TIntSet keySet()
@@ -220,7 +223,10 @@ public class ShardCacheViewImpl implements ShardCacheView
     @Override
     public JDA getElementById(int id)
     {
-        return this.elements.get(id);
+        try (UnlockHook hook = readLock())
+        {
+            return this.elements.get(id);
+        }
     }
 
     public static class UnifiedShardCacheViewImpl implements ShardCacheView

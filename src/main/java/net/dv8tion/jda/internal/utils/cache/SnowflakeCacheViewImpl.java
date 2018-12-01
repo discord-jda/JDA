@@ -18,7 +18,6 @@ package net.dv8tion.jda.internal.utils.cache;
 
 import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
-import net.dv8tion.jda.internal.utils.UnlockHook;
 
 import java.util.function.Function;
 
@@ -34,9 +33,6 @@ public class SnowflakeCacheViewImpl<T extends ISnowflake> extends AbstractCacheV
     {
         if (elements.isEmpty())
             return null;
-        try (UnlockHook hook = readLock())
-        {
-            return elements.get(id);
-        }
+        return get(id);
     }
 }

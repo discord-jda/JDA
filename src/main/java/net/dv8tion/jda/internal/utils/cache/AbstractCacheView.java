@@ -51,16 +51,26 @@ public abstract class AbstractCacheView<T> implements CacheView<T>
         this.emptyArray = (T[]) Array.newInstance(type, 0);
     }
 
-    public void clear()
-    {
-        elements.clear();
-    }
-
     public UnlockHook writeLock()
     {
         ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
         writeLock.lock();
         return new UnlockHook(writeLock);
+    }
+
+    public UnlockHook readLock()
+    {
+        ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
+        readLock.lock();
+        return new UnlockHook(readLock);
+    }
+
+    public void clear()
+    {
+        try (UnlockHook hook = writeLock())
+        {
+            elements.clear();
+        }
     }
 
     public TLongObjectMap<T> getMap()
@@ -105,13 +115,6 @@ public abstract class AbstractCacheView<T> implements CacheView<T>
                 action.accept(elem);
             }
         }
-    }
-
-    public UnlockHook readLock()
-    {
-        ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
-        readLock.lock();
-        return new UnlockHook(readLock);
     }
 
     @Override

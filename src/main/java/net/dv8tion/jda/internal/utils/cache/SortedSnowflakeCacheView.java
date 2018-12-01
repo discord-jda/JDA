@@ -92,7 +92,6 @@ public class SortedSnowflakeCacheView<T extends ISnowflake & Comparable<T>> exte
 
     @Nonnull
     @Override
-    @SuppressWarnings("unchecked")
     public Iterator<T> iterator()
     {
         try (UnlockHook hook = readLock())
