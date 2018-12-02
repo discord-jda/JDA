@@ -38,12 +38,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-public class ShardCacheViewImpl implements ShardCacheView
+public class ShardCacheViewImpl extends ReadWriteLockCache implements ShardCacheView
 {
     protected static final JDA[] EMPTY_ARRAY = new JDA[0];
     protected final TIntObjectMap<JDA> elements;
-
-    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     public ShardCacheViewImpl()
     {
@@ -53,20 +51,6 @@ public class ShardCacheViewImpl implements ShardCacheView
     public ShardCacheViewImpl(int initialCapacity)
     {
         this.elements = new TIntObjectHashMap<>(initialCapacity);
-    }
-
-    public UnlockHook writeLock()
-    {
-        ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
-        writeLock.lock();
-        return new UnlockHook(writeLock);
-    }
-
-    public UnlockHook readLock()
-    {
-        ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
-        readLock.lock();
-        return new UnlockHook(readLock);
     }
 
     public void clear()
