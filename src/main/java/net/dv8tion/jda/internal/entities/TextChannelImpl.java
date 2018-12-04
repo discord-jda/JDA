@@ -28,6 +28,7 @@ import net.dv8tion.jda.core.requests.restaction.ChannelAction;
 import net.dv8tion.jda.core.requests.restaction.MessageAction;
 import net.dv8tion.jda.core.requests.restaction.WebhookAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.core.utils.TimeUtil;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -126,7 +127,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         if (messageIds.size() < 2 || messageIds.size() > 100)
             throw new IllegalArgumentException("Must provide at least 2 or at most 100 messages to be deleted.");
 
-        long twoWeeksAgo = MiscUtil.getDiscordTimestamp((System.currentTimeMillis() - (14 * 24 * 60 * 60 * 1000)));
+        long twoWeeksAgo = TimeUtil.getDiscordTimestamp((System.currentTimeMillis() - (14 * 24 * 60 * 60 * 1000)));
         for (String id : messageIds)
             Checks.check(MiscUtil.parseSnowflake(id) > twoWeeksAgo, "Message Id provided was older than 2 weeks. Id: " + id);
 
@@ -202,7 +203,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         List<CompletableFuture<Void>> list = new LinkedList<>();
         TreeSet<Long> bulk = new TreeSet<>(Comparator.reverseOrder());
         TreeSet<Long> norm = new TreeSet<>(Comparator.reverseOrder());
-        long twoWeeksAgo = MiscUtil.getDiscordTimestamp(System.currentTimeMillis() - (14 * 24 * 60 * 60 * 1000) + 10000);
+        long twoWeeksAgo = TimeUtil.getDiscordTimestamp(System.currentTimeMillis() - (14 * 24 * 60 * 60 * 1000) + 10000);
         for (long messageId : messageIds)
         {
             if (messageId > twoWeeksAgo)
