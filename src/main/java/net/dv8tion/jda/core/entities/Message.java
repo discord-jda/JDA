@@ -275,7 +275,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return Time of the most recent edit, or {@code null} if the Message has never been edited.
      */
-    OffsetDateTime getEditedTime();
+    OffsetDateTime getTimeEdited();
 
     /**
      * The author of this Message

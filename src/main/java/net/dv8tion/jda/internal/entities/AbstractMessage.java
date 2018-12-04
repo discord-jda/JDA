@@ -164,7 +164,7 @@ public abstract class AbstractMessage implements Message
     }
 
     @Override
-    public OffsetDateTime getEditedTime()
+    public OffsetDateTime getTimeEdited()
     {
         unsupported();
         return null;

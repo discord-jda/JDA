@@ -51,9 +51,8 @@ public interface ISnowflake
      *
      * @see    net.dv8tion.jda.core.utils.MiscUtil#getCreationTime(long)
      */
-    default OffsetDateTime getCreationTime()
+    default OffsetDateTime getTimeCreated()
     {
         return MiscUtil.getCreationTime(getIdLong());
     }
-
 }

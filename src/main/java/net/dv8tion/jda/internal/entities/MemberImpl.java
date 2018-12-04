@@ -74,7 +74,7 @@ public class MemberImpl implements Member
     }
 
     @Override
-    public OffsetDateTime getJoinDate()
+    public OffsetDateTime getTimeJoined()
     {
         return OffsetDateTime.ofInstant(Instant.ofEpochMilli(joinDate), OFFSET);
     }
