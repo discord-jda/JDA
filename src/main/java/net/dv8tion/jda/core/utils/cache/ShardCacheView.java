@@ -21,6 +21,8 @@ import net.dv8tion.jda.core.JDA;
  * Read-only view on internal ShardManager cache of JDA instances.
  * <br>This can be useful to check information such as size without creating
  * an immutable snapshot first.
+ *
+ * @see CacheView CacheView for details on Efficient Memory Usage
  */
 public interface ShardCacheView extends CacheView<JDA>
 {

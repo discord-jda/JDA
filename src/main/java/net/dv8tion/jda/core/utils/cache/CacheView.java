@@ -26,6 +26,7 @@ import net.dv8tion.jda.internal.utils.cache.UnifiedCacheViewImpl;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
@@ -35,6 +36,18 @@ import java.util.stream.Stream;
  * Read-only view on internal JDA cache of items.
  * <br>This can be useful to check information such as size without creating
  * an immutable snapshot first.
+ *
+ * <h2>Memory Efficient Usage</h2>
+ * The {@link #forEach(Consumer)} method can be used to avoid creating a snapshot
+ * of the backing data store, it is implemented by first acquiring a read-lock and then iterating the code.
+ * The enhanced-for-loop uses the {@link #iterator()} which has to first create a snapshot to avoid
+ * concurrent modifications. Alternatively the {@link #lockedIterator()} can be used to acquire an iterator
+ * which holds a read-lock on the data store and thus prohibits concurrent modifications, for more details
+ * read the documentation of {@link ClosableIterator}. Streams from {@link #stream()}/{@link #parallelStream()}
+ * both use {@link #iterator()} with a snapshot of the backing data store to avoid concurrent modifications.
+ * <br>Using {@link #getElementsByName(String)} is more efficient than {@link #asList()} as it uses {@link #forEach(Consumer)}
+ * for pattern matching and thus does not need to create a snapshot of the entire data store like {@link #asList()} does.
+ * <br>Both {@link #size()} and {@link #isEmpty()} are atomic operations.
  *
  * @param  <T>
  *         The cache type

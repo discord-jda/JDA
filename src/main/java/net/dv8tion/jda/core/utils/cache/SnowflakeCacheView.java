@@ -22,6 +22,8 @@ import net.dv8tion.jda.core.utils.MiscUtil;
 /**
  * {@link net.dv8tion.jda.core.utils.cache.CacheView CacheView} implementation
  * specifically to view {@link net.dv8tion.jda.core.entities.ISnowflake ISnowflake} implementations.
+ *
+ * @see CacheView CacheView for details on Efficient Memory Usage
  */
 public interface SnowflakeCacheView<T extends ISnowflake> extends CacheView<T>
 {
