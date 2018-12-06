@@ -29,11 +29,11 @@ import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.core.events.guild.UnavailableGuildJoinedEvent;
 import net.dv8tion.jda.core.managers.AudioManager;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.utils.Helpers;
+import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -76,6 +76,11 @@ public class GuildSetupNode
     public String getId()
     {
         return Long.toUnsignedString(id);
+    }
+
+    public GuildSetupController.Status getStatus()
+    {
+        return status;
     }
 
     @Nullable
@@ -321,7 +326,8 @@ public class GuildSetupNode
         {
             GuildSetupController.log.warn(
                 "Accumulating suspicious amounts of cached events during guild setup, " +
-                "something might be wrong. Cached: {} GuildId: {}", cacheSize, id);
+                "something might be wrong. Cached: {} Members: {}/{} Status: {} GuildId: {}",
+                cacheSize, getCurrentMemberCount(), getExpectedMemberCount(), status, id);
         }
     }
 
