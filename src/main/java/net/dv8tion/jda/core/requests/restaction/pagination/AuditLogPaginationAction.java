@@ -172,7 +172,7 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
         Route.CompiledRoute route = super.finalizeRoute();
 
         final String limit = String.valueOf(this.limit.get());
-        final AuditLogEntry last = this.last;
+        final long last = this.lastKey;
 
         route = route.withQueryParams("limit", limit);
 
@@ -182,8 +182,8 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
         if (userId != null)
             route = route.withQueryParams("user_id", userId);
 
-        if (last != null)
-            route = route.withQueryParams("before", last.getId());
+        if (last != 0)
+            route = route.withQueryParams("before", Long.toUnsignedString(last));
 
         return route;
     }
@@ -231,6 +231,7 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
                 if (this.useCache)
                     this.cached.add(result);
                 this.last = result;
+                this.lastKey = last.getIdLong();
             }
             catch (JSONException | NullPointerException e)
             {
