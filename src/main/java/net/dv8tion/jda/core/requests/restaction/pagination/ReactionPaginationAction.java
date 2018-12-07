@@ -95,9 +95,9 @@ public class ReactionPaginationAction extends PaginationAction<User, ReactionPag
 
         String after = null;
         String limit = String.valueOf(getLimit());
-        User last = this.last;
-        if (last != null)
-            after = last.getId();
+        long last = this.lastKey;
+        if (last != 0)
+            after = Long.toUnsignedString(last);
 
         route = route.withQueryParams("limit", limit);
 
@@ -128,6 +128,7 @@ public class ReactionPaginationAction extends PaginationAction<User, ReactionPag
                 if (useCache)
                     cached.add(user);
                 last = user;
+                lastKey = last.getIdLong();
             }
             catch (JSONException | NullPointerException e)
             {

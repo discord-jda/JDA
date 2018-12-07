@@ -110,12 +110,12 @@ public class MessagePaginationAction extends PaginationAction<Message, MessagePa
         Route.CompiledRoute route = super.finalizeRoute();
 
         final String limit = String.valueOf(this.getLimit());
-        final Message last = this.last;
+        final long last = this.lastKey;
 
         route = route.withQueryParams("limit", limit);
 
-        if (last != null)
-            route = route.withQueryParams("before", last.getId());
+        if (last != 0)
+            route = route.withQueryParams("before", Long.toUnsignedString(last));
 
         return route;
     }
@@ -141,6 +141,7 @@ public class MessagePaginationAction extends PaginationAction<Message, MessagePa
                 if (useCache)
                     cached.add(msg);
                 last = msg;
+                lastKey = last.getIdLong();
             }
             catch (JSONException | NullPointerException e)
             {
