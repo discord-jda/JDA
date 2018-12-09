@@ -409,6 +409,11 @@ public interface Guild extends ISnowflake
      * A list of all {@link net.dv8tion.jda.core.entities.Member Members} in this Guild.
      * <br>The Members are not provided in any particular order.
      *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getMemberCache()} and use its more efficient
+     * versions of handling these values.
+     *
      * @return Immutable list of all members in this Guild.
      */
     default List<Member> getMembers()
@@ -550,6 +555,11 @@ public interface Guild extends ISnowflake
      * Gets all {@link net.dv8tion.jda.core.entities.Category Categories} in this {@link net.dv8tion.jda.core.entities.Guild Guild}.
      * <br>The returned categories will be sorted according to their position.
      *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getCategoryCache()} and use its more efficient
+     * versions of handling these values.
+     *
      * @return An immutable list of all {@link net.dv8tion.jda.core.entities.Category Categories} in this Guild.
      */
     default List<Category> getCategories()
@@ -624,6 +634,11 @@ public interface Guild extends ISnowflake
      * Gets all {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} in this {@link net.dv8tion.jda.core.entities.Guild Guild}.
      * <br>The channels returned will be sorted according to their position.
      *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getTextChannelCache()} and use its more efficient
+     * versions of handling these values.
+     *
      * @return An immutable List of all {@link net.dv8tion.jda.core.entities.TextChannel TextChannels} in this Guild.
      */
     default List<TextChannel> getTextChannels()
@@ -697,6 +712,11 @@ public interface Guild extends ISnowflake
     /**
      * Gets all {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels} in this {@link net.dv8tion.jda.core.entities.Guild Guild}.
      * <br>The channels returned will be sorted according to their position.
+     *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getVoiceChannelCache()} and use its more efficient
+     * versions of handling these values.
      *
      * @return An immutable List of {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannels}.
      */
@@ -822,6 +842,11 @@ public interface Guild extends ISnowflake
      * Gets all {@link net.dv8tion.jda.core.entities.Role Roles} in this {@link net.dv8tion.jda.core.entities.Guild Guild}.
      * <br>The roles returned will be sorted according to their position.
      *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getRoleCache()} and use its more efficient
+     * versions of handling these values.
+     *
      * @return An immutable List of {@link net.dv8tion.jda.core.entities.Role Roles}.
      */
     default List<Role> getRoles()
@@ -901,6 +926,11 @@ public interface Guild extends ISnowflake
      * <br>Emotes are not ordered in any specific way in the returned list.
      *
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.core.entities.Emote Emote}!</b>
+     *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getEmoteCache()} and use its more efficient
+     * versions of handling these values.
      *
      * @return An immutable List of {@link net.dv8tion.jda.core.entities.Emote Emotes}.
      */
