@@ -208,6 +208,35 @@ public abstract class AbstractCacheView<T> extends ReadWriteLockCache implements
         }
     }
 
+    @Override
+    public String toString()
+    {
+        return asList().toString();
+    }
+
+    @Override
+    public int hashCode()
+    {
+        try (UnlockHook hook = readLock())
+        {
+            return elements.hashCode();
+        }
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == this)
+            return true;
+        if (!(obj instanceof AbstractCacheView))
+            return false;
+        AbstractCacheView view = (AbstractCacheView) obj;
+        try (UnlockHook hook = readLock(); UnlockHook otherHook = view.readLock())
+        {
+            return this.elements.equals(view.elements);
+        }
+    }
+
     protected boolean equals(boolean ignoreCase, String first, String second)
     {
         return ignoreCase ? first.equalsIgnoreCase(second) : first.equals(second);

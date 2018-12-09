@@ -213,6 +213,35 @@ public class ShardCacheViewImpl extends ReadWriteLockCache implements ShardCache
         }
     }
 
+    @Override
+    public int hashCode()
+    {
+        try (UnlockHook hook = readLock())
+        {
+            return elements.hashCode();
+        }
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == this)
+            return true;
+        if (!(obj instanceof ShardCacheViewImpl))
+            return false;
+        ShardCacheViewImpl view = (ShardCacheViewImpl) obj;
+        try (UnlockHook hook = readLock(); UnlockHook otherHook = view.readLock())
+        {
+            return this.elements.equals(view.elements);
+        }
+    }
+
+    @Override
+    public String toString()
+    {
+        return asList().toString();
+    }
+
     public static class UnifiedShardCacheViewImpl implements ShardCacheView
     {
         protected final Supplier<Stream<ShardCacheView>> generator;
