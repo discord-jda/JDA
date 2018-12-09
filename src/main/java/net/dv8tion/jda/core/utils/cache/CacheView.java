@@ -49,6 +49,10 @@ import java.util.stream.Stream;
  * for pattern matching and thus does not need to create a snapshot of the entire data store like {@link #asList()} does.
  * <br>Both {@link #size()} and {@link #isEmpty()} are atomic operations.
  *
+ * <p>Note that making a copy is a requirement if a specific order is desired. If using {@link #lockedIterator()}
+ * or {@link #forEach(Consumer)} the order is not guaranteed as it directly iterates the backing cache.
+ * The backing cache is stored using an un-ordered hash map.
+ *
  * @param  <T>
  *         The cache type
  */
@@ -75,6 +79,9 @@ public interface CacheView<T> extends Iterable<T>
      * Returns an iterator with direct access to the underlying data store.
      * This iterator does not support removing elements.
      * <br>After usage this iterator should be closed to allow modifications by the library internals.
+     *
+     * <p><b>Note: Order is not preserved in this iterator to be more efficient,
+     * if order is desired use {@link #iterator()} instead!</b>
      *
      * @return {@link ClosableIterator} holding a read-lock on the data structure.
      */

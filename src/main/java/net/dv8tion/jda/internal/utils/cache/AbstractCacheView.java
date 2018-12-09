@@ -174,7 +174,7 @@ public abstract class AbstractCacheView<T> extends ReadWriteLockCache implements
             if (elementName != null && equals(ignoreCase, elementName, name))
                 list.add(elem);
         });
-        return list;
+        return list; // must be modifiable because of SortedSnowflakeCacheView
     }
 
     @Override

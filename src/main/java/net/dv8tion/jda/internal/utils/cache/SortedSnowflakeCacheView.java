@@ -70,6 +70,14 @@ public class SortedSnowflakeCacheView<T extends ISnowflake & Comparable<T>> exte
     }
 
     @Override
+    public List<T> getElementsByName(String name, boolean ignoreCase)
+    {
+        List<T> filtered = super.getElementsByName(name, ignoreCase);
+        filtered.sort(comparator);
+        return filtered;
+    }
+
+    @Override
     public Spliterator<T> spliterator()
     {
         try (UnlockHook hook = readLock())

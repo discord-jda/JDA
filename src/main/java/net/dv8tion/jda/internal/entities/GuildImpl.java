@@ -321,29 +321,44 @@ public class GuildImpl implements Guild
     @Override
     public List<GuildChannel> getChannels(boolean includeHidden)
     {
-        List<GuildChannel> channels = new ArrayList<>((int) getCategoryCache().size() + (int) getVoiceChannelCache().size() + (int) getTextChannelCache().size());
-        List<Category> categories = getCategories();
-
+        List<GuildChannel> channels;
+        SnowflakeCacheViewImpl<Category> categoryView = getCategoriesView();
+        SnowflakeCacheViewImpl<VoiceChannel> voiceView = getVoiceChannelsView();
+        SnowflakeCacheViewImpl<TextChannel> textView = getTextChannelsView();
+        List<TextChannel> textChannels;
+        List<VoiceChannel> voiceChannels;
+        List<Category> categories;
+        try (UnlockHook categoryHook = categoryView.readLock();
+             UnlockHook voiceHook = voiceView.readLock();
+             UnlockHook textHook = textView.readLock())
+        {
+            textChannels = textView.asList();
+            voiceChannels = voiceView.asList();
+            categories = categoryView.asList();
+            channels = new ArrayList<>((int) categoryView.size() + (int) voiceView.size() + (int) textView.size());
+        }
         Member self = getSelfMember();
         Predicate<GuildChannel> filterHidden = it -> includeHidden || self.hasPermission(it, Permission.VIEW_CHANNEL);
-        getTextChannelCache().stream()
-                             .filter(filterHidden)
-                             .filter(it -> it.getParent() == null)
-                             .forEach(channels::add);
-        getVoiceChannelCache().stream()
-                              .filter(filterHidden)
-                              .filter(it -> it.getParent() == null)
-                              .forEach(channels::add);
+        textChannels.forEach(channel ->
+        {
+            if (filterHidden.test(channel) && channel.getParent() == null)
+                channels.add(channel);
+        });
+        voiceChannels.forEach(channel ->
+        {
+            if (filterHidden.test(channel) && channel.getParent() == null)
+                channels.add(channel);
+        });
 
         for (Category category : categories)
         {
-            List<TextChannel> textChannels = category.getTextChannels().stream().filter(filterHidden).collect(Collectors.toList());
-            List<VoiceChannel> voiceChannels = category.getVoiceChannels().stream().filter(filterHidden).collect(Collectors.toList());
-            if (!includeHidden && textChannels.isEmpty() && voiceChannels.isEmpty())
+            List<TextChannel> childTextChannels = category.getTextChannels().stream().filter(filterHidden).collect(Collectors.toList());
+            List<VoiceChannel> childVoiceChannels = category.getVoiceChannels().stream().filter(filterHidden).collect(Collectors.toList());
+            if (!includeHidden && childTextChannels.isEmpty() && childVoiceChannels.isEmpty())
                 continue;
             channels.add(category);
-            channels.addAll(textChannels);
-            channels.addAll(voiceChannels);
+            channels.addAll(childTextChannels);
+            channels.addAll(childVoiceChannels);
         }
 
         return Collections.unmodifiableList(channels);
