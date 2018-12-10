@@ -75,15 +75,15 @@ public class SortedSnowflakeCacheViewImpl<T extends ISnowflake & Comparable<T>>
     }
 
     @Override
-    public SortedSet<T> asSet()
+    public NavigableSet<T> asSet()
     {
         if (isEmpty())
-            return Collections.emptySortedSet();
+            return Collections.emptyNavigableSet();
         try (UnlockHook hook = readLock())
         {
-            SortedSet<T> set = new TreeSet<>(comparator);
+            TreeSet<T> set = new TreeSet<>(comparator);
             elements.forEachValue(set::add);
-            return Collections.unmodifiableSortedSet(set);
+            return Collections.unmodifiableNavigableSet(set);
         }
     }
 

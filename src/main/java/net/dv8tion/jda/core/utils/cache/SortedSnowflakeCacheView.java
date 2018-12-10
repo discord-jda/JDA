@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.utils.cache;
 
 import net.dv8tion.jda.core.entities.ISnowflake;
 
+import java.util.NavigableSet;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -44,6 +45,9 @@ public interface SortedSnowflakeCacheView<T extends Comparable<T> & ISnowflake> 
      *         If provided with null
      */
     void forEachUnordered(final Consumer<? super T> action);
+
+    @Override
+    NavigableSet<T> asSet();
 
     /**
      * Behavior similar to {@link CacheView#stream()} which does not preserve order.
