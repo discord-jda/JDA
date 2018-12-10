@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-public class ShardCacheViewImpl extends ReadWriteLockCache implements ShardCacheView
+public class ShardCacheViewImpl extends ReadWriteLockCache<JDA> implements ShardCacheView
 {
     protected static final JDA[] EMPTY_ARRAY = new JDA[0];
     protected final TIntObjectMap<JDA> elements;
@@ -96,7 +96,10 @@ public class ShardCacheViewImpl extends ReadWriteLockCache implements ShardCache
             return Collections.emptyList();
         try (UnlockHook hook = readLock())
         {
-            return Collections.unmodifiableList(new ArrayList<>(elements.valueCollection()));
+            List<JDA> list = getCachedList();
+            if (list != null)
+                return list;
+            return cache(new ArrayList<>(elements.valueCollection()));
         }
     }
 
@@ -107,7 +110,10 @@ public class ShardCacheViewImpl extends ReadWriteLockCache implements ShardCache
             return Collections.emptySet();
         try (UnlockHook hook = readLock())
         {
-            return Collections.unmodifiableSet(new HashSet<>(elements.valueCollection()));
+            Set<JDA> set = getCachedSet();
+            if (set != null)
+                return set;
+            return cache(new HashSet<>(elements.valueCollection()));
         }
     }
 

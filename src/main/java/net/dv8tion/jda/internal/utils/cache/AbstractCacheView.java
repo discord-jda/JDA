@@ -35,7 +35,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-public abstract class AbstractCacheView<T> extends ReadWriteLockCache implements CacheView<T>
+public abstract class AbstractCacheView<T> extends ReadWriteLockCache<T> implements CacheView<T>
 {
     protected final TLongObjectMap<T> elements = new TLongObjectHashMap<>();
     protected final T[] emptyArray;
@@ -126,9 +126,12 @@ public abstract class AbstractCacheView<T> extends ReadWriteLockCache implements
             return Collections.emptyList();
         try (UnlockHook hook = readLock())
         {
-            ArrayList<T> list = new ArrayList<>(elements.size());
+            List<T> list = getCachedList();
+            if (list != null)
+                return list;
+            list = new ArrayList<>(elements.size());
             elements.forEachValue(list::add);
-            return Collections.unmodifiableList(list);
+            return cache(list);
         }
     }
 
@@ -139,9 +142,12 @@ public abstract class AbstractCacheView<T> extends ReadWriteLockCache implements
             return Collections.emptySet();
         try (UnlockHook hook = readLock())
         {
-            HashSet<T> set = new HashSet<>(elements.size());
+            Set<T> set = getCachedSet();
+            if (set != null)
+                return set;
+            set = new HashSet<>(elements.size());
             elements.forEachValue(set::add);
-            return Collections.unmodifiableSet(set);
+            return cache(set);
         }
     }
 
