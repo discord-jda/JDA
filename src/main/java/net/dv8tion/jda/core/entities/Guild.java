@@ -26,6 +26,7 @@ import net.dv8tion.jda.core.requests.restaction.MemberAction;
 import net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAction;
 import net.dv8tion.jda.core.utils.cache.MemberCacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.core.utils.cache.SortedSnowflakeCacheView;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -591,7 +592,7 @@ public interface Guild extends ISnowflake
      *
      * @return Sorted {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
-    SnowflakeCacheView<Category> getCategoryCache();
+    SortedSnowflakeCacheView<Category> getCategoryCache();
 
     /**
      * Gets a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} from this guild that has the same id as the
@@ -670,7 +671,7 @@ public interface Guild extends ISnowflake
      *
      * @return Sorted {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
-    SnowflakeCacheView<TextChannel> getTextChannelCache();
+    SortedSnowflakeCacheView<TextChannel> getTextChannelCache();
 
     /**
      * Gets a {@link net.dv8tion.jda.core.entities.VoiceChannel VoiceChannel} from this guild that has the same id as the
@@ -749,7 +750,7 @@ public interface Guild extends ISnowflake
      *
      * @return Sorted {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
-    SnowflakeCacheView<VoiceChannel> getVoiceChannelCache();
+    SortedSnowflakeCacheView<VoiceChannel> getVoiceChannelCache();
 
     /**
      * Populated list of {@link GuildChannel channels} for this guild.
@@ -878,7 +879,7 @@ public interface Guild extends ISnowflake
      *
      * @return Sorted {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
-    SnowflakeCacheView<Role> getRoleCache();
+    SortedSnowflakeCacheView<Role> getRoleCache();
 
     /**
      * Gets an {@link net.dv8tion.jda.core.entities.Emote Emote} from this guild that has the same id as the

@@ -34,6 +34,7 @@ import net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAct
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.cache.MemberCacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.core.utils.cache.SortedSnowflakeCacheView;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.requests.Route;
@@ -59,10 +60,10 @@ public class GuildImpl implements Guild
     private final long id;
     private final UpstreamReference<JDAImpl> api;
 
-    private final SortedSnowflakeCacheView<Category> categoryCache = new SortedSnowflakeCacheView<>(Category.class, GuildChannel::getName, Comparator.naturalOrder());
-    private final SortedSnowflakeCacheView<VoiceChannel> voiceChannelCache = new SortedSnowflakeCacheView<>(VoiceChannel.class, GuildChannel::getName, Comparator.naturalOrder());
-    private final SortedSnowflakeCacheView<TextChannel> textChannelCache = new SortedSnowflakeCacheView<>(TextChannel.class, GuildChannel::getName, Comparator.naturalOrder());
-    private final SortedSnowflakeCacheView<Role> roleCache = new SortedSnowflakeCacheView<>(Role.class, Role::getName, Comparator.reverseOrder());
+    private final SortedSnowflakeCacheViewImpl<Category> categoryCache = new SortedSnowflakeCacheViewImpl<>(Category.class, GuildChannel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SortedSnowflakeCacheViewImpl<>(VoiceChannel.class, GuildChannel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheViewImpl<TextChannel> textChannelCache = new SortedSnowflakeCacheViewImpl<>(TextChannel.class, GuildChannel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheViewImpl<Role> roleCache = new SortedSnowflakeCacheViewImpl<>(Role.class, Role::getName, Comparator.reverseOrder());
     private final SnowflakeCacheViewImpl<Emote> emoteCache = new SnowflakeCacheViewImpl<>(Emote.class, Emote::getName);
     private final MemberCacheViewImpl memberCache = new MemberCacheViewImpl();
 
@@ -301,21 +302,33 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public SnowflakeCacheView<Category> getCategoryCache()
+    public SortedSnowflakeCacheView<Category> getCategoryCache()
     {
         return categoryCache;
     }
 
     @Override
-    public SnowflakeCacheView<TextChannel> getTextChannelCache()
+    public SortedSnowflakeCacheView<TextChannel> getTextChannelCache()
     {
         return textChannelCache;
     }
 
     @Override
-    public SnowflakeCacheView<VoiceChannel> getVoiceChannelCache()
+    public SortedSnowflakeCacheView<VoiceChannel> getVoiceChannelCache()
     {
         return voiceChannelCache;
+    }
+
+    @Override
+    public SortedSnowflakeCacheView<Role> getRoleCache()
+    {
+        return roleCache;
+    }
+
+    @Override
+    public SnowflakeCacheView<Emote> getEmoteCache()
+    {
+        return emoteCache;
     }
 
     @Override
@@ -375,18 +388,6 @@ public class GuildImpl implements Guild
         }
 
         return Collections.unmodifiableList(channels);
-    }
-
-    @Override
-    public SnowflakeCacheView<Role> getRoleCache()
-    {
-        return roleCache;
-    }
-
-    @Override
-    public SnowflakeCacheView<Emote> getEmoteCache()
-    {
-        return emoteCache;
     }
 
     @Override

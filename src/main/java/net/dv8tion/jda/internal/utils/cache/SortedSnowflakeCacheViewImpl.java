@@ -17,29 +17,47 @@
 package net.dv8tion.jda.internal.utils.cache;
 
 import net.dv8tion.jda.core.entities.ISnowflake;
+import net.dv8tion.jda.core.utils.cache.SortedSnowflakeCacheView;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import org.apache.commons.collections4.iterators.ObjectArrayIterator;
 
 import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-public class SortedSnowflakeCacheView<T extends ISnowflake & Comparable<T>> extends SnowflakeCacheViewImpl<T>
+public class SortedSnowflakeCacheViewImpl<T extends ISnowflake & Comparable<T>>
+        extends SnowflakeCacheViewImpl<T> implements SortedSnowflakeCacheView<T>
 {
     protected static final int SPLIT_CHARACTERISTICS = Spliterator.IMMUTABLE | Spliterator.ORDERED | Spliterator.NONNULL;
 
     protected final Comparator<T> comparator;
 
-    public SortedSnowflakeCacheView(Class<T> type, Comparator<T> comparator)
+    public SortedSnowflakeCacheViewImpl(Class<T> type, Comparator<T> comparator)
     {
         this(type, null, comparator);
     }
 
-    public SortedSnowflakeCacheView(Class<T> type, Function<T, String> nameMapper, Comparator<T> comparator)
+    public SortedSnowflakeCacheViewImpl(Class<T> type, Function<T, String> nameMapper, Comparator<T> comparator)
     {
         super(type, nameMapper);
         this.comparator = comparator;
+    }
+
+    @Override
+    public void forEach(Consumer<? super T> action)
+    {
+        try (UnlockHook hook = readLock())
+        {
+            iterator().forEachRemaining(action);
+        }
+    }
+
+    @Override
+    public void forEachUnordered(Consumer<? super T> action)
+    {
+        super.forEach(action);
     }
 
     @Override
@@ -84,6 +102,18 @@ public class SortedSnowflakeCacheView<T extends ISnowflake & Comparable<T>> exte
         {
             return Spliterators.spliterator(iterator(), elements.size(), SPLIT_CHARACTERISTICS);
         }
+    }
+
+    @Override
+    public Stream<T> streamUnordered()
+    {
+        return super.stream();
+    }
+
+    @Override
+    public Stream<T> parallelStreamUnordered()
+    {
+        return super.parallelStream();
     }
 
     @Override
