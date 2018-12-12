@@ -113,7 +113,7 @@ public class DisconnectEvent extends Event
      *
      * @return Time of closure
      */
-    public OffsetDateTime getDisconnectTime()
+    public OffsetDateTime getTimeDisconnected()
     {
         return disconnectTime;
     }

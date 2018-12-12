@@ -434,7 +434,7 @@ public class ReceivedMessage extends AbstractMessage
     }
 
     @Override
-    public OffsetDateTime getEditedTime()
+    public OffsetDateTime getTimeEdited()
     {
         return editedTime;
     }

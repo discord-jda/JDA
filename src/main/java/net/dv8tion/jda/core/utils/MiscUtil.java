@@ -19,7 +19,6 @@ import gnu.trove.impl.sync.TSynchronizedLongObjectMap;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import okhttp3.MediaType;
@@ -32,82 +31,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
 import java.util.Formatter;
-import java.util.TimeZone;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 
 public class MiscUtil
 {
-    public static final long DISCORD_EPOCH = 1420070400000L;
-    public static final long TIMESTAMP_OFFSET = 22;
-    private static final DateTimeFormatter dtFormatter = DateTimeFormatter.RFC_1123_DATE_TIME;
-
-    /**
-     * Converts the provided epoch millisecond timestamp to a Discord Snowflake.
-     * <br>This can be used as a marker/pivot for {@link net.dv8tion.jda.core.entities.MessageHistory MessageHistory} creation.
-     *
-     * @param  millisTimestamp
-     *         The epoch millis to convert
-     *
-     * @return Shifted epoch millis for Discord
-     */
-    public static long getDiscordTimestamp(long millisTimestamp)
-    {
-        return (millisTimestamp - DISCORD_EPOCH) << TIMESTAMP_OFFSET;
-    }
-
-    /**
-     * Gets the creation-time of a JDA-entity by doing the reverse snowflake algorithm on its id.
-     * This returns the creation-time of the actual entity on Discords side, not inside JDA.
-     *
-     * @param  entityId
-     *         The id of the JDA entity where the creation-time should be determined for
-     *
-     * @return The creation time of the JDA entity as OffsetDateTime
-     */
-    public static OffsetDateTime getCreationTime(long entityId)
-    {
-        long timestamp = (entityId >>> TIMESTAMP_OFFSET) + DISCORD_EPOCH;
-        Calendar gmt = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-        gmt.setTimeInMillis(timestamp);
-        return OffsetDateTime.ofInstant(gmt.toInstant(), gmt.getTimeZone().toZoneId());
-    }
-
-    /**
-     * Gets the creation-time of a JDA-entity by doing the reverse snowflake algorithm on its id.
-     * This returns the creation-time of the actual entity on Discords side, not inside JDA.
-     *
-     * @param  entity
-     *         The JDA entity where the creation-time should be determined for
-     *
-     * @throws IllegalArgumentException
-     *         If the provided entity is {@code null}
-     *
-     * @return The creation time of the JDA entity as OffsetDateTime
-     */
-    public static OffsetDateTime getCreationTime(ISnowflake entity)
-    {
-        Checks.notNull(entity, "Entity");
-        return getCreationTime(entity.getIdLong());
-    }
-
-    /**
-     * Returns a prettier String-representation of a OffsetDateTime object
-     *
-     * @param  time
-     *         The OffsetDateTime object to format
-     *
-     * @return The String of the formatted OffsetDateTime
-     */
-    public static String getDateTimeString(OffsetDateTime time)
-    {
-        return time.format(dtFormatter);
-    }
-
     /**
      * Returns the shard id the given guild will be loaded on for the given amount of shards.
      *

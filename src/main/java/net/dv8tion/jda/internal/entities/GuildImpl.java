@@ -700,10 +700,10 @@ public class GuildImpl implements Guild
             case VERY_HIGH:
                 break; // we already checked for a verified phone number
             case HIGH:
-                if (ChronoUnit.MINUTES.between(getSelfMember().getJoinDate(), OffsetDateTime.now()) < 10)
+                if (ChronoUnit.MINUTES.between(getSelfMember().getTimeJoined(), OffsetDateTime.now()) < 10)
                     break;
             case MEDIUM:
-                if (ChronoUnit.MINUTES.between(MiscUtil.getCreationTime(getJDA().getSelfUser()), OffsetDateTime.now()) < 5)
+                if (ChronoUnit.MINUTES.between(getJDA().getSelfUser().getTimeCreated(), OffsetDateTime.now()) < 5)
                     break;
             case LOW:
                 if (!getJDA().getSelfUser().isVerified())

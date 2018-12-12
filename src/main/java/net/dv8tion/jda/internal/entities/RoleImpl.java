@@ -296,8 +296,8 @@ public class RoleImpl implements Role
         if (this.getPositionRaw() != r.getPositionRaw())
             return this.getPositionRaw() - r.getPositionRaw();
 
-        OffsetDateTime thisTime = this.getCreationTime();
-        OffsetDateTime rTime = r.getCreationTime();
+        OffsetDateTime thisTime = this.getTimeCreated();
+        OffsetDateTime rTime = r.getTimeCreated();
 
         //We compare the provided role's time to this's time instead of the reverse as one would expect due to how
         // discord deals with hierarchy. The more recent a role was created, the lower its hierarchy ranking when

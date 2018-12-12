@@ -61,7 +61,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return The Join Date.
      */
-    OffsetDateTime getJoinDate();
+    OffsetDateTime getTimeJoined();
 
     /**
      * The {@link net.dv8tion.jda.core.entities.GuildVoiceState VoiceState} of this Member.
