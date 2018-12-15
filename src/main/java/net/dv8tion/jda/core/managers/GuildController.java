@@ -605,7 +605,7 @@ public class GuildController
 
         Checks.notNegative(delDays, "Deletion Days");
 
-        Checks.notBiggerThan(delDays, 7, "Deletion Days");
+        Checks.check(delDays <= 7, "Deletion Days may not be bigger than 7.");
 
         final String userId = user.getId();
 
