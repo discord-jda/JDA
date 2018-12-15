@@ -95,7 +95,7 @@ public class UserImpl implements User
     @Override
     public String getAsTag()
     {
-        return getName() + "#" + getDiscriminator();
+        return getName() + '#' + getDiscriminator();
     }
 
     @Override
@@ -248,9 +248,9 @@ public class UserImpl implements User
         if (!alt)
             out = getAsMention();
         else if (upper)
-            out = String.format(formatter.locale(), "%S#%s", getName(), getDiscriminator());
+            out = getAsTag().toUpperCase();
         else
-            out = String.format(formatter.locale(), "%s#%s", getName(), getDiscriminator());
+            out = getAsTag();
 
         MiscUtil.appendTo(formatter, width, precision, leftJustified, out);
     }
