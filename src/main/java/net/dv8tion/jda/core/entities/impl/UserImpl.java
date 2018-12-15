@@ -92,6 +92,11 @@ public class UserImpl implements User
         return getAvatarUrl() == null ? getDefaultAvatarUrl() : getAvatarUrl();
     }
 
+    @Override
+    public String getAsTag()
+    {
+        return String.format("%#s", this);
+    }
 
     @Override
     public boolean hasPrivateChannel()
