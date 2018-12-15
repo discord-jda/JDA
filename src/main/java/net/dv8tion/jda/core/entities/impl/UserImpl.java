@@ -95,7 +95,7 @@ public class UserImpl implements User
     @Override
     public String getAsTag()
     {
-        return String.format("%#s", this);
+        return getName() + "#" + getDiscriminator();
     }
 
     @Override
