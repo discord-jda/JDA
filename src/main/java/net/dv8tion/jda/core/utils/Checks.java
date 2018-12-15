@@ -147,4 +147,10 @@ public class Checks
             throw new IllegalArgumentException(name + " may not be negative");
     }
 
+    public static void notBiggerThan(final int n, final int bound, String name)
+    {
+        if (n > bound)
+            throw new IllegalArgumentException(name + " may not be bigger than " + bound);
+    }
+
 }

@@ -534,6 +534,7 @@ public class GuildController
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the provided amount of days (delDays) is less than 0.</li>
+     *             <li>If the provided amount of days (delDays) is bigger than 7.</li>
      *             <li>If the provided member is {@code null}</li>
      *         </ul>
      *
@@ -587,6 +588,7 @@ public class GuildController
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the provided amount of days (delDays) is less than 0.</li>
+     *             <li>If the provided amount of days (delDays) is bigger than 7.</li>
      *             <li>If the provided user is null</li>
      *         </ul>
      *
@@ -602,6 +604,8 @@ public class GuildController
             checkPosition(getGuild().getMember(user));
 
         Checks.notNegative(delDays, "Deletion Days");
+
+        Checks.notBiggerThan(delDays, 7, "Deletion Days");
 
         final String userId = user.getId();
 
