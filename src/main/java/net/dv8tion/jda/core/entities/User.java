@@ -110,9 +110,10 @@ public interface User extends ISnowflake, IMentionable, IFakeable
     String getEffectiveAvatarUrl();
 
     /**
-     * The "tag" for this user, this is a shortcut to {@link java.lang.String#format(String, Object...) String#format("%#s", user)}
+     * The "tag" for this user
+     * This is the equivalent of calling {@link java.lang.String#format(String, Object...) String#format("%#s", {@link net.dv8tion.jda.core.entities.User User})}
      *
-     * @return The tag for this user
+     * @return Never-null String containing the tag for this user, for example DV8FromTheWorld#6297
      */
     String getAsTag();
 
