@@ -32,13 +32,14 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MemberImpl implements Member
 {
     private static final ZoneOffset OFFSET = ZoneOffset.of("+00:00");
     private final UpstreamReference<GuildImpl> guild;
     private final User user;
-    private final Set<Role> roles = new HashSet<>();
+    private final Set<Role> roles = ConcurrentHashMap.newKeySet();
     private final GuildVoiceState voiceState;
 
     private String nickname;
@@ -74,7 +75,7 @@ public class MemberImpl implements Member
     }
 
     @Override
-    public OffsetDateTime getJoinDate()
+    public OffsetDateTime getTimeJoined()
     {
         return OffsetDateTime.ofInstant(Instant.ofEpochMilli(joinDate), OFFSET);
     }
@@ -88,7 +89,7 @@ public class MemberImpl implements Member
     @Override
     public List<Activity> getActivities()
     {
-        return activities == null || activities.isEmpty() ? Collections.emptyList() : Collections.unmodifiableList(activities);
+        return activities == null || activities.isEmpty() ? Collections.emptyList() : activities;
     }
 
     @Override
@@ -217,7 +218,7 @@ public class MemberImpl implements Member
 
     public MemberImpl setActivities(List<Activity> activities)
     {
-        this.activities = activities;
+        this.activities = Collections.unmodifiableList(activities);
         return this;
     }
 

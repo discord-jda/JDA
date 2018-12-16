@@ -80,6 +80,11 @@ public class GuildSetupNode
         return Long.toUnsignedString(id);
     }
 
+    public GuildSetupController.Status getStatus()
+    {
+        return status;
+    }
+
     @Nullable
     public JSONObject getGuildPayload()
     {
@@ -323,7 +328,8 @@ public class GuildSetupNode
         {
             GuildSetupController.log.warn(
                 "Accumulating suspicious amounts of cached events during guild setup, " +
-                "something might be wrong. Cached: {} GuildId: {}", cacheSize, id);
+                "something might be wrong. Cached: {} Members: {}/{} Status: {} GuildId: {}",
+                cacheSize, getCurrentMemberCount(), getExpectedMemberCount(), status, id);
         }
     }
 

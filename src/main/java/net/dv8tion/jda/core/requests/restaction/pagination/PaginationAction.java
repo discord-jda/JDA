@@ -90,6 +90,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
     protected final int minLimit;
     protected final AtomicInteger limit;
 
+    protected volatile long lastKey = 0;
     protected volatile T last = null;
     protected volatile boolean useCache = true;
 
@@ -129,6 +130,70 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
         this.maxLimit = 0;
         this.minLimit = 0;
         this.limit = new AtomicInteger(0);
+    }
+
+    /**
+     * Skips past the specified ID for successive requests.
+     * This will reset the {@link #getLast()} entity and cause a {@link NoSuchElementException} to be thrown
+     * when attempting to get the last entity until a new retrieve action has been done.
+     * <br>If cache is disabled this can be set to an arbitrary value irrelevant of the current last.
+     * Set this to {@code 0} to start from the most recent message.
+     *
+     * <p>Fails if cache is enabled and the target id is newer than the current last id (id > last).
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public MessagePaginationAction getOlderThan(MessageChannel channel, long time) {
+     *     final long timestamp = TimeUtil.getDiscordTimestamp(time);
+     *     final MessagePaginationAction paginator = channel.getIterableHistory();
+     *     return paginator.skipTo(timestamp);
+     * }
+     *
+     * getOlderThan(channel, System.currentTimeMillis() - TimeUnit.DAYS.toMillis(14))
+     *     .forEachAsync((message) -> {
+     *         boolean empty = message.getContentRaw().isEmpty();
+     *         if (!empty)
+     *             System.out.printf("%#s%n", message); // means: print display content
+     *         return !empty; // means: continue if not empty
+     *     });
+     * }</pre>
+     *
+     * @param  id
+     *         The snowflake ID to skip before, this is exclusive rather than inclusive
+     *
+     * @throws IllegalArgumentException
+     *         If cache is enabled and you are attempting to skip forward in time (id > last)
+     *
+     * @return The current PaginationAction for chaining convenience
+     *
+     * @see    java.util.concurrent.TimeUnit
+     * @see    net.dv8tion.jda.core.utils.TimeUnit
+     */
+    public M skipTo(long id)
+    {
+        if (!cached.isEmpty())
+        {
+            int cmp = Long.compareUnsigned(this.lastKey, id);
+            if (cmp < 0) // old - new < 0 => old < new
+                throw new IllegalArgumentException("Cannot jump to that id, it is newer than the current oldest element.");
+        }
+        if (this.lastKey != id)
+            this.last = null;
+        this.lastKey = id;
+        return (M) this;
+    }
+
+    /**
+     * The current iteration anchor used for pagination.
+     * <br>This is updated by each retrieve action.
+     *
+     * @return The current iteration anchor
+     *
+     * @see    #skipTo(long) Use skipTo(anchor) to change this
+     */
+    public long getLastKey()
+    {
+        return lastKey;
     }
 
     @Override

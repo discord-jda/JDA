@@ -161,7 +161,7 @@ public interface Invite
      *
      * @return Invite URL for this Invite
      */
-    default String getURL()
+    default String getUrl()
     {
         return "https://discord.gg/" + getCode();
     }

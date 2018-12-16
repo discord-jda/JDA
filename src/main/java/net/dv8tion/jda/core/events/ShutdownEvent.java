@@ -42,7 +42,7 @@ public class ShutdownEvent extends Event
      * @return {@link java.time.OffsetDateTime OffsetDateTime} representing
      *         the point in time when the connection was dropped.
      */
-    public OffsetDateTime getShutdownTime()
+    public OffsetDateTime getTimeShutdown()
     {
         return shutdownTime;
     }

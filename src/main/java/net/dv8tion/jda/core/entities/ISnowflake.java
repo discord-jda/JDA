@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.core.entities;
 
-import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.core.utils.TimeUtil;
 
 import java.time.OffsetDateTime;
 
@@ -49,11 +49,10 @@ public interface ISnowflake
      *
      * @return OffsetDateTime - Time this entity was created at.
      *
-     * @see    net.dv8tion.jda.core.utils.MiscUtil#getCreationTime(long)
+     * @see    TimeUtil#getTimeCreated(long)
      */
-    default OffsetDateTime getCreationTime()
+    default OffsetDateTime getTimeCreated()
     {
-        return MiscUtil.getCreationTime(getIdLong());
+        return TimeUtil.getTimeCreated(getIdLong());
     }
-
 }
