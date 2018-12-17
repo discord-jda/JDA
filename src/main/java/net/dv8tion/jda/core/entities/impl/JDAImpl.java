@@ -193,7 +193,10 @@ public class JDAImpl implements JDA
         setStatus(Status.LOGGING_IN);
         if (token == null || token.isEmpty())
             throw new LoginException("Provided token was null or empty!");
-
+            
+        if (getAccountType() == AccountType.CLIENT)
+            LOG.warn("AccountType.CLIENT will be removed in JDA v4 as it is against the Discord Terms of Service (https://discordapp.com/terms). Proceeding with the login process may get this account terminated.");
+        
         Map<String, String> previousContext = null;
         if (contextMap != null)
         {
