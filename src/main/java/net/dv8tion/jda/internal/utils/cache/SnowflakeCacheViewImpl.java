@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.internal.utils.cache;
 
-import net.dv8tion.jda.core.entities.ISnowflake;
-import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 
 import java.util.function.Function;
 

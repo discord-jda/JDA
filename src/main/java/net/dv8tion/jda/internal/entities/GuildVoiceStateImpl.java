@@ -16,12 +16,12 @@
 
 package net.dv8tion.jda.internal.entities;
 
-import net.dv8tion.jda.core.entities.AudioChannel;
-import net.dv8tion.jda.core.entities.GuildVoiceState;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.VoiceChannel;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
+import net.dv8tion.jda.api.entities.AudioChannel;
+import net.dv8tion.jda.api.entities.GuildVoiceState;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 
 public class GuildVoiceStateImpl implements GuildVoiceState
 {

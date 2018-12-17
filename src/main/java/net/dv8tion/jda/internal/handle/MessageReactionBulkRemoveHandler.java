@@ -16,10 +16,10 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionRemoveAllEvent;
-import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveAllEvent;
-import net.dv8tion.jda.core.hooks.IEventManager;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemoveAllEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveAllEvent;
+import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import org.json.JSONObject;

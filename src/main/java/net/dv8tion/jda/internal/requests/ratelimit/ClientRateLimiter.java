@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.internal.requests.ratelimit;
 
-import net.dv8tion.jda.core.events.ExceptionEvent;
-import net.dv8tion.jda.core.requests.Request;
+import net.dv8tion.jda.api.events.ExceptionEvent;
+import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.RateLimiter;
 import net.dv8tion.jda.internal.requests.Requester;

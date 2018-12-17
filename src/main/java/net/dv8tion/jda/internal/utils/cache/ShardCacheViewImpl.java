@@ -18,9 +18,9 @@ package net.dv8tion.jda.internal.utils.cache;
 import gnu.trove.impl.sync.TSynchronizedIntObjectMap;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.utils.cache.CacheView;
-import net.dv8tion.jda.core.utils.cache.ShardCacheView;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.utils.cache.CacheView;
+import net.dv8tion.jda.api.utils.cache.ShardCacheView;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.apache.commons.collections4.iterators.ObjectArrayIterator;
 

@@ -15,8 +15,8 @@
  */
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.core.events.guild.GuildAvailableEvent;
-import net.dv8tion.jda.core.events.guild.GuildUnavailableEvent;
+import net.dv8tion.jda.api.events.guild.GuildAvailableEvent;
+import net.dv8tion.jda.api.events.guild.GuildUnavailableEvent;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.utils.Helpers;

@@ -17,8 +17,8 @@
 package net.dv8tion.jda.internal.utils.cache;
 
 import gnu.trove.map.TLongObjectMap;
-import net.dv8tion.jda.core.utils.MiscUtil;
-import net.dv8tion.jda.core.utils.cache.CacheView;
+import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.apache.commons.collections4.iterators.ObjectArrayIterator;
 

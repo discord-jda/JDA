@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.events.guild.voice.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.events.guild.voice.*;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildVoiceStateImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;

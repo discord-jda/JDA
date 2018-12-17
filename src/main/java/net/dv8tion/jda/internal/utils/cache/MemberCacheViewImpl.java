@@ -16,9 +16,9 @@
 
 package net.dv8tion.jda.internal.utils.cache;
 
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.utils.cache.MemberCacheView;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.utils.cache.MemberCacheView;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import java.util.*;

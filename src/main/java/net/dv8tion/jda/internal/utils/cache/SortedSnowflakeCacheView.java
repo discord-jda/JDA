@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.internal.utils.cache;
 
-import net.dv8tion.jda.core.entities.ISnowflake;
+import net.dv8tion.jda.api.entities.ISnowflake;
 import org.apache.commons.collections4.iterators.ObjectArrayIterator;
 
 import javax.annotation.Nonnull;

@@ -17,12 +17,12 @@
 package net.dv8tion.jda.internal.entities;
 
 import gnu.trove.map.TLongObjectMap;
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.requests.restaction.ChannelAction;
-import net.dv8tion.jda.core.requests.restaction.InviteAction;
-import net.dv8tion.jda.core.requests.restaction.order.CategoryOrderAction;
-import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.ChannelAction;
+import net.dv8tion.jda.api.requests.restaction.InviteAction;
+import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
+import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import java.util.ArrayList;

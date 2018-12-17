@@ -16,7 +16,7 @@
 //TODO: Remove
 package net.dv8tion.jda.internal.utils;
 
-import net.dv8tion.jda.core.requests.RequestFuture;
+import net.dv8tion.jda.api.requests.RequestFuture;
 
 import java.util.concurrent.CompletableFuture;
 

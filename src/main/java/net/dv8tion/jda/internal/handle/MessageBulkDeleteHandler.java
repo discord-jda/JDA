@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.events.message.MessageBulkDeleteEvent;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent;
 import net.dv8tion.jda.internal.JDAImpl;
 import org.json.JSONObject;
 

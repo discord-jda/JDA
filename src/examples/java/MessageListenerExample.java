@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.exceptions.PermissionException;
-import net.dv8tion.jda.core.exceptions.RateLimitedException;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.exceptions.PermissionException;
+import net.dv8tion.jda.api.exceptions.RateLimitedException;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import javax.security.auth.login.LoginException;
 import java.util.List;
@@ -66,13 +66,13 @@ public class MessageListenerExample extends ListenerAdapter
      *  a method from a super class properly. You should do this every time you override a method!
      *
      * As stated above, this method is overriding a hook method in the
-     * {@link net.dv8tion.jda.core.hooks.ListenerAdapter ListenerAdapter} class. It has convience methods for all JDA events!
+     * {@link net.dv8tion.jda.api.hooks.ListenerAdapter ListenerAdapter} class. It has convience methods for all JDA events!
      * Consider looking through the events it offers if you plan to use the ListenerAdapter.
      *
      * In this example, when a message is received it is printed to the console.
      *
      * @param event
-     *          An event containing information about a {@link net.dv8tion.jda.core.entities.Message Message} that was
+     *          An event containing information about a {@link net.dv8tion.jda.api.entities.Message Message} that was
      *          sent in a channel.
      */
     @Override

@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.events.self.*;
+import net.dv8tion.jda.api.AccountType;
+import net.dv8tion.jda.api.events.self.*;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.SelfUserImpl;
 import org.json.JSONObject;

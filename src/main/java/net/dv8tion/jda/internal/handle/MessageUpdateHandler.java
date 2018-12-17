@@ -15,13 +15,13 @@
  */
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.events.message.MessageEmbedEvent;
-import net.dv8tion.jda.core.events.message.MessageUpdateEvent;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageEmbedEvent;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent;
-import net.dv8tion.jda.core.events.message.priv.PrivateMessageEmbedEvent;
-import net.dv8tion.jda.core.events.message.priv.PrivateMessageUpdateEvent;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.message.MessageEmbedEvent;
+import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageEmbedEvent;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent;
+import net.dv8tion.jda.api.events.message.priv.PrivateMessageEmbedEvent;
+import net.dv8tion.jda.api.events.message.priv.PrivateMessageUpdateEvent;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.WebSocketClient;

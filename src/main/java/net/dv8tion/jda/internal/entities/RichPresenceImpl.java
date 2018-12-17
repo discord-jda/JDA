@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.internal.entities;
 
-import net.dv8tion.jda.core.entities.ActivityFlag;
-import net.dv8tion.jda.core.entities.RichPresence;
+import net.dv8tion.jda.api.entities.ActivityFlag;
+import net.dv8tion.jda.api.entities.RichPresence;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -172,7 +172,7 @@ public class RichPresenceImpl extends ActivityImpl implements RichPresence
     /**
      * Information on the active party of the player
      *
-     * @return {@link net.dv8tion.jda.core.entities.RichPresence.Party Party} wrapper or {@code null} if unset
+     * @return {@link net.dv8tion.jda.api.entities.RichPresence.Party Party} wrapper or {@code null} if unset
      */
     @Nullable
     @Override
@@ -184,7 +184,7 @@ public class RichPresenceImpl extends ActivityImpl implements RichPresence
     /**
      * Information on the large image displayed in the profile view
      *
-     * @return {@link net.dv8tion.jda.core.entities.RichPresence.Image Image} wrapper or {@code null} if unset
+     * @return {@link net.dv8tion.jda.api.entities.RichPresence.Image Image} wrapper or {@code null} if unset
      */
     @Nullable
     @Override
@@ -196,7 +196,7 @@ public class RichPresenceImpl extends ActivityImpl implements RichPresence
     /**
      * Information on the small corner image displayed in the profile view
      *
-     * @return {@link net.dv8tion.jda.core.entities.RichPresence.Image Image} wrapper or {@code null} if unset
+     * @return {@link net.dv8tion.jda.api.entities.RichPresence.Image Image} wrapper or {@code null} if unset
      */
     @Nullable
     @Override

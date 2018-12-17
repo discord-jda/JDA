@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.internal.requests;
 
-import net.dv8tion.jda.core.requests.Request;
+import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.internal.requests.ratelimit.IBucket;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
@@ -31,7 +31,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public abstract class RateLimiter
 {
-    //Implementations of this class exist in the net.dv8tion.jda.core.requests.ratelimit package.
+    //Implementations of this class exist in the net.dv8tion.jda.api.requests.ratelimit package.
     protected static final Logger log = JDALogger.getLog(RateLimiter.class);
     protected final Requester requester;
     protected volatile boolean isShutdown = false;

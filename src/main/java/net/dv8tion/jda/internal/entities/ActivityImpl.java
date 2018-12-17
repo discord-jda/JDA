@@ -15,8 +15,8 @@
  */
 package net.dv8tion.jda.internal.entities;
 
-import net.dv8tion.jda.core.entities.Activity;
-import net.dv8tion.jda.core.entities.RichPresence;
+import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.RichPresence;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -55,7 +55,7 @@ public class ActivityImpl implements Activity
      * Whether this is a <a href="https://discordapp.com/developers/docs/rich-presence/best-practices" target="_blank">Rich Presence</a>
      * <br>If {@code false} the result of {@link #asRichPresence()} is {@code null}
      *
-     * @return {@code true} if this is a {@link net.dv8tion.jda.core.entities.RichPresence RichPresence}
+     * @return {@code true} if this is a {@link net.dv8tion.jda.api.entities.RichPresence RichPresence}
      */
     @Override
     public boolean isRich()
@@ -64,7 +64,7 @@ public class ActivityImpl implements Activity
     }
 
     /**
-     * {@link net.dv8tion.jda.core.entities.RichPresence RichPresence} representation of
+     * {@link net.dv8tion.jda.api.entities.RichPresence RichPresence} representation of
      * this Activity.
      *
      * @return RichPresence or {@code null} if {@link #isRich()} returns {@code false}
@@ -101,7 +101,7 @@ public class ActivityImpl implements Activity
     /**
      * The type of {@link Activity Activity}.
      *
-     * @return Never-null {@link net.dv8tion.jda.core.entities.Activity.ActivityType ActivityType} representing the type of Activity
+     * @return Never-null {@link net.dv8tion.jda.api.entities.Activity.ActivityType ActivityType} representing the type of Activity
      */
     @Override
     public ActivityType getType()
@@ -112,7 +112,7 @@ public class ActivityImpl implements Activity
     /**
      * Information on the match duration, start, and end.
      *
-     * @return {@link net.dv8tion.jda.core.entities.RichPresence.Timestamps Timestamps} wrapper of {@code null} if unset
+     * @return {@link net.dv8tion.jda.api.entities.RichPresence.Timestamps Timestamps} wrapper of {@code null} if unset
      */
     @Nullable
     public RichPresence.Timestamps getTimestamps()
