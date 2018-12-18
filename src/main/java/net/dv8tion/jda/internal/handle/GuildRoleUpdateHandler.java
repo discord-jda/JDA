@@ -39,7 +39,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
             return guildId;
 
         JSONObject rolejson = content.getJSONObject("role");
-        GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(guildId);
+        GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
         if (guild == null)
         {
             getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
@@ -48,7 +48,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
         }
 
         final long roleId = rolejson.getLong("id");
-        RoleImpl role = (RoleImpl) guild.getRolesMap().get(roleId);
+        RoleImpl role = (RoleImpl) guild.getRolesView().get(roleId);
         if (role == null)
         {
             getJDA().getEventCache().cache(EventCache.Type.ROLE, roleId, responseNumber, allContent, this::handle);

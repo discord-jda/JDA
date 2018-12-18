@@ -16,7 +16,6 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.core.entities.Emote;
-import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.events.role.RoleDeleteEvent;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -40,7 +39,7 @@ public class GuildRoleDeleteHandler extends SocketHandler
         if (getJDA().getGuildSetupController().isLocked(guildId))
             return guildId;
 
-        GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(guildId);
+        GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
         if (guild == null)
         {
             getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
@@ -49,7 +48,7 @@ public class GuildRoleDeleteHandler extends SocketHandler
         }
 
         final long roleId = content.getLong("role_id");
-        Role removedRole = guild.getRolesMap().remove(roleId);
+        Role removedRole = guild.getRolesView().remove(roleId);
         if (removedRole == null)
         {
             //getJDA().getEventCache().cache(EventCache.Type.ROLE, roleId, () -> handle(responseNumber, allContent));
@@ -58,11 +57,11 @@ public class GuildRoleDeleteHandler extends SocketHandler
         }
 
         //Now that the role is removed from the Guild, remove it from all users and emotes.
-        for (Member m : guild.getMembersMap().valueCollection())
+        guild.getMembersView().forEach(m ->
         {
             MemberImpl member = (MemberImpl) m;
             member.getRoleSet().remove(removedRole);
-        }
+        });
 
         for (Emote emote : guild.getEmoteCache())
         {

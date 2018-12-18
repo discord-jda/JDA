@@ -16,7 +16,7 @@
 package net.dv8tion.jda.core.sharding;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
-import gnu.trove.map.TIntObjectMap;
+import gnu.trove.set.TIntSet;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
@@ -33,6 +33,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
+import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.ShardCacheViewImpl;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 import okhttp3.OkHttpClient;
@@ -438,7 +439,10 @@ public class DefaultShardManager implements ShardManager
             final int shardId = this.queue.isEmpty() ? 0 : this.queue.peek();
 
             jda = this.buildInstance(shardId);
-            this.shards.getMap().put(shardId, jda);
+            try (UnlockHook hook = this.shards.writeLock())
+            {
+                this.shards.getMap().put(shardId, jda);
+            }
             synchronized (queue)
             {
                 this.queue.remove(shardId);
@@ -475,13 +479,16 @@ public class DefaultShardManager implements ShardManager
         Checks.notNegative(shardId, "shardId");
         Checks.check(shardId < this.shardsTotal, "shardId must be lower than shardsTotal");
 
-        final JDA jda = this.shards.getMap().remove(shardId);
-        if (jda != null)
+        try (UnlockHook hook = this.shards.writeLock())
         {
-            if (this.useShutdownNow)
-                jda.shutdownNow();
-            else
-                jda.shutdown();
+            final JDA jda = this.shards.getMap().remove(shardId);
+            if (jda != null)
+            {
+                if (this.useShutdownNow)
+                    jda.shutdownNow();
+                else
+                    jda.shutdown();
+            }
         }
 
         enqueueShard(shardId);
@@ -490,13 +497,11 @@ public class DefaultShardManager implements ShardManager
     @Override
     public void restart()
     {
-        TIntObjectMap<JDA> map = this.shards.getMap();
-        synchronized (map)
-        {
-            Arrays.stream(map.keys())
-                  .sorted() // this ensures shards are started in natural order
-                  .forEach(this::restart);
-        }
+        TIntSet map = this.shards.keySet();
+
+        Arrays.stream(map.toArray())
+              .sorted() // this ensures shards are started in natural order
+              .forEach(this::restart);
     }
 
     @Override
@@ -521,26 +526,29 @@ public class DefaultShardManager implements ShardManager
 
         if (this.shards != null)
         {
-            for (final JDA jda : this.shards)
+            this.shards.forEach(jda ->
             {
                 if (this.useShutdownNow)
                     jda.shutdownNow();
                 else
                     jda.shutdown();
-            }
+            });
         }
     }
 
     @Override
     public void shutdown(final int shardId)
     {
-        final JDA jda = this.shards.getMap().remove(shardId);
-        if (jda != null)
+        try (UnlockHook hook = this.shards.writeLock())
         {
-            if (this.useShutdownNow)
-                jda.shutdownNow();
-            else
-                jda.shutdown();
+            final JDA jda = this.shards.getMap().remove(shardId);
+            if (jda != null)
+            {
+                if (this.useShutdownNow)
+                    jda.shutdownNow();
+                else
+                    jda.shutdown();
+            }
         }
     }
 
@@ -632,7 +640,10 @@ public class DefaultShardManager implements ShardManager
             return;
         }
 
-        this.shards.getMap().put(shardId, api);
+        try (UnlockHook hook = this.shards.writeLock())
+        {
+            this.shards.getMap().put(shardId, api);
+        }
         synchronized (queue)
         {
             this.queue.remove(shardId);

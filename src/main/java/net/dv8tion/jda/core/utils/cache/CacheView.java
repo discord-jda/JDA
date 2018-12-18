@@ -17,14 +17,17 @@
 package net.dv8tion.jda.core.utils.cache;
 
 import net.dv8tion.jda.core.entities.ISnowflake;
+import net.dv8tion.jda.core.utils.ClosableIterator;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
 import net.dv8tion.jda.internal.utils.cache.ShardCacheViewImpl;
+import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.UnifiedCacheViewImpl;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
@@ -35,6 +38,24 @@ import java.util.stream.Stream;
  * <br>This can be useful to check information such as size without creating
  * an immutable snapshot first.
  *
+ * <h2>Memory Efficient Usage</h2>
+ * The {@link #forEach(Consumer)} method can be used to avoid creating a snapshot
+ * of the backing data store, it is implemented by first acquiring a read-lock and then iterating the code.
+ * The enhanced-for-loop uses the {@link #iterator()} which has to first create a snapshot to avoid
+ * concurrent modifications. Alternatively the {@link #lockedIterator()} can be used to acquire an iterator
+ * which holds a read-lock on the data store and thus prohibits concurrent modifications, for more details
+ * read the documentation of {@link ClosableIterator}. Streams from {@link #stream()}/{@link #parallelStream()}
+ * both use {@link #iterator()} with a snapshot of the backing data store to avoid concurrent modifications.
+ * <br>Using {@link #getElementsByName(String)} is more efficient than {@link #asList()} as it uses {@link #forEach(Consumer)}
+ * for pattern matching and thus does not need to create a snapshot of the entire data store like {@link #asList()} does.
+ * <br>Both {@link #size()} and {@link #isEmpty()} are atomic operations.
+ *
+ * <p>Note that making a copy is a requirement if a specific order is desired. If using {@link #lockedIterator()}
+ * the order is not guaranteed as it directly iterates the backing cache.
+ * Using {@link #forEach(Consumer)} on a {@link SortedSnowflakeCacheView} will copy the cache in order to sort
+ * it, use {@link SortedSnowflakeCacheView#forEachUnordered(Consumer)} to avoid this overhead.
+ * The backing cache is stored using an un-ordered hash map.
+ *
  * @param  <T>
  *         The cache type
  */
@@ -43,7 +64,7 @@ public interface CacheView<T> extends Iterable<T>
     /**
      * Creates an immutable snapshot of the current cache state.
      * <br>This will copy all elements contained in this cache into a list.
-     * <br>This will be sorted for a {@link net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}.
+     * <br>This will be sorted for a {@link SortedSnowflakeCacheViewImpl SortedSnowflakeCacheView}.
      *
      * @return Immutable list of cached elements
      */
@@ -56,6 +77,18 @@ public interface CacheView<T> extends Iterable<T>
      * @return Immutable set of cached elements
      */
     Set<T> asSet();
+
+    /**
+     * Returns an iterator with direct access to the underlying data store.
+     * This iterator does not support removing elements.
+     * <br>After usage this iterator should be closed to allow modifications by the library internals.
+     *
+     * <p><b>Note: Order is not preserved in this iterator to be more efficient,
+     * if order is desired use {@link #iterator()} instead!</b>
+     *
+     * @return {@link ClosableIterator} holding a read-lock on the data structure.
+     */
+    ClosableIterator<T> lockedIterator();
 
     /**
      * The current size of this cache
@@ -118,7 +151,7 @@ public interface CacheView<T> extends Iterable<T>
 
     /**
      * Creates a {@link java.util.stream.Stream Stream} of all cached elements.
-     * <br>This will be sorted for a {@link net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}.
+     * <br>This will be sorted for a {@link SortedSnowflakeCacheViewImpl SortedSnowflakeCacheView}.
      *
      * @return Stream of elements
      */
@@ -126,7 +159,7 @@ public interface CacheView<T> extends Iterable<T>
 
     /**
      * Creates a parallel {@link java.util.stream.Stream Stream} of all cached elements.
-     * <br>This will be sorted for a {@link net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}.
+     * <br>This will be sorted for a {@link SortedSnowflakeCacheViewImpl SortedSnowflakeCacheView}.
      *
      * @return Parallel Stream of elements
      */
