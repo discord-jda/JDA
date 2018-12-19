@@ -53,6 +53,7 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
+import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
@@ -623,13 +624,14 @@ public class JDAImpl implements JDA
 
     private void closeAudioConnections()
     {
-        TLongObjectMap<AudioManager> managerMap = getAudioManagerMap();
-        synchronized (managerMap)
+        AbstractCacheView<AudioManager> view = getAudioManagersView();
+        try (UnlockHook hook = view.writeLock())
         {
-            managerMap.valueCollection().stream()
-                      .map(AudioManagerImpl.class::cast)
-                      .forEach(m -> m.closeAudioConnection(ConnectionStatus.SHUTTING_DOWN));
-            managerMap.clear();
+            TLongObjectMap<AudioManager> map = view.getMap();
+            map.valueCollection().stream()
+               .map(AudioManagerImpl.class::cast)
+               .forEach(m -> m.closeAudioConnection(ConnectionStatus.SHUTTING_DOWN));
+            map.clear();
         }
     }
 
@@ -822,34 +824,39 @@ public class JDAImpl implements JDA
         return client == null ? null : client.get();
     }
 
-    public TLongObjectMap<User> getUserMap()
+    public SnowflakeCacheViewImpl<User> getUsersView()
     {
-        return userCache.getMap();
+        return userCache;
     }
 
-    public TLongObjectMap<Guild> getGuildMap()
+    public SnowflakeCacheViewImpl<Guild> getGuildsView()
     {
-        return guildCache.getMap();
+        return guildCache;
     }
 
-    public TLongObjectMap<Category> getCategoryMap()
+    public SnowflakeCacheViewImpl<Category> getCategoriesView()
     {
-        return categories.getMap();
+        return categories;
     }
 
-    public TLongObjectMap<TextChannel> getTextChannelMap()
+    public SnowflakeCacheViewImpl<TextChannel> getTextChannelsView()
     {
-        return textChannelCache.getMap();
+        return textChannelCache;
     }
 
-    public TLongObjectMap<VoiceChannel> getVoiceChannelMap()
+    public SnowflakeCacheViewImpl<VoiceChannel> getVoiceChannelsView()
     {
-        return voiceChannelCache.getMap();
+        return voiceChannelCache;
     }
 
-    public TLongObjectMap<PrivateChannel> getPrivateChannelMap()
+    public SnowflakeCacheViewImpl<PrivateChannel> getPrivateChannelsView()
     {
-        return privateChannelCache.getMap();
+        return privateChannelCache;
+    }
+
+    public AbstractCacheView<AudioManager> getAudioManagersView()
+    {
+        return audioManagers;
     }
 
     public TLongObjectMap<User> getFakeUserMap()
@@ -860,11 +867,6 @@ public class JDAImpl implements JDA
     public TLongObjectMap<PrivateChannel> getFakePrivateChannelMap()
     {
         return fakePrivateChannels;
-    }
-
-    public TLongObjectMap<AudioManager> getAudioManagerMap()
-    {
-        return audioManagers.getMap();
     }
 
     public void setSelfUser(SelfUser selfUser)

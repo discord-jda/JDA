@@ -69,7 +69,7 @@ public class ChannelUpdateHandler extends SocketHandler
             case TEXT:
             {
                 String topic = content.optString("topic", null);
-                TextChannelImpl textChannel = (TextChannelImpl) getJDA().getTextChannelMap().get(channelId);
+                TextChannelImpl textChannel = (TextChannelImpl) getJDA().getTextChannelsView().get(channelId);
                 if (textChannel == null)
                 {
                     getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
@@ -150,7 +150,7 @@ public class ChannelUpdateHandler extends SocketHandler
             }
             case VOICE:
             {
-                VoiceChannelImpl voiceChannel = (VoiceChannelImpl) getJDA().getVoiceChannelMap().get(channelId);
+                VoiceChannelImpl voiceChannel = (VoiceChannelImpl) getJDA().getVoiceChannelsView().get(channelId);
                 int userLimit = content.getInt("user_limit");
                 int bitrate = content.getInt("bitrate");
                 if (voiceChannel == null)

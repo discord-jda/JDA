@@ -33,6 +33,8 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.utils.Helpers;
+import net.dv8tion.jda.internal.utils.UnlockHook;
+import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -433,9 +435,10 @@ public class GuildSetupNode
     private void updateAudioManagerReference(GuildImpl guild)
     {
         JDAImpl api = getController().getJDA();
-        TLongObjectMap<AudioManager> audioManagerMap = api.getAudioManagerMap();
-        synchronized (audioManagerMap)
+        AbstractCacheView<AudioManager> managerView = api.getAudioManagersView();
+        try (UnlockHook hook = managerView.writeLock())
         {
+            TLongObjectMap<AudioManager> audioManagerMap = managerView.getMap();
             AudioManagerImpl mng = (AudioManagerImpl) audioManagerMap.get(id);
             if (mng == null)
                 return;

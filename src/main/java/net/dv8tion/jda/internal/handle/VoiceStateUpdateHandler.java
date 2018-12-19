@@ -156,7 +156,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
             }
             else
             {
-                AudioManagerImpl mng = (AudioManagerImpl) getJDA().getAudioManagerMap().get(guildId);
+                AudioManagerImpl mng = (AudioManagerImpl) getJDA().getAudioManagersView().get(guildId);
 
                 //If the currently connected account is the one that is being moved
                 if (guild.getSelfMember().equals(member) && mng != null)

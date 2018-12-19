@@ -75,7 +75,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     @Override
     public Category getParent()
     {
-        return getGuild().getCategoriesMap().get(parentId);
+        return getGuild().getCategoriesView().get(parentId);
     }
 
     @Override

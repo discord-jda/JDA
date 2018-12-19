@@ -259,15 +259,15 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     @Override
     public List<Member> getMembers()
     {
-        return Collections.unmodifiableList(getGuild().getMembersMap().valueCollection().stream()
-                .filter(m -> m.hasPermission(this, Permission.MESSAGE_READ))
-                .collect(Collectors.toList()));
+        return Collections.unmodifiableList(getGuild().getMembersView().stream()
+                  .filter(m -> m.hasPermission(this, Permission.MESSAGE_READ))
+                  .collect(Collectors.toList()));
     }
 
     @Override
     public int getPosition()
     {
-        //We call getTextChannels instead of directly accessing the GuildImpl.getTextChannelMap because
+        //We call getTextChannels instead of directly accessing the GuildImpl.getTextChannelsView because
         // getTextChannels does the sorting logic.
         List<TextChannel> channels = getGuild().getTextChannels();
         for (int i = 0; i < channels.size(); i++)
