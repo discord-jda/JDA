@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.utils;
+package net.dv8tion.jda.api.utils;
 
-import net.dv8tion.jda.core.utils.cache.CacheView;
+import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
 

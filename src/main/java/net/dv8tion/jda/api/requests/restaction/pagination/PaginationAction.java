@@ -169,6 +169,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      * @see    java.util.concurrent.TimeUnit
      * @see    net.dv8tion.jda.api.utils.TimeUnit
      */
+    @SuppressWarnings("unchecked")
     public M skipTo(long id)
     {
         if (!cached.isEmpty())
