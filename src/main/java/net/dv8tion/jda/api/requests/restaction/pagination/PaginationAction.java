@@ -167,7 +167,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      * @return The current PaginationAction for chaining convenience
      *
      * @see    java.util.concurrent.TimeUnit
-     * @see    net.dv8tion.jda.api.utils.TimeUnit
+     * @see    net.dv8tion.jda.api.utils.TimeUtil
      */
     @SuppressWarnings("unchecked")
     public M skipTo(long id)
