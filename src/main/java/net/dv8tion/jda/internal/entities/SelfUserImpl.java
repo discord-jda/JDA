@@ -21,9 +21,9 @@ import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.SelfUser;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.managers.AccountManager;
-import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
 
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -59,7 +59,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     }
 
     @Override
-    public RestAction<PrivateChannel> openPrivateChannel()
+    public AbstractRestAction<PrivateChannel> openPrivateChannel()
     {
         throw new UnsupportedOperationException("You cannot open a PrivateChannel with yourself (SelfUser)");
     }

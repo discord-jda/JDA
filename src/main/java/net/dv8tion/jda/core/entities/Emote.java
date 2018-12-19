@@ -21,6 +21,8 @@ import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.managers.EmoteManager;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 
 import javax.annotation.CheckReturnValue;
@@ -141,7 +143,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         if the Permission {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES MANAGE_EMOTES} is not given
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      *         The RestAction to delete this Emote.
      */
     @CheckReturnValue
@@ -150,7 +152,7 @@ public interface Emote extends ISnowflake, IMentionable, IFakeable
     /**
      * The {@link EmoteManager Manager} for this emote, used to modify
      * properties of the emote like name and role restrictions.
-     * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.core.requests.RestAction#queue() RestAction.queue()}.
+     * <br>You modify multiple fields in one request by chaining setters before calling {@link AbstractRestAction#queue() RestAction.queue()}.
      *
      * @throws IllegalStateException
      *         if this emote is fake

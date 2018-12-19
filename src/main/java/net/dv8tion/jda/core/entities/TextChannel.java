@@ -19,6 +19,8 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.WebhookAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -80,7 +82,7 @@ public interface TextChannel extends GuildChannel, MessageChannel, Comparable<Te
      *     <br>if we were removed from the guild</li>
      * </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.core.entities.Webhook Webhook}{@literal >}
+     * @return {@link AbstractRestAction} - Type: List{@literal <}{@link net.dv8tion.jda.core.entities.Webhook Webhook}{@literal >}
      *         <br>An immutable list of Webhook attached to this channel
      */
     @CheckReturnValue
@@ -90,7 +92,7 @@ public interface TextChannel extends GuildChannel, MessageChannel, Comparable<Te
      * Creates a new {@link net.dv8tion.jda.core.entities.Webhook Webhook}.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The webhook could not be created due to a permission discrepancy</li>
@@ -152,7 +154,7 @@ public interface TextChannel extends GuildChannel, MessageChannel, Comparable<Te
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this account does not have {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      *
      * @see    #deleteMessagesByIds(Collection)
      * @see    #purgeMessages(List)
@@ -201,7 +203,7 @@ public interface TextChannel extends GuildChannel, MessageChannel, Comparable<Te
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If this account does not have {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      *
      * @see    #deleteMessages(Collection)
      * @see    #purgeMessagesById(List)
@@ -239,7 +241,7 @@ public interface TextChannel extends GuildChannel, MessageChannel, Comparable<Te
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MANAGE_WEBHOOKS Permission.MANAGE_WEBHOOKS} in this channel.
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      */
     @CheckReturnValue
     AuditableRestAction<Void> deleteWebhookById(String id);
@@ -273,7 +275,7 @@ public interface TextChannel extends GuildChannel, MessageChannel, Comparable<Te
      * @throws java.lang.IllegalArgumentException
      *         If the provided {@code id} is {@code null} or empty.
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      */
     @CheckReturnValue
     RestAction<Void> clearReactionsById(String messageId);
@@ -305,7 +307,7 @@ public interface TextChannel extends GuildChannel, MessageChannel, Comparable<Te
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in this channel.
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      */
     @CheckReturnValue
     default RestAction<Void> clearReactionsById(long messageId)
@@ -370,7 +372,7 @@ public interface TextChannel extends GuildChannel, MessageChannel, Comparable<Te
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in this channel.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link AbstractRestAction}
      */
     @CheckReturnValue
     RestAction<Void> removeReactionById(String messageId, String unicode, User user);
@@ -432,7 +434,7 @@ public interface TextChannel extends GuildChannel, MessageChannel, Comparable<Te
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in this channel.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link AbstractRestAction}
      */
     @CheckReturnValue
     default RestAction<Void> removeReactionById(long messageId, String unicode, User user)
@@ -491,7 +493,7 @@ public interface TextChannel extends GuildChannel, MessageChannel, Comparable<Te
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in this channel.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link AbstractRestAction}
      */
     @CheckReturnValue
     default RestAction<Void> removeReactionById(String messageId, Emote emote, User user)
@@ -551,7 +553,7 @@ public interface TextChannel extends GuildChannel, MessageChannel, Comparable<Te
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in this channel.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link AbstractRestAction}
      */
     @CheckReturnValue
     default RestAction<Void> removeReactionById(long messageId, Emote emote, User user)

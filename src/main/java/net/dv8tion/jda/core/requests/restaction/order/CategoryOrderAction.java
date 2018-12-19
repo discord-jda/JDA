@@ -19,6 +19,7 @@ package net.dv8tion.jda.core.requests.restaction.order;
 import net.dv8tion.jda.core.entities.Category;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.GuildChannel;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -27,7 +28,7 @@ import java.util.Collection;
 /**
  * An extension of {@link net.dv8tion.jda.core.requests.restaction.order.ChannelOrderAction ChannelOrderAction} with
  * similar functionality, but constrained to the bounds of a single {@link net.dv8tion.jda.core.entities.Category Category}.
- * <br>To apply the changes you must finish the {@link net.dv8tion.jda.core.requests.RestAction RestAction}.
+ * <br>To apply the changes you must finish the {@link AbstractRestAction RestAction}.
  *
  * <p>Before you can use any of the {@code move} methods
  * you must use either {@link #selectPosition(Object) selectPosition(GuildChannel)} or {@link #selectPosition(int)}!

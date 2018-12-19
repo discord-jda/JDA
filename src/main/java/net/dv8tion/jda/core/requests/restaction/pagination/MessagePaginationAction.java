@@ -121,14 +121,8 @@ public class MessagePaginationAction extends PaginationAction<Message, MessagePa
     }
 
     @Override
-    protected void handleResponse(Response response, Request<List<Message>> request)
+    protected void handleSuccess(Response response, Request<List<Message>> request)
     {
-        if (!response.isOk())
-        {
-            request.onFailure(response);
-            return;
-        }
-
         JSONArray array = response.getArray();
         List<Message> messages = new ArrayList<>(array.length());
         EntityBuilder builder = api.get().getEntityBuilder();

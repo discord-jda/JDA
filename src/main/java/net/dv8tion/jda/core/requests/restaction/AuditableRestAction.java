@@ -1,11 +1,11 @@
 /*
- *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
+ * Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,23 +16,10 @@
 
 package net.dv8tion.jda.core.requests.restaction;
 
-import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.audit.ThreadLocalReason;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.requests.RestFuture;
-import net.dv8tion.jda.core.utils.MiscUtil;
-import net.dv8tion.jda.internal.requests.Route;
-import okhttp3.RequestBody;
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
-import org.json.JSONObject;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
 
 /**
  * Extension of RestAction to allow setting a reason, only available to accounts of {@link net.dv8tion.jda.core.AccountType#BOT AccountType.BOT}
@@ -45,32 +32,8 @@ import java.util.function.Consumer;
  *
  * @since  3.3.0
  */
-public abstract class AuditableRestAction<T> extends RestAction<T>
+public interface AuditableRestAction<T> extends RestAction<T>
 {
-    protected String reason = null;
-
-    public AuditableRestAction(JDA api, Route.CompiledRoute route)
-    {
-        super(api, route);
-    }
-
-    public AuditableRestAction(JDA api, Route.CompiledRoute route, RequestBody data)
-    {
-        super(api, route, data);
-    }
-
-    public AuditableRestAction(JDA api, Route.CompiledRoute route, JSONObject data)
-    {
-        super(api, route, data);
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public AuditableRestAction<T> setCheck(BooleanSupplier checks)
-    {
-        return (AuditableRestAction) super.setCheck(checks);
-    }
-
     /**
      * Applies the specified reason as audit-log reason field.
      * <br>When the provided reason is empty or {@code null} it will be treated as not set.
@@ -92,83 +55,11 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
      *
      * @see    ThreadLocalReason
      */
-    @CheckReturnValue
-    public AuditableRestAction<T> reason(String reason)
-    {
-        this.reason = reason;
-        return this;
-    }
-
-    @Override
-    protected CaseInsensitiveMap<String, String> finalizeHeaders()
-    {
-        CaseInsensitiveMap<String, String> headers = super.finalizeHeaders();
-
-        if (reason == null || reason.isEmpty())
-        {
-            String localReason = ThreadLocalReason.getCurrent();
-            if (localReason == null || localReason.isEmpty())
-                return headers;
-            else
-                return generateHeaders(headers, localReason);
-        }
-
-        return generateHeaders(headers, reason);
-    }
-
-    @Nonnull
-    private CaseInsensitiveMap<String, String> generateHeaders(CaseInsensitiveMap<String, String> headers, String reason)
-    {
-        if (headers == null)
-            headers = new CaseInsensitiveMap<>();
-
-        headers.put("X-Audit-Log-Reason", uriEncode(reason));
-        return headers;
-    }
-
-    private String uriEncode(String input)
-    {
-        String formEncode = MiscUtil.encodeUTF8(input);
-        return formEncode.replace('+', ' ');
-    }
+    AuditableRestAction<T> reason(String reason);
 
     /**
-     * Specialized form of {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction} that is used to provide information that
-     * has already been retrieved or generated so that another request does not need to be made to Discord.
-     * <br>Basically: Allows you to provide a value directly to the success returns.
-     *
-     * @param <T>
-     *        The generic response type for this RestAction
+     * {@inheritDoc}
      */
-    public static class EmptyRestAction<T> extends AuditableRestAction<T>
-    {
-        protected final T content;
-
-        public EmptyRestAction(JDA api)
-        {
-            this(api, null);
-        }
-
-        public EmptyRestAction(JDA api, T content)
-        {
-            super(api, null);
-            this.content = content;
-        }
-
-        @Override
-        public void queue(Consumer<? super T> success, Consumer<? super Throwable> failure)
-        {
-            if (success != null)
-                success.accept(content);
-        }
-
-        @Override
-        public CompletableFuture<T> submit(boolean shouldQueue)
-        {
-            return new RestFuture<>(content);
-        }
-
-        @Override
-        protected void handleResponse(Response response, Request<T> request) { }
-    }
+    @Override
+    AuditableRestAction<T> setCheck(BooleanSupplier checks);
 }

@@ -21,7 +21,9 @@ import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.MessageAction;
 import net.dv8tion.jda.core.utils.IOConsumer;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.Requester;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.OkHttpClient;
@@ -734,7 +736,7 @@ public interface Message extends ISnowflake, Formattable
      *         If this Message was not sent by the currently logged in account and it was <b>not</b> sent in a
      *         {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      *
      * @see    net.dv8tion.jda.core.entities.TextChannel#deleteMessages(java.util.Collection) TextChannel.deleteMessages(Collection)
      * @see    net.dv8tion.jda.core.entities.MessageChannel#purgeMessages(java.util.List) MessageChannel.purgeMessages(List)
@@ -792,7 +794,7 @@ public interface Message extends ISnowflake, Formattable
      *             <br>Required to actually pin the Message.</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
+     * @return {@link AbstractRestAction RestAction} - Type: {@link java.lang.Void}
      */
     @CheckReturnValue
     RestAction<Void> pin();
@@ -830,7 +832,7 @@ public interface Message extends ISnowflake, Formattable
      *             <br>Required to actually pin the Message.</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
+     * @return {@link AbstractRestAction RestAction} - Type: {@link java.lang.Void}
      */
     @CheckReturnValue
     RestAction<Void> unpin();
@@ -884,7 +886,7 @@ public interface Message extends ISnowflake, Formattable
      *                 See {@link Emote#canInteract(User, MessageChannel)} or {@link Emote#canInteract(Member)} for more information.</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
+     * @return {@link AbstractRestAction RestAction} - Type: {@link java.lang.Void}
      */
     @CheckReturnValue
     RestAction<Void> addReaction(Emote emote);
@@ -933,7 +935,7 @@ public interface Message extends ISnowflake, Formattable
      * @throws java.lang.IllegalArgumentException
      *         If the provided unicode emoji is null or empty.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
+     * @return {@link AbstractRestAction RestAction} - Type: {@link java.lang.Void}
      */
     @CheckReturnValue
     RestAction<Void> addReaction(String unicode);
@@ -969,7 +971,7 @@ public interface Message extends ISnowflake, Formattable
      * @throws java.lang.IllegalStateException
      *         If this message was <b>not</b> sent in a
      *         {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
+     * @return {@link AbstractRestAction RestAction} - Type: {@link java.lang.Void}
      */
     @CheckReturnValue
     RestAction<Void> clearReactions();

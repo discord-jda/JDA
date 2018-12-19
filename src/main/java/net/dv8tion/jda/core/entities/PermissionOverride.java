@@ -19,6 +19,8 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.managers.PermOverrideManager;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 
 import javax.annotation.CheckReturnValue;
 import java.util.EnumSet;
@@ -143,7 +145,7 @@ public interface PermissionOverride
     /**
      * Returns the {@link net.dv8tion.jda.core.managers.PermOverrideManager PermOverrideManager} for this PermissionOverride.
      * <br>In the PermOverrideManager you can modify the permissions of the override.
-     * You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.core.requests.RestAction#queue() RestAction.queue()}.
+     * You modify multiple fields in one request by chaining setters before calling {@link AbstractRestAction#queue() RestAction.queue()}.
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL Permission.MANAGE_CHANNEL}
@@ -171,7 +173,7 @@ public interface PermissionOverride
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         if we don't have the permission to {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      */
     @CheckReturnValue
     AuditableRestAction<Void> delete();

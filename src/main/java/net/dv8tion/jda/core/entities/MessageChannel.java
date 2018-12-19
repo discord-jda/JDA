@@ -18,15 +18,16 @@ package net.dv8tion.jda.core.entities;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.MessageAction;
 import net.dv8tion.jda.core.requests.restaction.pagination.MessagePaginationAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.json.JSONArray;
 
@@ -1024,7 +1025,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Message
+     * @return {@link AbstractRestAction RestAction} - Type: Message
      *         <br>The Message defined by the provided id.
      */
     @CheckReturnValue
@@ -1033,22 +1034,10 @@ public interface MessageChannel extends ISnowflake, Formattable
         AccountTypeException.check(getJDA().getAccountType(), AccountType.BOT);
         Checks.isSnowflake(messageId, "Message ID");
 
+        JDAImpl jda = (JDAImpl) getJDA();
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(getId(), messageId);
-        return new RestAction<Message>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Message> request)
-            {
-                if (response.isOk())
-                {
-                    Message m = api.get().getEntityBuilder().createMessage(response.getObject(), MessageChannel.this, false);
-                    request.onSuccess(m);
-                }
-                else
-                    request.onFailure(response);
-
-            }
-        };
+        return new AbstractRestAction<>(jda, route,
+            (response, request) -> jda.getEntityBuilder().createMessage(response.getObject(), MessageChannel.this, false));
     }
 
     /**
@@ -1089,7 +1078,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Message
+     * @return {@link AbstractRestAction RestAction} - Type: Message
      *         <br>The Message defined by the provided id.
      */
     @CheckReturnValue
@@ -1134,7 +1123,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
+     * @return {@link AbstractRestAction RestAction} - Type: Void
      */
     @CheckReturnValue
     default AuditableRestAction<Void> deleteMessageById(String messageId)
@@ -1142,16 +1131,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.isSnowflake(messageId, "Message ID");
 
         Route.CompiledRoute route = Route.Messages.DELETE_MESSAGE.compile(getId(), messageId);
-        return new AuditableRestAction<Void>(getJDA(), route) {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
     /**
@@ -1190,7 +1170,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} and the logged in account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
+     * @return {@link AbstractRestAction RestAction} - Type: Void
      */
     @CheckReturnValue
     default AuditableRestAction<Void> deleteMessageById(long messageId)
@@ -1830,23 +1810,13 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
+     * @return {@link AbstractRestAction RestAction} - Type: Void
      */
     @CheckReturnValue
     default RestAction<Void> sendTyping()
     {
         Route.CompiledRoute route = Route.Channels.SEND_TYPING.compile(getId());
-        return new RestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AbstractRestAction<>(getJDA(), route);
     }
 
     /**
@@ -1908,7 +1878,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link AbstractRestAction}
      */
     @CheckReturnValue
     default RestAction<Void> addReactionById(String messageId, String unicode)
@@ -1919,17 +1889,7 @@ public interface MessageChannel extends ISnowflake, Formattable
 
         String encoded = MiscUtil.encodeUTF8(unicode);
         Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, encoded);
-        return new RestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AbstractRestAction<>(getJDA(), route);
     }
 
     /**
@@ -1990,7 +1950,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link AbstractRestAction}
      */
     @CheckReturnValue
     default RestAction<Void> addReactionById(long messageId, String unicode)
@@ -2053,7 +2013,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link AbstractRestAction}
      */
     @CheckReturnValue
     default RestAction<Void> addReactionById(String messageId, Emote emote)
@@ -2062,17 +2022,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.notNull(emote, "Emote");
 
         Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, String.format("%s:%s", emote.getName(), emote.getId()));
-        return new RestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AbstractRestAction<Void>(getJDA(), route);
     }
 
     /**
@@ -2129,7 +2079,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link AbstractRestAction}
      */
     @CheckReturnValue
     default RestAction<Void> addReactionById(long messageId, Emote emote)
@@ -2189,7 +2139,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>If provided {@code unicode} is {@code null} or empty.</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link AbstractRestAction}
      */
     @CheckReturnValue
     default RestAction<Void> removeReactionById(String messageId, String unicode)
@@ -2199,17 +2149,7 @@ public interface MessageChannel extends ISnowflake, Formattable
 
         final String code = MiscUtil.encodeUTF8(unicode);
         final Route.CompiledRoute route = Route.Messages.REMOVE_OWN_REACTION.compile(getId(), messageId, code);
-        return new RestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (!response.isOk())
-                    request.onFailure(response);
-                else
-                    request.onSuccess(null);
-            }
-        };
+        return new AbstractRestAction<Void>(getJDA(), route);
     }
 
     /**
@@ -2264,7 +2204,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>If provided {@code unicode} is {@code null} or empty.</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link AbstractRestAction}
      */
     @CheckReturnValue
     default RestAction<Void> removeReactionById(long messageId, String unicode)
@@ -2318,7 +2258,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>If provided {@code emote} is {@code null}.</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link AbstractRestAction}
      */
     @CheckReturnValue
     default RestAction<Void> removeReactionById(String messageId, Emote emote)
@@ -2373,7 +2313,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>If provided {@code emote} is {@code null}.</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link AbstractRestAction}
      */
     @CheckReturnValue
     default RestAction<Void> removeReactionById(long messageId, Emote emote)
@@ -2418,7 +2358,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link AbstractRestAction RestAction}
      */
     @CheckReturnValue
     default RestAction<Void> pinMessageById(String messageId)
@@ -2426,17 +2366,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.isSnowflake(messageId, "Message ID");
 
         Route.CompiledRoute route = Route.Messages.ADD_PINNED_MESSAGE.compile(getId(), messageId);
-        return new RestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AbstractRestAction<Void>(getJDA(), route);
     }
 
     /**
@@ -2475,7 +2405,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link AbstractRestAction RestAction}
      */
     @CheckReturnValue
     default RestAction<Void> pinMessageById(long messageId)
@@ -2519,7 +2449,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link AbstractRestAction RestAction}
      */
     @CheckReturnValue
     default RestAction<Void> unpinMessageById(String messageId)
@@ -2527,17 +2457,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.isSnowflake(messageId, "Message ID");
 
         Route.CompiledRoute route = Route.Messages.REMOVE_PINNED_MESSAGE.compile(getId(), messageId);
-        return new RestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AbstractRestAction<Void>(getJDA(), route);
     }
 
     /**
@@ -2576,7 +2496,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>{@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link AbstractRestAction RestAction}
      */
     @CheckReturnValue
     default RestAction<Void> unpinMessageById(long messageId)
@@ -2604,37 +2524,27 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a TextChannel and this account does not have
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.core.entities.Message}{@literal >}
+     * @return {@link AbstractRestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.core.entities.Message}{@literal >}
      *         <br>An immutable list of pinned messages
      */
     @CheckReturnValue
     default RestAction<List<Message>> getPinnedMessages()
     {
+        JDAImpl jda = (JDAImpl) getJDA();
         Route.CompiledRoute route = Route.Messages.GET_PINNED_MESSAGES.compile(getId());
-        return new RestAction<List<Message>>(getJDA(), route)
+        return new AbstractRestAction<>(jda, route, (response, request) ->
         {
-            @Override
-            protected void handleResponse(Response response, Request<List<Message>> request)
+            LinkedList<Message> pinnedMessages = new LinkedList<>();
+            EntityBuilder builder = jda.getEntityBuilder();
+            JSONArray pins = response.getArray();
+
+            for (int i = 0; i < pins.length(); i++)
             {
-                if (response.isOk())
-                {
-                    LinkedList<Message> pinnedMessages = new LinkedList<>();
-                    EntityBuilder builder = api.get().getEntityBuilder();
-                    JSONArray pins = response.getArray();
-
-                    for (int i = 0; i < pins.length(); i++)
-                    {
-                        pinnedMessages.add(builder.createMessage(pins.getJSONObject(i), MessageChannel.this, false));
-                    }
-
-                    request.onSuccess(Collections.unmodifiableList(pinnedMessages));
-                }
-                else
-                {
-                    request.onFailure(response);
-                }
+                pinnedMessages.add(builder.createMessage(pins.getJSONObject(i), MessageChannel.this, false));
             }
-        };
+
+            return Collections.unmodifiableList(pinnedMessages);
+        });
     }
 
     /**

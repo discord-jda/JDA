@@ -20,11 +20,10 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 
 import javax.annotation.CheckReturnValue;
@@ -286,7 +285,7 @@ public class MessageReaction
      *     <br>If we were removed from the channel/guild</li>
      * </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
+     * @return {@link AbstractRestAction RestAction} - Type: Void
      *         Nothing is returned on success
      */
     @CheckReturnValue
@@ -324,7 +323,7 @@ public class MessageReaction
      *         {@link net.dv8tion.jda.core.Permission#MESSAGE_MANAGE manage messages}
      *         in the channel this reaction was used in
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
+     * @return {@link AbstractRestAction RestAction} - Type: Void
      *         Nothing is returned on success
      */
     @CheckReturnValue
@@ -354,17 +353,7 @@ public class MessageReaction
             route = Route.Messages.REMOVE_OWN_REACTION.compile(channel.getId(), getMessageId(), code);
         else
             route = Route.Messages.REMOVE_REACTION.compile(channel.getId(), getMessageId(), code, user.getId());
-        return new RestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AbstractRestAction<>(getJDA(), route);
     }
 
     @Override

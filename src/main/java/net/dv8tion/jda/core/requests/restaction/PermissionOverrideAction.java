@@ -26,7 +26,9 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.internal.entities.AbstractChannelImpl;
 import net.dv8tion.jda.internal.entities.PermissionOverrideImpl;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
@@ -37,14 +39,14 @@ import java.util.EnumSet;
 import java.util.function.BooleanSupplier;
 
 /**
- * Extension of {@link net.dv8tion.jda.core.requests.RestAction RestAction} specifically
+ * Extension of {@link AbstractRestAction RestAction} specifically
  * designed to create a {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
  * for a {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel}.
  * This extension allows setting properties before executing the action.
  *
  * @since  3.0
  */
-public class PermissionOverrideAction extends AuditableRestAction<PermissionOverride>
+public class PermissionOverrideAction extends AuditableRestActionImpl<PermissionOverride>
 {
 
     private long allow = 0;
@@ -449,14 +451,8 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
     }
 
     @Override
-    protected void handleResponse(Response response, Request<PermissionOverride> request)
+    protected void handleSuccess(Response response, Request<PermissionOverride> request)
     {
-        if (!response.isOk())
-        {
-            request.onFailure(response);
-            return;
-        }
-
         boolean isMember = isMember();
         long id = isMember ? member.getUser().getIdLong() : role.getIdLong();
         JSONObject object = (JSONObject) request.getRawBody();

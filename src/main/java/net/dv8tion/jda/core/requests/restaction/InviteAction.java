@@ -20,7 +20,9 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Invite;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
@@ -30,10 +32,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
 /**
- * {@link net.dv8tion.jda.core.entities.Invite Invite} Builder system created as an extension of {@link net.dv8tion.jda.core.requests.RestAction}
+ * {@link net.dv8tion.jda.core.entities.Invite Invite} Builder system created as an extension of {@link AbstractRestAction}
  * <br>Provides an easy way to gather and deliver information to Discord to create {@link net.dv8tion.jda.core.entities.Invite Invites}.
  */
-public class InviteAction extends AuditableRestAction<Invite>
+public class InviteAction extends AuditableRestActionImpl<Invite>
 {
     private Integer maxAge = null;
     private Integer maxUses = null;
@@ -69,12 +71,9 @@ public class InviteAction extends AuditableRestAction<Invite>
     }
 
     @Override
-    protected void handleResponse(final Response response, final Request<Invite> request)
+    protected void handleSuccess(final Response response, final Request<Invite> request)
     {
-        if (response.isOk())
-            request.onSuccess(this.api.get().getEntityBuilder().createInvite(response.getObject()));
-        else
-            request.onFailure(response);
+        request.onSuccess(this.api.get().getEntityBuilder().createInvite(response.getObject()));
     }
 
     /**

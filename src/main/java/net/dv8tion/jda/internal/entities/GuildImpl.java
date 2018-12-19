@@ -26,9 +26,6 @@ import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.GuildController;
 import net.dv8tion.jda.core.managers.GuildManager;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.MemberAction;
 import net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
@@ -36,6 +33,7 @@ import net.dv8tion.jda.core.utils.cache.MemberCacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -99,34 +97,29 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public RestAction<EnumSet<Region>> retrieveRegions(boolean includeDeprecated)
+    public AbstractRestAction<EnumSet<Region>> retrieveRegions(boolean includeDeprecated)
     {
         Route.CompiledRoute route = Route.Guilds.GET_VOICE_REGIONS.compile(getId());
-        return new RestAction<EnumSet<Region>>(getJDA(), route)
+        return new AbstractRestAction<>(getJDA(), route, (response, request) ->
         {
-            @Override
-            protected void handleResponse(Response response, Request<EnumSet<Region>> request)
+            EnumSet<Region> set = EnumSet.noneOf(Region.class);
+            JSONArray arr = response.getArray();
+            for (int i = 0; arr != null && i < arr.length(); i++)
             {
-                if (!response.isOk())
+                JSONObject obj = arr.getJSONObject(i);
+                if (!includeDeprecated && Helpers.optBoolean(obj, "deprecated"))
                 {
-                    request.onFailure(response);
-                    return;
+                    continue;
                 }
-                EnumSet<Region> set = EnumSet.noneOf(Region.class);
-                JSONArray arr = response.getArray();
-                for (int i = 0; arr != null && i < arr.length(); i++)
+                String id = obj.optString("id");
+                Region region = Region.fromKey(id);
+                if (region != Region.UNKNOWN)
                 {
-                    JSONObject obj = arr.getJSONObject(i);
-                    if (!includeDeprecated && Helpers.optBoolean(obj, "deprecated"))
-                        continue;
-                    String id = obj.optString("id");
-                    Region region = Region.fromKey(id);
-                    if (region != Region.UNKNOWN)
-                        set.add(region);
+                    set.add(region);
                 }
-                request.onSuccess(set);
             }
-        };
+            return set;
+        });
     }
 
     @Override
@@ -177,7 +170,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public RestAction<String> getVanityUrl()
+    public AbstractRestAction<String> getVanityUrl()
     {
         if (!getSelfMember().hasPermission(Permission.MANAGE_SERVER))
             throw new InsufficientPermissionException(Permission.MANAGE_SERVER);
@@ -186,20 +179,8 @@ public class GuildImpl implements Guild
 
         Route.CompiledRoute route = Route.Guilds.GET_VANITY_URL.compile(getId());
 
-        return new RestAction<String>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<String> request)
-            {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                }
-
-                request.onSuccess(response.getObject().getString("code"));
-            }
-        };
+        return new AbstractRestAction<>(getJDA(), route,
+            (response, request) -> response.getObject().getString("code"));
     }
 
     @Override
@@ -215,43 +196,33 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public RestAction<List<Webhook>> getWebhooks()
+    public AbstractRestAction<List<Webhook>> getWebhooks()
     {
         if (!getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS))
             throw new InsufficientPermissionException(Permission.MANAGE_WEBHOOKS);
 
         Route.CompiledRoute route = Route.Guilds.GET_WEBHOOKS.compile(getId());
 
-        return new RestAction<List<Webhook>>(getJDA(), route)
+        return new AbstractRestAction<>(getJDA(), route, (response, request) ->
         {
-            @Override
-            protected void handleResponse(Response response, Request<List<Webhook>> request)
+            JSONArray array = response.getArray();
+            List<Webhook> webhooks = new ArrayList<>(array.length());
+            EntityBuilder builder = api.get().getEntityBuilder();
+
+            for (Object object : array)
             {
-                if (!response.isOk())
+                try
                 {
-                    request.onFailure(response);
-                    return;
+                    webhooks.add(builder.createWebhook((JSONObject) object));
                 }
-
-                JSONArray array = response.getArray();
-                List<Webhook> webhooks = new ArrayList<>(array.length());
-                EntityBuilder builder = api.get().getEntityBuilder();
-
-                for (Object object : array)
+                catch (JSONException | NullPointerException e)
                 {
-                    try
-                    {
-                        webhooks.add(builder.createWebhook((JSONObject) object));
-                    }
-                    catch (JSONException | NullPointerException e)
-                    {
-                        JDAImpl.LOG.error("Error creating webhook from json", e);
-                    }
+                    JDAImpl.LOG.error("Error creating webhook from json", e);
                 }
-
-                request.onSuccess(Collections.unmodifiableList(webhooks));
             }
-        };
+
+            return Collections.unmodifiableList(webhooks);
+        });
     }
 
     @Override
@@ -364,36 +335,27 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public RestAction<List<ListedEmote>> retrieveEmotes()
+    public AbstractRestAction<List<ListedEmote>> retrieveEmotes()
     {
         Route.CompiledRoute route = Route.Emotes.GET_EMOTES.compile(getId());
-        return new RestAction<List<ListedEmote>>(getJDA(), route)
+        return new AbstractRestAction<>(getJDA(), route, (response, request) ->
         {
-            @Override
-            protected void handleResponse(Response response, Request<List<ListedEmote>> request)
+
+            EntityBuilder builder = GuildImpl.this.getJDA().getEntityBuilder();
+            JSONArray emotes = response.getArray();
+            List<ListedEmote> list = new ArrayList<>(emotes.length());
+            for (int i = 0; i < emotes.length(); i++)
             {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                }
-
-                EntityBuilder builder = GuildImpl.this.getJDA().getEntityBuilder();
-                JSONArray emotes = response.getArray();
-                List<ListedEmote> list = new ArrayList<>(emotes.length());
-                for (int i = 0; i < emotes.length(); i++)
-                {
-                    JSONObject emote = emotes.getJSONObject(i);
-                    list.add(builder.createEmote(GuildImpl.this, emote, true));
-                }
-
-                request.onSuccess(Collections.unmodifiableList(list));
+                JSONObject emote = emotes.getJSONObject(i);
+                list.add(builder.createEmote(GuildImpl.this, emote, true));
             }
-        };
+
+            return Collections.unmodifiableList(list);
+        });
     }
 
     @Override
-    public RestAction<ListedEmote> retrieveEmoteById(String id)
+    public AbstractRestAction<ListedEmote> retrieveEmoteById(String id)
     {
         Checks.isSnowflake(id, "Emote ID");
         Emote emote = getEmoteById(id);
@@ -401,64 +363,43 @@ public class GuildImpl implements Guild
         {
             ListedEmote listedEmote = (ListedEmote) emote;
             if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
-                return new RestAction.EmptyRestAction<>(getJDA(), listedEmote);
+                return new AbstractRestAction.EmptyRestAction<>(getJDA(), listedEmote);
         }
         Route.CompiledRoute route = Route.Emotes.GET_EMOTE.compile(getId(), id);
-        return new RestAction<ListedEmote>(getJDA(), route)
+        return new AbstractRestAction<>(getJDA(), route, (response, request) ->
         {
-            @Override
-            protected void handleResponse(Response response, Request<ListedEmote> request)
-            {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                }
-
-                EntityBuilder builder = GuildImpl.this.getJDA().getEntityBuilder();
-                EmoteImpl emote = builder.createEmote(GuildImpl.this, response.getObject(), true);
-                request.onSuccess(emote);
-            }
-        };
+            EntityBuilder builder = GuildImpl.this.getJDA().getEntityBuilder();
+            return builder.createEmote(GuildImpl.this, response.getObject(), true);
+        });
     }
 
     @Nonnull
     @Override
-    public RestAction<List<Ban>> getBanList()
+    public AbstractRestAction<List<Ban>> getBanList()
     {
         if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS))
             throw new InsufficientPermissionException(Permission.BAN_MEMBERS);
 
         Route.CompiledRoute route = Route.Guilds.GET_BANS.compile(getId());
-        return new RestAction<List<Ban>>(getJDA(), route)
+        return new AbstractRestAction<>(getJDA(), route, (response, request) ->
         {
-            @Override
-            protected void handleResponse(Response response, Request<List<Ban>> request)
+            EntityBuilder builder = api.get().getEntityBuilder();
+            List<Ban> bans = new LinkedList<>();
+            JSONArray bannedArr = response.getArray();
+
+            for (int i = 0; i < bannedArr.length(); i++)
             {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                }
-
-                EntityBuilder builder = api.get().getEntityBuilder();
-                List<Ban> bans = new LinkedList<>();
-                JSONArray bannedArr = response.getArray();
-
-                for (int i = 0; i < bannedArr.length(); i++)
-                {
-                    final JSONObject object = bannedArr.getJSONObject(i);
-                    JSONObject user = object.getJSONObject("user");
-                    bans.add(new Ban(builder.createFakeUser(user, false), object.optString("reason", null)));
-                }
-                request.onSuccess(Collections.unmodifiableList(bans));
+                final JSONObject object = bannedArr.getJSONObject(i);
+                JSONObject user = object.getJSONObject("user");
+                bans.add(new Ban(builder.createFakeUser(user, false), object.optString("reason", null)));
             }
-        };
+            return Collections.unmodifiableList(bans);
+        });
     }
 
     @Nonnull
     @Override
-    public RestAction<Ban> getBanById(@Nonnull String userId)
+    public AbstractRestAction<Ban> getBanById(@Nonnull String userId)
     {
         if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS))
             throw new InsufficientPermissionException(Permission.BAN_MEMBERS);
@@ -466,28 +407,18 @@ public class GuildImpl implements Guild
         Checks.isSnowflake(userId, "User ID");
 
         Route.CompiledRoute route = Route.Guilds.GET_BAN.compile(getId(), userId);
-        return new RestAction<Ban>(getJDA(), route)
+        return new AbstractRestAction<>(getJDA(), route, (response, request) ->
         {
-            @Override
-            protected void handleResponse(Response response, Request<Ban> request)
-            {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                }
 
-                EntityBuilder builder = api.get().getEntityBuilder();
-                JSONObject bannedObj = response.getObject();
-                JSONObject user = bannedObj.getJSONObject("user");
-                final Ban ban = new Ban(builder.createFakeUser(user, false), bannedObj.optString("reason", null));
-                request.onSuccess(ban);
-            }
-        };
+            EntityBuilder builder = api.get().getEntityBuilder();
+            JSONObject bannedObj = response.getObject();
+            JSONObject user = bannedObj.getJSONObject("user");
+            return new Ban(builder.createFakeUser(user, false), bannedObj.optString("reason", null));
+        });
     }
 
     @Override
-    public RestAction<Integer> getPrunableMemberCount(int days)
+    public AbstractRestAction<Integer> getPrunableMemberCount(int days)
     {
         if (!getSelfMember().hasPermission(Permission.KICK_MEMBERS))
             throw new InsufficientPermissionException(Permission.KICK_MEMBERS);
@@ -496,17 +427,7 @@ public class GuildImpl implements Guild
             throw new IllegalArgumentException("Days amount must be at minimum 1 day.");
 
         Route.CompiledRoute route = Route.Guilds.PRUNABLE_COUNT.compile(getId()).withQueryParams("days", Integer.toString(days));
-        return new RestAction<Integer>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Integer> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(response.getObject().getInt("pruned"));
-                else
-                    request .onFailure(response);
-            }
-        };
+        return new AbstractRestAction<>(getJDA(), route, (response, request) -> response.getObject().getInt("pruned"));
     }
 
     @Override
@@ -565,27 +486,17 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public RestAction<Void> leave()
+    public AbstractRestAction<Void> leave()
     {
         if (owner.equals(getSelfMember()))
             throw new IllegalStateException("Cannot leave a guild that you are the owner of! Transfer guild ownership first!");
 
         Route.CompiledRoute route = Route.Self.LEAVE_GUILD.compile(getId());
-        return new RestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AbstractRestAction<>(getJDA(), route);
     }
 
     @Override
-    public RestAction<Void> delete()
+    public AbstractRestAction<Void> delete()
     {
         if (!getJDA().getSelfUser().isBot() && getJDA().getSelfUser().isMfaEnabled())
             throw new IllegalStateException("Cannot delete a guild without providing MFA code. Use Guild#delete(String)");
@@ -594,7 +505,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public RestAction<Void> delete(String mfaCode)
+    public AbstractRestAction<Void> delete(String mfaCode)
     {
         if (!owner.equals(getSelfMember()))
             throw new PermissionException("Cannot delete a guild that you do not own!");
@@ -607,17 +518,7 @@ public class GuildImpl implements Guild
         }
 
         Route.CompiledRoute route = Route.Guilds.DELETE_GUILD.compile(getId());
-        return new RestAction<Void>(getJDA(), route, mfaBody)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AbstractRestAction<Void>(getJDA(), route, mfaBody);
     }
 
     @Override
@@ -890,33 +791,21 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public RestAction<List<Invite>> getInvites()
+    public AbstractRestAction<List<Invite>> getInvites()
     {
         if (!this.getSelfMember().hasPermission(Permission.MANAGE_SERVER))
             throw new InsufficientPermissionException(Permission.MANAGE_SERVER);
 
         final Route.CompiledRoute route = Route.Invites.GET_GUILD_INVITES.compile(getId());
 
-        return new RestAction<List<Invite>>(getJDA(), route)
+        return new AbstractRestAction<>(getJDA(), route, (response, request) ->
         {
-            @Override
-            protected void handleResponse(final Response response, final Request<List<Invite>> request)
-            {
-                if (response.isOk())
-                {
-                    EntityBuilder entityBuilder = api.get().getEntityBuilder();
-                    JSONArray array = response.getArray();
-                    List<Invite> invites = new ArrayList<>(array.length());
-                    for (int i = 0; i < array.length(); i++)
-                        invites.add(entityBuilder.createInvite(array.getJSONObject(i)));
-                    request.onSuccess(Collections.unmodifiableList(invites));
-                }
-                else
-                {
-                    request.onFailure(response);
-                }
-            }
-        };
+            EntityBuilder entityBuilder = api.get().getEntityBuilder();
+            JSONArray array = response.getArray();
+            List<Invite> invites = new ArrayList<>(array.length());
+            for (int i = 0; i < array.length(); i++)
+                invites.add(entityBuilder.createInvite(array.getJSONObject(i)));
+            return Collections.unmodifiableList(invites);
+        });
     }
-
 }

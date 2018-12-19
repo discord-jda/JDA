@@ -19,6 +19,8 @@ package net.dv8tion.jda.core.entities;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.managers.WebhookManager;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
@@ -129,7 +131,7 @@ public interface Webhook extends ISnowflake, IFakeable
      * @throws IllegalStateException 
      *         if the Webhook is fake, such as the Webhooks retrieved from Audit Logs
      * 
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      *         <br>The rest action to delete this Webhook.
      */
     @CheckReturnValue
@@ -137,7 +139,7 @@ public interface Webhook extends ISnowflake, IFakeable
 
     /**
      * The {@link net.dv8tion.jda.core.managers.WebhookManager WebhookManager} for this Webhook.
-     * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.core.requests.RestAction#queue() RestAction.queue()}.
+     * <br>You modify multiple fields in one request by chaining setters before calling {@link AbstractRestAction#queue() RestAction.queue()}.
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_WEBHOOKS Permission.MANAGE_WEBHOOKS}

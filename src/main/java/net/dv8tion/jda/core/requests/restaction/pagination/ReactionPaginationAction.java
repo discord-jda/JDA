@@ -108,14 +108,8 @@ public class ReactionPaginationAction extends PaginationAction<User, ReactionPag
     }
 
     @Override
-    protected void handleResponse(Response response, Request<List<User>> request)
+    protected void handleSuccess(Response response, Request<List<User>> request)
     {
-        if (!response.isOk())
-        {
-            request.onFailure(response);
-            return;
-        }
-
         final EntityBuilder builder = api.get().getEntityBuilder();
         final JSONArray array = response.getArray();
         final List<User> users = new LinkedList<>();

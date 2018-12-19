@@ -18,8 +18,8 @@ package net.dv8tion.jda.internal.entities;
 
 import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.MessageAction;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -38,31 +38,31 @@ public class SystemMessage extends ReceivedMessage
     }
 
     @Override
-    public RestAction<Void> pin()
+    public AbstractRestAction<Void> pin()
     {
         throw new UnsupportedOperationException("Cannot pin message of this Message Type. MessageType: " + getType());
     }
 
     @Override
-    public RestAction<Void> unpin()
+    public AbstractRestAction<Void> unpin()
     {
         throw new UnsupportedOperationException("Cannot unpin message of this Message Type. MessageType: " + getType());
     }
 
     @Override
-    public RestAction<Void> addReaction(Emote emote)
+    public AbstractRestAction<Void> addReaction(Emote emote)
     {
         throw new UnsupportedOperationException("Cannot add reactions to message of this Message Type. MessageType: " + getType());
     }
 
     @Override
-    public RestAction<Void> addReaction(String unicode)
+    public AbstractRestAction<Void> addReaction(String unicode)
     {
         throw new UnsupportedOperationException("Cannot add reactions to message of this Message Type. MessageType: " + getType());
     }
 
     @Override
-    public RestAction<Void> clearReactions()
+    public AbstractRestAction<Void> clearReactions()
     {
         throw new UnsupportedOperationException("Cannot clear reactions for message of this Message Type. MessageType: " + getType());
     }

@@ -347,14 +347,8 @@ public class AccountManager extends ManagerBase
     }
 
     @Override
-    protected void handleResponse(Response response, Request<Void> request)
+    protected void handleSuccess(Response response, Request<Void> request)
     {
-        if (!response.isOk())
-        {
-            request.onFailure(response);
-            return;
-        }
-
         String newToken = response.getObject().getString("token").replace("Bot ", "");
         api.get().setToken(newToken);
         request.onSuccess(null);

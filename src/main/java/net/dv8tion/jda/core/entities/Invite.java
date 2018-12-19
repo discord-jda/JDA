@@ -21,6 +21,8 @@ import net.dv8tion.jda.core.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.internal.entities.InviteImpl;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
@@ -52,7 +54,7 @@ public interface Invite
      * @param  code
      *         A valid invite code
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Invite Invite}
+     * @return {@link AbstractRestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Invite Invite}
      *         <br>The Invite object
      */
     static RestAction<Invite> resolve(final JDA api, final String code)
@@ -77,7 +79,7 @@ public interface Invite
      * @param  withCounts
      *         Whether or not to include online and member counts for guild invites or users for group invites
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Invite Invite}
+     * @return {@link AbstractRestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Invite Invite}
      *         <br>The Invite object
      */
     static RestAction<Invite> resolve(final JDA api, final String code, final boolean withCounts)
@@ -93,7 +95,7 @@ public interface Invite
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         if the account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER MANAGE_SERVER} in the invite's channel
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      */
     @CheckReturnValue
     AuditableRestAction<Void> delete();
@@ -112,7 +114,7 @@ public interface Invite
      * @throws java.lang.IllegalStateException
      *         If this is a group invite
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Invite Invite}
+     * @return {@link AbstractRestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Invite Invite}
      *         <br>The expanded Invite object
      *
      * @see    #getType()

@@ -19,11 +19,9 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import org.json.JSONObject;
@@ -101,33 +99,22 @@ public class UserImpl implements User
     }
 
     @Override
-    public RestAction<PrivateChannel> openPrivateChannel()
+    public AbstractRestAction<PrivateChannel> openPrivateChannel()
     {
         if (privateChannel != null)
-            return new RestAction.EmptyRestAction<>(getJDA(), privateChannel);
+            return new AbstractRestAction.EmptyRestAction<>(getJDA(), privateChannel);
 
         if (fake)
             throw new IllegalStateException("Cannot open a PrivateChannel with a Fake user.");
 
         Route.CompiledRoute route = Route.Self.CREATE_PRIVATE_CHANNEL.compile();
         JSONObject body = new JSONObject().put("recipient_id", getId());
-        return new RestAction<PrivateChannel>(getJDA(), route, body)
+        return new AbstractRestAction<>(getJDA(), route, body, (response, request) ->
         {
-            @Override
-            protected void handleResponse(Response response, Request<PrivateChannel> request)
-            {
-                if (response.isOk())
-                {
-                    PrivateChannel priv = api.get().getEntityBuilder().createPrivateChannel(response.getObject());
-                    UserImpl.this.privateChannel = priv;
-                    request.onSuccess(priv);
-                }
-                else
-                {
-                    request.onFailure(response);
-                }
-            }
-        };
+            PrivateChannel priv = api.get().getEntityBuilder().createPrivateChannel(response.getObject());
+            UserImpl.this.privateChannel = priv;
+            return priv;
+        });
     }
 
     @Override

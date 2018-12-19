@@ -16,7 +16,7 @@
 package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
 
 import javax.annotation.CheckReturnValue;
 
@@ -44,8 +44,8 @@ public interface PrivateChannel extends MessageChannel, IFakeable
      * <br>As a note, this does not remove the history of the PrivateChannel. If the channel is reopened the history will
      * still be present.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
+     * @return {@link AbstractRestAction RestAction} - Type: Void
      */
     @CheckReturnValue
-    RestAction<Void> close();
+    AbstractRestAction<Void> close();
 }

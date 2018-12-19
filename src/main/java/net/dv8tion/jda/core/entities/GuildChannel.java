@@ -18,10 +18,11 @@ package net.dv8tion.jda.core.entities;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.managers.ChannelManager;
 import net.dv8tion.jda.core.requests.RestAction;
-import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.ChannelAction;
 import net.dv8tion.jda.core.requests.restaction.InviteAction;
 import net.dv8tion.jda.core.requests.restaction.PermissionOverrideAction;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 
 import javax.annotation.CheckReturnValue;
 import java.util.List;
@@ -177,7 +178,7 @@ public interface GuildChannel extends ISnowflake
      * </ol>
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The channel could not be created due to a permission discrepancy</li>
@@ -213,7 +214,7 @@ public interface GuildChannel extends ISnowflake
      * </ol>
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The channel could not be created due to a permission discrepancy</li>
@@ -237,7 +238,7 @@ public interface GuildChannel extends ISnowflake
     /**
      * Returns the {@link net.dv8tion.jda.core.managers.ChannelManager ChannelManager} for this GuildChannel.
      * <br>In the ChannelManager, you can modify the name, topic and position of this GuildChannel.
-     * You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.core.requests.RestAction#queue() RestAction.queue()}.
+     * You modify multiple fields in one request by chaining setters before calling {@link AbstractRestAction#queue() RestAction.queue()}.
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL Permission.MANAGE_CHANNEL}
@@ -266,10 +267,10 @@ public interface GuildChannel extends ISnowflake
      *         if the currently logged in account doesn't have {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
      *         for the channel.
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      */
     @CheckReturnValue
-    AuditableRestAction<Void> delete();
+    AbstractRestAction<Void> delete();
 
     /**
      * Creates a {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverride}
@@ -406,7 +407,7 @@ public interface GuildChannel extends ISnowflake
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         if the account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} in this channel
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.core.entities.Invite Invite}{@literal >}
+     * @return {@link AbstractRestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.core.entities.Invite Invite}{@literal >}
      *         <br>The list of expanded Invite objects
      *
      * @see    net.dv8tion.jda.core.entities.Guild#getInvites()

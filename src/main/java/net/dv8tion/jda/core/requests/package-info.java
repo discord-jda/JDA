@@ -25,7 +25,7 @@
  * of {@link net.dv8tion.jda.internal.requests.RateLimiter RateLimiter} specific for a certain {@link net.dv8tion.jda.core.AccountType AccountType}.
  * <br>{@link net.dv8tion.jda.core.requests.restaction Learn More}
  *
- * <p>The {@link net.dv8tion.jda.core.requests.RestAction RestAction} can be found throughout JDA and allows
+ * <p>The {@link net.dv8tion.jda.internal.requests.AbstractRestAction RestAction} can be found throughout JDA and allows
  * to specify how the Requester should deal with rate limits.
  * It has extensions with additional functionalities in {@link net.dv8tion.jda.core.requests.restaction}.
  *

@@ -24,12 +24,10 @@ import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.exceptions.HierarchyException;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.RoleManager;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.RoleAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
@@ -222,7 +220,7 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public AuditableRestAction<Void> delete()
+    public AuditableRestActionImpl<Void> delete()
     {
         if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_ROLES))
             throw new InsufficientPermissionException(Permission.MANAGE_ROLES);
@@ -232,17 +230,7 @@ public class RoleImpl implements Role
             throw new UnsupportedOperationException("Cannot delete a Role that is managed. ");
 
         Route.CompiledRoute route = Route.Roles.DELETE_ROLE.compile(getGuild().getId(), getId());
-        return new AuditableRestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestActionImpl<Void>(getJDA(), route);
     }
 
     @Override

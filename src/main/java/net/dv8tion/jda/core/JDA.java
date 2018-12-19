@@ -20,11 +20,11 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.managers.Presence;
-import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.GuildAction;
 import net.dv8tion.jda.core.sharding.ShardManager;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
 
 import javax.annotation.CheckReturnValue;
 import java.util.Collection;
@@ -175,7 +175,7 @@ public interface JDA
      * The time in milliseconds that discord took to respond to our last heartbeat
      * <br>This roughly represents the WebSocket ping of this session
      *
-     * <p><b>{@link net.dv8tion.jda.core.requests.RestAction RestAction} request times do not
+     * <p><b>{@link AbstractRestAction RestAction} request times do not
      * correlate to this value!</b>
      *
      * @return time in milliseconds between heartbeat and the heartbeat ack response
@@ -439,7 +439,7 @@ public interface JDA
      * <br>This first calls {@link #getUserById(long)}, and if the return is {@code null} then a request
      * is made to the Discord servers.
      *
-     * <p>The returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} can encounter the following Discord errors:
+     * <p>The returned {@link AbstractRestAction RestAction} can encounter the following Discord errors:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_USER ErrorResponse.UNKNOWN_USER}
      *     <br>Occurs when the provided id does not refer to a {@link net.dv8tion.jda.core.entities.User User}
@@ -460,18 +460,18 @@ public interface JDA
      *             <li>If the provided id String is empty.</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.User User}
+     * @return {@link AbstractRestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.User User}
      *         <br>On request, gets the User with id matching provided id from Discord.
      */
     @CheckReturnValue
-    RestAction<User> retrieveUserById(String id);
+    AbstractRestAction<User> retrieveUserById(String id);
 
     /**
      * Attempts to retrieve a {@link net.dv8tion.jda.core.entities.User User} object based on the provided id.
      * <br>This first calls {@link #getUserById(long)}, and if the return is {@code null} then a request
      * is made to the Discord servers.
      *
-     * <p>The returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} can encounter the following Discord errors:
+     * <p>The returned {@link AbstractRestAction RestAction} can encounter the following Discord errors:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_USER ErrorResponse.UNKNOWN_USER}
      *     <br>Occurs when the provided id does not refer to a {@link net.dv8tion.jda.core.entities.User User}
@@ -484,11 +484,11 @@ public interface JDA
      * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
      *         This endpoint is {@link AccountType#BOT} only.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.User User}
+     * @return {@link AbstractRestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.User User}
      *         <br>On request, gets the User with id matching provided id from Discord.
      */
     @CheckReturnValue
-    RestAction<User> retrieveUserById(long id);
+    AbstractRestAction<User> retrieveUserById(long id);
 
     /**
      * {@link net.dv8tion.jda.core.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
@@ -1090,7 +1090,7 @@ public interface JDA
     /**
      * Shuts down this JDA instance, closing all its connections.
      * After this command is issued the JDA Instance can not be used anymore.
-     * Already enqueued {@link net.dv8tion.jda.core.requests.RestAction RestActions} are still going to be executed.
+     * Already enqueued {@link AbstractRestAction RestActions} are still going to be executed.
      *
      * <p>If you want this instance to shutdown without executing, use {@link #shutdownNow() shutdownNow()}
      *
@@ -1101,7 +1101,7 @@ public interface JDA
     /**
      * Shuts down this JDA instance instantly, closing all its connections.
      * After this command is issued the JDA Instance can not be used anymore.
-     * This will also cancel all queued {@link net.dv8tion.jda.core.requests.RestAction RestActions}.
+     * This will also cancel all queued {@link AbstractRestAction RestActions}.
      *
      * <p>If you want this instance to shutdown without cancelling enqueued RestActions use {@link #shutdown() shutdown()}
      *
@@ -1132,11 +1132,11 @@ public interface JDA
      * the application that owns the logged in Bot-Account.
      * <br>This contains information about the owner of the currently logged in bot account!
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link ApplicationInfo ApplicationInfo}
+     * @return {@link AbstractRestAction RestAction} - Type: {@link ApplicationInfo ApplicationInfo}
      *         <br>The {@link ApplicationInfo ApplicationInfo} of the bot's application.
      */
     @CheckReturnValue
-    RestAction<ApplicationInfo> getApplicationInfo();
+    AbstractRestAction<ApplicationInfo> getApplicationInfo();
 
     /**
      * Creates an authorization invite url for the currently logged in Bot-Account.
@@ -1180,7 +1180,7 @@ public interface JDA
      * Retrieves a {@link net.dv8tion.jda.core.entities.Webhook Webhook} by its id.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>We do not have the required permissions</li>
@@ -1195,19 +1195,19 @@ public interface JDA
      * @throws IllegalArgumentException
      *         If the {@code webhookId} is null or empty
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Webhook Webhook}
+     * @return {@link AbstractRestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Webhook Webhook}
      *          <br>The webhook object.
      *
      * @see    Guild#getWebhooks()
      * @see    TextChannel#getWebhooks()
      */
-    RestAction<Webhook> getWebhookById(String webhookId);
+    AbstractRestAction<Webhook> getWebhookById(String webhookId);
 
     /**
      * Retrieves a {@link net.dv8tion.jda.core.entities.Webhook Webhook} by its id.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>We do not have the required permissions</li>
@@ -1219,13 +1219,13 @@ public interface JDA
      * @param  webhookId
      *         The webhook id
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Webhook Webhook}
+     * @return {@link AbstractRestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Webhook Webhook}
      *          <br>The webhook object.
      *
      * @see    Guild#getWebhooks()
      * @see    TextChannel#getWebhooks()
      */
-    default RestAction<Webhook> getWebhookById(long webhookId)
+    default AbstractRestAction<Webhook> getWebhookById(long webhookId)
     {
         return getWebhookById(Long.toUnsignedString(webhookId));
     }

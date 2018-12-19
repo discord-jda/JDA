@@ -21,7 +21,9 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 import org.json.JSONArray;
@@ -34,13 +36,13 @@ import java.util.Set;
 import java.util.function.BooleanSupplier;
 
 /**
- * Extension of {@link net.dv8tion.jda.core.requests.RestAction RestAction} specifically
+ * Extension of {@link AbstractRestAction RestAction} specifically
  * designed to create a {@link net.dv8tion.jda.core.entities.GuildChannel GuildChannel}.
  * This extension allows setting properties before executing the action.
  *
  * @since  3.0
  */
-public class ChannelAction extends AuditableRestAction<GuildChannel>
+public class ChannelAction extends AuditableRestActionImpl<GuildChannel>
 {
     protected final Set<PermOverrideData> overrides = new HashSet<>();
     protected final Guild guild;
@@ -412,14 +414,8 @@ public class ChannelAction extends AuditableRestAction<GuildChannel>
     }
 
     @Override
-    protected void handleResponse(Response response, Request<GuildChannel> request)
+    protected void handleSuccess(Response response, Request<GuildChannel> request)
     {
-        if (!response.isOk())
-        {
-            request.onFailure(response);
-            return;
-        }
-
         EntityBuilder builder = api.get().getEntityBuilder();
         GuildChannel channel;
         switch (type)

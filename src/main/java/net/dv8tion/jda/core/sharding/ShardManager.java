@@ -19,16 +19,14 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDA.Status;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.cache.CacheView;
 import net.dv8tion.jda.core.utils.cache.ShardCacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
-import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 import java.util.*;
@@ -178,7 +176,7 @@ public interface ShardManager
      *
      * @return The Application registry for this bot.
      */
-    default RestAction<ApplicationInfo> getApplicationInfo()
+    default AbstractRestAction<ApplicationInfo> getApplicationInfo()
     {
         return this.getShardCache().stream()
                 .findAny()
@@ -190,7 +188,7 @@ public interface ShardManager
      * The average time in milliseconds between all shards that discord took to respond to our last heartbeat.
      * This roughly represents the WebSocket ping of this session. If there is no shard running this wil return {@code -1}.
      *
-     * <p><b>{@link net.dv8tion.jda.core.requests.RestAction RestAction} request times do not
+     * <p><b>{@link AbstractRestAction RestAction} request times do not
      * correlate to this value!</b>
      *
      * @return The average time in milliseconds between heartbeat and the heartbeat ack response
@@ -461,7 +459,7 @@ public interface ShardManager
      * <br>This first calls {@link #getUserById(long)}, and if the return is {@code null} then a request
      * is made to the Discord servers.
      *
-     * <p>The returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} can encounter the following Discord errors:
+     * <p>The returned {@link AbstractRestAction RestAction} can encounter the following Discord errors:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_USER ErrorResponse.UNKNOWN_USER}
      *     <br>Occurs when the provided id does not refer to a {@link net.dv8tion.jda.core.entities.User User}
@@ -476,11 +474,11 @@ public interface ShardManager
      * @throws java.lang.IllegalStateException
      *         If there isn't any active shards.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.User User}
+     * @return {@link AbstractRestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.User User}
      *         <br>On request, gets the User with id matching provided id from Discord.
      */
     @CheckReturnValue
-    default RestAction<User> retrieveUserById(String id)
+    default AbstractRestAction<User> retrieveUserById(String id)
     {
         return retrieveUserById(MiscUtil.parseSnowflake(id));
     }
@@ -490,7 +488,7 @@ public interface ShardManager
      * <br>This first calls {@link #getUserById(long)}, and if the return is {@code null} then a request
      * is made to the Discord servers.
      *
-     * <p>The returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} can encounter the following Discord errors:
+     * <p>The returned {@link AbstractRestAction RestAction} can encounter the following Discord errors:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_USER ErrorResponse.UNKNOWN_USER}
      *     <br>Occurs when the provided id does not refer to a {@link net.dv8tion.jda.core.entities.User User}
@@ -503,11 +501,11 @@ public interface ShardManager
      * @throws java.lang.IllegalStateException
      *         If there isn't any active shards.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.User User}
+     * @return {@link AbstractRestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.User User}
      *         <br>On request, gets the User with id matching provided id from Discord.
      */
     @CheckReturnValue
-    default RestAction<User> retrieveUserById(long id)
+    default AbstractRestAction<User> retrieveUserById(long id)
     {
         JDA api = null;
         for (JDA shard : getShardCache())
@@ -515,27 +513,15 @@ public interface ShardManager
             api = shard;
             User user = shard.getUserById(id);
             if (user != null)
-                return new RestAction.EmptyRestAction<>(shard, user);
+                return new AbstractRestAction.EmptyRestAction<>(shard, user);
         }
 
         if (api == null)
             throw new IllegalStateException("no shards active");
 
+        JDAImpl jda = (JDAImpl) api;
         Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
-        return new RestAction<User>(api, route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<User> request)
-            {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                }
-                JSONObject user = response.getObject();
-                request.onSuccess(api.get().getEntityBuilder().createFakeUser(user, false));
-            }
-        };
+        return new AbstractRestAction<>(jda, route, (response, request) -> jda.getEntityBuilder().createFakeUser(response.getObject(), false));
     }
 
     /**

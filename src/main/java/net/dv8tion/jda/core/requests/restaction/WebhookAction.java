@@ -21,7 +21,9 @@ import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.entities.Webhook;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
@@ -30,10 +32,10 @@ import javax.annotation.CheckReturnValue;
 import java.util.function.BooleanSupplier;
 
 /**
- * {@link net.dv8tion.jda.core.entities.Webhook Webhook} Builder system created as an extension of {@link net.dv8tion.jda.core.requests.RestAction}
+ * {@link net.dv8tion.jda.core.entities.Webhook Webhook} Builder system created as an extension of {@link AbstractRestAction}
  * <br>Provides an easy way to gather and deliver information to Discord to create {@link net.dv8tion.jda.core.entities.Webhook Webhooks}.
  */
-public class WebhookAction extends AuditableRestAction<Webhook>
+public class WebhookAction extends AuditableRestActionImpl<Webhook>
 {
     protected String name;
     protected Icon avatar = null;
@@ -98,13 +100,8 @@ public class WebhookAction extends AuditableRestAction<Webhook>
     }
 
     @Override
-    protected void handleResponse(Response response, Request<Webhook> request)
+    protected void handleSuccess(Response response, Request<Webhook> request)
     {
-        if (!response.isOk())
-        {
-            request.onFailure(response);
-            return;
-        }
         JSONObject json = response.getObject();
         Webhook webhook = api.get().getEntityBuilder().createWebhook(json);
 

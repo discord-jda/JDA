@@ -20,9 +20,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -38,7 +36,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * {@link net.dv8tion.jda.core.requests.RestAction RestAction} extension
+ * {@link AbstractRestAction RestAction} extension
  * specifically designed to allow bots to add {@link net.dv8tion.jda.core.entities.User Users} to Guilds.
  * <br>This requires an <b>OAuth2 Access Token</b> with the scope {@code guilds.join} to work!
  *
@@ -46,7 +44,7 @@ import java.util.stream.Collectors;
  *
  * @see    <a href="https://discordapp.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
  */
-public class MemberAction extends RestAction<Void>
+public class MemberAction extends AbstractRestAction<Void>
 {
     private final String accessToken;
     private final String userId;
@@ -236,32 +234,6 @@ public class MemberAction extends RestAction<Void>
         obj.put("mute", mute);
         obj.put("deaf", deaf);
         return getRequestBody(obj);
-    }
-
-    @Override
-    protected void handleResponse(Response response, Request<Void> request)
-    {
-        if (response.isOk())
-            request.onSuccess(null);
-        else
-            request.onFailure(response);
-        /*
-        This is not very useful but here is the response:
-         {
-            "nick": null,
-            "user":
-            {
-                "username": "Minn",
-                "discriminator": "6688",
-                "id": "86699011792191488",
-                "avatar": "e6376ed75fa54ffbe5134c3ec965458e"
-            },
-            "roles": [],
-            "mute": false,
-            "deaf": false,
-            "joined_at": "2018-05-05T10:18:16.475626+00:00"
-         }
-        */
     }
 
     private void checkAndAdd(Set<Role> newRoles, Role role)

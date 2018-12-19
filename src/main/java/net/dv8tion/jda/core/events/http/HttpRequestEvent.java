@@ -19,7 +19,7 @@ package net.dv8tion.jda.core.events.http;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.Route.CompiledRoute;
 import okhttp3.Headers;
 import okhttp3.RequestBody;
@@ -30,7 +30,7 @@ import org.json.JSONObject;
 import java.util.Set;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.core.requests.RestAction RestAction} has been executed.
+ * Indicates that a {@link AbstractRestAction RestAction} has been executed.
  * 
  * <p>Depending on the request and its result not all values have to be populated.
  */
@@ -112,7 +112,7 @@ public class HttpRequestEvent extends Event
         return this.response.getCFRays();
     }
 
-    public RestAction<?> getRestAction()
+    public AbstractRestAction<?> getRestAction()
     {
         return this.request.getRestAction();
     }

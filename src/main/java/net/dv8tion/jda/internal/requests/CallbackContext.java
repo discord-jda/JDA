@@ -1,11 +1,11 @@
 /*
- *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
+ * Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.requests;
+package net.dv8tion.jda.internal.requests;
 
-class CallbackContext implements AutoCloseable
+public class CallbackContext implements AutoCloseable
 {
     private static final ThreadLocal<Boolean> callback = ThreadLocal.withInitial(() -> false);
     private static final CallbackContext instance = new CallbackContext();
 
-    static CallbackContext getInstance()
+    public static CallbackContext getInstance()
     {
         startCallback();
         return instance;

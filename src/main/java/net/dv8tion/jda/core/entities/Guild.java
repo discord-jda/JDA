@@ -26,6 +26,7 @@ import net.dv8tion.jda.core.requests.restaction.MemberAction;
 import net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAction;
 import net.dv8tion.jda.core.utils.cache.MemberCacheView;
 import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -47,7 +48,7 @@ public interface Guild extends ISnowflake
      * <br>Shortcut for {@link #retrieveRegions(boolean) retrieveRegions(true)}
      * <br>This will include deprecated voice regions by default.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type {@link java.util.EnumSet EnumSet}
+     * @return {@link AbstractRestAction RestAction} - Type {@link java.util.EnumSet EnumSet}
      */
     @CheckReturnValue
     default RestAction<EnumSet<Region>> retrieveRegions()
@@ -61,7 +62,7 @@ public interface Guild extends ISnowflake
      * @param  includeDeprecated
      *         Whether to include deprecated regions
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type {@link java.util.EnumSet EnumSet}
+     * @return {@link AbstractRestAction RestAction} - Type {@link java.util.EnumSet EnumSet}
      */
     @CheckReturnValue
     RestAction<EnumSet<Region>> retrieveRegions(boolean includeDeprecated);
@@ -222,7 +223,7 @@ public interface Guild extends ISnowflake
      * This action requires the {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER MANAGE_SERVER} permission.
      * <p>
      * Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The ban list cannot be fetched due to a permission discrepancy</li>
@@ -236,7 +237,7 @@ public interface Guild extends ISnowflake
      * @throws java.lang.IllegalStateException
      *         If the guild doesn't have the VANITY_URL feature
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: String
+     * @return {@link AbstractRestAction RestAction} - Type: String
      *         <br>The vanity url of this server
      *
      * @see    #getFeatures()
@@ -944,7 +945,7 @@ public interface Guild extends ISnowflake
      * <p>Note that {@link ListedEmote#getUser()} is only available if the currently
      * logged in account has {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: List of {@link net.dv8tion.jda.core.entities.ListedEmote ListedEmote}
+     * @return {@link AbstractRestAction RestAction} - Type: List of {@link net.dv8tion.jda.core.entities.ListedEmote ListedEmote}
      *
      * @since  3.8.0
      */
@@ -960,7 +961,7 @@ public interface Guild extends ISnowflake
      * logged in account has {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
      *     <br>If the provided id does not correspond to an emote in this guild</li>
@@ -972,7 +973,7 @@ public interface Guild extends ISnowflake
      * @throws IllegalArgumentException
      *         If the provided id is not a valid snowflake
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.ListedEmote ListedEmote}
+     * @return {@link AbstractRestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.ListedEmote ListedEmote}
      *
      * @since  3.8.0
      */
@@ -987,7 +988,7 @@ public interface Guild extends ISnowflake
      * logged in account has {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
      *     <br>If the provided id does not correspond to an emote in this guild</li>
@@ -996,7 +997,7 @@ public interface Guild extends ISnowflake
      * @param  id
      *         The emote id
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.ListedEmote ListedEmote}
+     * @return {@link AbstractRestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.ListedEmote ListedEmote}
      *
      * @since  3.8.0
      */
@@ -1014,7 +1015,7 @@ public interface Guild extends ISnowflake
      * logged in account has {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
      *     <br>If the provided emote does not correspond to an emote in this guild anymore</li>
@@ -1023,7 +1024,7 @@ public interface Guild extends ISnowflake
      * @param  emote
      *         The emote
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.ListedEmote ListedEmote}
+     * @return {@link AbstractRestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.ListedEmote ListedEmote}
      *
      * @since  3.8.0
      */
@@ -1038,7 +1039,7 @@ public interface Guild extends ISnowflake
         {
             ListedEmote listedEmote = (ListedEmote) emote;
             if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
-                return new RestAction.EmptyRestAction<>(getJDA(), listedEmote);
+                return new AbstractRestAction.EmptyRestAction<>(getJDA(), listedEmote);
         }
         return retrieveEmoteById(emote.getId());
     }
@@ -1049,7 +1050,7 @@ public interface Guild extends ISnowflake
      * {@link GuildController#unban(User) GuildController.unban(User)}.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The ban list cannot be fetched due to a permission discrepancy</li>
@@ -1061,7 +1062,7 @@ public interface Guild extends ISnowflake
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@literal List<}{@link net.dv8tion.jda.core.entities.Guild.Ban Ban}{@literal >}
+     * @return {@link AbstractRestAction RestAction} - Type: {@literal List<}{@link net.dv8tion.jda.core.entities.Guild.Ban Ban}{@literal >}
      *         <br>An unmodifiable list of all users currently banned from this Guild
      */
     @Nonnull
@@ -1074,7 +1075,7 @@ public interface Guild extends ISnowflake
      * {@link GuildController#unban(String)}  GuildController.unban(id)}.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The ban list cannot be fetched due to a permission discrepancy</li>
@@ -1092,7 +1093,7 @@ public interface Guild extends ISnowflake
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Guild.Ban Ban}
+     * @return {@link AbstractRestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Guild.Ban Ban}
      *         <br>An unmodifiable ban object for the user banned from this guild
      */
     @Nonnull
@@ -1108,7 +1109,7 @@ public interface Guild extends ISnowflake
      * {@link GuildController#unban(String) GuildController.unban(id)}.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The ban list cannot be fetched due to a permission discrepancy</li>
@@ -1126,7 +1127,7 @@ public interface Guild extends ISnowflake
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Guild.Ban Ban}
+     * @return {@link AbstractRestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Guild.Ban Ban}
      *         <br>An unmodifiable ban object for the user banned from this guild
      */
     @Nonnull
@@ -1139,7 +1140,7 @@ public interface Guild extends ISnowflake
      * {@link GuildController#unban(User) GuildController.unban(User)}.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The ban list cannot be fetched due to a permission discrepancy</li>
@@ -1157,7 +1158,7 @@ public interface Guild extends ISnowflake
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#BAN_MEMBERS} permission.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Guild.Ban Ban}
+     * @return {@link AbstractRestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.Guild.Ban Ban}
      *         <br>An unmodifiable ban object for the user banned from this guild
      */
     @Nonnull
@@ -1173,7 +1174,7 @@ public interface Guild extends ISnowflake
      * Prunability is determined by a Member being offline for at least <i>days</i> days.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The prune count cannot be fetched due to a permission discrepancy</li>
@@ -1190,7 +1191,7 @@ public interface Guild extends ISnowflake
      * @throws IllegalArgumentException
      *         If the provided days are less than {@code 1}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Integer
+     * @return {@link AbstractRestAction RestAction} - Type: Integer
      *         <br>The amount of Members that would be affected.
      */
     @CheckReturnValue
@@ -1224,7 +1225,7 @@ public interface Guild extends ISnowflake
     /**
      * Returns the {@link net.dv8tion.jda.core.managers.GuildManager GuildManager} for this Guild, used to modify
      * all properties and settings of the Guild.
-     * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.core.requests.RestAction#queue() RestAction.queue()}.
+     * <br>You modify multiple fields in one request by chaining setters before calling {@link AbstractRestAction#queue() RestAction.queue()}.
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER Permission.MANAGE_SERVER}
@@ -1286,7 +1287,7 @@ public interface Guild extends ISnowflake
      * @throws java.lang.IllegalStateException
      *         Thrown if the currently logged in account is the Owner of this Guild.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link java.lang.Void}
+     * @return {@link AbstractRestAction RestAction} - Type: {@link java.lang.Void}
      */
     @CheckReturnValue
     RestAction<Void> leave();
@@ -1300,7 +1301,7 @@ public interface Guild extends ISnowflake
      * @throws java.lang.IllegalStateException
      *         If the currently logged in account has MFA enabled. ({@link net.dv8tion.jda.core.entities.SelfUser#isMfaEnabled()}).
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: {@link java.lang.Void}
+     * @return {@link AbstractRestAction} - Type: {@link java.lang.Void}
      */
     @CheckReturnValue
     RestAction<Void> delete();
@@ -1320,7 +1321,7 @@ public interface Guild extends ISnowflake
      * @throws java.lang.IllegalArgumentException
      *         If the provided {@code mfaCode} is {@code null} or empty when {@link SelfUser#isMfaEnabled()} is true.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction} - Type: {@link java.lang.Void}
+     * @return {@link AbstractRestAction} - Type: {@link java.lang.Void}
      */
     @CheckReturnValue
     RestAction<Void> delete(String mfaCode);
@@ -1356,7 +1357,7 @@ public interface Guild extends ISnowflake
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         if the account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_SERVER MANAGE_SERVER} in this Guild.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.core.entities.Invite Invite}{@literal >}
+     * @return {@link AbstractRestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.core.entities.Invite Invite}{@literal >}
      *         <br>The list of expanded Invite objects
      *
      * @see     GuildChannel#getInvites()
@@ -1374,7 +1375,7 @@ public interface Guild extends ISnowflake
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         if the account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_WEBHOOKS MANAGE_WEBHOOKS} in this Guild.
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.core.entities.Webhook Webhook}{@literal >}
+     * @return {@link AbstractRestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.core.entities.Webhook Webhook}{@literal >}
      *         <br>A list of all Webhooks in this Guild.
      *
      * @see     TextChannel#getWebhooks()

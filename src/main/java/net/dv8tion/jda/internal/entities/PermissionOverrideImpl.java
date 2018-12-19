@@ -21,11 +21,9 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.managers.PermOverrideManager;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 
 import java.util.EnumSet;
@@ -145,24 +143,14 @@ public class PermissionOverrideImpl implements PermissionOverride
     }
 
     @Override
-    public AuditableRestAction<Void> delete()
+    public AuditableRestActionImpl<Void> delete()
     {
         if (!getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
             throw new InsufficientPermissionException(Permission.MANAGE_PERMISSIONS);
 
         String targetId = isRoleOverride() ? getRole().getId() : getMember().getUser().getId();
         Route.CompiledRoute route = Route.Channels.DELETE_PERM_OVERRIDE.compile(getChannel().getId(), targetId);
-        return new AuditableRestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
     public PermissionOverrideImpl setAllow(long allow)

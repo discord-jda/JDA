@@ -22,9 +22,7 @@ import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Icon;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
@@ -39,13 +37,13 @@ import java.util.*;
 import java.util.function.BooleanSupplier;
 
 /**
- * {@link net.dv8tion.jda.core.requests.RestAction RestAction} extension
+ * {@link AbstractRestAction RestAction} extension
  * specifically designed to allow for the creation of {@link net.dv8tion.jda.core.entities.Guild Guilds}.
  * <br>This is available to all account types but may undergo certain restrictions by Discord.
  *
  * @since  3.4.0
  */
-public class GuildAction extends RestAction<Void>
+public class GuildAction extends AbstractRestAction<Void>
 {
     protected String name;
     protected Region region;
@@ -354,15 +352,6 @@ public class GuildAction extends RestAction<Void>
         if (region != null)
             object.put("region", region.getKey());
         return getRequestBody(object);
-    }
-
-    @Override
-    protected void handleResponse(Response response, Request<Void> request)
-    {
-        if (response.isOk())
-            request.onSuccess(null);
-        else
-            request.onFailure(response);
     }
 
     /**

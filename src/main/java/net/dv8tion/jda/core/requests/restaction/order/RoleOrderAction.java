@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
@@ -35,7 +36,7 @@ import java.util.List;
  * Implementation of {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction OrderAction}
  * designed to modify the order of {@link net.dv8tion.jda.core.entities.Role Roles} of the
  * specified {@link net.dv8tion.jda.core.entities.Guild Guild}.
- * <br>To apply the changes you must finish the {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+ * <br>To apply the changes you must finish the {@link AbstractRestAction RestAction}
  *
  * <p>Before you can use any of the {@code move} methods
  * you must use either {@link #selectPosition(Object) selectPosition(Role)} or {@link #selectPosition(int)}!

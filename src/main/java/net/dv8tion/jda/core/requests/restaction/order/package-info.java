@@ -15,7 +15,7 @@
  */
 
 /**
- * {@link net.dv8tion.jda.core.requests.RestAction RestAction} extensions
+ * {@link net.dv8tion.jda.internal.requests.AbstractRestAction RestAction} extensions
  * specifically designed to change the order of discord entities.
  * <br>Such as:
  * <ul>

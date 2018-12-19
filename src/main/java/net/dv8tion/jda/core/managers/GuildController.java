@@ -32,10 +32,12 @@ import net.dv8tion.jda.core.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.core.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.core.requests.restaction.order.RoleOrderAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
-import net.dv8tion.jda.internal.entities.EmoteImpl;
+import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
@@ -96,7 +98,7 @@ public class GuildController
      * in the same Guild as the one that you are moving them to.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The target Member cannot be moved due to a permission discrepancy</li>
@@ -133,7 +135,7 @@ public class GuildController
      *                 {@link net.dv8tion.jda.core.Permission#VOICE_CONNECT} for the destination VoiceChannel.</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * @return {@link AbstractRestAction RestAction}
      */
     @CheckReturnValue
     public RestAction<Void> moveVoiceMember(Member member, VoiceChannel voiceChannel)
@@ -161,17 +163,7 @@ public class GuildController
         JSONObject body = new JSONObject().put("channel_id", voiceChannel.getId());
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), member.getUser().getId());
 
-        return new RestAction<Void>(getGuild().getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AbstractRestAction<>(getGuild().getJDA(), route, body);
     }
 
     /**
@@ -184,7 +176,7 @@ public class GuildController
      * the Permission {@link net.dv8tion.jda.core.Permission#NICKNAME_MANAGE NICKNAME_MANAGE} is required.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The nickname of the target Member is not modifiable due to a permission discrepancy</li>
@@ -216,7 +208,7 @@ public class GuildController
      *         If attempting to set nickname for another member and the logged in account cannot manipulate the other user due to permission hierarchy position.
      *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      */
     @CheckReturnValue
     public AuditableRestAction<Void> setNickname(Member member, String nickname)
@@ -237,7 +229,7 @@ public class GuildController
         }
 
         if (Objects.equals(nickname, member.getNickname()))
-            return new AuditableRestAction.EmptyRestAction<>(getJDA(), null);
+            return new AuditableRestActionImpl.EmptyRestAction<>(getJDA(), null);
 
         if (nickname == null)
             nickname = "";
@@ -250,17 +242,7 @@ public class GuildController
         else
             route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), member.getUser().getId());
 
-        return new AuditableRestAction<Void>(getGuild().getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestActionImpl<Void>(getGuild().getJDA(), route, body);
     }
 
     /**
@@ -270,7 +252,7 @@ public class GuildController
      * call this method.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The prune cannot finished due to a permission discrepancy</li>
@@ -287,7 +269,7 @@ public class GuildController
      * @throws IllegalArgumentException
      *         If the provided days are less than {@code 1}
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction} - Type: Integer
+     * @return {@link AuditableRestActionImpl AuditableRestAction} - Type: Integer
      *         <br>The amount of Members that were pruned from the Guild.
      */
     @CheckReturnValue
@@ -298,17 +280,7 @@ public class GuildController
         Checks.check(days >= 1, "Days amount must be at minimum 1 day.");
 
         Route.CompiledRoute route = Route.Guilds.PRUNE_MEMBERS.compile(getGuild().getId()).withQueryParams("days", Integer.toString(days));
-        return new AuditableRestAction<Integer>(getGuild().getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Integer> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(response.getObject().getInt("pruned"));
-                else
-                    request .onFailure(response);
-            }
-        };
+        return new AuditableRestActionImpl<>(getGuild().getJDA(), route, (response, request) -> response.getObject().getInt("pruned"));
     }
 
     /**
@@ -318,7 +290,7 @@ public class GuildController
      * until Discord sends the {@link net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The target Member cannot be kicked due to a permission discrepancy</li>
@@ -344,7 +316,7 @@ public class GuildController
      *         If the logged in account cannot kick the other member due to permission hierarchy position.
      *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      *         Kicks the provided Member from the current Guild
      */
     @CheckReturnValue
@@ -362,17 +334,7 @@ public class GuildController
         if (reason != null && !reason.isEmpty())
             route = route.withQueryParams("reason", MiscUtil.encodeUTF8(reason));
 
-        return new AuditableRestAction<Void>(getGuild().getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestActionImpl<Void>(getGuild().getJDA(), route);
     }
 
     /**
@@ -382,7 +344,7 @@ public class GuildController
      * until Discord sends the {@link net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The target Member cannot be kicked due to a permission discrepancy</li>
@@ -408,7 +370,7 @@ public class GuildController
      * @throws java.lang.IllegalArgumentException
      *         If the userId provided does not correspond to a Member in this Guild or the provided {@code userId} is blank/null.
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      */
     @CheckReturnValue
     public AuditableRestAction<Void> kick(String userId, String reason)
@@ -426,7 +388,7 @@ public class GuildController
      * until Discord sends the {@link net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The target Member cannot be kicked due to a permission discrepancy</li>
@@ -449,7 +411,7 @@ public class GuildController
      *         If the logged in account cannot kick the other member due to permission hierarchy position.
      *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      *         Kicks the provided Member from the current Guild
      */
     @CheckReturnValue
@@ -465,7 +427,7 @@ public class GuildController
      * until Discord sends the {@link net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The target Member cannot be kicked due to a permission discrepancy</li>
@@ -488,7 +450,7 @@ public class GuildController
      * @throws java.lang.IllegalArgumentException
      *         If the userId provided does not correspond to a Member in this Guild or the provided {@code userId} is blank/null.
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      */
     @CheckReturnValue
     public AuditableRestAction<Void> kick(String userId)
@@ -507,7 +469,7 @@ public class GuildController
      * {@link net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The target Member cannot be banned due to a permission discrepancy</li>
@@ -538,7 +500,7 @@ public class GuildController
      *         </ul>
      *
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      */
     @CheckReturnValue
     public AuditableRestAction<Void> ban(Member member, int delDays, String reason)
@@ -560,7 +522,7 @@ public class GuildController
      * until Discord sends the {@link net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The target Member cannot be banned due to a permission discrepancy</li>
@@ -590,7 +552,7 @@ public class GuildController
      *             <li>If the provided user is null</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      */
     @CheckReturnValue
     public AuditableRestAction<Void> ban(User user, int delDays, String reason)
@@ -611,17 +573,7 @@ public class GuildController
         if (delDays > 0)
             route = route.withQueryParams("delete-message-days", Integer.toString(delDays));
 
-        return new AuditableRestAction<Void>(getGuild().getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestActionImpl<>(getGuild().getJDA(), route);
     }
 
     /**
@@ -635,7 +587,7 @@ public class GuildController
      * until Discord sends the {@link net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The target Member cannot be banned due to a permission discrepancy</li>
@@ -662,7 +614,7 @@ public class GuildController
      * @throws IllegalArgumentException
      *         If the provided amount of days (delDays) is less than 0.
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      */
     @CheckReturnValue
     public AuditableRestAction<Void> ban(String userId, int delDays, String reason)
@@ -679,10 +631,10 @@ public class GuildController
         if (delDays > 0)
             route = route.withQueryParams("delete-message-days", Integer.toString(delDays));
 
-        return new AuditableRestAction<Void>(getGuild().getJDA(), route)
+        return new AuditableRestActionImpl<Void>(getGuild().getJDA(), route)
         {
             @Override
-            protected void handleResponse(Response response, Request<Void> request)
+            public void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -705,7 +657,7 @@ public class GuildController
      * {@link net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The target Member cannot be banned due to a permission discrepancy</li>
@@ -733,7 +685,7 @@ public class GuildController
      *             <li>If the provided member is {@code null}</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      */
     @CheckReturnValue
     public AuditableRestAction<Void> ban(Member member, int delDays)
@@ -752,7 +704,7 @@ public class GuildController
      * {@link net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The target Member cannot be banned due to a permission discrepancy</li>
@@ -780,7 +732,7 @@ public class GuildController
      *             <li>If the provided member is {@code null}</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      */
     @CheckReturnValue
     public AuditableRestAction<Void> ban(User user, int delDays)
@@ -799,7 +751,7 @@ public class GuildController
      * until Discord sends the {@link net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The target Member cannot be banned due to a permission discrepancy</li>
@@ -824,7 +776,7 @@ public class GuildController
      * @throws IllegalArgumentException
      *         If the provided amount of days (delDays) is less than 0.
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      */
     @CheckReturnValue
     public AuditableRestAction<Void> ban(String userId, int delDays)
@@ -836,7 +788,7 @@ public class GuildController
      * Unbans the specified {@link net.dv8tion.jda.core.entities.User User} from this Guild.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The target Member cannot be unbanned due to a permission discrepancy</li>
@@ -856,7 +808,7 @@ public class GuildController
      * @throws IllegalArgumentException
      *         If the provided user is null
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      */
     @CheckReturnValue
     public AuditableRestAction<Void> unban(User user)
@@ -870,7 +822,7 @@ public class GuildController
      * Unbans the a user specified by the userId from this Guild.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The target Member cannot be unbanned due to a permission discrepancy</li>
@@ -890,7 +842,7 @@ public class GuildController
      * @throws IllegalArgumentException
      *         If the provided id is null or blank
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      */
     @CheckReturnValue
     public AuditableRestAction<Void> unban(String userId)
@@ -899,10 +851,10 @@ public class GuildController
         checkPermission(Permission.BAN_MEMBERS);
 
         Route.CompiledRoute route = Route.Guilds.UNBAN.compile(getGuild().getId(), userId);
-        return new AuditableRestAction<Void>(getGuild().getJDA(), route)
+        return new AuditableRestActionImpl<Void>(getGuild().getJDA(), route)
         {
             @Override
-            protected void handleResponse(Response response, Request<Void> request)
+            public void handleResponse(Response response, Request<Void> request)
             {
                 if (response.isOk())
                     request.onSuccess(null);
@@ -922,7 +874,7 @@ public class GuildController
      * until JDA receives the {@link net.dv8tion.jda.core.events.guild.voice.GuildVoiceGuildDeafenEvent GuildVoiceGuildDeafenEvent} event related to this change.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The target Member cannot be deafened due to a permission discrepancy</li>
@@ -946,7 +898,7 @@ public class GuildController
      * @throws IllegalArgumentException
      *         If the provided member is not from this Guild or null.
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      */
     @CheckReturnValue
     public AuditableRestAction<Void> setDeafen(Member member, boolean deafen)
@@ -962,21 +914,11 @@ public class GuildController
 
         GuildVoiceState voiceState = member.getVoiceState();
         if (voiceState != null && voiceState.isGuildDeafened() == deafen)
-            return new AuditableRestAction.EmptyRestAction<>(getJDA(), null);
+            return new AuditableRestActionImpl.EmptyRestAction<>(getJDA(), null);
 
         JSONObject body = new JSONObject().put("deaf", deafen);
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), member.getUser().getId());
-        return new AuditableRestAction<Void>(getGuild().getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestActionImpl<>(getGuild().getJDA(), route, body);
     }
 
     /**
@@ -987,7 +929,7 @@ public class GuildController
      * until JDA receives the {@link net.dv8tion.jda.core.events.guild.voice.GuildVoiceGuildMuteEvent GuildVoiceGuildMuteEvent} event related to this change.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The target Member cannot be muted due to a permission discrepancy</li>
@@ -1011,7 +953,7 @@ public class GuildController
      * @throws java.lang.IllegalArgumentException
      *         If the provided member is not from this Guild or null.
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      */
     @CheckReturnValue
     public AuditableRestAction<Void> setMute(Member member, boolean mute)
@@ -1027,21 +969,11 @@ public class GuildController
 
         GuildVoiceState voiceState = member.getVoiceState();
         if (voiceState != null && voiceState.isGuildMuted() == mute)
-            return new AuditableRestAction.EmptyRestAction<>(getJDA(), null);
+            return new AuditableRestActionImpl.EmptyRestAction<>(getJDA(), null);
 
         JSONObject body = new JSONObject().put("mute", mute);
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), member.getUser().getId());
-        return new AuditableRestAction<Void>(getGuild().getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestActionImpl<>(getGuild().getJDA(), route, body);
     }
 
     /**
@@ -1054,7 +986,7 @@ public class GuildController
      * <p>If the specified role is already present in the member's set of roles this does nothing.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The Members Roles could not be modified due to a permission discrepancy</li>
@@ -1085,7 +1017,7 @@ public class GuildController
      *         If the provided roles are higher in the Guild's hierarchy
      *         and thus cannot be modified by the currently logged in account
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      */
     @CheckReturnValue
     public AuditableRestAction<Void> addSingleRoleToMember(Member member, Role role)
@@ -1098,17 +1030,7 @@ public class GuildController
         checkPosition(role);
 
         Route.CompiledRoute route = Route.Guilds.ADD_MEMBER_ROLE.compile(getGuild().getId(), member.getUser().getId(), role.getId());
-        return new AuditableRestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
     /**
@@ -1121,7 +1043,7 @@ public class GuildController
      * <p>If the specified role is not present in the member's set of roles this does nothing.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The Members Roles could not be modified due to a permission discrepancy</li>
@@ -1152,7 +1074,7 @@ public class GuildController
      *         If the provided roles are higher in the Guild's hierarchy
      *         and thus cannot be modified by the currently logged in account
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      */
     @CheckReturnValue
     public AuditableRestAction<Void> removeSingleRoleFromMember(Member member, Role role)
@@ -1165,17 +1087,7 @@ public class GuildController
         checkPosition(role);
 
         Route.CompiledRoute route = Route.Guilds.REMOVE_MEMBER_ROLE.compile(getGuild().getId(), member.getUser().getId(), role.getId());
-        return new AuditableRestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestActionImpl<Void>(getJDA(), route);
     }
 
     /**
@@ -1190,7 +1102,7 @@ public class GuildController
      * <br>To add <u>and</u> remove Roles from a Member you should use {@link #modifyMemberRoles(Member, Collection, Collection)}</b>
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The Members Roles could not be modified due to a permission discrepancy</li>
@@ -1221,7 +1133,7 @@ public class GuildController
      *             <br>Managed Roles can only be applied by the applications that manage them (e.g. Twitch Subscriber Roles)</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      *
      * @see    #addRolesToMember(Member, Collection)
      * @see    #modifyMemberRoles(Member, Role...)
@@ -1244,7 +1156,7 @@ public class GuildController
      * <br>To add <u>and</u> remove Roles from a Member you should use {@link #modifyMemberRoles(Member, Collection, Collection)}</b>
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The Members Roles could not be modified due to a permission discrepancy</li>
@@ -1275,7 +1187,7 @@ public class GuildController
      *             <br>Managed Roles can only be applied by the applications that manage them (e.g. Twitch Subscriber Roles)</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      *
      * @see    #addRolesToMember(Member, Role...)
      * @see    #modifyMemberRoles(Member, Collection)
@@ -1298,7 +1210,7 @@ public class GuildController
      * <br>To add <u>and</u> remove Roles from a Member you should use {@link #modifyMemberRoles(Member, Collection, Collection)}</b>
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The Members Roles could not be modified due to a permission discrepancy</li>
@@ -1329,7 +1241,7 @@ public class GuildController
      *             <br>Managed Roles can only be applied by the applications that manage them (e.g. Twitch Subscriber Roles)</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      *
      * @see    #addRolesToMember(Member, Collection)
      * @see    #modifyMemberRoles(Member, Role...)
@@ -1352,7 +1264,7 @@ public class GuildController
      * <br>To add <u>and</u> remove Roles from a Member you should use {@link #modifyMemberRoles(Member, Collection, Collection)}</b>
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The Members Roles could not be modified due to a permission discrepancy</li>
@@ -1383,7 +1295,7 @@ public class GuildController
      *             <br>Managed Roles can only be applied by the applications that manage them (e.g. Twitch Subscriber Roles)</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      *
      * @see    #addRolesToMember(Member, Role...)
      * @see    #modifyMemberRoles(Member, Collection)
@@ -1410,7 +1322,7 @@ public class GuildController
      * by a {@link net.dv8tion.jda.core.events.guild.member.GenericGuildMemberEvent GenericGuildMemberEvent} targeting the same Member.</b>
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The Members Roles could not be modified due to a permission discrepancy</li>
@@ -1442,7 +1354,7 @@ public class GuildController
      *             <li>If any of the specified Roles is managed or is the {@code Public Role} of the Guild</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      */
     @CheckReturnValue
     public AuditableRestAction<Void> modifyMemberRoles(Member member, Collection<Role> rolesToAdd, Collection<Role> rolesToRemove)
@@ -1475,7 +1387,7 @@ public class GuildController
         if (currentRoles.addAll(newRolesToAdd))
             currentRoles.removeAll(rolesToRemove);
         else if (!currentRoles.removeAll(rolesToRemove))
-            return new AuditableRestAction.EmptyRestAction<>(getGuild().getJDA());
+            return new RestAction.EmptyRestAction<>(getGuild().getJDA());
 
         Checks.check(!currentRoles.contains(getGuild().getPublicRole()),
             "Cannot add the PublicRole of a Guild to a Member. All members have this role by default!");
@@ -1484,17 +1396,7 @@ public class GuildController
                 .put("roles", currentRoles.stream().map(Role::getId).collect(Collectors.toList()));
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), member.getUser().getId());
 
-        return new AuditableRestAction<Void>(getGuild().getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestActionImpl<Void>(getGuild().getJDA(), route, body);
     }
 
     /**
@@ -1510,7 +1412,7 @@ public class GuildController
      * <p><b>The new roles <u>must not</u> contain the Public Role of the Guild</b>
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The Members Roles could not be modified due to a permission discrepancy</li>
@@ -1540,7 +1442,7 @@ public class GuildController
      *             <li>If any of the specified {@link net.dv8tion.jda.core.entities.Role Roles} is the {@code Public Role} of this Guild</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      *
      * @see    #modifyMemberRoles(Member, Collection)
      */
@@ -1563,7 +1465,7 @@ public class GuildController
      * by a {@link net.dv8tion.jda.core.events.guild.member.GenericGuildMemberEvent GenericGuildMemberEvent} targeting the same Member.</b>
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The Members Roles could not be modified due to a permission discrepancy</li>
@@ -1593,7 +1495,7 @@ public class GuildController
      *             <li>If any of the specified {@link net.dv8tion.jda.core.entities.Role Roles} is the {@code Public Role} of this Guild</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      *
      * @see    #modifyMemberRoles(Member, Collection)
      */
@@ -1616,7 +1518,7 @@ public class GuildController
         // Return an empty rest action if there were no changes
         final List<Role> memberRoles = member.getRoles();
         if (memberRoles.size() == roles.size() && memberRoles.containsAll(roles))
-            return new AuditableRestAction.EmptyRestAction<>(getGuild().getJDA());
+            return new AuditableRestActionImpl.EmptyRestAction<>(getGuild().getJDA());
 
         //Make sure that the current managed roles are preserved and no new ones are added.
         List<Role> currentManaged = memberRoles.stream().filter(Role::isManaged).collect(Collectors.toList());
@@ -1640,17 +1542,7 @@ public class GuildController
                 .put("roles", roles.stream().map(Role::getId).collect(Collectors.toList()));
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), member.getUser().getId());
 
-        return new AuditableRestAction<Void>(getGuild().getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestActionImpl<Void>(getGuild().getJDA(), route, body);
     }
 
     /**
@@ -1658,7 +1550,7 @@ public class GuildController
      * <br>Only available if the currently logged in account is the owner of this Guild
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The currently logged in account lost ownership before completing the task</li>
@@ -1682,7 +1574,7 @@ public class GuildController
      *             <li>If the specified Member is a bot account ({@link net.dv8tion.jda.core.AccountType#BOT AccountType.BOT})</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestActionImpl AuditableRestAction}
      */
     @CheckReturnValue
     public AuditableRestAction<Void> transferOwnership(Member newOwner)
@@ -1699,17 +1591,7 @@ public class GuildController
 
         JSONObject body = new JSONObject().put("owner_id", newOwner.getUser().getId());
         Route.CompiledRoute route = Route.Guilds.MODIFY_GUILD.compile(getGuild().getId());
-        return new AuditableRestAction<Void>(getGuild().getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestActionImpl<>(getGuild().getJDA(), route, body);
     }
 
     /**
@@ -1717,7 +1599,7 @@ public class GuildController
      * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The channel could not be created due to a permission discrepancy</li>
@@ -1755,7 +1637,7 @@ public class GuildController
      * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The channel could not be created due to a permission discrepancy</li>
@@ -1793,7 +1675,7 @@ public class GuildController
      * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The channel could not be created due to a permission discrepancy</li>
@@ -1841,7 +1723,7 @@ public class GuildController
      * </ol>
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The channel could not be created due to a permission discrepancy</li>
@@ -1880,7 +1762,7 @@ public class GuildController
      * <br>For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES MANAGE_ROLES} Permission
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The role could not be created due to a permission discrepancy</li>
@@ -1917,7 +1799,7 @@ public class GuildController
      * and all {@link net.dv8tion.jda.core.Permission Permissions} the given {@link net.dv8tion.jda.core.entities.Role Role} has.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The role could not be created due to a permission discrepancy</li>
@@ -1960,7 +1842,7 @@ public class GuildController
      * <br>Due to simplicity we do not check for these limits.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The emote could not be created due to a permission discrepancy</li>
@@ -1980,7 +1862,7 @@ public class GuildController
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.core.Permission#MANAGE_EMOTES MANAGE_EMOTES} Permission
      *
-     * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction} - Type: {@link net.dv8tion.jda.core.entities.Emote Emote}
+     * @return {@link AuditableRestActionImpl AuditableRestAction} - Type: {@link net.dv8tion.jda.core.entities.Emote Emote}
      */
     @CheckReturnValue
     public AuditableRestAction<Emote> createEmote(String name, Icon icon, Role... roles)
@@ -1996,28 +1878,18 @@ public class GuildController
         if (roles.length > 0) // making sure none of the provided roles are null before mapping them to the snowflake id
             body.put("roles", Stream.of(roles).filter(Objects::nonNull).map(ISnowflake::getId).collect(Collectors.toSet()));
 
+        JDAImpl jda = (JDAImpl) getJDA();
         Route.CompiledRoute route = Route.Emotes.CREATE_EMOTE.compile(getGuild().getId());
-        return new AuditableRestAction<Emote>(getJDA(), route, body)
+        return new AuditableRestActionImpl<>(jda, route, body, (response, request) ->
         {
-            @Override
-            protected void handleResponse(Response response, Request<Emote> request)
-            {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                }
-
-                JSONObject obj = response.getObject();
-                EmoteImpl emote = api.get().getEntityBuilder().createEmote((GuildImpl) getGuild(), obj, true);
-                request.onSuccess(emote);
-            }
-        };
+            JSONObject obj = response.getObject();
+            return jda.getEntityBuilder().createEmote((GuildImpl) getGuild(), obj, true);
+        });
     }
 
     /**
      * Modifies the positional order of {@link net.dv8tion.jda.core.entities.Guild#getCategories() Guild.getCategories()}
-     * using a specific {@link net.dv8tion.jda.core.requests.RestAction RestAction} extension to allow moving Channels
+     * using a specific {@link AbstractRestAction RestAction} extension to allow moving Channels
      * {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveDown(int) down}
      * or {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
      * <br>This uses <b>ascending</b> order with a 0 based index.
@@ -2041,7 +1913,7 @@ public class GuildController
 
     /**
      * Modifies the positional order of {@link net.dv8tion.jda.core.entities.Guild#getTextChannels() Guild.getTextChannels()}
-     * using a specific {@link net.dv8tion.jda.core.requests.RestAction RestAction} extension to allow moving Channels
+     * using a specific {@link AbstractRestAction RestAction} extension to allow moving Channels
      * {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveDown(int) down}
      * or {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
      * <br>This uses <b>ascending</b> order with a 0 based index.
@@ -2065,7 +1937,7 @@ public class GuildController
 
     /**
      * Modifies the positional order of {@link net.dv8tion.jda.core.entities.Guild#getVoiceChannels() Guild.getVoiceChannels()}
-     * using a specific {@link net.dv8tion.jda.core.requests.RestAction RestAction} extension to allow moving Channels
+     * using a specific {@link AbstractRestAction RestAction} extension to allow moving Channels
      * {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveDown(int) down}
      * or {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
      * <br>This uses <b>ascending</b> order with a 0 based index.
@@ -2157,7 +2029,7 @@ public class GuildController
 
     /**
      * Modifies the positional order of {@link net.dv8tion.jda.core.entities.Guild#getRoles() Guild.getRoles()}
-     * using a specific {@link net.dv8tion.jda.core.requests.RestAction RestAction} extension to allow moving Roles
+     * using a specific {@link AbstractRestAction RestAction} extension to allow moving Roles
      * {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveDown(int) down}
      * or {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
      *
@@ -2187,7 +2059,7 @@ public class GuildController
 
     /**
      * Modifies the positional order of {@link net.dv8tion.jda.core.entities.Guild#getRoles() Guild.getRoles()}
-     * using a specific {@link net.dv8tion.jda.core.requests.RestAction RestAction} extension to allow moving Roles
+     * using a specific {@link AbstractRestAction RestAction} extension to allow moving Roles
      * {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveDown(int) down}
      * or {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
      *

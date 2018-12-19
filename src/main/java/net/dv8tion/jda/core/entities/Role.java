@@ -19,6 +19,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.managers.RoleManager;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.RoleAction;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
 
 import javax.annotation.CheckReturnValue;
 import java.awt.Color;
@@ -150,7 +151,7 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      * and all {@link net.dv8tion.jda.core.Permission Permissions} the given {@link net.dv8tion.jda.core.entities.Role Role} has.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The role could not be created due to a permission discrepancy</li>
@@ -186,7 +187,7 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      * and all {@link net.dv8tion.jda.core.Permission Permissions} the given {@link net.dv8tion.jda.core.entities.Role Role} has.
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The role could not be created due to a permission discrepancy</li>
@@ -213,7 +214,7 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
     /**
      * The {@link net.dv8tion.jda.core.managers.RoleManager RoleManager} for this Role.
      * In the RoleManager, you can modify all its values.
-     * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.core.requests.RestAction#queue() RestAction.queue()}.
+     * <br>You modify multiple fields in one request by chaining setters before calling {@link AbstractRestAction#queue() RestAction.queue()}.
      *
      * @throws net.dv8tion.jda.core.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.core.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
@@ -245,7 +246,7 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      * @throws net.dv8tion.jda.core.exceptions.HierarchyException
      *         If the role is too high in the role hierarchy to be deleted
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     * @return {@link AbstractRestAction}
      */
     @CheckReturnValue
     AuditableRestAction<Void> delete();

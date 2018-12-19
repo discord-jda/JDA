@@ -29,6 +29,7 @@ import net.dv8tion.jda.core.utils.SessionControllerAdapter;
 import net.dv8tion.jda.core.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.OkHttpClient;
 
@@ -414,7 +415,7 @@ public class JDABuilder
 
     /**
      * Sets the {@link ExecutorService ExecutorService} that should be used in
-     * the JDA callback handler which mostly consists of {@link net.dv8tion.jda.core.requests.RestAction RestAction} callbacks.
+     * the JDA callback handler which mostly consists of {@link AbstractRestAction RestAction} callbacks.
      * By default JDA will use {@link ForkJoinPool#commonPool()}
      * <br><b>Only change this pool if you know what you're doing.
      * <br>This automatically disables the automatic shutdown of the callback pool, you can enable
@@ -432,7 +433,7 @@ public class JDABuilder
 
     /**
      * Sets the {@link ExecutorService ExecutorService} that should be used in
-     * the JDA callback handler which mostly consists of {@link net.dv8tion.jda.core.requests.RestAction RestAction} callbacks.
+     * the JDA callback handler which mostly consists of {@link AbstractRestAction RestAction} callbacks.
      * By default JDA will use {@link ForkJoinPool#commonPool()}
      * <br><b>Only change this pool if you know what you're doing.</b>
      *

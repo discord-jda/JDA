@@ -18,12 +18,13 @@ package net.dv8tion.jda.core.exceptions;
 
 import net.dv8tion.jda.core.requests.ErrorResponse;
 import net.dv8tion.jda.core.requests.Response;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import org.json.JSONObject;
 
 import java.util.Optional;
 
 /**
- * Indicates an unhandled error that is returned by Discord API Request using {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+ * Indicates an unhandled error that is returned by Discord API Request using {@link AbstractRestAction RestAction}
  * <br>It holds an {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponse}
  */
 public class ErrorResponseException extends RuntimeException

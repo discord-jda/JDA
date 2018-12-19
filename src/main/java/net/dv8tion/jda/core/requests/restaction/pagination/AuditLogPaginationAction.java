@@ -189,14 +189,8 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
     }
 
     @Override
-    protected void handleResponse(Response response, Request<List<AuditLogEntry>> request)
+    protected void handleSuccess(Response response, Request<List<AuditLogEntry>> request)
     {
-        if (!response.isOk())
-        {
-            request.onFailure(response);
-            return;
-        }
-
         JSONObject obj = response.getObject();
         JSONArray users = obj.getJSONArray("users");
         JSONArray webhooks = obj.getJSONArray("webhooks");

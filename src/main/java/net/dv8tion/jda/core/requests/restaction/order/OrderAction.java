@@ -17,9 +17,7 @@
 package net.dv8tion.jda.core.requests.restaction.order;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -30,7 +28,7 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 
 /**
- * Extension of {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: Void
+ * Extension of {@link AbstractRestAction RestAction} - Type: Void
  * that allows to modify the order of entities provided as an {@link java.util.ArrayList ArrayList}.
  * <br>This action contains a List or entities for the specified type {@code T} which
  * can be moved within the bounds but not removed, nor can any new entities be added.
@@ -47,7 +45,7 @@ import java.util.function.BooleanSupplier;
  *
  * @since 3.0
  */
-public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAction<Void>
+public abstract class OrderAction<T, M extends OrderAction<T, M>> extends AbstractRestAction<Void>
 {
     protected final List<T> orderList;
     protected final boolean ascendingOrder;
@@ -61,7 +59,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      *        in the order list
      * @param route
      *        The {@link net.dv8tion.jda.internal.requests.Route.CompiledRoute CompiledRoute}
-     *        which is provided to the {@link RestAction#RestAction(JDA, Route.CompiledRoute, okhttp3.RequestBody) RestAction Constructor}
+     *        which is provided to the {@link AbstractRestAction#AbstractRestAction(JDA, Route.CompiledRoute, okhttp3.RequestBody) RestAction Constructor}
      */
     public OrderAction(JDA api, Route.CompiledRoute route)
     {
@@ -78,7 +76,7 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
      *        Whether or not the order of items should be ascending
      * @param route
      *        The {@link net.dv8tion.jda.internal.requests.Route.CompiledRoute CompiledRoute}
-     *        which is provided to the {@link RestAction#RestAction(JDA, Route.CompiledRoute, okhttp3.RequestBody) RestAction Constructor}
+     *        which is provided to the {@link AbstractRestAction#AbstractRestAction(JDA, Route.CompiledRoute, okhttp3.RequestBody) RestAction Constructor}
      */
     public OrderAction(JDA api, boolean ascendingOrder, Route.CompiledRoute route)
     {
@@ -401,15 +399,6 @@ public abstract class OrderAction<T, M extends OrderAction<T, M>> extends RestAc
 
         this.orderList.sort(comparator);
         return (M) this;
-    }
-
-    @Override
-    protected void handleResponse(Response response, Request<Void> request)
-    {
-        if (response.isOk())
-            request.onSuccess(null);
-        else
-            request.onFailure(response);
     }
 
     protected abstract void validateInput(T entity);

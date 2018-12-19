@@ -23,8 +23,8 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.Method;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.Route;
@@ -41,7 +41,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
- * Extension of a default {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+ * Extension of a default {@link AbstractRestAction RestAction}
  * that allows setting message information before sending!
  *
  * <p>This is available as return type of all sendMessage/sendFile methods in {@link net.dv8tion.jda.core.entities.MessageChannel MessageChannel}
@@ -74,7 +74,7 @@ import java.util.function.Consumer;
  *
  * @since  3.4.0
  */
-public class MessageAction extends RestAction<Message> implements Appendable
+public class MessageAction extends AbstractRestAction<Message> implements Appendable
 {
     private static final String CONTENT_TOO_BIG = String.format("A message may not exceed %d characters. Please limit your input!", Message.MAX_CONTENT_LENGTH);
     protected final Map<String, InputStream> files = new HashMap<>();
@@ -686,12 +686,9 @@ public class MessageAction extends RestAction<Message> implements Appendable
     }
 
     @Override
-    protected void handleResponse(Response response, Request<Message> request)
+    protected void handleSuccess(Response response, Request<Message> request)
     {
-        if (response.isOk())
-            request.onSuccess(api.get().getEntityBuilder().createMessage(response.getObject(), channel, false));
-        else
-            request.onFailure(response);
+        request.onSuccess(api.get().getEntityBuilder().createMessage(response.getObject(), channel, false));
     }
 
     @Override

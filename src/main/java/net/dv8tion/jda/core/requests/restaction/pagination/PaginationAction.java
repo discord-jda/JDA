@@ -17,10 +17,8 @@
 package net.dv8tion.jda.core.requests.restaction.pagination;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.Procedure;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -36,7 +34,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
- * {@link net.dv8tion.jda.core.requests.RestAction RestAction} specification used
+ * {@link AbstractRestAction RestAction} specification used
  * to retrieve entities for paginated endpoints (before, after, limit).
  *
  * <p><b>Examples</b>
@@ -83,7 +81,7 @@ import java.util.stream.StreamSupport;
  * @since  3.1
  */
 public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
-    extends RestAction<List<T>> implements Iterable<T>
+    extends AbstractRestAction<List<T>> implements Iterable<T>
 {
     protected final List<T> cached = new CopyOnWriteArrayList<>();
     protected final int maxLimit;
@@ -169,6 +167,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      * @see    java.util.concurrent.TimeUnit
      * @see    net.dv8tion.jda.core.utils.TimeUnit
      */
+    @SuppressWarnings("unchecked")
     public M skipTo(long id)
     {
         if (!cached.isEmpty())
@@ -226,7 +225,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
 
     /**
      * The currently cached entities of recent execution tasks.
-     * <br>Every {@link net.dv8tion.jda.core.requests.RestAction RestAction} success
+     * <br>Every {@link AbstractRestAction RestAction} success
      * adds to this List. (Thread-Safe due to {@link java.util.concurrent.CopyOnWriteArrayList CopyOnWriteArrayList})
      *
      * <p><b>This <u>does not</u> contain all entities for the paginated endpoint unless the pagination has reached an end!</b>
@@ -329,7 +328,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
     /**
      * Whether retrieved entities are stored within an
      * internal cache. If this is {@code false} entities
-     * retrieved by the iterator or a call to a {@link net.dv8tion.jda.core.requests.RestAction RestAction}
+     * retrieved by the iterator or a call to a {@link AbstractRestAction RestAction}
      * terminal operation will not be retrievable from {@link #getCached()}.
      * <br>This being disabled allows unused entities to be removed from
      * the memory heap by the garbage collector. If this is enabled this will not
@@ -478,11 +477,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      */
     public CompletableFuture<?> forEachAsync(final Procedure<T> action)
     {
-        return forEachAsync(action, (throwable) ->
-        {
-            if (RestAction.DEFAULT_FAILURE != null)
-                RestAction.DEFAULT_FAILURE.accept(throwable);
-        });
+        return forEachAsync(action, AbstractRestAction.getDefaultFailure());
     }
 
     /**
@@ -522,7 +517,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return {@link java.util.concurrent.Future Future} that can be cancelled to stop iteration from outside!
      */
-    public CompletableFuture<?> forEachAsync(final Procedure<T> action, final Consumer<Throwable> failure)
+    public CompletableFuture<?> forEachAsync(final Procedure<T> action, final Consumer<? super Throwable> failure)
     {
         Checks.notNull(action, "Procedure");
         Checks.notNull(failure, "Failure Consumer");
@@ -582,11 +577,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      */
     public CompletableFuture<?> forEachRemainingAsync(final Procedure<T> action)
     {
-        return forEachRemainingAsync(action, (throwable) ->
-        {
-            if (RestAction.DEFAULT_FAILURE != null)
-                RestAction.DEFAULT_FAILURE.accept(throwable);
-        });
+        return forEachRemainingAsync(action, AbstractRestAction.getDefaultFailure());
     }
 
     /**
@@ -626,7 +617,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return {@link java.util.concurrent.Future Future} that can be cancelled to stop iteration from outside!
      */
-    public CompletableFuture<?> forEachRemainingAsync(final Procedure<T> action, final Consumer<Throwable> failure)
+    public CompletableFuture<?> forEachRemainingAsync(final Procedure<T> action, final Consumer<? super Throwable> failure)
     {
         Checks.notNull(action, "Procedure");
         Checks.notNull(failure, "Failure Consumer");
@@ -701,8 +692,6 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
         return StreamSupport.stream(spliterator(), true);
     }
 
-    protected abstract void handleResponse(Response response, Request<List<T>> request);
-
     private List<T> getNextChunk()
     {
         List<T> items;
@@ -721,7 +710,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      * as needed.
      *
      * <p>To retrieve new entities after reaching the end of the current cache, this iterator will
-     * request a List of new entities through a call of {@link net.dv8tion.jda.core.requests.RestAction#complete() RestAction.complete()}.
+     * request a List of new entities through a call of {@link AbstractRestAction#complete() RestAction.complete()}.
      * <br><b>It is recommended to use the highest possible limit for this task. (see {@link #limit(int)})</b>
      */
     public class PaginationIterator implements Iterator<T>

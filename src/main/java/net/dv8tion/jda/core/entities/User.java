@@ -18,9 +18,10 @@ package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
 
-import java.util.List;
 import javax.annotation.CheckReturnValue;
+import java.util.List;
 
 /**
  * Represents a Discord User.
@@ -133,7 +134,7 @@ public interface User extends ISnowflake, IMentionable, IFakeable
      * @throws java.lang.IllegalStateException
      *         If this User is {@link #isFake() fake}
      *
-     * @return {@link net.dv8tion.jda.core.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}
+     * @return {@link AbstractRestAction RestAction} - Type: {@link net.dv8tion.jda.core.entities.PrivateChannel PrivateChannel}
      *         <br>The PrivateChannel to use to directly message this User.
      */
     @CheckReturnValue

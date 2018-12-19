@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.GuildChannel;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
@@ -33,7 +34,7 @@ import java.util.Collection;
 /**
  * Implementation of {@link net.dv8tion.jda.core.requests.restaction.order.OrderAction OrderAction}
  * to modify the order of {@link net.dv8tion.jda.core.entities.GuildChannel Channels} for a {@link net.dv8tion.jda.core.entities.Guild Guild}.
- * <br>To apply the changes you must finish the {@link net.dv8tion.jda.core.requests.RestAction RestAction}.
+ * <br>To apply the changes you must finish the {@link AbstractRestAction RestAction}.
  *
  * <p>Before you can use any of the {@code move} methods
  * you must use either {@link #selectPosition(Object) selectPosition(GuildChannel)} or {@link #selectPosition(int)}!

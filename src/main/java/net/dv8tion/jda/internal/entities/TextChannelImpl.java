@@ -20,8 +20,6 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.ChannelAction;
@@ -30,7 +28,9 @@ import net.dv8tion.jda.core.requests.restaction.WebhookAction;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.TimeUtil;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -60,41 +60,32 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     }
 
     @Override
-    public RestAction<List<Webhook>> getWebhooks()
+    public AbstractRestAction<List<Webhook>> getWebhooks()
     {
         checkPermission(Permission.MANAGE_WEBHOOKS);
 
         Route.CompiledRoute route = Route.Channels.GET_WEBHOOKS.compile(getId());
-        return new RestAction<List<Webhook>>(getJDA(), route)
+        JDAImpl jda = (JDAImpl) getJDA();
+        return new AbstractRestAction<>(jda, route, (response, request) ->
         {
-            @Override
-            protected void handleResponse(Response response, Request<List<Webhook>> request)
+            JSONArray array = response.getArray();
+            List<Webhook> webhooks = new ArrayList<>(array.length());
+            EntityBuilder builder = jda.getEntityBuilder();
+
+            for (Object object : array)
             {
-                if (!response.isOk())
+                try
                 {
-                    request.onFailure(response);
-                    return;
+                    webhooks.add(builder.createWebhook((JSONObject) object));
                 }
-
-                JSONArray array = response.getArray();
-                List<Webhook> webhooks = new ArrayList<>(array.length());
-                EntityBuilder builder = api.get().getEntityBuilder();
-
-                for (Object object : array)
+                catch (JSONException | NullPointerException e)
                 {
-                    try
-                    {
-                        webhooks.add(builder.createWebhook((JSONObject) object));
-                    }
-                    catch (JSONException | NullPointerException e)
-                    {
-                        JDAImpl.LOG.error("Error while creating websocket from json", e);
-                    }
+                    JDAImpl.LOG.error("Error while creating websocket from json", e);
                 }
-
-                request.onSuccess(Collections.unmodifiableList(webhooks));
             }
-        };
+
+            return Collections.unmodifiableList(webhooks);
+        });
     }
 
     @Override
@@ -111,7 +102,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     }
 
     @Override
-    public RestAction<Void> deleteMessages(Collection<Message> messages)
+    public AbstractRestAction<Void> deleteMessages(Collection<Message> messages)
     {
         Checks.notEmpty(messages, "Messages collection");
 
@@ -121,7 +112,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     }
 
     @Override
-    public RestAction<Void> deleteMessagesByIds(Collection<String> messageIds)
+    public AbstractRestAction<Void> deleteMessagesByIds(Collection<String> messageIds)
     {
         checkPermission(Permission.MESSAGE_MANAGE, "Must have MESSAGE_MANAGE in order to bulk delete messages in this channel regardless of author.");
         if (messageIds.size() < 2 || messageIds.size() > 100)
@@ -135,7 +126,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     }
 
     @Override
-    public AuditableRestAction<Void> deleteWebhookById(String id)
+    public AuditableRestActionImpl<Void> deleteWebhookById(String id)
     {
         Checks.isSnowflake(id, "Webhook ID");
 
@@ -143,17 +134,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
             throw new InsufficientPermissionException(Permission.MANAGE_WEBHOOKS);
 
         Route.CompiledRoute route = Route.Webhooks.DELETE_WEBHOOK.compile(id);
-        return new AuditableRestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
     @Override
@@ -435,21 +416,11 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
 
         checkPermission(Permission.MESSAGE_MANAGE);
         final Route.CompiledRoute route = Route.Messages.REMOVE_ALL_REACTIONS.compile(getId(), messageId);
-        return new RestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AbstractRestAction<>(getJDA(), route);
     }
 
     @Override
-    public RestAction<Void> removeReactionById(String messageId, String unicode, User user)
+    public AbstractRestAction<Void> removeReactionById(String messageId, String unicode, User user)
     {
         Checks.isSnowflake(messageId, "Message ID");
         Checks.noWhitespace(unicode, "Unicode emoji");
@@ -462,17 +433,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
             route = Route.Messages.REMOVE_OWN_REACTION.compile(getId(), messageId, code);
         else
             route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, code, user.getId());
-        return new RestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (!response.isOk())
-                    request.onFailure(response);
-                else
-                    request.onSuccess(null);
-            }
-        };
+        return new AbstractRestAction<>(getJDA(), route);
     }
 
     @Override
@@ -552,20 +513,10 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     }
 
     // -- internal --
-    private RestAction<Void> deleteMessages0(Collection<String> messageIds)
+    private AbstractRestAction<Void> deleteMessages0(Collection<String> messageIds)
     {
         JSONObject body = new JSONObject().put("messages", messageIds);
         Route.CompiledRoute route = Route.Messages.DELETE_MESSAGES.compile(getId());
-        return new RestAction<Void>(getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AbstractRestAction<>(getJDA(), route, body);
     }
 }

@@ -18,6 +18,7 @@ package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.core.requests.restaction.ChannelAction;
 import net.dv8tion.jda.core.requests.restaction.order.CategoryOrderAction;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
 
 import javax.annotation.CheckReturnValue;
 import java.util.List;
@@ -64,7 +65,7 @@ public interface Category extends GuildChannel, Comparable<Category>
      * <p>This will copy all {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides} of this Category!
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The channel could not be created due to a permission discrepancy</li>
@@ -95,7 +96,7 @@ public interface Category extends GuildChannel, Comparable<Category>
      * <p>This will copy all {@link net.dv8tion.jda.core.entities.PermissionOverride PermissionOverrides} of this Category!
      *
      * <p>Possible {@link net.dv8tion.jda.core.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.core.requests.RestAction RestAction} include the following:
+     * the returned {@link AbstractRestAction RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The channel could not be created due to a permission discrepancy</li>

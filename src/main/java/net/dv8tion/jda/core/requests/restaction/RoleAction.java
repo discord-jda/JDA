@@ -23,7 +23,9 @@ import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
@@ -34,13 +36,13 @@ import java.util.Collection;
 import java.util.function.BooleanSupplier;
 
 /**
- * Extension of {@link net.dv8tion.jda.core.requests.RestAction RestAction} specifically
+ * Extension of {@link AbstractRestAction RestAction} specifically
  * designed to create a {@link net.dv8tion.jda.core.entities.Role Role}.
  * This extension allows setting properties before executing the action.
  *
  * @since  3.0
  */
-public class RoleAction extends AuditableRestAction<Role>
+public class RoleAction extends AuditableRestActionImpl<Role>
 {
 
     protected final Guild guild;
@@ -268,12 +270,9 @@ public class RoleAction extends AuditableRestAction<Role>
     }
 
     @Override
-    protected void handleResponse(Response response, Request<Role> request)
+    protected void handleSuccess(Response response, Request<Role> request)
     {
-        if (response.isOk())
-            request.onSuccess(api.get().getEntityBuilder().createRole((GuildImpl) guild, response.getObject(), guild.getIdLong()));
-        else
-            request.onFailure(response);
+        request.onSuccess(api.get().getEntityBuilder().createRole((GuildImpl) guild, response.getObject(), guild.getIdLong()));
     }
 
     private void checkPermission(Permission permission)

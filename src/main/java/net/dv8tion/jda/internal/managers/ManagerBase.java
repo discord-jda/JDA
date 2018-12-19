@@ -18,17 +18,15 @@ package net.dv8tion.jda.internal.managers;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.json.JSONObject;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
-public abstract class ManagerBase extends AuditableRestAction<Void>
+public abstract class ManagerBase extends AuditableRestActionImpl<Void>
 {
     private static boolean enablePermissionChecks = true;
     protected long set = 0;
@@ -113,8 +111,8 @@ public abstract class ManagerBase extends AuditableRestAction<Void>
             super.queue(success, failure);
         else if (success != null)
             success.accept(null);
-        else if (DEFAULT_SUCCESS != null)
-            DEFAULT_SUCCESS.accept(null);
+        else
+            getDefaultSuccess().accept(null);
     }
 
     @Override
@@ -123,15 +121,6 @@ public abstract class ManagerBase extends AuditableRestAction<Void>
         if (shouldUpdate())
             return super.complete(shouldQueue);
         return null;
-    }
-
-    @Override
-    protected void handleResponse(Response response, Request<Void> request)
-    {
-        if (response.isOk())
-            request.onSuccess(null);
-        else
-            request.onFailure(response);
     }
 
     @Override
