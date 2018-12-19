@@ -165,16 +165,6 @@ public class AbstractRestAction<T> implements RestAction<T>
         api.get().getRequester().request(new Request<>(this, success, failure, finisher, true, data, rawData, route, headers));
     }
 
-    /**
-     * Submits a Request for execution and provides a {@link java.util.concurrent.CompletableFuture CompletableFuture}
-     * representing its completion task.
-     * <br>Cancelling the returned Future will result in the cancellation of the Request!
-     *
-     * @param  shouldQueue
-     *         Whether the Request should automatically handle rate limitations. (default true)
-     *
-     * @return Never-null {@link java.util.concurrent.CompletableFuture CompletableFuture} task representing the completion promise
-     */
     @Override
     public CompletableFuture<T> submit(boolean shouldQueue)
     {
