@@ -27,6 +27,8 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EmoteImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.internal.utils.UnlockHook;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -49,7 +51,7 @@ public class GuildEmojisUpdateHandler extends SocketHandler
         if (getJDA().getGuildSetupController().isLocked(guildId))
             return guildId;
 
-        GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(guildId);
+        GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
         if (guild == null)
         {
             getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
@@ -57,61 +59,67 @@ public class GuildEmojisUpdateHandler extends SocketHandler
         }
 
         JSONArray array = content.getJSONArray("emojis");
-        TLongObjectMap<Emote> emoteMap = guild.getEmoteMap();
-        List<Emote> oldEmotes = new ArrayList<>(emoteMap.valueCollection()); //snapshot of emote cache
-        List<Emote> newEmotes = new ArrayList<>();
-        for (int i = 0; i < array.length(); i++)
+        List<Emote> oldEmotes, newEmotes;
+        SnowflakeCacheViewImpl<Emote> emoteView = guild.getEmotesView();
+        try (UnlockHook hook = emoteView.writeLock())
         {
-            JSONObject current = array.getJSONObject(i);
-            final long emoteId = current.getLong("id");
-            EmoteImpl emote = (EmoteImpl) emoteMap.get(emoteId);
-            EmoteImpl oldEmote = null;
+            TLongObjectMap<Emote> emoteMap = emoteView.getMap();
+            oldEmotes = new ArrayList<>(emoteMap.valueCollection()); //snapshot of emote cache
+            newEmotes = new ArrayList<>();
+            for (int i = 0; i < array.length(); i++)
+            {
+                JSONObject current = array.getJSONObject(i);
+                final long emoteId = current.getLong("id");
+                EmoteImpl emote = (EmoteImpl) emoteMap.get(emoteId);
+                EmoteImpl oldEmote = null;
 
-            if (emote == null)
-            {
-                emote = new EmoteImpl(emoteId, guild);
-                newEmotes.add(emote);
-            }
-            else
-            {
-                // emote is in our cache which is why we don't want to remove it in cleanup later
-                oldEmotes.remove(emote);
-                oldEmote = emote.clone();
-            }
-
-            emote.setName(current.getString("name"))
-                 .setAnimated(current.optBoolean("animated"))
-                 .setManaged(current.getBoolean("managed"));
-            //update roles
-            JSONArray roles = current.getJSONArray("roles");
-            Set<Role> newRoles = emote.getRoleSet();
-            Set<Role> oldRoles = new HashSet<>(newRoles); //snapshot of cached roles
-            for (int j = 0; j < roles.length(); j++)
-            {
-                Role role = guild.getRoleById(roles.getString(j));
-                if (role != null)
+                if (emote == null)
                 {
-                    newRoles.add(role);
-                    oldRoles.remove(role);
+                    emote = new EmoteImpl(emoteId, guild);
+                    newEmotes.add(emote);
                 }
-            }
+                else
+                {
+                    // emote is in our cache which is why we don't want to remove it in cleanup later
+                    oldEmotes.remove(emote);
+                    oldEmote = emote.clone();
+                }
 
-            //cleanup old cached roles that were not found in the JSONArray
-            for (Role r : oldRoles)
-            {
-                // newRoles directly writes to the set contained in the emote
-                newRoles.remove(r);
-            }
+                emote.setName(current.getString("name"))
+                     .setAnimated(current.optBoolean("animated"))
+                     .setManaged(current.getBoolean("managed"));
+                //update roles
+                JSONArray roles = current.getJSONArray("roles");
+                Set<Role> newRoles = emote.getRoleSet();
+                Set<Role> oldRoles = new HashSet<>(newRoles); //snapshot of cached roles
+                for (int j = 0; j < roles.length(); j++)
+                {
+                    Role role = guild.getRoleById(roles.getString(j));
+                    if (role != null)
+                    {
+                        newRoles.add(role);
+                        oldRoles.remove(role);
+                    }
+                }
 
-            // finally, update the emote
-            emoteMap.put(emote.getIdLong(), emote);
-            // check for updated fields and fire events
-            handleReplace(oldEmote, emote);
+                //cleanup old cached roles that were not found in the JSONArray
+                for (Role r : oldRoles)
+                {
+                    // newRoles directly writes to the set contained in the emote
+                    newRoles.remove(r);
+                }
+
+                // finally, update the emote
+                emoteMap.put(emote.getIdLong(), emote);
+                // check for updated fields and fire events
+                handleReplace(oldEmote, emote);
+            }
+            for (Emote e : oldEmotes)
+                emoteMap.remove(e.getIdLong());
         }
         //cleanup old emotes that don't exist anymore
         for (Emote e : oldEmotes)
         {
-            emoteMap.remove(e.getIdLong());
             getJDA().getEventManager().handle(
                 new EmoteRemovedEvent(
                     getJDA(), responseNumber,

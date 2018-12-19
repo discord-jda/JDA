@@ -30,6 +30,8 @@ import java.util.List;
  *
  * <p>This is done because Members do not implement {@link net.dv8tion.jda.api.entities.ISnowflake ISnowflake} as
  * they are not globally unique but only unique per {@link net.dv8tion.jda.api.entities.Guild Guild}!
+ *
+ * @see CacheView CacheView for details on Efficient Memory Usage
  */
 public interface UnifiedMemberCacheView extends CacheView<Member>
 {

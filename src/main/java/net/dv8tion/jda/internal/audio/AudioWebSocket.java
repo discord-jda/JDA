@@ -17,7 +17,6 @@
 package net.dv8tion.jda.internal.audio;
 
 import com.neovisionaries.ws.client.*;
-import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.JDAInfo;
 import net.dv8tion.jda.api.audio.SpeakingMode;
 import net.dv8tion.jda.api.audio.hooks.ConnectionListener;
@@ -26,7 +25,6 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.ExceptionEvent;
-import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
@@ -192,11 +190,7 @@ class AudioWebSocket extends WebSocketAdapter
             else if (status == ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD)
             {
                 //Remove audio manager as we are no longer in the guild
-                TLongObjectMap<AudioManager> audioManagerMap = api.getAudioManagerMap();
-                synchronized (audioManagerMap)
-                {
-                    audioManagerMap.remove(guild.getIdLong());
-                }
+                api.getAudioManagersView().remove(guild.getIdLong());
             }
             else if (status != ConnectionStatus.AUDIO_REGION_CHANGE)
             {

@@ -45,9 +45,9 @@ public class TypingStartHandler extends SocketHandler
         }
 
         final long channelId = content.getLong("channel_id");
-        MessageChannel channel = getJDA().getTextChannelMap().get(channelId);
+        MessageChannel channel = getJDA().getTextChannelsView().get(channelId);
         if (channel == null)
-            channel = getJDA().getPrivateChannelMap().get(channelId);
+            channel = getJDA().getPrivateChannelsView().get(channelId);
         if (channel == null)
             channel = getJDA().getFakePrivateChannelMap().get(channelId);
         if (channel == null)
@@ -67,7 +67,7 @@ public class TypingStartHandler extends SocketHandler
         if (channel instanceof PrivateChannel)
             user = ((PrivateChannel) channel).getUser();
         else
-            user = getJDA().getUserMap().get(userId);
+            user = getJDA().getUsersView().get(userId);
 
         if (user == null)
             return null;    //Just like in the comment above, if for some reason we don't have the user

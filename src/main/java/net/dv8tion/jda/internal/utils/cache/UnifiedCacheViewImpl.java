@@ -19,10 +19,12 @@ package net.dv8tion.jda.internal.utils.cache;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.utils.ClosableIterator;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.cache.MemberCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.cache.UnifiedMemberCacheView;
+import net.dv8tion.jda.internal.utils.ChainedClosableIterator;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -54,17 +56,30 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
     @Override
     public List<T> asList()
     {
-        List<T> list = new ArrayList<>();
-        stream().forEach(list::add);
-        return Collections.unmodifiableList(list);
+        try (ClosableIterator<T> it = lockedIterator())
+        {
+            List<T> list = new ArrayList<>();
+            it.forEachRemaining(list::add);
+            return Collections.unmodifiableList(list);
+        }
     }
 
     @Override
     public Set<T> asSet()
     {
-        Set<T> set = new HashSet<>();
-        generator.get().flatMap(CacheView::stream).forEach(set::add);
-        return Collections.unmodifiableSet(set);
+        try (ClosableIterator<T> it = lockedIterator())
+        {
+            Set<T> set = new HashSet<>();
+            it.forEachRemaining(set::add);
+            return Collections.unmodifiableSet(set);
+        }
+    }
+
+    @Override
+    public ClosableIterator<T> lockedIterator()
+    {
+        Iterator<E> gen = generator.get().iterator();
+        return new ChainedClosableIterator<>(gen);
     }
 
     @Override

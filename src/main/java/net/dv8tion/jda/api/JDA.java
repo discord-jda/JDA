@@ -358,6 +358,11 @@ public interface JDA
      * <p>If the developer is sharding, then only users from guilds connected to the specifically logged in
      * shard will be returned in the List.
      *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getUserCache()} and use its more efficient
+     * versions of handling these values.
+     *
      * @return List of all {@link net.dv8tion.jda.api.entities.User Users} that are visible to JDA.
      */
     default List<User> getUsers()
@@ -508,6 +513,11 @@ public interface JDA
      * <br>Guild connected if shardId == (guildId {@literal >>} 22) % totalShards;
      * <br>Source for formula: <a href="https://discordapp.com/developers/docs/topics/gateway#sharding">Discord Documentation</a>
      *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getGuildCache()} and use its more efficient
+     * versions of handling these values.
+     *
      * @return Possibly-empty list of all the {@link net.dv8tion.jda.api.entities.Guild Guilds} that this account is connected to.
      */
     default List<Guild> getGuilds()
@@ -576,6 +586,11 @@ public interface JDA
      * All {@link net.dv8tion.jda.api.entities.Role Roles} this JDA instance can see. <br>This will iterate over each
      * {@link net.dv8tion.jda.api.entities.Guild Guild} retrieved from {@link #getGuilds()} and collect its {@link
      * net.dv8tion.jda.api.entities.Guild#getRoles() Guild.getRoles()}.
+     *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getRoleCache()} and use its more efficient
+     * versions of handling these values.
      *
      * @return Immutable List of all visible Roles
      */
@@ -669,6 +684,11 @@ public interface JDA
     /**
      * Gets all {@link net.dv8tion.jda.api.entities.Category Categories} visible to the currently logged in account.
      *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getCategoryCache()} and use its more efficient
+     * versions of handling these values.
+     *
      * @return An immutable list of all visible {@link net.dv8tion.jda.api.entities.Category Categories}.
      */
     default List<Category> getCategories()
@@ -710,6 +730,11 @@ public interface JDA
      * client, it is possible that you will see fewer channels than this returns. This is because the discord
      * client hides any {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that you don't have the
      * {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} permission in.
+     *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getTextChannelCache()} and use its more efficient
+     * versions of handling these values.
      *
      * @return Possibly-empty list of all known {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}.
      */
@@ -797,6 +822,11 @@ public interface JDA
      * An unmodifiable list of all {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} of all connected
      * {@link net.dv8tion.jda.api.entities.Guild Guilds}.
      *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getVoiceChannelCache()} and use its more efficient
+     * versions of handling these values.
+     *
      * @return Possible-empty list of all known {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}.
      */
     default List<VoiceChannel> getVoiceChannels()
@@ -864,6 +894,11 @@ public interface JDA
     /**
      * An unmodifiable list of all known {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannels}.
      *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getPrivateChannelCache()} and use its more efficient
+     * versions of handling these values.
+     *
      * @return Possibly-empty list of all {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannels}.
      */
     default List<PrivateChannel> getPrivateChannels()
@@ -922,6 +957,11 @@ public interface JDA
      * Emote#canInteract(net.dv8tion.jda.api.entities.User, net.dv8tion.jda.api.entities.MessageChannel)}
      *
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</b>
+     *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getEmoteCache()} and use its more efficient
+     * versions of handling these values.
      *
      * @return An immutable list of Emotes (which may or may not be available to usage).
      */

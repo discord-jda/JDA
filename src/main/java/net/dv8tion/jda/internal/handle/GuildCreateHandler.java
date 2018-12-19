@@ -34,7 +34,7 @@ public class GuildCreateHandler extends SocketHandler
     protected Long handleInternally(JSONObject content)
     {
         final long id = content.getLong("id");
-        GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(id);
+        GuildImpl guild = (GuildImpl) getJDA().getGuildById(id);
         if (guild == null)
         {
             getJDA().getGuildSetupController().onCreate(id, content);

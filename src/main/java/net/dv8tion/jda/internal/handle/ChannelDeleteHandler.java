@@ -27,6 +27,7 @@ import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.UserImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import org.json.JSONObject;
 
 public class ChannelDeleteHandler extends SocketHandler
@@ -55,16 +56,15 @@ public class ChannelDeleteHandler extends SocketHandler
         {
             case TEXT:
             {
-                GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(guildId);
-                TextChannel channel = getJDA().getTextChannelMap().remove(channelId);
+                GuildImpl guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
+                TextChannel channel = getJDA().getTextChannelsView().remove(channelId);
                 if (channel == null)
                 {
-//                    getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
                     WebSocketClient.LOG.debug("CHANNEL_DELETE attempted to delete a text channel that is not yet cached. JSON: {}", content);
                     return null;
                 }
 
-                guild.getTextChannelsMap().remove(channel.getIdLong());
+                guild.getTextChannelsView().remove(channel.getIdLong());
                 getJDA().getEventManager().handle(
                     new TextChannelDeleteEvent(
                         getJDA(), responseNumber,
@@ -73,23 +73,22 @@ public class ChannelDeleteHandler extends SocketHandler
             }
             case VOICE:
             {
-                GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(guildId);
-                VoiceChannel channel = getJDA().getVoiceChannelMap().remove(channelId);
+                GuildImpl guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
+                VoiceChannel channel = guild.getVoiceChannelsView().remove(channelId);
                 if (channel == null)
                 {
-//                    getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
                     WebSocketClient.LOG.debug("CHANNEL_DELETE attempted to delete a voice channel that is not yet cached. JSON: {}", content);
                     return null;
                 }
 
                 //We use this instead of getAudioManager(Guild) so we don't create a new instance. Efficiency!
-                AudioManagerImpl manager = (AudioManagerImpl) getJDA().getAudioManagerMap().get(guild.getIdLong());
+                AudioManagerImpl manager = (AudioManagerImpl) getJDA().getAudioManagersView().get(guild.getIdLong());
                 if (manager != null && manager.isConnected()
                         && manager.getConnectedChannel().getIdLong() == channel.getIdLong())
                 {
                     manager.closeAudioConnection(ConnectionStatus.DISCONNECTED_CHANNEL_DELETED);
                 }
-                guild.getVoiceChannelsMap().remove(channel.getIdLong());
+                guild.getVoiceChannelsView().remove(channel.getIdLong());
                 getJDA().getEventManager().handle(
                     new VoiceChannelDeleteEvent(
                         getJDA(), responseNumber,
@@ -98,16 +97,15 @@ public class ChannelDeleteHandler extends SocketHandler
             }
             case CATEGORY:
             {
-                GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(guildId);
-                Category category = getJDA().getCategoryMap().remove(channelId);
+                GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
+                Category category = getJDA().getCategoriesView().remove(channelId);
                 if (category == null)
                 {
-//                    getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
                     WebSocketClient.LOG.debug("CHANNEL_DELETE attempted to delete a category channel that is not yet cached. JSON: {}", content);
                     return null;
                 }
 
-                guild.getCategoriesMap().remove(channelId);
+                guild.getCategoriesView().remove(channelId);
                 getJDA().getEventManager().handle(
                     new CategoryDeleteEvent(
                         getJDA(), responseNumber,
@@ -116,22 +114,24 @@ public class ChannelDeleteHandler extends SocketHandler
             }
             case PRIVATE:
             {
-                PrivateChannel channel = getJDA().getPrivateChannelMap().remove(channelId);
+                SnowflakeCacheViewImpl<PrivateChannel> privateView = getJDA().getPrivateChannelsView();
+                PrivateChannel channel = privateView.remove(channelId);
 
                 if (channel == null)
                     channel = getJDA().getFakePrivateChannelMap().remove(channelId);
                 if (channel == null)
                 {
 //                    getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
-                    WebSocketClient.LOG.debug("CHANNEL_DELETE attempted to delete a private channel that is not yet cached. JSON: {}", content);
+                    WebSocketClient.LOG.debug(
+                            "CHANNEL_DELETE attempted to delete a private channel that is not yet cached. JSON: {}",
+                            content
+                    );
                     return null;
                 }
 
                 if (channel.getUser().isFake())
                     getJDA().getFakeUserMap().remove(channel.getUser().getIdLong());
-
                 ((UserImpl) channel.getUser()).setPrivateChannel(null);
-
                 getJDA().getEventManager().handle(
                     new PrivateChannelDeleteEvent(
                         getJDA(), responseNumber,

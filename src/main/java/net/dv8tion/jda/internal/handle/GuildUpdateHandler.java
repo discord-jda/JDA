@@ -51,7 +51,7 @@ public class GuildUpdateHandler extends SocketHandler
         //  WARNING //
         //Do not rely on allContent past this point, this method is also called from GuildCreateHandler!
         //////////////
-        GuildImpl guild = (GuildImpl) getJDA().getGuildMap().get(id);
+        GuildImpl guild = (GuildImpl) getJDA().getGuildById(id);
         long ownerId = content.getLong("owner_id");
         String name = content.getString("name");
         String iconId = content.optString("icon", null);
@@ -63,9 +63,9 @@ public class GuildUpdateHandler extends SocketHandler
         Guild.ExplicitContentLevel explicitContentLevel = Guild.ExplicitContentLevel.fromKey(content.getInt("explicit_content_filter"));
         Guild.Timeout afkTimeout = Guild.Timeout.fromKey(content.getInt("afk_timeout"));
         VoiceChannel afkChannel = content.isNull("afk_channel_id")
-                ? null : guild.getVoiceChannelsMap().get(content.getLong("afk_channel_id"));
+                ? null : guild.getVoiceChannelsView().get(content.getLong("afk_channel_id"));
         TextChannel systemChannel = content.isNull("system_channel_id")
-                ? null : guild.getTextChannelsMap().get(content.getLong("system_channel_id"));
+                ? null : guild.getTextChannelsView().get(content.getLong("system_channel_id"));
         Set<String> features;
         if (!content.isNull("features"))
         {
@@ -80,7 +80,7 @@ public class GuildUpdateHandler extends SocketHandler
         if (ownerId != guild.getOwnerIdLong())
         {
             Member oldOwner = guild.getOwner();
-            Member newOwner = guild.getMembersMap().get(ownerId);
+            Member newOwner = guild.getMembersView().get(ownerId);
             if (newOwner == null)
                 WebSocketClient.LOG.warn("Received {} with owner not in cache. UserId: {} GuildId: {}", allContent.get("t"), ownerId, id);
             guild.setOwner(newOwner);

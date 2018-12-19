@@ -37,7 +37,7 @@ public class VoiceServerUpdateHandler extends SocketHandler
         final long guildId = content.getLong("guild_id");
         if (getJDA().getGuildSetupController().isLocked(guildId))
             return guildId;
-        Guild guild = getJDA().getGuildMap().get(guildId);
+        Guild guild = getJDA().getGuildById(guildId);
         if (guild == null)
             throw new IllegalArgumentException("Attempted to start audio connection with Guild that doesn't exist!");
 

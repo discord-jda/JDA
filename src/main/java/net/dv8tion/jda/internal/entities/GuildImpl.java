@@ -34,15 +34,14 @@ import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationActi
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.MemberCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
-import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
-import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
-import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheView;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.utils.UnlockHook;
+import net.dv8tion.jda.internal.utils.cache.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -61,10 +60,10 @@ public class GuildImpl implements Guild
     private final long id;
     private final UpstreamReference<JDAImpl> api;
 
-    private final SortedSnowflakeCacheView<Category> categoryCache = new SortedSnowflakeCacheView<>(Category.class, GuildChannel::getName, Comparator.naturalOrder());
-    private final SortedSnowflakeCacheView<VoiceChannel> voiceChannelCache = new SortedSnowflakeCacheView<>(VoiceChannel.class, GuildChannel::getName, Comparator.naturalOrder());
-    private final SortedSnowflakeCacheView<TextChannel> textChannelCache = new SortedSnowflakeCacheView<>(TextChannel.class, GuildChannel::getName, Comparator.naturalOrder());
-    private final SortedSnowflakeCacheView<Role> roleCache = new SortedSnowflakeCacheView<>(Role.class, Role::getName, Comparator.reverseOrder());
+    private final SortedSnowflakeCacheViewImpl<Category> categoryCache = new SortedSnowflakeCacheViewImpl<>(Category.class, GuildChannel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SortedSnowflakeCacheViewImpl<>(VoiceChannel.class, GuildChannel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheViewImpl<TextChannel> textChannelCache = new SortedSnowflakeCacheViewImpl<>(TextChannel.class, GuildChannel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheViewImpl<Role> roleCache = new SortedSnowflakeCacheViewImpl<>(Role.class, Role::getName, Comparator.reverseOrder());
     private final SnowflakeCacheViewImpl<Emote> emoteCache = new SnowflakeCacheViewImpl<>(Emote.class, Emote::getName);
     private final MemberCacheViewImpl memberCache = new MemberCacheViewImpl();
 
@@ -281,7 +280,7 @@ public class GuildImpl implements Guild
     @Override
     public boolean isMember(User user)
     {
-        return memberCache.getMap().containsKey(user.getIdLong());
+        return memberCache.get(user.getIdLong()) != null;
     }
 
     @Override
@@ -303,56 +302,25 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public SnowflakeCacheView<Category> getCategoryCache()
+    public SortedSnowflakeCacheView<Category> getCategoryCache()
     {
         return categoryCache;
     }
 
     @Override
-    public SnowflakeCacheView<TextChannel> getTextChannelCache()
+    public SortedSnowflakeCacheView<TextChannel> getTextChannelCache()
     {
         return textChannelCache;
     }
 
     @Override
-    public SnowflakeCacheView<VoiceChannel> getVoiceChannelCache()
+    public SortedSnowflakeCacheView<VoiceChannel> getVoiceChannelCache()
     {
         return voiceChannelCache;
     }
 
     @Override
-    public List<GuildChannel> getChannels(boolean includeHidden)
-    {
-        List<GuildChannel> channels = new ArrayList<>((int) getCategoryCache().size() + (int) getVoiceChannelCache().size() + (int) getTextChannelCache().size());
-        List<Category> categories = getCategories();
-
-        Member self = getSelfMember();
-        Predicate<GuildChannel> filterHidden = it -> includeHidden || self.hasPermission(it, Permission.VIEW_CHANNEL);
-        getTextChannelCache().stream()
-                             .filter(filterHidden)
-                             .filter(it -> it.getParent() == null)
-                             .forEach(channels::add);
-        getVoiceChannelCache().stream()
-                              .filter(filterHidden)
-                              .filter(it -> it.getParent() == null)
-                              .forEach(channels::add);
-
-        for (Category category : categories)
-        {
-            List<TextChannel> textChannels = category.getTextChannels().stream().filter(filterHidden).collect(Collectors.toList());
-            List<VoiceChannel> voiceChannels = category.getVoiceChannels().stream().filter(filterHidden).collect(Collectors.toList());
-            if (!includeHidden && textChannels.isEmpty() && voiceChannels.isEmpty())
-                continue;
-            channels.add(category);
-            channels.addAll(textChannels);
-            channels.addAll(voiceChannels);
-        }
-
-        return Collections.unmodifiableList(channels);
-    }
-
-    @Override
-    public SnowflakeCacheView<Role> getRoleCache()
+    public SortedSnowflakeCacheView<Role> getRoleCache()
     {
         return roleCache;
     }
@@ -361,6 +329,65 @@ public class GuildImpl implements Guild
     public SnowflakeCacheView<Emote> getEmoteCache()
     {
         return emoteCache;
+    }
+
+    @Override
+    public List<GuildChannel> getChannels(boolean includeHidden)
+    {
+        Member self = getSelfMember();
+        Predicate<GuildChannel> filterHidden = it -> self.hasPermission(it, Permission.VIEW_CHANNEL);
+
+        List<GuildChannel> channels;
+        SnowflakeCacheViewImpl<Category> categoryView = getCategoriesView();
+        SnowflakeCacheViewImpl<VoiceChannel> voiceView = getVoiceChannelsView();
+        SnowflakeCacheViewImpl<TextChannel> textView = getTextChannelsView();
+        List<TextChannel> textChannels;
+        List<VoiceChannel> voiceChannels;
+        List<Category> categories;
+        try (UnlockHook categoryHook = categoryView.readLock();
+             UnlockHook voiceHook = voiceView.readLock();
+             UnlockHook textHook = textView.readLock())
+        {
+            if (includeHidden)
+            {
+                textChannels = textView.asList();
+                voiceChannels = voiceView.asList();
+            }
+            else
+            {
+                textChannels = textView.stream().filter(filterHidden).collect(Collectors.toList());
+                voiceChannels = voiceView.stream().filter(filterHidden).collect(Collectors.toList());
+            }
+            categories = categoryView.asList(); // we filter categories out when they are empty (no visible channels inside)
+            channels = new ArrayList<>((int) categoryView.size() + voiceChannels.size() + textChannels.size());
+        }
+
+        textChannels.stream().filter(it -> it.getParent() == null).forEach(channels::add);
+        voiceChannels.stream().filter(it -> it.getParent() == null).forEach(channels::add);
+
+        for (Category category : categories)
+        {
+            List<TextChannel> childTextChannels;
+            List<VoiceChannel> childVoiceChannels;
+            if (includeHidden)
+            {
+                childTextChannels = category.getTextChannels();
+                childVoiceChannels = category.getVoiceChannels();
+            }
+            else
+            {
+                childTextChannels = category.getTextChannels().stream().filter(filterHidden).collect(Collectors.toList());
+                childVoiceChannels = category.getVoiceChannels().stream().filter(filterHidden).collect(Collectors.toList());
+                if (childTextChannels.isEmpty() && childVoiceChannels.isEmpty())
+                    continue;
+            }
+
+            channels.add(category);
+            channels.addAll(childTextChannels);
+            channels.addAll(childVoiceChannels);
+        }
+
+        return Collections.unmodifiableList(channels);
     }
 
     @Override
@@ -520,10 +547,10 @@ public class GuildImpl implements Guild
     public TextChannel getDefaultChannel()
     {
         final Role role = getPublicRole();
-        return getTextChannelsMap().valueCollection().stream()
-                .filter(c -> role.hasPermission(c, Permission.MESSAGE_READ))
-                .sorted(Comparator.naturalOrder())
-                .findFirst().orElse(null);
+        return getTextChannelsView().stream()
+                                    .filter(c -> role.hasPermission(c, Permission.MESSAGE_READ))
+                                    .sorted(Comparator.naturalOrder())
+                                    .findFirst().orElse(null);
     }
 
     @Override
@@ -626,12 +653,12 @@ public class GuildImpl implements Guild
         if (!getJDA().isAudioEnabled())
             throw new IllegalStateException("Audio is disabled. Cannot retrieve an AudioManager while audio is disabled.");
 
-        final TLongObjectMap<AudioManager> managerMap = getJDA().getAudioManagerMap();
+        final AbstractCacheView<AudioManager> managerMap = getJDA().getAudioManagersView();
         AudioManager mng = managerMap.get(id);
         if (mng == null)
         {
             // No previous manager found -> create one
-            synchronized (managerMap)
+            try (UnlockHook hook = managerMap.writeLock())
             {
                 GuildImpl cachedGuild = (GuildImpl) getJDA().getGuildById(id);
                 if (cachedGuild == null)
@@ -640,7 +667,7 @@ public class GuildImpl implements Guild
                 if (mng == null)
                 {
                     mng = new AudioManagerImpl(cachedGuild);
-                    managerMap.put(id, mng);
+                    managerMap.getMap().put(id, mng);
                 }
             }
         }
@@ -657,7 +684,7 @@ public class GuildImpl implements Guild
     public List<GuildVoiceState> getVoiceStates()
     {
         return Collections.unmodifiableList(
-                getMembersMap().valueCollection().stream().map(Member::getVoiceState).filter(Objects::nonNull).collect(Collectors.toList()));
+                getMembersView().stream().map(Member::getVoiceState).filter(Objects::nonNull).collect(Collectors.toList()));
     }
 
     @Override
@@ -830,34 +857,34 @@ public class GuildImpl implements Guild
 
     // -- Map getters --
 
-    public TLongObjectMap<Category> getCategoriesMap()
+    public SnowflakeCacheViewImpl<Category> getCategoriesView()
     {
-        return categoryCache.getMap();
+        return categoryCache;
     }
 
-    public TLongObjectMap<TextChannel> getTextChannelsMap()
+    public SnowflakeCacheViewImpl<TextChannel> getTextChannelsView()
     {
-        return textChannelCache.getMap();
+        return textChannelCache;
     }
 
-    public TLongObjectMap<VoiceChannel> getVoiceChannelsMap()
+    public SnowflakeCacheViewImpl<VoiceChannel> getVoiceChannelsView()
     {
-        return voiceChannelCache.getMap();
+        return voiceChannelCache;
     }
 
-    public TLongObjectMap<Member> getMembersMap()
+    public SnowflakeCacheViewImpl<Role> getRolesView()
     {
-        return memberCache.getMap();
+        return roleCache;
     }
 
-    public TLongObjectMap<Role> getRolesMap()
+    public SnowflakeCacheViewImpl<Emote> getEmotesView()
     {
-        return roleCache.getMap();
+        return emoteCache;
     }
 
-    public TLongObjectMap<Emote> getEmoteMap()
+    public MemberCacheViewImpl getMembersView()
     {
-        return emoteCache.getMap();
+        return memberCache;
     }
 
     public TLongObjectMap<JSONObject> getCachedPresenceMap()
