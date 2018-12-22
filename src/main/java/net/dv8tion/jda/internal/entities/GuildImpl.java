@@ -25,7 +25,6 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.GuildController;
-import net.dv8tion.jda.api.managers.GuildManager;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.MemberCacheView;
@@ -33,6 +32,7 @@ import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
+import net.dv8tion.jda.internal.managers.GuildManagerImpl;
 import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.MemberActionImpl;
@@ -68,7 +68,7 @@ public class GuildImpl implements Guild
     private final TLongObjectMap<JSONObject> cachedPresences = MiscUtil.newLongMap();
 
     private final ReentrantLock mngLock = new ReentrantLock();
-    private volatile GuildManager manager;
+    private volatile GuildManagerImpl manager;
     private volatile GuildController controller;
 
     private Member owner;
@@ -475,15 +475,15 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public GuildManager getManager()
+    public GuildManagerImpl getManager()
     {
-        GuildManager mng = manager;
+        GuildManagerImpl mng = manager;
         if (mng == null)
         {
             mng = MiscUtil.locked(mngLock, () ->
             {
                 if (manager == null)
-                    manager = new GuildManager(this);
+                    manager = new GuildManagerImpl(this);
                 return manager;
             });
         }
