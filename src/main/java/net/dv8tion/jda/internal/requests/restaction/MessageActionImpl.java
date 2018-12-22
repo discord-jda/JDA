@@ -166,13 +166,6 @@ public class MessageActionImpl extends AbstractRestAction<Message> implements Me
 
     @Override
     @CheckReturnValue
-    public MessageAction appendFormat(final String format, final Object... args)
-    {
-        return append(String.format(format, args));
-    }
-
-    @Override
-    @CheckReturnValue
     public MessageActionImpl addFile(final InputStream data, final String name)
     {
         checkEdit();
@@ -182,24 +175,6 @@ public class MessageActionImpl extends AbstractRestAction<Message> implements Me
         checkPermission(Permission.MESSAGE_ATTACH_FILES);
         files.put(name, data);
         return this;
-    }
-
-    @Override
-    @CheckReturnValue
-    public MessageActionImpl addFile(final byte[] data, final String name)
-    {
-        Checks.notNull(data, "Data");
-        final long maxSize = getJDA().getSelfUser().getAllowedFileSize();
-        Checks.check(data.length <= maxSize, "File may not exceed the maximum file length of %d bytes!", maxSize);
-        return addFile(new ByteArrayInputStream(data), name);
-    }
-
-    @Override
-    @CheckReturnValue
-    public MessageActionImpl addFile(final File file)
-    {
-        Checks.notNull(file, "File");
-        return addFile(file, file.getName());
     }
 
     @Override

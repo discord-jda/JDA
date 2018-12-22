@@ -19,8 +19,10 @@ package net.dv8tion.jda.api.requests.restaction;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.util.function.BiConsumer;
@@ -240,7 +242,10 @@ public interface MessageAction extends RestAction<Message>, Appendable
      * @return Updated MessageAction for chaining convenience
      */
     @CheckReturnValue
-    MessageAction appendFormat(final String format, final Object... args);
+    default MessageAction appendFormat(final String format, final Object... args)
+    {
+        return append(String.format(format, args));
+    }
 
     /**
      * Adds the provided {@link java.io.InputStream InputStream} as file data.
@@ -296,7 +301,13 @@ public interface MessageAction extends RestAction<Message>, Appendable
      * @see    net.dv8tion.jda.api.entities.SelfUser#getAllowedFileSize() SelfUser.getAllowedFileSize()
      */
     @CheckReturnValue
-    MessageAction addFile(final byte[] data, final String name);
+    default MessageAction addFile(final byte[] data, final String name)
+    {
+        Checks.notNull(data, "Data");
+        final long maxSize = getJDA().getSelfUser().getAllowedFileSize();
+        Checks.check(data.length <= maxSize, "File may not exceed the maximum file length of %d bytes!", maxSize);
+        return addFile(new ByteArrayInputStream(data), name);
+    }
 
     /**
      * Adds the provided {@link java.io.File File} as file data.
@@ -319,7 +330,11 @@ public interface MessageAction extends RestAction<Message>, Appendable
      * @see    net.dv8tion.jda.api.entities.SelfUser#getAllowedFileSize() SelfUser.getAllowedFileSize()
      */
     @CheckReturnValue
-    MessageAction addFile(final File file);
+    default MessageAction addFile(final File file)
+    {
+        Checks.notNull(file, "File");
+        return addFile(file, file.getName());
+    }
 
     /**
      * Adds the provided {@link java.io.File File} as file data.
