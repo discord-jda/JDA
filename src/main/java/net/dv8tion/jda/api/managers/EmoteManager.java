@@ -43,9 +43,46 @@ public interface EmoteManager extends Manager<EmoteManager>
 {
     /** Used to reset the name field */
     long NAME = 0x1;
-
     /** Used to reset the roles field */
     long ROLES = 0x2;
+
+    /**
+     * Resets the fields specified by the provided bit-flag pattern.
+     * You can specify a combination by using a bitwise OR concat of the flag constants.
+     * <br>Example: {@code manager.reset(EmoteManager.NAME | EmoteManager.ROLES);}
+     *
+     * <p><b>Flag Constants:</b>
+     * <ul>
+     *     <li>{@link #NAME}</li>
+     *     <li>{@link #ROLES}</li>
+     * </ul>
+     *
+     * @param  fields
+     *         Integer value containing the flags to reset.
+     *
+     * @return EmoteManager for chaining convenience
+     */
+    @Override
+    EmoteManager reset(long fields);
+
+    /**
+     * Resets the fields specified by the provided bit-flag pattern.
+     * You can specify a combination by using a bitwise OR concat of the flag constants.
+     * <br>Example: {@code manager.reset(EmoteManager.NAME, EmoteManager.ROLES);}
+     *
+     * <p><b>Flag Constants:</b>
+     * <ul>
+     *     <li>{@link #NAME}</li>
+     *     <li>{@link #ROLES}</li>
+     * </ul>
+     *
+     * @param  fields
+     *         Integer values containing the flags to reset.
+     *
+     * @return EmoteManager for chaining convenience
+     */
+    @Override
+    EmoteManager reset(long... fields);
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} this Manager's

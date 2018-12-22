@@ -49,6 +49,46 @@ public interface WebhookManager extends Manager<WebhookManager>
     long AVATAR  = 0x4;
 
     /**
+     * Resets the fields specified by the provided bit-flag pattern.
+     * You can specify a combination by using a bitwise OR concat of the flag constants.
+     * <br>Example: {@code manager.reset(WebhookManager.CHANNEL | WebhookManager.NAME);}
+     *
+     * <p><b>Flag Constants:</b>
+     * <ul>
+     *     <li>{@link #NAME}</li>
+     *     <li>{@link #AVATAR}</li>
+     *     <li>{@link #CHANNEL}</li>
+     * </ul>
+     *
+     * @param  fields
+     *         Integer value containing the flags to reset.
+     *
+     * @return WebhookManager for chaining convenience
+     */
+    @Override
+    WebhookManager reset(long fields);
+
+    /**
+     * Resets the fields specified by the provided bit-flag patterns.
+     * You can specify a combination by using a bitwise OR concat of the flag constants.
+     * <br>Example: {@code manager.reset(WebhookManager.CHANNEL, WebhookManager.NAME);}
+     *
+     * <p><b>Flag Constants:</b>
+     * <ul>
+     *     <li>{@link #NAME}</li>
+     *     <li>{@link #AVATAR}</li>
+     *     <li>{@link #CHANNEL}</li>
+     * </ul>
+     *
+     * @param  fields
+     *         Integer values containing the flags to reset.
+     *
+     * @return WebhookManager for chaining convenience
+     */
+    @Override
+    WebhookManager reset(long... fields);
+
+    /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} this Manager's
      * {@link net.dv8tion.jda.api.entities.Webhook Webhook} is in.
      * <br>This is logically the same as calling {@code getWebhook().getGuild()}
