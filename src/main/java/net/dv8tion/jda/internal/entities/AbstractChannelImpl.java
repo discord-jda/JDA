@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.managers.ChannelManager;
 import net.dv8tion.jda.api.requests.restaction.InviteAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.managers.ChannelManagerImpl;
 import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
@@ -49,7 +50,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     protected final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
 
     protected final ReentrantLock mngLock = new ReentrantLock();
-    protected volatile ChannelManager manager;
+    protected volatile ChannelManagerImpl manager;
 
     protected long parentId;
     protected String name;
@@ -129,13 +130,13 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     @Override
     public ChannelManager getManager()
     {
-        ChannelManager mng = manager;
+        ChannelManagerImpl mng = manager;
         if (mng == null)
         {
             mng = MiscUtil.locked(mngLock, () ->
             {
                 if (manager == null)
-                    manager = new ChannelManager(this);
+                    manager = new ChannelManagerImpl(this);
                 return manager;
             });
         }

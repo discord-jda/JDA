@@ -235,7 +235,7 @@ public interface GuildChannel extends ISnowflake
     }
 
     /**
-     * Returns the {@link net.dv8tion.jda.api.managers.ChannelManager ChannelManager} for this GuildChannel.
+     * Returns the {@link ChannelManager ChannelManager} for this GuildChannel.
      * <br>In the ChannelManager, you can modify the name, topic and position of this GuildChannel.
      * You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
      *
