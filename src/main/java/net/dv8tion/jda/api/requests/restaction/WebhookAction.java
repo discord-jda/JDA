@@ -18,7 +18,6 @@ package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.Webhook;
-import net.dv8tion.jda.api.requests.RestAction;
 
 import javax.annotation.CheckReturnValue;
 import java.util.function.BooleanSupplier;
@@ -27,7 +26,7 @@ import java.util.function.BooleanSupplier;
  * {@link net.dv8tion.jda.api.entities.Webhook Webhook} Builder system created as an extension of {@link net.dv8tion.jda.api.requests.RestAction}
  * <br>Provides an easy way to gather and deliver information to Discord to create {@link net.dv8tion.jda.api.entities.Webhook Webhooks}.
  */
-public interface WebhookAction extends RestAction<Webhook>
+public interface WebhookAction extends AuditableRestAction<Webhook>
 {
     @Override
     WebhookAction setCheck(BooleanSupplier checks);
