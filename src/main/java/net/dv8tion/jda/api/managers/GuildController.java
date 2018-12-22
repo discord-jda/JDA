@@ -38,6 +38,7 @@ import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.ChannelActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.RoleActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
@@ -1617,7 +1618,7 @@ public class GuildController
      * @throws IllegalArgumentException
      *         If the provided name is {@code null} or empty or greater than 100 characters in length
      *
-     * @return A specific {@link net.dv8tion.jda.api.requests.restaction.ChannelAction ChannelAction}
+     * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new TextChannel before creating it
      */
     @CheckReturnValue
@@ -1630,7 +1631,7 @@ public class GuildController
         Checks.check(name.length() > 0 && name.length() <= 100, "Provided name must be 1 - 100 characters in length");
 
         Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(getGuild().getId());
-        return new ChannelAction(route, name, getGuild(), ChannelType.TEXT);
+        return new ChannelActionImpl(route, name, getGuild(), ChannelType.TEXT);
     }
 
     /**
@@ -1655,7 +1656,7 @@ public class GuildController
      * @throws IllegalArgumentException
      *         If the provided name is {@code null} or empty or greater than 100 characters in length
      *
-     * @return A specific {@link net.dv8tion.jda.api.requests.restaction.ChannelAction ChannelAction}
+     * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new VoiceChannel before creating it
      */
     @CheckReturnValue
@@ -1668,7 +1669,7 @@ public class GuildController
         Checks.check(name.length() > 0 && name.length() <= 100, "Provided name must be 1 - 100 characters in length");
 
         Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(getGuild().getId());
-        return new ChannelAction(route, name, getGuild(), ChannelType.VOICE);
+        return new ChannelActionImpl(route, name, getGuild(), ChannelType.VOICE);
     }
 
     /**
@@ -1693,7 +1694,7 @@ public class GuildController
      * @throws IllegalArgumentException
      *         If the provided name is {@code null} or empty or greater than 100 characters in length
      *
-     * @return A specific {@link net.dv8tion.jda.api.requests.restaction.ChannelAction ChannelAction}
+     * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new Category before creating it
      */
     @CheckReturnValue
@@ -1706,7 +1707,7 @@ public class GuildController
         Checks.check(name.length() > 0 && name.length() <= 100, "Provided name must be 1 - 100 characters in length");
 
         Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(getGuild().getId());
-        return new ChannelAction(route, name, getGuild(), ChannelType.CATEGORY);
+        return new ChannelActionImpl(route, name, getGuild(), ChannelType.CATEGORY);
     }
 
     /**
@@ -1741,14 +1742,14 @@ public class GuildController
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission
      *
-     * @return A specific {@link net.dv8tion.jda.api.requests.restaction.ChannelAction ChannelAction}
+     * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new GuildChannel before creating it!
      *
      * @since  3.1
      *
      * @see    #createTextChannel(String)
      * @see    #createVoiceChannel(String)
-     * @see    net.dv8tion.jda.api.requests.restaction.ChannelAction ChannelAction
+     * @see    ChannelAction ChannelAction
      */
     @CheckReturnValue
     public ChannelAction createCopyOfChannel(GuildChannel channel)
