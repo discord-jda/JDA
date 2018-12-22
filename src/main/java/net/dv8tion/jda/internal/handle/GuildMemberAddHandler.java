@@ -15,8 +15,8 @@
  */
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import org.json.JSONObject;

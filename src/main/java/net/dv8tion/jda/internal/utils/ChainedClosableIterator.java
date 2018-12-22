@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.internal.utils;
 
-import net.dv8tion.jda.core.utils.ClosableIterator;
-import net.dv8tion.jda.core.utils.cache.CacheView;
+import net.dv8tion.jda.api.utils.ClosableIterator;
+import net.dv8tion.jda.api.utils.cache.CacheView;
 import org.slf4j.Logger;
 
 import java.util.Iterator;

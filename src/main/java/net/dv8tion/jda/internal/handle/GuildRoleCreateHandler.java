@@ -15,8 +15,8 @@
  */
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.events.role.RoleCreateEvent;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.events.role.RoleCreateEvent;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import org.json.JSONObject;

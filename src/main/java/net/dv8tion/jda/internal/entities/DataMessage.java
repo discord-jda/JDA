@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.internal.entities;
 
-import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.MessageType;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.MessageType;
 
 import java.util.Collections;
 import java.util.List;

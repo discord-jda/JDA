@@ -16,11 +16,11 @@
 
 package net.dv8tion.jda.internal.managers;
 
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.exceptions.RateLimitedException;
-import net.dv8tion.jda.core.requests.Request;
-import net.dv8tion.jda.core.requests.Response;
-import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.exceptions.RateLimitedException;
+import net.dv8tion.jda.api.requests.Request;
+import net.dv8tion.jda.api.requests.Response;
+import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.json.JSONObject;
@@ -36,9 +36,9 @@ public abstract class ManagerBase extends AuditableRestAction<Void>
     /**
      * Enables internal checks for missing permissions
      * <br>When this is disabled the chances of hitting a
-     * {@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS ErrorResponse.MISSING_PERMISSIONS} is increased significantly,
+     * {@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS ErrorResponse.MISSING_PERMISSIONS} is increased significantly,
      * otherwise JDA will check permissions and cancel the execution using
-     * {@link net.dv8tion.jda.core.exceptions.InsufficientPermissionException InsufficientPermissionException}.
+     * {@link net.dv8tion.jda.api.exceptions.InsufficientPermissionException InsufficientPermissionException}.
      * <br><b>Default: true</b>
      *
      * @param enable
@@ -54,9 +54,9 @@ public abstract class ManagerBase extends AuditableRestAction<Void>
     /**
      * Whether internal checks for missing permissions are enabled
      * <br>When this is disabled the chances of hitting a
-     * {@link net.dv8tion.jda.core.requests.ErrorResponse#MISSING_PERMISSIONS ErrorResponse.MISSING_PERMISSIONS} is increased significantly,
+     * {@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS ErrorResponse.MISSING_PERMISSIONS} is increased significantly,
      * otherwise JDA will check permissions and cancel the execution using
-     * {@link net.dv8tion.jda.core.exceptions.InsufficientPermissionException InsufficientPermissionException}.
+     * {@link net.dv8tion.jda.api.exceptions.InsufficientPermissionException InsufficientPermissionException}.
      *
      * @return True, if internal permission checks are enabled
      *
