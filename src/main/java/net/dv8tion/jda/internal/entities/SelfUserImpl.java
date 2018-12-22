@@ -20,9 +20,9 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.SelfUser;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
-import net.dv8tion.jda.api.managers.AccountManager;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.managers.AccountManagerImpl;
 import net.dv8tion.jda.internal.requests.AbstractRestAction;
 
 import java.util.concurrent.locks.ReentrantLock;
@@ -30,7 +30,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class SelfUserImpl extends UserImpl implements SelfUser
 {
     protected final ReentrantLock mngLock = new ReentrantLock();
-    protected volatile AccountManager manager;
+    protected volatile AccountManagerImpl manager;
 
     private boolean verified;
     private boolean mfaEnabled;
@@ -118,15 +118,15 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     }
 
     @Override
-    public AccountManager getManager()
+    public AccountManagerImpl getManager()
     {
-        AccountManager mng = manager;
+        AccountManagerImpl mng = manager;
         if (mng == null)
         {
             mng = MiscUtil.locked(mngLock, () ->
             {
                 if (manager == null)
-                    manager = new AccountManager(this);
+                    manager = new AccountManagerImpl(this);
                 return manager;
             });
         }

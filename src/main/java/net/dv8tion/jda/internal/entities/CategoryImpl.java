@@ -18,11 +18,11 @@ package net.dv8tion.jda.internal.entities;
 
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.InviteAction;
 import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.requests.AbstractRestAction;
-import net.dv8tion.jda.internal.requests.restaction.ChannelActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import java.util.ArrayList;
@@ -88,10 +88,10 @@ public class CategoryImpl extends AbstractChannelImpl<CategoryImpl> implements C
     }
 
     @Override
-    public ChannelActionImpl createCopy(Guild guild)
+    public ChannelAction createCopy(Guild guild)
     {
         Checks.notNull(guild, "Guild");
-        ChannelActionImpl action = guild.getController().createCategory(name);
+        ChannelAction action = guild.getController().createCategory(name);
         if (guild.equals(getGuild()))
         {
             for (PermissionOverride o : overrides.valueCollection())
@@ -145,17 +145,17 @@ public class CategoryImpl extends AbstractChannelImpl<CategoryImpl> implements C
     }
 
     @Override
-    public ChannelActionImpl createTextChannel(String name)
+    public ChannelAction createTextChannel(String name)
     {
-        ChannelActionImpl action = getGuild().getController().createTextChannel(name).setParent(this);
+        ChannelAction action = getGuild().getController().createTextChannel(name).setParent(this);
         applyPermission(action);
         return action;
     }
 
     @Override
-    public ChannelActionImpl createVoiceChannel(String name)
+    public ChannelAction createVoiceChannel(String name)
     {
-        ChannelActionImpl action = getGuild().getController().createVoiceChannel(name).setParent(this);
+        ChannelAction action = getGuild().getController().createVoiceChannel(name).setParent(this);
         applyPermission(action);
         return action;
     }
@@ -178,7 +178,7 @@ public class CategoryImpl extends AbstractChannelImpl<CategoryImpl> implements C
         return "GC:" + getName() + '(' + id + ')';
     }
 
-    private void applyPermission(ChannelActionImpl a)
+    private void applyPermission(ChannelAction a)
     {
         overrides.forEachValue(override ->
         {

@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.managers;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
+import net.dv8tion.jda.api.managers.Manager;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -26,40 +27,16 @@ import org.json.JSONObject;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
-public abstract class ManagerBase extends AuditableRestActionImpl<Void>
+public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestActionImpl<Void> implements Manager<M>
 {
     private static boolean enablePermissionChecks = true;
     protected long set = 0;
 
-    /**
-     * Enables internal checks for missing permissions
-     * <br>When this is disabled the chances of hitting a
-     * {@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS ErrorResponse.MISSING_PERMISSIONS} is increased significantly,
-     * otherwise JDA will check permissions and cancel the execution using
-     * {@link net.dv8tion.jda.api.exceptions.InsufficientPermissionException InsufficientPermissionException}.
-     * <br><b>Default: true</b>
-     *
-     * @param enable
-     *        True, if JDA should perform permissions checks internally
-     *
-     * @see   #isPermissionChecksEnabled()
-     */
     public static void setPermissionChecksEnabled(boolean enable)
     {
         enablePermissionChecks = enable;
     }
 
-    /**
-     * Whether internal checks for missing permissions are enabled
-     * <br>When this is disabled the chances of hitting a
-     * {@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS ErrorResponse.MISSING_PERMISSIONS} is increased significantly,
-     * otherwise JDA will check permissions and cancel the execution using
-     * {@link net.dv8tion.jda.api.exceptions.InsufficientPermissionException InsufficientPermissionException}.
-     *
-     * @return True, if internal permission checks are enabled
-     *
-     * @see    #setPermissionChecksEnabled(boolean)
-     */
     public static boolean isPermissionChecksEnabled()
     {
         return enablePermissionChecks;
@@ -70,7 +47,9 @@ public abstract class ManagerBase extends AuditableRestActionImpl<Void>
         super(api, route);
     }
 
-    public ManagerBase reset(long fields)
+    @Override
+    @SuppressWarnings("unchecked")
+    public M reset(long fields)
     {
         //logic explanation:
         //0101 = fields
@@ -78,15 +57,17 @@ public abstract class ManagerBase extends AuditableRestActionImpl<Void>
         //1100 = set
         //1000 = set & ~fields
         set &= ~fields;
-        return this;
+        return (M) this;
     }
 
-    public ManagerBase reset(long... fields)
+    @Override
+    @SuppressWarnings("unchecked")
+    public M reset(long... fields)
     {
         Checks.notNull(fields, "Fields");
         //trivial case
         if (fields.length == 0)
-            return this;
+            return (M) this;
         else if (fields.length == 1)
             return reset(fields[0]);
 
@@ -97,10 +78,12 @@ public abstract class ManagerBase extends AuditableRestActionImpl<Void>
         return reset(sum);
     }
 
-    protected ManagerBase reset()
+    @Override
+    @SuppressWarnings("unchecked")
+    public M reset()
     {
         set = 0;
-        return this;
+        return (M) this;
     }
 
     @Override

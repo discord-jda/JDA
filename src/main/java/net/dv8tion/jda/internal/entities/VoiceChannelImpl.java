@@ -18,8 +18,8 @@ package net.dv8tion.jda.internal.entities;
 
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
-import net.dv8tion.jda.internal.requests.restaction.ChannelActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import java.util.ArrayList;
@@ -74,10 +74,10 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannelImpl> impl
     }
 
     @Override
-    public ChannelActionImpl createCopy(Guild guild)
+    public ChannelAction createCopy(Guild guild)
     {
         Checks.notNull(guild, "Guild");
-        ChannelActionImpl action = guild.getController().createVoiceChannel(name).setBitrate(bitrate).setUserlimit(userLimit);
+        ChannelAction action = guild.getController().createVoiceChannel(name).setBitrate(bitrate).setUserlimit(userLimit);
         if (guild.equals(getGuild()))
         {
             Category parent = getParent();
