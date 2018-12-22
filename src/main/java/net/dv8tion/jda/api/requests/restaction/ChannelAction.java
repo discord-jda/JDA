@@ -20,7 +20,6 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Category;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.IPermissionHolder;
-import net.dv8tion.jda.api.requests.RestAction;
 
 import javax.annotation.CheckReturnValue;
 import java.util.Collection;
@@ -33,7 +32,7 @@ import java.util.function.BooleanSupplier;
  *
  * @since  3.0
  */
-public interface ChannelAction extends RestAction<GuildChannel> // TODO: Make generic
+public interface ChannelAction extends AuditableRestAction<GuildChannel> // TODO: Make generic
 {
     @Override
     ChannelAction setCheck(BooleanSupplier checks);
