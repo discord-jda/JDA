@@ -382,7 +382,7 @@ public interface GuildChannel extends ISnowflake
     PermissionOverrideAction putPermissionOverride(Role role);
 
     /**
-     * Creates a new {@link net.dv8tion.jda.api.requests.restaction.InviteAction InviteAction} which can be used to create a
+     * Creates a new {@link InviteAction InviteAction} which can be used to create a
      * new {@link net.dv8tion.jda.api.entities.Invite Invite}.
      * <br>Requires {@link net.dv8tion.jda.api.Permission#CREATE_INSTANT_INVITE CREATE_INSTANT_INVITE} in this channel.
      *
@@ -391,9 +391,9 @@ public interface GuildChannel extends ISnowflake
      * @throws java.lang.IllegalArgumentException
      *         If this is an instance of a {@link net.dv8tion.jda.api.entities.Category Category}
      *
-     * @return A new {@link net.dv8tion.jda.api.requests.restaction.InviteAction InviteAction}
+     * @return A new {@link InviteAction InviteAction}
      * 
-     * @see    net.dv8tion.jda.api.requests.restaction.InviteAction
+     * @see    InviteAction
      */
     @CheckReturnValue
     InviteAction createInvite();
