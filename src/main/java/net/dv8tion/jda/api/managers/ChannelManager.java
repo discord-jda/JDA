@@ -23,7 +23,7 @@ import javax.annotation.CheckReturnValue;
 import java.util.Collection;
 
 /**
- * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.api.entities.GuildChannel Guild GuildChannel}.
+ * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}.
  *
  * <p><b>Example</b>
  * <pre>{@code
