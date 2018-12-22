@@ -108,7 +108,7 @@ public interface TextChannel extends GuildChannel, MessageChannel, Comparable<Te
      *         If the provided name is {@code null}, blank or not
      *         between 2-100 characters in length
      *
-     * @return A specific {@link net.dv8tion.jda.api.requests.restaction.WebhookAction WebhookAction}
+     * @return A specific {@link WebhookAction WebhookAction}
      *         <br>This action allows to set fields for the new webhook before creating it
      */
     @CheckReturnValue

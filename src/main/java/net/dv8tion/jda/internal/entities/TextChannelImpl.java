@@ -31,6 +31,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.WebhookActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -98,7 +99,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
         Checks.check(name.length() >= 2 && name.length() <= 100, "Name must be 2-100 characters in length!");
 
         Route.CompiledRoute route = Route.Channels.CREATE_WEBHOOK.compile(getId());
-        return new WebhookAction(getJDA(), route, name);
+        return new WebhookActionImpl(getJDA(), route, name);
     }
 
     @Override
