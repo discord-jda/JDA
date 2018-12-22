@@ -19,7 +19,6 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.managers.RoleManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.RoleAction;
-import net.dv8tion.jda.internal.requests.AbstractRestAction;
 
 import javax.annotation.CheckReturnValue;
 import java.awt.Color;

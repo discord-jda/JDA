@@ -127,7 +127,7 @@ public class Request<T>
         return api;
     }
 
-    public AbstractRestAction<T> getRestAction()
+    public RestAction<T> getRestAction()
     {
         return restAction;
     }

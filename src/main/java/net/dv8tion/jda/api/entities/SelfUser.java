@@ -17,7 +17,6 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.managers.AccountManager;
-import net.dv8tion.jda.internal.requests.AbstractRestAction;
 
 /**
  * Represents the currently logged in account.

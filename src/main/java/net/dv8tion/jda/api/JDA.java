@@ -25,7 +25,6 @@ import net.dv8tion.jda.api.requests.restaction.GuildAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
-import net.dv8tion.jda.internal.requests.AbstractRestAction;
 
 import javax.annotation.CheckReturnValue;
 import java.util.Collection;
@@ -470,7 +469,7 @@ public interface JDA
      *         <br>On request, gets the User with id matching provided id from Discord.
      */
     @CheckReturnValue
-    AbstractRestAction<User> retrieveUserById(String id);
+    RestAction<User> retrieveUserById(String id);
 
     /**
      * Attempts to retrieve a {@link net.dv8tion.jda.api.entities.User User} object based on the provided id.
@@ -494,7 +493,7 @@ public interface JDA
      *         <br>On request, gets the User with id matching provided id from Discord.
      */
     @CheckReturnValue
-    AbstractRestAction<User> retrieveUserById(long id);
+    RestAction<User> retrieveUserById(long id);
 
     /**
      * {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
@@ -1177,7 +1176,7 @@ public interface JDA
      *         <br>The {@link ApplicationInfo ApplicationInfo} of the bot's application.
      */
     @CheckReturnValue
-    AbstractRestAction<ApplicationInfo> getApplicationInfo();
+    RestAction<ApplicationInfo> getApplicationInfo();
 
     /**
      * Creates an authorization invite url for the currently logged in Bot-Account.
@@ -1242,7 +1241,7 @@ public interface JDA
      * @see    Guild#getWebhooks()
      * @see    TextChannel#getWebhooks()
      */
-    AbstractRestAction<Webhook> getWebhookById(String webhookId);
+    RestAction<Webhook> getWebhookById(String webhookId);
 
     /**
      * Retrieves a {@link net.dv8tion.jda.api.entities.Webhook Webhook} by its id.
@@ -1266,7 +1265,7 @@ public interface JDA
      * @see    Guild#getWebhooks()
      * @see    TextChannel#getWebhooks()
      */
-    default AbstractRestAction<Webhook> getWebhookById(long webhookId)
+    default RestAction<Webhook> getWebhookById(long webhookId)
     {
         return getWebhookById(Long.toUnsignedString(webhookId));
     }

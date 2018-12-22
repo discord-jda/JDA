@@ -19,8 +19,6 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDA.Status;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.requests.Request;
-import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.CacheView;
@@ -179,7 +177,7 @@ public interface ShardManager
      *
      * @return The Application registry for this bot.
      */
-    default AbstractRestAction<ApplicationInfo> getApplicationInfo()
+    default RestAction<ApplicationInfo> getApplicationInfo()
     {
         return this.getShardCache().stream()
                 .findAny()
@@ -497,7 +495,7 @@ public interface ShardManager
      *         <br>On request, gets the User with id matching provided id from Discord.
      */
     @CheckReturnValue
-    default AbstractRestAction<User> retrieveUserById(String id)
+    default RestAction<User> retrieveUserById(String id)
     {
         return retrieveUserById(MiscUtil.parseSnowflake(id));
     }
@@ -524,7 +522,7 @@ public interface ShardManager
      *         <br>On request, gets the User with id matching provided id from Discord.
      */
     @CheckReturnValue
-    default AbstractRestAction<User> retrieveUserById(long id)
+    default RestAction<User> retrieveUserById(long id)
     {
         JDA api = null;
         for (JDA shard : getShardCache())

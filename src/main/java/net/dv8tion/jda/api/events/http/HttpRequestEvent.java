@@ -20,7 +20,6 @@ import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.Route.CompiledRoute;
 import okhttp3.Headers;
 import okhttp3.RequestBody;
@@ -113,7 +112,7 @@ public class HttpRequestEvent extends Event
         return this.response.getCFRays();
     }
 
-    public AbstractRestAction<?> getRestAction()
+    public RestAction<?> getRestAction()
     {
         return this.request.getRestAction();
     }
