@@ -211,7 +211,7 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.managers.RoleManager RoleManager} for this Role.
+     * The {@link RoleManager RoleManager} for this Role.
      * In the RoleManager, you can modify all its values.
      * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
      *
