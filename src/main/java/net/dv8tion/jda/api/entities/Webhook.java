@@ -136,7 +136,7 @@ public interface Webhook extends ISnowflake, IFakeable
     AuditableRestAction<Void> delete();
 
     /**
-     * The {@link net.dv8tion.jda.api.managers.WebhookManager WebhookManager} for this Webhook.
+     * The {@link WebhookManager WebhookManager} for this Webhook.
      * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
@@ -145,7 +145,7 @@ public interface Webhook extends ISnowflake, IFakeable
      * @throws IllegalStateException 
      *         if the Webhook is fake, such as the Webhooks retrieved from Audit Logs
      * 
-     * @return The {@link net.dv8tion.jda.api.managers.WebhookManager WebhookManager} for this Webhook
+     * @return The {@link WebhookManager WebhookManager} for this Webhook
      */
     WebhookManager getManager();
 }

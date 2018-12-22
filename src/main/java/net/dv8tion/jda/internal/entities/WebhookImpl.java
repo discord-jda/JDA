@@ -18,8 +18,8 @@ package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.managers.WebhookManager;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.internal.managers.WebhookManagerImpl;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
@@ -33,7 +33,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class WebhookImpl implements Webhook
 {
-    protected volatile WebhookManager manager = null;
+    protected volatile WebhookManagerImpl manager = null;
 
     private final ReentrantLock mngLock = new ReentrantLock();
     private final TextChannel channel;
@@ -108,18 +108,18 @@ public class WebhookImpl implements Webhook
     }
 
     @Override
-    public WebhookManager getManager()
+    public WebhookManagerImpl getManager()
     {
         if (isFake())
             throw new IllegalStateException("Fake Webhooks (such as those retrieved from Audit Logs) "
                     + "cannot provide a WebhookManager!");
-        WebhookManager mng = manager;
+        WebhookManagerImpl mng = manager;
         if (mng == null)
         {
             mng = MiscUtil.locked(mngLock, () ->
             {
                 if (manager == null)
-                    manager = new WebhookManager(this);
+                    manager = new WebhookManagerImpl(this);
                 return manager;
             });
         }
