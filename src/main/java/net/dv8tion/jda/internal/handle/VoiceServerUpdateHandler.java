@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.audio.AudioConnection;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;

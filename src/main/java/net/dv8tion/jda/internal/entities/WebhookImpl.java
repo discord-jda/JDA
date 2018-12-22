@@ -16,10 +16,13 @@
 
 package net.dv8tion.jda.internal.entities;
 
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.managers.WebhookManager;
-import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.managers.WebhookManager;
+import net.dv8tion.jda.api.requests.Request;
+import net.dv8tion.jda.api.requests.Response;
+import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
@@ -27,7 +30,7 @@ import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * The implementation for {@link net.dv8tion.jda.core.entities.Webhook Webhook}
+ * The implementation for {@link net.dv8tion.jda.api.entities.Webhook Webhook}
  *
  * @since  3.0
  */

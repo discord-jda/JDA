@@ -15,13 +15,14 @@
  */
 package net.dv8tion.jda.internal.entities;
 
-import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.PrivateChannel;
-import net.dv8tion.jda.core.entities.SelfUser;
-import net.dv8tion.jda.core.exceptions.AccountTypeException;
-import net.dv8tion.jda.core.managers.AccountManager;
-import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.api.AccountType;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.PrivateChannel;
+import net.dv8tion.jda.api.entities.SelfUser;
+import net.dv8tion.jda.api.exceptions.AccountTypeException;
+import net.dv8tion.jda.api.managers.AccountManager;
+import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.AbstractRestAction;
 
