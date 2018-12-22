@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.MessagePaginationAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
@@ -1195,7 +1196,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     }
 
     /**
-     * A {@link net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction PaginationAction} implementation
+     * A {@link PaginationAction PaginationAction} implementation
      * that allows to {@link Iterable iterate} over recent {@link net.dv8tion.jda.api.entities.Message Messages} of
      * this MessageChannel.
      * <br>This is <b>not</b> a cache for received messages and it can only view messages that were sent

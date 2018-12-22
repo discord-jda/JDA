@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.audit.ThreadLocalReason;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
 
 import java.util.function.BooleanSupplier;
 
@@ -40,7 +41,7 @@ public interface AuditableRestAction<T> extends RestAction<T>
      *
      * <p>Reasons for any AuditableRestAction may be retrieved
      * via {@link net.dv8tion.jda.api.audit.AuditLogEntry#getReason() AuditLogEntry.getReason()}
-     * in iterable {@link net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction AuditLogPaginationActions}
+     * in iterable {@link AuditLogPaginationAction AuditLogPaginationActions}
      * from {@link net.dv8tion.jda.api.entities.Guild#getAuditLogs() Guild.getAuditLogs()}!
      *
      * <p>This will specify the reason via the {@code X-Audit-Log-Reason} Request Header.

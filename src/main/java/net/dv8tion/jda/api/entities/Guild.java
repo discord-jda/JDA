@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.managers.GuildManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MemberAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
 import net.dv8tion.jda.api.utils.cache.MemberCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
@@ -1276,7 +1277,7 @@ public interface Guild extends ISnowflake
     GuildController getController();
 
     /**
-     * A {@link net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction PaginationAction} implementation
+     * A {@link PaginationAction PaginationAction} implementation
      * that allows to {@link Iterable iterate} over all {@link net.dv8tion.jda.api.audit.AuditLogEntry AuditLogEntries} of
      * this Guild.
      * <br>This iterates from the most recent action to the first logged one. (Limit 90 days into history by discord api)
@@ -1305,7 +1306,7 @@ public interface Guild extends ISnowflake
      *         If the currently logged in account
      *         does not have the permission {@link net.dv8tion.jda.api.Permission#VIEW_AUDIT_LOGS VIEW_AUDIT_LOGS}
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction AuditLogPaginationAction}
+     * @return {@link AuditLogPaginationAction AuditLogPaginationAction}
      */
     @CheckReturnValue
     AuditLogPaginationAction getAuditLogs();

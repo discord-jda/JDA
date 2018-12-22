@@ -1,11 +1,11 @@
 /*
- *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
+ * Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,20 +16,17 @@
 
 package net.dv8tion.jda.api.requests.restaction.pagination;
 
-import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.Procedure;
 import net.dv8tion.jda.internal.requests.AbstractRestAction;
-import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.requests.restaction.pagination.AbstractPaginationAction;
 
 import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -80,56 +77,8 @@ import java.util.stream.StreamSupport;
  *
  * @since  3.1
  */
-public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
-    extends AbstractRestAction<List<T>> implements Iterable<T>
+public interface PaginationAction<T, M extends PaginationAction<T, M>> extends RestAction<List<T>>, Iterable<T>
 {
-    protected final List<T> cached = new CopyOnWriteArrayList<>();
-    protected final int maxLimit;
-    protected final int minLimit;
-    protected final AtomicInteger limit;
-
-    protected volatile long lastKey = 0;
-    protected volatile T last = null;
-    protected volatile boolean useCache = true;
-
-    /**
-     * Creates a new PaginationAction instance
-     *
-     * @param api
-     *        The current JDA instance
-     * @param route
-     *        The base route
-     * @param maxLimit
-     *        The inclusive maximum limit that can be used in {@link #limit(int)}
-     * @param minLimit
-     *        The inclusive minimum limit that can be used in {@link #limit(int)}
-     * @param initialLimit
-     *        The initial limit to use on the pagination endpoint
-     */
-    public PaginationAction(JDA api, Route.CompiledRoute route, int minLimit, int maxLimit, int initialLimit)
-    {
-        super(api, route);
-        this.maxLimit = maxLimit;
-        this.minLimit = minLimit;
-        this.limit = new AtomicInteger(initialLimit);
-    }
-
-    /**
-     * Creates a new PaginationAction instance
-     * <br>This is used for PaginationActions that should not deal with
-     * {@link #limit(int)}
-     *
-     * @param api
-     *        The current JDA instance
-     */
-    public PaginationAction(JDA api)
-    {
-        super(api, null);
-        this.maxLimit = 0;
-        this.minLimit = 0;
-        this.limit = new AtomicInteger(0);
-    }
-
     /**
      * Skips past the specified ID for successive requests.
      * This will reset the {@link #getLast()} entity and cause a {@link NoSuchElementException} to be thrown
@@ -137,7 +86,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      * <br>If cache is disabled this can be set to an arbitrary value irrelevant of the current last.
      * Set this to {@code 0} to start from the most recent message.
      *
-     * <p>Fails if cache is enabled and the target id is newer than the current last id (id > last).
+     * <p>Fails if cache is enabled and the target id is newer than the current last id {@literal (id > last)}.
      *
      * <h2>Example</h2>
      * <pre>{@code
@@ -160,27 +109,14 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *         The snowflake ID to skip before, this is exclusive rather than inclusive
      *
      * @throws IllegalArgumentException
-     *         If cache is enabled and you are attempting to skip forward in time (id > last)
+     *         If cache is enabled and you are attempting to skip forward in time {@literal (id > last)}
      *
      * @return The current PaginationAction for chaining convenience
      *
      * @see    java.util.concurrent.TimeUnit
      * @see    net.dv8tion.jda.api.utils.TimeUtil
      */
-    @SuppressWarnings("unchecked")
-    public M skipTo(long id)
-    {
-        if (!cached.isEmpty())
-        {
-            int cmp = Long.compareUnsigned(this.lastKey, id);
-            if (cmp < 0) // old - new < 0 => old < new
-                throw new IllegalArgumentException("Cannot jump to that id, it is newer than the current oldest element.");
-        }
-        if (this.lastKey != id)
-            this.last = null;
-        this.lastKey = id;
-        return (M) this;
-    }
+    M skipTo(long id);
 
     /**
      * The current iteration anchor used for pagination.
@@ -190,27 +126,17 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @see    #skipTo(long) Use skipTo(anchor) to change this
      */
-    public long getLastKey()
-    {
-        return lastKey;
-    }
+    long getLastKey();
 
     @Override
-    @SuppressWarnings("unchecked")
-    public M setCheck(BooleanSupplier checks)
-    {
-        return (M) super.setCheck(checks);
-    }
+    M setCheck(BooleanSupplier checks);
 
     /**
      * The current amount of cached entities for this PaginationAction
      *
      * @return int size of currently cached entities
      */
-    public int cacheSize()
-    {
-        return cached.size();
-    }
+    int cacheSize();
 
     /**
      * Whether the cache of this PaginationAction is empty.
@@ -218,10 +144,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return True, if no entities have been retrieved yet.
      */
-    public boolean isEmpty()
-    {
-        return cached.isEmpty();
-    }
+    boolean isEmpty();
 
     /**
      * The currently cached entities of recent execution tasks.
@@ -233,10 +156,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return Immutable {@link java.util.List List} containing all currently cached entities for this PaginationAction
      */
-    public List<T> getCached()
-    {
-        return Collections.unmodifiableList(cached);
-    }
+    List<T> getCached();
 
     /**
      * The most recent entity retrieved by this PaginationAction instance
@@ -246,13 +166,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return The most recent cached entity
      */
-    public T getLast()
-    {
-        final T last = this.last;
-        if (last == null)
-            throw new NoSuchElementException("No entities have been retrieved yet.");
-        return last;
-    }
+    T getLast();
 
     /**
      * The first cached entity retrieved by this PaginationAction instance
@@ -262,12 +176,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return The very first cached entity
      */
-    public T getFirst()
-    {
-        if (cached.isEmpty())
-            throw new NoSuchElementException("No entities have been retrieved yet.");
-        return cached.get(0);
-    }
+    T getFirst();
 
     /**
      * Sets the limit that should be used in the next RestAction completion
@@ -291,18 +200,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return The current PaginationAction implementation instance
      */
-    @SuppressWarnings("unchecked")
-    public M limit(final int limit)
-    {
-        Checks.check(maxLimit == 0 || limit <= maxLimit, "Limit must not exceed %d!", maxLimit);
-        Checks.check(minLimit == 0 || limit >= minLimit, "Limit must be greater or equal to %d", minLimit);
-
-        synchronized (this.limit)
-        {
-            this.limit.set(limit);
-        }
-        return (M) this;
-    }
+    M limit(final int limit);
 
     /**
      * Whether already retrieved entities should be stored
@@ -318,12 +216,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return The current PaginationAction implementation instance
      */
-    @SuppressWarnings("unchecked")
-    public M cache(final boolean enableCache)
-    {
-        this.useCache = enableCache;
-        return (M) this;
-    }
+    M cache(final boolean enableCache);
 
     /**
      * Whether retrieved entities are stored within an
@@ -336,10 +229,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return True, If entities will be cached.
      */
-    public boolean isCacheEnabled()
-    {
-        return useCache;
-    }
+    boolean isCacheEnabled();
 
     /**
      * The maximum limit that can be used for this PaginationAction
@@ -350,10 +240,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return The maximum limit
      */
-    public final int getMaxLimit()
-    {
-        return maxLimit;
-    }
+    int getMaxLimit();
 
     /**
      * The minimum limit that can be used for this PaginationAction
@@ -364,10 +251,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return The minimum limit
      */
-    public final int getMinLimit()
-    {
-        return minLimit;
-    }
+    int getMinLimit();
 
     /**
      * The currently used limit.
@@ -376,10 +260,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return limit
      */
-    public final int getLimit()
-    {
-        return limit.get();
-    }
+    int getLimit();
 
     /**
      * Convenience method to retrieve an amount of entities from this pagination action.
@@ -392,13 +273,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @see    #forEachAsync(Procedure)
      */
-    public CompletableFuture<List<T>> takeAsync(int amount)
-    {
-        return takeAsync0(amount, (task, list) -> forEachAsync(val -> {
-            list.add(val);
-            return list.size() < amount;
-        }, task::completeExceptionally));
-    }
+    CompletableFuture<List<T>> takeAsync(int amount);
 
     /**
      * Convenience method to retrieve an amount of entities from this pagination action.
@@ -411,35 +286,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @see    #forEachRemainingAsync(Procedure)
      */
-    public CompletableFuture<List<T>> takeRemainingAsync(int amount)
-    {
-        return takeAsync0(amount, (task, list) -> forEachRemainingAsync(val -> {
-            list.add(val);
-            return list.size() < amount;
-        }, task::completeExceptionally));
-    }
-
-    private CompletableFuture<List<T>> takeAsync0(int amount, BiFunction<CompletableFuture<?>, List<T>, CompletableFuture<?>> converter)
-    {
-        CompletableFuture<List<T>> task = new CompletableFuture<>();
-        List<T> list = new ArrayList<>(amount);
-        CompletableFuture<?> promise = converter.apply(task, list);
-        promise.thenRun(() -> task.complete(list));
-        return task;
-    }
-
-    /**
-     * {@link net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction.PaginationIterator PaginationIterator}
-     * that will iterate over all entities for this PaginationAction.
-     *
-     * @return new PaginationIterator
-     */
-    @Nonnull
-    @Override
-    public PaginationIterator iterator()
-    {
-        return new PaginationIterator();
-    }
+    CompletableFuture<List<T>> takeRemainingAsync(int amount);
 
     /**
      * Iterates over all entities until the provided action returns {@code false}!
@@ -475,7 +322,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return {@link java.util.concurrent.Future Future} that can be cancelled to stop iteration from outside!
      */
-    public CompletableFuture<?> forEachAsync(final Procedure<T> action)
+    default CompletableFuture<?> forEachAsync(final Procedure<T> action)
     {
         return forEachAsync(action, AbstractRestAction.getDefaultFailure());
     }
@@ -517,28 +364,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return {@link java.util.concurrent.Future Future} that can be cancelled to stop iteration from outside!
      */
-    public CompletableFuture<?> forEachAsync(final Procedure<T> action, final Consumer<? super Throwable> failure)
-    {
-        Checks.notNull(action, "Procedure");
-        Checks.notNull(failure, "Failure Consumer");
-
-        final CompletableFuture<?> task = new CompletableFuture<>();
-        final Consumer<List<T>> acceptor = new ChainedConsumer(task, action, (throwable) ->
-        {
-            task.completeExceptionally(throwable);
-            failure.accept(throwable);
-        });
-        try
-        {
-            acceptor.accept(cached);
-        }
-        catch (Exception ex)
-        {
-            failure.accept(ex);
-            task.completeExceptionally(ex);
-        }
-        return task;
-    }
+    CompletableFuture<?> forEachAsync(final Procedure<T> action, final Consumer<? super Throwable> failure);
 
     /**
      * Iterates over all remaining entities until the provided action returns {@code false}!
@@ -575,7 +401,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return {@link java.util.concurrent.Future Future} that can be cancelled to stop iteration from outside!
      */
-    public CompletableFuture<?> forEachRemainingAsync(final Procedure<T> action)
+    default CompletableFuture<?> forEachRemainingAsync(final Procedure<T> action)
     {
         return forEachRemainingAsync(action, AbstractRestAction.getDefaultFailure());
     }
@@ -617,29 +443,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return {@link java.util.concurrent.Future Future} that can be cancelled to stop iteration from outside!
      */
-    public CompletableFuture<?> forEachRemainingAsync(final Procedure<T> action, final Consumer<? super Throwable> failure)
-    {
-        Checks.notNull(action, "Procedure");
-        Checks.notNull(failure, "Failure Consumer");
-
-        final CompletableFuture<?> task = new CompletableFuture<>();
-        final Consumer<List<T>> acceptor = new ChainedConsumer(task, action, (throwable) ->
-        {
-            task.completeExceptionally(throwable);
-            failure.accept(throwable);
-        });
-        try
-        {
-            //not starting with cache here unlike forEachAsync
-            acceptor.accept(Collections.emptyList());
-        }
-        catch (Exception ex)
-        {
-            failure.accept(ex);
-            task.completeExceptionally(ex);
-        }
-        return task;
-    }
+    CompletableFuture<?> forEachRemainingAsync(final Procedure<T> action, final Consumer<? super Throwable> failure);
 
     /**
      * Iterates over all remaining entities until the provided action returns {@code false}!
@@ -651,22 +455,10 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *         The {@link net.dv8tion.jda.api.utils.Procedure Procedure}
      *         which should return {@code true} to continue iterating
      */
-    public void forEachRemaining(final Procedure<T> action)
-    {
-        Checks.notNull(action, "Procedure");
-        Queue<T> queue = new LinkedList<>();
-        while (queue.addAll(getNextChunk()))
-        {
-            while (!queue.isEmpty())
-            {
-                if (!action.execute(queue.poll()))
-                    return;
-            }
-        }
-    }
+    void forEachRemaining(final Procedure<T> action);
 
     @Override
-    public Spliterator<T> spliterator()
+    default Spliterator<T> spliterator()
     {
         return Spliterators.spliteratorUnknownSize(iterator(), Spliterator.IMMUTABLE);
     }
@@ -676,7 +468,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return a sequential {@code Stream} over the elements in this PaginationAction
      */
-    public Stream<T> stream()
+    default Stream<T> stream()
     {
         return StreamSupport.stream(spliterator(), false);
     }
@@ -687,25 +479,23 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *
      * @return a sequential {@code Stream} over the elements in this PaginationAction
      */
-    public Stream<T> parallelStream()
+    default Stream<T> parallelStream()
     {
         return StreamSupport.stream(spliterator(), true);
     }
 
-    private List<T> getNextChunk()
-    {
-        List<T> items;
-        synchronized (limit)
-        {
-            final int current = limit.getAndSet(getMaxLimit());
-            items = complete();
-            limit.set(current);
-        }
-        return items;
-    }
+    /**
+     * {@link AbstractPaginationAction.PaginationIterator PaginationIterator}
+     * that will iterate over all entities for this PaginationAction.
+     *
+     * @return new PaginationIterator
+     */
+    @Nonnull
+    @Override
+    PaginationIterator<T> iterator();
 
     /**
-     * Iterator implementation for a {@link net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction PaginationAction}.
+     * Iterator implementation for a {@link PaginationAction PaginationAction}.
      * <br>This iterator will first iterate over all currently cached entities and continue to retrieve new entities
      * as needed.
      *
@@ -713,9 +503,16 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      * request a List of new entities through a call of {@link net.dv8tion.jda.api.requests.RestAction#complete() RestAction.complete()}.
      * <br><b>It is recommended to use the highest possible limit for this task. (see {@link #limit(int)})</b>
      */
-    public class PaginationIterator implements Iterator<T>
+    class PaginationIterator<E> implements Iterator<E>
     {
-        protected Queue<T> items = new LinkedList<>(cached);
+        protected Queue<E> items;
+        protected final Supplier<List<E>> supply;
+
+        public PaginationIterator(Collection<E> queue, Supplier<List<E>> supply)
+        {
+            this.items = new LinkedList<>(queue);
+            this.supply = supply;
+        }
 
         @Override
         public boolean hasNext()
@@ -725,7 +522,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
             if (!hitEnd())
                 return true;
 
-            if (items.addAll(getNextChunk()))
+            if (items.addAll(supply.get()))
                 return true;
 
             // null indicates that the real end has been reached
@@ -734,7 +531,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
         }
 
         @Override
-        public T next()
+        public E next()
         {
             if (!hasNext())
                 throw new NoSuchElementException("Reached End of pagination task!");
@@ -744,50 +541,6 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
         protected boolean hitEnd()
         {
             return items.isEmpty();
-        }
-
-    }
-
-    protected class ChainedConsumer implements Consumer<List<T>>
-    {
-        protected final CompletableFuture<?> task;
-        protected final Procedure<T> action;
-        protected final Consumer<Throwable> throwableConsumer;
-        protected boolean initial = true;
-
-        protected ChainedConsumer(final CompletableFuture<?> task, final Procedure<T> action,
-                                  final Consumer<Throwable> throwableConsumer)
-        {
-            this.task = task;
-            this.action = action;
-            this.throwableConsumer = throwableConsumer;
-        }
-
-        @Override
-        public void accept(final List<T> list)
-        {
-            if (list.isEmpty() && !initial)
-            {
-                task.complete(null);
-                return;
-            }
-            initial = false;
-
-            for (T it : list)
-            {
-                if (task.isCancelled())
-                    return;
-                if (action.execute(it))
-                    continue;
-                task.complete(null);
-                return;
-            }
-            synchronized (limit)
-            {
-                final int currentLimit = limit.getAndSet(maxLimit);
-                queue(this, throwableConsumer);
-                limit.set(currentLimit);
-            }
         }
     }
 }

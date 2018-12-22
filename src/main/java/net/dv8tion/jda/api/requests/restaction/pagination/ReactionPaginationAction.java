@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.pagination.AbstractPaginationAction;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -30,7 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * {@link net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction PaginationAction}
+ * {@link PaginationAction PaginationAction}
  * that paginates the endpoint {@link net.dv8tion.jda.internal.requests.Route.Messages#GET_REACTION_USERS Route.Messages.GET_REACTION_USERS}.
  *
  * <p><b>Must provide not-null {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} to compile a valid
@@ -52,7 +53,7 @@ import java.util.List;
  *
  * @since  3.1
  */
-public class ReactionPaginationAction extends PaginationAction<User, ReactionPaginationAction>
+public class ReactionPaginationAction extends AbstractPaginationAction<User, ReactionPaginationAction>
 {
 
     protected final MessageReaction reaction;

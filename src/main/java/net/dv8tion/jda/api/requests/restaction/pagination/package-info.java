@@ -17,7 +17,7 @@
 /**
  * Extensions of {@link net.dv8tion.jda.api.requests.RestAction RestAction} that allow
  * to access paginated discord endpoints like {@link net.dv8tion.jda.internal.requests.Route.Messages#GET_REACTION_USERS Route.Messages.GET_REACTION_USERS}
- * <br>The {@link net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction PaginationAction} is designed to work
+ * <br>The {@link net.dv8tion.jda.internal.requests.restaction.pagination.AbstractPaginationAction PaginationAction} is designed to work
  * as an {@link java.lang.Iterable Iterable} of the specified endpoint. Each implementation specifies the endpoints it will
  * use in the class-level javadoc
  *

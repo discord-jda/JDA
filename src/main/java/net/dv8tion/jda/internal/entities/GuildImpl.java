@@ -25,7 +25,6 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.GuildController;
-import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.MemberCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
@@ -36,6 +35,7 @@ import net.dv8tion.jda.internal.managers.GuildManagerImpl;
 import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.MemberActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.pagination.AuditLogPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.UnlockHook;
@@ -507,9 +507,9 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public AuditLogPaginationAction getAuditLogs()
+    public AuditLogPaginationActionImpl getAuditLogs()
     {
-        return new AuditLogPaginationAction(this);
+        return new AuditLogPaginationActionImpl(this);
     }
 
     @Override
