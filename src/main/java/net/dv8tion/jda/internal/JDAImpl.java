@@ -34,7 +34,6 @@ import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.Presence;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
-import net.dv8tion.jda.api.requests.restaction.GuildAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.SessionController;
@@ -51,6 +50,7 @@ import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
+import net.dv8tion.jda.internal.requests.restaction.GuildActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.UnlockHook;
@@ -708,7 +708,7 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public GuildAction createGuild(String name)
+    public GuildActionImpl createGuild(String name)
     {
         switch (accountType)
         {
@@ -720,7 +720,7 @@ public class JDAImpl implements JDA
                 if (guildCache.size() >= 100)
                     throw new IllegalStateException("Cannot be in more than 100 guilds with AccountType.CLIENT!");
         }
-        return new GuildAction(this, name);
+        return new GuildActionImpl(this, name);
     }
 
     @Override
