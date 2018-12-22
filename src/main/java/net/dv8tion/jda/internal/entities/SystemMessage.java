@@ -18,8 +18,8 @@ package net.dv8tion.jda.internal.entities;
 
 import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.internal.requests.AbstractRestAction;
+import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -68,25 +68,25 @@ public class SystemMessage extends ReceivedMessage
     }
 
     @Override
-    public MessageAction editMessage(CharSequence newContent)
+    public MessageActionImpl editMessage(CharSequence newContent)
     {
         throw new UnsupportedOperationException("Cannot edit message of this Message Type. MessageType: " + getType());
     }
 
     @Override
-    public MessageAction editMessage(MessageEmbed newContent)
+    public MessageActionImpl editMessage(MessageEmbed newContent)
     {
         throw new UnsupportedOperationException("Cannot edit message of this Message Type. MessageType: " + getType());
     }
 
     @Override
-    public MessageAction editMessageFormat(String format, Object... args)
+    public MessageActionImpl editMessageFormat(String format, Object... args)
     {
         throw new UnsupportedOperationException("Cannot edit message of this Message Type. MessageType: " + getType());
     }
 
     @Override
-    public MessageAction editMessage(Message newContent)
+    public MessageActionImpl editMessage(Message newContent)
     {
         throw new UnsupportedOperationException("Cannot edit message of this Message Type. MessageType: " + getType());
     }

@@ -28,6 +28,7 @@ import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.json.JSONArray;
 
@@ -323,7 +324,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The newly created Message after it has been sent to Discord.
      *
      * @see net.dv8tion.jda.api.MessageBuilder
@@ -336,9 +337,9 @@ public interface MessageChannel extends ISnowflake, Formattable
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
         if (text instanceof StringBuilder)
-            return new MessageAction(getJDA(), route, this, (StringBuilder) text);
+            return new MessageActionImpl(getJDA(), route, this, (StringBuilder) text);
         else
-            return new MessageAction(getJDA(), route, this).append(text);
+            return new MessageActionImpl(getJDA(), route, this).append(text);
     }
 
     /**
@@ -384,7 +385,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         see the <a href="../util/Formatter.html#detail">Details</a>
      *         section of the formatter class specification.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The newly created Message after it has been sent to Discord.
      */
     @CheckReturnValue
@@ -430,7 +431,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The newly created Message after it has been sent to Discord.
      *
      * @see    net.dv8tion.jda.api.MessageBuilder
@@ -442,7 +443,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.notNull(embed, "Provided embed");
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
-        return new MessageAction(getJDA(), route, this).embed(embed);
+        return new MessageActionImpl(getJDA(), route, this).embed(embed);
     }
 
     /**
@@ -498,7 +499,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The newly created Message after it has been sent to Discord.
      *
      * @see    net.dv8tion.jda.api.MessageBuilder
@@ -509,7 +510,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.notNull(msg, "Message");
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
-        return new MessageAction(getJDA(), route, this).apply(msg);
+        return new MessageActionImpl(getJDA(), route, this).apply(msg);
     }
 
     /**
@@ -547,7 +548,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
      */
     @CheckReturnValue
@@ -602,7 +603,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
      */
     @CheckReturnValue
@@ -640,7 +641,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
      */
     @CheckReturnValue
@@ -683,7 +684,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
      */
     @CheckReturnValue
@@ -744,7 +745,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
      */
     @CheckReturnValue
@@ -839,7 +840,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
      */
     @CheckReturnValue
@@ -908,7 +909,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
      */
     @CheckReturnValue
@@ -918,7 +919,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.notNull(fileName, "fileName");
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
-        return new MessageAction(getJDA(), route, this).apply(message).addFile(data, fileName);
+        return new MessageActionImpl(getJDA(), route, this).apply(message).addFile(data, fileName);
     }
 
     /**
@@ -972,7 +973,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
      */
     @CheckReturnValue
@@ -2586,7 +2587,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a TextChannel and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The modified Message after it has been sent to Discord.
      */
     @CheckReturnValue
@@ -2598,9 +2599,9 @@ public interface MessageChannel extends ISnowflake, Formattable
 
         Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getId(), messageId);
         if (newContent instanceof StringBuilder)
-            return new MessageAction(getJDA(), route, this, (StringBuilder) newContent);
+            return new MessageActionImpl(getJDA(), route, this, (StringBuilder) newContent);
         else
-            return new MessageAction(getJDA(), route, this).append(newContent);
+            return new MessageActionImpl(getJDA(), route, this).append(newContent);
     }
 
     /**
@@ -2642,7 +2643,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a TextChannel and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The modified Message after it has been sent to Discord.
      */
     @CheckReturnValue
@@ -2691,7 +2692,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a TextChannel and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The modified Message after it has been sent to discord
      */
     @CheckReturnValue
@@ -2701,7 +2702,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.notNull(newContent, "message");
 
         Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getId(), messageId);
-        return new MessageAction(getJDA(), route, this).apply(newContent);
+        return new MessageActionImpl(getJDA(), route, this).apply(newContent);
     }
 
     /**
@@ -2744,7 +2745,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a TextChannel and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The modified Message after it has been sent to discord
      */
     @CheckReturnValue
@@ -2802,7 +2803,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         see the <a href="../util/Formatter.html#detail">Details</a>
      *         section of the formatter class specification.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The modified Message after it has been sent to discord
      */
     @CheckReturnValue
@@ -2861,7 +2862,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         see the <a href="../util/Formatter.html#detail">Details</a>
      *         section of the formatter class specification.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The modified Message after it has been sent to discord
      */
     @CheckReturnValue
@@ -2912,7 +2913,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The modified Message after it has been sent to discord
      */
     @CheckReturnValue
@@ -2922,7 +2923,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.notNull(newEmbed, "MessageEmbed");
 
         Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getId(), messageId);
-        return new MessageAction(getJDA(), route, this).embed(newEmbed);
+        return new MessageActionImpl(getJDA(), route, this).embed(newEmbed);
     }
 
     /**
@@ -2966,7 +2967,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The modified Message after it has been sent to discord
      */
     @CheckReturnValue
