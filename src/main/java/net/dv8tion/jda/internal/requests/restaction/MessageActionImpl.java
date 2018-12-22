@@ -39,6 +39,7 @@ import javax.annotation.CheckReturnValue;
 import java.io.*;
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 public class MessageActionImpl extends AbstractRestAction<Message> implements MessageAction
@@ -66,6 +67,12 @@ public class MessageActionImpl extends AbstractRestAction<Message> implements Me
             "Cannot build a Message with more than %d characters. Please limit your input.", Message.MAX_CONTENT_LENGTH);
         this.content = contentBuilder;
         this.channel = channel;
+    }
+
+    @Override
+    public MessageAction setCheck(BooleanSupplier checks)
+    {
+        return (MessageAction) super.setCheck(checks);
     }
 
     public boolean isEmpty()

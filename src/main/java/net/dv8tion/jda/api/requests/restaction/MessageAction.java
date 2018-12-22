@@ -26,6 +26,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.util.function.BiConsumer;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 /**
@@ -64,6 +65,9 @@ import java.util.function.Consumer;
  */
 public interface MessageAction extends RestAction<Message>, Appendable
 {
+    @Override
+    MessageAction setCheck(BooleanSupplier checks);
+
     /**
      * Whether this MessageAction has no values set.
      * <br>Trying to execute with {@code isEmpty() == true} will result in an {@link java.lang.IllegalStateException IllegalStateException}!

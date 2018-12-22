@@ -144,7 +144,7 @@ public class AbstractRestAction<T> implements RestAction<T>
     }
 
     @Override
-    public AbstractRestAction<T> setCheck(BooleanSupplier checks)
+    public RestAction<T> setCheck(BooleanSupplier checks)
     {
         this.checks = checks;
         return this;
