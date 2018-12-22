@@ -17,7 +17,6 @@
 package net.dv8tion.jda.internal.managers;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.Webhook;
@@ -51,18 +50,6 @@ public class WebhookManagerImpl extends ManagerBase<WebhookManager> implements W
         this.webhook = new UpstreamReference<>(webhook);
         if (isPermissionChecksEnabled())
             checkPermissions();
-    }
-
-    @Override
-    public Guild getGuild()
-    {
-        return getWebhook().getGuild();
-    }
-
-    @Override
-    public TextChannel getChannel()
-    {
-        return getWebhook().getChannel();
     }
 
     @Override

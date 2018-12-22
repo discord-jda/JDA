@@ -89,13 +89,12 @@ public interface WebhookManager extends Manager<WebhookManager>
     WebhookManager reset(long... fields);
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.Guild Guild} this Manager's
-     * {@link net.dv8tion.jda.api.entities.Webhook Webhook} is in.
-     * <br>This is logically the same as calling {@code getWebhook().getGuild()}
+     * The target {@link net.dv8tion.jda.api.entities.Webhook Webhook}
+     * that will be modified by this manager
      *
-     * @return The parent {@link net.dv8tion.jda.api.entities.Guild Guild}
+     * @return The target {@link net.dv8tion.jda.api.entities.Webhook Webhook}
      */
-    Guild getGuild();
+    Webhook getWebhook();
 
     /**
      * The {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} this Manager's
@@ -104,15 +103,22 @@ public interface WebhookManager extends Manager<WebhookManager>
      *
      * @return The parent {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      */
-    TextChannel getChannel();
+    default TextChannel getChannel()
+    {
+        return getWebhook().getChannel();
+    }
 
     /**
-     * The target {@link net.dv8tion.jda.api.entities.Webhook Webhook}
-     * that will be modified by this manager
+     * The {@link net.dv8tion.jda.api.entities.Guild Guild} this Manager's
+     * {@link net.dv8tion.jda.api.entities.Webhook Webhook} is in.
+     * <br>This is logically the same as calling {@code getWebhook().getGuild()}
      *
-     * @return The target {@link net.dv8tion.jda.api.entities.Webhook Webhook}
+     * @return The parent {@link net.dv8tion.jda.api.entities.Guild Guild}
      */
-    Webhook getWebhook();
+    default Guild getGuild()
+    {
+        return getWebhook().getGuild();
+    }
 
     /**
      * Sets the <b><u>default name</u></b> of the selected {@link net.dv8tion.jda.api.entities.Webhook Webhook}.

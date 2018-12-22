@@ -112,13 +112,6 @@ public interface ChannelManager extends Manager<ChannelManager>
     ChannelManager reset(long... fields);
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType}
-     *
-     * @return The ChannelType
-     */
-    ChannelType getType();
-
-    /**
      * The {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} that will
      * be modified by this Manager instance
      *
@@ -127,13 +120,26 @@ public interface ChannelManager extends Manager<ChannelManager>
     GuildChannel getChannel();
 
     /**
+     * The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType}
+     *
+     * @return The ChannelType
+     */
+    default ChannelType getType()
+    {
+        return getChannel().getType();
+    }
+
+    /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} this Manager's
      * {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} is in.
      * <br>This is logically the same as calling {@code getChannel().getGuild()}
      *
      * @return The parent {@link net.dv8tion.jda.api.entities.Guild Guild}
      */
-    Guild getGuild();
+    default Guild getGuild()
+    {
+        return getChannel().getGuild();
+    }
 
     /**
      * Clears the overrides added via {@link #putPermissionOverride(IPermissionHolder, Collection, Collection)}.

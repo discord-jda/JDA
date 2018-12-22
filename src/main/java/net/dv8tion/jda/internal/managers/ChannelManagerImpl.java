@@ -70,21 +70,9 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     }
 
     @Override
-    public ChannelType getType()
-    {
-        return getChannel().getType();
-    }
-
-    @Override
     public GuildChannel getChannel()
     {
         return channel.get();
-    }
-
-    @Override
-    public Guild getGuild()
-    {
-        return getChannel().getGuild();
     }
 
     @Override

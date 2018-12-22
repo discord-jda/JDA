@@ -17,7 +17,6 @@
 package net.dv8tion.jda.internal.managers;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
@@ -56,12 +55,6 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
         this.role = new UpstreamReference<>(role);
         if (isPermissionChecksEnabled())
             checkPermissions();
-    }
-
-    @Override
-    public Guild getGuild()
-    {
-        return getRole().getGuild();
     }
 
     @Override

@@ -91,7 +91,10 @@ public interface EmoteManager extends Manager<EmoteManager>
      *
      * @return The parent {@link net.dv8tion.jda.api.entities.Guild Guild}
      */
-    Guild getGuild();
+    default Guild getGuild()
+    {
+        return getEmote().getGuild();
+    }
 
     /**
      * The target {@link net.dv8tion.jda.api.entities.Emote Emote}

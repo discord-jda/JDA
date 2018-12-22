@@ -100,21 +100,24 @@ public interface RoleManager extends Manager<RoleManager>
     RoleManager reset(long... fields);
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.Guild Guild} this Manager's
-     * {@link net.dv8tion.jda.api.entities.Role Role} is in.
-     * <br>This is logically the same as calling {@code getRole().getGuild()}
-     *
-     * @return The parent {@link net.dv8tion.jda.api.entities.Guild Guild}
-     */
-    Guild getGuild();
-
-    /**
      * The target {@link net.dv8tion.jda.api.entities.Role Role} for this
      * manager
      *
      * @return The target Role
      */
     Role getRole();
+
+    /**
+     * The {@link net.dv8tion.jda.api.entities.Guild Guild} this Manager's
+     * {@link net.dv8tion.jda.api.entities.Role Role} is in.
+     * <br>This is logically the same as calling {@code getRole().getGuild()}
+     *
+     * @return The parent {@link net.dv8tion.jda.api.entities.Guild Guild}
+     */
+    default Guild getGuild()
+    {
+        return getRole().getGuild();
+    }
 
     /**
      * Sets the <b><u>name</u></b> of the selected {@link net.dv8tion.jda.api.entities.Role Role}.

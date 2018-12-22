@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.internal.managers;
 
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.Guild;
@@ -64,18 +63,6 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
         if (g == null)
             throw new IllegalStateException("Cannot modify a fake emote");
         return g;
-    }
-
-    @Override
-    public JDA getJDA()
-    {
-        return emote.getJDA();
-    }
-
-    @Override
-    public Guild getGuild()
-    {
-        return emote.getGuild();
     }
 
     @Override
