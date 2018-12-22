@@ -23,12 +23,12 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.ChannelManager;
 import net.dv8tion.jda.api.requests.restaction.InviteAction;
-import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.PermissionOverrideActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import org.json.JSONArray;
@@ -151,7 +151,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     }
 
     @Override
-    public PermissionOverrideAction createPermissionOverride(Member member)
+    public PermissionOverrideActionImpl createPermissionOverride(Member member)
     {
         Checks.notNull(member, "member");
         if (overrides.containsKey(member.getUser().getIdLong()))
@@ -161,7 +161,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     }
 
     @Override
-    public PermissionOverrideAction createPermissionOverride(Role role)
+    public PermissionOverrideActionImpl createPermissionOverride(Role role)
     {
         Checks.notNull(role, "role");
         if (overrides.containsKey(role.getIdLong()))
@@ -171,7 +171,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     }
 
     @Override
-    public PermissionOverrideAction putPermissionOverride(Member member)
+    public PermissionOverrideActionImpl putPermissionOverride(Member member)
     {
         checkPermission(Permission.MANAGE_PERMISSIONS);
         Checks.notNull(member, "member");
@@ -179,11 +179,11 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         if (!getGuild().equals(member.getGuild()))
             throw new IllegalArgumentException("Provided member is not from the same guild as this channel!");
         Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(getId(), member.getUser().getId());
-        return new PermissionOverrideAction(getJDA(), route, this, member);
+        return new PermissionOverrideActionImpl(getJDA(), route, this, member);
     }
 
     @Override
-    public PermissionOverrideAction putPermissionOverride(Role role)
+    public PermissionOverrideActionImpl putPermissionOverride(Role role)
     {
         checkPermission(Permission.MANAGE_PERMISSIONS);
         Checks.notNull(role, "role");
@@ -191,7 +191,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         if (!getGuild().equals(role.getGuild()))
             throw new IllegalArgumentException("Provided role is not from the same guild as this channel!");
         Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(getId(), role.getId());
-        return new PermissionOverrideAction(getJDA(), route, this, role);
+        return new PermissionOverrideActionImpl(getJDA(), route, this, role);
     }
 
     @Override

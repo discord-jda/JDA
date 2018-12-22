@@ -296,7 +296,7 @@ public interface GuildChannel extends ISnowflake
      *         If the specified Member already has a PermissionOverride. Use {@link #getPermissionOverride(Member)} to retrieve it.
      *         You can use {@link #putPermissionOverride(Member)} to replace existing overrides.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction PermissionOverrideAction}
+     * @return {@link PermissionOverrideAction PermissionOverrideAction}
      *         Provides the newly created PermissionOverride for the specified Role
      *
      * @see    #createPermissionOverride(Role)
@@ -330,7 +330,7 @@ public interface GuildChannel extends ISnowflake
      *         If the specified Role already has a PermissionOverride. Use {@link #getPermissionOverride(Role)} to retrieve it.
      *         You can use {@link #putPermissionOverride(Role)} to replace existing overrides.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction PermissionOverrideAction}
+     * @return {@link PermissionOverrideAction PermissionOverrideAction}
      *         Provides the newly created PermissionOverride for the specified Role
      *
      * @see    #createPermissionOverride(Member)
@@ -352,7 +352,7 @@ public interface GuildChannel extends ISnowflake
      * @throws java.lang.IllegalArgumentException
      *         If the provided member is null or from a different guild
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction PermissionOverrideAction}
+     * @return {@link PermissionOverrideAction PermissionOverrideAction}
      *         Provides the newly created PermissionOverride for the specified Member
      *
      * @see    #putPermissionOverride(Role)
@@ -373,7 +373,7 @@ public interface GuildChannel extends ISnowflake
      * @throws java.lang.IllegalArgumentException
      *         If the provided role is null or from a different guild
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction PermissionOverrideAction}
+     * @return {@link PermissionOverrideAction PermissionOverrideAction}
      *         Provides the newly created PermissionOverride for the specified Role
      *
      * @see    #putPermissionOverride(Member)
