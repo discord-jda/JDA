@@ -1,11 +1,11 @@
 /*
- *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
+ * Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,17 +17,8 @@
 package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.api.requests.Request;
-import net.dv8tion.jda.api.requests.Response;
-import net.dv8tion.jda.internal.entities.GuildImpl;
-import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import okhttp3.RequestBody;
-import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 import java.awt.Color;
@@ -41,36 +32,10 @@ import java.util.function.BooleanSupplier;
  *
  * @since  3.0
  */
-public class RoleAction extends AuditableRestActionImpl<Role>
+public interface RoleAction extends AuditableRestAction<Role>
 {
-
-    protected final Guild guild;
-    protected Long permissions;
-    protected String name = null;
-    protected Integer color = null;
-    protected Boolean hoisted = null;
-    protected Boolean mentionable = null;
-
-    /**
-     * Creates a new RoleAction instance
-     *
-     * @param  route
-     *         A {@link net.dv8tion.jda.internal.requests.Route.CompiledRoute CompiledRoute}
-     *         Which will be used for the Role creation.
-     * @param  guild
-     *         The {@link net.dv8tion.jda.api.entities.Guild Guild} for which the Role should be created.
-     */
-    public RoleAction(Route.CompiledRoute route, Guild guild)
-    {
-        super(guild.getJDA(), route);
-        this.guild = guild;
-    }
-
     @Override
-    public RoleAction setCheck(BooleanSupplier checks)
-    {
-        return (RoleAction) super.setCheck(checks);
-    }
+    RoleAction setCheck(BooleanSupplier checks);
 
     /**
      * Sets the name for new role (optional)
@@ -81,11 +46,7 @@ public class RoleAction extends AuditableRestActionImpl<Role>
      * @return The current RoleAction, for chaining convenience
      */
     @CheckReturnValue
-    public RoleAction setName(String name)
-    {
-        this.name = name;
-        return this;
-    }
+    RoleAction setName(String name);
 
     /**
      * Sets whether or not the new role should be hoisted
@@ -96,11 +57,7 @@ public class RoleAction extends AuditableRestActionImpl<Role>
      * @return The current RoleAction, for chaining convenience
      */
     @CheckReturnValue
-    public RoleAction setHoisted(Boolean hoisted)
-    {
-        this.hoisted = hoisted;
-        return this;
-    }
+    RoleAction setHoisted(Boolean hoisted);
 
     /**
      * Sets whether the new role should be mentionable by members of
@@ -112,11 +69,7 @@ public class RoleAction extends AuditableRestActionImpl<Role>
      * @return The current RoleAction, for chaining convenience
      */
     @CheckReturnValue
-    public RoleAction setMentionable(Boolean mentionable)
-    {
-        this.mentionable = mentionable;
-        return this;
-    }
+    RoleAction setMentionable(Boolean mentionable);
 
     /**
      * Sets the color which the new role should be displayed with.
@@ -127,7 +80,7 @@ public class RoleAction extends AuditableRestActionImpl<Role>
      * @return The current RoleAction, for chaining convenience
      */
     @CheckReturnValue
-    public RoleAction setColor(Color color)
+    default RoleAction setColor(Color color)
     {
         return this.setColor(color != null ? color.getRGB() : null);
     }
@@ -143,11 +96,7 @@ public class RoleAction extends AuditableRestActionImpl<Role>
      * @return The current RoleAction, for chaining convenience
      */
     @CheckReturnValue
-    public RoleAction setColor(Integer rgb)
-    {
-        this.color = rgb;
-        return this;
-    }
+    RoleAction setColor(Integer rgb);
 
     /**
      * Sets the Permissions the new Role should have.
@@ -167,19 +116,12 @@ public class RoleAction extends AuditableRestActionImpl<Role>
      * @see    net.dv8tion.jda.api.Permission#getRaw(net.dv8tion.jda.api.Permission...) Permission.getRaw(Permission...)
      */
     @CheckReturnValue
-    public RoleAction setPermissions(Permission... permissions)
+    default RoleAction setPermissions(Permission... permissions)
     {
         if (permissions != null)
-        {
-            for (Permission p : permissions)
-            {
-                Checks.notNull(p, "Permissions");
-                checkPermission(p);
-            }
-        }
+            Checks.noneNull(permissions, "Permissions");
 
-        this.permissions = permissions == null ? null : Permission.getRaw(permissions);
-        return this;
+        return setPermissions(permissions == null ? null : Permission.getRaw(permissions));
     }
 
     /**
@@ -201,19 +143,12 @@ public class RoleAction extends AuditableRestActionImpl<Role>
      * @see    java.util.EnumSet EnumSet
      */
     @CheckReturnValue
-    public RoleAction setPermissions(Collection<Permission> permissions)
+    default RoleAction setPermissions(Collection<Permission> permissions)
     {
         if (permissions != null)
-        {
-            for (Permission p : permissions)
-            {
-                Checks.notNull(p, "Permissions");
-                checkPermission(p);
-            }
-        }
+            Checks.noneNull(permissions, "Permissions");
 
-        this.permissions = permissions == null ? null : Permission.getRaw(permissions);
-        return this;
+        return setPermissions(permissions == null ? null : Permission.getRaw(permissions));
     }
 
     /**
@@ -237,46 +172,5 @@ public class RoleAction extends AuditableRestActionImpl<Role>
      * @see    net.dv8tion.jda.api.Permission#getRaw(net.dv8tion.jda.api.Permission...)
      */
     @CheckReturnValue
-    public RoleAction setPermissions(Long permissions)
-    {
-        if (permissions != null)
-        {
-            Checks.notNegative(permissions, "Raw Permissions");
-            Checks.check(permissions <= Permission.ALL_PERMISSIONS, "Provided permissions may not be greater than a full permission set!");
-            for (Permission p : Permission.getPermissions(permissions))
-                checkPermission(p);
-        }
-        this.permissions = permissions;
-        return this;
-    }
-
-    @Override
-    protected RequestBody finalizeData()
-    {
-        JSONObject object = new JSONObject();
-        if (name != null)
-            object.put("name", name);
-        if (color != null)
-            object.put("color", color & 0xFFFFFF);
-        if (permissions != null)
-            object.put("permissions", permissions);
-        if (hoisted != null)
-            object.put("hoist", hoisted.booleanValue());
-        if (mentionable != null)
-            object.put("mentionable", mentionable.booleanValue());
-
-        return getRequestBody(object);
-    }
-
-    @Override
-    protected void handleSuccess(Response response, Request<Role> request)
-    {
-        request.onSuccess(api.get().getEntityBuilder().createRole((GuildImpl) guild, response.getObject(), guild.getIdLong()));
-    }
-
-    private void checkPermission(Permission permission)
-    {
-        if (!guild.getSelfMember().hasPermission(permission))
-            throw new InsufficientPermissionException(permission);
-    }
+    RoleAction setPermissions(Long permissions);
 }

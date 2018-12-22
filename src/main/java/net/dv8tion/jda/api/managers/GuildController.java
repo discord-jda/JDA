@@ -38,6 +38,7 @@ import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.RoleActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
@@ -1777,7 +1778,7 @@ public class GuildController
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES} Permission
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.RoleAction RoleAction}
+     * @return {@link RoleAction RoleAction}
      *         <br>Creates a new role with previously selected field values
      */
     @CheckReturnValue
@@ -1786,7 +1787,7 @@ public class GuildController
         checkPermission(Permission.MANAGE_ROLES);
 
         Route.CompiledRoute route = Route.Roles.CREATE_ROLE.compile(getGuild().getId());
-        return new RoleAction(route, getGuild());
+        return new RoleActionImpl(route, getGuild());
     }
 
     /**
@@ -1819,7 +1820,7 @@ public class GuildController
      * @throws java.lang.IllegalArgumentException
      *         If the specified role is {@code null}
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.RoleAction RoleAction}
+     * @return {@link RoleAction RoleAction}
      *         <br>RoleAction with already copied values from the specified {@link net.dv8tion.jda.api.entities.Role Role}
      */
     @CheckReturnValue
