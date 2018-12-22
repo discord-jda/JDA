@@ -26,7 +26,6 @@ import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.GuildController;
 import net.dv8tion.jda.api.managers.GuildManager;
-import net.dv8tion.jda.api.requests.restaction.MemberAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.MemberCacheView;
@@ -36,6 +35,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.MemberActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.UnlockHook;
@@ -122,14 +122,14 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public MemberAction addMember(String accessToken, String userId)
+    public MemberActionImpl addMember(String accessToken, String userId)
     {
         Checks.notBlank(accessToken, "Access-Token");
         Checks.isSnowflake(userId, "User ID");
         Checks.check(getMemberById(userId) == null, "User is already in this guild");
         if (!getSelfMember().hasPermission(Permission.CREATE_INSTANT_INVITE))
             throw new InsufficientPermissionException(Permission.CREATE_INSTANT_INVITE);
-        return new MemberAction(getJDA(), this, userId, accessToken);
+        return new MemberActionImpl(getJDA(), this, userId, accessToken);
     }
 
     @Override

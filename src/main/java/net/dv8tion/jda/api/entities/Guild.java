@@ -83,7 +83,7 @@ public interface Guild extends ISnowflake
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#CREATE_INSTANT_INVITE Permission.CREATE_INSTANT_INVITE}
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MemberAction MemberAction}
+     * @return {@link MemberAction MemberAction}
      *
      * @see    <a href="https://discordapp.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
      *
@@ -107,7 +107,7 @@ public interface Guild extends ISnowflake
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#CREATE_INSTANT_INVITE Permission.CREATE_INSTANT_INVITE}
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MemberAction MemberAction}
+     * @return {@link MemberAction MemberAction}
      *
      * @see    <a href="https://discordapp.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
      *
@@ -135,7 +135,7 @@ public interface Guild extends ISnowflake
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#CREATE_INSTANT_INVITE Permission.CREATE_INSTANT_INVITE}
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MemberAction MemberAction}
+     * @return {@link MemberAction MemberAction}
      *
      * @see    <a href="https://discordapp.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
      *
