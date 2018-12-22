@@ -20,8 +20,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.api.managers.PermOverrideManager;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.internal.managers.PermOverrideManagerImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
@@ -36,7 +36,7 @@ public class PermissionOverrideImpl implements PermissionOverride
     private final IPermissionHolder permissionHolder;
 
     protected final ReentrantLock mngLock = new ReentrantLock();
-    protected volatile PermOverrideManager manager;
+    protected volatile PermOverrideManagerImpl manager;
 
     private long allow;
     private long deny;
@@ -127,15 +127,15 @@ public class PermissionOverrideImpl implements PermissionOverride
     }
 
     @Override
-    public PermOverrideManager getManager()
+    public PermOverrideManagerImpl getManager()
     {
-        PermOverrideManager mng = manager;
+        PermOverrideManagerImpl mng = manager;
         if (mng == null)
         {
             mng = MiscUtil.locked(mngLock, () ->
             {
                 if (manager == null)
-                    manager = new PermOverrideManager(this);
+                    manager = new PermOverrideManagerImpl(this);
                 return manager;
             });
         }

@@ -141,7 +141,7 @@ public interface PermissionOverride
     boolean isRoleOverride();
 
     /**
-     * Returns the {@link net.dv8tion.jda.api.managers.PermOverrideManager PermOverrideManager} for this PermissionOverride.
+     * Returns the {@link PermOverrideManager PermOverrideManager} for this PermissionOverride.
      * <br>In the PermOverrideManager you can modify the permissions of the override.
      * You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
      *
