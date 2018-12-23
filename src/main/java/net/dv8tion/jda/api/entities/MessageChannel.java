@@ -1917,7 +1917,12 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.notEmpty(unicode, "Provided Unicode");
         Checks.noWhitespace(unicode, "Provided Unicode");
 
-        String encoded = MiscUtil.encodeUTF8(unicode);
+        unicode = unicode.trim();
+        String encoded;
+        if (unicode.startsWith("U+"))
+            encoded = MiscUtil.encodeCodePointsUTF8(unicode);
+        else
+            encoded = MiscUtil.encodeUTF8(unicode);
         Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, encoded);
         return new RestAction<Void>(getJDA(), route)
         {
