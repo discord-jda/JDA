@@ -843,7 +843,8 @@ public interface Guild extends ISnowflake
 
     /**
      * Gets all {@link net.dv8tion.jda.api.entities.Role Roles} in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
-     * <br>The roles returned will be sorted according to their position.
+     * <br>The roles returned will be sorted according to their position. The highest role being at index 0
+     * and the lowest at the last index.
      *
      * <p>This copies the backing store into a list. This means every call
      * creates a new list with O(n) complexity. It is recommended to store this into

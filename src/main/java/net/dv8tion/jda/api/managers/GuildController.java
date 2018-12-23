@@ -2077,9 +2077,9 @@ public class GuildController
      * </ul>
      *
      * @param  useDiscordOrder
-     *         Defines the ordering of the OrderAction. If {@code true}, the OrderAction will be in the ordering
+     *         Defines the ordering of the OrderAction. If {@code false}, the OrderAction will be in the ordering
      *         defined by Discord for roles, which is Descending. This means that the highest role appears at index {@code 0}
-     *         and the lowest role at index {@code n - 1}. Providing {@code false} will result in the ordering being
+     *         and the lowest role at index {@code n - 1}. Providing {@code true} will result in the ordering being
      *         in ascending order, with the lower role at index {@code 0} and the highest at index {@code n - 1}.
      *         <br>As a note: {@link net.dv8tion.jda.api.entities.Member#getRoles() Member.getRoles()}
      *         and {@link net.dv8tion.jda.api.entities.Guild#getRoles() Guild.getRoles()} are both in descending order.

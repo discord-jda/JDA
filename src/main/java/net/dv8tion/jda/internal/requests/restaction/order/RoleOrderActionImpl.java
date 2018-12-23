@@ -44,23 +44,23 @@ public class RoleOrderActionImpl
      * @param  guild
      *         The target {@link net.dv8tion.jda.api.entities.Guild Guild} of which
      *         to change the {@link net.dv8tion.jda.api.entities.Role Role} order
-     * @param  useDiscordOrder
-     *         Defines the ordering of the OrderAction. If {@code true}, the OrderAction will be in the ordering
+     * @param  useAscendingOrder
+     *         Defines the ordering of the OrderAction. If {@code false}, the OrderAction will be in the ordering
      *         defined by Discord for roles, which is Descending. This means that the highest role appears at index {@code 0}
-     *         and the lowest role at index {@code n - 1}. Providing {@code false} will result in the ordering being
+     *         and the lowest role at index {@code n - 1}. Providing {@code true} will result in the ordering being
      *         in ascending order, with the lower role at index {@code 0} and the highest at index {@code n - 1}.
      *         <br>As a note: {@link net.dv8tion.jda.api.entities.Member#getRoles() Member.getRoles()}
      *         and {@link net.dv8tion.jda.api.entities.Guild#getRoles() Guild.getRoles()} are both in descending order.
      */
-    public RoleOrderActionImpl(Guild guild, boolean useDiscordOrder)
+    public RoleOrderActionImpl(Guild guild, boolean useAscendingOrder)
     {
-        super(guild.getJDA(), !useDiscordOrder, Route.Guilds.MODIFY_ROLES.compile(guild.getId()));
+        super(guild.getJDA(), !useAscendingOrder, Route.Guilds.MODIFY_ROLES.compile(guild.getId()));
         this.guild = guild;
 
         List<Role> roles = guild.getRoles();
         roles = roles.subList(0, roles.size() - 1); //Don't include the @everyone role.
 
-        if (useDiscordOrder)
+        if (useAscendingOrder)
         {
             //Add roles to orderList in reverse due to role position ordering being descending
             // Top role starts at roles.size() - 1, bottom is 0.
