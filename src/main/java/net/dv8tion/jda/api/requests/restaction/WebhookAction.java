@@ -25,6 +25,8 @@ import java.util.function.BooleanSupplier;
 /**
  * {@link net.dv8tion.jda.api.entities.Webhook Webhook} Builder system created as an extension of {@link net.dv8tion.jda.api.requests.RestAction}
  * <br>Provides an easy way to gather and deliver information to Discord to create {@link net.dv8tion.jda.api.entities.Webhook Webhooks}.
+ *
+ * @see net.dv8tion.jda.api.entities.TextChannel#createWebhook(String)
  */
 public interface WebhookAction extends AuditableRestAction<Webhook>
 {

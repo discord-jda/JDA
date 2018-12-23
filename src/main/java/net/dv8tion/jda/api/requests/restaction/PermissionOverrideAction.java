@@ -17,7 +17,9 @@
 package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.PermissionOverride;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -33,6 +35,11 @@ import java.util.function.BooleanSupplier;
  * This extension allows setting properties before executing the action.
  *
  * @since  3.0
+ *
+ * @see    net.dv8tion.jda.api.entities.GuildChannel#createPermissionOverride(Role)
+ * @see    net.dv8tion.jda.api.entities.GuildChannel#createPermissionOverride(Member)
+ * @see    net.dv8tion.jda.api.entities.GuildChannel#putPermissionOverride(Role)
+ * @see    net.dv8tion.jda.api.entities.GuildChannel#putPermissionOverride(Member)
  */
 public interface PermissionOverrideAction extends RestAction<PermissionOverride>
 {

@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.requests.restaction.order;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.managers.GuildController;
 
 /**
  * Implementation of {@link OrderAction OrderAction}
@@ -31,6 +32,9 @@ import net.dv8tion.jda.api.entities.Role;
  * <p><b>This uses descending order!</b>
  *
  * @since 3.0
+ *
+ * @see   GuildController#modifyRolePositions()
+ * @see   GuildController#modifyRolePositions(boolean)
  */
 public interface RoleOrderAction extends OrderAction<Role, RoleOrderAction>
 {

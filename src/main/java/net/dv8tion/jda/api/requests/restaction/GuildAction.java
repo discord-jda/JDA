@@ -42,6 +42,8 @@ import java.util.function.BooleanSupplier;
  * <br>This is available to all account types but may undergo certain restrictions by Discord.
  *
  * @since  3.4.0
+ *
+ * @see    net.dv8tion.jda.api.JDA#createGuild(String)
  */
 public interface GuildAction extends RestAction<Void>
 {

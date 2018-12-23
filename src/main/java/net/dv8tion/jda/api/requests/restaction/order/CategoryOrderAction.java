@@ -35,6 +35,9 @@ import javax.annotation.Nonnull;
  *         or {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
  *
  * @author Kaidan Gustave
+ *
+ * @see    Category#modifyTextChannelPositions()
+ * @see    Category#modifyVoiceChannelPositions()
  */
 public interface CategoryOrderAction<T extends GuildChannel> extends ChannelOrderAction<T>
 {

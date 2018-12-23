@@ -59,6 +59,8 @@ import java.util.stream.Stream;
  * permissions and create new channels and roles.
  *
  * @since 3.0
+ *
+ * @see   Guild#getController()
  */
 public class GuildController
 {

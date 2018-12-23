@@ -34,6 +34,9 @@ import java.util.function.BooleanSupplier;
  *
  * @since  3.7.0
  *
+ * @see    Guild#addMember(String, User)
+ * @see    Guild#addMember(String, long)
+ * @see    Guild#addMember(String, String)
  * @see    <a href="https://discordapp.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
  */
 public interface MemberAction extends RestAction<Void>

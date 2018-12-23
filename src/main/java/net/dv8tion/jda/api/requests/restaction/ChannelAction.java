@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Category;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.IPermissionHolder;
 
@@ -31,6 +32,13 @@ import java.util.function.BooleanSupplier;
  * This extension allows setting properties before executing the action.
  *
  * @since  3.0
+ *
+ * @see    net.dv8tion.jda.api.managers.GuildController
+ * @see    net.dv8tion.jda.api.managers.GuildController#createTextChannel(String)
+ * @see    net.dv8tion.jda.api.managers.GuildController#createVoiceChannel(String)
+ * @see    net.dv8tion.jda.api.managers.GuildController#createCategory(String)
+ * @see    GuildChannel#createCopy()
+ * @see    GuildChannel#createCopy(Guild)
  */
 public interface ChannelAction extends AuditableRestAction<GuildChannel> // TODO: Make generic
 {

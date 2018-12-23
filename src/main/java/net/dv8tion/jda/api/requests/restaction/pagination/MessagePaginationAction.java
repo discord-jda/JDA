@@ -40,7 +40,7 @@ import net.dv8tion.jda.api.entities.MessageChannel;
  * {
  *     if (limit{@literal <} 1)
  *         return;
- *     <u>MessagePaginationAction</u> action = channel.<u>getIterableHistory</u>();
+ *     MessagePaginationAction action = channel.getIterableHistory<();
  *     AtomicInteger counter = new AtomicInteger(limit);
  *     action.forEachAsync( (message){@literal ->}
  *     {
@@ -52,6 +52,8 @@ import net.dv8tion.jda.api.entities.MessageChannel;
  * </code></pre>
  *
  * @since  3.1
+ *
+ * @see    MessageChannel#getIterableHistory()
  */
 public interface MessagePaginationAction extends PaginationAction<Message, MessagePaginationAction>
 {

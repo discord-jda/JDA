@@ -62,6 +62,23 @@ import java.util.function.Consumer;
  * </code></pre>
  *
  * @since  3.4.0
+ *
+ * @see    Message#editMessage(Message)
+ * @see    Message#editMessage(CharSequence)
+ * @see    Message#editMessage(MessageEmbed)
+ * @see    Message#editMessageFormat(String, Object...)
+ * @see    net.dv8tion.jda.api.entities.MessageChannel#sendMessage(Message)
+ * @see    net.dv8tion.jda.api.entities.MessageChannel#sendMessage(CharSequence)
+ * @see    net.dv8tion.jda.api.entities.MessageChannel#sendMessage(MessageEmbed)
+ * @see    net.dv8tion.jda.api.entities.MessageChannel#sendMessageFormat(String, Object...)
+ * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(File)
+ * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(File, String)
+ * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(InputStream, String)
+ * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(byte[], String)
+ * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(File, Message)
+ * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(File, String, Message)
+ * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(InputStream, String, Message)
+ * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(byte[], String, Message)
  */
 public interface MessageAction extends RestAction<Message>, Appendable
 {
