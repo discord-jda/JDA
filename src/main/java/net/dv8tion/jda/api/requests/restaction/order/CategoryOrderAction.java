@@ -19,13 +19,14 @@ package net.dv8tion.jda.api.requests.restaction.order;
 import net.dv8tion.jda.api.entities.Category;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.internal.requests.restaction.order.ChannelOrderActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
 
 /**
- * An extension of {@link net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction ChannelOrderAction} with
+ * An extension of {@link ChannelOrderAction ChannelOrderAction} with
  * similar functionality, but constrained to the bounds of a single {@link net.dv8tion.jda.api.entities.Category Category}.
  * <br>To apply the changes you must finish the {@link net.dv8tion.jda.api.requests.RestAction RestAction}.
  *
@@ -39,7 +40,7 @@ import java.util.Collection;
  *
  * @author Kaidan Gustave
  */
-public class CategoryOrderAction<T extends GuildChannel> extends ChannelOrderAction<T>
+public class CategoryOrderAction<T extends GuildChannel> extends ChannelOrderActionImpl<T>
 {
     protected final Category category;
 
