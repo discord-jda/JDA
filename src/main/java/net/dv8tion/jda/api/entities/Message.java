@@ -901,6 +901,16 @@ public interface Message extends ISnowflake, Formattable
      *
      * <p><b>Neither success nor failure of this request will affect this Message's {@link #getReactions()} return as Message is immutable.</b>
      *
+     * <h2>Examples</h2>
+     * <code>
+     * // custom<br>
+     * message.addReaction("minn:245267426227388416").queue();<br>
+     * // unicode escape<br>
+     * message.addReaction("&#92;uD83D&#92;uDE02").queue();<br>
+     * // codepoint notation<br>
+     * message.addReaction("U+1F602").queue();
+     * </code>
+     *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
