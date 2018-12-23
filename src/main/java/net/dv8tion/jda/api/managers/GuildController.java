@@ -2039,10 +2039,10 @@ public class GuildController
      * {@link OrderAction#moveUp(int) up}/{@link OrderAction#moveDown(int) down}
      * or {@link OrderAction#moveTo(int) to} a specific position.
      *
-     * <p>This uses the ordering defined by Discord, which is <b>descending</b>!
-     * <br>This means the highest role appears at index {@code 0} and the lower role at index {@code n - 1}.
-     * <br>Providing {@code false} to {@link #modifyRolePositions(boolean)} will result in the ordering being
-     * in ascending order, with the lower role at index {@code 0} and the highest at index {@code n - 1}.
+     * <p>This uses <b>ascending</b> ordering which means the lowest role is first!
+     * <br>This means the highest role appears at index {@code n - 1} and the lower role at index {@code 0}.
+     * <br>Providing {@code true} to {@link #modifyRolePositions(boolean)} will result in the ordering being
+     * in ascending order, with the lower role at index {@code n - 1} and the highest at index {@code 0}.
      * <br>As a note: {@link net.dv8tion.jda.api.entities.Member#getRoles() Member.getRoles()}
      * and {@link net.dv8tion.jda.api.entities.Guild#getRoles() Guild.getRoles()} are both in descending order.
      *
@@ -2078,7 +2078,7 @@ public class GuildController
      *     <br>The currently logged in account was removed from the Guild</li>
      * </ul>
      *
-     * @param  useDiscordOrder
+     * @param  useAscendingOrder
      *         Defines the ordering of the OrderAction. If {@code false}, the OrderAction will be in the ordering
      *         defined by Discord for roles, which is Descending. This means that the highest role appears at index {@code 0}
      *         and the lowest role at index {@code n - 1}. Providing {@code true} will result in the ordering being
@@ -2089,9 +2089,9 @@ public class GuildController
      * @return {@link RoleOrderAction RoleOrderAction}
      */
     @CheckReturnValue
-    public RoleOrderAction modifyRolePositions(boolean useDiscordOrder)
+    public RoleOrderAction modifyRolePositions(boolean useAscendingOrder)
     {
-        return new RoleOrderActionImpl(getGuild(), useDiscordOrder);
+        return new RoleOrderActionImpl(getGuild(), useAscendingOrder);
     }
 
     protected void checkGuild(Guild providedGuild, String comment)
