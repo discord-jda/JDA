@@ -198,7 +198,7 @@ public interface GuildChannel extends ISnowflake
      *         <br>This action allows to set fields for the new GuildChannel before creating it!
      */
     @CheckReturnValue
-    ChannelAction createCopy(Guild guild);
+    ChannelAction<? extends GuildChannel> createCopy(Guild guild);
 
     /**
      * Creates a copy of the specified {@link GuildChannel GuildChannel}.
@@ -229,7 +229,7 @@ public interface GuildChannel extends ISnowflake
      *         <br>This action allows to set fields for the new GuildChannel before creating it!
      */
     @CheckReturnValue
-    default ChannelAction createCopy()
+    default ChannelAction<? extends GuildChannel> createCopy()
     {
         return createCopy(getGuild());
     }

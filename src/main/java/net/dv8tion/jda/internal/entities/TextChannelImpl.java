@@ -42,7 +42,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implements TextChannel
+public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChannelImpl> implements TextChannel
 {
     private String topic;
     private long lastMessageId;
@@ -280,10 +280,10 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
     }
 
     @Override
-    public ChannelAction createCopy(Guild guild)
+    public ChannelAction<TextChannel> createCopy(Guild guild)
     {
         Checks.notNull(guild, "Guild");
-        ChannelAction action = guild.getController().createTextChannel(name).setNSFW(nsfw).setTopic(topic).setSlowmode(slowmode);
+        ChannelAction<TextChannel> action = guild.getController().createTextChannel(name).setNSFW(nsfw).setTopic(topic).setSlowmode(slowmode);
         if (guild.equals(getGuild()))
         {
             Category parent = getParent();

@@ -171,4 +171,10 @@ public interface Category extends GuildChannel, Comparable<Category>
      */
     @CheckReturnValue
     CategoryOrderAction<VoiceChannel> modifyVoiceChannelPositions();
+
+    @Override
+    ChannelAction<Category> createCopy(Guild guild);
+
+    @Override
+    ChannelAction<Category> createCopy();
 }

@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.ChannelManager;
+import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.InviteAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -42,7 +43,7 @@ import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
-public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> implements GuildChannel
+public abstract class AbstractChannelImpl<T extends GuildChannel, M extends AbstractChannelImpl<T, M>> implements GuildChannel
 {
     protected final long id;
     protected final UpstreamReference<GuildImpl> guild;
@@ -60,6 +61,15 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     {
         this.id = id;
         this.guild = new UpstreamReference<>(guild);
+    }
+
+    @Override
+    public abstract ChannelAction<T> createCopy(Guild guild);
+
+    @Override
+    public ChannelAction<T> createCopy()
+    {
+        return createCopy(getGuild());
     }
 
     @Override
@@ -254,24 +264,24 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     }
 
     @SuppressWarnings("unchecked")
-    public T setName(String name)
+    public M setName(String name)
     {
         this.name = name;
-        return (T) this;
+        return (M) this;
     }
 
     @SuppressWarnings("unchecked")
-    public T setParent(long parentId)
+    public M setParent(long parentId)
     {
         this.parentId = parentId;
-        return (T) this;
+        return (M) this;
     }
 
     @SuppressWarnings("unchecked")
-    public T setPosition(int rawPosition)
+    public M setPosition(int rawPosition)
     {
         this.rawPosition = rawPosition;
-        return (T) this;
+        return (M) this;
     }
 
     protected void checkPermission(Permission permission) {checkPermission(permission, null);}

@@ -365,7 +365,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         //note: overridesAdd and overridesRem are mutually disjoint
         TLongObjectHashMap<PermOverrideData> data = new TLongObjectHashMap<>(this.overridesAdd);
 
-        AbstractChannelImpl<?> impl = (AbstractChannelImpl<?>) getChannel();
+        AbstractChannelImpl<?,?> impl = (AbstractChannelImpl<?,?>) getChannel();
         impl.getOverrideMap().forEachEntry((id, override) ->
         {
             //removed by not adding them here, this data set overrides the existing one

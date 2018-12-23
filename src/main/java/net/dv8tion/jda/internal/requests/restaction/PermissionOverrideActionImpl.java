@@ -172,7 +172,7 @@ public class PermissionOverrideActionImpl
         override.setAllow(object.getLong("allow"));
         override.setDeny(object.getLong("deny"));
 
-        ((AbstractChannelImpl<?>) channel).getOverrideMap().put(id, override);
+        ((AbstractChannelImpl<?,?>) channel).getOverrideMap().put(id, override);
 
         request.onSuccess(override);
     }

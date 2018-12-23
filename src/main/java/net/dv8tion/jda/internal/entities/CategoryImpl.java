@@ -30,7 +30,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CategoryImpl extends AbstractChannelImpl<CategoryImpl> implements Category
+public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> implements Category
 {
     protected final TLongObjectMap<GuildChannel> channels = MiscUtil.newLongMap();
 
@@ -88,10 +88,10 @@ public class CategoryImpl extends AbstractChannelImpl<CategoryImpl> implements C
     }
 
     @Override
-    public ChannelAction createCopy(Guild guild)
+    public ChannelAction<Category> createCopy(Guild guild)
     {
         Checks.notNull(guild, "Guild");
-        ChannelAction action = guild.getController().createCategory(name);
+        ChannelAction<Category> action = guild.getController().createCategory(name);
         if (guild.equals(getGuild()))
         {
             for (PermissionOverride o : overrides.valueCollection())

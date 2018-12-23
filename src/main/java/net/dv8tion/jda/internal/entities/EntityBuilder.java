@@ -720,7 +720,7 @@ public class EntityBuilder
         return priv;
     }
 
-    public void createOverridesPass(AbstractChannelImpl<?> channel, JSONArray overrides)
+    public void createOverridesPass(AbstractChannelImpl<?,?> channel, JSONArray overrides)
     {
         for (int i = 0; i < overrides.length(); i++)
         {
@@ -1023,7 +1023,7 @@ public class EntityBuilder
                 if (permOverride == null)
                 {
                     permOverride = new PermissionOverrideImpl(chan, member.getUser().getIdLong(), member);
-                    ((AbstractChannelImpl<?>) chan).getOverrideMap().put(member.getUser().getIdLong(), permOverride);
+                    ((AbstractChannelImpl<?,?>) chan).getOverrideMap().put(member.getUser().getIdLong(), permOverride);
                 }
                 break;
             case "role":
@@ -1035,7 +1035,7 @@ public class EntityBuilder
                 if (permOverride == null)
                 {
                     permOverride = new PermissionOverrideImpl(chan, role.getIdLong(), role);
-                    ((AbstractChannelImpl<?>) chan).getOverrideMap().put(role.getIdLong(), permOverride);
+                    ((AbstractChannelImpl<?,?>) chan).getOverrideMap().put(role.getIdLong(), permOverride);
                 }
                 break;
             default:

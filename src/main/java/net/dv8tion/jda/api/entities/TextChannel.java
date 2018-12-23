@@ -17,6 +17,7 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -67,6 +68,12 @@ public interface TextChannel extends GuildChannel, MessageChannel, Comparable<Te
      * @return The slowmode for this TextChannel, between 1 and 120, or {@code 0} if no slowmode is set.
      */
     int getSlowmode();
+
+    @Override
+    ChannelAction<TextChannel> createCopy(Guild guild);
+
+    @Override
+    ChannelAction<TextChannel> createCopy();
 
     /**
      * Retrieves the {@link net.dv8tion.jda.api.entities.Webhook Webhooks} attached to this TextChannel.
