@@ -125,7 +125,7 @@ public interface Category extends GuildChannel, Comparable<Category>
      * <br>This uses an extension of {@link ChannelOrderAction ChannelOrderAction}
      * specialized for ordering the nested {@link net.dv8tion.jda.api.entities.TextChannel TextChannels} of this
      * {@link net.dv8tion.jda.api.entities.Category Category}.
-     * <br>Like {@code ChannelOrderAction}, the returned {@link net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction CategoryOrderAction}
+     * <br>Like {@code ChannelOrderAction}, the returned {@link CategoryOrderAction CategoryOrderAction}
      * can be used to move TextChannels {@link OrderAction#moveUp(int) up},
      * {@link OrderAction#moveDown(int) down}, or
      * {@link OrderAction#moveTo(int) to} a specific position.
@@ -140,7 +140,7 @@ public interface Category extends GuildChannel, Comparable<Category>
      *     <br>The currently logged in account was removed from the Guild.</li>
      * </ul>
      *
-     * @return A {@link net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction CategoryOrderAction} for
+     * @return A {@link CategoryOrderAction CategoryOrderAction} for
      *         ordering the Category's {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}.
      */
     @CheckReturnValue
@@ -151,7 +151,7 @@ public interface Category extends GuildChannel, Comparable<Category>
      * <br>This uses an extension of {@link ChannelOrderAction ChannelOrderAction}
      * specialized for ordering the nested {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} of this
      * {@link net.dv8tion.jda.api.entities.Category Category}.
-     * <br>Like {@code ChannelOrderAction}, the returned {@link net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction CategoryOrderAction}
+     * <br>Like {@code ChannelOrderAction}, the returned {@link CategoryOrderAction CategoryOrderAction}
      * can be used to move VoiceChannels {@link OrderAction#moveUp(int) up},
      * {@link OrderAction#moveDown(int) down}, or
      * {@link OrderAction#moveTo(int) to} a specific position.
@@ -166,7 +166,7 @@ public interface Category extends GuildChannel, Comparable<Category>
      *     <br>The currently logged in account was removed from the Guild.</li>
      * </ul>
      *
-     * @return A {@link net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction CategoryOrderAction} for
+     * @return A {@link CategoryOrderAction CategoryOrderAction} for
      *         ordering the Category's {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}.
      */
     @CheckReturnValue

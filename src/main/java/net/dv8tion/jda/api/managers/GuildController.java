@@ -41,6 +41,7 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.ChannelActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.RoleActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.order.CategoryOrderActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.order.ChannelOrderActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.order.RoleOrderActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -1969,7 +1970,7 @@ public class GuildController
      * using an extension of {@link ChannelOrderAction ChannelOrderAction}
      * specialized for ordering the nested {@link net.dv8tion.jda.api.entities.TextChannel TextChannels} of this
      * {@link net.dv8tion.jda.api.entities.Category Category}.
-     * <br>Like {@code ChannelOrderAction}, the returned {@link net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction CategoryOrderAction}
+     * <br>Like {@code ChannelOrderAction}, the returned {@link CategoryOrderAction CategoryOrderAction}
      * can be used to move TextChannels {@link OrderAction#moveUp(int) up},
      * {@link OrderAction#moveDown(int) down}, or
      * {@link OrderAction#moveTo(int) to} a specific position.
@@ -1988,14 +1989,14 @@ public class GuildController
      *         The {@link net.dv8tion.jda.api.entities.Category Category} to order
      *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannels} from.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction CategoryOrderAction} - Type: {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     * @return {@link CategoryOrderAction CategoryOrderAction} - Type: {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      */
     @CheckReturnValue
     public CategoryOrderAction<TextChannel> modifyTextChannelPositions(Category category)
     {
         Checks.notNull(category, "Category");
         checkGuild(category.getGuild(), "Category");
-        return new CategoryOrderAction<>(category, ChannelType.TEXT);
+        return new CategoryOrderActionImpl<>(category, ChannelType.TEXT);
     }
 
     /**
@@ -2003,7 +2004,7 @@ public class GuildController
      * using an extension of {@link ChannelOrderAction ChannelOrderAction}
      * specialized for ordering the nested {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} of this
      * {@link net.dv8tion.jda.api.entities.Category Category}.
-     * <br>Like {@code ChannelOrderAction}, the returned {@link net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction CategoryOrderAction}
+     * <br>Like {@code ChannelOrderAction}, the returned {@link CategoryOrderAction CategoryOrderAction}
      * can be used to move VoiceChannels {@link OrderAction#moveUp(int) up},
      * {@link OrderAction#moveDown(int) down}, or
      * {@link OrderAction#moveTo(int) to} a specific position.
@@ -2022,14 +2023,14 @@ public class GuildController
      *         The {@link net.dv8tion.jda.api.entities.Category Category} to order
      *         {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} from.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction CategoryOrderAction} - Type: {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}
+     * @return {@link CategoryOrderAction CategoryOrderAction} - Type: {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}
      */
     @CheckReturnValue
     public CategoryOrderAction<VoiceChannel> modifyVoiceChannelPositions(Category category)
     {
         Checks.notNull(category, "Category");
         checkGuild(category.getGuild(), "Category");
-        return new CategoryOrderAction<>(category, ChannelType.VOICE);
+        return new CategoryOrderActionImpl<>(category, ChannelType.VOICE);
     }
 
     /**
