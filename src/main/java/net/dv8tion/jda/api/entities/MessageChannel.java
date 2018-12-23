@@ -30,6 +30,7 @@ import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.pagination.MessagePaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.json.JSONArray;
 
@@ -1231,12 +1232,12 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *         and the currently logged in account does not have the permission {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY MESSAGE_HISTORY}
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.pagination.MessagePaginationAction MessagePaginationAction}
+     * @return {@link MessagePaginationAction MessagePaginationAction}
      */
     @CheckReturnValue
     default MessagePaginationAction getIterableHistory()
     {
-        return new MessagePaginationAction(this);
+        return new MessagePaginationActionImpl(this);
     }
 
     /**
