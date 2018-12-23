@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.order.AbstractOrderAction;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 import org.json.JSONArray;
@@ -31,7 +32,7 @@ import org.json.JSONObject;
 import java.util.Collection;
 
 /**
- * Implementation of {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction OrderAction}
+ * Implementation of {@link OrderAction OrderAction}
  * to modify the order of {@link net.dv8tion.jda.api.entities.GuildChannel Channels} for a {@link net.dv8tion.jda.api.entities.Guild Guild}.
  * <br>To apply the changes you must finish the {@link net.dv8tion.jda.api.requests.RestAction RestAction}.
  *
@@ -44,7 +45,7 @@ import java.util.Collection;
  *
  * @since 3.0
  */
-public class ChannelOrderAction<T extends GuildChannel> extends OrderAction<T, ChannelOrderAction<T>>
+public class ChannelOrderAction<T extends GuildChannel> extends AbstractOrderAction<T, ChannelOrderAction<T>>
 {
     protected final Guild guild;
     protected final ChannelType type;

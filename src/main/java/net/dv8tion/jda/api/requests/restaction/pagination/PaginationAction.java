@@ -19,7 +19,6 @@ package net.dv8tion.jda.api.requests.restaction.pagination;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.Procedure;
 import net.dv8tion.jda.internal.requests.AbstractRestAction;
-import net.dv8tion.jda.internal.requests.restaction.pagination.AbstractPaginationAction;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -485,7 +484,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
     }
 
     /**
-     * {@link AbstractPaginationAction.PaginationIterator PaginationIterator}
+     * {@link PaginationIterator PaginationIterator}
      * that will iterate over all entities for this PaginationAction.
      *
      * @return new PaginationIterator

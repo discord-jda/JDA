@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
+import net.dv8tion.jda.api.requests.restaction.order.OrderAction;
 
 import javax.annotation.CheckReturnValue;
 import java.util.List;
@@ -124,9 +125,9 @@ public interface Category extends GuildChannel, Comparable<Category>
      * specialized for ordering the nested {@link net.dv8tion.jda.api.entities.TextChannel TextChannels} of this
      * {@link net.dv8tion.jda.api.entities.Category Category}.
      * <br>Like {@code ChannelOrderAction}, the returned {@link net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction CategoryOrderAction}
-     * can be used to move TextChannels {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveUp(int) up},
-     * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveDown(int) down}, or
-     * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
+     * can be used to move TextChannels {@link OrderAction#moveUp(int) up},
+     * {@link OrderAction#moveDown(int) down}, or
+     * {@link OrderAction#moveTo(int) to} a specific position.
      * <br>This uses <b>ascending</b> order with a 0 based index.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
@@ -150,9 +151,9 @@ public interface Category extends GuildChannel, Comparable<Category>
      * specialized for ordering the nested {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} of this
      * {@link net.dv8tion.jda.api.entities.Category Category}.
      * <br>Like {@code ChannelOrderAction}, the returned {@link net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction CategoryOrderAction}
-     * can be used to move VoiceChannels {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveUp(int) up},
-     * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveDown(int) down}, or
-     * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
+     * can be used to move VoiceChannels {@link OrderAction#moveUp(int) up},
+     * {@link OrderAction#moveDown(int) down}, or
+     * {@link OrderAction#moveTo(int) to} a specific position.
      * <br>This uses <b>ascending</b> order with a 0 based index.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
