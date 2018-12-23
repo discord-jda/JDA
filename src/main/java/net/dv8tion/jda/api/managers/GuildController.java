@@ -1628,7 +1628,7 @@ public class GuildController
      *         <br>This action allows to set fields for the new TextChannel before creating it
      */
     @CheckReturnValue
-    public ChannelAction createTextChannel(String name)
+    public ChannelAction<TextChannel> createTextChannel(String name)
     {
         checkPermission(Permission.MANAGE_CHANNEL);
         Checks.notBlank(name, "Name");
@@ -1637,7 +1637,7 @@ public class GuildController
         Checks.check(name.length() > 0 && name.length() <= 100, "Provided name must be 1 - 100 characters in length");
 
         Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(getGuild().getId());
-        return new ChannelActionImpl(route, name, getGuild(), ChannelType.TEXT);
+        return new ChannelActionImpl<>(TextChannel.class, route, name, getGuild(), ChannelType.TEXT);
     }
 
     /**
@@ -1666,7 +1666,7 @@ public class GuildController
      *         <br>This action allows to set fields for the new VoiceChannel before creating it
      */
     @CheckReturnValue
-    public ChannelAction createVoiceChannel(String name)
+    public ChannelAction<VoiceChannel> createVoiceChannel(String name)
     {
         checkPermission(Permission.MANAGE_CHANNEL);
         Checks.notBlank(name, "Name");
@@ -1675,7 +1675,7 @@ public class GuildController
         Checks.check(name.length() > 0 && name.length() <= 100, "Provided name must be 1 - 100 characters in length");
 
         Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(getGuild().getId());
-        return new ChannelActionImpl(route, name, getGuild(), ChannelType.VOICE);
+        return new ChannelActionImpl<>(VoiceChannel.class, route, name, getGuild(), ChannelType.VOICE);
     }
 
     /**
@@ -1704,7 +1704,7 @@ public class GuildController
      *         <br>This action allows to set fields for the new Category before creating it
      */
     @CheckReturnValue
-    public ChannelAction createCategory(String name)
+    public ChannelAction<Category> createCategory(String name)
     {
         checkPermission(Permission.MANAGE_CHANNEL);
         Checks.notBlank(name, "Name");
@@ -1713,7 +1713,7 @@ public class GuildController
         Checks.check(name.length() > 0 && name.length() <= 100, "Provided name must be 1 - 100 characters in length");
 
         Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(getGuild().getId());
-        return new ChannelActionImpl(route, name, getGuild(), ChannelType.CATEGORY);
+        return new ChannelActionImpl<>(Category.class, route, name, getGuild(), ChannelType.CATEGORY);
     }
 
     /**

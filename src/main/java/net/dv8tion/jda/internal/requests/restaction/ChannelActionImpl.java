@@ -34,11 +34,12 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 
-public class ChannelActionImpl extends AuditableRestActionImpl<GuildChannel> implements ChannelAction //TODO: Make generic
+public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActionImpl<T> implements ChannelAction<T>
 {
     protected final Set<PermOverrideData> overrides = new HashSet<>();
     protected final Guild guild;
     protected final ChannelType type;
+    protected final Class<T> clazz;
     protected String name;
     protected Category parent;
     protected Integer position;
@@ -52,36 +53,24 @@ public class ChannelActionImpl extends AuditableRestActionImpl<GuildChannel> imp
     protected Integer bitrate = null;
     protected Integer userlimit = null;
 
-    /**
-     * Creates a new ChannelAction instance
-     *
-     * @param  route
-     *         The {@link net.dv8tion.jda.internal.requests.Route.CompiledRoute CompileRoute}
-     *         to use for this action
-     * @param  name
-     *         The name for the new {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}
-     * @param  guild
-     *         The {@link net.dv8tion.jda.api.entities.Guild Guild} the channel should be created in
-     * @param  type
-     *         What kind of channel should be created
-     */
-    public ChannelActionImpl(Route.CompiledRoute route, String name, Guild guild, ChannelType type)
+    public ChannelActionImpl(Class<T> clazz, Route.CompiledRoute route, String name, Guild guild, ChannelType type)
     {
         super(guild.getJDA(), route);
+        this.clazz = clazz;
         this.guild = guild;
         this.type = type;
         this.name = name;
     }
 
     @Override
-    public ChannelActionImpl setCheck(BooleanSupplier checks)
+    public ChannelActionImpl<T> setCheck(BooleanSupplier checks)
     {
-        return (ChannelActionImpl) super.setCheck(checks);
+        return (ChannelActionImpl<T>) super.setCheck(checks);
     }
 
     @Override
     @CheckReturnValue
-    public ChannelActionImpl setName(String name)
+    public ChannelActionImpl<T> setName(String name)
     {
         Checks.notNull(name, "Channel name");
         if (name.length() < 1 || name.length() > 100)
@@ -93,7 +82,7 @@ public class ChannelActionImpl extends AuditableRestActionImpl<GuildChannel> imp
 
     @Override
     @CheckReturnValue
-    public ChannelActionImpl setParent(Category category)
+    public ChannelActionImpl<T> setParent(Category category)
     {
         Checks.check(category == null || category.getGuild().equals(guild), "Category is not from same guild!");
         this.parent = category;
@@ -102,7 +91,7 @@ public class ChannelActionImpl extends AuditableRestActionImpl<GuildChannel> imp
 
     @Override
     @CheckReturnValue
-    public ChannelActionImpl setPosition(Integer position)
+    public ChannelActionImpl<T> setPosition(Integer position)
     {
         Checks.check(position == null || position >= 0, "Position must be >= 0!");
         this.position = position;
@@ -111,7 +100,7 @@ public class ChannelActionImpl extends AuditableRestActionImpl<GuildChannel> imp
 
     @Override
     @CheckReturnValue
-    public ChannelActionImpl setTopic(String topic)
+    public ChannelActionImpl<T> setTopic(String topic)
     {
         if (type != ChannelType.TEXT)
             throw new UnsupportedOperationException("Can only set the topic for a TextChannel!");
@@ -123,7 +112,7 @@ public class ChannelActionImpl extends AuditableRestActionImpl<GuildChannel> imp
 
     @Override
     @CheckReturnValue
-    public ChannelActionImpl setNSFW(boolean nsfw)
+    public ChannelActionImpl<T> setNSFW(boolean nsfw)
     {
         if (type != ChannelType.TEXT)
             throw new UnsupportedOperationException("Can only set nsfw for a TextChannel!");
@@ -133,7 +122,7 @@ public class ChannelActionImpl extends AuditableRestActionImpl<GuildChannel> imp
 
     @Override
     @CheckReturnValue
-    public ChannelActionImpl setSlowmode(int slowmode)
+    public ChannelActionImpl<T> setSlowmode(int slowmode)
     {
         Checks.check(slowmode <= 120 && slowmode >= 0, "Slowmode must be between 0 and 120 (seconds)!");
         this.slowmode = slowmode;
@@ -142,7 +131,7 @@ public class ChannelActionImpl extends AuditableRestActionImpl<GuildChannel> imp
 
     @Override
     @CheckReturnValue
-    public ChannelActionImpl addPermissionOverride(IPermissionHolder target, long allow, long deny)
+    public ChannelActionImpl<T> addPermissionOverride(IPermissionHolder target, long allow, long deny)
     {
         Checks.notNull(target, "Override Role");
         Checks.notNegative(allow, "Granted permissions value");
@@ -169,7 +158,7 @@ public class ChannelActionImpl extends AuditableRestActionImpl<GuildChannel> imp
     // --voice only--
     @Override
     @CheckReturnValue
-    public ChannelActionImpl setBitrate(Integer bitrate)
+    public ChannelActionImpl<T> setBitrate(Integer bitrate)
     {
         if (type != ChannelType.VOICE)
             throw new UnsupportedOperationException("Can only set the bitrate for a VoiceChannel!");
@@ -188,7 +177,7 @@ public class ChannelActionImpl extends AuditableRestActionImpl<GuildChannel> imp
 
     @Override
     @CheckReturnValue
-    public ChannelActionImpl setUserlimit(Integer userlimit)
+    public ChannelActionImpl<T> setUserlimit(Integer userlimit)
     {
         if (type != ChannelType.VOICE)
             throw new UnsupportedOperationException("Can only set the userlimit for a VoiceChannel!");
@@ -230,7 +219,7 @@ public class ChannelActionImpl extends AuditableRestActionImpl<GuildChannel> imp
     }
 
     @Override
-    protected void handleSuccess(Response response, Request<GuildChannel> request)
+    protected void handleSuccess(Response response, Request<T> request)
     {
         EntityBuilder builder = api.get().getEntityBuilder();
         GuildChannel channel;
@@ -249,7 +238,7 @@ public class ChannelActionImpl extends AuditableRestActionImpl<GuildChannel> imp
                 request.onFailure(new IllegalStateException("Created channel of unknown type!"));
                 return;
         }
-        request.onSuccess(channel);
+        request.onSuccess(clazz.cast(channel));
     }
 
     protected void checkPermissions(Collection<Permission> permissions)
