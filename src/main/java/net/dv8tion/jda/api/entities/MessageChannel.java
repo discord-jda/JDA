@@ -1914,10 +1914,10 @@ public interface MessageChannel extends ISnowflake, Formattable
     default RestAction<Void> addReactionById(String messageId, String unicode)
     {
         Checks.isSnowflake(messageId, "Message ID");
-        Checks.notEmpty(unicode, "Provided Unicode");
-        Checks.noWhitespace(unicode, "Provided Unicode");
-
+        Checks.notNull(unicode, "Provided Unicode");
         unicode = unicode.trim();
+        Checks.notEmpty(unicode, "Provided Unicode");
+
         String encoded;
         if (unicode.startsWith("U+"))
             encoded = MiscUtil.encodeCodePointsUTF8(unicode);
