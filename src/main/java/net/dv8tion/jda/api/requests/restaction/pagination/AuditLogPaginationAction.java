@@ -33,20 +33,20 @@ import net.dv8tion.jda.api.entities.User;
  * <br>Maximum - 100
  *
  * <h1>Example</h1>
- * <pre>{@code
+ * <pre><code>
  * public class Listener extends ListenerAdapter
  * {
- *     @Override
+ *     {@literal @Override}
  *     public void onRoleCreate(RoleCreateEvent event)
  *     {
- *         List<TextChannel> channels = event.getGuild().getTextChannelsByName("logs", true);
+ *         {@literal List<TextChannel>} channels = event.getGuild().getTextChannelsByName("logs", true);
  *         if (channels.isEmpty()) return; // no log channel
  *         TextChannel channel = channels.get(0); // get first match
  *
  *         AuditLogPaginationAction auditLogs = event.getGuild().getAuditLogs();
  *         auditLogs.type(ActionType.ROLE_CREATE); // only take ROLE_CREATE type
  *         auditLogs.limit(1); // take first
- *         auditLogs.queue( (entries) ->
+ *         auditLogs.queue( (entries) {@literal ->}
  *         {
  *             // callback has a list, this may be empty due to race conditions
  *             if (entries.isEmpty()) return;
@@ -55,7 +55,7 @@ import net.dv8tion.jda.api.entities.User;
  *         });
  *     }
  * }
- * }</pre>
+ * </code></pre>
  *
  * @since  3.2
  *
