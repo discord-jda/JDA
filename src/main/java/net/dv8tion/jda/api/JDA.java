@@ -25,10 +25,14 @@ import net.dv8tion.jda.api.requests.restaction.GuildAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
+import okhttp3.OkHttpClient;
 
 import javax.annotation.CheckReturnValue;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * The core of JDA. Acts as a registry system of JDA. All parts of the the API can be accessed starting from this class.
@@ -247,6 +251,38 @@ public interface JDA
      * @return List of all websocket traces
      */
     List<String> getWebSocketTrace();
+
+    /**
+     * {@link ScheduledExecutorService} used to handle rate-limits for {@link RestAction}
+     * executions. This is also used in other parts of JDA related to http requests.
+     *
+     * @return The {@link ScheduledExecutorService} used for http request handling
+     */
+    ScheduledExecutorService getRateLimitPool();
+
+    /**
+     * {@link ScheduledExecutorService} used to send WebSocket messages to discord.
+     * <br>This involves initial setup of guilds as well as keeping the connection alive.
+     *
+     * @return The {@link ScheduledExecutorService} used for WebSocket transmissions
+     */
+    ScheduledExecutorService getGatewayPool();
+
+    /**
+     * {@link ExecutorService} used to handle {@link RestAction} callbacks
+     * and completions.
+     * <br>By default this uses the {@link ForkJoinPool#commonPool() CommonPool} of the runtime.
+     *
+     * @return The {@link ExecutorService} used for callbacks
+     */
+    ExecutorService getCallbackPool();
+
+    /**
+     * The {@link OkHttpClient} used for handling http requests from {@link RestAction RestActions}.
+     *
+     * @return The http client
+     */
+    OkHttpClient getHttpClient();
 
     /**
      * Changes the internal EventManager.
