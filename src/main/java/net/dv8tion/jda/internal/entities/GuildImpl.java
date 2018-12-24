@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.GuildController;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.MemberCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
@@ -33,6 +34,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.managers.GuildManagerImpl;
 import net.dv8tion.jda.internal.requests.AbstractRestAction;
+import net.dv8tion.jda.internal.requests.EmptyRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.MemberActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.AuditLogPaginationActionImpl;
@@ -382,7 +384,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public AbstractRestAction<ListedEmote> retrieveEmoteById(String id)
+    public RestAction<ListedEmote> retrieveEmoteById(String id)
     {
         Checks.isSnowflake(id, "Emote ID");
         Emote emote = getEmoteById(id);
@@ -390,7 +392,7 @@ public class GuildImpl implements Guild
         {
             ListedEmote listedEmote = (ListedEmote) emote;
             if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
-                return new AbstractRestAction.EmptyRestAction<>(getJDA(), listedEmote);
+                return new EmptyRestAction<>(getJDA(), listedEmote);
         }
         Route.CompiledRoute route = Route.Emotes.GET_EMOTE.compile(getId(), id);
         return new AbstractRestAction<>(getJDA(), route, (response, request) ->

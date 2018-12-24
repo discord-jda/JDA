@@ -28,7 +28,7 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.requests.AbstractRestAction;
+import net.dv8tion.jda.internal.requests.EmptyRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -129,7 +129,7 @@ public class ReceivedMessage extends AbstractMessage
         }
         else if (reaction.isSelf())
         {
-            return new AbstractRestAction.EmptyRestAction<>(getJDA(), null);
+            return new EmptyRestAction<>((JDAImpl) getJDA(), null);
         }
 
         return channel.addReactionById(getIdLong(), emote);
@@ -145,7 +145,7 @@ public class ReceivedMessage extends AbstractMessage
                 .findFirst().orElse(null);
 
         if (reaction != null && reaction.isSelf())
-            return new AbstractRestAction.EmptyRestAction<>(getJDA(), null);
+            return new EmptyRestAction<>((JDAImpl) getJDA(), null);
 
         return channel.addReactionById(getIdLong(), unicode);
     }

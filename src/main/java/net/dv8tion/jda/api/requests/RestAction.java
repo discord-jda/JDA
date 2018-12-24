@@ -19,7 +19,6 @@ package net.dv8tion.jda.api.requests;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.internal.requests.AbstractRestAction;
-import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import java.util.concurrent.CompletableFuture;
@@ -142,7 +141,7 @@ import java.util.function.Consumer;
  *
  * @since 3.0
  */
-public interface RestAction<T> //TODO: More documentation
+public interface RestAction<T>
 {
     /**
      * If enabled this will pass a {@link net.dv8tion.jda.api.exceptions.ContextException ContextException}
@@ -173,21 +172,43 @@ public interface RestAction<T> //TODO: More documentation
         return AbstractRestAction.isPassContext();
     }
 
+    /**
+     * The default failure callback used when none is provided in {@link #queue(Consumer, Consumer)}.
+     *
+     * @param callback
+     *        The fallback to use, or null to ignore failures (not recommended)
+     */
     static void setDefaultFailure(final Consumer<? super Throwable> callback)
     {
         AbstractRestAction.setDefaultFailure(callback);
     }
 
+    /**
+     * The default success callback used when none is provided in {@link #queue(Consumer, Consumer)} or {@link #queue(Consumer)}.
+     *
+     * @param callback
+     *        The fallback to use, or null to ignore success
+     */
     static void setDefaultSuccess(final Consumer<Object> callback)
     {
         AbstractRestAction.setDefaultSuccess(callback);
     }
 
+    /**
+     * The default failure callback used when none is provided in {@link #queue(Consumer, Consumer)}.
+     *
+     * @return The fallback consumer
+     */
     static Consumer<? super Throwable> getDefaultFailure()
     {
         return AbstractRestAction.getDefaultFailure();
     }
 
+    /**
+     * The default success callback used when none is provided in {@link #queue(Consumer, Consumer)} or {@link #queue(Consumer)}.
+     *
+     * @return The fallback consumer
+     */
     static Consumer<Object> getDefaultSuccess()
     {
         return AbstractRestAction.getDefaultSuccess();
@@ -596,38 +617,4 @@ public interface RestAction<T> //TODO: More documentation
      */
     ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<? super T> success, Consumer<? super Throwable> failure, ScheduledExecutorService executor);
 
-    class EmptyRestAction<T> extends AuditableRestActionImpl<T>
-    {
-        private final T returnObj;
-
-        public EmptyRestAction(JDA api)
-        {
-            this(api, null);
-        }
-
-        public EmptyRestAction(JDA api, T returnObj)
-        {
-            super(api, null);
-            this.returnObj = returnObj;
-        }
-
-        @Override
-        public void queue(Consumer<? super T> success, Consumer<? super Throwable> failure)
-        {
-            if (success != null)
-                success.accept(returnObj);
-        }
-
-        @Override
-        public CompletableFuture<T> submit(boolean shouldQueue)
-        {
-            return new RestFuture<>(returnObj);
-        }
-
-        @Override
-        public T complete(boolean shouldQueue)
-        {
-            return returnObj;
-        }
-    }
 }

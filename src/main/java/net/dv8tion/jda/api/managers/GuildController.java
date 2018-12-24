@@ -37,6 +37,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.requests.AbstractRestAction;
+import net.dv8tion.jda.internal.requests.EmptyRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.ChannelActionImpl;
@@ -237,7 +238,7 @@ public class GuildController
         }
 
         if (Objects.equals(nickname, member.getNickname()))
-            return new AuditableRestActionImpl.EmptyRestAction<>(getJDA(), null);
+            return new EmptyRestAction<>((JDAImpl) getJDA(), null);
 
         if (nickname == null)
             nickname = "";
@@ -922,7 +923,7 @@ public class GuildController
 
         GuildVoiceState voiceState = member.getVoiceState();
         if (voiceState != null && voiceState.isGuildDeafened() == deafen)
-            return new AuditableRestActionImpl.EmptyRestAction<>(getJDA(), null);
+            return new EmptyRestAction<>((JDAImpl) getJDA(), null);
 
         JSONObject body = new JSONObject().put("deaf", deafen);
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), member.getUser().getId());
@@ -977,7 +978,7 @@ public class GuildController
 
         GuildVoiceState voiceState = member.getVoiceState();
         if (voiceState != null && voiceState.isGuildMuted() == mute)
-            return new AuditableRestActionImpl.EmptyRestAction<>(getJDA(), null);
+            return new EmptyRestAction<>((JDAImpl) getJDA(), null);
 
         JSONObject body = new JSONObject().put("mute", mute);
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), member.getUser().getId());
@@ -1395,7 +1396,7 @@ public class GuildController
         if (currentRoles.addAll(newRolesToAdd))
             currentRoles.removeAll(rolesToRemove);
         else if (!currentRoles.removeAll(rolesToRemove))
-            return new RestAction.EmptyRestAction<>(getGuild().getJDA());
+            return new EmptyRestAction<>((JDAImpl) getGuild().getJDA());
 
         Checks.check(!currentRoles.contains(getGuild().getPublicRole()),
             "Cannot add the PublicRole of a Guild to a Member. All members have this role by default!");
@@ -1526,7 +1527,7 @@ public class GuildController
         // Return an empty rest action if there were no changes
         final List<Role> memberRoles = member.getRoles();
         if (memberRoles.size() == roles.size() && memberRoles.containsAll(roles))
-            return new AuditableRestActionImpl.EmptyRestAction<>(getGuild().getJDA());
+            return new EmptyRestAction<>((JDAImpl) getGuild().getJDA());
 
         //Make sure that the current managed roles are preserved and no new ones are added.
         List<Role> currentManaged = memberRoles.stream().filter(Role::isManaged).collect(Collectors.toList());

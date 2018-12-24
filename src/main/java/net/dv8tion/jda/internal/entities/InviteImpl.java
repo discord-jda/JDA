@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.AbstractRestAction;
+import net.dv8tion.jda.internal.requests.EmptyRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -96,7 +97,7 @@ public class InviteImpl implements Invite
     public RestAction<Invite> expand()
     {
         if (this.expanded)
-            return new AbstractRestAction.EmptyRestAction<>(getJDA(), this);
+            return new EmptyRestAction<>(getJDA(), this);
 
         if (this.type != Invite.InviteType.GUILD)
             throw new IllegalStateException("Only guild invites can be expanded");
