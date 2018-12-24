@@ -1636,9 +1636,7 @@ public class GuildController
         name = name.trim();
 
         Checks.check(name.length() > 0 && name.length() <= 100, "Provided name must be 1 - 100 characters in length");
-
-        Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(getGuild().getId());
-        return new ChannelActionImpl<>(TextChannel.class, route, name, getGuild(), ChannelType.TEXT);
+        return new ChannelActionImpl<>(TextChannel.class, name, getGuild(), ChannelType.TEXT);
     }
 
     /**
@@ -1674,9 +1672,7 @@ public class GuildController
         name = name.trim();
 
         Checks.check(name.length() > 0 && name.length() <= 100, "Provided name must be 1 - 100 characters in length");
-
-        Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(getGuild().getId());
-        return new ChannelActionImpl<>(VoiceChannel.class, route, name, getGuild(), ChannelType.VOICE);
+        return new ChannelActionImpl<>(VoiceChannel.class, name, getGuild(), ChannelType.VOICE);
     }
 
     /**
@@ -1712,9 +1708,7 @@ public class GuildController
         name = name.trim();
 
         Checks.check(name.length() > 0 && name.length() <= 100, "Provided name must be 1 - 100 characters in length");
-
-        Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(getGuild().getId());
-        return new ChannelActionImpl<>(Category.class, route, name, getGuild(), ChannelType.CATEGORY);
+        return new ChannelActionImpl<>(Category.class, name, getGuild(), ChannelType.CATEGORY);
     }
 
     /**
@@ -1795,8 +1789,7 @@ public class GuildController
     {
         checkPermission(Permission.MANAGE_ROLES);
 
-        Route.CompiledRoute route = Route.Roles.CREATE_ROLE.compile(getGuild().getId());
-        return new RoleActionImpl(route, getGuild());
+        return new RoleActionImpl(getGuild());
     }
 
     /**

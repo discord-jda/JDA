@@ -17,9 +17,7 @@
 package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.PermissionOverride;
-import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -45,6 +43,54 @@ public interface PermissionOverrideAction extends RestAction<PermissionOverride>
 {
     @Override
     PermissionOverrideAction setCheck(BooleanSupplier checks);
+
+    /**
+     * The {@link GuildChannel} this will be created in
+     *
+     * @return The channel
+     */
+    GuildChannel getChannel();
+
+    /**
+     * The {@link Role} for this override
+     *
+     * @return The role, or null if this is a member override
+     */
+    Role getRole();
+
+    /**
+     * The {@link Member} for this override
+     *
+     * @return The member, or null if this is a role override
+     */
+    Member getMember();
+
+    /**
+     * Whether this override is for a {@link Member}
+     *
+     * @return True, if this override is for a member
+     */
+    boolean isMemberOverride();
+
+    /**
+     * Whether this override is for a {@link Role}
+     *
+     * @return True, if this override is for a role
+     */
+    default boolean isRoleOverride()
+    {
+        return !isMemberOverride();
+    }
+
+    /**
+     * The {@link Guild} for this override
+     *
+     * @return The guild
+     */
+    default Guild getGuild()
+    {
+        return getChannel().getGuild();
+    }
 
     /**
      * The currently set of allowed permission bits.

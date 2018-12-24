@@ -16,7 +16,9 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Icon;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.Webhook;
 
 import javax.annotation.CheckReturnValue;
@@ -32,6 +34,23 @@ public interface WebhookAction extends AuditableRestAction<Webhook>
 {
     @Override
     WebhookAction setCheck(BooleanSupplier checks);
+
+    /**
+     * The {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} to create this webhook in
+     *
+     * @return The channel
+     */
+    TextChannel getChannel();
+
+    /**
+     * The {@link net.dv8tion.jda.api.entities.Guild Guild} to create this webhook in
+     *
+     * @return The guild
+     */
+    default Guild getGuild()
+    {
+        return getChannel().getGuild();
+    }
 
     /**
      * Sets the <b>Name</b> for the custom Webhook User

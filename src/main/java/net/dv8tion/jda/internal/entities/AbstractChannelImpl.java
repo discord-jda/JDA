@@ -191,8 +191,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
 
         if (!getGuild().equals(member.getGuild()))
             throw new IllegalArgumentException("Provided member is not from the same guild as this channel!");
-        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(getId(), member.getUser().getId());
-        return new PermissionOverrideActionImpl(getJDA(), route, this, member);
+        return new PermissionOverrideActionImpl(getJDA(), this, member);
     }
 
     @Override
@@ -203,8 +202,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
 
         if (!getGuild().equals(role.getGuild()))
             throw new IllegalArgumentException("Provided role is not from the same guild as this channel!");
-        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(getId(), role.getId());
-        return new PermissionOverrideActionImpl(getJDA(), route, this, role);
+        return new PermissionOverrideActionImpl(getJDA(), this, role);
     }
 
     @Override

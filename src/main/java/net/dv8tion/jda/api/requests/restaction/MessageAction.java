@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -84,6 +85,13 @@ public interface MessageAction extends RestAction<Message>, Appendable
 {
     @Override
     MessageAction setCheck(BooleanSupplier checks);
+
+    /**
+     * The target {@link MessageChannel} for this message
+     *
+     * @return The target channel
+     */
+    MessageChannel getChannel();
 
     /**
      * Whether this MessageAction has no values set.

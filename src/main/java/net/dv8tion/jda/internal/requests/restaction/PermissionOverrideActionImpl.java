@@ -51,16 +51,14 @@ public class PermissionOverrideActionImpl
      *
      * @param api
      *        The current JDA instance
-     * @param route
-     *        The {@link net.dv8tion.jda.internal.requests.Route.CompiledRoute Route.CompiledRoute} to be used for rate limit handling
      * @param channel
      *        The target {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the PermissionOverride
      * @param member
      *        The target {@link net.dv8tion.jda.api.entities.Member Member} that will be affected by the PermissionOverride
      */
-    public PermissionOverrideActionImpl(JDA api, Route.CompiledRoute route, GuildChannel channel, Member member)
+    public PermissionOverrideActionImpl(JDA api, GuildChannel channel, Member member)
     {
-        super(api, route);
+        super(api, Route.Channels.CREATE_PERM_OVERRIDE.compile(channel.getId(), member.getUser().getId()));
         this.channel = channel;
         this.member = member;
         this.role = null;
@@ -71,16 +69,14 @@ public class PermissionOverrideActionImpl
      *
      * @param api
      *        The current JDA instance
-     * @param route
-     *        The {@link net.dv8tion.jda.internal.requests.Route.CompiledRoute Route.CompiledRoute} to be used for rate limit handling
      * @param channel
      *        The target {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the PermissionOverride
      * @param role
      *        The target {@link net.dv8tion.jda.api.entities.Role Role} that will be affected by the PermissionOverride
      */
-    public PermissionOverrideActionImpl(JDA api, Route.CompiledRoute route, GuildChannel channel, Role role)
+    public PermissionOverrideActionImpl(JDA api, GuildChannel channel, Role role)
     {
-        super(api, route);
+        super(api, Route.Channels.CREATE_PERM_OVERRIDE.compile(channel.getId(), role.getId()));
         this.channel = channel;
         this.member = null;
         this.role = role;
@@ -90,6 +86,30 @@ public class PermissionOverrideActionImpl
     public PermissionOverrideActionImpl setCheck(BooleanSupplier checks)
     {
         return (PermissionOverrideActionImpl) super.setCheck(checks);
+    }
+
+    @Override
+    public GuildChannel getChannel()
+    {
+        return channel;
+    }
+
+    @Override
+    public Role getRole()
+    {
+        return role;
+    }
+
+    @Override
+    public Member getMember()
+    {
+        return member;
+    }
+
+    @Override
+    public boolean isMemberOverride()
+    {
+        return member != null;
     }
 
     @Override

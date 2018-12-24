@@ -17,10 +17,7 @@
 package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Category;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.entities.IPermissionHolder;
+import net.dv8tion.jda.api.entities.*;
 
 import javax.annotation.CheckReturnValue;
 import java.util.Collection;
@@ -47,6 +44,20 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
 {
     @Override
     ChannelAction<T> setCheck(BooleanSupplier checks);
+
+    /**
+     * The guild to create this {@link GuildChannel} in
+     *
+     * @return The guild
+     */
+    Guild getGuild();
+
+    /**
+     * The {@link ChannelType} for the resulting channel
+     *
+     * @return The channel type
+     */
+    ChannelType getType();
 
     /**
      * Sets the name for the new GuildChannel

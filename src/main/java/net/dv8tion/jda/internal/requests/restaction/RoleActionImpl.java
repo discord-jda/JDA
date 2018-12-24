@@ -44,15 +44,12 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
     /**
      * Creates a new RoleAction instance
      *
-     * @param  route
-     *         A {@link net.dv8tion.jda.internal.requests.Route.CompiledRoute CompiledRoute}
-     *         Which will be used for the Role creation.
      * @param  guild
      *         The {@link net.dv8tion.jda.api.entities.Guild Guild} for which the Role should be created.
      */
-    public RoleActionImpl(Route.CompiledRoute route, Guild guild)
+    public RoleActionImpl(Guild guild)
     {
-        super(guild.getJDA(), route);
+        super(guild.getJDA(), Route.Roles.CREATE_ROLE.compile(guild.getId()));
         this.guild = guild;
     }
 
@@ -60,6 +57,12 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
     public RoleActionImpl setCheck(BooleanSupplier checks)
     {
         return (RoleActionImpl) super.setCheck(checks);
+    }
+
+    @Override
+    public Guild getGuild()
+    {
+        return guild;
     }
 
     @Override

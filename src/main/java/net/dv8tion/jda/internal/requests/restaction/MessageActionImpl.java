@@ -75,12 +75,20 @@ public class MessageActionImpl extends AbstractRestAction<Message> implements Me
         return (MessageAction) super.setCheck(checks);
     }
 
+    @Override
+    public MessageChannel getChannel()
+    {
+        return channel;
+    }
+
+    @Override
     public boolean isEmpty()
     {
         return Helpers.isBlank(content)
             && (embed == null || embed.isEmpty() || !hasPermission(Permission.MESSAGE_EMBED_LINKS));
     }
 
+    @Override
     public boolean isEdit()
     {
         return finalizeRoute().getMethod() == Method.PATCH;

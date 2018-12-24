@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Icon;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.Webhook;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
@@ -36,12 +37,14 @@ import java.util.function.BooleanSupplier;
  */
 public class WebhookActionImpl extends AuditableRestActionImpl<Webhook> implements WebhookAction
 {
+    protected final TextChannel channel;
     protected String name;
     protected Icon avatar = null;
 
-    public WebhookActionImpl(JDA api, Route.CompiledRoute route, String name)
+    public WebhookActionImpl(JDA api, TextChannel channel, String name)
     {
-        super(api, route);
+        super(api, Route.Channels.CREATE_WEBHOOK.compile(channel.getId()));
+        this.channel = channel;
         this.name = name;
     }
 
@@ -49,6 +52,12 @@ public class WebhookActionImpl extends AuditableRestActionImpl<Webhook> implemen
     public WebhookActionImpl setCheck(BooleanSupplier checks)
     {
         return (WebhookActionImpl) super.setCheck(checks);
+    }
+
+    @Override
+    public TextChannel getChannel()
+    {
+        return channel;
     }
 
     @Override

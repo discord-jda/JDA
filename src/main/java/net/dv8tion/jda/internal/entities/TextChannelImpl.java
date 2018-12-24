@@ -95,11 +95,9 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         Checks.notBlank(name, "Webhook name");
         name = name.trim();
         checkPermission(Permission.MANAGE_WEBHOOKS);
-
         Checks.check(name.length() >= 2 && name.length() <= 100, "Name must be 2-100 characters in length!");
 
-        Route.CompiledRoute route = Route.Channels.CREATE_WEBHOOK.compile(getId());
-        return new WebhookActionImpl(getJDA(), route, name);
+        return new WebhookActionImpl(getJDA(), this, name);
     }
 
     @Override

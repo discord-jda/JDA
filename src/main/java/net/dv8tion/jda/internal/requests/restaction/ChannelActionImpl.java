@@ -53,9 +53,9 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     protected Integer bitrate = null;
     protected Integer userlimit = null;
 
-    public ChannelActionImpl(Class<T> clazz, Route.CompiledRoute route, String name, Guild guild, ChannelType type)
+    public ChannelActionImpl(Class<T> clazz, String name, Guild guild, ChannelType type)
     {
-        super(guild.getJDA(), route);
+        super(guild.getJDA(), Route.Guilds.CREATE_CHANNEL.compile(guild.getId()));
         this.clazz = clazz;
         this.guild = guild;
         this.type = type;
@@ -66,6 +66,18 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     public ChannelActionImpl<T> setCheck(BooleanSupplier checks)
     {
         return (ChannelActionImpl<T>) super.setCheck(checks);
+    }
+
+    @Override
+    public Guild getGuild()
+    {
+        return guild;
+    }
+
+    @Override
+    public ChannelType getType()
+    {
+        return type;
     }
 
     @Override

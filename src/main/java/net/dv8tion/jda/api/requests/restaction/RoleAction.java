@@ -45,6 +45,13 @@ public interface RoleAction extends AuditableRestAction<Role>
     RoleAction setCheck(BooleanSupplier checks);
 
     /**
+     * The guild to create the role in
+     *
+     * @return The guild
+     */
+    Guild getGuild();
+
+    /**
      * Sets the name for new role (optional)
      *
      * @param  name
