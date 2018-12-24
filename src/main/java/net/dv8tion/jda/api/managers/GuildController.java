@@ -1759,10 +1759,11 @@ public class GuildController
      * @see    ChannelAction ChannelAction
      */
     @CheckReturnValue
-    public ChannelAction createCopyOfChannel(GuildChannel channel)
+    @SuppressWarnings("unchecked")
+    public <T extends GuildChannel> ChannelAction<T> createCopyOfChannel(T channel)
     {
         Checks.notNull(channel, "Channel");
-        return channel.createCopy(getGuild());
+        return (ChannelAction<T>) channel.createCopy(getGuild());
     }
 
     /**
