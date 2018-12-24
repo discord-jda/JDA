@@ -437,6 +437,30 @@ public class JDAImpl implements JDA
     }
 
     @Override
+    public ScheduledExecutorService getRateLimitPool()
+    {
+        return rateLimitPool;
+    }
+
+    @Override
+    public ScheduledExecutorService getGatewayPool()
+    {
+        return gatewayPool;
+    }
+
+    @Override
+    public ExecutorService getCallbackPool()
+    {
+        return callbackPool;
+    }
+
+    @Override
+    public OkHttpClient getHttpClient()
+    {
+        return httpClient;
+    }
+
+    @Override
     public List<String> getCloudflareRays()
     {
         WebSocketClient client = getClient();
@@ -676,12 +700,6 @@ public class JDAImpl implements JDA
     {
         return eventManager;
     }
-
-    //@Override
-    //public AuditableRestAction<Void> installAuxiliaryCable(int port) throws UnsupportedOperationException
-    //{
-    //    return new AuditableRestAction.FailedRestAction<>(new UnsupportedOperationException("nice try but next time think first :)"));
-    //}
 
     @Override
     public AccountType getAccountType()
@@ -926,11 +944,6 @@ public class JDAImpl implements JDA
         return eventCache;
     }
 
-    public OkHttpClient getHttpClient()
-    {
-        return httpClient;
-    }
-
     public String getGatewayUrl()
     {
         return gatewayUrl;
@@ -954,20 +967,5 @@ public class JDAImpl implements JDA
             }
         }
         return pool;
-    }
-
-    public ScheduledExecutorService getRateLimitPool()
-    {
-        return rateLimitPool;
-    }
-
-    public ScheduledExecutorService getGatewayPool()
-    {
-        return gatewayPool;
-    }
-
-    public ExecutorService getCallbackPool()
-    {
-        return callbackPool;
     }
 }
