@@ -16,10 +16,7 @@
 package net.dv8tion.jda.api;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
-import net.dv8tion.jda.annotations.DeprecatedSince;
 import net.dv8tion.jda.annotations.Incubating;
-import net.dv8tion.jda.annotations.ReplaceWith;
-import net.dv8tion.jda.api.JDA.Status;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
@@ -747,109 +744,6 @@ public class JDABuilder
     {
         this.controller = controller;
         return this;
-    }
-
-    /**
-     * Builds a new {@link net.dv8tion.jda.api.JDA} instance and uses the provided token to start the login process.
-     * <br>The login process runs in a different thread, so while this will return immediately, {@link net.dv8tion.jda.api.JDA} has not
-     * finished loading, thus many {@link net.dv8tion.jda.api.JDA} methods have the chance to return incorrect information.
-     * <br>The main use of this method is to start the JDA connect process and do other things in parallel while startup is
-     * being performed like database connection or local resource loading.
-     *
-     * <p>If you wish to be sure that the {@link net.dv8tion.jda.api.JDA} information is correct, please use
-     * {@link net.dv8tion.jda.api.JDABuilder#buildBlocking() buildBlocking()} or register an
-     * {@link net.dv8tion.jda.api.hooks.EventListener EventListener} to listen for the
-     * {@link net.dv8tion.jda.api.events.ReadyEvent ReadyEvent} .
-     *
-     * @throws LoginException
-     *         If the provided token is invalid.
-     * @throws IllegalArgumentException
-     *         If the provided token is empty or null.
-     *
-     * @return A {@link net.dv8tion.jda.api.JDA} instance that has started the login process. It is unknown as
-     *         to whether or not loading has finished when this returns.
-     *
-     * @deprecated
-     *         Use {@link #build()} instead
-     */
-    @Deprecated
-    @DeprecatedSince("3.8.0")
-    @ReplaceWith("build()")
-    public JDA buildAsync() throws LoginException
-    {
-        return build();
-    }
-
-    /**
-     * Builds a new {@link net.dv8tion.jda.api.JDA} instance and uses the provided token to start the login process.
-     * <br>This method will block until JDA has reached the specified connection status.
-     *
-     * <h2>Login Cycle</h2>
-     * <ol>
-     *     <li>{@link net.dv8tion.jda.api.JDA.Status#INITIALIZING INITIALIZING}</li>
-     *     <li>{@link net.dv8tion.jda.api.JDA.Status#INITIALIZED INITIALIZED}</li>
-     *     <li>{@link net.dv8tion.jda.api.JDA.Status#LOGGING_IN LOGGING_IN}</li>
-     *     <li>{@link net.dv8tion.jda.api.JDA.Status#CONNECTING_TO_WEBSOCKET CONNECTING_TO_WEBSOCKET}</li>
-     *     <li>{@link net.dv8tion.jda.api.JDA.Status#IDENTIFYING_SESSION IDENTIFYING_SESSION}</li>
-     *     <li>{@link net.dv8tion.jda.api.JDA.Status#AWAITING_LOGIN_CONFIRMATION AWAITING_LOGIN_CONFIRMATION}</li>
-     *     <li>{@link net.dv8tion.jda.api.JDA.Status#LOADING_SUBSYSTEMS LOADING_SUBSYSTEMS}</li>
-     *     <li>{@link net.dv8tion.jda.api.JDA.Status#CONNECTED CONNECTED}</li>
-     * </ol>
-     *
-     * @param  status
-     *         The {@link JDA.Status Status} to wait for, once JDA has reached the specified
-     *         stage of the startup cycle this method will return.
-     *
-     * @throws LoginException
-     *         If the provided token is invalid.
-     * @throws IllegalArgumentException
-     *         If the provided token is empty or {@code null} or
-     *         the provided status is not part of the login cycle.
-     * @throws InterruptedException
-     *         If an interrupt request is received while waiting for {@link net.dv8tion.jda.api.JDA} to finish logging in.
-     *         This would most likely be caused by a JVM shutdown request.
-     *
-     * @return A {@link net.dv8tion.jda.api.JDA} Object that is <b>guaranteed</b> to be logged in and finished loading.
-     *
-     * @deprecated
-     *         Use {@link #build()} and {@link JDA#awaitStatus(Status)} instead
-     */
-    @Deprecated
-    @DeprecatedSince("3.8.0")
-    @ReplaceWith("build().awaitStatus(Status)")
-    public JDA buildBlocking(JDA.Status status) throws LoginException, InterruptedException
-    {
-        Checks.notNull(status, "Status");
-        Checks.check(status.isInit(), "Cannot await the status %s as it is not part of the login cycle!", status);
-        JDA jda = build();
-        jda.awaitStatus(status);
-        return jda;
-    }
-
-    /**
-     * Builds a new {@link net.dv8tion.jda.api.JDA} instance and uses the provided token to start the login process.
-     * <br>This method will block until JDA has logged in and finished loading all resources. This is an alternative
-     * to using {@link net.dv8tion.jda.api.events.ReadyEvent ReadyEvent}.
-     *
-     * @throws LoginException
-     *         If the provided token is invalid.
-     * @throws IllegalArgumentException
-     *         If the provided token is empty or null.
-     * @throws InterruptedException
-     *         If an interrupt request is received while waiting for {@link net.dv8tion.jda.api.JDA} to finish logging in.
-     *         This would most likely be caused by a JVM shutdown request.
-     *
-     * @return A {@link net.dv8tion.jda.api.JDA} Object that is <b>guaranteed</b> to be logged in and finished loading.
-     *
-     * @deprecated
-     *         Use {@link #build()} and {@link JDA#awaitReady()} instead
-     */
-    @Deprecated
-    @DeprecatedSince("3.8.0")
-    @ReplaceWith("build().awaitReady()")
-    public JDA buildBlocking() throws LoginException, InterruptedException
-    {
-        return buildBlocking(Status.CONNECTED);
     }
 
     /**
