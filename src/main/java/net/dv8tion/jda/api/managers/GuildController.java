@@ -22,8 +22,6 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
-import net.dv8tion.jda.api.requests.Request;
-import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
@@ -251,7 +249,7 @@ public class GuildController
         else
             route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), member.getUser().getId());
 
-        return new AuditableRestActionImpl<Void>(getGuild().getJDA(), route, body);
+        return new AuditableRestActionImpl<>(getGuild().getJDA(), route, body);
     }
 
     /**
@@ -343,7 +341,7 @@ public class GuildController
         if (reason != null && !reason.isEmpty())
             route = route.withQueryParams("reason", MiscUtil.encodeUTF8(reason));
 
-        return new AuditableRestActionImpl<Void>(getGuild().getJDA(), route);
+        return new AuditableRestActionImpl<>(getGuild().getJDA(), route);
     }
 
     /**
@@ -604,8 +602,8 @@ public class GuildController
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>We were removed from the Guild before finishing the task</li>
      *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The specified Member was removed from the Guild before finishing the task</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER UNKNOWN_USER}
+     *     <br>The specified User does not exit</li>
      * </ul>
      *
      * @param  userId
@@ -640,19 +638,7 @@ public class GuildController
         if (delDays > 0)
             route = route.withQueryParams("delete-message-days", Integer.toString(delDays));
 
-        return new AuditableRestActionImpl<Void>(getGuild().getJDA(), route)
-        {
-            @Override
-            public void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else if (response.code == 404)
-                    request.onFailure(new IllegalArgumentException("User with provided id \"" + userId + "\" does not exist! Cannot ban a non-existent user!"));
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestActionImpl<>(getGuild().getJDA(), route);
     }
 
     /**
@@ -840,7 +826,7 @@ public class GuildController
      *     <br>We were removed from the Guild before finishing the task</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER UNKNOWN_USER}
-     *     <br>The specified User is invalid</li>
+     *     <br>The specified User does not exist</li>
      * </ul>
      *
      * @param  userId
@@ -860,19 +846,7 @@ public class GuildController
         checkPermission(Permission.BAN_MEMBERS);
 
         Route.CompiledRoute route = Route.Guilds.UNBAN.compile(getGuild().getId(), userId);
-        return new AuditableRestActionImpl<Void>(getGuild().getJDA(), route)
-        {
-            @Override
-            public void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else if (response.code == 404)
-                    request.onFailure(new IllegalArgumentException("User with provided id \"" + userId + "\" is not banned! Cannot unban a user who is not currently banned!"));
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestActionImpl<>(getGuild().getJDA(), route);
     }
 
     /**
@@ -1096,7 +1070,7 @@ public class GuildController
         checkPosition(role);
 
         Route.CompiledRoute route = Route.Guilds.REMOVE_MEMBER_ROLE.compile(getGuild().getId(), member.getUser().getId(), role.getId());
-        return new AuditableRestActionImpl<Void>(getJDA(), route);
+        return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
     /**
@@ -1405,7 +1379,7 @@ public class GuildController
                 .put("roles", currentRoles.stream().map(Role::getId).collect(Collectors.toList()));
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), member.getUser().getId());
 
-        return new AuditableRestActionImpl<Void>(getGuild().getJDA(), route, body);
+        return new AuditableRestActionImpl<>(getGuild().getJDA(), route, body);
     }
 
     /**
@@ -1551,7 +1525,7 @@ public class GuildController
                 .put("roles", roles.stream().map(Role::getId).collect(Collectors.toList()));
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), member.getUser().getId());
 
-        return new AuditableRestActionImpl<Void>(getGuild().getJDA(), route, body);
+        return new AuditableRestActionImpl<>(getGuild().getJDA(), route, body);
     }
 
     /**
