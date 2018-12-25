@@ -128,6 +128,21 @@ public class MiscUtil
         }
     }
 
+    public static String encodeCodePointsUTF8(String input)
+    {
+        if (!input.startsWith("U+"))
+            throw new IllegalArgumentException("Invalid format");
+        String[] codePoints = input.substring(2).split("\\s*U\\+\\s*");
+        StringBuilder encoded = new StringBuilder();
+        for (String part : codePoints)
+        {
+            int codePoint = Integer.parseUnsignedInt(part, 16);
+            char[] chars = Character.toChars(codePoint);
+            encoded.append(encodeUTF8(String.valueOf(chars)));
+        }
+        return encoded.toString();
+    }
+
     public static long parseSnowflake(String input)
     {
         Checks.notEmpty(input, "ID");

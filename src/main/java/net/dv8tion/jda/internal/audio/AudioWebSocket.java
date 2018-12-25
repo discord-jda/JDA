@@ -435,6 +435,11 @@ class AudioWebSocket extends WebSocketAdapter
             case VoiceCode.SESSION_DESCRIPTION:
             {
                 LOG.trace("-> SESSION_DESCRIPTION {}", contentAll);
+                send(VoiceCode.USER_SPEAKING_UPDATE, // required to receive audio?
+                     new JSONObject()
+                        .put("delay", 0)
+                        .put("speaking", 0)
+                        .put("ssrc", ssrc));
                 //secret_key is an array of 32 ints that are less than 256, so they are bytes.
                 JSONArray keyArray = contentAll.getJSONObject("d").getJSONArray("secret_key");
 

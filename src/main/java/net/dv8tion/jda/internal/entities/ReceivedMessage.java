@@ -118,7 +118,7 @@ public class ReceivedMessage extends AbstractMessage
     {
         Checks.notNull(emote, "Emote");
 
-        MessageReaction reaction = reactions.parallelStream()
+        MessageReaction reaction = reactions.stream()
                 .filter(r -> Objects.equals(r.getReactionEmote().getId(), emote.getId()))
                 .findFirst().orElse(null);
 
@@ -140,7 +140,7 @@ public class ReceivedMessage extends AbstractMessage
     {
         Checks.notEmpty(unicode, "Provided Unicode");
 
-        MessageReaction reaction = reactions.parallelStream()
+        MessageReaction reaction = reactions.stream()
                 .filter(r -> Objects.equals(r.getReactionEmote().getName(), unicode))
                 .findFirst().orElse(null);
 

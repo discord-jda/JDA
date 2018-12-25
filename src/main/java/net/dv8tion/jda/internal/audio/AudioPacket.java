@@ -52,10 +52,12 @@ public class AudioPacket
      */
     public static final short RTP_DISCORD_EXTENSION = (short) 0xBEDE;
 
+    public static final int PT_INDEX =                      1;
     public static final int SEQ_INDEX =                     2;
     public static final int TIMESTAMP_INDEX =               4;
     public static final int SSRC_INDEX =                    8;
 
+    private final byte type;
     private final char seq;
     private final int timestamp;
     private final int ssrc;
@@ -75,6 +77,7 @@ public class AudioPacket
         this.seq = buffer.getChar(SEQ_INDEX);
         this.timestamp = buffer.getInt(TIMESTAMP_INDEX);
         this.ssrc = buffer.getInt(SSRC_INDEX);
+        this.type = buffer.get(PT_INDEX);
 
         final byte profile = buffer.get(0);
         final byte[] data = buffer.array();
@@ -103,6 +106,7 @@ public class AudioPacket
         this.ssrc = ssrc;
         this.timestamp = timestamp;
         this.encodedAudio = encodedAudio;
+        this.type = RTP_PAYLOAD_TYPE;
         this.rawPacket = generateRawPacket(buffer, seq, timestamp, ssrc, encodedAudio);
     }
 
@@ -200,6 +204,8 @@ public class AudioPacket
     {
         TweetNaclFast.SecretBox boxer = new TweetNaclFast.SecretBox(secretKey);
         AudioPacket encryptedPacket = new AudioPacket(packet);
+        if (encryptedPacket.type != RTP_PAYLOAD_TYPE)
+            return null;
 
         byte[] extendedNonce;
         byte[] rawPacket = encryptedPacket.getRawPacket();

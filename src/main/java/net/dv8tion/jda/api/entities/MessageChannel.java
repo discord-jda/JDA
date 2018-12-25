@@ -1835,6 +1835,16 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>This method encodes the provided unicode for you.
      * <b>Do not encode the emoji before providing the unicode.</b>
      *
+     * <h2>Examples</h2>
+     * <code>
+     * // custom<br>
+     * channel.addReactionById(messageId, "minn:245267426227388416").queue();<br>
+     * // unicode escape<br>
+     * channel.addReactionById(messageId, "&#92;uD83D&#92;uDE02").queue();<br>
+     * // codepoint notation<br>
+     * channel.addReactionById(messageId, "U+1F602").queue();
+     * </code>
+     *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
@@ -1887,10 +1897,15 @@ public interface MessageChannel extends ISnowflake, Formattable
     default RestAction<Void> addReactionById(String messageId, String unicode)
     {
         Checks.isSnowflake(messageId, "Message ID");
+        Checks.notNull(unicode, "Provided Unicode");
+        unicode = unicode.trim();
         Checks.notEmpty(unicode, "Provided Unicode");
-        Checks.noWhitespace(unicode, "Provided Unicode");
 
-        String encoded = MiscUtil.encodeUTF8(unicode);
+        String encoded;
+        if (unicode.startsWith("U+"))
+            encoded = MiscUtil.encodeCodePointsUTF8(unicode);
+        else
+            encoded = MiscUtil.encodeUTF8(unicode);
         Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, encoded);
         return new AbstractRestAction<>(getJDA(), route);
     }
@@ -1907,6 +1922,16 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * <p>This method encodes the provided unicode for you.
      * <b>Do not encode the emoji before providing the unicode.</b>
+     *
+     * <h2>Examples</h2>
+     * <code>
+     * // custom<br>
+     * channel.addReactionById(messageId, "minn:245267426227388416").queue();<br>
+     * // unicode escape<br>
+     * channel.addReactionById(messageId, "&#92;uD83D&#92;uDE02").queue();<br>
+     * // codepoint notation<br>
+     * channel.addReactionById(messageId, "U+1F602").queue();
+     * </code>
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
