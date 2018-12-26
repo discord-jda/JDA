@@ -146,7 +146,7 @@ public class PermissionUtil
 
         // We don't need to check based on the fact it is animated if it's a BOT account
         // because BOT accounts cannot have nitro, and have access to animated Emotes naturally.
-        if (emote.isAnimated() && !issuer.getUser().isBot())
+        if (emote.isAnimated() && !issuer.isBot())
         {
             // This is a currently logged in client, meaning we can check if they have nitro or not.
             // If this isn't the currently logged in account, we just check it like a normal emote,

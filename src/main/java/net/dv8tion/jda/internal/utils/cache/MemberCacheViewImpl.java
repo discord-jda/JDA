@@ -39,7 +39,7 @@ public class MemberCacheViewImpl extends SnowflakeCacheViewImpl<Member> implemen
         List<Member> members = new ArrayList<>();
         forEach(member ->
         {
-            final String nick = member.getUser().getName();
+            final String nick = member.getName();
             if (equals(ignoreCase, nick, name))
                 members.add(member);
         });

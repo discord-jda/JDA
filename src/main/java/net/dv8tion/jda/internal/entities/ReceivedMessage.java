@@ -385,14 +385,14 @@ public class ReceivedMessage extends AbstractMessage
 
     private boolean isUserMentioned(IMentionable mentionable)
     {
-        if (mentionable instanceof User)
-        {
-            return getMentionedUsers().contains(mentionable);
-        }
-        else if (mentionable instanceof Member)
+        if (mentionable instanceof Member)
         {
             final Member member = (Member) mentionable;
             return getMentionedUsers().contains(member.getUser());
+        }
+        else if (mentionable instanceof User)
+        {
+            return getMentionedUsers().contains(mentionable);
         }
         return false;
     }

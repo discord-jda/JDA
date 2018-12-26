@@ -458,7 +458,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
         }
 
         boolean isMember = isMember();
-        long id = isMember ? member.getUser().getIdLong() : role.getIdLong();
+        long id = isMember ? member.getIdLong() : role.getIdLong();
         JSONObject object = (JSONObject) request.getRawBody();
         PermissionOverrideImpl override = new PermissionOverrideImpl(channel, id, isMember ? member : role);
         override.setAllow(object.getLong("allow"));

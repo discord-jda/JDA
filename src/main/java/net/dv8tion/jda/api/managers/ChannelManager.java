@@ -749,6 +749,6 @@ public class ChannelManager extends ManagerBase
         if (holder instanceof Role)
             return ((Role) holder).getIdLong();
         else
-            return ((Member) holder).getUser().getIdLong();
+            return ((Member) holder).getIdLong();
     }
 }

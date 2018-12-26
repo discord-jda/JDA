@@ -159,7 +159,7 @@ public class GuildController
                             "for the destination VoiceChannel, so the move cannot be done.");
 
         JSONObject body = new JSONObject().put("channel_id", voiceChannel.getId());
-        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), member.getUser().getId());
+        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), member.getId());
 
         return new RestAction<Void>(getGuild().getJDA(), route, body)
         {
@@ -248,7 +248,7 @@ public class GuildController
         if (member.equals(getGuild().getSelfMember()))
             route = Route.Guilds.MODIFY_SELF_NICK.compile(getGuild().getId());
         else
-            route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), member.getUser().getId());
+            route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), member.getId());
 
         return new AuditableRestAction<Void>(getGuild().getJDA(), route, body)
         {
@@ -355,7 +355,7 @@ public class GuildController
         checkPermission(Permission.KICK_MEMBERS);
         checkPosition(member);
 
-        final String userId = member.getUser().getId();
+        final String userId = member.getId();
         final String guildId = getGuild().getId();
 
         Route.CompiledRoute route = Route.Guilds.KICK_MEMBER.compile(guildId, userId);
@@ -965,7 +965,7 @@ public class GuildController
             return new AuditableRestAction.EmptyRestAction<>(getJDA(), null);
 
         JSONObject body = new JSONObject().put("deaf", deafen);
-        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), member.getUser().getId());
+        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), member.getId());
         return new AuditableRestAction<Void>(getGuild().getJDA(), route, body)
         {
             @Override
@@ -1030,7 +1030,7 @@ public class GuildController
             return new AuditableRestAction.EmptyRestAction<>(getJDA(), null);
 
         JSONObject body = new JSONObject().put("mute", mute);
-        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), member.getUser().getId());
+        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), member.getId());
         return new AuditableRestAction<Void>(getGuild().getJDA(), route, body)
         {
             @Override
@@ -1097,7 +1097,7 @@ public class GuildController
         checkPermission(Permission.MANAGE_ROLES);
         checkPosition(role);
 
-        Route.CompiledRoute route = Route.Guilds.ADD_MEMBER_ROLE.compile(getGuild().getId(), member.getUser().getId(), role.getId());
+        Route.CompiledRoute route = Route.Guilds.ADD_MEMBER_ROLE.compile(getGuild().getId(), member.getId(), role.getId());
         return new AuditableRestAction<Void>(getJDA(), route)
         {
             @Override
@@ -1164,7 +1164,7 @@ public class GuildController
         checkPermission(Permission.MANAGE_ROLES);
         checkPosition(role);
 
-        Route.CompiledRoute route = Route.Guilds.REMOVE_MEMBER_ROLE.compile(getGuild().getId(), member.getUser().getId(), role.getId());
+        Route.CompiledRoute route = Route.Guilds.REMOVE_MEMBER_ROLE.compile(getGuild().getId(), member.getId(), role.getId());
         return new AuditableRestAction<Void>(getJDA(), route)
         {
             @Override
@@ -1482,7 +1482,7 @@ public class GuildController
 
         JSONObject body = new JSONObject()
                 .put("roles", currentRoles.stream().map(Role::getId).collect(Collectors.toList()));
-        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), member.getUser().getId());
+        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), member.getId());
 
         return new AuditableRestAction<Void>(getGuild().getJDA(), route, body)
         {
@@ -1638,7 +1638,7 @@ public class GuildController
         //This is identical to the rest action stuff in #modifyMemberRoles(Member, Collection<Role>, Collection<Role>)
         JSONObject body = new JSONObject()
                 .put("roles", roles.stream().map(Role::getId).collect(Collectors.toList()));
-        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), member.getUser().getId());
+        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), member.getId());
 
         return new AuditableRestAction<Void>(getGuild().getJDA(), route, body)
         {
@@ -1695,9 +1695,9 @@ public class GuildController
         Checks.check(!getGuild().getSelfMember().equals(newOwner),
             "The member provided as the newOwner is the currently logged in account. Provide a different member to give ownership to.");
 
-        Checks.check(!newOwner.getUser().isBot(), "Cannot transfer ownership of a Guild to a Bot!");
+        Checks.check(!newOwner.isBot(), "Cannot transfer ownership of a Guild to a Bot!");
 
-        JSONObject body = new JSONObject().put("owner_id", newOwner.getUser().getId());
+        JSONObject body = new JSONObject().put("owner_id", newOwner.getId());
         Route.CompiledRoute route = Route.Guilds.MODIFY_GUILD.compile(getGuild().getId());
         return new AuditableRestAction<Void>(getGuild().getJDA(), route, body)
         {

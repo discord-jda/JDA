@@ -288,7 +288,7 @@ public class EntityBuilder
             VoiceChannelImpl voiceChannel =
                     (VoiceChannelImpl) guildObj.getVoiceChannelsView().get(channelId);
             if (voiceChannel != null)
-                voiceChannel.getConnectedMembersMap().put(member.getUser().getIdLong(), member);
+                voiceChannel.getConnectedMembersMap().put(member.getIdLong(), member);
             else
                 LOG.error("Received a GuildVoiceState with a channel ID for a non-existent channel! ChannelId: {} GuildId: {} UserId: {}",
                     channelId, guildObj.getId(), userId);
@@ -401,7 +401,7 @@ public class EntityBuilder
             if (r == null)
             {
                 LOG.debug("Received a Member with an unknown Role. MemberId: {} GuildId: {} roleId: {}",
-                    member.getUser().getId(), guild.getId(), roleId);
+                    member.getId(), guild.getId(), roleId);
             }
             else
             {
@@ -441,7 +441,7 @@ public class EntityBuilder
                 catch (Exception ex)
                 {
                     String userId;
-                    userId = member.getUser().getId();
+                    userId = member.getId();
                     if (LOG.isDebugEnabled())
                         LOG.warn("Encountered exception trying to parse a presence! UserId: {} JSON: {}", userId, activityArray, ex);
                     else
@@ -1022,7 +1022,7 @@ public class EntityBuilder
                 permOverride = (PermissionOverrideImpl) chan.getPermissionOverride(member);
                 if (permOverride == null)
                 {
-                    permOverride = new PermissionOverrideImpl(chan, member.getUser().getIdLong(), member);
+                    permOverride = new PermissionOverrideImpl(chan, member.getIdLong(), member);
                     ((AbstractChannelImpl<?>) chan).getOverrideMap().put(member.getUser().getIdLong(), permOverride);
                 }
                 break;

@@ -317,7 +317,7 @@ public class ChannelAction extends AuditableRestAction<GuildChannel>
         else
         {
             Member m = (Member) target;
-            long id = m.getUser().getIdLong();
+            long id = m.getIdLong();
             overrides.add(new PermOverrideData(PermOverrideData.MEMBER_TYPE, id, allow, deny));
         }
         return this;

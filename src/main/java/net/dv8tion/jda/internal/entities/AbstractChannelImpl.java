@@ -94,7 +94,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     @Override
     public PermissionOverride getPermissionOverride(Member member)
     {
-        return member != null ? overrides.get(member.getUser().getIdLong()) : null;
+        return member != null ? overrides.get(member.getIdLong()) : null;
     }
 
     @Override
@@ -165,7 +165,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     public PermissionOverrideAction createPermissionOverride(Member member)
     {
         Checks.notNull(member, "member");
-        if (overrides.containsKey(member.getUser().getIdLong()))
+        if (overrides.containsKey(member.getIdLong()))
             throw new IllegalStateException("Provided member already has a PermissionOverride in this channel!");
 
         return putPermissionOverride(member);
@@ -189,7 +189,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
 
         if (!getGuild().equals(member.getGuild()))
             throw new IllegalArgumentException("Provided member is not from the same guild as this channel!");
-        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(getId(), member.getUser().getId());
+        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(getId(), member.getId());
         return new PermissionOverrideAction(getJDA(), route, this, member);
     }
 

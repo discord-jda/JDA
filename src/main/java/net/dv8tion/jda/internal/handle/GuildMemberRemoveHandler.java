@@ -68,7 +68,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
         {
             VoiceChannel channel = voiceState.getChannel();
             voiceState.setConnectedChannel(null);
-            ((VoiceChannelImpl) channel).getConnectedMembersMap().remove(member.getUser().getIdLong());
+            ((VoiceChannelImpl) channel).getConnectedMembersMap().remove(member.getIdLong());
             getJDA().getEventManager().handle(
                     new GuildVoiceLeaveEvent(
                             getJDA(), responseNumber,

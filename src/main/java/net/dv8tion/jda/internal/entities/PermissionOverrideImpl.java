@@ -150,7 +150,7 @@ public class PermissionOverrideImpl implements PermissionOverride
         if (!getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
             throw new InsufficientPermissionException(Permission.MANAGE_PERMISSIONS);
 
-        String targetId = isRoleOverride() ? getRole().getId() : getMember().getUser().getId();
+        String targetId = isRoleOverride() ? getRole().getId() : getMember().getId();
         Route.CompiledRoute route = Route.Channels.DELETE_PERM_OVERRIDE.compile(getChannel().getId(), targetId);
         return new AuditableRestAction<Void>(getJDA(), route)
         {

@@ -72,7 +72,7 @@ public class PermOverrideManager extends ManagerBase
         super(override.getJDA(),
               Route.Channels.MODIFY_PERM_OVERRIDE.compile(
                   override.getChannel().getId(),
-                  override.isMemberOverride() ? override.getMember().getUser().getId()
+                  override.isMemberOverride() ? override.getMember().getId()
                                               : override.getRole().getId()));
         this.override = new UpstreamReference<>(override);
         this.allowed = override.getAllowedRaw();
@@ -387,7 +387,7 @@ public class PermOverrideManager extends ManagerBase
     @Override
     protected RequestBody finalizeData()
     {
-        String targetId = getPermissionOverride().isMemberOverride() ? getPermissionOverride().getMember().getUser().getId() : getPermissionOverride().getRole().getId();
+        String targetId = getPermissionOverride().isMemberOverride() ? getPermissionOverride().getMember().getId() : getPermissionOverride().getRole().getId();
         // setup missing values here
         setupValues();
         RequestBody data = getRequestBody(

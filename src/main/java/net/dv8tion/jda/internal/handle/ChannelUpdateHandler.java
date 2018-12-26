@@ -268,7 +268,7 @@ public class ChannelUpdateHandler extends SocketHandler
     private long getIdLong(IPermissionHolder permHolder)
     {
         if (permHolder instanceof Member)
-            return ((Member) permHolder).getUser().getIdLong();
+            return ((Member) permHolder).getIdLong();
         else
             return ((Role) permHolder).getIdLong();
     }

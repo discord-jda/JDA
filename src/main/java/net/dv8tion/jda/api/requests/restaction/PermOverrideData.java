@@ -41,7 +41,7 @@ public class PermOverrideData implements JSONString
     {
         if (override.isMemberOverride())
         {
-            this.id = override.getMember().getUser().getIdLong();
+            this.id = override.getMember().getIdLong();
             this.type = MEMBER_TYPE;
         }
         else
