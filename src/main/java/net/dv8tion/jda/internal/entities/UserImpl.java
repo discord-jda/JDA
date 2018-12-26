@@ -69,30 +69,10 @@ public class UserImpl implements User
     }
 
     @Override
-    public String getAvatarUrl()
-    {
-        return getAvatarId() == null ? null : "https://cdn.discordapp.com/avatars/" + getId() + "/" + getAvatarId()
-                + (getAvatarId().startsWith("a_") ? ".gif" : ".png");
-    }
-
-    @Override
     public String getDefaultAvatarId()
     {
         return DefaultAvatar.values()[Integer.parseInt(getDiscriminator()) % DefaultAvatar.values().length].toString();
     }
-
-    @Override
-    public String getDefaultAvatarUrl()
-    {
-        return "https://discordapp.com/assets/" + getDefaultAvatarId() + ".png";
-    }
-
-    @Override
-    public String getEffectiveAvatarUrl()
-    {
-        return getAvatarUrl() == null ? getDefaultAvatarUrl() : getAvatarUrl();
-    }
-
 
     @Override
     public boolean hasPrivateChannel()

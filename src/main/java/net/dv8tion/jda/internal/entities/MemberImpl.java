@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -66,6 +67,54 @@ public class MemberImpl implements Member
     public GuildImpl getGuild()
     {
         return guild.get();
+    }
+
+    @Override
+    public String getName()
+    {
+        return user.getName();
+    }
+
+    @Override
+    public String getDiscriminator()
+    {
+        return user.getDiscriminator();
+    }
+
+    @Override
+    public String getAvatarId()
+    {
+        return user.getAvatarId();
+    }
+
+    @Override
+    public String getDefaultAvatarId()
+    {
+        return user.getDefaultAvatarId();
+    }
+
+    @Override
+    public boolean hasPrivateChannel()
+    {
+        return user.hasPrivateChannel();
+    }
+
+    @Override
+    public RestAction<PrivateChannel> openPrivateChannel()
+    {
+        return user.openPrivateChannel();
+    }
+
+    @Override
+    public List<Guild> getMutualGuilds()
+    {
+        return user.getMutualGuilds();
+    }
+
+    @Override
+    public boolean isBot()
+    {
+        return user.isBot();
     }
 
     @Override
@@ -269,5 +318,17 @@ public class MemberImpl implements Member
                  .sorted(Comparator.reverseOrder())
                  .filter(c -> hasPermission(c, Permission.MESSAGE_READ))
                  .findFirst().orElse(null);
+    }
+
+    @Override
+    public boolean isFake()
+    {
+        return false;
+    }
+
+    @Override
+    public long getIdLong()
+    {
+        return user.getIdLong();
     }
 }

@@ -23,17 +23,11 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import java.util.*;
 
-public class MemberCacheViewImpl extends AbstractCacheView<Member> implements MemberCacheView
+public class MemberCacheViewImpl extends SnowflakeCacheViewImpl<Member> implements MemberCacheView
 {
     public MemberCacheViewImpl()
     {
         super(Member.class, Member::getEffectiveName);
-    }
-
-    @Override
-    public Member getElementById(long id)
-    {
-        return get(id);
     }
 
     @Override

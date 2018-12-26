@@ -84,7 +84,11 @@ public interface User extends ISnowflake, IMentionable, IFakeable
      *
      * @return Possibly-null String containing the {@link net.dv8tion.jda.api.entities.User User} avatar url.
      */
-    String getAvatarUrl();
+    default String getAvatarUrl()
+    {
+        return getAvatarId() == null ? null : "https://cdn.discordapp.com/avatars/" + getId() + "/" + getAvatarId()
+                + (getAvatarId().startsWith("a_") ? ".gif" : ".png");
+    }
 
     /**
      * The Discord Id for this user's default avatar image.
@@ -98,7 +102,10 @@ public interface User extends ISnowflake, IMentionable, IFakeable
      *
      * @return Never-null String containing the {@link net.dv8tion.jda.api.entities.User User} default avatar url.
      */
-    String getDefaultAvatarUrl();
+    default String getDefaultAvatarUrl()
+    {
+        return "https://discordapp.com/assets/" + getDefaultAvatarId() + ".png";
+    }
 
     /**
      * The URL for the user's avatar image
@@ -107,7 +114,10 @@ public interface User extends ISnowflake, IMentionable, IFakeable
      *
      * @return  Never-null String containing the {@link net.dv8tion.jda.api.entities.User User} effective avatar url.
      */
-    String getEffectiveAvatarUrl();
+    default String getEffectiveAvatarUrl()
+    {
+        return getAvatarUrl() == null ? getDefaultAvatarUrl() : getAvatarUrl();
+    }
 
     /**
      * Whether or not the currently logged in user and this user have a currently open
