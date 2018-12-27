@@ -34,7 +34,6 @@ import org.json.JSONObject;
  */
 public class PresenceImpl implements Presence
 {
-
     private final UpstreamReference<JDAImpl> api;
     private boolean idle = false;
     private Activity activity = null;
@@ -203,7 +202,11 @@ public class PresenceImpl implements Presence
 
     protected void update(JSONObject data)
     {
-        api.get().getClient().send(new JSONObject()
+        JDAImpl jda = api.get();
+        JDA.Status status = jda.getStatus();
+        if (status == JDA.Status.RECONNECT_QUEUED || status == JDA.Status.SHUTDOWN || status == JDA.Status.SHUTTING_DOWN)
+            return;
+        jda.getClient().send(new JSONObject()
             .put("d", data)
             .put("op", WebSocketCode.PRESENCE).toString());
     }
