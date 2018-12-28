@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.hooks.IEventManager;
+import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.SessionControllerAdapter;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
@@ -60,6 +61,7 @@ public class JDABuilder
     protected EnumSet<CacheFlag> cacheFlags = EnumSet.allOf(CacheFlag.class);
     protected ConcurrentMap<String, String> contextMap = null;
     protected SessionController controller = null;
+    protected VoiceDispatchInterceptor voiceDispatchInterceptor = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
     protected OkHttpClient httpClient = null;
     protected WebSocketFactory wsFactory = null;
@@ -746,6 +748,12 @@ public class JDABuilder
         return this;
     }
 
+    public JDABuilder setVoiceDispatchInterceptor(VoiceDispatchInterceptor interceptor)
+    {
+        this.voiceDispatchInterceptor = interceptor;
+        return this;
+    }
+
     /**
      * Builds a new {@link net.dv8tion.jda.api.JDA} instance and uses the provided token to start the login process.
      * <br>The login process runs in a different thread, so while this will return immediately, {@link net.dv8tion.jda.api.JDA} has not
@@ -781,8 +789,8 @@ public class JDABuilder
         if (controller == null && shardInfo != null)
             controller = new SessionControllerAdapter();
 
-        JDAImpl jda = new JDAImpl(accountType, token, controller, httpClient, wsFactory, rateLimitPool, mainWsPool,
-                                  callbackPool,
+        JDAImpl jda = new JDAImpl(accountType, token, controller, voiceDispatchInterceptor,
+                                  httpClient, wsFactory, rateLimitPool, mainWsPool, callbackPool,
                                   autoReconnect, enableVoice, enableShutdownHook, enableBulkDeleteSplitting,
                                   requestTimeoutRetry, enableContext,
                                   shutdownRateLimitPool, shutdownMainWsPool, shutdownCallbackPool,

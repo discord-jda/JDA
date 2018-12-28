@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.hooks.IEventManager;
+import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.SessionControllerAdapter;
@@ -66,6 +67,8 @@ public class DefaultShardManager implements ShardManager
      * The {@link net.dv8tion.jda.api.utils.SessionController SessionController} for this manager.
      */
     protected final SessionController controller;
+
+    protected final VoiceDispatchInterceptor voiceDispatchInterceptor;
 
     /**
      * The factory used to create {@link net.dv8tion.jda.api.audio.factory.IAudioSendSystem IAudioSendSystem}
@@ -309,7 +312,7 @@ public class DefaultShardManager implements ShardManager
      */
     protected DefaultShardManager(
         final int shardsTotal, final Collection<Integer> shardIds,
-        final SessionController controller, final List<Object> listeners,
+        final SessionController controller, final VoiceDispatchInterceptor voiceDispatchInterceptor, final List<Object> listeners,
         final List<IntFunction<Object>> listenerProviders,
         final String token, final IntFunction<? extends IEventManager> eventManagerProvider, final IAudioSendFactory audioSendFactory,
         final IntFunction<? extends Activity> gameProvider, final IntFunction<OnlineStatus> statusProvider,
@@ -329,6 +332,7 @@ public class DefaultShardManager implements ShardManager
         this.listeners = listeners;
         this.listenerProviders = listenerProviders;
         this.token = token;
+        this.voiceDispatchInterceptor = voiceDispatchInterceptor;
         this.eventManagerProvider = eventManagerProvider;
         this.audioSendFactory = audioSendFactory;
         this.gameProvider = gameProvider;
@@ -670,7 +674,7 @@ public class DefaultShardManager implements ShardManager
         boolean shutdownCallbackPool = callbackPair.automaticShutdown;
 
         final JDAImpl jda = new JDAImpl(
-                AccountType.BOT, this.token, this.controller, httpClient, this.wsFactory,
+                AccountType.BOT, this.token, this.controller, this.voiceDispatchInterceptor, httpClient, this.wsFactory,
                 rateLimitPool, gatewayPool, callbackPool, this.autoReconnect, this.enableVoice, false, this.enableBulkDeleteSplitting,
                 this.retryOnTimeout, this.enableMDC, shutdownRateLimitPool, shutdownGatewayPool, shutdownCallbackPool, this.corePoolSize, this.maxReconnectDelay,
                 this.contextProvider == null || !this.enableMDC ? null : contextProvider.apply(shardId), this.cacheFlags);

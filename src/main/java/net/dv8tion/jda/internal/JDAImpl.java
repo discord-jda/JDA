@@ -30,6 +30,7 @@ import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.InterfacedEventManager;
+import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.Presence;
 import net.dv8tion.jda.api.requests.Request;
@@ -108,6 +109,7 @@ public class JDAImpl implements JDA
 
     protected final SessionController sessionController;
     protected final GuildSetupController guildSetupController;
+    protected final VoiceDispatchInterceptor voiceInterceptor;
 
     protected UpstreamReference<WebSocketClient> client;
     protected Requester requester;
@@ -128,7 +130,7 @@ public class JDAImpl implements JDA
     protected ShardManager shardManager = null;
 
     public JDAImpl(
-        AccountType accountType, String token, SessionController controller, OkHttpClient httpClient, WebSocketFactory wsFactory,
+        AccountType accountType, String token, SessionController controller, VoiceDispatchInterceptor interceptor, OkHttpClient httpClient, WebSocketFactory wsFactory,
         ScheduledExecutorService rateLimitPool, ScheduledExecutorService gatewayPool, ExecutorService callbackPool,
         boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook,
         boolean bulkDeleteSplittingEnabled, boolean retryOnTimeout, boolean enableMDC,
@@ -138,6 +140,7 @@ public class JDAImpl implements JDA
     {
         this.accountType = accountType;
         this.setToken(token);
+        this.voiceInterceptor = interceptor;
         this.httpClient = httpClient;
         this.wsFactory = wsFactory;
         this.autoReconnect = autoReconnect;
@@ -182,6 +185,11 @@ public class JDAImpl implements JDA
     public GuildSetupController getGuildSetupController()
     {
         return guildSetupController;
+    }
+
+    public VoiceDispatchInterceptor getVoiceInterceptor()
+    {
+        return voiceInterceptor;
     }
 
     public int login(String gatewayUrl, ShardInfo shardInfo, boolean compression, boolean validateToken) throws LoginException

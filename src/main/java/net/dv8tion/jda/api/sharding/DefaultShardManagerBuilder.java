@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.hooks.IEventManager;
+import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -47,6 +48,7 @@ public class  DefaultShardManagerBuilder
     protected final List<Object> listeners = new ArrayList<>();
     protected final List<IntFunction<Object>> listenerProviders = new ArrayList<>();
     protected SessionController sessionController = null;
+    protected VoiceDispatchInterceptor voiceDispatchInterceptor = null;
     protected EnumSet<CacheFlag> cacheFlags = EnumSet.allOf(CacheFlag.class);
     protected boolean enableContext = true;
     protected boolean enableBulkDeleteSplitting = true;
@@ -145,6 +147,12 @@ public class  DefaultShardManagerBuilder
     public DefaultShardManagerBuilder setSessionController(SessionController controller)
     {
         this.sessionController = controller;
+        return this;
+    }
+
+    public DefaultShardManagerBuilder setVoiceDispatchInterceptor(VoiceDispatchInterceptor interceptor)
+    {
+        this.voiceDispatchInterceptor = interceptor;
         return this;
     }
 
@@ -1082,7 +1090,7 @@ public class  DefaultShardManagerBuilder
     public ShardManager build() throws LoginException, IllegalArgumentException
     {
         final DefaultShardManager manager = new DefaultShardManager(
-                this.shardsTotal, this.shards, this.sessionController,
+                this.shardsTotal, this.shards, this.sessionController, this.voiceDispatchInterceptor,
                 this.listeners, this.listenerProviders, this.token, this.eventManagerProvider,
                 this.audioSendFactory, this.gameProvider, this.statusProvider,
                 this.httpClientBuilder, this.httpClient, this.rateLimitPoolProvider, this.gatewayPoolProvider,
