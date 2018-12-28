@@ -24,14 +24,13 @@ import net.dv8tion.jda.internal.utils.cache.ShardCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.UnifiedCacheViewImpl;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Read-only view on internal JDA cache of items.
@@ -89,6 +88,73 @@ public interface CacheView<T> extends Iterable<T>
      * @return {@link ClosableIterator} holding a read-lock on the data structure.
      */
     ClosableIterator<T> lockedIterator();
+
+    /**
+     * Creates an unordered sequenced stream of the elements in this cache.
+     * <br>This does not copy the backing cache prior to consumption unlike {@link #stream()}.
+     *
+     * <p>The stream will be closed once this method returns and cannot be used anymore.
+     *
+     * <h2>Example</h2>
+     * <code>
+     * {@literal CacheView<User>} view = jda.getUserCache();<br>
+     * long shortNames = view.applyStream(stream -> stream.filter(it -> it.getName().length() < 4).count());<br>
+     * System.out.println(shortNames + " users with less than 4 characters in their name");
+     * </code>
+     *
+     * @param  action
+     *         The action to perform on the stream
+     * @param  <R>
+     *         The return type after performing the specified action
+     *
+     * @throws IllegalArgumentException
+     *         If the action is null
+     *
+     * @return The resulting value after the action was performed
+     *
+     * @see    #acceptStream(Consumer)
+     */
+    default <R> R applyStream(Function<Stream<T>, R> action)
+    {
+        Checks.notNull(action, "Action");
+        try (ClosableIterator<T> it = lockedIterator())
+        {
+            Spliterator<T> spliterator = Spliterators.spliterator(it, size(), Spliterator.IMMUTABLE | Spliterator.NONNULL);
+            Stream<T> stream = StreamSupport.stream(spliterator, false);
+            return action.apply(stream);
+        }
+    }
+
+    /**
+     * Creates an unordered sequenced stream of the elements in this cache.
+     * <br>This does not copy the backing cache prior to consumption unlike {@link #stream()}.
+     *
+     * <p>The stream will be closed once this method returns and cannot be used anymore.
+     *
+     * <h2>Example</h2>
+     * <code>
+     * {@literal CacheView<TextChannel>} view = guild.getTextChannelCache();<br>
+     * view.acceptStream(stream -> stream.filter(it -> it.isNSFW()).forEach(it -> it.sendMessage("lewd").queue()));
+     * </code>
+     *
+     * @param  action
+     *         The action to perform on the stream
+     *
+     * @throws IllegalArgumentException
+     *         If the action is null
+     *
+     * @see    #applyStream(Function)
+     */
+    default void acceptStream(Consumer<Stream<T>> action)
+    {
+        Checks.notNull(action, "Action");
+        try (ClosableIterator<T> it = lockedIterator())
+        {
+            Spliterator<T> spliterator = Spliterators.spliterator(it, size(), Spliterator.IMMUTABLE | Spliterator.NONNULL);
+            Stream<T> stream = StreamSupport.stream(spliterator, false);
+            action.accept(stream);
+        }
+    }
 
     /**
      * The current size of this cache
