@@ -98,7 +98,7 @@ public interface CacheView<T> extends Iterable<T>
      * <h2>Example</h2>
      * <code>
      * {@literal CacheView<User>} view = jda.getUserCache();<br>
-     * long shortNames = view.applyStream(stream -> stream.filter(it -> it.getName().length() < 4).count());<br>
+     * long shortNames = view.applyStream(stream {@literal ->} stream.filter(it {@literal ->} it.getName().length() {@literal <} 4).count());<br>
      * System.out.println(shortNames + " users with less than 4 characters in their name");
      * </code>
      *
@@ -134,7 +134,7 @@ public interface CacheView<T> extends Iterable<T>
      * <h2>Example</h2>
      * <code>
      * {@literal CacheView<TextChannel>} view = guild.getTextChannelCache();<br>
-     * view.acceptStream(stream -> stream.filter(it -> it.isNSFW()).forEach(it -> it.sendMessage("lewd").queue()));
+     * view.acceptStream(stream {@literal ->} stream.filter(it {@literal ->} it.isNSFW()).forEach(it {@literal ->} it.sendMessage("lewd").queue()));
      * </code>
      *
      * @param  action
