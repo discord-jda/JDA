@@ -20,11 +20,9 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.ContextRunnable;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
@@ -396,7 +394,13 @@ public interface RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
      */
-    ScheduledFuture<T> submitAfter(long delay, TimeUnit unit, ScheduledExecutorService executor);
+    default ScheduledFuture<T> submitAfter(long delay, TimeUnit unit, ScheduledExecutorService executor)
+    {
+        Checks.notNull(unit, "TimeUnit");
+        if (executor == null)
+            executor = getJDA().getRateLimitPool();
+        return executor.schedule((Callable<T>) new ContextRunnable<>((Callable<T>) this::complete), delay, unit);
+    }
 
     /**
      * Blocks the current Thread for the specified delay and calls {@link #complete()}
@@ -615,6 +619,11 @@ public interface RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
      */
-    ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<? super T> success, Consumer<? super Throwable> failure, ScheduledExecutorService executor);
-
+    default ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<? super T> success, Consumer<? super Throwable> failure, ScheduledExecutorService executor)
+    {
+        Checks.notNull(unit, "TimeUnit");
+        if (executor == null)
+            executor = getJDA().getRateLimitPool();
+        return executor.schedule((Runnable) new ContextRunnable<>(() -> queue(success, failure)), delay, unit);
+    }
 }

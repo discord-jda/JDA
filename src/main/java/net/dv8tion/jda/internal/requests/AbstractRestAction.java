@@ -17,7 +17,6 @@
 package net.dv8tion.jda.internal.requests;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.audit.ThreadLocalReason;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
@@ -35,7 +34,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -201,24 +201,6 @@ public class AbstractRestAction<T> implements RestAction<T>
         }
     }
 
-    @Override
-    public ScheduledFuture<T> submitAfter(long delay, TimeUnit unit, ScheduledExecutorService executor)
-    {
-        Checks.notNull(unit, "TimeUnit");
-        if (executor == null)
-            executor = api.get().getRateLimitPool();
-        return executor.schedule((Callable<T>) new ContextRunnable((Callable<T>) this::complete), delay, unit);
-    }
-
-    @Override
-    public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<? super T> success, Consumer<? super Throwable> failure, ScheduledExecutorService executor)
-    {
-        Checks.notNull(unit, "TimeUnit");
-        if (executor == null)
-            executor = api.get().getRateLimitPool();
-        return executor.schedule((Runnable) new ContextRunnable(() -> queue(success, failure)), delay, unit);
-    }
-
     protected RequestBody finalizeData() { return data; }
     protected Route.CompiledRoute finalizeRoute() { return route; }
     protected CaseInsensitiveMap<String, String> finalizeHeaders() { return null; }
@@ -301,45 +283,6 @@ public class AbstractRestAction<T> implements RestAction<T>
         public boolean getAsBoolean()
         {
             return pre() && test();
-        }
-    }
-
-    private class ContextRunnable implements Runnable, Callable<T>
-    {
-        private final String localReason;
-        private final Runnable runnable;
-        private final Callable<T> callable;
-
-        protected ContextRunnable(Runnable runnable)
-        {
-            this.localReason = ThreadLocalReason.getCurrent();
-            this.runnable = runnable;
-            this.callable = null;
-        }
-
-        protected ContextRunnable(Callable<T> callable)
-        {
-            this.localReason = ThreadLocalReason.getCurrent();
-            this.runnable = null;
-            this.callable = callable;
-        }
-
-        @Override
-        public void run()
-        {
-            try (ThreadLocalReason.Closable __ = ThreadLocalReason.closable(localReason))
-            {
-                runnable.run();
-            }
-        }
-
-        @Override
-        public T call() throws Exception
-        {
-            try (ThreadLocalReason.Closable __ = ThreadLocalReason.closable(localReason))
-            {
-                return callable.call();
-            }
         }
     }
 }

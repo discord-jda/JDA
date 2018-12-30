@@ -19,9 +19,8 @@ package net.dv8tion.jda.internal.requests;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.utils.Checks;
 
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
@@ -70,24 +69,6 @@ public class EmptyRestAction<T> implements AuditableRestAction<T>
     public CompletableFuture<T> submit(boolean shouldQueue)
     {
         return CompletableFuture.completedFuture(returnObj);
-    }
-
-    @Override
-    public ScheduledFuture<T> submitAfter(long delay, TimeUnit unit, ScheduledExecutorService executor)
-    {
-        Checks.notNull(unit, "TimeUnit");
-        if (executor == null)
-            executor = api.getRateLimitPool();
-        return executor.schedule((Callable<T>) this::complete, delay, unit);
-    }
-
-    @Override
-    public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<? super T> success, Consumer<? super Throwable> failure, ScheduledExecutorService executor)
-    {
-        Checks.notNull(unit, "TimeUnit");
-        if (executor == null)
-            executor = api.getRateLimitPool();
-        return executor.schedule(() -> queue(success, failure), delay, unit);
     }
 
     @Override
