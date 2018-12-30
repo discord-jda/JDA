@@ -20,17 +20,18 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.SelfUser;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
+import net.dv8tion.jda.api.managers.AccountManager;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.AccountManagerImpl;
-import net.dv8tion.jda.internal.requests.AbstractRestAction;
 
 import java.util.concurrent.locks.ReentrantLock;
 
 public class SelfUserImpl extends UserImpl implements SelfUser
 {
     protected final ReentrantLock mngLock = new ReentrantLock();
-    protected volatile AccountManagerImpl manager;
+    protected volatile AccountManager manager;
 
     private boolean verified;
     private boolean mfaEnabled;
@@ -59,7 +60,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     }
 
     @Override
-    public AbstractRestAction<PrivateChannel> openPrivateChannel()
+    public RestAction<PrivateChannel> openPrivateChannel()
     {
         throw new UnsupportedOperationException("You cannot open a PrivateChannel with yourself (SelfUser)");
     }
@@ -118,9 +119,9 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     }
 
     @Override
-    public AccountManagerImpl getManager()
+    public AccountManager getManager()
     {
-        AccountManagerImpl mng = manager;
+        AccountManager mng = manager;
         if (mng == null)
         {
             mng = MiscUtil.locked(mngLock, () ->

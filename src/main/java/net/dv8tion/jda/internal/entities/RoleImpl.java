@@ -23,6 +23,8 @@ import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.managers.RoleManager;
+import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.RoleAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.managers.RoleManagerImpl;
@@ -44,7 +46,7 @@ public class RoleImpl implements Role
     private final UpstreamReference<Guild> guild;
 
     private final ReentrantLock mngLock = new ReentrantLock();
-    private volatile RoleManagerImpl manager;
+    private volatile RoleManager manager;
 
     private String name;
     private boolean managed;
@@ -204,9 +206,9 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public RoleManagerImpl getManager()
+    public RoleManager getManager()
     {
-        RoleManagerImpl mng = manager;
+        RoleManager mng = manager;
         if (mng == null)
         {
             mng = MiscUtil.locked(mngLock, () ->
@@ -220,7 +222,7 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public AuditableRestActionImpl<Void> delete()
+    public AuditableRestAction<Void> delete()
     {
         if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_ROLES))
             throw new InsufficientPermissionException(Permission.MANAGE_ROLES);

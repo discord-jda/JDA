@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.managers.PermOverrideManager;
+import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.managers.PermOverrideManagerImpl;
 import net.dv8tion.jda.internal.requests.Route;
@@ -36,7 +38,7 @@ public class PermissionOverrideImpl implements PermissionOverride
     private final IPermissionHolder permissionHolder;
 
     protected final ReentrantLock mngLock = new ReentrantLock();
-    protected volatile PermOverrideManagerImpl manager;
+    protected volatile PermOverrideManager manager;
 
     private long allow;
     private long deny;
@@ -127,9 +129,9 @@ public class PermissionOverrideImpl implements PermissionOverride
     }
 
     @Override
-    public PermOverrideManagerImpl getManager()
+    public PermOverrideManager getManager()
     {
-        PermOverrideManagerImpl mng = manager;
+        PermOverrideManager mng = manager;
         if (mng == null)
         {
             mng = MiscUtil.locked(mngLock, () ->
@@ -143,7 +145,7 @@ public class PermissionOverrideImpl implements PermissionOverride
     }
 
     @Override
-    public AuditableRestActionImpl<Void> delete()
+    public AuditableRestAction<Void> delete()
     {
         if (!getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
             throw new InsufficientPermissionException(Permission.MANAGE_PERMISSIONS);

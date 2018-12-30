@@ -23,8 +23,10 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.ChannelManager;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.InviteAction;
+import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.ChannelManagerImpl;
@@ -52,7 +54,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     protected final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
 
     protected final ReentrantLock mngLock = new ReentrantLock();
-    protected volatile ChannelManagerImpl manager;
+    protected volatile ChannelManager manager;
 
     protected long parentId;
     protected String name;
@@ -141,7 +143,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     @Override
     public ChannelManager getManager()
     {
-        ChannelManagerImpl mng = manager;
+        ChannelManager mng = manager;
         if (mng == null)
         {
             mng = MiscUtil.locked(mngLock, () ->
@@ -155,7 +157,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     }
 
     @Override
-    public AuditableRestActionImpl<Void> delete()
+    public AuditableRestAction<Void> delete()
     {
         checkPermission(Permission.MANAGE_CHANNEL);
 
@@ -164,7 +166,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     }
 
     @Override
-    public PermissionOverrideActionImpl createPermissionOverride(Member member)
+    public PermissionOverrideAction createPermissionOverride(Member member)
     {
         Checks.notNull(member, "member");
         if (overrides.containsKey(member.getUser().getIdLong()))
@@ -174,7 +176,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     }
 
     @Override
-    public PermissionOverrideActionImpl createPermissionOverride(Role role)
+    public PermissionOverrideAction createPermissionOverride(Role role)
     {
         Checks.notNull(role, "role");
         if (overrides.containsKey(role.getIdLong()))
@@ -184,7 +186,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     }
 
     @Override
-    public PermissionOverrideActionImpl putPermissionOverride(Member member)
+    public PermissionOverrideAction putPermissionOverride(Member member)
     {
         checkPermission(Permission.MANAGE_PERMISSIONS);
         Checks.notNull(member, "member");
@@ -195,7 +197,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     }
 
     @Override
-    public PermissionOverrideActionImpl putPermissionOverride(Role role)
+    public PermissionOverrideAction putPermissionOverride(Role role)
     {
         checkPermission(Permission.MANAGE_PERMISSIONS);
         Checks.notNull(role, "role");

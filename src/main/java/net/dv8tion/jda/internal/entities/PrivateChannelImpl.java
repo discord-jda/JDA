@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.Route;
@@ -83,7 +84,7 @@ public class PrivateChannelImpl implements PrivateChannel
     }
 
     @Override
-    public AbstractRestAction<Void> close()
+    public RestAction<Void> close()
     {
         Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(getId());
         return new AbstractRestAction<>(getJDA(), route);

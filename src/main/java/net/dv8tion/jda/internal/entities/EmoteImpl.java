@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.ListedEmote;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.managers.EmoteManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -50,7 +51,7 @@ public class EmoteImpl implements ListedEmote
     private final boolean fake;
 
     private final ReentrantLock mngLock = new ReentrantLock();
-    private volatile EmoteManagerImpl manager = null;
+    private volatile EmoteManager manager = null;
 
     private boolean managed = false;
     private boolean animated = false;
@@ -145,9 +146,9 @@ public class EmoteImpl implements ListedEmote
     }
 
     @Override
-    public EmoteManagerImpl getManager()
+    public EmoteManager getManager()
     {
-        EmoteManagerImpl m = manager;
+        EmoteManager m = manager;
         if (m == null)
         {
             m = MiscUtil.locked(mngLock, () ->

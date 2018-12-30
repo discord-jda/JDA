@@ -25,7 +25,10 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.GuildController;
+import net.dv8tion.jda.api.managers.GuildManager;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.MemberAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.MemberCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
@@ -70,7 +73,7 @@ public class GuildImpl implements Guild
     private final TLongObjectMap<JSONObject> cachedPresences = MiscUtil.newLongMap();
 
     private final ReentrantLock mngLock = new ReentrantLock();
-    private volatile GuildManagerImpl manager;
+    private volatile GuildManager manager;
     private volatile GuildController controller;
 
     private Member owner;
@@ -98,7 +101,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public AbstractRestAction<EnumSet<Region>> retrieveRegions(boolean includeDeprecated)
+    public RestAction<EnumSet<Region>> retrieveRegions(boolean includeDeprecated)
     {
         Route.CompiledRoute route = Route.Guilds.GET_VOICE_REGIONS.compile(getId());
         return new AbstractRestAction<>(getJDA(), route, (response, request) ->
@@ -124,7 +127,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public MemberActionImpl addMember(String accessToken, String userId)
+    public MemberAction addMember(String accessToken, String userId)
     {
         Checks.notBlank(accessToken, "Access-Token");
         Checks.isSnowflake(userId, "User ID");
@@ -171,7 +174,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public AbstractRestAction<String> getVanityUrl()
+    public RestAction<String> getVanityUrl()
     {
         if (!getSelfMember().hasPermission(Permission.MANAGE_SERVER))
             throw new InsufficientPermissionException(Permission.MANAGE_SERVER);
@@ -197,7 +200,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public AbstractRestAction<List<Webhook>> getWebhooks()
+    public RestAction<List<Webhook>> getWebhooks()
     {
         if (!getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS))
             throw new InsufficientPermissionException(Permission.MANAGE_WEBHOOKS);
@@ -364,7 +367,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public AbstractRestAction<List<ListedEmote>> retrieveEmotes()
+    public RestAction<List<ListedEmote>> retrieveEmotes()
     {
         Route.CompiledRoute route = Route.Emotes.GET_EMOTES.compile(getId());
         return new AbstractRestAction<>(getJDA(), route, (response, request) ->
@@ -428,7 +431,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AbstractRestAction<Ban> getBanById(@Nonnull String userId)
+    public RestAction<Ban> getBanById(@Nonnull String userId)
     {
         if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS))
             throw new InsufficientPermissionException(Permission.BAN_MEMBERS);
@@ -447,7 +450,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public AbstractRestAction<Integer> getPrunableMemberCount(int days)
+    public RestAction<Integer> getPrunableMemberCount(int days)
     {
         if (!getSelfMember().hasPermission(Permission.KICK_MEMBERS))
             throw new InsufficientPermissionException(Permission.KICK_MEMBERS);
@@ -477,9 +480,9 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public GuildManagerImpl getManager()
+    public GuildManager getManager()
     {
-        GuildManagerImpl mng = manager;
+        GuildManager mng = manager;
         if (mng == null)
         {
             mng = MiscUtil.locked(mngLock, () ->
@@ -509,13 +512,13 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public AuditLogPaginationActionImpl getAuditLogs()
+    public AuditLogPaginationAction getAuditLogs()
     {
         return new AuditLogPaginationActionImpl(this);
     }
 
     @Override
-    public AbstractRestAction<Void> leave()
+    public RestAction<Void> leave()
     {
         if (owner.equals(getSelfMember()))
             throw new IllegalStateException("Cannot leave a guild that you are the owner of! Transfer guild ownership first!");
@@ -525,7 +528,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public AbstractRestAction<Void> delete()
+    public RestAction<Void> delete()
     {
         if (!getJDA().getSelfUser().isBot() && getJDA().getSelfUser().isMfaEnabled())
             throw new IllegalStateException("Cannot delete a guild without providing MFA code. Use Guild#delete(String)");
@@ -534,7 +537,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public AbstractRestAction<Void> delete(String mfaCode)
+    public RestAction<Void> delete(String mfaCode)
     {
         if (!owner.equals(getSelfMember()))
             throw new PermissionException("Cannot delete a guild that you do not own!");
@@ -820,7 +823,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public AbstractRestAction<List<Invite>> getInvites()
+    public RestAction<List<Invite>> getInvites()
     {
         if (!this.getSelfMember().hasPermission(Permission.MANAGE_SERVER))
             throw new InsufficientPermissionException(Permission.MANAGE_SERVER);

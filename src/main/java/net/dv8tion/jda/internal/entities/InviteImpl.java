@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.EmptyRestAction;
@@ -70,7 +71,7 @@ public class InviteImpl implements Invite
         this.type = type;
     }
 
-    public static AbstractRestAction<Invite> resolve(final JDA api, final String code, final boolean withCounts)
+    public static RestAction<Invite> resolve(final JDA api, final String code, final boolean withCounts)
     {
         Checks.notNull(code, "code");
         Checks.notNull(api, "api");
@@ -86,7 +87,7 @@ public class InviteImpl implements Invite
     }
 
     @Override
-    public AuditableRestActionImpl<Void> delete()
+    public AuditableRestAction<Void> delete()
     {
         final Route.CompiledRoute route = Route.Invites.DELETE_INVITE.compile(this.code);
 

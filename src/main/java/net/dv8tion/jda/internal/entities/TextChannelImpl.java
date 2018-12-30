@@ -61,7 +61,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     }
 
     @Override
-    public AbstractRestAction<List<Webhook>> getWebhooks()
+    public RestAction<List<Webhook>> getWebhooks()
     {
         checkPermission(Permission.MANAGE_WEBHOOKS);
 
@@ -101,7 +101,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     }
 
     @Override
-    public AbstractRestAction<Void> deleteMessages(Collection<Message> messages)
+    public RestAction<Void> deleteMessages(Collection<Message> messages)
     {
         Checks.notEmpty(messages, "Messages collection");
 
@@ -111,7 +111,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     }
 
     @Override
-    public AbstractRestAction<Void> deleteMessagesByIds(Collection<String> messageIds)
+    public RestAction<Void> deleteMessagesByIds(Collection<String> messageIds)
     {
         checkPermission(Permission.MESSAGE_MANAGE, "Must have MESSAGE_MANAGE in order to bulk delete messages in this channel regardless of author.");
         if (messageIds.size() < 2 || messageIds.size() > 100)
@@ -125,7 +125,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     }
 
     @Override
-    public AuditableRestActionImpl<Void> deleteWebhookById(String id)
+    public AuditableRestAction<Void> deleteWebhookById(String id)
     {
         Checks.isSnowflake(id, "Webhook ID");
 
