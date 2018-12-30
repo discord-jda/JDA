@@ -414,7 +414,7 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public long getPing()
+    public long getGatewayPing()
     {
         return ping;
     }

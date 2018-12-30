@@ -20,11 +20,14 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.Presence;
+import net.dv8tion.jda.api.requests.Request;
+import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.GuildAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.internal.requests.Route;
 import okhttp3.OkHttpClient;
 
 import javax.annotation.CheckReturnValue;
@@ -33,6 +36,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * The core of JDA. Acts as a registry system of JDA. All parts of the the API can be accessed starting from this class.
@@ -183,8 +187,38 @@ public interface JDA
      * correlate to this value!</b>
      *
      * @return time in milliseconds between heartbeat and the heartbeat ack response
+     *
+     * @see    #getRestPing() Getting RestAction ping
      */
-    long getPing();
+    long getGatewayPing();
+
+    /**
+     * The time in milliseconds that discord took to respond to a REST request.
+     * <br>This will request the current user from the API and calculate the time the response took.
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: long
+     *
+     * @see    #getGatewayPing()
+     */
+    default RestAction<Long> getRestPing()
+    {
+        AtomicLong time = new AtomicLong();
+        Route.CompiledRoute route = Route.Self.GET_SELF.compile();
+        return new RestAction<Long>(this, route)
+        {
+            @Override
+            protected void handleResponse(Response response, Request<Long> request)
+            {
+                if (response.isOk())
+                    request.onSuccess(System.currentTimeMillis() - time.get());
+                else
+                    request.onFailure(response);
+            }
+        }.setCheck(() -> {
+            time.set(System.currentTimeMillis());
+            return true;
+        });
+    }
 
     /**
      * This method will block until JDA has reached the specified connection status.
