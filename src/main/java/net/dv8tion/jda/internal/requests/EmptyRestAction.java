@@ -18,7 +18,6 @@ package net.dv8tion.jda.internal.requests;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.internal.JDAImpl;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BooleanSupplier;
@@ -26,15 +25,15 @@ import java.util.function.Consumer;
 
 public class EmptyRestAction<T> implements AuditableRestAction<T>
 {
-    private final JDAImpl api;
+    private final JDA api;
     private final T returnObj;
 
-    public EmptyRestAction(JDAImpl api)
+    public EmptyRestAction(JDA api)
     {
         this(api, null);
     }
 
-    public EmptyRestAction(JDAImpl api, T returnObj)
+    public EmptyRestAction(JDA api, T returnObj)
     {
         this.api = api;
         this.returnObj = returnObj;

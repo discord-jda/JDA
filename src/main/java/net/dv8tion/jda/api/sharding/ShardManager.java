@@ -531,7 +531,7 @@ public interface ShardManager
             api = shard;
             User user = shard.getUserById(id);
             if (user != null)
-                return new EmptyRestAction<>((JDAImpl) shard, user);
+                return new EmptyRestAction<>(shard, user);
         }
 
         if (api == null)

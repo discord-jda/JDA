@@ -129,7 +129,7 @@ public class ReceivedMessage extends AbstractMessage
         }
         else if (reaction.isSelf())
         {
-            return new EmptyRestAction<>((JDAImpl) getJDA(), null);
+            return new EmptyRestAction<>(getJDA(), null);
         }
 
         return channel.addReactionById(getIdLong(), emote);
@@ -145,7 +145,7 @@ public class ReceivedMessage extends AbstractMessage
                 .findFirst().orElse(null);
 
         if (reaction != null && reaction.isSelf())
-            return new EmptyRestAction<>((JDAImpl) getJDA(), null);
+            return new EmptyRestAction<>(getJDA(), null);
 
         return channel.addReactionById(getIdLong(), unicode);
     }

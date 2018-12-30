@@ -236,7 +236,7 @@ public class GuildController
         }
 
         if (Objects.equals(nickname, member.getNickname()))
-            return new EmptyRestAction<>((JDAImpl) getJDA(), null);
+            return new EmptyRestAction<>(getJDA(), null);
 
         if (nickname == null)
             nickname = "";
@@ -897,7 +897,7 @@ public class GuildController
 
         GuildVoiceState voiceState = member.getVoiceState();
         if (voiceState != null && voiceState.isGuildDeafened() == deafen)
-            return new EmptyRestAction<>((JDAImpl) getJDA(), null);
+            return new EmptyRestAction<>(getJDA(), null);
 
         JSONObject body = new JSONObject().put("deaf", deafen);
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), member.getUser().getId());
@@ -952,7 +952,7 @@ public class GuildController
 
         GuildVoiceState voiceState = member.getVoiceState();
         if (voiceState != null && voiceState.isGuildMuted() == mute)
-            return new EmptyRestAction<>((JDAImpl) getJDA(), null);
+            return new EmptyRestAction<>(getJDA(), null);
 
         JSONObject body = new JSONObject().put("mute", mute);
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), member.getUser().getId());
@@ -1370,7 +1370,7 @@ public class GuildController
         if (currentRoles.addAll(newRolesToAdd))
             currentRoles.removeAll(rolesToRemove);
         else if (!currentRoles.removeAll(rolesToRemove))
-            return new EmptyRestAction<>((JDAImpl) getGuild().getJDA());
+            return new EmptyRestAction<>(getGuild().getJDA());
 
         Checks.check(!currentRoles.contains(getGuild().getPublicRole()),
             "Cannot add the PublicRole of a Guild to a Member. All members have this role by default!");
@@ -1501,7 +1501,7 @@ public class GuildController
         // Return an empty rest action if there were no changes
         final List<Role> memberRoles = member.getRoles();
         if (memberRoles.size() == roles.size() && memberRoles.containsAll(roles))
-            return new EmptyRestAction<>((JDAImpl) getGuild().getJDA());
+            return new EmptyRestAction<>(getGuild().getJDA());
 
         //Make sure that the current managed roles are preserved and no new ones are added.
         List<Role> currentManaged = memberRoles.stream().filter(Role::isManaged).collect(Collectors.toList());

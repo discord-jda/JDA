@@ -23,7 +23,6 @@ import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.InviteAction;
 import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
-import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.EmptyRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -116,7 +115,7 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
     @Override
     public RestAction<List<Invite>> getInvites()
     {
-        return new EmptyRestAction<>((JDAImpl) getJDA(), Collections.emptyList());
+        return new EmptyRestAction<>(getJDA(), Collections.emptyList());
     }
 
     @Override
