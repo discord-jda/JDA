@@ -18,10 +18,7 @@ package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.PermissionOverride;
-import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.internal.entities.AbstractChannelImpl;
@@ -50,47 +47,13 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
     private long deny = 0;
     private final GuildChannel channel;
 
-    private final Member member;
-    private final Role role;
+    private final IPermissionHolder permissionHolder;
 
-    /**
-     * Creates a new PermissionOverrideAction instance
-     *
-     * @param api
-     *        The current JDA instance
-     * @param route
-     *        The {@link net.dv8tion.jda.internal.requests.Route.CompiledRoute Route.CompiledRoute} to be used for rate limit handling
-     * @param channel
-     *        The target {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the PermissionOverride
-     * @param member
-     *        The target {@link net.dv8tion.jda.api.entities.Member Member} that will be affected by the PermissionOverride
-     */
-    public PermissionOverrideAction(JDA api, Route.CompiledRoute route, GuildChannel channel, Member member)
+    public PermissionOverrideAction(JDA api, Route.CompiledRoute route, GuildChannel channel, IPermissionHolder permissionHolder)
     {
         super(api, route);
         this.channel = channel;
-        this.member = member;
-        this.role = null;
-    }
-
-    /**
-     * Creates a new PermissionOverrideAction instance
-     *
-     * @param api
-     *        The current JDA instance
-     * @param route
-     *        The {@link net.dv8tion.jda.internal.requests.Route.CompiledRoute Route.CompiledRoute} to be used for rate limit handling
-     * @param channel
-     *        The target {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the PermissionOverride
-     * @param role
-     *        The target {@link net.dv8tion.jda.api.entities.Role Role} that will be affected by the PermissionOverride
-     */
-    public PermissionOverrideAction(JDA api, Route.CompiledRoute route, GuildChannel channel, Role role)
-    {
-        super(api, route);
-        this.channel = channel;
-        this.member = null;
-        this.role = role;
+        this.permissionHolder = permissionHolder;
     }
 
     @Override
@@ -198,7 +161,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      */
     public boolean isMember()
     {
-        return member != null;
+        return permissionHolder instanceof Member;
     }
 
     /**
@@ -211,7 +174,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      */
     public boolean isRole()
     {
-        return role != null;
+        return permissionHolder instanceof Role;
     }
 
 
@@ -300,6 +263,57 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
         return setAllow(Permission.getRaw(permissions));
     }
 
+    /**
+     * Grants the specified permissions.
+     * <br>This does not override already granted permissions.
+     *
+     * @param  allowBits
+     *         The permissions to grant, in addition to already allowed permissions
+     *
+     * @return The current PermissionOverrideAction - for chaining convenience
+     */
+    @CheckReturnValue
+    public PermissionOverrideAction grant(long allowBits)
+    {
+        return setAllow(getAllow() | allowBits);
+    }
+
+    /**
+     * Grants the specified permissions.
+     * <br>This does not override already granted permissions.
+     *
+     * @param  permissions
+     *         The permissions to grant, in addition to already allowed permissions
+     *
+     * @throws IllegalArgumentException
+     *         If any provided argument is null
+     *
+     * @return The current PermissionOverrideAction - for chaining convenience
+     */
+    @CheckReturnValue
+    public PermissionOverrideAction grant(Collection<Permission> permissions)
+    {
+        return setAllow(getAllow() | Permission.getRaw(permissions));
+    }
+
+    /**
+     * Grants the specified permissions.
+     * <br>This does not override already granted permissions.
+     *
+     * @param  permissions
+     *         The permissions to grant, in addition to already allowed permissions
+     *
+     * @throws IllegalArgumentException
+     *         If any provided argument is null
+     *
+     * @return The current PermissionOverrideAction - for chaining convenience
+     */
+    @CheckReturnValue
+    public PermissionOverrideAction grant(Permission... permissions)
+    {
+        return setAllow(getAllow() | Permission.getRaw(permissions));
+    }
+
 
     /**
      * Sets the value of explicitly denied permissions
@@ -386,6 +400,57 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
         return setDeny(Permission.getRaw(permissions));
     }
 
+    /**
+     * Denies the specified permissions.
+     * <br>This does not override already denied permissions.
+     *
+     * @param  denyBits
+     *         The permissions to deny, in addition to already denied permissions
+     *
+     * @return The current PermissionOverrideAction - for chaining convenience
+     */
+    @CheckReturnValue
+    public PermissionOverrideAction deny(long denyBits)
+    {
+        return setDeny(getDeny() | denyBits);
+    }
+
+    /**
+     * Denies the specified permissions.
+     * <br>This does not override already denied permissions.
+     *
+     * @param  permissions
+     *         The permissions to deny, in addition to already denied permissions
+     *
+     * @throws IllegalArgumentException
+     *         If any provided argument is null
+     *
+     * @return The current PermissionOverrideAction - for chaining convenience
+     */
+    @CheckReturnValue
+    public PermissionOverrideAction deny(Collection<Permission> permissions)
+    {
+        return setDeny(getDeny() | Permission.getRaw(permissions));
+    }
+
+    /**
+     * Denies the specified permissions.
+     * <br>This does not override already denied permissions.
+     *
+     * @param  permissions
+     *         The permissions to deny, in addition to already denied permissions
+     *
+     * @throws IllegalArgumentException
+     *         If any provided argument is null
+     *
+     * @return The current PermissionOverrideAction - for chaining convenience
+     */
+    @CheckReturnValue
+    public PermissionOverrideAction deny(Permission... permissions)
+    {
+        return setDeny(getDeny() | Permission.getRaw(permissions));
+    }
+
 
     /**
      * Combination of {@link #setAllow(long)} and {@link #setDeny(long)}
@@ -466,10 +531,9 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
             return;
         }
 
-        boolean isMember = isMember();
-        long id = isMember ? member.getUser().getIdLong() : role.getIdLong();
+        long id = permissionHolder.getIdLong();
         JSONObject object = (JSONObject) request.getRawBody();
-        PermissionOverrideImpl override = new PermissionOverrideImpl(channel, id, isMember ? member : role);
+        PermissionOverrideImpl override = new PermissionOverrideImpl(channel, id, permissionHolder);
         override.setAllow(object.getLong("allow"));
         override.setDeny(object.getLong("deny"));
 

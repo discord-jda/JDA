@@ -92,15 +92,12 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     }
 
     @Override
-    public PermissionOverride getPermissionOverride(Member member)
+    public PermissionOverride getPermissionOverride(IPermissionHolder permissionHolder)
     {
-        return member != null ? overrides.get(member.getUser().getIdLong()) : null;
-    }
+        if (permissionHolder == null)
+            return null;
 
-    @Override
-    public PermissionOverride getPermissionOverride(Role role)
-    {
-        return role != null ? overrides.get(role.getIdLong()) : null;
+        return overrides.get(permissionHolder.getIdLong());
     }
 
     @Override
@@ -162,47 +159,25 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     }
 
     @Override
-    public PermissionOverrideAction createPermissionOverride(Member member)
+    public PermissionOverrideAction createPermissionOverride(IPermissionHolder permissionHolder)
     {
-        Checks.notNull(member, "member");
-        if (overrides.containsKey(member.getUser().getIdLong()))
+        Checks.notNull(permissionHolder, "PermissionHolder");
+        if (getPermissionOverride(permissionHolder) == null)
             throw new IllegalStateException("Provided member already has a PermissionOverride in this channel!");
 
-        return putPermissionOverride(member);
+        return putPermissionOverride(permissionHolder);
     }
 
     @Override
-    public PermissionOverrideAction createPermissionOverride(Role role)
-    {
-        Checks.notNull(role, "role");
-        if (overrides.containsKey(role.getIdLong()))
-            throw new IllegalStateException("Provided role already has a PermissionOverride in this channel!");
-
-        return putPermissionOverride(role);
-    }
-
-    @Override
-    public PermissionOverrideAction putPermissionOverride(Member member)
+    public PermissionOverrideAction putPermissionOverride(IPermissionHolder permissionHolder)
     {
         checkPermission(Permission.MANAGE_PERMISSIONS);
-        Checks.notNull(member, "member");
+        Checks.notNull(permissionHolder, "PermissionHolder");
 
-        if (!getGuild().equals(member.getGuild()))
-            throw new IllegalArgumentException("Provided member is not from the same guild as this channel!");
-        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(getId(), member.getUser().getId());
-        return new PermissionOverrideAction(getJDA(), route, this, member);
-    }
-
-    @Override
-    public PermissionOverrideAction putPermissionOverride(Role role)
-    {
-        checkPermission(Permission.MANAGE_PERMISSIONS);
-        Checks.notNull(role, "role");
-
-        if (!getGuild().equals(role.getGuild()))
-            throw new IllegalArgumentException("Provided role is not from the same guild as this channel!");
-        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(getId(), role.getId());
-        return new PermissionOverrideAction(getJDA(), route, this, role);
+        if (!getGuild().equals(permissionHolder.getGuild()))
+            throw new IllegalArgumentException("Provided permission holder is not from the same guild as this channel!");
+        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(getId(), permissionHolder.getId());
+        return new PermissionOverrideAction(getJDA(), route, this, permissionHolder);
     }
 
     @Override
