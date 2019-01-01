@@ -204,6 +204,12 @@ public class MemberImpl implements Member
         return this.equals(getGuild().getOwner());
     }
 
+    @Override
+    public long getIdLong()
+    {
+        return user.getIdLong();
+    }
+
     public MemberImpl setNickname(String nickname)
     {
         this.nickname = nickname;
