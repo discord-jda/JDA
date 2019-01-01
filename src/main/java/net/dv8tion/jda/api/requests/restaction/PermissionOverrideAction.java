@@ -46,7 +46,6 @@ import java.util.function.BooleanSupplier;
  */
 public class PermissionOverrideAction extends AuditableRestAction<PermissionOverride>
 {
-
     private long allow = 0;
     private long deny = 0;
     private final GuildChannel channel;
@@ -222,6 +221,9 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      * <br>This value can be retrieved through {@link net.dv8tion.jda.api.Permission#getRaw(net.dv8tion.jda.api.Permission...) Permissions.getRaw(Permission...)}!
      * <br><b>Note: Permissions not marked as {@link net.dv8tion.jda.api.Permission#isChannel() isChannel()} will have no affect!</b>
      *
+     * <p>All newly granted permissions will be removed from the currently set denied permissions.
+     * <br>{@code allow = allowBits; deny = deny & ~allowBits;}
+     *
      * @param  allowBits
      *         The <b>positive</b> bits representing the granted
      *         permissions for the new PermissionOverride
@@ -241,6 +243,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
         Checks.notNegative(allowBits, "Granted permissions value");
         Checks.check(allowBits <= Permission.ALL_PERMISSIONS, "Specified allow value may not be greater than a full permission set");
         this.allow = allowBits;
+        this.deny &= ~allowBits;
         return this;
     }
 
@@ -269,7 +272,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
     {
         if (permissions == null || permissions.isEmpty())
             return setAllow(0);
-        checkNull(permissions, "Permission");
+        Checks.noneNull(permissions, "Permission");
         return setAllow(Permission.getRaw(permissions));
     }
 
@@ -293,7 +296,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
     {
         if (permissions == null || permissions.length < 1)
             return setAllow(0);
-        checkNull(permissions, "Permission");
+        Checks.noneNull(permissions, "Permission");
         return setAllow(Permission.getRaw(permissions));
     }
 
@@ -303,6 +306,9 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      * using the bitwise representation of a set of {@link net.dv8tion.jda.api.Permission Permissions}.
      * <br>This value can be retrieved through {@link net.dv8tion.jda.api.Permission#getRaw(net.dv8tion.jda.api.Permission...) Permissions.getRaw(Permission...)}!
      * <br><b>Note: Permissions not marked as {@link net.dv8tion.jda.api.Permission#isChannel() isChannel()} will have no affect!</b>
+     *
+     * <p>All newly denied permissions will be removed from the currently set allowed permissions.
+     * <br>{@code deny = denyBits; allow = allow & ~denyBits;}
      *
      * @param  denyBits
      *         The <b>positive</b> bits representing the denied
@@ -323,6 +329,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
         Checks.notNegative(denyBits, "Denied permissions value");
         Checks.check(denyBits <= Permission.ALL_PERMISSIONS, "Specified allow value may not be greater than a full permission set");
         this.deny = denyBits;
+        this.allow &= ~denyBits;
         return this;
     }
 
@@ -351,7 +358,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
     {
         if (permissions == null || permissions.isEmpty())
             return setDeny(0);
-        checkNull(permissions, "Permission");
+        Checks.noneNull(permissions, "Permission");
         return setDeny(Permission.getRaw(permissions));
     }
 
@@ -375,19 +382,20 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
     {
         if (permissions == null || permissions.length < 1)
             return setDeny(0);
-        checkNull(permissions, "Permission");
+        Checks.noneNull(permissions, "Permission");
         return setDeny(Permission.getRaw(permissions));
     }
 
 
     /**
      * Combination of {@link #setAllow(long)} and {@link #setDeny(long)}
+     * <br>First sets the allow bits and then the deny bits.
      *
      * @param  allowBits
-     *         A non-negative bitwise representation
+     *         An unsigned bitwise representation
      *         of granted Permissions
      * @param  denyBits
-     *         A non-negative bitwise representation
+     *         An unsigned bitwise representation
      *         of denied Permissions
      *
      * @throws java.lang.IllegalArgumentException
@@ -410,6 +418,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
 
     /**
      * Combination of {@link #setAllow(java.util.Collection)} and {@link #setDeny(java.util.Collection)}
+     * <br>First sets the granted permissions and then the denied permissions.
      * <br>If a passed collection is {@code null} it resets the represented value to {@code 0} - no permission specifics.
      *
      * <p>Example: {@code setPermissions(EnumSet.of(Permission.MESSAGE_READ), EnumSet.of(Permission.MESSAGE_WRITE, Permission.MESSAGE_EXT_EMOJI))}
@@ -468,18 +477,4 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
 
         request.onSuccess(override);
     }
-
-    private void checkNull(Collection<?> collection, String name)
-    {
-        Checks.notNull(collection, name);
-        collection.forEach(e -> Checks.notNull(e, name));
-    }
-
-    private <T> void checkNull(T[] arr, String name)
-    {
-        Checks.notNull(arr, name);
-        for (T e : arr)
-            Checks.notNull(e, name);
-    }
-
 }

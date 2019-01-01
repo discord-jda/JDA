@@ -269,7 +269,7 @@ public class ChannelManager extends ManagerBase
     /**
      * Adds an override for the specified {@link net.dv8tion.jda.api.entities.IPermissionHolder IPermissionHolder}
      * with the provided raw bitmasks as allowed and denied permissions. If the permission holder already
-     * had an override on this channel it will be updated instead.
+     * had an override on this channel it will be replaced instead.
      *
      * @param  permHolder
      *         The permission holder
@@ -310,7 +310,7 @@ public class ChannelManager extends ManagerBase
     /**
      * Adds an override for the specified {@link net.dv8tion.jda.api.entities.IPermissionHolder IPermissionHolder}
      * with the provided permission sets as allowed and denied permissions. If the permission holder already
-     * had an override on this channel it will be updated instead.
+     * had an override on this channel it will be replaced instead.
      * <br>Example: {@code putPermissionOverride(guild.getSelfMember(), EnumSet.of(Permission.MESSAGE_WRITE, Permission.MESSAGE_READ), null)}
      *
      * @param  permHolder
