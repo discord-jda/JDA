@@ -69,13 +69,10 @@ public class MessageActivity
     }
 
     /**
-     * Represents the {@link net.dv8tion.jda.core.entities.Message} application if the
-     * {@link net.dv8tion.jda.core.entities.MessageActivity.ActivityType ActivityType} of the
-     * {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity} does not equal
-     * {@link net.dv8tion.jda.core.entities.MessageActivity.ActivityType#LISTENING ActivityType.LISTENING}.
+     * Represents the {@link net.dv8tion.jda.core.entities.MessageActivity.Application Application} of an
+     * {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity} if it's set.
      *
-     * <br>Many applications can be found at:
-     * <a href="https://discordapp.com/api/v7/games" target="_blank">https://discordapp.com/api/v7/games</a>.
+     * @see <a href="https://discordapp.com/api/v7/games" target="_blank">https://discordapp.com/api/v7/games</a>
      */
     public static class Application implements ISnowflake
     {

@@ -776,29 +776,21 @@ public class EntityBuilder
             final String partyId = activityData.optString("party_id", null);
             MessageActivity.Application application = null;
 
-            switch (activityType)
+            if (!jsonObject.isNull("application"))
             {
-                case JOIN:
-                case SPECTATE:
-                case JOIN_REQUEST:
-                    if (!jsonObject.isNull("application"))
-                    {
-                        JSONObject applicationData = jsonObject.getJSONObject("application");
+                JSONObject applicationData = jsonObject.getJSONObject("application");
 
-                        final String name = applicationData.getString("name");
-                        final String description = applicationData.getString("description");
-                        final String iconId = applicationData.getString("icon");
-                        final String coverId = applicationData.getString("cover_image");
-                        final long applicationId = applicationData.getLong("id");
+                final String name = applicationData.getString("name");
+                final String description = applicationData.getString("description");
+                final String iconId = applicationData.getString("icon");
+                final String coverId = applicationData.getString("cover_image");
+                final long applicationId = applicationData.getLong("id");
 
-                        application = new MessageActivity.Application(name, description, iconId, coverId, applicationId);
-                    }
-                    break;
-                case UNKNOWN:
-                    LOG.debug("Received an unknown ActivityType, Activity: {}", activityData);
-                    break;
-                default:
-                    break;
+                application = new MessageActivity.Application(name, description, iconId, coverId, applicationId);
+            }
+            if (activityType == MessageActivity.ActivityType.UNKNOWN)
+            {
+                LOG.debug("Received an unknown ActivityType, Activity: {}", activityData);
             }
 
             activity = new MessageActivity(activityType, partyId, application);
