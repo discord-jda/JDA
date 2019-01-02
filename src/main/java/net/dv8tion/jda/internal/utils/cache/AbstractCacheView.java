@@ -20,7 +20,7 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
-import net.dv8tion.jda.api.utils.ClosableIteratorImpl;
+import net.dv8tion.jda.api.utils.LockIterator;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.UnlockHook;
@@ -103,14 +103,14 @@ public abstract class AbstractCacheView<T> extends ReadWriteLockCache<T> impleme
     }
 
     @Override
-    public ClosableIteratorImpl<T> lockedIterator()
+    public LockIterator<T> lockedIterator()
     {
         ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
         readLock.lock();
         try
         {
             Iterator<T> directIterator = elements.valueCollection().iterator();
-            return new ClosableIteratorImpl<>(directIterator, readLock);
+            return new LockIterator<>(directIterator, readLock);
         }
         catch (Throwable t)
         {

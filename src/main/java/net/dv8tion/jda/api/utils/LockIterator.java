@@ -46,13 +46,13 @@ import java.util.concurrent.locks.Lock;
  * @param <T>
  *        The element type for this iterator
  */
-public class ClosableIteratorImpl<T> implements ClosableIterator<T>
+public class LockIterator<T> implements ClosableIterator<T>
 {
     private final static Logger log = JDALogger.getLog(ClosableIterator.class);
     private final Iterator<? extends T> it;
     private Lock lock;
 
-    public ClosableIteratorImpl(Iterator<? extends T> it, Lock lock)
+    public LockIterator(Iterator<? extends T> it, Lock lock)
     {
         this.it = it;
         this.lock = lock;
