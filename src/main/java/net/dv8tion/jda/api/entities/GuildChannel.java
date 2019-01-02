@@ -84,14 +84,14 @@ public interface GuildChannel extends ISnowflake
     int getPosition();
 
     /**
-     * The actual position of the {@link net.dv8tion.jda.core.entities.Channel Channel} as stored and given by Discord.
+     * The actual position of the {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} as stored and given by Discord.
      * Channel positions are actually based on a pairing of the creation time (as stored in the snowflake id)
      * and the position. If 2 or more channels share the same position then they are sorted based on their creation date.
      * The more recent a channel was created, the lower it is in the hierarchy. This is handled by {@link #getPosition()}
      * and it is most likely the method you want. If, for some reason, you want the actual position of the
      * channel then this method will give you that value.
      *
-     * @return The true, Discord stored, position of the {@link net.dv8tion.jda.core.entities.Channel Channel}.
+     * @return The true, Discord stored, position of the {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}.
      */
     int getPositionRaw();
 
