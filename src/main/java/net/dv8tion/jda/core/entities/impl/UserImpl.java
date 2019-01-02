@@ -92,6 +92,11 @@ public class UserImpl implements User
         return getAvatarUrl() == null ? getDefaultAvatarUrl() : getAvatarUrl();
     }
 
+    @Override
+    public String getAsTag()
+    {
+        return getName() + '#' + getDiscriminator();
+    }
 
     @Override
     public boolean hasPrivateChannel()
@@ -243,9 +248,9 @@ public class UserImpl implements User
         if (!alt)
             out = getAsMention();
         else if (upper)
-            out = String.format(formatter.locale(), "%S#%s", getName(), getDiscriminator());
+            out = getAsTag().toUpperCase();
         else
-            out = String.format(formatter.locale(), "%s#%s", getName(), getDiscriminator());
+            out = getAsTag();
 
         MiscUtil.appendTo(formatter, width, precision, leftJustified, out);
     }
