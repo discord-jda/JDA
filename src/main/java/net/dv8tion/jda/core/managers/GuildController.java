@@ -663,13 +663,11 @@ public class GuildController
      * @throws net.dv8tion.jda.core.exceptions.HierarchyException
      *         If the logged in account cannot ban the other user due to permission hierarchy position.
      *         <br>See {@link net.dv8tion.jda.core.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
-     * @throws IllegalArgumentException
-     *         If the provided amount of days (delDays) is less than 0.
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the provided amount of days (delDays) is less than 0.</li>
      *             <li>If the provided amount of days (delDays) is bigger than 7.</li>
-     *             <li>If the provided user is null</li>
+     *             <li>If the provided userId is null</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
@@ -842,7 +840,7 @@ public class GuildController
      *         <ul>
      *             <li>If the provided amount of days (delDays) is less than 0.</li>
      *             <li>If the provided amount of days (delDays) is bigger than 7.</li>
-     *             <li>If the provided user is {@code null}</li>
+     *             <li>If the provided userId is {@code null}</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.core.requests.restaction.AuditableRestAction AuditableRestAction}
