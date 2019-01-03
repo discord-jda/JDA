@@ -29,6 +29,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -535,6 +536,14 @@ public interface Message extends ISnowflake, Formattable
      * @return If this message is TTS.
      */
     boolean isTTS();
+
+    /**
+     * A {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity} that contains its type and party id.
+     *
+     * @return The activity, or {@code null} if no activity was added to the message.
+     */
+    @Nullable
+    MessageActivity getActivity();
 
     /**
      * Edits this Message's content to the provided String.

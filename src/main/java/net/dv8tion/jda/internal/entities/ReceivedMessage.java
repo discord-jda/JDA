@@ -32,6 +32,7 @@ import net.dv8tion.jda.internal.requests.EmptyRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.apache.commons.collections4.CollectionUtils;
 
+import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -49,6 +50,7 @@ public class ReceivedMessage extends AbstractMessage
     protected final boolean mentionsEveryone;
     protected final boolean pinned;
     protected final User author;
+    protected final MessageActivity activity;
     protected final OffsetDateTime editedTime;
     protected final List<MessageReaction> reactions;
     protected final List<Attachment> attachments;
@@ -69,7 +71,7 @@ public class ReceivedMessage extends AbstractMessage
     public ReceivedMessage(
         long id, MessageChannel channel, MessageType type,
         boolean fromWebhook, boolean mentionsEveryone, TLongSet mentionedUsers, TLongSet mentionedRoles, boolean tts, boolean pinned,
-        String content, String nonce, User author, OffsetDateTime editTime,
+        String content, String nonce, User author, MessageActivity activity, OffsetDateTime editTime,
         List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds)
     {
         super(content, nonce, tts);
@@ -81,6 +83,7 @@ public class ReceivedMessage extends AbstractMessage
         this.mentionsEveryone = mentionsEveryone;
         this.pinned = pinned;
         this.author = author;
+        this.activity = activity;
         this.editedTime = editTime;
         this.reactions = Collections.unmodifiableList(reactions);
         this.attachments = Collections.unmodifiableList(attachments);
@@ -699,6 +702,13 @@ public class ReceivedMessage extends AbstractMessage
     public boolean isTTS()
     {
         return isTTS;
+    }
+
+    @Nullable
+    @Override
+    public MessageActivity getActivity()
+    {
+        return activity;
     }
 
     @Override
