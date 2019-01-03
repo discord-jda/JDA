@@ -138,8 +138,7 @@ public class MessageHistory
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>Can occur if the request for history retrieval was executed <i>after</i> JDA lost access to the Channel,
-     *         typically due to the account being removed from the {@link net.dv8tion.jda.api.entities.Guild Guild} or
-     *         {@link net.dv8tion.jda.client.entities.Group Group}.</li>
+     *         typically due to the account being removed from the {@link net.dv8tion.jda.api.entities.Guild Guild}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>Can occur if the request for history retrieval was executed <i>after</i> JDA lost the
@@ -214,8 +213,7 @@ public class MessageHistory
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>Can occur if the request for history retrieval was executed <i>after</i> JDA lost access to the Channel,
-     *         typically due to the account being removed from the {@link net.dv8tion.jda.api.entities.Guild Guild} or
-     *         {@link net.dv8tion.jda.client.entities.Group Group}.</li>
+     *         typically due to the account being removed from the {@link net.dv8tion.jda.api.entities.Guild Guild}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>Can occur if the request for history retrieval was executed <i>after</i> JDA lost the

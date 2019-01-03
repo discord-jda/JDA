@@ -139,7 +139,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      * <br>If cache is disabled this can be set to an arbitrary value irrelevant of the current last.
      * Set this to {@code 0} to start from the most recent message.
      *
-     * <p>Fails if cache is enabled and the target id is newer than the current last id (id > last).
+     * <p>Fails if cache is enabled and the target id is newer than the current last id (id {@literal >} last).
      *
      * <h2>Example</h2>
      * <pre>{@code
@@ -162,7 +162,7 @@ public abstract class PaginationAction<T, M extends PaginationAction<T, M>>
      *         The snowflake ID to skip before, this is exclusive rather than inclusive
      *
      * @throws IllegalArgumentException
-     *         If cache is enabled and you are attempting to skip forward in time (id > last)
+     *         If cache is enabled and you are attempting to skip forward in time (id {@literal >} last)
      *
      * @return The current PaginationAction for chaining convenience
      *

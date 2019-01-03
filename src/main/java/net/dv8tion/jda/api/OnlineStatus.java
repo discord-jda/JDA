@@ -16,8 +16,7 @@
 package net.dv8tion.jda.api;
 
 /**
- * Represents the online presence of a {@link net.dv8tion.jda.api.entities.Member Member} or
- * {@link net.dv8tion.jda.client.entities.Friend Friend}.
+ * Represents the online presence of a {@link net.dv8tion.jda.api.entities.Member Member}.
  */
 public enum OnlineStatus
 {
