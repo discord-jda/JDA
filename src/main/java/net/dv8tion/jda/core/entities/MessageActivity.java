@@ -180,7 +180,7 @@ public class MessageActivity
          */
         JOIN_REQUEST(5),
         /**
-         * The {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity} type handling all unsupported types.
+         * Represents any unknown or unsupported {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity} types.
          */
         UNKNOWN(-1);
 
