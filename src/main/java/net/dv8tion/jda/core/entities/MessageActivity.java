@@ -69,7 +69,7 @@ public class MessageActivity
     }
 
     /**
-     * Represents the {@link net.dv8tion.jda.core.entities.MessageActivity.Application Application} of an
+     * Represents the {@link net.dv8tion.jda.core.entities.MessageActivity.Application Application} of a
      * {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity} if it's set.
      *
      * @see <a href="https://discordapp.com/api/v7/games" target="_blank">https://discordapp.com/api/v7/games</a>
