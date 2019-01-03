@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.internal.entities;
 
-import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
@@ -58,12 +57,6 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     public JDAImpl getJDA()
     {
         return getGuild().getJDA();
-    }
-
-    @Override
-    public AudioChannel getAudioChannel()
-    {
-        return connectedChannel;
     }
 
     @Override
