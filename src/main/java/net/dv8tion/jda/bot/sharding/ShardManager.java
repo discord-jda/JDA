@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
  * This class acts as a manager for multiple shards.
  * It contains several methods to make your life with sharding easier.
  *
- * <br>Custom implementations my not support all methods and throw
+ * <br>Custom implementations may not support all methods and throw
  * {@link java.lang.UnsupportedOperationException UnsupportedOperationExceptions} instead.
  *
  * @since  3.4
