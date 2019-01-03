@@ -90,6 +90,21 @@ public interface CacheView<T> extends Iterable<T>
     ClosableIterator<T> lockedIterator();
 
     /**
+     * Behavior similar to {@link #forEach(Consumer)} but does not preserve order.
+     * <br>This will not copy the data store as sorting is not needed.
+     *
+     * @param  action
+     *         The action to perform
+     *
+     * @throws NullPointerException
+     *         If provided with null
+     */
+    default void forEachUnordered(final Consumer<? super T> action)
+    {
+        forEach(action);
+    }
+
+    /**
      * Creates an unordered sequenced stream of the elements in this cache.
      * <br>This does not copy the backing cache prior to consumption unlike {@link #stream()}.
      *
