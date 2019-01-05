@@ -196,6 +196,13 @@ public interface JDA
      * The time in milliseconds that discord took to respond to a REST request.
      * <br>This will request the current user from the API and calculate the time the response took.
      *
+     * <h2>Example</h2>
+     * <pre><code>
+     * jda.getRestPing().queue( (time) {@literal ->}
+     *     channel.sendMessageFormat("Ping: %d ms", time).queue()
+     * );
+     * </code></pre>
+     *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: long
      *
      * @see    #getGatewayPing()
