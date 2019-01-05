@@ -448,7 +448,7 @@ public class GuildSetupNode
             newMng.setSelfDeafened(mng.isSelfDeafened());
             newMng.setQueueTimeout(mng.getConnectTimeout());
             newMng.setSendingHandler(mng.getSendingHandler());
-            newMng.setReceivingHandler(mng.getReceiveHandler());
+            newMng.setReceivingHandler(mng.getReceivingHandler());
             newMng.setConnectionListener(listener);
             newMng.setAutoReconnect(mng.isAutoReconnect());
 

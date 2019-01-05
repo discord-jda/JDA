@@ -245,7 +245,7 @@ public class AudioManagerImpl implements AudioManager
     }
 
     @Override
-    public AudioReceiveHandler getReceiveHandler()
+    public AudioReceiveHandler getReceivingHandler()
     {
         return receiveHandler;
     }
