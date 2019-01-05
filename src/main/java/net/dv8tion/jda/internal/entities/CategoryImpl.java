@@ -146,17 +146,17 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
     }
 
     @Override
-    public ChannelAction createTextChannel(String name)
+    public ChannelAction<TextChannel> createTextChannel(String name)
     {
-        ChannelAction action = getGuild().getController().createTextChannel(name).setParent(this);
+        ChannelAction<TextChannel> action = getGuild().getController().createTextChannel(name).setParent(this);
         applyPermission(action);
         return action;
     }
 
     @Override
-    public ChannelAction createVoiceChannel(String name)
+    public ChannelAction<VoiceChannel> createVoiceChannel(String name)
     {
-        ChannelAction action = getGuild().getController().createVoiceChannel(name).setParent(this);
+        ChannelAction<VoiceChannel> action = getGuild().getController().createVoiceChannel(name).setParent(this);
         applyPermission(action);
         return action;
     }

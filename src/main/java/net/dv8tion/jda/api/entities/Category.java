@@ -87,7 +87,7 @@ public interface Category extends GuildChannel, Comparable<Category>
      *         <br>This action allows to set fields for the new TextChannel before creating it
      */
     @CheckReturnValue
-    ChannelAction createTextChannel(String name);
+    ChannelAction<TextChannel> createTextChannel(String name);
 
     /**
      * Creates a new {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} with this Category as parent.
@@ -118,7 +118,7 @@ public interface Category extends GuildChannel, Comparable<Category>
      *         <br>This action allows to set fields for the new VoiceChannel before creating it
      */
     @CheckReturnValue
-    ChannelAction createVoiceChannel(String name);
+    ChannelAction<VoiceChannel> createVoiceChannel(String name);
 
     /**
      * Modifies the positional order of this Category's nested {@link #getTextChannels() TextChannels}.
