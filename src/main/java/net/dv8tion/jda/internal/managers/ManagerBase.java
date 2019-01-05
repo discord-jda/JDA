@@ -49,6 +49,13 @@ public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestAct
 
     @Override
     @SuppressWarnings("unchecked")
+    public M setCheck(BooleanSupplier checks)
+    {
+        return (M) super.setCheck(checks);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
     public M reset(long fields)
     {
         //logic explanation:

@@ -69,7 +69,7 @@ public class AuditableRestActionImpl<T> extends AbstractRestAction<T> implements
 
     @Override
     @SuppressWarnings("unchecked")
-    public AuditableRestActionImpl<T> setCheck(BooleanSupplier checks)
+    public AuditableRestAction<T> setCheck(BooleanSupplier checks)
     {
         return (AuditableRestActionImpl) super.setCheck(checks);
     }

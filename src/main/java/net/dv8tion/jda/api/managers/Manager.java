@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.internal.managers.ManagerBase;
 
 import javax.annotation.CheckReturnValue;
+import java.util.function.BooleanSupplier;
 
 public interface Manager<M extends Manager<M>> extends AuditableRestAction<Void>
 {
@@ -56,6 +57,9 @@ public interface Manager<M extends Manager<M>> extends AuditableRestAction<Void>
     {
         return ManagerBase.isPermissionChecksEnabled();
     }
+
+    @Override
+    M setCheck(BooleanSupplier checks);
 
     @CheckReturnValue
     M reset(long fields);
