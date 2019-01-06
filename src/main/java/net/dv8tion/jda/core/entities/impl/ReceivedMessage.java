@@ -464,6 +464,8 @@ public class ReceivedMessage extends AbstractMessage
             if (strippedContent != null)
                 return strippedContent;
             String tmp = getContentDisplay();
+            if(tmp.startsWith("\\"))
+                return tmp;
             //all the formatting keys to keep track of
             String[] keys = new String[]{ "*", "_", "`", "~~" };
 
