@@ -18,7 +18,7 @@ package net.dv8tion.jda.api.requests;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
-import net.dv8tion.jda.internal.requests.AbstractRestAction;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.ContextRunnable;
 
@@ -153,7 +153,7 @@ public interface RestAction<T>
      */
     static void setPassContext(boolean enable)
     {
-        AbstractRestAction.setPassContext(enable);
+        RestActionImpl.setPassContext(enable);
     }
 
     /**
@@ -167,7 +167,7 @@ public interface RestAction<T>
      */
     static boolean isPassContext()
     {
-        return AbstractRestAction.isPassContext();
+        return RestActionImpl.isPassContext();
     }
 
     /**
@@ -178,7 +178,7 @@ public interface RestAction<T>
      */
     static void setDefaultFailure(final Consumer<? super Throwable> callback)
     {
-        AbstractRestAction.setDefaultFailure(callback);
+        RestActionImpl.setDefaultFailure(callback);
     }
 
     /**
@@ -189,7 +189,7 @@ public interface RestAction<T>
      */
     static void setDefaultSuccess(final Consumer<Object> callback)
     {
-        AbstractRestAction.setDefaultSuccess(callback);
+        RestActionImpl.setDefaultSuccess(callback);
     }
 
     /**
@@ -199,7 +199,7 @@ public interface RestAction<T>
      */
     static Consumer<? super Throwable> getDefaultFailure()
     {
-        return AbstractRestAction.getDefaultFailure();
+        return RestActionImpl.getDefaultFailure();
     }
 
     /**
@@ -209,7 +209,7 @@ public interface RestAction<T>
      */
     static Consumer<Object> getDefaultSuccess()
     {
-        return AbstractRestAction.getDefaultSuccess();
+        return RestActionImpl.getDefaultSuccess();
     }
 
     /**

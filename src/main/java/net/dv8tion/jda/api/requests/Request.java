@@ -23,8 +23,8 @@ import net.dv8tion.jda.api.exceptions.ContextException;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.CallbackContext;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
@@ -35,7 +35,7 @@ import java.util.function.Consumer;
 public class Request<T>
 {
     private final JDAImpl api;
-    private final AbstractRestAction<T> restAction;
+    private final RestActionImpl<T> restAction;
     private final Consumer<? super T> onSuccess;
     private final Consumer<? super Throwable> onFailure;
     private final BooleanSupplier checks;
@@ -50,13 +50,13 @@ public class Request<T>
     private boolean isCanceled = false;
 
     public Request(
-        AbstractRestAction<T> restAction, Consumer<? super T> onSuccess, Consumer<? super Throwable> onFailure,
-        BooleanSupplier checks, boolean shouldQueue, RequestBody body, Object rawBody,
-        Route.CompiledRoute route, CaseInsensitiveMap<String, String> headers)
+            RestActionImpl<T> restAction, Consumer<? super T> onSuccess, Consumer<? super Throwable> onFailure,
+            BooleanSupplier checks, boolean shouldQueue, RequestBody body, Object rawBody,
+            Route.CompiledRoute route, CaseInsensitiveMap<String, String> headers)
     {
         this.restAction = restAction;
         this.onSuccess = onSuccess;
-        if (AbstractRestAction.isPassContext())
+        if (RestActionImpl.isPassContext())
             this.onFailure = ContextException.here(onFailure);
         else
             this.onFailure = onFailure;
@@ -82,7 +82,7 @@ public class Request<T>
             }
             catch (Throwable t)
             {
-                AbstractRestAction.LOG.error("Encountered error while processing success consumer", t);
+                RestActionImpl.LOG.error("Encountered error while processing success consumer", t);
                 if (t instanceof Error)
                     api.getEventManager().handle(new ExceptionEvent(api, t, true));
             }
@@ -115,7 +115,7 @@ public class Request<T>
             }
             catch (Throwable t)
             {
-                AbstractRestAction.LOG.error("Encountered error while processing failure consumer", t);
+                RestActionImpl.LOG.error("Encountered error while processing failure consumer", t);
                 if (t instanceof Error)
                     api.getEventManager().handle(new ExceptionEvent(api, t, true));
             }

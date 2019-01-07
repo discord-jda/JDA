@@ -274,7 +274,7 @@ public class JDAImpl implements JDA
     public void verifyToken(boolean alreadyFailed) throws LoginException
     {
 
-        AbstractRestAction<JSONObject> login = new AbstractRestAction<JSONObject>(this, Route.Self.GET_SELF.compile())
+        RestActionImpl<JSONObject> login = new RestActionImpl<JSONObject>(this, Route.Self.GET_SELF.compile())
         {
             @Override
             public void handleResponse(Response response, Request<JSONObject> request)
@@ -347,7 +347,7 @@ public class JDAImpl implements JDA
         }
     }
 
-    private JSONObject checkToken(AbstractRestAction<JSONObject> login) throws LoginException
+    private JSONObject checkToken(RestActionImpl<JSONObject> login) throws LoginException
     {
         JSONObject userResponse;
         try
@@ -507,8 +507,8 @@ public class JDAImpl implements JDA
             return new EmptyRestAction<>(this, user);
 
         Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
-        return new AbstractRestAction<>(this, route,
-            (response, request) -> getEntityBuilder().createFakeUser(response.getObject(), false));
+        return new RestActionImpl<>(this, route,
+                                    (response, request) -> getEntityBuilder().createFakeUser(response.getObject(), false));
     }
 
     @Override
@@ -746,7 +746,7 @@ public class JDAImpl implements JDA
 
         Route.CompiledRoute route = Route.Webhooks.GET_WEBHOOK.compile(webhookId);
 
-        return new AbstractRestAction<>(this, route, (response, request) ->
+        return new RestActionImpl<>(this, route, (response, request) ->
         {
             JSONObject object = response.getObject();
             EntityBuilder builder = getEntityBuilder();
@@ -758,7 +758,7 @@ public class JDAImpl implements JDA
     public RestAction<ApplicationInfo> getApplicationInfo()
     {
         Route.CompiledRoute route = Route.Applications.GET_BOT_APPLICATION.compile();
-        return new AbstractRestAction<>(this, route, (response, request) ->
+        return new RestActionImpl<>(this, route, (response, request) ->
         {
             ApplicationInfo info = getEntityBuilder().createApplicationInfo(response.getObject());
             this.clientId = info.getId();

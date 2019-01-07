@@ -40,7 +40,7 @@ import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
-public class AbstractRestAction<T> implements RestAction<T>
+public class RestActionImpl<T> implements RestAction<T>
 {
     public static final Logger LOG = JDALogger.getLog(RestAction.class);
 
@@ -102,33 +102,33 @@ public class AbstractRestAction<T> implements RestAction<T>
         return DEFAULT_SUCCESS;
     }
 
-    public AbstractRestAction(JDA api, Route.CompiledRoute route)
+    public RestActionImpl(JDA api, Route.CompiledRoute route)
     {
         this(api, route, (RequestBody) null, null);
     }
 
-    public AbstractRestAction(JDA api, Route.CompiledRoute route, JSONObject data)
+    public RestActionImpl(JDA api, Route.CompiledRoute route, JSONObject data)
     {
         this(api, route, data, null);
     }
 
-    public AbstractRestAction(JDA api, Route.CompiledRoute route, RequestBody data)
+    public RestActionImpl(JDA api, Route.CompiledRoute route, RequestBody data)
     {
         this(api, route, data, null);
     }
 
-    public AbstractRestAction(JDA api, Route.CompiledRoute route, BiFunction<Response, Request<T>, T> handler)
+    public RestActionImpl(JDA api, Route.CompiledRoute route, BiFunction<Response, Request<T>, T> handler)
     {
         this(api, route, (RequestBody) null, handler);
     }
 
-    public AbstractRestAction(JDA api, Route.CompiledRoute route, JSONObject data, BiFunction<Response, Request<T>, T> handler)
+    public RestActionImpl(JDA api, Route.CompiledRoute route, JSONObject data, BiFunction<Response, Request<T>, T> handler)
     {
         this(api, route, data == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, data.toString()), handler);
         this.rawData = data;
     }
 
-    public AbstractRestAction(JDA api, Route.CompiledRoute route, RequestBody data, BiFunction<Response, Request<T>, T> handler)
+    public RestActionImpl(JDA api, Route.CompiledRoute route, RequestBody data, BiFunction<Response, Request<T>, T> handler)
     {
         Checks.notNull(api, "api");
         this.api = new UpstreamReference<>((JDAImpl) api);

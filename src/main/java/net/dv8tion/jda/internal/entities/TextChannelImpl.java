@@ -28,7 +28,7 @@ import net.dv8tion.jda.api.requests.restaction.WebhookAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.requests.AbstractRestAction;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.WebhookActionImpl;
@@ -67,7 +67,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
 
         Route.CompiledRoute route = Route.Channels.GET_WEBHOOKS.compile(getId());
         JDAImpl jda = (JDAImpl) getJDA();
-        return new AbstractRestAction<>(jda, route, (response, request) ->
+        return new RestActionImpl<>(jda, route, (response, request) ->
         {
             JSONArray array = response.getArray();
             List<Webhook> webhooks = new ArrayList<>(array.length());
@@ -415,11 +415,11 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
 
         checkPermission(Permission.MESSAGE_MANAGE);
         final Route.CompiledRoute route = Route.Messages.REMOVE_ALL_REACTIONS.compile(getId(), messageId);
-        return new AbstractRestAction<>(getJDA(), route);
+        return new RestActionImpl<>(getJDA(), route);
     }
 
     @Override
-    public AbstractRestAction<Void> removeReactionById(String messageId, String unicode, User user)
+    public RestActionImpl<Void> removeReactionById(String messageId, String unicode, User user)
     {
         Checks.isSnowflake(messageId, "Message ID");
         Checks.noWhitespace(unicode, "Unicode emoji");
@@ -432,7 +432,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
             route = Route.Messages.REMOVE_OWN_REACTION.compile(getId(), messageId, code);
         else
             route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, code, user.getId());
-        return new AbstractRestAction<>(getJDA(), route);
+        return new RestActionImpl<>(getJDA(), route);
     }
 
     @Override
@@ -512,10 +512,10 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     }
 
     // -- internal --
-    private AbstractRestAction<Void> deleteMessages0(Collection<String> messageIds)
+    private RestActionImpl<Void> deleteMessages0(Collection<String> messageIds)
     {
         JSONObject body = new JSONObject().put("messages", messageIds);
         Route.CompiledRoute route = Route.Messages.DELETE_MESSAGES.compile(getId());
-        return new AbstractRestAction<>(getJDA(), route, body);
+        return new RestActionImpl<>(getJDA(), route, body);
     }
 }

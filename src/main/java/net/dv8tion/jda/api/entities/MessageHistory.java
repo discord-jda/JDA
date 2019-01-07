@@ -26,7 +26,7 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
-import net.dv8tion.jda.internal.requests.AbstractRestAction;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.apache.commons.collections4.map.ListOrderedMap;
@@ -174,7 +174,7 @@ public class MessageHistory
             route = route.withQueryParams("before", String.valueOf(history.lastKey()));
 
         JDAImpl jda = (JDAImpl) getJDA();
-        return new AbstractRestAction<>(jda, route, (response, request) ->
+        return new RestActionImpl<>(jda, route, (response, request) ->
         {
             EntityBuilder builder = jda.getEntityBuilder();
             LinkedList<Message> msgs  = new LinkedList<>();
@@ -243,7 +243,7 @@ public class MessageHistory
 
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId()).withQueryParams("limit", Integer.toString(amount), "after", String.valueOf(history.firstKey()));
         JDAImpl jda = (JDAImpl) getJDA();
-        return new AbstractRestAction<>(jda, route, (response, request) ->
+        return new RestActionImpl<>(jda, route, (response, request) ->
         {
             EntityBuilder builder = jda.getEntityBuilder();
             LinkedList<Message> msgs  = new LinkedList<>();
@@ -465,7 +465,7 @@ public class MessageHistory
      * Constructs a MessageHistory object with initially retrieved Messages before or after a certain pivot message id.
      * <br>Allows to {@link #limit(Integer) limit} the amount to retrieve for better performance!
      */
-    public static class MessageRetrieveAction extends AbstractRestAction<MessageHistory>
+    public static class MessageRetrieveAction extends RestActionImpl<MessageHistory>
     {
         private final MessageChannel channel;
         private Integer limit;

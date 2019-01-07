@@ -31,7 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ReactionPaginationActionImpl
-    extends AbstractPaginationAction<User, ReactionPaginationAction>
+    extends PaginationActionImpl<User, ReactionPaginationAction>
     implements ReactionPaginationAction
 {
     protected final MessageReaction reaction;

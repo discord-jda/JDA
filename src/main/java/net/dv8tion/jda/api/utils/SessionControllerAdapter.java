@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
-import net.dv8tion.jda.internal.requests.AbstractRestAction;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
@@ -79,15 +79,15 @@ public class SessionControllerAdapter implements SessionController
     public String getGateway(JDA api)
     {
         Route.CompiledRoute route = Route.Misc.GATEWAY.compile();
-        return new AbstractRestAction<String>(api, route,
-            (response, request) -> response.getObject().getString("url")).complete();
+        return new RestActionImpl<String>(api, route,
+                                          (response, request) -> response.getObject().getString("url")).complete();
     }
 
     @Override
     public Pair<String, Integer> getGatewayBot(JDA api)
     {
         AccountTypeException.check(api.getAccountType(), AccountType.BOT);
-        return new AbstractRestAction<Pair<String, Integer>>(api, Route.Misc.GATEWAY_BOT.compile())
+        return new RestActionImpl<Pair<String, Integer>>(api, Route.Misc.GATEWAY_BOT.compile())
         {
             @Override
             public void handleResponse(Response response, Request<Pair<String, Integer>> request)

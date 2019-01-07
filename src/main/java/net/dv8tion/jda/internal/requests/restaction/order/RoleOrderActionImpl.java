@@ -33,7 +33,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class RoleOrderActionImpl
-    extends AbstractOrderAction<Role, RoleOrderAction>
+    extends OrderActionImpl<Role, RoleOrderAction>
     implements RoleOrderAction
 {
     protected final Guild guild;

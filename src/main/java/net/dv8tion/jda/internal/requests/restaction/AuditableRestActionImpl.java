@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
-import net.dv8tion.jda.internal.requests.AbstractRestAction;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
@@ -33,7 +33,7 @@ import javax.annotation.Nonnull;
 import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 
-public class AuditableRestActionImpl<T> extends AbstractRestAction<T> implements AuditableRestAction<T>
+public class AuditableRestActionImpl<T> extends RestActionImpl<T> implements AuditableRestAction<T>
 {
     protected String reason = null;
 

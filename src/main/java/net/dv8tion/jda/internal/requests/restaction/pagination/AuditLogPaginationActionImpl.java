@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AuditLogPaginationActionImpl
-    extends AbstractPaginationAction<AuditLogEntry, AuditLogPaginationAction>
+    extends PaginationActionImpl<AuditLogEntry, AuditLogPaginationAction>
     implements AuditLogPaginationAction
 {
     protected final Guild guild;

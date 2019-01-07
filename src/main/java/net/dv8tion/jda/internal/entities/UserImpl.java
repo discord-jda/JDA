@@ -22,8 +22,8 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.EmptyRestAction;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import org.json.JSONObject;
@@ -111,7 +111,7 @@ public class UserImpl implements User
 
         Route.CompiledRoute route = Route.Self.CREATE_PRIVATE_CHANNEL.compile();
         JSONObject body = new JSONObject().put("recipient_id", getId());
-        return new AbstractRestAction<>(getJDA(), route, body, (response, request) ->
+        return new RestActionImpl<>(getJDA(), route, body, (response, request) ->
         {
             PrivateChannel priv = api.get().getEntityBuilder().createPrivateChannel(response.getObject());
             UserImpl.this.privateChannel = priv;

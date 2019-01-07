@@ -19,7 +19,7 @@ package net.dv8tion.jda.internal.requests.restaction.pagination;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
 import net.dv8tion.jda.api.utils.Procedure;
-import net.dv8tion.jda.internal.requests.AbstractRestAction;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -32,8 +32,8 @@ import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
-public abstract class AbstractPaginationAction<T, M extends PaginationAction<T, M>>
-    extends AbstractRestAction<List<T>>
+public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
+    extends RestActionImpl<List<T>>
     implements PaginationAction<T, M>
 {
     protected final List<T> cached = new CopyOnWriteArrayList<>();
@@ -59,7 +59,7 @@ public abstract class AbstractPaginationAction<T, M extends PaginationAction<T, 
      * @param initialLimit
      *        The initial limit to use on the pagination endpoint
      */
-    public AbstractPaginationAction(JDA api, Route.CompiledRoute route, int minLimit, int maxLimit, int initialLimit)
+    public PaginationActionImpl(JDA api, Route.CompiledRoute route, int minLimit, int maxLimit, int initialLimit)
     {
         super(api, route);
         this.maxLimit = maxLimit;
@@ -75,7 +75,7 @@ public abstract class AbstractPaginationAction<T, M extends PaginationAction<T, 
      * @param api
      *        The current JDA instance
      */
-    public AbstractPaginationAction(JDA api)
+    public PaginationActionImpl(JDA api)
     {
         super(api, null);
         this.maxLimit = 0;

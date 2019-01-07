@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.requests.restaction.GuildAction;
-import net.dv8tion.jda.internal.requests.AbstractRestAction;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
@@ -34,7 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
-public class GuildActionImpl extends AbstractRestAction<Void> implements GuildAction
+public class GuildActionImpl extends RestActionImpl<Void> implements GuildAction
 {
     protected String name;
     protected Region region;

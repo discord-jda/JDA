@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
-import net.dv8tion.jda.internal.requests.AbstractRestAction;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 
@@ -87,7 +87,7 @@ public class PrivateChannelImpl implements PrivateChannel
     public RestAction<Void> close()
     {
         Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(getId());
-        return new AbstractRestAction<>(getJDA(), route);
+        return new RestActionImpl<>(getJDA(), route);
     }
 
     @Override

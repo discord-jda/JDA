@@ -26,7 +26,7 @@ import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
-import net.dv8tion.jda.internal.requests.AbstractRestAction;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
@@ -1039,8 +1039,8 @@ public interface MessageChannel extends ISnowflake, Formattable
 
         JDAImpl jda = (JDAImpl) getJDA();
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(getId(), messageId);
-        return new AbstractRestAction<>(jda, route,
-            (response, request) -> jda.getEntityBuilder().createMessage(response.getObject(), MessageChannel.this, false));
+        return new RestActionImpl<>(jda, route,
+                                    (response, request) -> jda.getEntityBuilder().createMessage(response.getObject(), MessageChannel.this, false));
     }
 
     /**
@@ -1819,7 +1819,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     default RestAction<Void> sendTyping()
     {
         Route.CompiledRoute route = Route.Channels.SEND_TYPING.compile(getId());
-        return new AbstractRestAction<>(getJDA(), route);
+        return new RestActionImpl<>(getJDA(), route);
     }
 
     /**
@@ -1907,7 +1907,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         else
             encoded = MiscUtil.encodeUTF8(unicode);
         Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, encoded);
-        return new AbstractRestAction<>(getJDA(), route);
+        return new RestActionImpl<>(getJDA(), route);
     }
 
     /**
@@ -2050,7 +2050,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.notNull(emote, "Emote");
 
         Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, String.format("%s:%s", emote.getName(), emote.getId()));
-        return new AbstractRestAction<Void>(getJDA(), route);
+        return new RestActionImpl<Void>(getJDA(), route);
     }
 
     /**
@@ -2177,7 +2177,7 @@ public interface MessageChannel extends ISnowflake, Formattable
 
         final String code = MiscUtil.encodeUTF8(unicode);
         final Route.CompiledRoute route = Route.Messages.REMOVE_OWN_REACTION.compile(getId(), messageId, code);
-        return new AbstractRestAction<Void>(getJDA(), route);
+        return new RestActionImpl<Void>(getJDA(), route);
     }
 
     /**
@@ -2394,7 +2394,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.isSnowflake(messageId, "Message ID");
 
         Route.CompiledRoute route = Route.Messages.ADD_PINNED_MESSAGE.compile(getId(), messageId);
-        return new AbstractRestAction<Void>(getJDA(), route);
+        return new RestActionImpl<Void>(getJDA(), route);
     }
 
     /**
@@ -2485,7 +2485,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.isSnowflake(messageId, "Message ID");
 
         Route.CompiledRoute route = Route.Messages.REMOVE_PINNED_MESSAGE.compile(getId(), messageId);
-        return new AbstractRestAction<Void>(getJDA(), route);
+        return new RestActionImpl<Void>(getJDA(), route);
     }
 
     /**
@@ -2560,7 +2560,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     {
         JDAImpl jda = (JDAImpl) getJDA();
         Route.CompiledRoute route = Route.Messages.GET_PINNED_MESSAGES.compile(getId());
-        return new AbstractRestAction<>(jda, route, (response, request) ->
+        return new RestActionImpl<>(jda, route, (response, request) ->
         {
             LinkedList<Message> pinnedMessages = new LinkedList<>();
             EntityBuilder builder = jda.getEntityBuilder();

@@ -18,7 +18,7 @@ package net.dv8tion.jda.internal.requests.restaction.order;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.restaction.order.OrderAction;
-import net.dv8tion.jda.internal.requests.AbstractRestAction;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -28,8 +28,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
-public abstract class AbstractOrderAction<T, M extends OrderAction<T, M>>
-    extends AbstractRestAction<Void>
+public abstract class OrderActionImpl<T, M extends OrderAction<T, M>>
+    extends RestActionImpl<Void>
     implements OrderAction<T, M>
 {
     protected final List<T> orderList;
@@ -44,9 +44,9 @@ public abstract class AbstractOrderAction<T, M extends OrderAction<T, M>>
      *        in the order list
      * @param route
      *        The {@link net.dv8tion.jda.internal.requests.Route.CompiledRoute CompiledRoute}
-     *        which is provided to the {@link AbstractRestAction#AbstractRestAction(JDA, Route.CompiledRoute, okhttp3.RequestBody) RestAction Constructor}
+     *        which is provided to the {@link RestActionImpl#RestActionImpl(JDA, Route.CompiledRoute, okhttp3.RequestBody) RestAction Constructor}
      */
-    public AbstractOrderAction(JDA api, Route.CompiledRoute route)
+    public OrderActionImpl(JDA api, Route.CompiledRoute route)
     {
         this(api, true, route);
     }
@@ -61,9 +61,9 @@ public abstract class AbstractOrderAction<T, M extends OrderAction<T, M>>
      *        Whether or not the order of items should be ascending
      * @param route
      *        The {@link net.dv8tion.jda.internal.requests.Route.CompiledRoute CompiledRoute}
-     *        which is provided to the {@link AbstractRestAction#AbstractRestAction(JDA, Route.CompiledRoute, okhttp3.RequestBody) RestAction Constructor}
+     *        which is provided to the {@link RestActionImpl#RestActionImpl(JDA, Route.CompiledRoute, okhttp3.RequestBody) RestAction Constructor}
      */
-    public AbstractOrderAction(JDA api, boolean ascendingOrder, Route.CompiledRoute route)
+    public OrderActionImpl(JDA api, boolean ascendingOrder, Route.CompiledRoute route)
     {
         super(api, route);
         this.orderList = new ArrayList<>();

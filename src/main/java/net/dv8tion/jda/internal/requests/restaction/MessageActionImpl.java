@@ -25,9 +25,9 @@ import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
-import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.Method;
 import net.dv8tion.jda.internal.requests.Requester;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -42,7 +42,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
-public class MessageActionImpl extends AbstractRestAction<Message> implements MessageAction
+public class MessageActionImpl extends RestActionImpl<Message> implements MessageAction
 {
     private static final String CONTENT_TOO_BIG = String.format("A message may not exceed %d characters. Please limit your input!", Message.MAX_CONTENT_LENGTH);
     protected final Map<String, InputStream> files = new HashMap<>();

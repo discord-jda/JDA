@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MessagePaginationActionImpl
-    extends AbstractPaginationAction<Message, MessagePaginationAction>
+    extends PaginationActionImpl<Message, MessagePaginationAction>
     implements MessagePaginationAction
 {
     private final MessageChannel channel;

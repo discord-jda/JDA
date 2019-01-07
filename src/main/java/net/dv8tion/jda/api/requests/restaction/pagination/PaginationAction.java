@@ -18,7 +18,7 @@ package net.dv8tion.jda.api.requests.restaction.pagination;
 
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.Procedure;
-import net.dv8tion.jda.internal.requests.AbstractRestAction;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -323,7 +323,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      */
     default CompletableFuture<?> forEachAsync(final Procedure<T> action)
     {
-        return forEachAsync(action, AbstractRestAction.getDefaultFailure());
+        return forEachAsync(action, RestActionImpl.getDefaultFailure());
     }
 
     /**
@@ -402,7 +402,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      */
     default CompletableFuture<?> forEachRemainingAsync(final Procedure<T> action)
     {
-        return forEachRemainingAsync(action, AbstractRestAction.getDefaultFailure());
+        return forEachRemainingAsync(action, RestActionImpl.getDefaultFailure());
     }
 
     /**

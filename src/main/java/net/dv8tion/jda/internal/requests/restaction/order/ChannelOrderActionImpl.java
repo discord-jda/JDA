@@ -32,7 +32,7 @@ import org.json.JSONObject;
 import java.util.Collection;
 
 public class ChannelOrderActionImpl<T extends GuildChannel>
-    extends AbstractOrderAction<T, ChannelOrderAction<T>>
+    extends OrderActionImpl<T, ChannelOrderAction<T>>
     implements ChannelOrderAction<T>
 {
     protected final Guild guild;

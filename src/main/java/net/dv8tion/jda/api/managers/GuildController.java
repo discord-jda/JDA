@@ -34,8 +34,8 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
-import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.EmptyRestAction;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.ChannelActionImpl;
@@ -170,7 +170,7 @@ public class GuildController
         JSONObject body = new JSONObject().put("channel_id", voiceChannel.getId());
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), member.getUser().getId());
 
-        return new AbstractRestAction<>(getGuild().getJDA(), route, body);
+        return new RestActionImpl<>(getGuild().getJDA(), route, body);
     }
 
     /**

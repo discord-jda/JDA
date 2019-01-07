@@ -24,8 +24,8 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.requests.AbstractRestAction;
 import net.dv8tion.jda.internal.requests.EmptyRestAction;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -82,7 +82,7 @@ public class InviteImpl implements Invite
             route = route.withQueryParams("with_counts", "true");
 
         JDAImpl jda = (JDAImpl) api;
-        return new AbstractRestAction<>(api, route, (response, request) ->
+        return new RestActionImpl<>(api, route, (response, request) ->
                 jda.getEntityBuilder().createInvite(response.getObject()));
     }
 
@@ -129,7 +129,7 @@ public class InviteImpl implements Invite
             throw new InsufficientPermissionException(Permission.MANAGE_CHANNEL, "You don't have the permission to view the full invite info");
         }
 
-        return new AbstractRestAction<>(this.api, route, (response, request) ->
+        return new RestActionImpl<>(this.api, route, (response, request) ->
         {
             final EntityBuilder entityBuilder = this.api.getEntityBuilder();
             final JSONArray array = response.getArray();

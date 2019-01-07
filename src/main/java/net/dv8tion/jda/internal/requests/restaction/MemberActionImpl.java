@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.requests.restaction.MemberAction;
-import net.dv8tion.jda.internal.requests.AbstractRestAction;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -37,7 +37,7 @@ import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
-public class MemberActionImpl extends AbstractRestAction<Void> implements MemberAction
+public class MemberActionImpl extends RestActionImpl<Void> implements MemberAction
 {
     private final String accessToken;
     private final String userId;
