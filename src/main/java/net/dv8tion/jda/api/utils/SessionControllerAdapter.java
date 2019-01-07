@@ -80,7 +80,7 @@ public class SessionControllerAdapter implements SessionController
     {
         Route.CompiledRoute route = Route.Misc.GATEWAY.compile();
         return new RestActionImpl<String>(api, route,
-                                          (response, request) -> response.getObject().getString("url")).complete();
+            (response, request) -> response.getObject().getString("url")).complete();
     }
 
     @Override

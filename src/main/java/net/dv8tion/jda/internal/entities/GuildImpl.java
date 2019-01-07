@@ -184,7 +184,7 @@ public class GuildImpl implements Guild
         Route.CompiledRoute route = Route.Guilds.GET_VANITY_URL.compile(getId());
 
         return new RestActionImpl<>(getJDA(), route,
-                                    (response, request) -> response.getObject().getString("code"));
+            (response, request) -> response.getObject().getString("code"));
     }
 
     @Override

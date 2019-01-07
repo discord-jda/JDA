@@ -508,7 +508,7 @@ public class JDAImpl implements JDA
 
         Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
         return new RestActionImpl<>(this, route,
-                                    (response, request) -> getEntityBuilder().createFakeUser(response.getObject(), false));
+            (response, request) -> getEntityBuilder().createFakeUser(response.getObject(), false));
     }
 
     @Override
