@@ -17,10 +17,11 @@ package net.dv8tion.jda.api.entities;
 
 /**
  * Represents a Discord Voice GuildChannel.
- * <br>As a VoiceChannel has no extra functionality as its {@link GuildChannel GuildChannel} parent,
- * this interface is empty.
- * This interface only exists to distinct {@link GuildChannel Channels} into
- * VoiceChannels and {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}.
+ * <br>Adds additional information specific to voice channels in Discord.
+ *
+ * @see GuildChannel
+ * @see TextChannel
+ * @see Category
  */
 public interface VoiceChannel extends GuildChannel, Comparable<VoiceChannel>
 {
