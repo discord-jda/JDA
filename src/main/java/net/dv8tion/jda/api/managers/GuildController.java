@@ -1728,6 +1728,8 @@ public class GuildController
      *     <br>We were removed from the Guild before finishing the task</li>
      * </ul>
      *
+     * @param  <T>
+     *         The channel type
      * @param  channel
      *         The {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} to use for the copy template
      *
