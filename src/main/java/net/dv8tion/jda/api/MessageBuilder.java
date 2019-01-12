@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.internal.entities.DataMessage;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -768,7 +769,7 @@ public class MessageBuilder implements Appendable
     }
 
     /**
-     * Creates a {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * Creates a {@link MessageAction MessageAction}
      * with the current settings without building a {@link net.dv8tion.jda.api.entities.Message Message} instance first.
      *
      * @param  channel
@@ -780,7 +781,7 @@ public class MessageBuilder implements Appendable
      *         If the currently logged in account does not have permission to send or read messages in this channel,
      *         or if this is a PrivateChannel and both users (sender and receiver) are bots.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      */
     @CheckReturnValue
     public MessageAction sendTo(MessageChannel channel)
@@ -802,7 +803,7 @@ public class MessageBuilder implements Appendable
                     throw new UnsupportedOperationException("Cannot send a private message between bots.");
         }
         final Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(channel.getId());
-        final MessageAction action = new MessageAction(channel.getJDA(), route, channel, builder);
+        final MessageActionImpl action = new MessageActionImpl(channel.getJDA(), route, channel, builder);
         return action.tts(isTTS).embed(embed).nonce(nonce);
     }
 

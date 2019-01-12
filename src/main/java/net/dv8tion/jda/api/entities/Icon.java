@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.managers.AccountManager;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.IOUtil;
 
@@ -28,7 +29,7 @@ import java.util.Base64;
 /**
  * Icon containing a base64 encoded jpeg/png/gif/gifv image.
  * <br>Used to represent various base64 images in the Discord api.
- * <br>Example: {@link net.dv8tion.jda.api.managers.AccountManager#setAvatar(Icon)}.
+ * <br>Example: {@link AccountManager#setAvatar(Icon)}.
  *
  * @since 3.0
  */

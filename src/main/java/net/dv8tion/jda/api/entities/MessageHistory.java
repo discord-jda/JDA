@@ -24,7 +24,9 @@ import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.TimeUtil;
+import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.apache.commons.collections4.map.ListOrderedMap;
@@ -170,28 +172,19 @@ public class MessageHistory
         if (!history.isEmpty())
             route = route.withQueryParams("before", String.valueOf(history.lastKey()));
 
-        return new RestAction<List<Message>>(getJDA(), route)
+        JDAImpl jda = (JDAImpl) getJDA();
+        return new RestActionImpl<>(jda, route, (response, request) ->
         {
-            @Override
-            protected void handleResponse(Response response, Request<List<Message>> request)
-            {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                }
+            EntityBuilder builder = jda.getEntityBuilder();
+            LinkedList<Message> msgs  = new LinkedList<>();
+            JSONArray historyJson = response.getArray();
 
-                EntityBuilder builder = api.get().getEntityBuilder();
-                LinkedList<Message> msgs  = new LinkedList<>();
-                JSONArray historyJson = response.getArray();
+            for (int i = 0; i < historyJson.length(); i++)
+                msgs.add(builder.createMessage(historyJson.getJSONObject(i)));
 
-                for (int i = 0; i < historyJson.length(); i++)
-                    msgs.add(builder.createMessage(historyJson.getJSONObject(i)));
-
-                msgs.forEach(msg -> history.put(msg.getIdLong(), msg));
-                request.onSuccess(msgs);
-            }
-        };
+            msgs.forEach(msg -> history.put(msg.getIdLong(), msg));
+            return msgs;
+        });
     }
 
     /**
@@ -247,33 +240,24 @@ public class MessageHistory
             throw new IllegalStateException("No messages have been retrieved yet, so there is no message to act as a marker to retrieve more recent messages based on.");
 
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId()).withQueryParams("limit", Integer.toString(amount), "after", String.valueOf(history.firstKey()));
-        return new RestAction<List<Message>>(getJDA(), route)
+        JDAImpl jda = (JDAImpl) getJDA();
+        return new RestActionImpl<>(jda, route, (response, request) ->
         {
-            @Override
-            protected void handleResponse(Response response, Request<List<Message>> request)
+            EntityBuilder builder = jda.getEntityBuilder();
+            LinkedList<Message> msgs  = new LinkedList<>();
+            JSONArray historyJson = response.getArray();
+
+            for (int i = 0; i < historyJson.length(); i++)
+                msgs.add(builder.createMessage(historyJson.getJSONObject(i)));
+
+            for (Iterator<Message> it = msgs.descendingIterator(); it.hasNext();)
             {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                }
-
-                EntityBuilder builder = api.get().getEntityBuilder();
-                LinkedList<Message> msgs  = new LinkedList<>();
-                JSONArray historyJson = response.getArray();
-
-                for (int i = 0; i < historyJson.length(); i++)
-                    msgs.add(builder.createMessage(historyJson.getJSONObject(i)));
-
-                for (Iterator<Message> it = msgs.descendingIterator(); it.hasNext();)
-                {
-                    Message m = it.next();
-                    history.put(0, m.getIdLong(), m);
-                }
-
-                request.onSuccess(msgs);
+                Message m = it.next();
+                history.put(0, m.getIdLong(), m);
             }
-        };
+
+            return msgs;
+        });
     }
 
     /**
@@ -479,7 +463,7 @@ public class MessageHistory
      * Constructs a MessageHistory object with initially retrieved Messages before or after a certain pivot message id.
      * <br>Allows to {@link #limit(Integer) limit} the amount to retrieve for better performance!
      */
-    public static class MessageRetrieveAction extends RestAction<MessageHistory>
+    public static class MessageRetrieveAction extends RestActionImpl<MessageHistory>
     {
         private final MessageChannel channel;
         private Integer limit;
@@ -520,13 +504,8 @@ public class MessageHistory
         }
 
         @Override
-        protected void handleResponse(Response response, Request<MessageHistory> request)
+        protected void handleSuccess(Response response, Request<MessageHistory> request)
         {
-            if (!response.isOk())
-            {
-                request.onFailure(response);
-                return;
-            }
             final MessageHistory result = new MessageHistory(channel);
             final JSONArray array = response.getArray();
             final EntityBuilder builder = api.get().getEntityBuilder();

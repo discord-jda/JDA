@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.managers.AccountManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.managers.AccountManagerImpl;
 
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -126,7 +127,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
             mng = MiscUtil.locked(mngLock, () ->
             {
                 if (manager == null)
-                    manager = new AccountManager(this);
+                    manager = new AccountManagerImpl(this);
                 return manager;
             });
         }
