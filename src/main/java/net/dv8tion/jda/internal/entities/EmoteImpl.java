@@ -22,12 +22,12 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.EmoteManager;
-import net.dv8tion.jda.api.requests.Request;
-import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.managers.EmoteManagerImpl;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 
 import java.util.Collections;
@@ -154,7 +154,7 @@ public class EmoteImpl implements ListedEmote
             m = MiscUtil.locked(mngLock, () ->
             {
                 if (manager == null)
-                    manager = new EmoteManager(this);
+                    manager = new EmoteManagerImpl(this);
                 return manager;
             });
         }
@@ -178,17 +178,7 @@ public class EmoteImpl implements ListedEmote
             throw new InsufficientPermissionException(Permission.MANAGE_EMOTES);
 
         Route.CompiledRoute route = Route.Emotes.DELETE_EMOTE.compile(getGuild().getId(), getId());
-        return new AuditableRestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestActionImpl<Void>(getJDA(), route);
     }
 
     // -- Setters --

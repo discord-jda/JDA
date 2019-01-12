@@ -108,7 +108,8 @@ public interface Member extends IMentionable, IPermissionHolder
 
     /**
      * The roles applied to this Member.
-     * <br>The roles are ordered based on their position.
+     * <br>The roles are ordered based on their position. The highest role being at index 0
+     * and the lowest at the last index.
      *
      * <p>A Member's roles can be changed using the <b>addRolesToMember</b>, <b>removeRolesFromMember</b>, and <b>modifyMemberRoles</b>
      * methods in {@link net.dv8tion.jda.api.managers.GuildController GuildController}.

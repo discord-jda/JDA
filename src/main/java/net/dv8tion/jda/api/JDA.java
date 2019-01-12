@@ -372,7 +372,7 @@ public interface JDA
 
     /**
      * Constructs a new {@link net.dv8tion.jda.api.entities.Guild Guild} with the specified name
-     * <br>Use the returned {@link net.dv8tion.jda.api.requests.restaction.GuildAction GuildAction} to provide
+     * <br>Use the returned {@link GuildAction GuildAction} to provide
      * further details and settings for the resulting Guild!
      *
      * <p>This RestAction does not provide the resulting Guild!
@@ -390,7 +390,7 @@ public interface JDA
      * @throws java.lang.IllegalArgumentException
      *         If the provided name is empty, {@code null} or not between 2-100 characters
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.GuildAction GuildAction}
+     * @return {@link GuildAction GuildAction}
      *         <br>Allows for setting various details for the resulting Guild
      */
     GuildAction createGuild(String name);
