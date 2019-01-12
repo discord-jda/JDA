@@ -20,13 +20,12 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.Presence;
-import net.dv8tion.jda.api.requests.Request;
-import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.GuildAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import okhttp3.OkHttpClient;
 
@@ -211,20 +210,12 @@ public interface JDA
     {
         AtomicLong time = new AtomicLong();
         Route.CompiledRoute route = Route.Self.GET_SELF.compile();
-        return new RestAction<Long>(this, route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Long> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(System.currentTimeMillis() - time.get());
-                else
-                    request.onFailure(response);
-            }
-        }.setCheck(() -> {
+        RestActionImpl<Long> action = new RestActionImpl<>(this, route, (response, request) -> System.currentTimeMillis() - time.get());
+        action.setCheck(() -> {
             time.set(System.currentTimeMillis());
             return true;
         });
+        return action;
     }
 
     /**
