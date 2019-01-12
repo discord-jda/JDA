@@ -84,14 +84,14 @@ public interface GuildChannel extends ISnowflake
     int getPosition();
 
     /**
-     * The actual position of the {@link GuildChannel GuildChannel} as stored and given by Discord.
-     * Role positions are actually based on a pairing of the creation time (as stored in the snowflake id)
-     * and the position. If 2 or more roles share the same position then they are sorted based on their creation date.
-     * The more recent a role was created, the lower it is in the hierarchy. This is handled by {@link #getPosition()}
+     * The actual position of the {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} as stored and given by Discord.
+     * Channel positions are actually based on a pairing of the creation time (as stored in the snowflake id)
+     * and the position. If 2 or more channels share the same position then they are sorted based on their creation date.
+     * The more recent a channel was created, the lower it is in the hierarchy. This is handled by {@link #getPosition()}
      * and it is most likely the method you want. If, for some reason, you want the actual position of the
-     * Role then this method will give you that value.
+     * channel then this method will give you that value.
      *
-     * @return The true, Discord stored, position of the {@link GuildChannel GuildChannel}.
+     * @return The true, Discord stored, position of the {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}.
      */
     int getPositionRaw();
 
@@ -181,11 +181,11 @@ public interface GuildChannel extends ISnowflake
      * @throws net.dv8tion.jda.api.exceptions.PermissionException
      *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission
      *
-     * @return A specific {@link net.dv8tion.jda.api.requests.restaction.ChannelAction ChannelAction}
+     * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new GuildChannel before creating it!
      */
     @CheckReturnValue
-    ChannelAction createCopy(Guild guild);
+    ChannelAction<? extends GuildChannel> createCopy(Guild guild);
 
     /**
      * Creates a copy of the specified {@link GuildChannel GuildChannel}.
@@ -212,17 +212,17 @@ public interface GuildChannel extends ISnowflake
      * @throws net.dv8tion.jda.api.exceptions.PermissionException
      *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission
      *
-     * @return A specific {@link net.dv8tion.jda.api.requests.restaction.ChannelAction ChannelAction}
+     * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new GuildChannel before creating it!
      */
     @CheckReturnValue
-    default ChannelAction createCopy()
+    default ChannelAction<? extends GuildChannel> createCopy()
     {
         return createCopy(getGuild());
     }
 
     /**
-     * Returns the {@link net.dv8tion.jda.api.managers.ChannelManager ChannelManager} for this GuildChannel.
+     * Returns the {@link ChannelManager ChannelManager} for this GuildChannel.
      * <br>In the ChannelManager, you can modify the name, topic and position of this GuildChannel.
      * You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
      *
@@ -283,7 +283,7 @@ public interface GuildChannel extends ISnowflake
      *         If the specified permission holder already has a PermissionOverride. Use {@link #getPermissionOverride(IPermissionHolder)} to retrieve it.
      *         You can use {@link #putPermissionOverride(IPermissionHolder)} to replace existing overrides.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction PermissionOverrideAction}
+     * @return {@link PermissionOverrideAction PermissionOverrideAction}
      *         Provides the newly created PermissionOverride for the specified permission holder
      *
      * @see    #createPermissionOverride(IPermissionHolder)
@@ -305,7 +305,7 @@ public interface GuildChannel extends ISnowflake
      * @throws java.lang.IllegalArgumentException
      *         If the provided permission holder is null or from a different guild
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction PermissionOverrideAction}
+     * @return {@link PermissionOverrideAction PermissionOverrideAction}
      *         Provides the newly created PermissionOverride for the specified permission holder
      *
      * @see    #putPermissionOverride(IPermissionHolder)
@@ -314,7 +314,7 @@ public interface GuildChannel extends ISnowflake
     PermissionOverrideAction putPermissionOverride(IPermissionHolder permissionHolder);
 
     /**
-     * Creates a new {@link net.dv8tion.jda.api.requests.restaction.InviteAction InviteAction} which can be used to create a
+     * Creates a new {@link InviteAction InviteAction} which can be used to create a
      * new {@link net.dv8tion.jda.api.entities.Invite Invite}.
      * <br>Requires {@link net.dv8tion.jda.api.Permission#CREATE_INSTANT_INVITE CREATE_INSTANT_INVITE} in this channel.
      *
@@ -323,9 +323,9 @@ public interface GuildChannel extends ISnowflake
      * @throws java.lang.IllegalArgumentException
      *         If this is an instance of a {@link net.dv8tion.jda.api.entities.Category Category}
      *
-     * @return A new {@link net.dv8tion.jda.api.requests.restaction.InviteAction InviteAction}
+     * @return A new {@link InviteAction InviteAction}
      * 
-     * @see    net.dv8tion.jda.api.requests.restaction.InviteAction
+     * @see    InviteAction
      */
     @CheckReturnValue
     InviteAction createInvite();

@@ -24,9 +24,11 @@ import net.dv8tion.jda.api.managers.GuildManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MemberAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
 import net.dv8tion.jda.api.utils.cache.MemberCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
+import net.dv8tion.jda.internal.requests.EmptyRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -82,7 +84,7 @@ public interface Guild extends ISnowflake
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#CREATE_INSTANT_INVITE Permission.CREATE_INSTANT_INVITE}
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MemberAction MemberAction}
+     * @return {@link MemberAction MemberAction}
      *
      * @see    <a href="https://discordapp.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
      *
@@ -106,7 +108,7 @@ public interface Guild extends ISnowflake
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#CREATE_INSTANT_INVITE Permission.CREATE_INSTANT_INVITE}
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MemberAction MemberAction}
+     * @return {@link MemberAction MemberAction}
      *
      * @see    <a href="https://discordapp.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
      *
@@ -134,7 +136,7 @@ public interface Guild extends ISnowflake
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#CREATE_INSTANT_INVITE Permission.CREATE_INSTANT_INVITE}
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MemberAction MemberAction}
+     * @return {@link MemberAction MemberAction}
      *
      * @see    <a href="https://discordapp.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
      *
@@ -149,7 +151,7 @@ public interface Guild extends ISnowflake
     /**
      * The human readable name of the {@link net.dv8tion.jda.api.entities.Guild Guild}.
      * <p>
-     * This value can be modified using {@link net.dv8tion.jda.api.managers.GuildManager#setName(String)}.
+     * This value can be modified using {@link GuildManager#setName(String)}.
      *
      * @return Never-null String containing the Guild's name.
      */
@@ -159,7 +161,7 @@ public interface Guild extends ISnowflake
      * The Discord hash-id of the {@link net.dv8tion.jda.api.entities.Guild Guild} icon image.
      * If no icon has been set, this returns {@code null}.
      * <p>
-     * The Guild icon can be modified using {@link net.dv8tion.jda.api.managers.GuildManager#setIcon(Icon)}.
+     * The Guild icon can be modified using {@link GuildManager#setIcon(Icon)}.
      *
      * @return Possibly-null String containing the Guild's icon hash-id.
      */
@@ -169,7 +171,7 @@ public interface Guild extends ISnowflake
      * The URL of the {@link net.dv8tion.jda.api.entities.Guild Guild} icon image.
      * If no icon has been set, this returns {@code null}.
      * <p>
-     * The Guild icon can be modified using {@link net.dv8tion.jda.api.managers.GuildManager#setIcon(Icon)}.
+     * The Guild icon can be modified using {@link GuildManager#setIcon(Icon)}.
      *
      * @return Possibly-null String containing the Guild's icon URL.
      */
@@ -197,7 +199,7 @@ public interface Guild extends ISnowflake
      * If no splash has been set, this returns {@code null}.
      * <br>Splash images are VIP/Partner Guild only.
      * <p>
-     * The Guild splash can be modified using {@link net.dv8tion.jda.api.managers.GuildManager#setSplash(Icon)}.
+     * The Guild splash can be modified using {@link GuildManager#setSplash(Icon)}.
      *
      * @return Possibly-null String containing the Guild's splash hash-id
      */
@@ -209,7 +211,7 @@ public interface Guild extends ISnowflake
      * If no splash has been set, this returns {@code null}.
      * <br>Splash images are VIP/Partner Guild only.
      * <p>
-     * The Guild splash can be modified using {@link net.dv8tion.jda.api.managers.GuildManager#setSplash(Icon)}.
+     * The Guild splash can be modified using {@link GuildManager#setSplash(Icon)}.
      *
      * @return Possibly-null String containing the Guild's splash URL.
      */
@@ -251,7 +253,7 @@ public interface Guild extends ISnowflake
      * {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} for longer than {@link #getAfkTimeout()}.
      * <br>If no channel has been set as the AFK channel, this returns {@code null}.
      * <p>
-     * This value can be modified using {@link net.dv8tion.jda.api.managers.GuildManager#setAfkChannel(VoiceChannel)}.
+     * This value can be modified using {@link GuildManager#setAfkChannel(VoiceChannel)}.
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} that is the AFK Channel.
      */
@@ -262,7 +264,7 @@ public interface Guild extends ISnowflake
      * which newly joined {@link net.dv8tion.jda.api.entities.Member Members} will be announced in.
      * <br>If no channel has been set as the system channel, this returns {@code null}.
      * <p>
-     * This value can be modified using {@link net.dv8tion.jda.api.managers.GuildManager#setSystemChannel(TextChannel)}.
+     * This value can be modified using {@link GuildManager#setSystemChannel(TextChannel)}.
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that is the system Channel.
      */
@@ -309,7 +311,7 @@ public interface Guild extends ISnowflake
      * will be automatically moved to the AFK channel after they have been inactive for longer than the returned Timeout.
      * <br>Default is {@link Timeout#SECONDS_300 300 seconds (5 minutes)}.
      * <p>
-     * This value can be modified using {@link net.dv8tion.jda.api.managers.GuildManager#setAfkTimeout(net.dv8tion.jda.api.entities.Guild.Timeout)}.
+     * This value can be modified using {@link GuildManager#setAfkTimeout(net.dv8tion.jda.api.entities.Guild.Timeout)}.
      *
      * @return The {@link net.dv8tion.jda.api.entities.Guild.Timeout Timeout} set for this Guild.
      */
@@ -321,7 +323,7 @@ public interface Guild extends ISnowflake
      * <br>If the Region is not recognized, returns {@link net.dv8tion.jda.api.Region#UNKNOWN UNKNOWN} but you
      * can still use the {@link #getRegionRaw()} to retrieve the raw name this region has.
      *
-     * <p>This value can be modified using {@link net.dv8tion.jda.api.managers.GuildManager#setRegion(net.dv8tion.jda.api.Region)}.
+     * <p>This value can be modified using {@link GuildManager#setRegion(net.dv8tion.jda.api.Region)}.
      *
      * @return The the audio Region this Guild is using for audio connections. Can return Region.UNKNOWN.
      */
@@ -335,7 +337,7 @@ public interface Guild extends ISnowflake
      * for audio connections.
      * <br>This is resolved to an enum constant of {@link net.dv8tion.jda.api.Region Region} by {@link #getRegion()}!
      *
-     * <p>This value can be modified using {@link net.dv8tion.jda.api.managers.GuildManager#setRegion(net.dv8tion.jda.api.Region)}.
+     * <p>This value can be modified using {@link GuildManager#setRegion(net.dv8tion.jda.api.Region)}.
      *
      * @return Raw region name
      */
@@ -841,7 +843,8 @@ public interface Guild extends ISnowflake
 
     /**
      * Gets all {@link net.dv8tion.jda.api.entities.Role Roles} in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
-     * <br>The roles returned will be sorted according to their position.
+     * <br>The roles returned will be sorted according to their position. The highest role being at index 0
+     * and the lowest at the last index.
      *
      * <p>This copies the backing store into a list. This means every call
      * creates a new list with O(n) complexity. It is recommended to store this into
@@ -1069,7 +1072,7 @@ public interface Guild extends ISnowflake
         {
             ListedEmote listedEmote = (ListedEmote) emote;
             if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
-                return new RestAction.EmptyRestAction<>(getJDA(), listedEmote);
+                return new EmptyRestAction<>(getJDA(), listedEmote);
         }
         return retrieveEmoteById(emote.getId());
     }
@@ -1253,7 +1256,7 @@ public interface Guild extends ISnowflake
     TextChannel getDefaultChannel();
 
     /**
-     * Returns the {@link net.dv8tion.jda.api.managers.GuildManager GuildManager} for this Guild, used to modify
+     * Returns the {@link GuildManager GuildManager} for this Guild, used to modify
      * all properties and settings of the Guild.
      * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
      *
@@ -1275,7 +1278,7 @@ public interface Guild extends ISnowflake
     GuildController getController();
 
     /**
-     * A {@link net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction PaginationAction} implementation
+     * A {@link PaginationAction PaginationAction} implementation
      * that allows to {@link Iterable iterate} over all {@link net.dv8tion.jda.api.audit.AuditLogEntry AuditLogEntries} of
      * this Guild.
      * <br>This iterates from the most recent action to the first logged one. (Limit 90 days into history by discord api)
@@ -1304,7 +1307,7 @@ public interface Guild extends ISnowflake
      *         If the currently logged in account
      *         does not have the permission {@link net.dv8tion.jda.api.Permission#VIEW_AUDIT_LOGS VIEW_AUDIT_LOGS}
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction AuditLogPaginationAction}
+     * @return {@link AuditLogPaginationAction AuditLogPaginationAction}
      */
     @CheckReturnValue
     AuditLogPaginationAction getAuditLogs();

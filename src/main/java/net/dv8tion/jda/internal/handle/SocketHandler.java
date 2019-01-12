@@ -15,8 +15,8 @@
  */
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import org.json.JSONObject;
 
 public abstract class SocketHandler

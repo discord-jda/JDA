@@ -19,12 +19,12 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.managers.WebhookManager;
-import net.dv8tion.jda.api.requests.Request;
-import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.internal.managers.WebhookManagerImpl;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -106,17 +106,7 @@ public class WebhookImpl implements Webhook
             throw new IllegalStateException("Fake Webhooks (such as those retrieved from Audit Logs) "
                     + "cannot be used for deletion!");
         Route.CompiledRoute route = Route.Webhooks.DELETE_TOKEN_WEBHOOK.compile(getId(), token);
-        return new AuditableRestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
     @Override
@@ -131,7 +121,7 @@ public class WebhookImpl implements Webhook
             mng = MiscUtil.locked(mngLock, () ->
             {
                 if (manager == null)
-                    manager = new WebhookManager(this);
+                    manager = new WebhookManagerImpl(this);
                 return manager;
             });
         }

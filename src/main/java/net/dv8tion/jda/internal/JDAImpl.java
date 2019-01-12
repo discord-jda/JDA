@@ -35,7 +35,6 @@ import net.dv8tion.jda.api.managers.Presence;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.restaction.GuildAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.SessionController;
@@ -48,9 +47,8 @@ import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.handle.GuildSetupController;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
-import net.dv8tion.jda.internal.requests.Requester;
-import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.requests.WebSocketClient;
+import net.dv8tion.jda.internal.requests.*;
+import net.dv8tion.jda.internal.requests.restaction.GuildActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.UnlockHook;
@@ -276,10 +274,10 @@ public class JDAImpl implements JDA
     public void verifyToken(boolean alreadyFailed) throws LoginException
     {
 
-        RestAction<JSONObject> login = new RestAction<JSONObject>(this, Route.Self.GET_SELF.compile())
+        RestActionImpl<JSONObject> login = new RestActionImpl<JSONObject>(this, Route.Self.GET_SELF.compile())
         {
             @Override
-            protected void handleResponse(Response response, Request<JSONObject> request)
+            public void handleResponse(Response response, Request<JSONObject> request)
             {
                 if (response.isOk())
                     request.onSuccess(response.getObject());
@@ -349,7 +347,7 @@ public class JDAImpl implements JDA
         }
     }
 
-    private JSONObject checkToken(RestAction<JSONObject> login) throws LoginException
+    private JSONObject checkToken(RestActionImpl<JSONObject> login) throws LoginException
     {
         JSONObject userResponse;
         try
@@ -506,23 +504,11 @@ public class JDAImpl implements JDA
         // check cache
         User user = this.getUserById(id);
         if (user != null)
-            return new RestAction.EmptyRestAction<>(this, user);
+            return new EmptyRestAction<>(this, user);
 
         Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
-        return new RestAction<User>(this, route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<User> request)
-            {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                }
-                JSONObject user = response.getObject();
-                request.onSuccess(getEntityBuilder().createFakeUser(user, false));
-            }
-        };
+        return new RestActionImpl<>(this, route,
+            (response, request) -> getEntityBuilder().createFakeUser(response.getObject(), false));
     }
 
     @Override
@@ -738,7 +724,7 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public GuildAction createGuild(String name)
+    public GuildActionImpl createGuild(String name)
     {
         switch (accountType)
         {
@@ -750,7 +736,7 @@ public class JDAImpl implements JDA
                 if (guildCache.size() >= 100)
                     throw new IllegalStateException("Cannot be in more than 100 guilds with AccountType.CLIENT!");
         }
-        return new GuildAction(this, name);
+        return new GuildActionImpl(this, name);
     }
 
     @Override
@@ -760,46 +746,24 @@ public class JDAImpl implements JDA
 
         Route.CompiledRoute route = Route.Webhooks.GET_WEBHOOK.compile(webhookId);
 
-        return new RestAction<Webhook>(this, route)
+        return new RestActionImpl<>(this, route, (response, request) ->
         {
-            @Override
-            protected void handleResponse(Response response, Request<Webhook> request)
-            {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                }
-
-                JSONObject object = response.getObject();
-                EntityBuilder builder = api.get().getEntityBuilder();
-                Webhook webhook = builder.createWebhook(object);
-
-                request.onSuccess(webhook);
-            }
-        };
+            JSONObject object = response.getObject();
+            EntityBuilder builder = getEntityBuilder();
+            return builder.createWebhook(object);
+        });
     }
 
     @Override
     public RestAction<ApplicationInfo> getApplicationInfo()
     {
         Route.CompiledRoute route = Route.Applications.GET_BOT_APPLICATION.compile();
-        return new RestAction<ApplicationInfo>(this, route)
+        return new RestActionImpl<>(this, route, (response, request) ->
         {
-            @Override
-            protected void handleResponse(Response response, Request<ApplicationInfo> request)
-            {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                }
-
-                ApplicationInfo info = api.get().getEntityBuilder().createApplicationInfo(response.getObject());
-                JDAImpl.this.clientId = info.getId();
-                request.onSuccess(info);
-            }
-        };
+            ApplicationInfo info = getEntityBuilder().createApplicationInfo(response.getObject());
+            this.clientId = info.getId();
+            return info;
+        });
     }
 
     @Override

@@ -17,6 +17,7 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -68,6 +69,12 @@ public interface TextChannel extends GuildChannel, MessageChannel, Comparable<Te
      */
     int getSlowmode();
 
+    @Override
+    ChannelAction<TextChannel> createCopy(Guild guild);
+
+    @Override
+    ChannelAction<TextChannel> createCopy();
+
     /**
      * Retrieves the {@link net.dv8tion.jda.api.entities.Webhook Webhooks} attached to this TextChannel.
      *
@@ -108,7 +115,7 @@ public interface TextChannel extends GuildChannel, MessageChannel, Comparable<Te
      *         If the provided name is {@code null}, blank or not
      *         between 2-100 characters in length
      *
-     * @return A specific {@link net.dv8tion.jda.api.requests.restaction.WebhookAction WebhookAction}
+     * @return A specific {@link WebhookAction WebhookAction}
      *         <br>This action allows to set fields for the new webhook before creating it
      */
     @CheckReturnValue

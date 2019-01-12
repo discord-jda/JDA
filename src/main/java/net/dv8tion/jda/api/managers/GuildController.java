@@ -22,20 +22,27 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
-import net.dv8tion.jda.api.requests.Request;
-import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.RoleAction;
 import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
+import net.dv8tion.jda.api.requests.restaction.order.OrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.RoleOrderAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
-import net.dv8tion.jda.internal.entities.EmoteImpl;
+import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
+import net.dv8tion.jda.internal.requests.EmptyRestAction;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.ChannelActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.RoleActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.order.CategoryOrderActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.order.ChannelOrderActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.order.RoleOrderActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
@@ -51,6 +58,8 @@ import java.util.stream.Stream;
  * permissions and create new channels and roles.
  *
  * @since 3.0
+ *
+ * @see   Guild#getController()
  */
 public class GuildController
 {
@@ -161,17 +170,7 @@ public class GuildController
         JSONObject body = new JSONObject().put("channel_id", voiceChannel.getId());
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), member.getUser().getId());
 
-        return new RestAction<Void>(getGuild().getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new RestActionImpl<>(getGuild().getJDA(), route, body);
     }
 
     /**
@@ -237,7 +236,7 @@ public class GuildController
         }
 
         if (Objects.equals(nickname, member.getNickname()))
-            return new AuditableRestAction.EmptyRestAction<>(getJDA(), null);
+            return new EmptyRestAction<>(getJDA(), null);
 
         if (nickname == null)
             nickname = "";
@@ -250,17 +249,7 @@ public class GuildController
         else
             route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), member.getUser().getId());
 
-        return new AuditableRestAction<Void>(getGuild().getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestActionImpl<>(getGuild().getJDA(), route, body);
     }
 
     /**
@@ -298,17 +287,7 @@ public class GuildController
         Checks.check(days >= 1, "Days amount must be at minimum 1 day.");
 
         Route.CompiledRoute route = Route.Guilds.PRUNE_MEMBERS.compile(getGuild().getId()).withQueryParams("days", Integer.toString(days));
-        return new AuditableRestAction<Integer>(getGuild().getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Integer> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(response.getObject().getInt("pruned"));
-                else
-                    request .onFailure(response);
-            }
-        };
+        return new AuditableRestActionImpl<>(getGuild().getJDA(), route, (response, request) -> response.getObject().getInt("pruned"));
     }
 
     /**
@@ -362,17 +341,7 @@ public class GuildController
         if (reason != null && !reason.isEmpty())
             route = route.withQueryParams("reason", MiscUtil.encodeUTF8(reason));
 
-        return new AuditableRestAction<Void>(getGuild().getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestActionImpl<>(getGuild().getJDA(), route);
     }
 
     /**
@@ -534,6 +503,7 @@ public class GuildController
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the provided amount of days (delDays) is less than 0.</li>
+     *             <li>If the provided amount of days (delDays) is bigger than 7.</li>
      *             <li>If the provided member is {@code null}</li>
      *         </ul>
      *
@@ -587,6 +557,7 @@ public class GuildController
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the provided amount of days (delDays) is less than 0.</li>
+     *             <li>If the provided amount of days (delDays) is bigger than 7.</li>
      *             <li>If the provided user is null</li>
      *         </ul>
      *
@@ -603,6 +574,8 @@ public class GuildController
 
         Checks.notNegative(delDays, "Deletion Days");
 
+        Checks.check(delDays <= 7, "Deletion Days must not be bigger than 7.");
+
         final String userId = user.getId();
 
         Route.CompiledRoute route = Route.Guilds.BAN.compile(getGuild().getId(), userId);
@@ -611,17 +584,7 @@ public class GuildController
         if (delDays > 0)
             route = route.withQueryParams("delete-message-days", Integer.toString(delDays));
 
-        return new AuditableRestAction<Void>(getGuild().getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestActionImpl<>(getGuild().getJDA(), route);
     }
 
     /**
@@ -643,8 +606,8 @@ public class GuildController
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>We were removed from the Guild before finishing the task</li>
      *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The specified Member was removed from the Guild before finishing the task</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER UNKNOWN_USER}
+     *     <br>The specified User does not exit</li>
      * </ul>
      *
      * @param  userId
@@ -659,19 +622,28 @@ public class GuildController
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot ban the other user due to permission hierarchy position.
      *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
-     * @throws IllegalArgumentException
-     *         If the provided amount of days (delDays) is less than 0.
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided amount of days (delDays) is less than 0.</li>
+     *             <li>If the provided amount of days (delDays) is bigger than 7.</li>
+     *             <li>If the provided userId is null</li>
+     *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @CheckReturnValue
     public AuditableRestAction<Void> ban(String userId, int delDays, String reason)
     {
+        Checks.notNull(userId, "User");
         checkPermission(Permission.BAN_MEMBERS);
 
         User user = getGuild().getJDA().getUserById(userId);
         if (user != null) // If we have the user cached then we should use the additional information available to use during the ban process.
             return ban(user, delDays, reason);
+
+        Checks.notNegative(delDays, "Deletion Days");
+
+        Checks.check(delDays <= 7, "Deletion Days must not be bigger than 7.");
 
         Route.CompiledRoute route = Route.Guilds.BAN.compile(getGuild().getId(), userId);
         if (reason != null && !reason.isEmpty())
@@ -679,19 +651,7 @@ public class GuildController
         if (delDays > 0)
             route = route.withQueryParams("delete-message-days", Integer.toString(delDays));
 
-        return new AuditableRestAction<Void>(getGuild().getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else if (response.code == 404)
-                    request.onFailure(new IllegalArgumentException("User with provided id \"" + userId + "\" does not exist! Cannot ban a non-existent user!"));
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestActionImpl<>(getGuild().getJDA(), route);
     }
 
     /**
@@ -730,6 +690,7 @@ public class GuildController
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the provided amount of days (delDays) is less than 0.</li>
+     *             <li>If the provided amount of days (delDays) is bigger than 7.</li>
      *             <li>If the provided member is {@code null}</li>
      *         </ul>
      *
@@ -777,7 +738,8 @@ public class GuildController
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the provided amount of days (delDays) is less than 0.</li>
-     *             <li>If the provided member is {@code null}</li>
+     *             <li>If the provided amount of days (delDays) is bigger than 7.</li>
+     *             <li>If the provided user is {@code null}</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
@@ -821,8 +783,12 @@ public class GuildController
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot ban the other user due to permission hierarchy position.
      *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
-     * @throws IllegalArgumentException
-     *         If the provided amount of days (delDays) is less than 0.
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided amount of days (delDays) is less than 0.</li>
+     *             <li>If the provided amount of days (delDays) is bigger than 7.</li>
+     *             <li>If the provided userId is {@code null}</li>
+     *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -879,7 +845,7 @@ public class GuildController
      *     <br>We were removed from the Guild before finishing the task</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER UNKNOWN_USER}
-     *     <br>The specified User is invalid</li>
+     *     <br>The specified User does not exist</li>
      * </ul>
      *
      * @param  userId
@@ -899,19 +865,7 @@ public class GuildController
         checkPermission(Permission.BAN_MEMBERS);
 
         Route.CompiledRoute route = Route.Guilds.UNBAN.compile(getGuild().getId(), userId);
-        return new AuditableRestAction<Void>(getGuild().getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else if (response.code == 404)
-                    request.onFailure(new IllegalArgumentException("User with provided id \"" + userId + "\" is not banned! Cannot unban a user who is not currently banned!"));
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestActionImpl<>(getGuild().getJDA(), route);
     }
 
     /**
@@ -962,21 +916,11 @@ public class GuildController
 
         GuildVoiceState voiceState = member.getVoiceState();
         if (voiceState != null && voiceState.isGuildDeafened() == deafen)
-            return new AuditableRestAction.EmptyRestAction<>(getJDA(), null);
+            return new EmptyRestAction<>(getJDA(), null);
 
         JSONObject body = new JSONObject().put("deaf", deafen);
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), member.getUser().getId());
-        return new AuditableRestAction<Void>(getGuild().getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestActionImpl<>(getGuild().getJDA(), route, body);
     }
 
     /**
@@ -1027,21 +971,11 @@ public class GuildController
 
         GuildVoiceState voiceState = member.getVoiceState();
         if (voiceState != null && voiceState.isGuildMuted() == mute)
-            return new AuditableRestAction.EmptyRestAction<>(getJDA(), null);
+            return new EmptyRestAction<>(getJDA(), null);
 
         JSONObject body = new JSONObject().put("mute", mute);
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), member.getUser().getId());
-        return new AuditableRestAction<Void>(getGuild().getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestActionImpl<>(getGuild().getJDA(), route, body);
     }
 
     /**
@@ -1098,17 +1032,7 @@ public class GuildController
         checkPosition(role);
 
         Route.CompiledRoute route = Route.Guilds.ADD_MEMBER_ROLE.compile(getGuild().getId(), member.getUser().getId(), role.getId());
-        return new AuditableRestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
     /**
@@ -1165,17 +1089,7 @@ public class GuildController
         checkPosition(role);
 
         Route.CompiledRoute route = Route.Guilds.REMOVE_MEMBER_ROLE.compile(getGuild().getId(), member.getUser().getId(), role.getId());
-        return new AuditableRestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
     /**
@@ -1475,7 +1389,7 @@ public class GuildController
         if (currentRoles.addAll(newRolesToAdd))
             currentRoles.removeAll(rolesToRemove);
         else if (!currentRoles.removeAll(rolesToRemove))
-            return new AuditableRestAction.EmptyRestAction<>(getGuild().getJDA());
+            return new EmptyRestAction<>(getGuild().getJDA());
 
         Checks.check(!currentRoles.contains(getGuild().getPublicRole()),
             "Cannot add the PublicRole of a Guild to a Member. All members have this role by default!");
@@ -1484,17 +1398,7 @@ public class GuildController
                 .put("roles", currentRoles.stream().map(Role::getId).collect(Collectors.toList()));
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), member.getUser().getId());
 
-        return new AuditableRestAction<Void>(getGuild().getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestActionImpl<>(getGuild().getJDA(), route, body);
     }
 
     /**
@@ -1616,7 +1520,7 @@ public class GuildController
         // Return an empty rest action if there were no changes
         final List<Role> memberRoles = member.getRoles();
         if (memberRoles.size() == roles.size() && memberRoles.containsAll(roles))
-            return new AuditableRestAction.EmptyRestAction<>(getGuild().getJDA());
+            return new EmptyRestAction<>(getGuild().getJDA());
 
         //Make sure that the current managed roles are preserved and no new ones are added.
         List<Role> currentManaged = memberRoles.stream().filter(Role::isManaged).collect(Collectors.toList());
@@ -1640,17 +1544,7 @@ public class GuildController
                 .put("roles", roles.stream().map(Role::getId).collect(Collectors.toList()));
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), member.getUser().getId());
 
-        return new AuditableRestAction<Void>(getGuild().getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestActionImpl<>(getGuild().getJDA(), route, body);
     }
 
     /**
@@ -1699,17 +1593,7 @@ public class GuildController
 
         JSONObject body = new JSONObject().put("owner_id", newOwner.getUser().getId());
         Route.CompiledRoute route = Route.Guilds.MODIFY_GUILD.compile(getGuild().getId());
-        return new AuditableRestAction<Void>(getGuild().getJDA(), route, body)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestActionImpl<>(getGuild().getJDA(), route, body);
     }
 
     /**
@@ -1734,20 +1618,18 @@ public class GuildController
      * @throws IllegalArgumentException
      *         If the provided name is {@code null} or empty or greater than 100 characters in length
      *
-     * @return A specific {@link net.dv8tion.jda.api.requests.restaction.ChannelAction ChannelAction}
+     * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new TextChannel before creating it
      */
     @CheckReturnValue
-    public ChannelAction createTextChannel(String name)
+    public ChannelAction<TextChannel> createTextChannel(String name)
     {
         checkPermission(Permission.MANAGE_CHANNEL);
         Checks.notBlank(name, "Name");
         name = name.trim();
 
         Checks.check(name.length() > 0 && name.length() <= 100, "Provided name must be 1 - 100 characters in length");
-
-        Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(getGuild().getId());
-        return new ChannelAction(route, name, getGuild(), ChannelType.TEXT);
+        return new ChannelActionImpl<>(TextChannel.class, name, getGuild(), ChannelType.TEXT);
     }
 
     /**
@@ -1772,20 +1654,18 @@ public class GuildController
      * @throws IllegalArgumentException
      *         If the provided name is {@code null} or empty or greater than 100 characters in length
      *
-     * @return A specific {@link net.dv8tion.jda.api.requests.restaction.ChannelAction ChannelAction}
+     * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new VoiceChannel before creating it
      */
     @CheckReturnValue
-    public ChannelAction createVoiceChannel(String name)
+    public ChannelAction<VoiceChannel> createVoiceChannel(String name)
     {
         checkPermission(Permission.MANAGE_CHANNEL);
         Checks.notBlank(name, "Name");
         name = name.trim();
 
         Checks.check(name.length() > 0 && name.length() <= 100, "Provided name must be 1 - 100 characters in length");
-
-        Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(getGuild().getId());
-        return new ChannelAction(route, name, getGuild(), ChannelType.VOICE);
+        return new ChannelActionImpl<>(VoiceChannel.class, name, getGuild(), ChannelType.VOICE);
     }
 
     /**
@@ -1810,20 +1690,18 @@ public class GuildController
      * @throws IllegalArgumentException
      *         If the provided name is {@code null} or empty or greater than 100 characters in length
      *
-     * @return A specific {@link net.dv8tion.jda.api.requests.restaction.ChannelAction ChannelAction}
+     * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new Category before creating it
      */
     @CheckReturnValue
-    public ChannelAction createCategory(String name)
+    public ChannelAction<Category> createCategory(String name)
     {
         checkPermission(Permission.MANAGE_CHANNEL);
         Checks.notBlank(name, "Name");
         name = name.trim();
 
         Checks.check(name.length() > 0 && name.length() <= 100, "Provided name must be 1 - 100 characters in length");
-
-        Route.CompiledRoute route = Route.Guilds.CREATE_CHANNEL.compile(getGuild().getId());
-        return new ChannelAction(route, name, getGuild(), ChannelType.CATEGORY);
+        return new ChannelActionImpl<>(Category.class, name, getGuild(), ChannelType.CATEGORY);
     }
 
     /**
@@ -1858,20 +1736,21 @@ public class GuildController
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission
      *
-     * @return A specific {@link net.dv8tion.jda.api.requests.restaction.ChannelAction ChannelAction}
+     * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new GuildChannel before creating it!
      *
      * @since  3.1
      *
      * @see    #createTextChannel(String)
      * @see    #createVoiceChannel(String)
-     * @see    net.dv8tion.jda.api.requests.restaction.ChannelAction ChannelAction
+     * @see    ChannelAction ChannelAction
      */
     @CheckReturnValue
-    public ChannelAction createCopyOfChannel(GuildChannel channel)
+    @SuppressWarnings("unchecked")
+    public <T extends GuildChannel> ChannelAction<T> createCopyOfChannel(T channel)
     {
         Checks.notNull(channel, "Channel");
-        return channel.createCopy(getGuild());
+        return (ChannelAction<T>) channel.createCopy(getGuild());
     }
 
     /**
@@ -1895,7 +1774,7 @@ public class GuildController
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES} Permission
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.RoleAction RoleAction}
+     * @return {@link RoleAction RoleAction}
      *         <br>Creates a new role with previously selected field values
      */
     @CheckReturnValue
@@ -1903,8 +1782,7 @@ public class GuildController
     {
         checkPermission(Permission.MANAGE_ROLES);
 
-        Route.CompiledRoute route = Route.Roles.CREATE_ROLE.compile(getGuild().getId());
-        return new RoleAction(route, getGuild());
+        return new RoleActionImpl(getGuild());
     }
 
     /**
@@ -1937,7 +1815,7 @@ public class GuildController
      * @throws java.lang.IllegalArgumentException
      *         If the specified role is {@code null}
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.RoleAction RoleAction}
+     * @return {@link RoleAction RoleAction}
      *         <br>RoleAction with already copied values from the specified {@link net.dv8tion.jda.api.entities.Role Role}
      */
     @CheckReturnValue
@@ -1996,30 +1874,20 @@ public class GuildController
         if (roles.length > 0) // making sure none of the provided roles are null before mapping them to the snowflake id
             body.put("roles", Stream.of(roles).filter(Objects::nonNull).map(ISnowflake::getId).collect(Collectors.toSet()));
 
+        JDAImpl jda = (JDAImpl) getJDA();
         Route.CompiledRoute route = Route.Emotes.CREATE_EMOTE.compile(getGuild().getId());
-        return new AuditableRestAction<Emote>(getJDA(), route, body)
+        return new AuditableRestActionImpl<>(jda, route, body, (response, request) ->
         {
-            @Override
-            protected void handleResponse(Response response, Request<Emote> request)
-            {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                }
-
-                JSONObject obj = response.getObject();
-                EmoteImpl emote = api.get().getEntityBuilder().createEmote((GuildImpl) getGuild(), obj, true);
-                request.onSuccess(emote);
-            }
-        };
+            JSONObject obj = response.getObject();
+            return jda.getEntityBuilder().createEmote((GuildImpl) getGuild(), obj, true);
+        });
     }
 
     /**
      * Modifies the positional order of {@link net.dv8tion.jda.api.entities.Guild#getCategories() Guild.getCategories()}
      * using a specific {@link net.dv8tion.jda.api.requests.RestAction RestAction} extension to allow moving Channels
-     * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveDown(int) down}
-     * or {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
+     * {@link OrderAction#moveUp(int) up}/{@link OrderAction#moveDown(int) down}
+     * or {@link OrderAction#moveTo(int) to} a specific position.
      * <br>This uses <b>ascending</b> order with a 0 based index.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
@@ -2031,19 +1899,19 @@ public class GuildController
      *     <br>The currently logged in account was removed from the Guild</li>
      * </ul>
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction ChannelOrderAction} - Type: {@link net.dv8tion.jda.api.entities.Category Category}
+     * @return {@link ChannelOrderAction ChannelOrderAction} - Type: {@link net.dv8tion.jda.api.entities.Category Category}
      */
     @CheckReturnValue
     public ChannelOrderAction<Category> modifyCategoryPositions()
     {
-        return new ChannelOrderAction<>(getGuild(), ChannelType.CATEGORY);
+        return new ChannelOrderActionImpl<>(getGuild(), ChannelType.CATEGORY);
     }
 
     /**
      * Modifies the positional order of {@link net.dv8tion.jda.api.entities.Guild#getTextChannels() Guild.getTextChannels()}
      * using a specific {@link net.dv8tion.jda.api.requests.RestAction RestAction} extension to allow moving Channels
-     * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveDown(int) down}
-     * or {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
+     * {@link OrderAction#moveUp(int) up}/{@link OrderAction#moveDown(int) down}
+     * or {@link OrderAction#moveTo(int) to} a specific position.
      * <br>This uses <b>ascending</b> order with a 0 based index.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
@@ -2055,19 +1923,19 @@ public class GuildController
      *     <br>The currently logged in account was removed from the Guild</li>
      * </ul>
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction ChannelOrderAction} - Type: {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     * @return {@link ChannelOrderAction ChannelOrderAction} - Type: {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      */
     @CheckReturnValue
     public ChannelOrderAction<TextChannel> modifyTextChannelPositions()
     {
-        return new ChannelOrderAction<>(getGuild(), ChannelType.TEXT);
+        return new ChannelOrderActionImpl<>(getGuild(), ChannelType.TEXT);
     }
 
     /**
      * Modifies the positional order of {@link net.dv8tion.jda.api.entities.Guild#getVoiceChannels() Guild.getVoiceChannels()}
      * using a specific {@link net.dv8tion.jda.api.requests.RestAction RestAction} extension to allow moving Channels
-     * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveDown(int) down}
-     * or {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
+     * {@link OrderAction#moveUp(int) up}/{@link OrderAction#moveDown(int) down}
+     * or {@link OrderAction#moveTo(int) to} a specific position.
      * <br>This uses <b>ascending</b> order with a 0 based index.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
@@ -2079,23 +1947,23 @@ public class GuildController
      *     <br>The currently logged in account was removed from the Guild</li>
      * </ul>
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction ChannelOrderAction} - Type: {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}
+     * @return {@link ChannelOrderAction ChannelOrderAction} - Type: {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}
      */
     @CheckReturnValue
     public ChannelOrderAction<VoiceChannel> modifyVoiceChannelPositions()
     {
-        return new ChannelOrderAction<>(getGuild(), ChannelType.VOICE);
+        return new ChannelOrderActionImpl<>(getGuild(), ChannelType.VOICE);
     }
 
     /**
      * Modifies the positional order of {@link net.dv8tion.jda.api.entities.Category#getTextChannels() Category#getTextChannels()}
-     * using an extension of {@link net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction ChannelOrderAction}
+     * using an extension of {@link ChannelOrderAction ChannelOrderAction}
      * specialized for ordering the nested {@link net.dv8tion.jda.api.entities.TextChannel TextChannels} of this
      * {@link net.dv8tion.jda.api.entities.Category Category}.
-     * <br>Like {@code ChannelOrderAction}, the returned {@link net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction CategoryOrderAction}
-     * can be used to move TextChannels {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveUp(int) up},
-     * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveDown(int) down}, or
-     * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
+     * <br>Like {@code ChannelOrderAction}, the returned {@link CategoryOrderAction CategoryOrderAction}
+     * can be used to move TextChannels {@link OrderAction#moveUp(int) up},
+     * {@link OrderAction#moveDown(int) down}, or
+     * {@link OrderAction#moveTo(int) to} a specific position.
      * <br>This uses <b>ascending</b> order with a 0 based index.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
@@ -2111,25 +1979,25 @@ public class GuildController
      *         The {@link net.dv8tion.jda.api.entities.Category Category} to order
      *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannels} from.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction CategoryOrderAction} - Type: {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     * @return {@link CategoryOrderAction CategoryOrderAction} - Type: {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      */
     @CheckReturnValue
     public CategoryOrderAction<TextChannel> modifyTextChannelPositions(Category category)
     {
         Checks.notNull(category, "Category");
         checkGuild(category.getGuild(), "Category");
-        return new CategoryOrderAction<>(category, ChannelType.TEXT);
+        return new CategoryOrderActionImpl<>(category, ChannelType.TEXT);
     }
 
     /**
      * Modifies the positional order of {@link net.dv8tion.jda.api.entities.Category#getVoiceChannels() Category#getVoiceChannels()}
-     * using an extension of {@link net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction ChannelOrderAction}
+     * using an extension of {@link ChannelOrderAction ChannelOrderAction}
      * specialized for ordering the nested {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} of this
      * {@link net.dv8tion.jda.api.entities.Category Category}.
-     * <br>Like {@code ChannelOrderAction}, the returned {@link net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction CategoryOrderAction}
-     * can be used to move VoiceChannels {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveUp(int) up},
-     * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveDown(int) down}, or
-     * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
+     * <br>Like {@code ChannelOrderAction}, the returned {@link CategoryOrderAction CategoryOrderAction}
+     * can be used to move VoiceChannels {@link OrderAction#moveUp(int) up},
+     * {@link OrderAction#moveDown(int) down}, or
+     * {@link OrderAction#moveTo(int) to} a specific position.
      * <br>This uses <b>ascending</b> order with a 0 based index.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
@@ -2145,26 +2013,26 @@ public class GuildController
      *         The {@link net.dv8tion.jda.api.entities.Category Category} to order
      *         {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} from.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction CategoryOrderAction} - Type: {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}
+     * @return {@link CategoryOrderAction CategoryOrderAction} - Type: {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}
      */
     @CheckReturnValue
     public CategoryOrderAction<VoiceChannel> modifyVoiceChannelPositions(Category category)
     {
         Checks.notNull(category, "Category");
         checkGuild(category.getGuild(), "Category");
-        return new CategoryOrderAction<>(category, ChannelType.VOICE);
+        return new CategoryOrderActionImpl<>(category, ChannelType.VOICE);
     }
 
     /**
      * Modifies the positional order of {@link net.dv8tion.jda.api.entities.Guild#getRoles() Guild.getRoles()}
      * using a specific {@link net.dv8tion.jda.api.requests.RestAction RestAction} extension to allow moving Roles
-     * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveDown(int) down}
-     * or {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
+     * {@link OrderAction#moveUp(int) up}/{@link OrderAction#moveDown(int) down}
+     * or {@link OrderAction#moveTo(int) to} a specific position.
      *
-     * <p>This uses the ordering defined by Discord, which is <b>descending</b>!
-     * <br>This means the highest role appears at index {@code 0} and the lower role at index {@code n - 1}.
-     * <br>Providing {@code false} to {@link #modifyRolePositions(boolean)} will result in the ordering being
-     * in ascending order, with the lower role at index {@code 0} and the highest at index {@code n - 1}.
+     * <p>This uses <b>ascending</b> ordering which means the lowest role is first!
+     * <br>This means the highest role appears at index {@code n - 1} and the lower role at index {@code 0}.
+     * <br>Providing {@code true} to {@link #modifyRolePositions(boolean)} will result in the ordering being
+     * in ascending order, with the lower role at index {@code n - 1} and the highest at index {@code 0}.
      * <br>As a note: {@link net.dv8tion.jda.api.entities.Member#getRoles() Member.getRoles()}
      * and {@link net.dv8tion.jda.api.entities.Guild#getRoles() Guild.getRoles()} are both in descending order.
      *
@@ -2177,7 +2045,7 @@ public class GuildController
      *     <br>The currently logged in account was removed from the Guild</li>
      * </ul>
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.order.RoleOrderAction RoleOrderAction}
+     * @return {@link RoleOrderAction RoleOrderAction}
      */
     @CheckReturnValue
     public RoleOrderAction modifyRolePositions()
@@ -2188,8 +2056,8 @@ public class GuildController
     /**
      * Modifies the positional order of {@link net.dv8tion.jda.api.entities.Guild#getRoles() Guild.getRoles()}
      * using a specific {@link net.dv8tion.jda.api.requests.RestAction RestAction} extension to allow moving Roles
-     * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveDown(int) down}
-     * or {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
+     * {@link OrderAction#moveUp(int) up}/{@link OrderAction#moveDown(int) down}
+     * or {@link OrderAction#moveTo(int) to} a specific position.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -2200,20 +2068,20 @@ public class GuildController
      *     <br>The currently logged in account was removed from the Guild</li>
      * </ul>
      *
-     * @param  useDiscordOrder
-     *         Defines the ordering of the OrderAction. If {@code true}, the OrderAction will be in the ordering
+     * @param  useAscendingOrder
+     *         Defines the ordering of the OrderAction. If {@code false}, the OrderAction will be in the ordering
      *         defined by Discord for roles, which is Descending. This means that the highest role appears at index {@code 0}
-     *         and the lowest role at index {@code n - 1}. Providing {@code false} will result in the ordering being
+     *         and the lowest role at index {@code n - 1}. Providing {@code true} will result in the ordering being
      *         in ascending order, with the lower role at index {@code 0} and the highest at index {@code n - 1}.
      *         <br>As a note: {@link net.dv8tion.jda.api.entities.Member#getRoles() Member.getRoles()}
      *         and {@link net.dv8tion.jda.api.entities.Guild#getRoles() Guild.getRoles()} are both in descending order.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.order.RoleOrderAction RoleOrderAction}
+     * @return {@link RoleOrderAction RoleOrderAction}
      */
     @CheckReturnValue
-    public RoleOrderAction modifyRolePositions(boolean useDiscordOrder)
+    public RoleOrderAction modifyRolePositions(boolean useAscendingOrder)
     {
-        return new RoleOrderAction(getGuild(), useDiscordOrder);
+        return new RoleOrderActionImpl(getGuild(), useAscendingOrder);
     }
 
     protected void checkGuild(Guild providedGuild, String comment)

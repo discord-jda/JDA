@@ -22,14 +22,19 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.ChannelManager;
-import net.dv8tion.jda.api.requests.Request;
-import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.InviteAction;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.managers.ChannelManagerImpl;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.InviteActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.PermissionOverrideActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import org.json.JSONArray;
@@ -41,7 +46,7 @@ import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
-public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> implements GuildChannel
+public abstract class AbstractChannelImpl<T extends GuildChannel, M extends AbstractChannelImpl<T, M>> implements GuildChannel
 {
     protected final long id;
     protected final UpstreamReference<GuildImpl> guild;
@@ -59,6 +64,15 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     {
         this.id = id;
         this.guild = new UpstreamReference<>(guild);
+    }
+
+    @Override
+    public abstract ChannelAction<T> createCopy(Guild guild);
+
+    @Override
+    public ChannelAction<T> createCopy()
+    {
+        return createCopy(getGuild());
     }
 
     @Override
@@ -132,7 +146,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
             mng = MiscUtil.locked(mngLock, () ->
             {
                 if (manager == null)
-                    manager = new ChannelManager(this);
+                    manager = new ChannelManagerImpl(this);
                 return manager;
             });
         }
@@ -145,17 +159,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         checkPermission(Permission.MANAGE_CHANNEL);
 
         Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(getId());
-        return new AuditableRestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
     @Override
@@ -177,7 +181,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         if (!getGuild().equals(permissionHolder.getGuild()))
             throw new IllegalArgumentException("Provided permission holder is not from the same guild as this channel!");
         Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(getId(), permissionHolder.getId());
-        return new PermissionOverrideAction(getJDA(), route, this, permissionHolder);
+        return new PermissionOverrideActionImpl(getJDA(), route, this, permissionHolder);
     }
 
     @Override
@@ -186,7 +190,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         if (!this.getGuild().getSelfMember().hasPermission(this, Permission.CREATE_INSTANT_INVITE))
             throw new InsufficientPermissionException(Permission.CREATE_INSTANT_INVITE);
 
-        return new InviteAction(this.getJDA(), this.getId());
+        return new InviteActionImpl(this.getJDA(), this.getId());
     }
 
     @Override
@@ -197,26 +201,16 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
 
         final Route.CompiledRoute route = Route.Invites.GET_CHANNEL_INVITES.compile(getId());
 
-        return new RestAction<List<Invite>>(getJDA(), route)
+        JDAImpl jda = (JDAImpl) getJDA();
+        return new RestActionImpl<>(jda, route, (response, request) ->
         {
-            @Override
-            protected void handleResponse(final Response response, final Request<List<Invite>> request)
-            {
-                if (response.isOk())
-                {
-                    EntityBuilder entityBuilder = api.get().getEntityBuilder();
-                    JSONArray array = response.getArray();
-                    List<Invite> invites = new ArrayList<>(array.length());
-                    for (int i = 0; i < array.length(); i++)
-                        invites.add(entityBuilder.createInvite(array.getJSONObject(i)));
-                    request.onSuccess(Collections.unmodifiableList(invites));
-                }
-                else
-                {
-                    request.onFailure(response);
-                }
-            }
-        };
+            EntityBuilder entityBuilder = jda.getEntityBuilder();
+            JSONArray array = response.getArray();
+            List<Invite> invites = new ArrayList<>(array.length());
+            for (int i = 0; i < array.length(); i++)
+                invites.add(entityBuilder.createInvite(array.getJSONObject(i)));
+            return Collections.unmodifiableList(invites);
+        });
     }
 
     @Override
@@ -248,24 +242,24 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     }
 
     @SuppressWarnings("unchecked")
-    public T setName(String name)
+    public M setName(String name)
     {
         this.name = name;
-        return (T) this;
+        return (M) this;
     }
 
     @SuppressWarnings("unchecked")
-    public T setParent(long parentId)
+    public M setParent(long parentId)
     {
         this.parentId = parentId;
-        return (T) this;
+        return (M) this;
     }
 
     @SuppressWarnings("unchecked")
-    public T setPosition(int rawPosition)
+    public M setPosition(int rawPosition)
     {
         this.rawPosition = rawPosition;
-        return (T) this;
+        return (M) this;
     }
 
     protected void checkPermission(Permission permission) {checkPermission(permission, null);}
