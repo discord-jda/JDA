@@ -19,16 +19,16 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDA.Status;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.requests.Request;
-import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.cache.ShardCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.requests.EmptyRestAction;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
-import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 import java.util.*;
@@ -531,27 +531,15 @@ public interface ShardManager
             api = shard;
             User user = shard.getUserById(id);
             if (user != null)
-                return new RestAction.EmptyRestAction<>(shard, user);
+                return new EmptyRestAction<>(shard, user);
         }
 
         if (api == null)
             throw new IllegalStateException("no shards active");
 
+        JDAImpl jda = (JDAImpl) api;
         Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
-        return new RestAction<User>(api, route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<User> request)
-            {
-                if (!response.isOk())
-                {
-                    request.onFailure(response);
-                    return;
-                }
-                JSONObject user = response.getObject();
-                request.onSuccess(api.get().getEntityBuilder().createFakeUser(user, false));
-            }
-        };
+        return new RestActionImpl<>(jda, route, (response, request) -> jda.getEntityBuilder().createFakeUser(response.getObject(), false));
     }
 
     /**

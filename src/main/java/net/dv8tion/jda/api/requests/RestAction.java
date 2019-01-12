@@ -1,11 +1,11 @@
 /*
- *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
+ * Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,21 +17,10 @@
 package net.dv8tion.jda.api.requests;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.audit.ThreadLocalReason;
-import net.dv8tion.jda.api.exceptions.ErrorResponseException;
-import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
-import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.requests.Requester;
-import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.JDALogger;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
-import okhttp3.RequestBody;
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.slf4j.Logger;
+import net.dv8tion.jda.internal.utils.ContextRunnable;
 
 import java.util.concurrent.*;
 import java.util.function.BooleanSupplier;
@@ -150,39 +139,8 @@ import java.util.function.Consumer;
  *
  * @since 3.0
  */
-public abstract class RestAction<T>
+public interface RestAction<T>
 {
-    public static final Logger LOG = JDALogger.getLog(RestAction.class);
-
-    public static Consumer DEFAULT_SUCCESS = o -> {};
-    public static Consumer<Throwable> DEFAULT_FAILURE = t ->
-    {
-        if (LOG.isDebugEnabled())
-        {
-            LOG.error("RestAction queue returned failure", t);
-        }
-        else if (t.getCause() != null)
-        {
-            LOG.error("RestAction queue returned failure: [{}] {}", t.getClass().getSimpleName(), t.getMessage(), t.getCause());
-        }
-        else
-        {
-            LOG.error("RestAction queue returned failure: [{}] {}", t.getClass().getSimpleName(), t.getMessage());
-        }
-    };
-
-    private static final Consumer FALLBACK_CONSUMER = o -> {};
-
-    protected static boolean passContext = true;
-
-    protected final UpstreamReference<JDAImpl> api;
-
-    private final Route.CompiledRoute route;
-    private final RequestBody data;
-
-    private Object rawData;
-    private BooleanSupplier checks;
-
     /**
      * If enabled this will pass a {@link net.dv8tion.jda.api.exceptions.ContextException ContextException}
      * as root-cause to all failure consumers.
@@ -193,9 +151,9 @@ public abstract class RestAction<T>
      * @param  enable
      *         True, if context should be passed to all failure consumers
      */
-    public static void setPassContext(boolean enable)
+    static void setPassContext(boolean enable)
     {
-        passContext = enable;
+        RestActionImpl.setPassContext(enable);
     }
 
     /**
@@ -207,61 +165,51 @@ public abstract class RestAction<T>
      *
      * @see    #setPassContext(boolean)
      */
-    public static boolean isPassContext()
+    static boolean isPassContext()
     {
-        return passContext;
+        return RestActionImpl.isPassContext();
     }
 
     /**
-     * Creates a new RestAction instance
+     * The default failure callback used when none is provided in {@link #queue(Consumer, Consumer)}.
      *
-     * @param  api
-     *         The current JDA instance
-     * @param  route
-     *         The {@link net.dv8tion.jda.internal.requests.Route.CompiledRoute Route.CompiledRoute}
-     *         to be used for rate limit handling
+     * @param callback
+     *        The fallback to use, or null to ignore failures (not recommended)
      */
-    public RestAction(JDA api, Route.CompiledRoute route)
+    static void setDefaultFailure(final Consumer<? super Throwable> callback)
     {
-        this(api, route, (RequestBody) null);
+        RestActionImpl.setDefaultFailure(callback);
     }
 
     /**
-     * Creates a new RestAction instance
+     * The default success callback used when none is provided in {@link #queue(Consumer, Consumer)} or {@link #queue(Consumer)}.
      *
-     * @param  api
-     *         The current JDA instance
-     * @param  route
-     *         The {@link net.dv8tion.jda.internal.requests.Route.CompiledRoute Route.CompiledRoute}
-     *         to be used for rate limit handling
-     * @param  data
-     *         The data that should be sent to the specified route. (can be null)
+     * @param callback
+     *        The fallback to use, or null to ignore success
      */
-    public RestAction(JDA api, Route.CompiledRoute route, RequestBody data)
+    static void setDefaultSuccess(final Consumer<Object> callback)
     {
-        Checks.notNull(api, "api");
-
-        this.api = new UpstreamReference<>((JDAImpl) api);
-        this.route = route;
-        this.data = data;
+        RestActionImpl.setDefaultSuccess(callback);
     }
 
     /**
-     * Creates a new RestAction instance
+     * The default failure callback used when none is provided in {@link #queue(Consumer, Consumer)}.
      *
-     * @param  api
-     *         The current JDA instance
-     * @param  route
-     *         The {@link net.dv8tion.jda.internal.requests.Route.CompiledRoute Route.CompiledRoute}
-     *         to be used for rate limit handling
-     * @param  data
-     *         The data that should be sent to the specified route. (can be null)
+     * @return The fallback consumer
      */
-    public RestAction(JDA api, Route.CompiledRoute route, JSONObject data)
+    static Consumer<? super Throwable> getDefaultFailure()
     {
-        this(api, route, data == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, data.toString()));
+        return RestActionImpl.getDefaultFailure();
+    }
 
-        this.rawData = data;
+    /**
+     * The default success callback used when none is provided in {@link #queue(Consumer, Consumer)} or {@link #queue(Consumer)}.
+     *
+     * @return The fallback consumer
+     */
+    static Consumer<Object> getDefaultSuccess()
+    {
+        return RestActionImpl.getDefaultSuccess();
     }
 
     /**
@@ -269,10 +217,7 @@ public abstract class RestAction<T>
      *
      * @return The corresponding JDA instance
      */
-    public JDA getJDA()
-    {
-        return api.get();
-    }
+    JDA getJDA();
 
     /**
      * Sets the last-second checks before finally executing the http request in the queue.
@@ -284,23 +229,18 @@ public abstract class RestAction<T>
      *
      * @return The current RestAction for chaining convenience
      */
-    public RestAction<T> setCheck(BooleanSupplier checks)
-    {
-        this.checks = checks;
-        return this;
-    }
+    RestAction<T> setCheck(BooleanSupplier checks);
 
     /**
      * Submits a Request for execution.
      * <br>Using the default callback functions:
-     * {@link #DEFAULT_SUCCESS DEFAULT_SUCCESS} and
-     * {@link #DEFAULT_FAILURE DEFAULT_FAILURE}
+     * {@link #setDefaultSuccess(Consumer)} and {@link #setDefaultFailure(Consumer)}
      *
      * <p><b>This method is asynchronous</b>
      */
-    public void queue()
+    default void queue()
     {
-        queue(null, null);
+        queue(null);
     }
 
     /**
@@ -313,7 +253,7 @@ public abstract class RestAction<T>
      *         The success callback that will be called at a convenient time
      *         for the API. (can be null)
      */
-    public void queue(Consumer<? super T> success)
+    default void queue(Consumer<? super T> success)
     {
         queue(success, null);
     }
@@ -330,52 +270,7 @@ public abstract class RestAction<T>
      *         The failure callback that will be called if the Request
      *         encounters an exception at its execution point.
      */
-    @SuppressWarnings("unchecked")
-    public void queue(Consumer<? super T> success, Consumer<? super Throwable> failure)
-    {
-        Route.CompiledRoute route = finalizeRoute();
-        Checks.notNull(route, "Route");
-        RequestBody data = finalizeData();
-        CaseInsensitiveMap<String, String> headers = finalizeHeaders();
-        BooleanSupplier finisher = getFinisher();
-        if (success == null)
-            success = DEFAULT_SUCCESS == null ? FALLBACK_CONSUMER : DEFAULT_SUCCESS;
-        if (failure == null)
-            failure = DEFAULT_FAILURE == null ? FALLBACK_CONSUMER : DEFAULT_FAILURE;
-        api.get().getRequester().request(new Request<>(this, success, failure, finisher, true, data, rawData, route, headers));
-    }
-
-    /**
-     * Submits a Request for execution and provides a {@link java.util.concurrent.CompletableFuture CompletableFuture}
-     * representing its completion task.
-     * <br>Cancelling the returned Future will result in the cancellation of the Request!
-     *
-     * @return Never-null {@link java.util.concurrent.CompletableFuture CompletableFuture} representing the completion promise
-     */
-    public CompletableFuture<T> submit()
-    {
-        return submit(true);
-    }
-
-    /**
-     * Submits a Request for execution and provides a {@link java.util.concurrent.CompletableFuture CompletableFuture}
-     * representing its completion task.
-     * <br>Cancelling the returned Future will result in the cancellation of the Request!
-     *
-     * @param  shouldQueue
-     *         Whether the Request should automatically handle rate limitations. (default true)
-     *
-     * @return Never-null {@link java.util.concurrent.CompletableFuture CompletableFuture} task representing the completion promise
-     */
-    public CompletableFuture<T> submit(boolean shouldQueue)
-    {
-        Route.CompiledRoute route = finalizeRoute();
-        Checks.notNull(route, "Route");
-        RequestBody data = finalizeData();
-        CaseInsensitiveMap<String, String> headers = finalizeHeaders();
-        BooleanSupplier finisher = getFinisher();
-        return new RestFuture<>(this, shouldQueue, finisher, data, rawData, route, headers);
-    }
+    void queue(Consumer<? super T> success, Consumer<? super Throwable> failure);
 
     /**
      * Blocks the current Thread and awaits the completion
@@ -389,7 +284,7 @@ public abstract class RestAction<T>
      *
      * @return The response value
      */
-    public T complete()
+    default T complete()
     {
         try
         {
@@ -420,29 +315,31 @@ public abstract class RestAction<T>
      *
      * @return The response value
      */
-    public T complete(boolean shouldQueue) throws RateLimitedException
+    T complete(boolean shouldQueue) throws RateLimitedException;
+
+    /**
+     * Submits a Request for execution and provides a {@link java.util.concurrent.CompletableFuture CompletableFuture}
+     * representing its completion task.
+     * <br>Cancelling the returned Future will result in the cancellation of the Request!
+     *
+     * @return Never-null {@link java.util.concurrent.CompletableFuture CompletableFuture} representing the completion promise
+     */
+    default CompletableFuture<T> submit()
     {
-        if (CallbackContext.isCallbackContext())
-            throw new IllegalStateException("Preventing use of complete() in callback threads! This operation can be a deadlock cause");
-        try
-        {
-            return submit(shouldQueue).get();
-        }
-        catch (Throwable e)
-        {
-            if (e instanceof ExecutionException)
-            {
-                Throwable t = e.getCause();
-                if (t instanceof RateLimitedException)
-                    throw (RateLimitedException) t;
-                else if (t instanceof  PermissionException)
-                    throw (PermissionException) t;
-                else if (t instanceof ErrorResponseException)
-                    throw (ErrorResponseException) t;
-            }
-            throw new RuntimeException(e);
-        }
+        return submit(true);
     }
+
+    /**
+     * Submits a Request for execution and provides a {@link java.util.concurrent.CompletableFuture CompletableFuture}
+     * representing its completion task.
+     * <br>Cancelling the returned Future will result in the cancellation of the Request!
+     *
+     * @param  shouldQueue
+     *         Whether the Request should automatically handle rate limitations. (default true)
+     *
+     * @return Never-null {@link java.util.concurrent.CompletableFuture CompletableFuture} task representing the completion promise
+     */
+    CompletableFuture<T> submit(boolean shouldQueue);
 
     /**
      * Schedules a call to {@link #complete()} to be executed after the specified {@code delay}.
@@ -468,9 +365,9 @@ public abstract class RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture} representing the
      *         delayed operation
      */
-    public ScheduledFuture<T> submitAfter(long delay, TimeUnit unit)
+    default ScheduledFuture<T> submitAfter(long delay, TimeUnit unit)
     {
-        return submitAfter(delay, unit, api.get().getRateLimitPool());
+        return submitAfter(delay, unit, null);
     }
 
     /**
@@ -497,11 +394,12 @@ public abstract class RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
      */
-    public ScheduledFuture<T> submitAfter(long delay, TimeUnit unit, ScheduledExecutorService executor)
+    default ScheduledFuture<T> submitAfter(long delay, TimeUnit unit, ScheduledExecutorService executor)
     {
-        Checks.notNull(executor, "Scheduler");
         Checks.notNull(unit, "TimeUnit");
-        return executor.schedule((Callable<T>) new ContextRunnable((Callable<T>) this::complete), delay, unit);
+        if (executor == null)
+            executor = getJDA().getRateLimitPool();
+        return executor.schedule((Callable<T>) new ContextRunnable<>((Callable<T>) this::complete), delay, unit);
     }
 
     /**
@@ -522,7 +420,7 @@ public abstract class RestAction<T>
      *
      * @return The response value
      */
-    public T completeAfter(long delay, TimeUnit unit)
+    default T completeAfter(long delay, TimeUnit unit)
     {
         Checks.notNull(unit, "TimeUnit");
         try
@@ -560,9 +458,9 @@ public abstract class RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
      */
-    public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit)
+    default ScheduledFuture<?> queueAfter(long delay, TimeUnit unit)
     {
-        return queueAfter(delay, unit, api.get().getRateLimitPool());
+        return queueAfter(delay, unit, null, null, null);
     }
 
     /**
@@ -592,9 +490,9 @@ public abstract class RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
      */
-    public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<? super T> success)
+    default ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<? super T> success)
     {
-        return queueAfter(delay, unit, success, api.get().getRateLimitPool());
+        return queueAfter(delay, unit, success, null, null);
     }
 
     /**
@@ -625,9 +523,9 @@ public abstract class RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
      */
-    public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<? super T> success, Consumer<? super Throwable> failure)
+    default ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<? super T> success, Consumer<? super Throwable> failure)
     {
-        return queueAfter(delay, unit, success, failure, api.get().getRateLimitPool());
+        return queueAfter(delay, unit, success, failure, null);
     }
 
     /**
@@ -655,9 +553,9 @@ public abstract class RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
      */
-    public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, ScheduledExecutorService executor)
+    default ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, ScheduledExecutorService executor)
     {
-        return queueAfter(delay, unit, null, executor);
+        return queueAfter(delay, unit, null, null, executor);
     }
 
     /**
@@ -688,7 +586,7 @@ public abstract class RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
      */
-    public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<? super T> success, ScheduledExecutorService executor)
+    default ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<? super T> success, ScheduledExecutorService executor)
     {
         return queueAfter(delay, unit, success, null, executor);
     }
@@ -721,161 +619,11 @@ public abstract class RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
      */
-    public ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<? super T> success, Consumer<? super Throwable> failure, ScheduledExecutorService executor)
+    default ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<? super T> success, Consumer<? super Throwable> failure, ScheduledExecutorService executor)
     {
-        Checks.notNull(executor, "Scheduler");
         Checks.notNull(unit, "TimeUnit");
-        return executor.schedule((Runnable) new ContextRunnable(() -> queue(success, failure)), delay, unit);
-    }
-
-    protected RequestBody finalizeData() { return data; }
-    protected Route.CompiledRoute finalizeRoute() { return route; }
-    protected CaseInsensitiveMap<String, String> finalizeHeaders() { return null; }
-    protected BooleanSupplier finalizeChecks() { return null; }
-
-    protected RequestBody getRequestBody(JSONObject object)
-    {
-        this.rawData = object;
-
-        return object == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, object.toString());
-    }
-
-    protected RequestBody getRequestBody(JSONArray array)
-    {
-        this.rawData = array;
-
-        return array == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, array.toString());
-    }
-
-    private CheckWrapper getFinisher()
-    {
-        BooleanSupplier pre = finalizeChecks();
-        BooleanSupplier wrapped = this.checks;
-        return (pre != null || wrapped != null) ? new CheckWrapper(wrapped, pre) : CheckWrapper.EMPTY;
-    }
-
-    protected abstract void handleResponse(Response response, Request<T> request);
-
-    /**
-     * Specialized form of {@link net.dv8tion.jda.api.requests.RestAction} that is used to provide information that
-     * has already been retrieved or generated so that another request does not need to be made to Discord.
-     * <br>Basically: Allows you to provide a value directly to the success returns.
-     *
-     * @param <T>
-     *        The generic response type for this RestAction
-     */
-    public static class EmptyRestAction<T> extends RestAction<T>
-    {
-        private final T returnObj;
-
-        public EmptyRestAction(JDA api, T returnObj)
-        {
-            super(api, null);
-            this.returnObj = returnObj;
-        }
-
-        @Override
-        public void queue(Consumer<? super T> success, Consumer<? super Throwable> failure)
-        {
-            if (success != null)
-                success.accept(returnObj);
-        }
-
-        @Override
-        public CompletableFuture<T> submit(boolean shouldQueue)
-        {
-            return new RestFuture<>(returnObj);
-        }
-
-        @Override
-        public T complete(boolean shouldQueue)
-        {
-            return returnObj;
-        }
-
-        @Override
-        protected void handleResponse(Response response, Request<T> request) { }
-    }
-
-    /*
-        useful for final permission checks:
-
-        @Override
-        protected BooleanSupplier finalizeChecks()
-        {
-            // throw exception, if missing perms
-            return () -> hasPermission(Permission.MESSAGE_WRITE);
-        }
-     */
-    protected static class CheckWrapper implements BooleanSupplier
-    {
-        public static final CheckWrapper EMPTY = new CheckWrapper(null, null)
-        {
-            public boolean getAsBoolean() { return true; }
-        };
-
-        protected final BooleanSupplier pre;
-        protected final BooleanSupplier wrapped;
-
-        public CheckWrapper(BooleanSupplier wrapped, BooleanSupplier pre)
-        {
-            this.pre = pre;
-            this.wrapped = wrapped;
-        }
-
-        public boolean pre()
-        {
-            return pre == null || pre.getAsBoolean();
-        }
-
-        public boolean test()
-        {
-            return wrapped == null || wrapped.getAsBoolean();
-        }
-
-        @Override
-        public boolean getAsBoolean()
-        {
-            return pre() && test();
-        }
-    }
-
-    private class ContextRunnable implements Runnable, Callable<T>
-    {
-        private final String localReason;
-        private final Runnable runnable;
-        private final Callable<T> callable;
-
-        protected ContextRunnable(Runnable runnable)
-        {
-            this.localReason = ThreadLocalReason.getCurrent();
-            this.runnable = runnable;
-            this.callable = null;
-        }
-
-        protected ContextRunnable(Callable<T> callable)
-        {
-            this.localReason = ThreadLocalReason.getCurrent();
-            this.runnable = null;
-            this.callable = callable;
-        }
-
-        @Override
-        public void run()
-        {
-            try (ThreadLocalReason.Closable __ = ThreadLocalReason.closable(localReason))
-            {
-                runnable.run();
-            }
-        }
-
-        @Override
-        public T call() throws Exception
-        {
-            try (ThreadLocalReason.Closable __ = ThreadLocalReason.closable(localReason))
-            {
-                return callable.call();
-            }
-        }
+        if (executor == null)
+            executor = getJDA().getRateLimitPool();
+        return executor.schedule((Runnable) new ContextRunnable<>(() -> queue(success, failure)), delay, unit);
     }
 }

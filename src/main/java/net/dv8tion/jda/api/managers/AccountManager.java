@@ -1,11 +1,11 @@
 /*
- *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
+ * Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,17 +16,8 @@
 
 package net.dv8tion.jda.api.managers;
 
-import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.SelfUser;
-import net.dv8tion.jda.api.requests.Request;
-import net.dv8tion.jda.api.requests.Response;
-import net.dv8tion.jda.internal.managers.ManagerBase;
-import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
-import okhttp3.RequestBody;
-import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 
@@ -47,37 +38,16 @@ import javax.annotation.CheckReturnValue;
  * @see net.dv8tion.jda.api.JDA#getSelfUser() JDA.getSelfUser()
  * @see net.dv8tion.jda.api.entities.SelfUser#getManager()
  */
-public class AccountManager extends ManagerBase
+public interface AccountManager extends Manager<AccountManager>
 {
     /** Used to reset the name field */
-    public static final long NAME = 0x1;
+    long NAME = 0x1;
     /** Used to reset the avatar field */
-    public static final long AVATAR = 0x2;
+    long AVATAR = 0x2;
     /** Used to reset the email field */
-    public static final long EMAIL = 0x4;
+    long EMAIL = 0x4;
     /** Used to reset the password field */
-    public static final long PASSWORD = 0x8;
-
-    protected final UpstreamReference<SelfUser> selfUser;
-
-    protected String currentPassword;
-
-    protected String name;
-    protected Icon avatar;
-    protected String email;
-    protected String password;
-
-    /**
-     * Creates a new AccountManager instance
-     *
-     * @param selfUser
-     *        The {@link net.dv8tion.jda.api.entities.SelfUser SelfUser} to manage
-     */
-    public AccountManager(SelfUser selfUser)
-    {
-        super(selfUser.getJDA(), Route.Self.MODIFY_SELF.compile());
-        this.selfUser = new UpstreamReference<>(selfUser);
-    }
+    long PASSWORD = 0x8;
 
     /**
      * The {@link net.dv8tion.jda.api.entities.SelfUser SelfUser} that will be
@@ -86,10 +56,7 @@ public class AccountManager extends ManagerBase
      *
      * @return The corresponding SelfUser
      */
-    public SelfUser getSelfUser()
-    {
-        return selfUser.get();
-    }
+    SelfUser getSelfUser();
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
@@ -111,13 +78,7 @@ public class AccountManager extends ManagerBase
      */
     @Override
     @CheckReturnValue
-    public AccountManager reset(long fields)
-    {
-        super.reset(fields);
-        if ((fields & AVATAR) == AVATAR)
-            avatar = null;
-        return this;
-    }
+    AccountManager reset(long fields);
 
     /**
      * Resets the fields specified by the provided bit-flag patterns.
@@ -139,25 +100,7 @@ public class AccountManager extends ManagerBase
      */
     @Override
     @CheckReturnValue
-    public AccountManager reset(long... fields)
-    {
-        super.reset(fields);
-        return this;
-    }
-
-    /**
-     * Resets all fields for this manager.
-     *
-     * @return AccountManager for chaining convenience
-     */
-    @Override
-    @CheckReturnValue
-    public AccountManager reset()
-    {
-        super.reset();
-        avatar = null;
-        return this;
-    }
+    AccountManager reset(long... fields);
 
     /**
      * Sets the username for the currently logged in account
@@ -178,7 +121,7 @@ public class AccountManager extends ManagerBase
      * @return AccountManager for chaining convenience
      */
     @CheckReturnValue
-    public AccountManager setName(String name)
+    default AccountManager setName(String name)
     {
         return setName(name, null);
     }
@@ -204,15 +147,7 @@ public class AccountManager extends ManagerBase
      * @return AccountManager for chaining convenience
      */
     @CheckReturnValue
-    public AccountManager setName(String name, String currentPassword)
-    {
-        Checks.notBlank(name, "Name");
-        Checks.check(name.length() >= 2 && name.length() <= 32, "Name must be between 2-32 characters long");
-        this.currentPassword = currentPassword;
-        this.name = name;
-        set |= NAME;
-        return this;
-    }
+    AccountManager setName(String name, String currentPassword);
 
     /**
      * Sets the avatar for the currently logged in account
@@ -227,7 +162,7 @@ public class AccountManager extends ManagerBase
      * @return AccountManager for chaining convenience
      */
     @CheckReturnValue
-    public AccountManager setAvatar(Icon avatar)
+    default AccountManager setAvatar(Icon avatar)
     {
         return setAvatar(avatar, null);
     }
@@ -249,13 +184,7 @@ public class AccountManager extends ManagerBase
      * @return AccountManager for chaining convenience
      */
     @CheckReturnValue
-    public AccountManager setAvatar(Icon avatar, String currentPassword)
-    {
-        this.currentPassword = currentPassword;
-        this.avatar = avatar;
-        set |= AVATAR;
-        return this;
-    }
+    AccountManager setAvatar(Icon avatar, String currentPassword);
 
     /**
      * Sets the email for the currently logged in client account.
@@ -276,14 +205,7 @@ public class AccountManager extends ManagerBase
      * @return AccountManager for chaining convenience
      */
     @CheckReturnValue
-    public AccountManager setEmail(String email, String currentPassword)
-    {
-        Checks.notNull(email, "email");
-        this.currentPassword = currentPassword;
-        this.email = email;
-        set |= EMAIL;
-        return this;
-    }
+    AccountManager setEmail(String email, String currentPassword);
 
     /**
      * Sets the password for the currently logged in client account.
@@ -302,61 +224,5 @@ public class AccountManager extends ManagerBase
      * @return AccountManager for chaining convenience
      */
     @CheckReturnValue
-    public AccountManager setPassword(String newPassword, String currentPassword)
-    {
-        Checks.notNull(newPassword, "password");
-        Checks.check(newPassword.length() >= 6 && newPassword.length() <= 128, "Password must be between 2-128 characters long");
-        this.currentPassword = currentPassword;
-        this.password = newPassword;
-        set |= PASSWORD;
-        return this;
-    }
-
-    @Override
-    protected RequestBody finalizeData()
-    {
-        boolean isClient = getJDA().getAccountType() == AccountType.CLIENT;
-        Checks.check(!isClient || (currentPassword != null && !currentPassword.isEmpty()),
-            "Provided client account password to be used in auth is null or empty!");
-
-        JSONObject body = new JSONObject();
-
-        //Required fields. Populate with current values..
-        body.put("username", getSelfUser().getName());
-        body.put("avatar", opt(getSelfUser().getAvatarId()));
-
-        if (shouldUpdate(NAME))
-            body.put("username", name);
-        if (shouldUpdate(AVATAR))
-            body.put("avatar", avatar == null ? JSONObject.NULL : avatar.getEncoding());
-
-        if (isClient)
-        {
-            //Required fields. Populate with current values.
-            body.put("password", currentPassword);
-            body.put("email", email);
-
-            if (shouldUpdate(EMAIL))
-                body.put("email", email);
-            if (shouldUpdate(PASSWORD))
-                body.put("new_password", password);
-        }
-
-        reset();
-        return getRequestBody(body);
-    }
-
-    @Override
-    protected void handleResponse(Response response, Request<Void> request)
-    {
-        if (!response.isOk())
-        {
-            request.onFailure(response);
-            return;
-        }
-
-        String newToken = response.getObject().getString("token").replace("Bot ", "");
-        api.get().setToken(newToken);
-        request.onSuccess(null);
-    }
+    AccountManager setPassword(String newPassword, String currentPassword);
 }

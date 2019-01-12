@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.InviteAction;
 import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.internal.requests.EmptyRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CategoryImpl extends AbstractChannelImpl<CategoryImpl> implements Category
+public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> implements Category
 {
     protected final TLongObjectMap<GuildChannel> channels = MiscUtil.newLongMap();
 
@@ -88,10 +89,10 @@ public class CategoryImpl extends AbstractChannelImpl<CategoryImpl> implements C
     }
 
     @Override
-    public ChannelAction createCopy(Guild guild)
+    public ChannelAction<Category> createCopy(Guild guild)
     {
         Checks.notNull(guild, "Guild");
-        ChannelAction action = guild.getController().createCategory(name);
+        ChannelAction<Category> action = guild.getController().createCategory(name);
         if (guild.equals(getGuild()))
         {
             for (PermissionOverride o : overrides.valueCollection())
@@ -114,7 +115,7 @@ public class CategoryImpl extends AbstractChannelImpl<CategoryImpl> implements C
     @Override
     public RestAction<List<Invite>> getInvites()
     {
-        return new RestAction.EmptyRestAction<>(getJDA(), Collections.emptyList());
+        return new EmptyRestAction<>(getJDA(), Collections.emptyList());
     }
 
     @Override
@@ -145,17 +146,17 @@ public class CategoryImpl extends AbstractChannelImpl<CategoryImpl> implements C
     }
 
     @Override
-    public ChannelAction createTextChannel(String name)
+    public ChannelAction<TextChannel> createTextChannel(String name)
     {
-        ChannelAction action = getGuild().getController().createTextChannel(name).setParent(this);
+        ChannelAction<TextChannel> action = getGuild().getController().createTextChannel(name).setParent(this);
         applyPermission(action);
         return action;
     }
 
     @Override
-    public ChannelAction createVoiceChannel(String name)
+    public ChannelAction<VoiceChannel> createVoiceChannel(String name)
     {
-        ChannelAction action = getGuild().getController().createVoiceChannel(name).setParent(this);
+        ChannelAction<VoiceChannel> action = getGuild().getController().createVoiceChannel(name).setParent(this);
         applyPermission(action);
         return action;
     }

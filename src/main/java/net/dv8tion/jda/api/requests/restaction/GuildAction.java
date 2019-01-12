@@ -1,11 +1,11 @@
 /*
- *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
+ * Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,26 +16,24 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Icon;
-import net.dv8tion.jda.api.requests.Request;
-import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.GuildActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.PermOverrideData;
 import net.dv8tion.jda.internal.utils.Checks;
-import okhttp3.RequestBody;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONString;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nullable;
 import java.awt.Color;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -44,35 +42,13 @@ import java.util.function.BooleanSupplier;
  * <br>This is available to all account types but may undergo certain restrictions by Discord.
  *
  * @since  3.4.0
+ *
+ * @see    net.dv8tion.jda.api.JDA#createGuild(String)
  */
-public class GuildAction extends RestAction<Void>
+public interface GuildAction extends RestAction<Void>
 {
-    protected String name;
-    protected Region region;
-    protected Icon icon;
-    protected Guild.VerificationLevel verificationLevel;
-    protected Guild.NotificationLevel notificationLevel;
-    protected Guild.ExplicitContentLevel explicitContentLevel;
-
-    protected final List<RoleData> roles;
-    protected final List<ChannelData> channels;
-
-    public GuildAction(JDA api, String name)
-    {
-        super(api, Route.Guilds.CREATE_GUILD.compile());
-        this.setName(name);
-
-        this.roles = new LinkedList<>();
-        this.channels = new LinkedList<>();
-        // public role is the first element
-        this.roles.add(new RoleData(0));
-    }
-
     @Override
-    public GuildAction setCheck(BooleanSupplier checks)
-    {
-        return (GuildAction) super.setCheck(checks);
-    }
+    GuildAction setCheck(BooleanSupplier checks);
 
     /**
      * Sets the voice {@link net.dv8tion.jda.api.Region Region} of
@@ -87,12 +63,7 @@ public class GuildAction extends RestAction<Void>
      * @return The current GuildAction for chaining convenience
      */
     @CheckReturnValue
-    public GuildAction setRegion(Region region)
-    {
-        Checks.check(region == null || !region.isVip(), "Cannot create a Guild with a VIP voice region!");
-        this.region = region;
-        return this;
-    }
+    GuildAction setRegion(Region region);
 
     /**
      * Sets the {@link net.dv8tion.jda.api.entities.Icon Icon}
@@ -104,11 +75,7 @@ public class GuildAction extends RestAction<Void>
      * @return The current GuildAction for chaining convenience
      */
     @CheckReturnValue
-    public GuildAction setIcon(Icon icon)
-    {
-        this.icon = icon;
-        return this;
-    }
+    GuildAction setIcon(Icon icon);
 
     /**
      * Sets the name for the resulting {@link net.dv8tion.jda.api.entities.Guild Guild}
@@ -122,14 +89,7 @@ public class GuildAction extends RestAction<Void>
      * @return The current GuildAction for chaining convenience
      */
     @CheckReturnValue
-    public GuildAction setName(String name)
-    {
-        Checks.notBlank(name, "Name");
-        name = name.trim();
-        Checks.check(name.length() >= 2 && name.length() <= 100, "Name must have 2-100 characters in length!");
-        this.name = name;
-        return this;
-    }
+    GuildAction setName(String name);
 
     /**
      * Sets the {@link net.dv8tion.jda.api.entities.Guild.VerificationLevel VerificationLevel}
@@ -141,11 +101,7 @@ public class GuildAction extends RestAction<Void>
      * @return The current GuildAction for chaining convenience
      */
     @CheckReturnValue
-    public GuildAction setVerificationLevel(Guild.VerificationLevel level)
-    {
-        this.verificationLevel = level;
-        return this;
-    }
+    GuildAction setVerificationLevel(Guild.VerificationLevel level);
 
     /**
      * Sets the {@link net.dv8tion.jda.api.entities.Guild.NotificationLevel NotificationLevel}
@@ -157,11 +113,7 @@ public class GuildAction extends RestAction<Void>
      * @return The current GuildAction for chaining convenience
      */
     @CheckReturnValue
-    public GuildAction setNotificationLevel(Guild.NotificationLevel level)
-    {
-        this.notificationLevel = level;
-        return this;
-    }
+    GuildAction setNotificationLevel(Guild.NotificationLevel level);
 
     /**
      * Sets the {@link net.dv8tion.jda.api.entities.Guild.ExplicitContentLevel ExplicitContentLevel}
@@ -173,20 +125,14 @@ public class GuildAction extends RestAction<Void>
      * @return The current GuildAction for chaining convenience
      */
     @CheckReturnValue
-    public GuildAction setExplicitContentLevel(Guild.ExplicitContentLevel level)
-    {
-        this.explicitContentLevel = level;
-        return this;
-    }
-
-    // Channels
+    GuildAction setExplicitContentLevel(Guild.ExplicitContentLevel level);
 
     /**
      * Adds a {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} to the resulting
      * Guild. This cannot be of type {@link net.dv8tion.jda.api.entities.ChannelType#CATEGORY CATEGORY}!
      *
      * @param  channel
-     *         The {@link net.dv8tion.jda.api.requests.restaction.GuildAction.ChannelData ChannelData}
+     *         The {@link ChannelData ChannelData}
      *         to use for the construction of the GuildChannel
      *
      * @throws java.lang.IllegalArgumentException
@@ -195,16 +141,11 @@ public class GuildAction extends RestAction<Void>
      * @return The current GuildAction for chaining convenience
      */
     @CheckReturnValue
-    public GuildAction addChannel(ChannelData channel)
-    {
-        Checks.notNull(channel, "Channel");
-        this.channels.add(channel);
-        return this;
-    }
+    GuildAction addChannel(ChannelData channel);
 
     /**
-     * Gets the {@link net.dv8tion.jda.api.requests.restaction.GuildAction.ChannelData ChannelData}
-     * of the specified index. The index is 0 based on insertion order of {@link #addChannel(GuildAction.ChannelData)}!
+     * Gets the {@link ChannelData ChannelData}
+     * of the specified index. The index is 0 based on insertion order of {@link #addChannel(ChannelData)}!
      *
      * @param  index
      *         The 0 based index of the channel
@@ -215,13 +156,10 @@ public class GuildAction extends RestAction<Void>
      * @return The current GuildAction for chaining convenience
      */
     @CheckReturnValue
-    public ChannelData getChannel(int index)
-    {
-        return this.channels.get(index);
-    }
+    ChannelData getChannel(int index);
 
     /**
-     * Removes the {@link net.dv8tion.jda.api.requests.restaction.GuildAction.ChannelData ChannelData}
+     * Removes the {@link ChannelData ChannelData}
      * at the specified index and returns the removed object.
      *
      * @param  index
@@ -233,13 +171,10 @@ public class GuildAction extends RestAction<Void>
      * @return The removed object
      */
     @CheckReturnValue
-    public ChannelData removeChannel(int index)
-    {
-        return this.channels.remove(index);
-    }
+    ChannelData removeChannel(int index);
 
     /**
-     * Removes the provided {@link net.dv8tion.jda.api.requests.restaction.GuildAction.ChannelData ChannelData}
+     * Removes the provided {@link ChannelData ChannelData}
      * from this GuildAction if present.
      *
      * @param  data
@@ -248,14 +183,10 @@ public class GuildAction extends RestAction<Void>
      * @return The current GuildAction for chaining convenience
      */
     @CheckReturnValue
-    public GuildAction removeChannel(ChannelData data)
-    {
-        this.channels.remove(data);
-        return this;
-    }
+    GuildAction removeChannel(ChannelData data);
 
     /**
-     * Creates a new {@link net.dv8tion.jda.api.requests.restaction.GuildAction.ChannelData ChannelData}
+     * Creates a new {@link ChannelData ChannelData}
      * instance and adds it to this GuildAction.
      *
      * @param  type
@@ -275,17 +206,10 @@ public class GuildAction extends RestAction<Void>
      * @return The new ChannelData instance
      */
     @CheckReturnValue
-    public ChannelData newChannel(ChannelType type, String name)
-    {
-        ChannelData data = new ChannelData(type, name);
-        addChannel(data);
-        return data;
-    }
-
-    // Roles
+    ChannelData newChannel(ChannelType type, String name);
 
     /**
-     * Retrieves the {@link net.dv8tion.jda.api.requests.restaction.GuildAction.RoleData RoleData} for the
+     * Retrieves the {@link RoleData RoleData} for the
      * public role ({@link net.dv8tion.jda.api.entities.Guild#getPublicRole() Guild.getPublicRole()}) for the resulting Guild.
      * <br>The public role is also known in the official client as the {@code @everyone} role.
      *
@@ -294,13 +218,10 @@ public class GuildAction extends RestAction<Void>
      * @return RoleData of the public role
      */
     @CheckReturnValue
-    public RoleData getPublicRole()
-    {
-        return this.roles.get(0);
-    }
+    RoleData getPublicRole();
 
     /**
-     * Retrieves the {@link net.dv8tion.jda.api.requests.restaction.GuildAction.RoleData RoleData} for the
+     * Retrieves the {@link RoleData RoleData} for the
      * provided index.
      * <br>The public role is at the index 0 and all others are ordered by insertion order!
      *
@@ -313,65 +234,27 @@ public class GuildAction extends RestAction<Void>
      * @return RoleData of the provided index
      */
     @CheckReturnValue
-    public RoleData getRole(int index)
-    {
-        return this.roles.get(index);
-    }
+    RoleData getRole(int index);
 
     /**
-     * Creates and add a new {@link net.dv8tion.jda.api.requests.restaction.GuildAction.RoleData RoleData} object
+     * Creates and add a new {@link RoleData RoleData} object
      * representing a Role for the resulting Guild.
      *
-     * <p>This can be used in {@link GuildAction.ChannelData#addPermissionOverride(GuildAction.RoleData, long, long) ChannelData.addPermissionOverride(...)}.
-     * <br>You may change any properties of this {@link net.dv8tion.jda.api.requests.restaction.GuildAction.RoleData RoleData} instance!
+     * <p>This can be used in {@link ChannelData#addPermissionOverride(RoleData, long, long) ChannelData.addPermissionOverride(...)}.
+     * <br>You may change any properties of this {@link RoleData RoleData} instance!
      *
      * @return RoleData for the new Role
      */
     @CheckReturnValue
-    public RoleData newRole()
-    {
-        final RoleData role = new RoleData(roles.size());
-        this.roles.add(role);
-        return role;
-    }
-
-    @Override
-    protected RequestBody finalizeData()
-    {
-        final JSONObject object = new JSONObject();
-        object.put("name", name);
-        object.put("roles", new JSONArray(roles));
-        if (!channels.isEmpty())
-            object.put("channels", new JSONArray(channels));
-        if (icon != null)
-            object.put("icon", icon.getEncoding());
-        if (verificationLevel != null)
-            object.put("verification_level", verificationLevel.getKey());
-        if (notificationLevel != null)
-            object.put("default_message_notifications", notificationLevel.getKey());
-        if (explicitContentLevel != null)
-            object.put("explicit_content_filter", explicitContentLevel.getKey());
-        if (region != null)
-            object.put("region", region.getKey());
-        return getRequestBody(object);
-    }
-
-    @Override
-    protected void handleResponse(Response response, Request<Void> request)
-    {
-        if (response.isOk())
-            request.onSuccess(null);
-        else
-            request.onFailure(response);
-    }
+    RoleData newRole();
 
     /**
      * Mutable object containing information on a {@link net.dv8tion.jda.api.entities.Role Role}
      * of the resulting {@link net.dv8tion.jda.api.entities.Guild Guild} that is constructed by a GuildAction instance
      *
-     * <p>This may be used in {@link net.dv8tion.jda.api.requests.restaction.GuildAction.ChannelData#addPermissionOverride(GuildAction.RoleData, long, long)}  ChannelData.addPermissionOverride(...)}!
+     * <p>This may be used in {@link ChannelData#addPermissionOverride(RoleData, long, long)}  ChannelData.addPermissionOverride(...)}!
      */
-    public static class RoleData implements JSONString
+    class RoleData implements JSONString
     {
         protected final long id;
         protected final boolean isPublicRole;
@@ -382,7 +265,7 @@ public class GuildAction extends RestAction<Void>
         protected Integer position;
         protected Boolean mentionable, hoisted;
 
-        protected RoleData(long id)
+        public RoleData(long id)
         {
             this.id = id;
             this.isPublicRole = id == 0;
@@ -590,9 +473,9 @@ public class GuildAction extends RestAction<Void>
      * GuildChannel information used for the creation of {@link net.dv8tion.jda.api.entities.GuildChannel Channels} within
      * the construction of a {@link net.dv8tion.jda.api.entities.Guild Guild} via GuildAction.
      *
-     * <p>Use with {@link net.dv8tion.jda.api.requests.restaction.GuildAction#addChannel(GuildAction.ChannelData) GuildAction.addChannel(ChannelData)}.
+     * <p>Use with {@link #addChannel(ChannelData) GuildAction.addChannel(ChannelData)}.
      */
-    public static class ChannelData implements JSONString
+    class ChannelData implements JSONString
     {
         protected final ChannelType type;
         protected final String name;
@@ -731,8 +614,8 @@ public class GuildAction extends RestAction<Void>
 
         /**
          * Adds a {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride} to this channel
-         * with the provided {@link net.dv8tion.jda.api.requests.restaction.GuildAction.RoleData RoleData}!
-         * <br>Use {@link GuildAction#newRole() GuildAction.newRole()} to retrieve an instance of RoleData.
+         * with the provided {@link RoleData RoleData}!
+         * <br>Use {@link #newRole() GuildAction.newRole()} to retrieve an instance of RoleData.
          *
          * @param  role
          *         The target role
@@ -750,7 +633,7 @@ public class GuildAction extends RestAction<Void>
          *
          * @return This ChannelData instance for chaining convenience
          */
-        public ChannelData addPermissionOverride(RoleData role, long allow, long deny)
+        public ChannelData addPermissionOverride(GuildActionImpl.RoleData role, long allow, long deny)
         {
             Checks.notNull(role, "Role");
             Checks.notNegative(allow, "Granted permissions value");
@@ -763,8 +646,8 @@ public class GuildAction extends RestAction<Void>
 
         /**
          * Adds a {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride} to this channel
-         * with the provided {@link net.dv8tion.jda.api.requests.restaction.GuildAction.RoleData RoleData}!
-         * <br>Use {@link GuildAction#newRole() GuildAction.newRole()} to retrieve an instance of RoleData.
+         * with the provided {@link GuildActionImpl.RoleData RoleData}!
+         * <br>Use {@link GuildActionImpl#newRole() GuildAction.newRole()} to retrieve an instance of RoleData.
          *
          * @param  role
          *         The target role
@@ -781,7 +664,7 @@ public class GuildAction extends RestAction<Void>
          *
          * @return This ChannelData instance for chaining convenience
          */
-        public ChannelData addPermissionOverride(RoleData role, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny)
+        public ChannelData addPermissionOverride(GuildActionImpl.RoleData role, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny)
         {
             long allowRaw = 0;
             long denyRaw = 0;

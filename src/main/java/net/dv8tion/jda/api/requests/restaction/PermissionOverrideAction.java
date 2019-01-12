@@ -1,11 +1,11 @@
 /*
- *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
+ * Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,20 +16,10 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.PermissionOverride;
-import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.requests.Request;
-import net.dv8tion.jda.api.requests.Response;
-import net.dv8tion.jda.internal.entities.AbstractChannelImpl;
-import net.dv8tion.jda.internal.entities.PermissionOverrideImpl;
-import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.utils.Checks;
-import okhttp3.RequestBody;
-import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 import java.util.Collection;
@@ -43,61 +33,63 @@ import java.util.function.BooleanSupplier;
  * This extension allows setting properties before executing the action.
  *
  * @since  3.0
+ *
+ * @see    net.dv8tion.jda.api.entities.GuildChannel#createPermissionOverride(Role)
+ * @see    net.dv8tion.jda.api.entities.GuildChannel#createPermissionOverride(Member)
+ * @see    net.dv8tion.jda.api.entities.GuildChannel#putPermissionOverride(Role)
+ * @see    net.dv8tion.jda.api.entities.GuildChannel#putPermissionOverride(Member)
  */
-public class PermissionOverrideAction extends AuditableRestAction<PermissionOverride>
+public interface PermissionOverrideAction extends RestAction<PermissionOverride>
 {
-
-    private long allow = 0;
-    private long deny = 0;
-    private final GuildChannel channel;
-
-    private final Member member;
-    private final Role role;
-
-    /**
-     * Creates a new PermissionOverrideAction instance
-     *
-     * @param api
-     *        The current JDA instance
-     * @param route
-     *        The {@link net.dv8tion.jda.internal.requests.Route.CompiledRoute Route.CompiledRoute} to be used for rate limit handling
-     * @param channel
-     *        The target {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the PermissionOverride
-     * @param member
-     *        The target {@link net.dv8tion.jda.api.entities.Member Member} that will be affected by the PermissionOverride
-     */
-    public PermissionOverrideAction(JDA api, Route.CompiledRoute route, GuildChannel channel, Member member)
-    {
-        super(api, route);
-        this.channel = channel;
-        this.member = member;
-        this.role = null;
-    }
-
-    /**
-     * Creates a new PermissionOverrideAction instance
-     *
-     * @param api
-     *        The current JDA instance
-     * @param route
-     *        The {@link net.dv8tion.jda.internal.requests.Route.CompiledRoute Route.CompiledRoute} to be used for rate limit handling
-     * @param channel
-     *        The target {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the PermissionOverride
-     * @param role
-     *        The target {@link net.dv8tion.jda.api.entities.Role Role} that will be affected by the PermissionOverride
-     */
-    public PermissionOverrideAction(JDA api, Route.CompiledRoute route, GuildChannel channel, Role role)
-    {
-        super(api, route);
-        this.channel = channel;
-        this.member = null;
-        this.role = role;
-    }
-
     @Override
-    public PermissionOverrideAction setCheck(BooleanSupplier checks)
+    PermissionOverrideAction setCheck(BooleanSupplier checks);
+
+    /**
+     * The {@link GuildChannel} this will be created in
+     *
+     * @return The channel
+     */
+    GuildChannel getChannel();
+
+    /**
+     * The {@link Role} for this override
+     *
+     * @return The role, or null if this is a member override
+     */
+    Role getRole();
+
+    /**
+     * The {@link Member} for this override
+     *
+     * @return The member, or null if this is a role override
+     */
+    Member getMember();
+
+    /**
+     * Whether this override is for a {@link Member}
+     *
+     * @return True, if this override is for a member
+     */
+    boolean isMemberOverride();
+
+    /**
+     * Whether this override is for a {@link Role}
+     *
+     * @return True, if this override is for a role
+     */
+    default boolean isRoleOverride()
     {
-        return (PermissionOverrideAction) super.setCheck(checks);
+        return !isMemberOverride();
+    }
+
+    /**
+     * The {@link Guild} for this override
+     *
+     * @return The guild
+     */
+    default Guild getGuild()
+    {
+        return getChannel().getGuild();
     }
 
     /**
@@ -110,10 +102,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *
      * @return long value of granted permissions
      */
-    public long getAllow()
-    {
-        return allow;
-    }
+    long getAllow();
 
     /**
      * Set of {@link net.dv8tion.jda.api.Permission Permissions}
@@ -122,11 +111,10 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *
      * @return set of granted {@link net.dv8tion.jda.api.Permission Permissions}
      */
-    public EnumSet<Permission> getAllowedPermissions()
+    default EnumSet<Permission> getAllowedPermissions()
     {
-        return Permission.getPermissions(allow);
+        return Permission.getPermissions(getAllow());
     }
-
 
     /**
      * The currently set of denied permission bits.
@@ -138,10 +126,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *
      * @return long value of denied permissions
      */
-    public long getDeny()
-    {
-        return deny;
-    }
+    long getDeny();
 
     /**
      * Set of {@link net.dv8tion.jda.api.Permission Permissions}
@@ -150,11 +135,10 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *
      * @return set of denied {@link net.dv8tion.jda.api.Permission Permissions}
      */
-    public EnumSet<Permission> getDeniedPermissions()
+    default EnumSet<Permission> getDeniedPermissions()
     {
-        return Permission.getPermissions(deny);
+        return Permission.getPermissions(getDeny());
     }
-
 
     /**
      * The currently set of inherited permission bits.
@@ -168,10 +152,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *
      * @return long value of inherited permissions
      */
-    public long getInherited()
-    {
-        return ~allow & ~deny;
-    }
+    long getInherited();
 
     /**
      * Set of {@link net.dv8tion.jda.api.Permission Permissions}
@@ -183,11 +164,10 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      *
      * @see    #getInherited()
      */
-    public EnumSet<Permission> getInheritedPermissions()
+    default EnumSet<Permission> getInheritedPermissions()
     {
         return Permission.getPermissions(getInherited());
     }
-
 
     /**
      * Whether this Action will
@@ -197,10 +177,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      * @return True, if this is targeting a Member
      *         If this is {@code false} it is targeting a {@link net.dv8tion.jda.api.entities.Role Role}. ({@link #isRole()})
      */
-    public boolean isMember()
-    {
-        return member != null;
-    }
+    boolean isMember();
 
     /**
      * Whether this Action will
@@ -210,11 +187,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      * @return True, if this is targeting a Role.
      *         If this is {@code false} it is targeting a {@link net.dv8tion.jda.api.entities.Member Member}. ({@link #isMember()})
      */
-    public boolean isRole()
-    {
-        return role != null;
-    }
-
+    boolean isRole();
 
     /**
      * Sets the value of explicitly granted permissions
@@ -236,13 +209,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      * @see    #setAllow(net.dv8tion.jda.api.Permission...) setAllow(Permission...)
      */
     @CheckReturnValue
-    public PermissionOverrideAction setAllow(long allowBits)
-    {
-        Checks.notNegative(allowBits, "Granted permissions value");
-        Checks.check(allowBits <= Permission.ALL_PERMISSIONS, "Specified allow value may not be greater than a full permission set");
-        this.allow = allowBits;
-        return this;
-    }
+    PermissionOverrideAction setAllow(long allowBits);
 
     /**
      * Sets the value of explicitly granted permissions
@@ -265,11 +232,11 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      * @see    #setAllow(net.dv8tion.jda.api.Permission...) setAllow(Permission...)
      */
     @CheckReturnValue
-    public PermissionOverrideAction setAllow(Collection<Permission> permissions)
+    default PermissionOverrideAction setAllow(Collection<Permission> permissions)
     {
         if (permissions == null || permissions.isEmpty())
             return setAllow(0);
-        checkNull(permissions, "Permission");
+        Checks.noneNull(permissions, "Permissions");
         return setAllow(Permission.getRaw(permissions));
     }
 
@@ -289,14 +256,13 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      * @return The current PermissionOverrideAction - for chaining convenience
      */
     @CheckReturnValue
-    public PermissionOverrideAction setAllow(Permission... permissions)
+    default PermissionOverrideAction setAllow(Permission... permissions)
     {
-        if (permissions == null || permissions.length < 1)
+        if (permissions == null || permissions.length == 0)
             return setAllow(0);
-        checkNull(permissions, "Permission");
+        Checks.noneNull(permissions, "Permissions");
         return setAllow(Permission.getRaw(permissions));
     }
-
 
     /**
      * Sets the value of explicitly denied permissions
@@ -318,13 +284,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      * @see    #setDeny(net.dv8tion.jda.api.Permission...) setDeny(Permission...)
      */
     @CheckReturnValue
-    public PermissionOverrideAction setDeny(long denyBits)
-    {
-        Checks.notNegative(denyBits, "Denied permissions value");
-        Checks.check(denyBits <= Permission.ALL_PERMISSIONS, "Specified allow value may not be greater than a full permission set");
-        this.deny = denyBits;
-        return this;
-    }
+    PermissionOverrideAction setDeny(long denyBits);
 
     /**
      * Sets the value of explicitly denied permissions
@@ -347,11 +307,11 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      * @see    #setDeny(net.dv8tion.jda.api.Permission...) setDeny(Permission...)
      */
     @CheckReturnValue
-    public PermissionOverrideAction setDeny(Collection<Permission> permissions)
+    default PermissionOverrideAction setDeny(Collection<Permission> permissions)
     {
         if (permissions == null || permissions.isEmpty())
             return setDeny(0);
-        checkNull(permissions, "Permission");
+        Checks.noneNull(permissions, "Permissions");
         return setDeny(Permission.getRaw(permissions));
     }
 
@@ -371,14 +331,13 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      * @return The current PermissionOverrideAction - for chaining convenience
      */
     @CheckReturnValue
-    public PermissionOverrideAction setDeny(Permission... permissions)
+    default PermissionOverrideAction setDeny(Permission... permissions)
     {
-        if (permissions == null || permissions.length < 1)
+        if (permissions == null || permissions.length == 0)
             return setDeny(0);
-        checkNull(permissions, "Permission");
+        Checks.noneNull(permissions, "Permissions");
         return setDeny(Permission.getRaw(permissions));
     }
-
 
     /**
      * Combination of {@link #setAllow(long)} and {@link #setDeny(long)}
@@ -401,12 +360,7 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      * @see    net.dv8tion.jda.api.Permission#getRaw(java.util.Collection)  Permission.getRaw(Collection)
      */
     @CheckReturnValue
-    public PermissionOverrideAction setPermissions(long allowBits, long denyBits)
-    {
-        setAllow(allowBits);
-        setDeny(denyBits);
-        return this;
-    }
+    PermissionOverrideAction setPermissions(long allowBits, long denyBits);
 
     /**
      * Combination of {@link #setAllow(java.util.Collection)} and {@link #setDeny(java.util.Collection)}
@@ -430,56 +384,8 @@ public class PermissionOverrideAction extends AuditableRestAction<PermissionOver
      * @see    net.dv8tion.jda.api.Permission#getRaw(java.util.Collection) Permission.getRaw(Collection)
      */
     @CheckReturnValue
-    public PermissionOverrideAction setPermissions(Collection<Permission> grantPermissions, Collection<Permission> denyPermissions)
+    default PermissionOverrideAction setPermissions(Collection<Permission> grantPermissions, Collection<Permission> denyPermissions)
     {
-        setAllow(grantPermissions);
-        setDeny(denyPermissions);
-        return this;
+        return setAllow(grantPermissions).setDeny(denyPermissions);
     }
-
-    @Override
-    protected RequestBody finalizeData()
-    {
-        JSONObject object = new JSONObject();
-        object.put("type", isRole() ? "role" : "member");
-        object.put("allow", allow);
-        object.put("deny", deny);
-
-        return getRequestBody(object);
-    }
-
-    @Override
-    protected void handleResponse(Response response, Request<PermissionOverride> request)
-    {
-        if (!response.isOk())
-        {
-            request.onFailure(response);
-            return;
-        }
-
-        boolean isMember = isMember();
-        long id = isMember ? member.getUser().getIdLong() : role.getIdLong();
-        JSONObject object = (JSONObject) request.getRawBody();
-        PermissionOverrideImpl override = new PermissionOverrideImpl(channel, id, isMember ? member : role);
-        override.setAllow(object.getLong("allow"));
-        override.setDeny(object.getLong("deny"));
-
-        ((AbstractChannelImpl<?>) channel).getOverrideMap().put(id, override);
-
-        request.onSuccess(override);
-    }
-
-    private void checkNull(Collection<?> collection, String name)
-    {
-        Checks.notNull(collection, name);
-        collection.forEach(e -> Checks.notNull(e, name));
-    }
-
-    private <T> void checkNull(T[] arr, String name)
-    {
-        Checks.notNull(arr, name);
-        for (T e : arr)
-            Checks.notNull(e, name);
-    }
-
 }
