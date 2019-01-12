@@ -180,8 +180,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
 
         if (!getGuild().equals(permissionHolder.getGuild()))
             throw new IllegalArgumentException("Provided permission holder is not from the same guild as this channel!");
-        Route.CompiledRoute route = Route.Channels.CREATE_PERM_OVERRIDE.compile(getId(), permissionHolder.getId());
-        return new PermissionOverrideActionImpl(getJDA(), route, this, permissionHolder);
+        return new PermissionOverrideActionImpl(getJDA(), this, permissionHolder);
     }
 
     @Override

@@ -34,10 +34,8 @@ import java.util.function.BooleanSupplier;
  *
  * @since  3.0
  *
- * @see    net.dv8tion.jda.api.entities.GuildChannel#createPermissionOverride(Role)
- * @see    net.dv8tion.jda.api.entities.GuildChannel#createPermissionOverride(Member)
- * @see    net.dv8tion.jda.api.entities.GuildChannel#putPermissionOverride(Role)
- * @see    net.dv8tion.jda.api.entities.GuildChannel#putPermissionOverride(Member)
+ * @see    net.dv8tion.jda.api.entities.GuildChannel#createPermissionOverride(IPermissionHolder)
+ * @see    net.dv8tion.jda.api.entities.GuildChannel#putPermissionOverride(IPermissionHolder)
  */
 public interface PermissionOverrideAction extends RestAction<PermissionOverride>
 {
@@ -64,23 +62,6 @@ public interface PermissionOverrideAction extends RestAction<PermissionOverride>
      * @return The member, or null if this is a role override
      */
     Member getMember();
-
-    /**
-     * Whether this override is for a {@link Member}
-     *
-     * @return True, if this override is for a member
-     */
-    boolean isMemberOverride();
-
-    /**
-     * Whether this override is for a {@link Role}
-     *
-     * @return True, if this override is for a role
-     */
-    default boolean isRoleOverride()
-    {
-        return !isMemberOverride();
-    }
 
     /**
      * The {@link Guild} for this override
@@ -277,7 +258,7 @@ public interface PermissionOverrideAction extends RestAction<PermissionOverride>
      * @return The current PermissionOverrideAction - for chaining convenience
      */
     @CheckReturnValue
-    public PermissionOverrideAction grant(long allowBits)
+    default PermissionOverrideAction grant(long allowBits)
     {
         return setAllow(getAllow() | allowBits);
     }
@@ -295,7 +276,7 @@ public interface PermissionOverrideAction extends RestAction<PermissionOverride>
      * @return The current PermissionOverrideAction - for chaining convenience
      */
     @CheckReturnValue
-    public PermissionOverrideAction grant(Collection<Permission> permissions)
+    default PermissionOverrideAction grant(Collection<Permission> permissions)
     {
         return setAllow(getAllow() | Permission.getRaw(permissions));
     }
@@ -313,7 +294,7 @@ public interface PermissionOverrideAction extends RestAction<PermissionOverride>
      * @return The current PermissionOverrideAction - for chaining convenience
      */
     @CheckReturnValue
-    public PermissionOverrideAction grant(Permission... permissions)
+    default PermissionOverrideAction grant(Permission... permissions)
     {
         return setAllow(getAllow() | Permission.getRaw(permissions));
     }
@@ -407,7 +388,7 @@ public interface PermissionOverrideAction extends RestAction<PermissionOverride>
      * @return The current PermissionOverrideAction - for chaining convenience
      */
     @CheckReturnValue
-    public PermissionOverrideAction deny(long denyBits)
+    default PermissionOverrideAction deny(long denyBits)
     {
         return setDeny(getDeny() | denyBits);
     }
@@ -425,7 +406,7 @@ public interface PermissionOverrideAction extends RestAction<PermissionOverride>
      * @return The current PermissionOverrideAction - for chaining convenience
      */
     @CheckReturnValue
-    public PermissionOverrideAction deny(Collection<Permission> permissions)
+    default PermissionOverrideAction deny(Collection<Permission> permissions)
     {
         return setDeny(getDeny() | Permission.getRaw(permissions));
     }
@@ -443,7 +424,7 @@ public interface PermissionOverrideAction extends RestAction<PermissionOverride>
      * @return The current PermissionOverrideAction - for chaining convenience
      */
     @CheckReturnValue
-    public PermissionOverrideAction deny(Permission... permissions)
+    default PermissionOverrideAction deny(Permission... permissions)
     {
         return setDeny(getDeny() | Permission.getRaw(permissions));
     }

@@ -18,10 +18,7 @@ package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.PermissionOverride;
-import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
@@ -42,44 +39,13 @@ public class PermissionOverrideActionImpl
     private long allow = 0;
     private long deny = 0;
     private final GuildChannel channel;
+    private final IPermissionHolder permissionHolder;
 
-    private final Member member;
-    private final Role role;
-
-    /**
-     * Creates a new PermissionOverrideAction instance
-     *
-     * @param api
-     *        The current JDA instance
-     * @param channel
-     *        The target {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the PermissionOverride
-     * @param member
-     *        The target {@link net.dv8tion.jda.api.entities.Member Member} that will be affected by the PermissionOverride
-     */
-    public PermissionOverrideActionImpl(JDA api, GuildChannel channel, Member member)
+    public PermissionOverrideActionImpl(JDA api, GuildChannel channel, IPermissionHolder permissionHolder)
     {
-        super(api, Route.Channels.CREATE_PERM_OVERRIDE.compile(channel.getId(), member.getUser().getId()));
+        super(api, Route.Channels.CREATE_PERM_OVERRIDE.compile(channel.getId(), permissionHolder.getId()));
         this.channel = channel;
-        this.member = member;
-        this.role = null;
-    }
-
-    /**
-     * Creates a new PermissionOverrideAction instance
-     *
-     * @param api
-     *        The current JDA instance
-     * @param channel
-     *        The target {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the PermissionOverride
-     * @param role
-     *        The target {@link net.dv8tion.jda.api.entities.Role Role} that will be affected by the PermissionOverride
-     */
-    public PermissionOverrideActionImpl(JDA api, GuildChannel channel, Role role)
-    {
-        super(api, Route.Channels.CREATE_PERM_OVERRIDE.compile(channel.getId(), role.getId()));
-        this.channel = channel;
-        this.member = null;
-        this.role = role;
+        this.permissionHolder = permissionHolder;
     }
 
     @Override
@@ -97,19 +63,13 @@ public class PermissionOverrideActionImpl
     @Override
     public Role getRole()
     {
-        return role;
+        return isRole() ? (Role) permissionHolder : null;
     }
 
     @Override
     public Member getMember()
     {
-        return member;
-    }
-
-    @Override
-    public boolean isMemberOverride()
-    {
-        return member != null;
+        return isMember() ? (Member) permissionHolder : null;
     }
 
     @Override
@@ -133,13 +93,13 @@ public class PermissionOverrideActionImpl
     @Override
     public boolean isMember()
     {
-        return member != null;
+        return permissionHolder instanceof Member;
     }
 
     @Override
     public boolean isRole()
     {
-        return role != null;
+        return permissionHolder instanceof Role;
     }
 
     @Override
@@ -185,10 +145,9 @@ public class PermissionOverrideActionImpl
     @Override
     protected void handleSuccess(Response response, Request<PermissionOverride> request)
     {
-        boolean isMember = isMember();
-        long id = isMember ? member.getUser().getIdLong() : role.getIdLong();
+        long id = permissionHolder.getIdLong();
         JSONObject object = (JSONObject) request.getRawBody();
-        PermissionOverrideImpl override = new PermissionOverrideImpl(channel, id, isMember ? member : role);
+        PermissionOverrideImpl override = new PermissionOverrideImpl(channel, id, permissionHolder);
         override.setAllow(object.getLong("allow"));
         override.setDeny(object.getLong("deny"));
 
