@@ -740,7 +740,12 @@ public interface ShardManager
         return Collections.unmodifiableMap(this.getShardCache().stream()
                 .collect(Collectors.toMap(Function.identity(), JDA::getStatus)));
     }
-
+    
+    default ShardManger awaitReady()
+    {
+        this.getShards().forEach((shard) -> shard.awaitready());
+        return this;
+    }
     /**
      * This returns the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} which has the same id as the one provided.
      * <br>If there is no known {@link net.dv8tion.jda.core.entities.TextChannel TextChannel} with an id that matches the provided
