@@ -109,6 +109,7 @@ public class PermissionOverrideActionImpl
         Checks.notNegative(allowBits, "Granted permissions value");
         Checks.check(allowBits <= Permission.ALL_PERMISSIONS, "Specified allow value may not be greater than a full permission set");
         this.allow = allowBits;
+        this.deny &= ~allowBits;
         return this;
     }
 
@@ -119,6 +120,7 @@ public class PermissionOverrideActionImpl
         Checks.notNegative(denyBits, "Denied permissions value");
         Checks.check(denyBits <= Permission.ALL_PERMISSIONS, "Specified deny value may not be greater than a full permission set");
         this.deny = denyBits;
+        this.allow &= ~denyBits;
         return this;
     }
 
