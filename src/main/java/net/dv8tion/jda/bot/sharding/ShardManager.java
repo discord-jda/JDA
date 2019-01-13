@@ -743,7 +743,7 @@ public interface ShardManager
     
     default ShardManger awaitReady()
     {
-        this.getShards().forEach((shard) -> shard.awaitready());
+        this.getShards().forEach((shard) -> shard.awaitReady());
         return this;
     }
     /**
