@@ -741,7 +741,7 @@ public interface ShardManager
                 .collect(Collectors.toMap(Function.identity(), JDA::getStatus)));
     }
     
-    default ShardManger awaitReady()
+    default ShardManager awaitReady()
     {
         this.getShards().forEach((shard) -> shard.awaitReady());
         return this;
