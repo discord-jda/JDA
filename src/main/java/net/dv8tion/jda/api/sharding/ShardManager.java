@@ -195,11 +195,11 @@ public interface ShardManager
      *
      * @return The average time in milliseconds between heartbeat and the heartbeat ack response
      */
-    default double getAveragePing()
+    default double getAverageGatewayPing()
     {
         return this.getShardCache()
                 .stream()
-                .mapToLong(JDA::getPing)
+                .mapToLong(JDA::getGatewayPing)
                 .filter(ping -> ping != -1)
                 .average()
                 .orElse(-1D);

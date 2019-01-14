@@ -25,6 +25,8 @@ import net.dv8tion.jda.api.requests.restaction.GuildAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
+import net.dv8tion.jda.internal.requests.Route;
 import okhttp3.OkHttpClient;
 
 import javax.annotation.CheckReturnValue;
@@ -33,6 +35,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * The core of JDA. Acts as a registry system of JDA. All parts of the the API can be accessed starting from this class.
@@ -183,8 +186,37 @@ public interface JDA
      * correlate to this value!</b>
      *
      * @return time in milliseconds between heartbeat and the heartbeat ack response
+     *
+     * @see    #getRestPing() Getting RestAction ping
      */
-    long getPing();
+    long getGatewayPing();
+
+    /**
+     * The time in milliseconds that discord took to respond to a REST request.
+     * <br>This will request the current user from the API and calculate the time the response took.
+     *
+     * <h2>Example</h2>
+     * <pre><code>
+     * jda.getRestPing().queue( (time) {@literal ->}
+     *     channel.sendMessageFormat("Ping: %d ms", time).queue()
+     * );
+     * </code></pre>
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: long
+     *
+     * @see    #getGatewayPing()
+     */
+    default RestAction<Long> getRestPing()
+    {
+        AtomicLong time = new AtomicLong();
+        Route.CompiledRoute route = Route.Self.GET_SELF.compile();
+        RestActionImpl<Long> action = new RestActionImpl<>(this, route, (response, request) -> System.currentTimeMillis() - time.get());
+        action.setCheck(() -> {
+            time.set(System.currentTimeMillis());
+            return true;
+        });
+        return action;
+    }
 
     /**
      * This method will block until JDA has reached the specified connection status.
