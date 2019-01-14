@@ -998,18 +998,22 @@ public interface Message extends ISnowflake, Formattable
     {
         /**
          * Represents a mention for a {@link net.dv8tion.jda.api.entities.User User}/{@link net.dv8tion.jda.api.entities.Member Member}
+         * <br>The first and only group matches the id of the mention.
          */
         USER("<@!?(\\d+)>"),
         /**
          * Represents a mention for a {@link net.dv8tion.jda.api.entities.Role Role}
+         * <br>The first and only group matches the id of the mention.
          */
         ROLE("<@&(\\d+)>"),
         /**
          * Represents a mention for a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+         * <br>The first and only group matches the id of the mention.
          */
         CHANNEL("<#(\\d+)>"),
         /**
          * Represents a mention for a {@link net.dv8tion.jda.api.entities.Emote Emote}
+         * <br>The first group matches the name of the emote and the second the id of the mention.
          */
         EMOTE("<a?:([a-zA-Z0-9_]+):([0-9]+)>"),
         /**
@@ -1018,8 +1022,6 @@ public interface Message extends ISnowflake, Formattable
         HERE("@here"),
         /**
          * Represents a mention for all users in a server, literal {@code @everyone}.
-         *
-         * <p>This is not the same as {@code guild.getPublicRole().getAsMention()}!
          */
         EVERYONE("@everyone");
 
