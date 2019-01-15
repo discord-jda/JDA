@@ -111,7 +111,7 @@ public interface User extends ISnowflake, IMentionable, IFakeable
 
     /**
      * The "tag" for this user
-     * <p>This is the equivalent of calling {@link java.lang.String#format(String, Object...) String.format}("%#s", {@link net.dv8tion.jda.core.entities.User User})
+     * <p>This is the equivalent of calling {@link java.lang.String#format(String, Object...) String.format}("%#s", user)
      *
      * @return Never-null String containing the tag for this user, for example DV8FromTheWorld#6297
      */

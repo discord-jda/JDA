@@ -36,6 +36,7 @@ import java.util.Iterator;
  * }</pre>
  *
  * @param <T>
+ *        The element type
  */
 public interface ClosableIterator<T> extends Iterator<T>, AutoCloseable
 {
