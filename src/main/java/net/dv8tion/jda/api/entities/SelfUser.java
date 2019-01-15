@@ -102,7 +102,7 @@ public interface SelfUser extends User
     long getAllowedFileSize();
 
     /**
-     * The {@link net.dv8tion.jda.api.managers.AccountManager AccountManager}
+     * The {@link AccountManager AccountManager}
      * for the currently logged in account.
      * <br>This can be used to atomically set account fields (like avatar/username)
      * You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.

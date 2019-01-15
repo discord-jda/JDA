@@ -170,7 +170,7 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      * @throws java.lang.IllegalArgumentException
      *         If the specified guild is {@code null}
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.RoleAction RoleAction}
+     * @return {@link RoleAction RoleAction}
      *         <br>RoleAction with already copied values from the specified {@link net.dv8tion.jda.api.entities.Role Role}
      */
     @CheckReturnValue
@@ -201,7 +201,7 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      * @throws net.dv8tion.jda.api.exceptions.PermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES} Permission and every Permission the provided Role has
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.RoleAction RoleAction}
+     * @return {@link RoleAction RoleAction}
      *         <br>RoleAction with already copied values from the specified {@link net.dv8tion.jda.api.entities.Role Role}
      */
     @CheckReturnValue
@@ -211,7 +211,7 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.managers.RoleManager RoleManager} for this Role.
+     * The {@link RoleManager RoleManager} for this Role.
      * In the RoleManager, you can modify all its values.
      * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
      *

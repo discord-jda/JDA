@@ -259,7 +259,7 @@ public interface AudioManager
      *
      * @return The currently active {@link net.dv8tion.jda.api.audio.AudioReceiveHandler AudioReceiveHandler} or {@code null}.
      */
-    AudioReceiveHandler getReceiveHandler();
+    AudioReceiveHandler getReceivingHandler();
 
     /**
      * Sets the {@link net.dv8tion.jda.api.audio.hooks.ConnectionListener ConnectionListener} for this AudioManager.

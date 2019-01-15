@@ -16,26 +16,16 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.requests.Request;
-import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.Helpers;
-import okhttp3.RequestBody;
-import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.function.BooleanSupplier;
 
 /**
  * {@link net.dv8tion.jda.api.requests.RestAction RestAction} extension
@@ -44,26 +34,15 @@ import java.util.stream.Collectors;
  *
  * @since  3.7.0
  *
+ * @see    Guild#addMember(String, User)
+ * @see    Guild#addMember(String, long)
+ * @see    Guild#addMember(String, String)
  * @see    <a href="https://discordapp.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
  */
-public class MemberAction extends RestAction<Void>
+public interface MemberAction extends RestAction<Void>
 {
-    private final String accessToken;
-    private final String userId;
-    private final Guild guild;
-
-    private String nick;
-    private Set<Role> roles;
-    private boolean mute;
-    private boolean deaf;
-
-    public MemberAction(JDA api, Guild guild, String userId, String accessToken)
-    {
-        super(api, Route.Guilds.ADD_MEMBER.compile(guild.getId(), userId));
-        this.accessToken = accessToken;
-        this.userId = userId;
-        this.guild = guild;
-    }
+    @Override
+    MemberAction setCheck(BooleanSupplier checks);
 
     /**
      * The access token
@@ -71,10 +50,7 @@ public class MemberAction extends RestAction<Void>
      * @return The access token
      */
     @Nonnull
-    public String getAccessToken()
-    {
-        return accessToken;
-    }
+    String getAccessToken();
 
     /**
      * The id of the user who will be added by this task
@@ -82,10 +58,7 @@ public class MemberAction extends RestAction<Void>
      * @return The id of the user
      */
     @Nonnull
-    public String getUserId()
-    {
-        return userId;
-    }
+    String getUserId();
 
     /**
      * The user associated with the id
@@ -93,10 +66,7 @@ public class MemberAction extends RestAction<Void>
      * @return Possibly-null user associated with the id
      */
     @Nullable
-    public User getUser()
-    {
-        return getJDA().getUserById(userId);
-    }
+    User getUser();
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} to which the
@@ -105,10 +75,7 @@ public class MemberAction extends RestAction<Void>
      * @return The Guild
      */
     @Nonnull
-    public Guild getGuild()
-    {
-        return guild;
-    }
+    Guild getGuild();
 
     /**
      * Sets the nickname of the user for the guild.
@@ -123,20 +90,7 @@ public class MemberAction extends RestAction<Void>
      * @return The current MemberAction for chaining
      */
     @CheckReturnValue
-    public MemberAction setNickname(String nick)
-    {
-        if (nick != null)
-        {
-            if (Helpers.isBlank(nick))
-            {
-                this.nick = null;
-                return this;
-            }
-            Checks.check(nick.length() <= 32, "Nickname must not be greater than 32 characters in length");
-        }
-        this.nick = nick;
-        return this;
-    }
+    MemberAction setNickname(String nick);
 
     /**
      * Sets the roles of the user for the guild.
@@ -151,19 +105,7 @@ public class MemberAction extends RestAction<Void>
      * @return The current MemberAction for chaining
      */
     @CheckReturnValue
-    public MemberAction setRoles(Collection<Role> roles)
-    {
-        if (roles == null)
-        {
-            this.roles = null;
-            return this;
-        }
-        Set<Role> newRoles = new HashSet<>(roles.size());
-        for (Role role : roles)
-            checkAndAdd(newRoles, role);
-        this.roles = newRoles;
-        return this;
-    }
+    MemberAction setRoles(Collection<Role> roles);
 
     /**
      * Sets the roles of the user for the guild.
@@ -178,19 +120,7 @@ public class MemberAction extends RestAction<Void>
      * @return The current MemberAction for chaining
      */
     @CheckReturnValue
-    public MemberAction setRoles(Role... roles)
-    {
-        if (roles == null)
-        {
-            this.roles = null;
-            return this;
-        }
-        Set<Role> newRoles = new HashSet<>(roles.length);
-        for (Role role : roles)
-            checkAndAdd(newRoles, role);
-        this.roles = newRoles;
-        return this;
-    }
+    MemberAction setRoles(Role... roles);
 
     /**
      * Whether the user should be voice muted in the guild.
@@ -202,11 +132,7 @@ public class MemberAction extends RestAction<Void>
      * @return The current MemberAction for chaining
      */
     @CheckReturnValue
-    public MemberAction setMute(boolean mute)
-    {
-        this.mute = mute;
-        return this;
-    }
+    MemberAction setMute(boolean mute);
 
     /**
      * Whether the user should be voice deafened in the guild.
@@ -218,56 +144,5 @@ public class MemberAction extends RestAction<Void>
      * @return The current MemberAction for chaining
      */
     @CheckReturnValue
-    public MemberAction setDeafen(boolean deaf)
-    {
-        this.deaf = deaf;
-        return this;
-    }
-
-    @Override
-    protected RequestBody finalizeData()
-    {
-        JSONObject obj = new JSONObject();
-        obj.put("access_token", accessToken);
-        if (nick != null)
-            obj.put("nick", nick);
-        if (roles != null && !roles.isEmpty())
-            obj.put("roles", roles.stream().map(Role::getId).collect(Collectors.toList()));
-        obj.put("mute", mute);
-        obj.put("deaf", deaf);
-        return getRequestBody(obj);
-    }
-
-    @Override
-    protected void handleResponse(Response response, Request<Void> request)
-    {
-        if (response.isOk())
-            request.onSuccess(null);
-        else
-            request.onFailure(response);
-        /*
-        This is not very useful but here is the response:
-         {
-            "nick": null,
-            "user":
-            {
-                "username": "Minn",
-                "discriminator": "6688",
-                "id": "86699011792191488",
-                "avatar": "e6376ed75fa54ffbe5134c3ec965458e"
-            },
-            "roles": [],
-            "mute": false,
-            "deaf": false,
-            "joined_at": "2018-05-05T10:18:16.475626+00:00"
-         }
-        */
-    }
-
-    private void checkAndAdd(Set<Role> newRoles, Role role)
-    {
-        Checks.notNull(role, "Role");
-        Checks.check(role.getGuild().equals(getGuild()), "Roles must all be from the same guild");
-        newRoles.add(role);
-    }
+    MemberAction setDeafen(boolean deaf);
 }

@@ -18,15 +18,19 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
-import net.dv8tion.jda.api.requests.Request;
-import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.MessagePaginationAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.pagination.MessagePaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.json.JSONArray;
 
@@ -267,11 +271,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <ul>
      *     <li><b>TextChannel</b> - Returns {@link TextChannel#getName()}</li>
      *     <li><b>PrivateChannel</b> Returns {@link PrivateChannel#getUser()}{@link net.dv8tion.jda.api.entities.User#getName() .getName()}</li>
-     *     <li><b>Group</b> - Returns {@link net.dv8tion.jda.client.entities.Group#getName() Group.getName()}</li>
      * </ul>
      *
-     * @return Possibly-null "name" of the MessageChannel. Different implementations determine what the name. Only
-     *         {@link net.dv8tion.jda.client.entities.Group Group} could have a {@code null} name.
+     * @return Never-null "name" of the MessageChannel. Different implementations determine what the name.
      */
     String getName();
 
@@ -312,7 +314,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
      *         </ul>
-     * @throws net.dv8tion.jda.client.exceptions.VerificationLevelException
+     * @throws net.dv8tion.jda.api.exceptions.VerificationLevelException
      *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel} and
      *         {@link net.dv8tion.jda.api.entities.TextChannel#getGuild() TextChannel.getGuild()}{@link net.dv8tion.jda.api.entities.Guild#checkVerification() .checkVerification()}
      *         returns false.
@@ -322,7 +324,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The newly created Message after it has been sent to Discord.
      *
      * @see net.dv8tion.jda.api.MessageBuilder
@@ -335,9 +337,9 @@ public interface MessageChannel extends ISnowflake, Formattable
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
         if (text instanceof StringBuilder)
-            return new MessageAction(getJDA(), route, this, (StringBuilder) text);
+            return new MessageActionImpl(getJDA(), route, this, (StringBuilder) text);
         else
-            return new MessageAction(getJDA(), route, this).append(text);
+            return new MessageActionImpl(getJDA(), route, this).append(text);
     }
 
     /**
@@ -366,7 +368,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
      *         </ul>
-     * @throws net.dv8tion.jda.client.exceptions.VerificationLevelException
+     * @throws net.dv8tion.jda.api.exceptions.VerificationLevelException
      *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel} and
      *         {@link net.dv8tion.jda.api.entities.TextChannel#getGuild() TextChannel.getGuild()}{@link net.dv8tion.jda.api.entities.Guild#checkVerification() .checkVerification()}
      *         returns false.
@@ -383,7 +385,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         see the <a href="../util/Formatter.html#detail">Details</a>
      *         section of the formatter class specification.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The newly created Message after it has been sent to Discord.
      */
     @CheckReturnValue
@@ -418,7 +420,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_EMBED_LINKS Permission.MESSAGE_EMBED_LINKS}</li>
      *         </ul>
-     * @throws net.dv8tion.jda.client.exceptions.VerificationLevelException
+     * @throws net.dv8tion.jda.api.exceptions.VerificationLevelException
      *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel} and
      *         {@link net.dv8tion.jda.api.entities.TextChannel#getGuild() TextChannel.getGuild()}{@link net.dv8tion.jda.api.entities.Guild#checkVerification() .checkVerification()}
      *         returns false.
@@ -429,7 +431,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The newly created Message after it has been sent to Discord.
      *
      * @see    net.dv8tion.jda.api.MessageBuilder
@@ -441,7 +443,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.notNull(embed, "Provided embed");
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
-        return new MessageAction(getJDA(), route, this).embed(embed);
+        return new MessageActionImpl(getJDA(), route, this).embed(embed);
     }
 
     /**
@@ -454,8 +456,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
      *
@@ -485,7 +486,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_EMBED_LINKS Permission.MESSAGE_EMBED_LINKS} (if this message is only an embed)</li>
      *         </ul>
-     * @throws net.dv8tion.jda.client.exceptions.VerificationLevelException
+     * @throws net.dv8tion.jda.api.exceptions.VerificationLevelException
      *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel} and
      *         {@link net.dv8tion.jda.api.entities.TextChannel#getGuild() TextChannel.getGuild()}{@link net.dv8tion.jda.api.entities.Guild#checkVerification() .checkVerification()}
      *         returns false.
@@ -497,7 +498,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The newly created Message after it has been sent to Discord.
      *
      * @see    net.dv8tion.jda.api.MessageBuilder
@@ -508,7 +509,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.notNull(msg, "Message");
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
-        return new MessageAction(getJDA(), route, this).apply(msg);
+        return new MessageActionImpl(getJDA(), route, this).apply(msg);
     }
 
     /**
@@ -546,7 +547,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
      */
     @CheckReturnValue
@@ -601,7 +602,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
      */
     @CheckReturnValue
@@ -639,7 +640,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
      */
     @CheckReturnValue
@@ -682,7 +683,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
      */
     @CheckReturnValue
@@ -743,7 +744,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
      */
     @CheckReturnValue
@@ -790,8 +791,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The send request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The send request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
@@ -838,7 +838,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
      */
     @CheckReturnValue
@@ -907,7 +907,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
      */
     @CheckReturnValue
@@ -917,7 +917,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.notNull(fileName, "fileName");
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
-        return new MessageAction(getJDA(), route, this).apply(message).addFile(data, fileName);
+        return new MessageActionImpl(getJDA(), route, this).apply(message).addFile(data, fileName);
     }
 
     /**
@@ -971,7 +971,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
      */
     @CheckReturnValue
@@ -994,8 +994,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
      *
@@ -1033,22 +1032,10 @@ public interface MessageChannel extends ISnowflake, Formattable
         AccountTypeException.check(getJDA().getAccountType(), AccountType.BOT);
         Checks.isSnowflake(messageId, "Message ID");
 
+        JDAImpl jda = (JDAImpl) getJDA();
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(getId(), messageId);
-        return new RestAction<Message>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Message> request)
-            {
-                if (response.isOk())
-                {
-                    Message m = api.get().getEntityBuilder().createMessage(response.getObject(), MessageChannel.this, false);
-                    request.onSuccess(m);
-                }
-                else
-                    request.onFailure(response);
-
-            }
-        };
+        return new RestActionImpl<>(jda, route,
+            (response, request) -> jda.getEntityBuilder().createMessage(response.getObject(), MessageChannel.this, false));
     }
 
     /**
@@ -1061,8 +1048,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
      *
@@ -1105,8 +1091,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
      *
@@ -1115,8 +1100,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         that was not sent by the currently logged in account.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_DM_ACTION INVALID_DM_ACTION}
-     *     <br>Attempted to delete a Message in a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} or
-     *         {@link net.dv8tion.jda.client.entities.Group Group} that was not sent by the currently logged in account.</li>
+     *     <br>Attempted to delete a Message in a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
+     *         that was not sent by the currently logged in account.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code id} does not refer to a message sent in this channel or the message has already been deleted.</li>
@@ -1142,16 +1127,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.isSnowflake(messageId, "Message ID");
 
         Route.CompiledRoute route = Route.Messages.DELETE_MESSAGE.compile(getId(), messageId);
-        return new AuditableRestAction<Void>(getJDA(), route) {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
     /**
@@ -1161,8 +1137,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
      *
@@ -1171,8 +1146,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         that was not sent by the currently logged in account.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_DM_ACTION INVALID_DM_ACTION}
-     *     <br>Attempted to delete a Message in a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} or
-     *         {@link net.dv8tion.jda.client.entities.Group Group} that was not sent by the currently logged in account.</li>
+     *     <br>Attempted to delete a Message in a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
+     *         that was not sent by the currently logged in account.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code id} does not refer to a message sent in this channel or the message has already been deleted.</li>
@@ -1214,7 +1189,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     }
 
     /**
-     * A {@link net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction PaginationAction} implementation
+     * A {@link PaginationAction PaginationAction} implementation
      * that allows to {@link Iterable iterate} over recent {@link net.dv8tion.jda.api.entities.Message Messages} of
      * this MessageChannel.
      * <br>This is <b>not</b> a cache for received messages and it can only view messages that were sent
@@ -1249,12 +1224,12 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *         and the currently logged in account does not have the permission {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY MESSAGE_HISTORY}
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.pagination.MessagePaginationAction MessagePaginationAction}
+     * @return {@link MessagePaginationAction MessagePaginationAction}
      */
     @CheckReturnValue
     default MessagePaginationAction getIterableHistory()
     {
-        return new MessagePaginationAction(this);
+        return new MessagePaginationActionImpl(this);
     }
 
     /**
@@ -1277,8 +1252,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
      *
@@ -1343,8 +1317,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
      *
@@ -1409,8 +1382,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
      *
@@ -1468,8 +1440,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
      *
@@ -1526,8 +1497,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
      *
@@ -1581,8 +1551,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
      *
@@ -1640,8 +1609,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
      *
@@ -1698,8 +1666,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
      *
@@ -1756,8 +1723,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
      *
@@ -1813,8 +1779,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
@@ -1836,17 +1801,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     default RestAction<Void> sendTyping()
     {
         Route.CompiledRoute route = Route.Channels.SEND_TYPING.compile(getId());
-        return new RestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new RestActionImpl<>(getJDA(), route);
     }
 
     /**
@@ -1875,8 +1830,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
@@ -1934,17 +1888,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         else
             encoded = MiscUtil.encodeUTF8(unicode);
         Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, encoded);
-        return new RestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new RestActionImpl<>(getJDA(), route);
     }
 
     /**
@@ -1973,8 +1917,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
@@ -2035,8 +1978,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
@@ -2087,17 +2029,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.notNull(emote, "Emote");
 
         Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, String.format("%s:%s", emote.getName(), emote.getId()));
-        return new RestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new RestActionImpl<Void>(getJDA(), route);
     }
 
     /**
@@ -2112,8 +2044,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
@@ -2178,8 +2109,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
@@ -2224,17 +2154,7 @@ public interface MessageChannel extends ISnowflake, Formattable
 
         final String code = MiscUtil.encodeUTF8(unicode);
         final Route.CompiledRoute route = Route.Messages.REMOVE_OWN_REACTION.compile(getId(), messageId, code);
-        return new RestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (!response.isOk())
-                    request.onFailure(response);
-                else
-                    request.onSuccess(null);
-            }
-        };
+        return new RestActionImpl<Void>(getJDA(), route);
     }
 
     /**
@@ -2253,8 +2173,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
@@ -2307,8 +2226,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
@@ -2362,8 +2280,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
@@ -2413,8 +2330,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
      *
@@ -2451,17 +2367,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.isSnowflake(messageId, "Message ID");
 
         Route.CompiledRoute route = Route.Messages.ADD_PINNED_MESSAGE.compile(getId(), messageId);
-        return new RestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new RestActionImpl<Void>(getJDA(), route);
     }
 
     /**
@@ -2470,8 +2376,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
      *
@@ -2514,8 +2419,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
      *
@@ -2552,17 +2456,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.isSnowflake(messageId, "Message ID");
 
         Route.CompiledRoute route = Route.Messages.REMOVE_PINNED_MESSAGE.compile(getId(), messageId);
-        return new RestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new RestActionImpl<Void>(getJDA(), route);
     }
 
     /**
@@ -2571,8 +2465,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
      *
@@ -2616,8 +2509,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
      *
@@ -2635,31 +2527,21 @@ public interface MessageChannel extends ISnowflake, Formattable
     @CheckReturnValue
     default RestAction<List<Message>> getPinnedMessages()
     {
+        JDAImpl jda = (JDAImpl) getJDA();
         Route.CompiledRoute route = Route.Messages.GET_PINNED_MESSAGES.compile(getId());
-        return new RestAction<List<Message>>(getJDA(), route)
+        return new RestActionImpl<>(jda, route, (response, request) ->
         {
-            @Override
-            protected void handleResponse(Response response, Request<List<Message>> request)
+            LinkedList<Message> pinnedMessages = new LinkedList<>();
+            EntityBuilder builder = jda.getEntityBuilder();
+            JSONArray pins = response.getArray();
+
+            for (int i = 0; i < pins.length(); i++)
             {
-                if (response.isOk())
-                {
-                    LinkedList<Message> pinnedMessages = new LinkedList<>();
-                    EntityBuilder builder = api.get().getEntityBuilder();
-                    JSONArray pins = response.getArray();
-
-                    for (int i = 0; i < pins.length(); i++)
-                    {
-                        pinnedMessages.add(builder.createMessage(pins.getJSONObject(i), MessageChannel.this, false));
-                    }
-
-                    request.onSuccess(Collections.unmodifiableList(pinnedMessages));
-                }
-                else
-                {
-                    request.onFailure(response);
-                }
+                pinnedMessages.add(builder.createMessage(pins.getJSONObject(i), MessageChannel.this, false));
             }
-        };
+
+            return Collections.unmodifiableList(pinnedMessages);
+        });
     }
 
     /**
@@ -2673,8 +2555,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         Discord does not allow editing of other users' Messages!</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
      *
@@ -2701,7 +2582,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a TextChannel and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The modified Message after it has been sent to Discord.
      */
     @CheckReturnValue
@@ -2713,9 +2594,9 @@ public interface MessageChannel extends ISnowflake, Formattable
 
         Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getId(), messageId);
         if (newContent instanceof StringBuilder)
-            return new MessageAction(getJDA(), route, this, (StringBuilder) newContent);
+            return new MessageActionImpl(getJDA(), route, this, (StringBuilder) newContent);
         else
-            return new MessageAction(getJDA(), route, this).append(newContent);
+            return new MessageActionImpl(getJDA(), route, this).append(newContent);
     }
 
     /**
@@ -2729,8 +2610,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         Discord does not allow editing of other users' Messages!</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
      *
@@ -2757,7 +2637,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a TextChannel and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The modified Message after it has been sent to Discord.
      */
     @CheckReturnValue
@@ -2776,8 +2656,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         Discord does not allow editing of other users' Messages!</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
      *
@@ -2806,7 +2685,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a TextChannel and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The modified Message after it has been sent to discord
      */
     @CheckReturnValue
@@ -2816,7 +2695,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.notNull(newContent, "message");
 
         Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getId(), messageId);
-        return new MessageAction(getJDA(), route, this).apply(newContent);
+        return new MessageActionImpl(getJDA(), route, this).apply(newContent);
     }
 
     /**
@@ -2829,8 +2708,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         Discord does not allow editing of other users' Messages!</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
      *
@@ -2859,7 +2737,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         If this is a TextChannel and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The modified Message after it has been sent to discord
      */
     @CheckReturnValue
@@ -2879,8 +2757,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         Discord does not allow editing of other users' Messages!</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
      *
@@ -2917,7 +2794,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         see the <a href="../util/Formatter.html#detail">Details</a>
      *         section of the formatter class specification.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The modified Message after it has been sent to discord
      */
     @CheckReturnValue
@@ -2938,8 +2815,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         Discord does not allow editing of other users' Messages!</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
      *
@@ -2976,7 +2852,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         see the <a href="../util/Formatter.html#detail">Details</a>
      *         section of the formatter class specification.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The modified Message after it has been sent to discord
      */
     @CheckReturnValue
@@ -2996,8 +2872,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         Discord does not allow editing of other users' Messages!</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
      *
@@ -3027,7 +2902,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The modified Message after it has been sent to discord
      */
     @CheckReturnValue
@@ -3037,7 +2912,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.notNull(newEmbed, "MessageEmbed");
 
         Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getId(), messageId);
-        return new MessageAction(getJDA(), route, this).embed(newEmbed);
+        return new MessageActionImpl(getJDA(), route, this).embed(newEmbed);
     }
 
     /**
@@ -3050,8 +2925,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         Discord does not allow editing of other users' Messages!</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild} or {@link net.dv8tion.jda.client.entities.Group Group}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
      *
@@ -3081,7 +2955,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction}
+     * @return {@link MessageAction MessageAction}
      *         <br>The modified Message after it has been sent to discord
      */
     @CheckReturnValue

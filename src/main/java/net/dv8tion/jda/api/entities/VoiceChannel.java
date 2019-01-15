@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.requests.restaction.ChannelAction;
+
 /**
  * Represents a Discord Voice GuildChannel.
  * <br>Adds additional information specific to voice channels in Discord.
@@ -42,4 +44,10 @@ public interface VoiceChannel extends GuildChannel, Comparable<VoiceChannel>
      * @return The audio bitrate of this voice channel.
      */
     int getBitrate();
+
+    @Override
+    ChannelAction<VoiceChannel> createCopy(Guild guild);
+
+    @Override
+    ChannelAction<VoiceChannel> createCopy();
 }
