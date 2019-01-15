@@ -25,6 +25,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.ratelimit.BotRateLimiter;
 import net.dv8tion.jda.internal.requests.ratelimit.ClientRateLimiter;
 import net.dv8tion.jda.internal.utils.JDALogger;
+import net.dv8tion.jda.internal.utils.config.AuthorizationConfig;
 import okhttp3.Call;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -54,6 +55,7 @@ public class Requester
     public static final MediaType MEDIA_TYPE_OCTET = MediaType.parse("application/octet-stream; charset=utf-8");
 
     protected final JDAImpl api;
+    protected final AuthorizationConfig authConfig;
     private final RateLimiter rateLimiter;
 
     private final OkHttpClient httpClient;
@@ -66,16 +68,17 @@ public class Requester
 
     public Requester(JDA api)
     {
-        this(api, api.getAccountType());
+        this(api, ((JDAImpl) api).getAuthorizationConfig());
     }
 
-    public Requester(JDA api, AccountType accountType)
+    public Requester(JDA api, AuthorizationConfig authConfig)
     {
-        if (accountType == null)
-            throw new NullPointerException("Provided accountType was null!");
+        if (authConfig == null)
+            throw new NullPointerException("Provided config was null!");
 
+        this.authConfig = authConfig;
         this.api = (JDAImpl) api;
-        if (accountType == AccountType.BOT)
+        if (authConfig.getAccountType() == AccountType.BOT)
             rateLimiter = new BotRateLimiter(this);
         else
             rateLimiter = new ClientRateLimiter(this);
@@ -163,8 +166,8 @@ public class Requester
 
         //adding token to all requests to the discord api or cdn pages
         //we can check for startsWith(DISCORD_API_PREFIX) because the cdn endpoints don't need any kind of authorization
-        if (url.startsWith(DISCORD_API_PREFIX) && api.getToken() != null)
-            builder.header("authorization", api.getToken());
+        if (url.startsWith(DISCORD_API_PREFIX) && authConfig.getToken() != null)
+            builder.header("authorization", authConfig.getToken());
 
         // Apply custom headers like X-Audit-Log-Reason
         // If customHeaders is null this does nothing

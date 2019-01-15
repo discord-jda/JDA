@@ -35,6 +35,10 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.ShardCacheViewImpl;
+import net.dv8tion.jda.internal.utils.config.AuthorizationConfig;
+import net.dv8tion.jda.internal.utils.config.MetaConfig;
+import net.dv8tion.jda.internal.utils.config.SessionConfig;
+import net.dv8tion.jda.internal.utils.config.ThreadingConfig;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
@@ -669,11 +673,14 @@ public class DefaultShardManager implements ShardManager
         ExecutorService callbackPool = callbackPair.executor;
         boolean shutdownCallbackPool = callbackPair.automaticShutdown;
 
-        final JDAImpl jda = new JDAImpl(
-                AccountType.BOT, this.token, this.controller, httpClient, this.wsFactory,
-                rateLimitPool, gatewayPool, callbackPool, this.autoReconnect, this.enableVoice, false, this.enableBulkDeleteSplitting,
-                this.retryOnTimeout, this.enableMDC, shutdownRateLimitPool, shutdownGatewayPool, shutdownCallbackPool, this.corePoolSize, this.maxReconnectDelay,
-                this.contextProvider == null || !this.enableMDC ? null : contextProvider.apply(shardId), this.cacheFlags);
+        AuthorizationConfig authConfig = new AuthorizationConfig(AccountType.BOT, token);
+        SessionConfig sessionConfig = new SessionConfig(controller, httpClient, wsFactory, enableVoice, retryOnTimeout, enableBulkDeleteSplitting, maxReconnectDelay);
+        ThreadingConfig threadingConfig = new ThreadingConfig();
+        threadingConfig.setRateLimitPool(rateLimitPool, shutdownRateLimitPool);
+        threadingConfig.setGatewayPool(gatewayPool, shutdownGatewayPool);
+        threadingConfig.setCallbackPool(callbackPool, shutdownCallbackPool);
+        MetaConfig metaConfig = new MetaConfig(contextProvider == null || !this.enableMDC ? null : contextProvider.apply(shardId), cacheFlags, enableMDC, false);
+        final JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig);
 
         jda.setShardManager(this);
 
