@@ -18,7 +18,6 @@ package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -27,7 +26,7 @@ import java.util.EnumSet;
 import java.util.function.BooleanSupplier;
 
 /**
- * Extension of {@link net.dv8tion.jda.api.requests.RestAction RestAction} specifically
+ * Extension of {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction} specifically
  * designed to create a {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
  * for a {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}.
  * This extension allows setting properties before executing the action.
@@ -39,7 +38,7 @@ import java.util.function.BooleanSupplier;
  * @see    net.dv8tion.jda.api.entities.GuildChannel#putPermissionOverride(Role)
  * @see    net.dv8tion.jda.api.entities.GuildChannel#putPermissionOverride(Member)
  */
-public interface PermissionOverrideAction extends RestAction<PermissionOverride>
+public interface PermissionOverrideAction extends AuditableRestAction<PermissionOverride>
 {
     @Override
     PermissionOverrideAction setCheck(BooleanSupplier checks);
