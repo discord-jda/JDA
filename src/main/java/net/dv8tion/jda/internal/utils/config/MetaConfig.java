@@ -25,6 +25,7 @@ import java.util.concurrent.ConcurrentMap;
 
 public class MetaConfig
 {
+    private static final MetaConfig defaultConfig = new MetaConfig(null, EnumSet.allOf(CacheFlag.class), false, true);
     private final ConcurrentMap<String, String> mdcContextMap;
     private final EnumSet<CacheFlag> cacheFlags;
     private final boolean enableMDC;
@@ -62,5 +63,10 @@ public class MetaConfig
     public boolean isUseShutdownHook()
     {
         return useShutdownHook;
+    }
+
+    public static MetaConfig getDefault()
+    {
+        return defaultConfig;
     }
 }

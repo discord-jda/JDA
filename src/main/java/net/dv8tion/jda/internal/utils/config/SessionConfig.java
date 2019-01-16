@@ -90,4 +90,9 @@ public class SessionConfig
     {
         return maxReconnectDelay;
     }
+
+    public static SessionConfig getDefault()
+    {
+        return new SessionConfig(null, null, null, true, true, true, 900);
+    }
 }

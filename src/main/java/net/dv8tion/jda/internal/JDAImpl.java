@@ -114,18 +114,23 @@ public class JDAImpl implements JDA
     protected String clientId = null;
     protected ShardManager shardManager = null;
 
+    public JDAImpl(AuthorizationConfig authConfig)
+    {
+        this(authConfig, null, null, null);
+    }
+
     public JDAImpl(
             AuthorizationConfig authConfig, SessionConfig sessionConfig,
             ThreadingConfig threadConfig, MetaConfig metaConfig)
     {
         this.authConfig = authConfig;
-        this.threadConfig = threadConfig;
-        this.sessionConfig = sessionConfig;
-        this.metaConfig = metaConfig;
-        this.shutdownHook = metaConfig.isUseShutdownHook() ? new Thread(this::shutdown, "JDA Shutdown Hook") : null;
+        this.threadConfig = threadConfig == null ? ThreadingConfig.getDefault() : threadConfig;
+        this.sessionConfig = sessionConfig == null ? SessionConfig.getDefault() : sessionConfig;
+        this.metaConfig = metaConfig == null ? MetaConfig.getDefault() : metaConfig;
+        this.shutdownHook = this.metaConfig.isUseShutdownHook() ? new Thread(this::shutdown, "JDA Shutdown Hook") : null;
         this.presence = new PresenceImpl(this);
         this.requester = new Requester(this);
-        this.requester.setRetryOnTimeout(sessionConfig.isRetryOnTimeout());
+        this.requester.setRetryOnTimeout(this.sessionConfig.isRetryOnTimeout());
         this.guildSetupController = new GuildSetupController(this);
     }
 
@@ -144,12 +149,23 @@ public class JDAImpl implements JDA
         return guildSetupController;
     }
 
+    public int login() throws LoginException
+    {
+        return login(null, null, true, true);
+    }
+
+    public int login(ShardInfo shardInfo, boolean compression, boolean validateToken) throws LoginException
+    {
+        return login(null, shardInfo, compression, validateToken);
+    }
+
     public int login(String gatewayUrl, ShardInfo shardInfo, boolean compression, boolean validateToken) throws LoginException
     {
-        this.gatewayUrl = gatewayUrl;
         this.shardInfo = shardInfo;
-
         threadConfig.init(this::getIdentifierString);
+        this.gatewayUrl = gatewayUrl == null ? getGateway() : gatewayUrl;
+        Checks.notNull(this.gatewayUrl, "Gateway URL");
+
         String token = authConfig.getToken();
         setStatus(Status.LOGGING_IN);
         if (token == null || token.isEmpty())

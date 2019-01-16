@@ -804,14 +804,12 @@ public class JDABuilder
         listeners.forEach(jda::addEventListener);
         jda.setStatus(JDA.Status.INITIALIZED);  //This is already set by JDA internally, but this is to make sure the listeners catch it.
 
-        String gateway = jda.getGateway();
-
         // Set the presence information before connecting to have the correct information ready when sending IDENTIFY
         ((PresenceImpl) jda.getPresence())
                 .setCacheActivity(activity)
                 .setCacheIdle(idle)
                 .setCacheStatus(status);
-        jda.login(gateway, shardInfo, enableCompression, true);
+        jda.login(shardInfo, enableCompression, true);
         return jda;
     }
 }

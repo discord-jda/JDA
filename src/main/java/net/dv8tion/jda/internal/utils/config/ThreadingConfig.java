@@ -122,4 +122,9 @@ public class ThreadingConfig
     {
         return new ScheduledThreadPoolExecutor(coreSize, new CountingThreadFactory(identifier, baseName));
     }
+
+    public static ThreadingConfig getDefault()
+    {
+        return new ThreadingConfig();
+    }
 }
