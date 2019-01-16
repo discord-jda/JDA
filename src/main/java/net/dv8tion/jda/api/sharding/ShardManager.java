@@ -985,7 +985,7 @@ public interface ShardManager
      */
     default void setGame(final Activity game)
     {
-        this.setGameProvider(id -> game);
+        this.setActivityProvider(id -> game);
     }
 
     /**
@@ -1001,7 +1001,7 @@ public interface ShardManager
      * @see    net.dv8tion.jda.api.entities.Activity#playing(String)
      * @see    net.dv8tion.jda.api.entities.Activity#streaming(String, String)
      */
-    default void setGameProvider(final IntFunction<? extends Activity> gameProvider)
+    default void setActivityProvider(final IntFunction<? extends Activity> gameProvider)
     {
         this.getShardCache().forEach(jda -> jda.getPresence().setActivity(gameProvider.apply(jda.getShardInfo().getShardId())));
     }

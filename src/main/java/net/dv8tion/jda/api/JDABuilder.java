@@ -74,7 +74,6 @@ public class JDABuilder
     protected Activity activity = null;
     protected OnlineStatus status = OnlineStatus.ONLINE;
     protected int maxReconnectDelay = 900;
-    protected int corePoolSize = 5;
     protected boolean enableContext = true;
     protected boolean enableVoice = true;
     protected boolean enableShutdownHook = true;
@@ -315,27 +314,6 @@ public class JDABuilder
     public JDABuilder setWebsocketFactory(WebSocketFactory factory)
     {
         this.wsFactory = factory;
-        return this;
-    }
-
-    /**
-     * Sets the core pool size for the global JDA
-     * {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} which is used
-     * in various locations throughout the JDA instance created by this builder. (Default: 5)
-     * <br>Note: This has no effect if you set a pool using {@link #setRateLimitPool(ScheduledExecutorService)}.
-     *
-     * @param  size
-     *         The core pool size for the global JDA executor
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the specified core pool size is not positive
-     *
-     * @return The JDABuilder instance. Useful for chaining.
-     */
-    public JDABuilder setCorePoolSize(int size)
-    {
-        Checks.positive(size, "Core pool size");
-        this.corePoolSize = size;
         return this;
     }
 
@@ -790,7 +768,7 @@ public class JDABuilder
         threadingConfig.setCallbackPool(callbackPool, shutdownCallbackPool);
         threadingConfig.setGatewayPool(mainWsPool, shutdownMainWsPool);
         threadingConfig.setRateLimitPool(rateLimitPool, shutdownRateLimitPool);
-        SessionConfig sessionConfig = new SessionConfig(controller, httpClient, wsFactory, enableVoice, requestTimeoutRetry, enableBulkDeleteSplitting, maxReconnectDelay);
+        SessionConfig sessionConfig = new SessionConfig(controller, httpClient, wsFactory, enableVoice, requestTimeoutRetry,autoReconnect, enableBulkDeleteSplitting, maxReconnectDelay);
         MetaConfig metaConfig = new MetaConfig(contextMap, cacheFlags, enableContext, enableShutdownHook);
 
         JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig);

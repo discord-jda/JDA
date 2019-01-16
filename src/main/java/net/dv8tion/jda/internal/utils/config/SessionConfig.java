@@ -34,13 +34,14 @@ public class SessionConfig
 
     public SessionConfig(
         SessionController sessionController, OkHttpClient httpClient, WebSocketFactory webSocketFactory,
-        boolean audioEnabled, boolean retryOnTimeout,
+        boolean audioEnabled, boolean retryOnTimeout, boolean autoReconnect,
         boolean bulkDeleteSplittingEnabled, int maxReconnectDelay)
     {
         this.sessionController = sessionController == null ? new SessionControllerAdapter() : sessionController;
         this.httpClient = httpClient == null ? new OkHttpClient() : httpClient;
         this.webSocketFactory = webSocketFactory == null ? new WebSocketFactory() : webSocketFactory;
         this.audioEnabled = audioEnabled;
+        this.autoReconnect = autoReconnect;
         this.retryOnTimeout = retryOnTimeout;
         this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
         this.maxReconnectDelay = maxReconnectDelay;
@@ -93,6 +94,6 @@ public class SessionConfig
 
     public static SessionConfig getDefault()
     {
-        return new SessionConfig(null, null, null, true, true, true, 900);
+        return new SessionConfig(null, null, null, true, true, true, true, 900);
     }
 }
