@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.utils.config;
 
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import java.util.EnumSet;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,6 +34,7 @@ public class MetaConfig
             ConcurrentMap<String, String> mdcContextMap,
             EnumSet<CacheFlag> cacheFlags, boolean enableMDC, boolean useShutdownHook)
     {
+        Checks.notNull(cacheFlags, "CacheFlags");
         this.cacheFlags = cacheFlags;
         this.enableMDC = enableMDC;
         if (enableMDC)

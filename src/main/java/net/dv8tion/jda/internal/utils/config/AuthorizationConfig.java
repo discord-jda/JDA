@@ -17,14 +17,17 @@
 package net.dv8tion.jda.internal.utils.config;
 
 import net.dv8tion.jda.api.AccountType;
+import net.dv8tion.jda.internal.utils.Checks;
 
-public class AuthorizationConfig
+public final class AuthorizationConfig
 {
     private final AccountType accountType;
     private String token;
 
     public AuthorizationConfig(AccountType accountType, String token)
     {
+        Checks.notNull(accountType, "AccountType");
+        Checks.notNull(token, "Token");
         this.accountType = accountType;
         setToken(token);
     }

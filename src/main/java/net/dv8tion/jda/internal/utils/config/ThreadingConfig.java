@@ -18,10 +18,7 @@ package net.dv8tion.jda.internal.utils.config;
 
 import net.dv8tion.jda.internal.utils.concurrent.CountingThreadFactory;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.*;
 import java.util.function.Supplier;
 
 public class ThreadingConfig
@@ -58,6 +55,37 @@ public class ThreadingConfig
             this.rateLimitPool = newScheduler(5, identifier, "RateLimit");
         if (this.gatewayPool == null)
             this.gatewayPool = newScheduler(1, identifier, "Gateway");
+    }
+
+    public void shutdown()
+    {
+        if (shutdownCallbackPool)
+            callbackPool.shutdown();
+        if (shutdownGatewayPool)
+            gatewayPool.shutdown();
+        if (shutdownRateLimitPool)
+        {
+            if (rateLimitPool instanceof ScheduledThreadPoolExecutor)
+            {
+                ScheduledThreadPoolExecutor executor = (ScheduledThreadPoolExecutor) rateLimitPool;
+                executor.setKeepAliveTime(5L, TimeUnit.SECONDS);
+                executor.allowCoreThreadTimeOut(true);
+            }
+            else
+            {
+                rateLimitPool.shutdown();
+            }
+        }
+    }
+
+    public void shutdownNow()
+    {
+        if (shutdownCallbackPool)
+            callbackPool.shutdownNow();
+        if (shutdownGatewayPool)
+            gatewayPool.shutdownNow();
+        if (shutdownRateLimitPool)
+            rateLimitPool.shutdownNow();
     }
 
     public ScheduledExecutorService getRateLimitPool()

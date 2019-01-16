@@ -541,12 +541,7 @@ public class JDAImpl implements JDA
     public synchronized void shutdownNow()
     {
         shutdown();
-        if (threadConfig.isShutdownRateLimitPool())
-            getRateLimitPool().shutdownNow();
-        if (threadConfig.isShutdownGatewayPool())
-            getGatewayPool().shutdownNow();
-        if (threadConfig.isShutdownCallbackPool())
-            getCallbackPool().shutdownNow();
+        threadConfig.shutdownNow();
     }
 
     @Override
@@ -573,7 +568,9 @@ public class JDAImpl implements JDA
         guildSetupController.close();
 
         getRequester().shutdown();
-        shutdownPools();
+        if (audioLifeCyclePool != null)
+            audioLifeCyclePool.shutdownNow();
+        threadConfig.shutdown();
 
         if (shutdownHook != null)
         {
@@ -585,30 +582,6 @@ public class JDAImpl implements JDA
         }
 
         setStatus(Status.SHUTDOWN);
-    }
-
-    private void shutdownPools()
-    {
-        if (audioLifeCyclePool != null)
-            audioLifeCyclePool.shutdownNow();
-        if (threadConfig.isShutdownGatewayPool())
-            getGatewayPool().shutdown();
-        if (threadConfig.isShutdownCallbackPool())
-            getCallbackPool().shutdown();
-        if (threadConfig.isShutdownRateLimitPool())
-        {
-            ScheduledExecutorService rateLimitPool = getRateLimitPool();
-            if (rateLimitPool instanceof ScheduledThreadPoolExecutor)
-            {
-                ScheduledThreadPoolExecutor executor = (ScheduledThreadPoolExecutor) rateLimitPool;
-                executor.setKeepAliveTime(5L, TimeUnit.SECONDS);
-                executor.allowCoreThreadTimeOut(true);
-            }
-            else
-            {
-                rateLimitPool.shutdown();
-            }
-        }
     }
 
     private void closeAudioConnections()
