@@ -1071,7 +1071,7 @@ public class  DefaultShardManagerBuilder
         final ThreadingProviderConfig threadingConfig = new ThreadingProviderConfig(rateLimitPoolProvider, gatewayPoolProvider, callbackPoolProvider, threadFactory);
         final ShardingSessionConfig sessionConfig = new ShardingSessionConfig(sessionController, httpClient, httpClientBuilder, wsFactory, audioSendFactory, enableVoice, retryOnTimeout, autoReconnect, enableBulkDeleteSplitting, maxReconnectDelay);
         final ShardingMetaConfig metaConfig = new ShardingMetaConfig(contextProvider, cacheFlags, enableContext, useShutdownNow, enableCompression);
-        final DefaultShardManager manager = new DefaultShardManager(this.shards, this.token, shardingConfig, eventConfig, presenceConfig, threadingConfig, sessionConfig, metaConfig);
+        final DefaultShardManager manager = new DefaultShardManager(this.token, this.shards, shardingConfig, eventConfig, presenceConfig, threadingConfig, sessionConfig, metaConfig);
 
         manager.login();
 

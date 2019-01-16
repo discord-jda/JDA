@@ -60,4 +60,9 @@ public class ThreadingProviderConfig
     {
         return callbackPoolProvider;
     }
+
+    public static ThreadingProviderConfig getDefault()
+    {
+        return new ThreadingProviderConfig(null, null, null, null);
+    }
 }

@@ -56,4 +56,9 @@ public class PresenceProviderConfig
     {
         this.idleProvider = idleProvider;
     }
+
+    public static PresenceProviderConfig getDefault()
+    {
+        return new PresenceProviderConfig();
+    }
 }

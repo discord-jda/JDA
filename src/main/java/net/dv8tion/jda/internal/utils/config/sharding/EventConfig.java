@@ -72,4 +72,9 @@ public class EventConfig
     {
         return eventManagerProvider;
     }
+
+    public static EventConfig getDefault()
+    {
+        return new EventConfig(null);
+    }
 }

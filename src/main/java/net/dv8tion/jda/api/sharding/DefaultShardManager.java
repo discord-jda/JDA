@@ -110,20 +110,30 @@ public class DefaultShardManager implements ShardManager
     protected final ShardingSessionConfig sessionConfig;
     protected final ShardingMetaConfig metaConfig;
 
-    protected DefaultShardManager(
-        Collection<Integer> shardIds, String token,
+    public DefaultShardManager(String token)
+    {
+        this(token, null);
+    }
+
+    public DefaultShardManager(String token, Collection<Integer> shardIds)
+    {
+        this(token, shardIds, null, null, null, null, null, null);
+    }
+
+    public DefaultShardManager(
+        String token, Collection<Integer> shardIds,
         ShardingConfig shardingConfig, EventConfig eventConfig, PresenceProviderConfig presenceConfig,
         ThreadingProviderConfig threadingConfig, ShardingSessionConfig sessionConfig, ShardingMetaConfig metaConfig)
     {
         this.token = token;
-        this.eventConfig = eventConfig;
-        this.shardingConfig = shardingConfig;
-        this.threadingConfig = threadingConfig;
-        this.sessionConfig = sessionConfig;
-        this.presenceConfig = presenceConfig;
-        this.metaConfig = metaConfig;
-        this.executor = createExecutor(threadingConfig.getThreadFactory());
-        this.shutdownHook = metaConfig.isUseShutdownHook() ? new Thread(this::shutdown, "JDA Shutdown Hook") : null;
+        this.eventConfig = eventConfig == null ? EventConfig.getDefault() : eventConfig;
+        this.shardingConfig = shardingConfig == null ? ShardingConfig.getDefault() : shardingConfig;
+        this.threadingConfig = threadingConfig == null ? ThreadingProviderConfig.getDefault() : threadingConfig;
+        this.sessionConfig = sessionConfig == null ? ShardingSessionConfig.getDefault() : sessionConfig;
+        this.presenceConfig = presenceConfig == null ? PresenceProviderConfig.getDefault() : presenceConfig;
+        this.metaConfig = metaConfig == null ? ShardingMetaConfig.getDefault() : metaConfig;
+        this.executor = createExecutor(this.threadingConfig.getThreadFactory());
+        this.shutdownHook = this.metaConfig.isUseShutdownHook() ? new Thread(this::shutdown, "JDA Shutdown Hook") : null;
 
         synchronized (queue)
         {
@@ -449,6 +459,7 @@ public class DefaultShardManager implements ShardManager
         threadingConfig.setCallbackPool(callbackPool, shutdownCallbackPool);
         MetaConfig metaConfig = new MetaConfig(this.metaConfig.getContextMap(shardId), this.metaConfig.getCacheFlags(), this.metaConfig.isEnableMDC(), false);
         final JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig);
+        threadingConfig.init(jda::getIdentifierString);
 
         jda.setShardManager(this);
 

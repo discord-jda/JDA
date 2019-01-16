@@ -53,4 +53,9 @@ public class ShardingSessionConfig extends SessionConfig
     {
         return audioSendFactory;
     }
+
+    public static ShardingSessionConfig getDefault()
+    {
+        return new ShardingSessionConfig(null, null, null, null, null, true, true, true, true, 900);
+    }
 }

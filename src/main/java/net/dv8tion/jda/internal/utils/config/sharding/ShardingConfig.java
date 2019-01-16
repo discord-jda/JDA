@@ -51,4 +51,9 @@ public class ShardingConfig
     {
         return useShutdownNow;
     }
+
+    public static ShardingConfig getDefault()
+    {
+        return new ShardingConfig(1, null, false);
+    }
 }

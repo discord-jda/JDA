@@ -53,4 +53,9 @@ public class ShardingMetaConfig extends MetaConfig
     {
         return contextProvider;
     }
+
+    public static ShardingMetaConfig getDefault()
+    {
+        return new ShardingMetaConfig(null, null, false, true, true);
+    }
 }
