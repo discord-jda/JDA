@@ -1286,7 +1286,7 @@ public class EntityBuilder
 
     public ApplicationInfo createApplicationInfo(JSONObject object)
     {
-        final String description = object.getString("description");
+        final String description = object.optString("description", null);
         final boolean doesBotRequireCodeGrant = object.getBoolean("bot_require_code_grant");
         final String iconId = object.optString("icon", null);
         final long id = object.getLong("id");
