@@ -346,15 +346,14 @@ public interface RestAction<T>
     CompletableFuture<T> submit(boolean shouldQueue);
 
     /**
-     * Schedules a call to {@link #complete()} to be executed after the specified {@code delay}.
+     * Schedules a call to {@link #queue()} to be executed after the specified {@code delay}.
      * <br>This is an <b>asynchronous</b> operation that will return a
-     * {@link java.util.concurrent.ScheduledFuture ScheduledFuture} representing the task.
+     * {@link CompletableFuture CompletableFuture} representing the task.
      *
-     * <p>The returned Future will provide the return type of a {@link #complete()} operation when
-     * received through the <b>blocking</b> call to {@link java.util.concurrent.Future#get()}!
+     * <p>Similar to {@link #queueAfter(long, TimeUnit)} but does not require callbacks to be passed.
+     * Continuations of {@link CompletableFuture} can be used instead.
      *
-     * <p>The global JDA {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService}
-     * is used for this operation.
+     * <p>The global JDA RateLimit {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} is used for this operation.
      * <br>You can change the core pool size for this Executor through {@link net.dv8tion.jda.api.JDABuilder#setCorePoolSize(int) JDABuilder.setCorePoolSize(int)}
      * or you can provide your own Executor using {@link #submitAfter(long, java.util.concurrent.TimeUnit, java.util.concurrent.ScheduledExecutorService)}!
      *
@@ -366,8 +365,8 @@ public interface RestAction<T>
      * @throws java.lang.IllegalArgumentException
      *         If the provided TimeUnit is {@code null}
      *
-     * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture} representing the
-     *         delayed operation
+     * @return {@link CompletableFuture CompletableFuture}
+     *         representing the delayed operation
      */
     default CompletableFuture<T> submitAfter(long delay, TimeUnit unit)
     {
@@ -375,12 +374,12 @@ public interface RestAction<T>
     }
 
     /**
-     * Schedules a call to {@link #complete()} to be executed after the specified {@code delay}.
+     * Schedules a call to {@link #queue()} to be executed after the specified {@code delay}.
      * <br>This is an <b>asynchronous</b> operation that will return a
-     * {@link java.util.concurrent.ScheduledFuture ScheduledFuture} representing the task.
+     * {@link CompletableFuture CompletableFuture} representing the task.
      *
-     * <p>The returned Future will provide the return type of a {@link #complete()} operation when
-     * received through the <b>blocking</b> call to {@link java.util.concurrent.Future#get()}!
+     * <p>Similar to {@link #queueAfter(long, TimeUnit)} but does not require callbacks to be passed.
+     * Continuations of {@link CompletableFuture} can be used instead.
      *
      * <p>The specified {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} is used for this operation.
      *
@@ -389,13 +388,13 @@ public interface RestAction<T>
      * @param  unit
      *         The {@link java.util.concurrent.TimeUnit TimeUnit} to convert the specified {@code delay}
      * @param  executor
-     *         The Non-null {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} that should be used
-     *         to schedule this operation
+     *         The {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} that should be used
+     *         to schedule this operation, or null to use the default
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the provided TimeUnit or ScheduledExecutorService is {@code null}
+     *         If the provided TimeUnit is {@code null}
      *
-     * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
+     * @return {@link CompletableFuture CompletableFuture}
      *         representing the delayed operation
      */
     default CompletableFuture<T> submitAfter(long delay, TimeUnit unit, ScheduledExecutorService executor)
