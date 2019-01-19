@@ -21,8 +21,12 @@ import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.ContextRunnable;
+import net.dv8tion.jda.internal.utils.concurrent.ProxyCompletableFuture;
 
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
@@ -365,7 +369,7 @@ public interface RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture} representing the
      *         delayed operation
      */
-    default ScheduledFuture<T> submitAfter(long delay, TimeUnit unit)
+    default CompletableFuture<T> submitAfter(long delay, TimeUnit unit)
     {
         return submitAfter(delay, unit, null);
     }
@@ -394,12 +398,15 @@ public interface RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
      */
-    default ScheduledFuture<T> submitAfter(long delay, TimeUnit unit, ScheduledExecutorService executor)
+    default CompletableFuture<T> submitAfter(long delay, TimeUnit unit, ScheduledExecutorService executor)
     {
         Checks.notNull(unit, "TimeUnit");
         if (executor == null)
             executor = getJDA().getRateLimitPool();
-        return executor.schedule((Callable<T>) new ContextRunnable<>((Callable<T>) this::complete), delay, unit);
+        ProxyCompletableFuture<T> task = new ProxyCompletableFuture<>();
+        ScheduledFuture<?> handle = executor.schedule((Runnable) new ContextRunnable<>(() -> queue(task::complete, task::completeExceptionally)), delay, unit);
+        task.initProxy(handle);
+        return task;
     }
 
     /**
