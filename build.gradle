@@ -125,6 +125,7 @@ processTestResources.enabled = false
 jar {
     baseName = project.name
     manifest.attributes 'Implementation-Version': version
+    manifest.attributes 'Automatic-Module-Name': 'net.dv8tion.jda'
 }
 
 shadowJar.classifier = 'withDependencies'
@@ -139,9 +140,7 @@ task noOpusJar(type: ShadowJar, dependsOn: shadowJar) {
     exclude 'club/minnced/opus/util/*'
     exclude 'tomp2p/opuswrapper/*'
 
-    manifest {
-        inheritFrom jar.manifest
-    }
+    manifest.inheritFrom jar.manifest
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
