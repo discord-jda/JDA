@@ -18,10 +18,10 @@ package net.dv8tion.jda.api.requests;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
+import net.dv8tion.jda.api.utils.concurrent.DelayedCompletableFuture;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.ContextRunnable;
-import net.dv8tion.jda.internal.utils.concurrent.ProxyCompletableFuture;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
@@ -365,10 +365,10 @@ public interface RestAction<T>
      * @throws java.lang.IllegalArgumentException
      *         If the provided TimeUnit is {@code null}
      *
-     * @return {@link CompletableFuture CompletableFuture}
+     * @return {@link DelayedCompletableFuture DelayedCompletableFuture}
      *         representing the delayed operation
      */
-    default CompletableFuture<T> submitAfter(long delay, TimeUnit unit)
+    default DelayedCompletableFuture<T> submitAfter(long delay, TimeUnit unit)
     {
         return submitAfter(delay, unit, null);
     }
@@ -394,15 +394,15 @@ public interface RestAction<T>
      * @throws java.lang.IllegalArgumentException
      *         If the provided TimeUnit is {@code null}
      *
-     * @return {@link CompletableFuture CompletableFuture}
+     * @return {@link DelayedCompletableFuture DelayedCompletableFuture}
      *         representing the delayed operation
      */
-    default CompletableFuture<T> submitAfter(long delay, TimeUnit unit, ScheduledExecutorService executor)
+    default DelayedCompletableFuture<T> submitAfter(long delay, TimeUnit unit, ScheduledExecutorService executor)
     {
         Checks.notNull(unit, "TimeUnit");
         if (executor == null)
             executor = getJDA().getRateLimitPool();
-        ProxyCompletableFuture<T> task = new ProxyCompletableFuture<>();
+        DelayedCompletableFuture<T> task = new DelayedCompletableFuture<>();
         ScheduledFuture<?> handle = executor.schedule((Runnable) new ContextRunnable<>(() -> queue(task::complete, task::completeExceptionally)), delay, unit);
         task.initProxy(handle);
         return task;
