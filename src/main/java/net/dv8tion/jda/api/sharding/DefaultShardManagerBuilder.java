@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.hooks.IEventManager;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -707,6 +708,12 @@ public class  DefaultShardManagerBuilder
      * <br><b>This automatically disables the automatic shutdown of the rate-limit pool, you can enable
      * it using {@link #setRateLimitPool(ScheduledExecutorService, boolean) setRateLimiPool(executor, true)}</b>
      *
+     * <p>This is used mostly by the Rate-Limiter to handle backoff delays by using scheduled executions.
+     * Besides that it is also used by planned execution for {@link net.dv8tion.jda.api.requests.RestAction#queueAfter(long, TimeUnit)}
+     * and similar methods.
+     *
+     * <p>Default: {@link ScheduledThreadPoolExecutor} with 5 threads (per shard).
+     *
      * @param  pool
      *         The thread-pool to use for rate-limit handling
      *
@@ -722,6 +729,12 @@ public class  DefaultShardManagerBuilder
      * the JDA rate-limit handler. Changing this can drastically change the JDA behavior for RestAction execution
      * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
      * <br>This will override the rate-limit pool provider set from {@link #setRateLimitPoolProvider(ThreadPoolProvider)}.
+     *
+     * <p>This is used mostly by the Rate-Limiter to handle backoff delays by using scheduled executions.
+     * Besides that it is also used by planned execution for {@link net.dv8tion.jda.api.requests.RestAction#queueAfter(long, TimeUnit)}
+     * and similar methods.
+     *
+     * <p>Default: {@link ScheduledThreadPoolExecutor} with 5 threads (per shard).
      *
      * @param  pool
      *         The thread-pool to use for rate-limit handling
@@ -739,6 +752,12 @@ public class  DefaultShardManagerBuilder
      * Sets the {@link ScheduledExecutorService ScheduledExecutorService} provider that should be used in
      * the JDA rate-limit handler. Changing this can drastically change the JDA behavior for RestAction execution
      * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
+     *
+     * <p>This is used mostly by the Rate-Limiter to handle backoff delays by using scheduled executions.
+     * Besides that it is also used by planned execution for {@link net.dv8tion.jda.api.requests.RestAction#queueAfter(long, TimeUnit)}
+     * and similar methods.
+     *
+     * <p>Default: {@link ScheduledThreadPoolExecutor} with 5 threads (per shard).
      *
      * @param  provider
      *         The thread-pool provider to use for rate-limit handling
@@ -759,6 +778,19 @@ public class  DefaultShardManagerBuilder
      * <br><b>This automatically disables the automatic shutdown of the main-ws pools, you can enable
      * it using {@link #setGatewayPool(ScheduledExecutorService, boolean) setGatewayPoolProvider(pool, true)}</b>
      *
+     * <p>This is used to send various forms of session updates such as:
+     * <ul>
+     *     <li>Voice States - (Dis-)Connecting from channels</li>
+     *     <li>Presence - Changing current activity or online status</li>
+     *     <li>Guild Setup - Requesting Members of newly joined guilds</li>
+     *     <li>Heartbeats - Regular updates to keep the connection alive (usually once a minute)</li>
+     * </ul>
+     * When nothing has to be sent the pool will only be used every 500 seconds to check the queue for new payloads.
+     * Once a new payload is sent we switch to "rapid mode" which means more tasks will be submitted until no more payloads
+     * have to be sent.
+     *
+     * <p>Default: {@link ScheduledThreadPoolExecutor} with 1 thread (per shard)
+     *
      * @param  pool
      *         The thread-pool to use for main WebSocket workers
      *
@@ -774,6 +806,19 @@ public class  DefaultShardManagerBuilder
      * the JDA main WebSocket workers.
      * <br><b>Only change this pool if you know what you're doing.</b>
      * <br>This will override the worker pool provider set from {@link #setGatewayPoolProvider(ThreadPoolProvider)}.
+     *
+     * <p>This is used to send various forms of session updates such as:
+     * <ul>
+     *     <li>Voice States - (Dis-)Connecting from channels</li>
+     *     <li>Presence - Changing current activity or online status</li>
+     *     <li>Guild Setup - Requesting Members of newly joined guilds</li>
+     *     <li>Heartbeats - Regular updates to keep the connection alive (usually once a minute)</li>
+     * </ul>
+     * When nothing has to be sent the pool will only be used every 500 seconds to check the queue for new payloads.
+     * Once a new payload is sent we switch to "rapid mode" which means more tasks will be submitted until no more payloads
+     * have to be sent.
+     *
+     * <p>Default: {@link ScheduledThreadPoolExecutor} with 1 thread (per shard)
      *
      * @param  pool
      *         The thread-pool to use for main WebSocket workers
@@ -791,6 +836,19 @@ public class  DefaultShardManagerBuilder
      * Sets the {@link ScheduledExecutorService ScheduledExecutorService} that should be used for
      * the JDA main WebSocket workers.
      * <br><b>Only change this pool if you know what you're doing.</b>
+     *
+     * <p>This is used to send various forms of session updates such as:
+     * <ul>
+     *     <li>Voice States - (Dis-)Connecting from channels</li>
+     *     <li>Presence - Changing current activity or online status</li>
+     *     <li>Guild Setup - Requesting Members of newly joined guilds</li>
+     *     <li>Heartbeats - Regular updates to keep the connection alive (usually once a minute)</li>
+     * </ul>
+     * When nothing has to be sent the pool will only be used every 500 seconds to check the queue for new payloads.
+     * Once a new payload is sent we switch to "rapid mode" which means more tasks will be submitted until no more payloads
+     * have to be sent.
+     *
+     * <p>Default: {@link ScheduledThreadPoolExecutor} with 1 thread (per shard)
      *
      * @param  provider
      *         The thread-pool provider to use for main WebSocket workers
@@ -811,6 +869,11 @@ public class  DefaultShardManagerBuilder
      * <br>This automatically disables the automatic shutdown of the callback pools, you can enable
      * it using {@link #setCallbackPool(ExecutorService, boolean) setCallbackPool(executor, true)}</b>
      *
+     * <p>This is used to handle callbacks of {@link RestAction#queue()}, similarly it is used to
+     * finish {@link RestAction#submit()} and {@link RestAction#complete()} tasks which build on queue.
+     *
+     * <p>Default: {@link ForkJoinPool#commonPool()}
+     *
      * @param  executor
      *         The thread-pool to use for callback handling
      *
@@ -826,6 +889,11 @@ public class  DefaultShardManagerBuilder
      * the JDA callback handler which mostly consists of {@link net.dv8tion.jda.api.requests.RestAction RestAction} callbacks.
      * By default JDA will use {@link ForkJoinPool#commonPool()}
      * <br><b>Only change this pool if you know what you're doing.</b>
+     *
+     * <p>This is used to handle callbacks of {@link RestAction#queue()}, similarly it is used to
+     * finish {@link RestAction#submit()} and {@link RestAction#complete()} tasks which build on queue.
+     *
+     * <p>Default: {@link ForkJoinPool#commonPool()}
      *
      * @param  executor
      *         The thread-pool to use for callback handling
@@ -844,6 +912,11 @@ public class  DefaultShardManagerBuilder
      * the JDA callback handler which mostly consists of {@link net.dv8tion.jda.api.requests.RestAction RestAction} callbacks.
      * By default JDA will use {@link ForkJoinPool#commonPool()}
      * <br><b>Only change this pool if you know what you're doing.</b>
+     *
+     * <p>This is used to handle callbacks of {@link RestAction#queue()}, similarly it is used to
+     * finish {@link RestAction#submit()} and {@link RestAction#complete()} tasks which build on queue.
+     *
+     * <p>Default: {@link ForkJoinPool#commonPool()}
      *
      * @param  provider
      *         The thread-pool provider to use for callback handling
