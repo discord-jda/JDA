@@ -103,11 +103,34 @@ public class DefaultShardManager implements ShardManager
      */
     protected String gatewayURL;
 
+    /**
+     * {@link PresenceProviderConfig} containing providers for activity and other presence information.
+     */
     protected final PresenceProviderConfig presenceConfig;
+
+    /**
+     * {@link EventConfig} containing listeners and possibly a custom event manager.
+     */
     protected final EventConfig eventConfig;
+
+    /**
+     * {@link ShardingConfig} containing information on shard specific meta information.
+     */
     protected final ShardingConfig shardingConfig;
+
+    /**
+     * {@link ThreadingProviderConfig} containing a series of {@link ThreadPoolProvider} instances for shard specific configuration.
+     */
     protected final ThreadingProviderConfig threadingConfig;
+
+    /**
+     * {@link ShardingSessionConfig} containing general configurations for sessions of shards like the http client.
+     */
     protected final ShardingSessionConfig sessionConfig;
+
+    /**
+     * {@link ShardingMetaConfig} containing details on logging configuration, compression mode and shutdown behavior of the manager.
+     */
     protected final ShardingMetaConfig metaConfig;
 
     public DefaultShardManager(String token)
