@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
  * @see    CompletableFuture
  * @see    Delayed
  */
-public class DelayedCompletableFuture<T> extends CompletableFuture<T> implements Delayed
+public class DelayedCompletableFuture<T> extends CompletableFuture<T> implements ScheduledFuture<T>
 {
     private ScheduledFuture<?> future;
 
