@@ -20,7 +20,7 @@ package net.dv8tion.jda.api.entities;
  * Represents a channel that is able to transmit and receive audio.
  *
  * @see   net.dv8tion.jda.api.entities.VoiceChannel
- * @see   net.dv8tion.jda.client.entities.Call
+ *
  * @since 3.0
  */
 public interface AudioChannel extends ISnowflake

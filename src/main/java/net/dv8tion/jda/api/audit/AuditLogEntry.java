@@ -33,8 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Single entry for an {@link net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction
- * AuditLogPaginationAction}.
+ * Single entry for an {@link net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction AuditLogPaginationAction}.
  * <br>This entry contains all options/changes and details for the action
  * that was logged by the {@link net.dv8tion.jda.api.entities.Guild Guild} audit-logs.
  */

@@ -20,12 +20,12 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
-import net.dv8tion.jda.api.requests.Request;
-import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.pagination.ReactionPaginationActionImpl;
 
 import javax.annotation.CheckReturnValue;
 import java.util.Objects;
@@ -228,7 +228,7 @@ public class MessageReaction
      *     <br>If we were removed from the channel/guild</li>
      * </ul>
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction}
+     * @return {@link ReactionPaginationAction ReactionPaginationAction}
      *         <br>Retrieves an immutable list of users that reacted with this Reaction.
      */
     @CheckReturnValue
@@ -260,13 +260,13 @@ public class MessageReaction
      * @throws IllegalArgumentException
      *         if the provided amount is not between 1-100
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction}
+     * @return {@link ReactionPaginationAction ReactionPaginationAction}
      *         <br>Retrieves an immutable list of users that reacted with this Reaction.
      */
     @CheckReturnValue
     public ReactionPaginationAction getUsers(int amount)
     {
-        return new ReactionPaginationAction(this).limit(amount);
+        return new ReactionPaginationActionImpl(this).limit(amount);
     }
 
     /**
@@ -354,17 +354,7 @@ public class MessageReaction
             route = Route.Messages.REMOVE_OWN_REACTION.compile(channel.getId(), getMessageId(), code);
         else
             route = Route.Messages.REMOVE_REACTION.compile(channel.getId(), getMessageId(), code, user.getId());
-        return new RestAction<Void>(getJDA(), route)
-        {
-            @Override
-            protected void handleResponse(Response response, Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new RestActionImpl<>(getJDA(), route);
     }
 
     @Override

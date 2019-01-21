@@ -21,12 +21,13 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.api.requests.Request;
-import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.requests.EmptyRestAction;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -80,22 +81,9 @@ public class InviteImpl implements Invite
         if (withCounts)
             route = route.withQueryParams("with_counts", "true");
 
-        return new RestAction<Invite>(api, route)
-        {
-            @Override
-            protected void handleResponse(final Response response, final Request<Invite> request)
-            {
-                if (response.isOk())
-                {
-                    final Invite invite = this.api.get().getEntityBuilder().createInvite(response.getObject());
-                    request.onSuccess(invite);
-                }
-                else
-                {
-                    request.onFailure(response);
-                }
-            }
-        };
+        JDAImpl jda = (JDAImpl) api;
+        return new RestActionImpl<>(api, route, (response, request) ->
+                jda.getEntityBuilder().createInvite(response.getObject()));
     }
 
     @Override
@@ -103,24 +91,14 @@ public class InviteImpl implements Invite
     {
         final Route.CompiledRoute route = Route.Invites.DELETE_INVITE.compile(this.code);
 
-        return new AuditableRestAction<Void>(this.api, route)
-        {
-            @Override
-            protected void handleResponse(final Response response, final Request<Void> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(null);
-                else
-                    request.onFailure(response);
-            }
-        };
+        return new AuditableRestActionImpl<>(this.api, route);
     }
 
     @Override
     public RestAction<Invite> expand()
     {
         if (this.expanded)
-            return new RestAction.EmptyRestAction<>(getJDA(), this);
+            return new EmptyRestAction<>(getJDA(), this);
 
         if (this.type != Invite.InviteType.GUILD)
             throw new IllegalStateException("Only guild invites can be expanded");
@@ -151,32 +129,20 @@ public class InviteImpl implements Invite
             throw new InsufficientPermissionException(Permission.MANAGE_CHANNEL, "You don't have the permission to view the full invite info");
         }
 
-        return new RestAction<Invite>(this.api, route)
+        return new RestActionImpl<>(this.api, route, (response, request) ->
         {
-            @Override
-            protected void handleResponse(final Response response, final Request<Invite> request)
+            final EntityBuilder entityBuilder = this.api.getEntityBuilder();
+            final JSONArray array = response.getArray();
+            for (int i = 0; i < array.length(); i++)
             {
-                if (response.isOk())
+                final JSONObject object = array.getJSONObject(i);
+                if (InviteImpl.this.code.equals(object.getString("code")))
                 {
-                    final EntityBuilder entityBuilder = this.api.get().getEntityBuilder();
-                    final JSONArray array = response.getArray();
-                    for (int i = 0; i < array.length(); i++)
-                    {
-                        final JSONObject object = array.getJSONObject(i);
-                        if (InviteImpl.this.code.equals(object.getString("code")))
-                        {
-                            request.onSuccess(entityBuilder.createInvite(object));
-                            return;
-                        }
-                    }
-                    request.onFailure(new IllegalStateException("Missing the invite in the channel/guild invite list"));
-                }
-                else
-                {
-                    request.onFailure(response);
+                    return entityBuilder.createInvite(object);
                 }
             }
-        };
+            throw new IllegalStateException("Missing the invite in the channel/guild invite list");
+        });
     }
 
     @Override

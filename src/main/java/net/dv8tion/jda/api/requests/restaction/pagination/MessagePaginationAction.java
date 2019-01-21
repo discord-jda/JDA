@@ -1,11 +1,11 @@
 /*
- *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
+ * Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,24 +16,12 @@
 
 package net.dv8tion.jda.api.requests.restaction.pagination;
 
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.api.requests.Request;
-import net.dv8tion.jda.api.requests.Response;
-import net.dv8tion.jda.internal.entities.EntityBuilder;
-import net.dv8tion.jda.internal.requests.Route;
-import org.json.JSONArray;
-import org.json.JSONException;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * {@link net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction PaginationAction}
+ * {@link PaginationAction PaginationAction}
  * that paginates the endpoints {@link net.dv8tion.jda.internal.requests.Route.Messages#GET_MESSAGE_HISTORY Route.Messages.GET_MESSAGE_HISTORY}.
  *
  * <p><b>Must provide not-null {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel} to compile a valid
@@ -52,7 +40,7 @@ import java.util.List;
  * {
  *     if (limit{@literal <} 1)
  *         return;
- *     <u>MessagePaginationAction</u> action = channel.<u>getIterableHistory</u>();
+ *     MessagePaginationAction action = channel.getIterableHistory();
  *     AtomicInteger counter = new AtomicInteger(limit);
  *     action.forEachAsync( (message){@literal ->}
  *     {
@@ -64,32 +52,18 @@ import java.util.List;
  * </code></pre>
  *
  * @since  3.1
+ *
+ * @see    MessageChannel#getIterableHistory()
  */
-public class MessagePaginationAction extends PaginationAction<Message, MessagePaginationAction>
+public interface MessagePaginationAction extends PaginationAction<Message, MessagePaginationAction>
 {
-    private final MessageChannel channel;
-
-    public MessagePaginationAction(MessageChannel channel)
-    {
-        super(channel.getJDA(), Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId()), 1, 100, 100);
-
-        if (channel.getType() == ChannelType.TEXT)
-        {
-            TextChannel textChannel = (TextChannel) channel;
-            if (!textChannel.getGuild().getSelfMember().hasPermission(textChannel, Permission.MESSAGE_HISTORY))
-                throw new InsufficientPermissionException(Permission.MESSAGE_HISTORY);
-        }
-
-        this.channel = channel;
-    }
-
     /**
      * The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} of
      * the targeted {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
      *
      * @return {@link net.dv8tion.jda.api.entities.ChannelType ChannelType}
      */
-    public ChannelType getType()
+    default ChannelType getType()
     {
         return getChannel().getType();
     }
@@ -99,56 +73,5 @@ public class MessagePaginationAction extends PaginationAction<Message, MessagePa
      *
      * @return The MessageChannel instance
      */
-    public MessageChannel getChannel()
-    {
-        return channel;
-    }
-
-    @Override
-    protected Route.CompiledRoute finalizeRoute()
-    {
-        Route.CompiledRoute route = super.finalizeRoute();
-
-        final String limit = String.valueOf(this.getLimit());
-        final long last = this.lastKey;
-
-        route = route.withQueryParams("limit", limit);
-
-        if (last != 0)
-            route = route.withQueryParams("before", Long.toUnsignedString(last));
-
-        return route;
-    }
-
-    @Override
-    protected void handleResponse(Response response, Request<List<Message>> request)
-    {
-        if (!response.isOk())
-        {
-            request.onFailure(response);
-            return;
-        }
-
-        JSONArray array = response.getArray();
-        List<Message> messages = new ArrayList<>(array.length());
-        EntityBuilder builder = api.get().getEntityBuilder();
-        for (int i = 0; i < array.length(); i++)
-        {
-            try
-            {
-                Message msg = builder.createMessage(array.getJSONObject(i), channel, false);
-                messages.add(msg);
-                if (useCache)
-                    cached.add(msg);
-                last = msg;
-                lastKey = last.getIdLong();
-            }
-            catch (JSONException | NullPointerException e)
-            {
-                LOG.warn("Encountered an exception in MessagePagination", e);
-            }
-        }
-
-        request.onSuccess(messages);
-    }
+    MessageChannel getChannel();
 }

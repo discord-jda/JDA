@@ -29,7 +29,7 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '2.0.4'
 }
 
-def versionObj = new Version(major: 4, minor: 0, revision: 0)
+def versionObj = new Version(major: 4, minor: 'ALPHA', revision: 0)
 
 group = "net.dv8tion"
 archivesBaseName = "JDA"
@@ -125,6 +125,7 @@ processTestResources.enabled = false
 jar {
     baseName = project.name
     manifest.attributes 'Implementation-Version': version
+    manifest.attributes 'Automatic-Module-Name': 'net.dv8tion.jda'
 }
 
 shadowJar.classifier = 'withDependencies'
@@ -139,9 +140,7 @@ task noOpusJar(type: ShadowJar, dependsOn: shadowJar) {
     exclude 'club/minnced/opus/util/*'
     exclude 'tomp2p/opuswrapper/*'
 
-    manifest {
-        inheritFrom jar.manifest
-    }
+    manifest.inheritFrom jar.manifest
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {

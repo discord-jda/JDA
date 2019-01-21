@@ -18,6 +18,8 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
+import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
+import net.dv8tion.jda.api.requests.restaction.order.OrderAction;
 
 import javax.annotation.CheckReturnValue;
 import java.util.List;
@@ -81,11 +83,11 @@ public interface Category extends GuildChannel, Comparable<Category>
      * @throws IllegalArgumentException
      *         If the provided name is {@code null} or empty or greater than 100 characters in length
      *
-     * @return A specific {@link net.dv8tion.jda.api.requests.restaction.ChannelAction ChannelAction}
+     * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new TextChannel before creating it
      */
     @CheckReturnValue
-    ChannelAction createTextChannel(String name);
+    ChannelAction<TextChannel> createTextChannel(String name);
 
     /**
      * Creates a new {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} with this Category as parent.
@@ -112,21 +114,21 @@ public interface Category extends GuildChannel, Comparable<Category>
      * @throws IllegalArgumentException
      *         If the provided name is {@code null} or empty or greater than 100 characters in length
      *
-     * @return A specific {@link net.dv8tion.jda.api.requests.restaction.ChannelAction ChannelAction}
+     * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new VoiceChannel before creating it
      */
     @CheckReturnValue
-    ChannelAction createVoiceChannel(String name);
+    ChannelAction<VoiceChannel> createVoiceChannel(String name);
 
     /**
      * Modifies the positional order of this Category's nested {@link #getTextChannels() TextChannels}.
-     * <br>This uses an extension of {@link net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction ChannelOrderAction}
+     * <br>This uses an extension of {@link ChannelOrderAction ChannelOrderAction}
      * specialized for ordering the nested {@link net.dv8tion.jda.api.entities.TextChannel TextChannels} of this
      * {@link net.dv8tion.jda.api.entities.Category Category}.
-     * <br>Like {@code ChannelOrderAction}, the returned {@link net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction CategoryOrderAction}
-     * can be used to move TextChannels {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveUp(int) up},
-     * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveDown(int) down}, or
-     * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
+     * <br>Like {@code ChannelOrderAction}, the returned {@link CategoryOrderAction CategoryOrderAction}
+     * can be used to move TextChannels {@link OrderAction#moveUp(int) up},
+     * {@link OrderAction#moveDown(int) down}, or
+     * {@link OrderAction#moveTo(int) to} a specific position.
      * <br>This uses <b>ascending</b> order with a 0 based index.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
@@ -138,7 +140,7 @@ public interface Category extends GuildChannel, Comparable<Category>
      *     <br>The currently logged in account was removed from the Guild.</li>
      * </ul>
      *
-     * @return A {@link net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction CategoryOrderAction} for
+     * @return A {@link CategoryOrderAction CategoryOrderAction} for
      *         ordering the Category's {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}.
      */
     @CheckReturnValue
@@ -146,13 +148,13 @@ public interface Category extends GuildChannel, Comparable<Category>
 
     /**
      * Modifies the positional order of this Category's nested {@link #getVoiceChannels() VoiceChannels}.
-     * <br>This uses an extension of {@link net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction ChannelOrderAction}
+     * <br>This uses an extension of {@link ChannelOrderAction ChannelOrderAction}
      * specialized for ordering the nested {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} of this
      * {@link net.dv8tion.jda.api.entities.Category Category}.
-     * <br>Like {@code ChannelOrderAction}, the returned {@link net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction CategoryOrderAction}
-     * can be used to move VoiceChannels {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveUp(int) up},
-     * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveDown(int) down}, or
-     * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
+     * <br>Like {@code ChannelOrderAction}, the returned {@link CategoryOrderAction CategoryOrderAction}
+     * can be used to move VoiceChannels {@link OrderAction#moveUp(int) up},
+     * {@link OrderAction#moveDown(int) down}, or
+     * {@link OrderAction#moveTo(int) to} a specific position.
      * <br>This uses <b>ascending</b> order with a 0 based index.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
@@ -164,9 +166,15 @@ public interface Category extends GuildChannel, Comparable<Category>
      *     <br>The currently logged in account was removed from the Guild.</li>
      * </ul>
      *
-     * @return A {@link net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction CategoryOrderAction} for
+     * @return A {@link CategoryOrderAction CategoryOrderAction} for
      *         ordering the Category's {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}.
      */
     @CheckReturnValue
     CategoryOrderAction<VoiceChannel> modifyVoiceChannelPositions();
+
+    @Override
+    ChannelAction<Category> createCopy(Guild guild);
+
+    @Override
+    ChannelAction<Category> createCopy();
 }

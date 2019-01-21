@@ -25,10 +25,17 @@ import net.dv8tion.jda.api.requests.restaction.GuildAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
+import net.dv8tion.jda.internal.requests.Route;
+import okhttp3.OkHttpClient;
 
 import javax.annotation.CheckReturnValue;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * The core of JDA. Acts as a registry system of JDA. All parts of the the API can be accessed starting from this class.
@@ -179,8 +186,37 @@ public interface JDA
      * correlate to this value!</b>
      *
      * @return time in milliseconds between heartbeat and the heartbeat ack response
+     *
+     * @see    #getRestPing() Getting RestAction ping
      */
-    long getPing();
+    long getGatewayPing();
+
+    /**
+     * The time in milliseconds that discord took to respond to a REST request.
+     * <br>This will request the current user from the API and calculate the time the response took.
+     *
+     * <h2>Example</h2>
+     * <pre><code>
+     * jda.getRestPing().queue( (time) {@literal ->}
+     *     channel.sendMessageFormat("Ping: %d ms", time).queue()
+     * );
+     * </code></pre>
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: long
+     *
+     * @see    #getGatewayPing()
+     */
+    default RestAction<Long> getRestPing()
+    {
+        AtomicLong time = new AtomicLong();
+        Route.CompiledRoute route = Route.Self.GET_SELF.compile();
+        RestActionImpl<Long> action = new RestActionImpl<>(this, route, (response, request) -> System.currentTimeMillis() - time.get());
+        action.setCheck(() -> {
+            time.set(System.currentTimeMillis());
+            return true;
+        });
+        return action;
+    }
 
     /**
      * This method will block until JDA has reached the specified connection status.
@@ -249,6 +285,38 @@ public interface JDA
     List<String> getWebSocketTrace();
 
     /**
+     * {@link ScheduledExecutorService} used to handle rate-limits for {@link RestAction}
+     * executions. This is also used in other parts of JDA related to http requests.
+     *
+     * @return The {@link ScheduledExecutorService} used for http request handling
+     */
+    ScheduledExecutorService getRateLimitPool();
+
+    /**
+     * {@link ScheduledExecutorService} used to send WebSocket messages to discord.
+     * <br>This involves initial setup of guilds as well as keeping the connection alive.
+     *
+     * @return The {@link ScheduledExecutorService} used for WebSocket transmissions
+     */
+    ScheduledExecutorService getGatewayPool();
+
+    /**
+     * {@link ExecutorService} used to handle {@link RestAction} callbacks
+     * and completions.
+     * <br>By default this uses the {@link ForkJoinPool#commonPool() CommonPool} of the runtime.
+     *
+     * @return The {@link ExecutorService} used for callbacks
+     */
+    ExecutorService getCallbackPool();
+
+    /**
+     * The {@link OkHttpClient} used for handling http requests from {@link RestAction RestActions}.
+     *
+     * @return The http client
+     */
+    OkHttpClient getHttpClient();
+
+    /**
      * Changes the internal EventManager.
      *
      * <p>The default EventManager is {@link net.dv8tion.jda.api.hooks.InterfacedEventManager InterfacedEventListener}.
@@ -295,7 +363,7 @@ public interface JDA
 
     /**
      * Constructs a new {@link net.dv8tion.jda.api.entities.Guild Guild} with the specified name
-     * <br>Use the returned {@link net.dv8tion.jda.api.requests.restaction.GuildAction GuildAction} to provide
+     * <br>Use the returned {@link GuildAction GuildAction} to provide
      * further details and settings for the resulting Guild!
      *
      * <p>This RestAction does not provide the resulting Guild!
@@ -313,7 +381,7 @@ public interface JDA
      * @throws java.lang.IllegalArgumentException
      *         If the provided name is empty, {@code null} or not between 2-100 characters
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.GuildAction GuildAction}
+     * @return {@link GuildAction GuildAction}
      *         <br>Allows for setting various details for the resulting Guild
      */
     GuildAction createGuild(String name);

@@ -273,7 +273,7 @@ public class ChannelUpdateHandler extends SocketHandler
             return ((Role) permHolder).getIdLong();
     }
 
-    private void applyPermissions(AbstractChannelImpl<?> channel, JSONObject content,
+    private void applyPermissions(AbstractChannelImpl<?,?> channel, JSONObject content,
                                   JSONArray permOverwrites, List<IPermissionHolder> contained, List<IPermissionHolder> changed)
     {
 
@@ -314,7 +314,7 @@ public class ChannelUpdateHandler extends SocketHandler
         return holder == null ? guild.getMemberById(id) : holder;
     }
 
-    private void handlePermissionOverride(JSONObject override, AbstractChannelImpl<?> channel, JSONObject content,
+    private void handlePermissionOverride(JSONObject override, AbstractChannelImpl<?,?> channel, JSONObject content,
                                           List<IPermissionHolder> changedPermHolders, List<IPermissionHolder> containedPermHolders)
     {
         final long id = override.getLong("id");

@@ -22,7 +22,23 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.user.update.GenericUserPresenceEvent;
 
-public class UserActivityEndEvent extends GenericUserEvent implements GenericUserPresenceEvent // TODO: Docs
+/**
+ * Indicates that a {@link net.dv8tion.jda.api.entities.User User} has stopped an {@link Activity}
+ * in a {@link Guild}.
+ *
+ * <p>This is fired for every {@link Guild} the user is part of. If the title of a stream
+ * changes a start event is fired before an end event which will replace the activity.
+ *
+ * <p>The activities of the {@link Member} are updated before all start/end events are fired.
+ * This means you can check {@link Member#getActivities()} when handling this event and it
+ * will already contain all new activities, even ones that have not yet fired the start event.
+ *
+ * <p>To check whether the activity has concluded rather than was replaced due to an update
+ * of one of its properties such as name you can check {@link Member#getActivities()}.
+ * Iterate the list of activities and check if an activity of the same {@link Activity#getType() type}
+ * exists, if that is the case it was replaced and not finished.
+ */
+public class UserActivityEndEvent extends GenericUserEvent implements GenericUserPresenceEvent
 {
     private final Activity oldActivity;
     private final Member member;
@@ -34,6 +50,11 @@ public class UserActivityEndEvent extends GenericUserEvent implements GenericUse
         this.member = member;
     }
 
+    /**
+     * The old activity
+     *
+     * @return The old activity
+     */
     public Activity getOldActivity()
     {
         return oldActivity;

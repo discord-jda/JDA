@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannelImpl> implements VoiceChannel
+public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannel, VoiceChannelImpl> implements VoiceChannel
 {
     private final TLongObjectMap<Member> connectedMembers = MiscUtil.newLongMap();
     private int userLimit;
@@ -74,10 +74,10 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannelImpl> impl
     }
 
     @Override
-    public ChannelAction createCopy(Guild guild)
+    public ChannelAction<VoiceChannel> createCopy(Guild guild)
     {
         Checks.notNull(guild, "Guild");
-        ChannelAction action = guild.getController().createVoiceChannel(name).setBitrate(bitrate).setUserlimit(userLimit);
+        ChannelAction<VoiceChannel> action = guild.getController().createVoiceChannel(name).setBitrate(bitrate).setUserlimit(userLimit);
         if (guild.equals(getGuild()))
         {
             Category parent = getParent();
