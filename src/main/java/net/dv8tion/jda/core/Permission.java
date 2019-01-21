@@ -178,7 +178,7 @@ public enum Permission
      */
     public boolean isText()
     {
-        return offset > 9 && offset < 20;
+        return offset == 6 || (offset > 9 && offset < 20);
     }
 
     /**
@@ -188,7 +188,7 @@ public enum Permission
      */
     public boolean isVoice()
     {
-        return offset == 10 || offset == 8 || offset > 19 && offset < 26;
+        return offset == 10 || offset == 8 || (offset > 19 && offset < 26);
     }
 
     /**
