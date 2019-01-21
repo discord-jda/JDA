@@ -19,6 +19,7 @@ package net.dv8tion.jda.api;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.managers.AudioManager;
+import net.dv8tion.jda.api.managers.DirectAudioController;
 import net.dv8tion.jda.api.managers.Presence;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.GuildAction;
@@ -315,6 +316,8 @@ public interface JDA
      * @return The http client
      */
     OkHttpClient getHttpClient();
+
+    DirectAudioController getAudioController();
 
     /**
      * Changes the internal EventManager.

@@ -153,7 +153,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
             {
                 oldChannel.getConnectedMembersMap().remove(userId);
                 if (isSelf)
-                    getJDA().getClient().updateAudioConnection(guildId, null);
+                    getJDA().getAudioController().update(guild, null);
                 getJDA().getEventManager().handle(
                         new GuildVoiceLeaveEvent(
                                 getJDA(), responseNumber,
@@ -176,7 +176,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
                     // we have just joined / moved to is the same as the currently queued audioRequest
                     // (handled by updateAudioConnection)
                     if (mng.isConnected())
-                        getJDA().getClient().updateAudioConnection(guildId, channel);
+                        getJDA().getAudioController().update(guild, channel);
                     //If we are not already connected this will be removed by VOICE_SERVER_UPDATE
                 }
 
@@ -191,7 +191,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
         if (voiceInterceptor != null)
         {
             if (voiceInterceptor.interceptStateUpdate(new VoiceDispatchInterceptor.VoiceStateUpdate(guild, channel, vState, allContent)))
-                getJDA().getClient().updateAudioConnection(guildId, channel);
+                getJDA().getAudioController().update(guild, channel);
         }
     }
 }

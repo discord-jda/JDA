@@ -32,6 +32,7 @@ import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.InterfacedEventManager;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.managers.AudioManager;
+import net.dv8tion.jda.api.managers.DirectAudioController;
 import net.dv8tion.jda.api.managers.Presence;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
@@ -47,6 +48,7 @@ import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.handle.GuildSetupController;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
+import net.dv8tion.jda.internal.managers.DirectAudioControllerImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
 import net.dv8tion.jda.internal.requests.*;
 import net.dv8tion.jda.internal.requests.restaction.GuildActionImpl;
@@ -108,6 +110,7 @@ public class JDAImpl implements JDA
     protected final SessionController sessionController;
     protected final GuildSetupController guildSetupController;
     protected final VoiceDispatchInterceptor voiceInterceptor;
+    protected final DirectAudioController audioController;
 
     protected UpstreamReference<WebSocketClient> client;
     protected Requester requester;
@@ -163,6 +166,7 @@ public class JDAImpl implements JDA
         this.requester.setRetryOnTimeout(retryOnTimeout);
         this.guildSetupController = new GuildSetupController(this);
         this.cacheFlags = cacheFlags;
+        this.audioController = new DirectAudioControllerImpl(this);
     }
 
     private ScheduledThreadPoolExecutor newScheduler(int coreSize, String baseName)
@@ -464,6 +468,12 @@ public class JDAImpl implements JDA
     public OkHttpClient getHttpClient()
     {
         return httpClient;
+    }
+
+    @Override
+    public DirectAudioController getAudioController()
+    {
+        return this.audioController;
     }
 
     @Override
