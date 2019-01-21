@@ -60,7 +60,7 @@ dependencies {
 
     //Web Connection Support
     api 'com.neovisionaries:nv-websocket-client:2.5'
-    api 'com.squareup.okhttp3:okhttp:3.12.0'
+    api 'com.squareup.okhttp3:okhttp:3.12.1'
 
     //Opus library support
     api ('club.minnced:opus-java:1.0.4@pom') {
