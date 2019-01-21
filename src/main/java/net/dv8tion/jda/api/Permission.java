@@ -28,44 +28,44 @@ import java.util.stream.Collectors;
 public enum Permission
 {
     CREATE_INSTANT_INVITE(0, true, true, "Create Instant Invite"),
-    KICK_MEMBERS(1, true, false, "Kick Members"),
-    BAN_MEMBERS(2, true, false, "Ban Members"),
-    ADMINISTRATOR(3, true, false, "Administrator"),
-    MANAGE_CHANNEL(4, true, true, "Manage Channels"),
-    MANAGE_SERVER(5, true, false, "Manage Server"),
-    MESSAGE_ADD_REACTION(6, true, true, "Add Reactions"),
-    VIEW_AUDIT_LOGS(7, true, false, "View Audit Logs"),
-    PRIORITY_SPEAKER(8, true, true, "Priority Speaker"),
+    KICK_MEMBERS(         1, true, false, "Kick Members"),
+    BAN_MEMBERS(          2, true, false, "Ban Members"),
+    ADMINISTRATOR(        3, true, false, "Administrator"),
+    MANAGE_CHANNEL(       4, true, true, "Manage Channels"),
+    MANAGE_SERVER(        5, true, false, "Manage Server"),
+    MESSAGE_ADD_REACTION( 6, true, true, "Add Reactions"),
+    VIEW_AUDIT_LOGS(      7, true, false, "View Audit Logs"),
+    PRIORITY_SPEAKER(     8, true, true, "Priority Speaker"),
 
     // Applicable to all channel types
-    VIEW_CHANNEL(10, true, true, "Read Text Channels & See Voice Channels"),
+    VIEW_CHANNEL(            10, true, true, "Read Text Channels & See Voice Channels"),
 
     // Text Permissions
-    MESSAGE_READ(10, true, true, "Read Messages"),
-    MESSAGE_WRITE(11, true, true, "Send Messages"),
-    MESSAGE_TTS(12, true, true, "Send TTS Messages"),
-    MESSAGE_MANAGE(13, true, true, "Manage Messages"),
-    MESSAGE_EMBED_LINKS(14, true, true, "Embed Links"),
-    MESSAGE_ATTACH_FILES(15, true, true, "Attach Files"),
-    MESSAGE_HISTORY(16, true, true, "Read History"),
+    MESSAGE_READ(            10, true, true, "Read Messages"),
+    MESSAGE_WRITE(           11, true, true, "Send Messages"),
+    MESSAGE_TTS(             12, true, true, "Send TTS Messages"),
+    MESSAGE_MANAGE(          13, true, true, "Manage Messages"),
+    MESSAGE_EMBED_LINKS(     14, true, true, "Embed Links"),
+    MESSAGE_ATTACH_FILES(    15, true, true, "Attach Files"),
+    MESSAGE_HISTORY(         16, true, true, "Read History"),
     MESSAGE_MENTION_EVERYONE(17, true, true, "Mention Everyone"),
-    MESSAGE_EXT_EMOJI(18, true, true, "Use External Emojis"),
+    MESSAGE_EXT_EMOJI(       18, true, true, "Use External Emojis"),
 
     // Voice Permissions
-    VOICE_CONNECT(20, true, true, "Connect"),
-    VOICE_SPEAK(21, true, true, "Speak"),
+    VOICE_CONNECT(    20, true, true, "Connect"),
+    VOICE_SPEAK(      21, true, true, "Speak"),
     VOICE_MUTE_OTHERS(22, true, true, "Mute Members"),
     VOICE_DEAF_OTHERS(23, true, true, "Deafen Members"),
     VOICE_MOVE_OTHERS(24, true, true, "Move Members"),
-    VOICE_USE_VAD(25, true, true, "Use Voice Activity"),
+    VOICE_USE_VAD(    25, true, true, "Use Voice Activity"),
 
     NICKNAME_CHANGE(26, true, false, "Change Nickname"),
     NICKNAME_MANAGE(27, true, false, "Manage Nicknames"),
 
-    MANAGE_ROLES(28, true, false, "Manage Roles"),
+    MANAGE_ROLES(      28, true, false, "Manage Roles"),
     MANAGE_PERMISSIONS(28, false, true, "Manage Permissions"),
-    MANAGE_WEBHOOKS(29, true, true, "Manage Webhooks"),
-    MANAGE_EMOTES(30, true, false, "Manage Emojis"),
+    MANAGE_WEBHOOKS(   29, true, true, "Manage Webhooks"),
+    MANAGE_EMOTES(     30, true, false, "Manage Emojis"),
 
     UNKNOWN(-1, false, false, "Unknown");
 
@@ -84,25 +84,28 @@ public enum Permission
      * All permissions that apply to a channel
      */
     public static final long ALL_CHANNEL_PERMISSIONS = Permission.getRaw(Arrays.stream(values())
-            .filter(Permission::isChannel).collect(Collectors.toList()));
+            .filter(Permission::isChannel).collect(Collectors.toSet()));
 
     /**
      * All Guild specific permissions which are only available to roles
      */
     public static final long ALL_GUILD_PERMISSIONS = Permission.getRaw(Arrays.stream(values())
-            .filter(Permission::isGuild).collect(Collectors.toList()));
+            .filter(Permission::isGuild).collect(Collectors.toSet()));
 
     /**
      * All text channel specific permissions which are only available in text channel permission overrides
      */
-    public static final long ALL_TEXT_PERMISSIONS = Permission.getRaw(Arrays.stream(values())
-            .filter(Permission::isText).collect(Collectors.toList()));
+    public static final long ALL_TEXT_PERMISSIONS
+            = Permission.getRaw(MESSAGE_ADD_REACTION, MESSAGE_WRITE, MESSAGE_TTS,
+                                MESSAGE_MANAGE, MESSAGE_EMBED_LINKS, MESSAGE_ATTACH_FILES,
+                                MESSAGE_HISTORY, MESSAGE_MENTION_EVERYONE);
 
     /**
      * All voice channel specific permissions which are only available in voice channel permission overrides
      */
-    public static final long ALL_VOICE_PERMISSIONS = Permission.getRaw(Arrays.stream(values())
-            .filter(Permission::isVoice).collect(Collectors.toList()));
+    public static final long ALL_VOICE_PERMISSIONS
+            = Permission.getRaw(VOICE_CONNECT, VOICE_SPEAK, VOICE_MUTE_OTHERS,
+                                VOICE_DEAF_OTHERS, VOICE_MOVE_OTHERS, VOICE_USE_VAD);
 
     private final int offset;
     private final long raw;
@@ -176,21 +179,21 @@ public enum Permission
     /**
      * Whether this permission is specifically for {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}
      *
-     * @return True, if and only if this permission can be applied to only text channels
+     * @return True, if and only if this permission can only be applied to text channels
      */
     public boolean isText()
     {
-        return offset == 6 || (offset > 9 && offset < 20);
+        return (raw & ALL_TEXT_PERMISSIONS) == raw;
     }
 
     /**
      * Whether this permission is specifically for {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}
      *
-     * @return True, if and only if this permission can be applied to only voice channels
+     * @return True, if and only if this permission can only be applied to voice channels
      */
     public boolean isVoice()
     {
-        return offset == 8 || offset == 10 || (offset > 19 && offset < 26);
+        return (raw & ALL_VOICE_PERMISSIONS) == raw;
     }
 
     /**
