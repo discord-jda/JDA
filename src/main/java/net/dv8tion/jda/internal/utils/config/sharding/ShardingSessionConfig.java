@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
+ * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.sharding;
+package net.dv8tion.jda.internal.utils.config.sharding;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
