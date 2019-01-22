@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.hooks;
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.VoiceChannel;
@@ -51,7 +52,39 @@ public interface VoiceDispatchInterceptor
      */
     boolean interceptStateUpdate(@Nonnull VoiceStateUpdate update);
 
-    class VoiceServerUpdate implements JSONString
+    interface VoiceUpdate extends JSONString
+    {
+        Guild getGuild();
+        JSONObject getJSON();
+
+        @Override
+        default String toJSONString()
+        {
+            return getJSON().toString();
+        }
+
+        default long getGuildIdLong()
+        {
+            return getGuild().getIdLong();
+        }
+
+        default String getGuildId()
+        {
+            return Long.toUnsignedString(getGuildIdLong());
+        }
+
+        default JDA getJDA()
+        {
+            return getGuild().getJDA();
+        }
+
+        default JDA.ShardInfo getShardInfo()
+        {
+            return getJDA().getShardInfo();
+        }
+    }
+
+    class VoiceServerUpdate implements VoiceUpdate
     {
         private final Guild guild;
         private final String endpoint;
@@ -68,14 +101,14 @@ public interface VoiceDispatchInterceptor
             this.json = json;
         }
 
-        public JSONObject getJSON()
-        {
-            return json;
-        }
-
         public Guild getGuild()
         {
             return guild;
+        }
+
+        public JSONObject getJSON()
+        {
+            return json;
         }
 
         public String getEndpoint()
@@ -92,15 +125,9 @@ public interface VoiceDispatchInterceptor
         {
             return sessionId;
         }
-
-        @Override
-        public String toJSONString()
-        {
-            return json.toString();
-        }
     }
 
-    class VoiceStateUpdate implements JSONString
+    class VoiceStateUpdate implements VoiceUpdate
     {
         private final Guild guild;
         private final VoiceChannel channel;
@@ -115,14 +142,14 @@ public interface VoiceDispatchInterceptor
             this.json = json;
         }
 
-        public JSONObject getJSON()
-        {
-            return json;
-        }
-
         public Guild getGuild()
         {
             return guild;
+        }
+
+        public JSONObject getJSON()
+        {
+            return json;
         }
 
         public VoiceChannel getChannel()
@@ -133,12 +160,6 @@ public interface VoiceDispatchInterceptor
         public GuildVoiceState getVoiceState()
         {
             return voiceState;
-        }
-
-        @Override
-        public String toJSONString()
-        {
-            return json.toString();
         }
     }
 }
