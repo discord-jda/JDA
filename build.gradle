@@ -74,8 +74,8 @@ dependencies {
     /* Internal dependencies */
 
     //General Utility
+    api 'org.json:json:20160810'
     implementation 'org.apache.commons:commons-collections4:4.1'
-    implementation 'org.json:json:20160810'
     implementation 'net.sf.trove4j:trove4j:3.0.3'
 
     //Sets the dependencies for the examples

@@ -748,6 +748,16 @@ public class JDABuilder
         return this;
     }
 
+    /**
+     * Configures a custom voice dispatch handler which handles audio connections.
+     *
+     * @param  interceptor
+     *         The new voice dispatch handler, or null to use the default
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @see    VoiceDispatchInterceptor
+     */
     public JDABuilder setVoiceDispatchInterceptor(VoiceDispatchInterceptor interceptor)
     {
         this.voiceDispatchInterceptor = interceptor;

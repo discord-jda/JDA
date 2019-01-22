@@ -37,6 +37,8 @@ import java.util.EnumSet;
 /**
  * AudioManager deals with creating, managing and severing audio connections to
  * {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}. Also controls audio handlers.
+ *
+ * @see Guild#getAudioManager()
  */
 public interface AudioManager
 {

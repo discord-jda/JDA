@@ -190,7 +190,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
         }
         if (voiceInterceptor != null)
         {
-            if (voiceInterceptor.interceptStateUpdate(new VoiceDispatchInterceptor.VoiceStateUpdate(guild, channel, vState, allContent)))
+            if (voiceInterceptor.interceptStateUpdate(new VoiceDispatchInterceptor.VoiceStateUpdate(channel, vState, allContent)))
                 getJDA().getAudioController().update(guild, channel);
         }
     }

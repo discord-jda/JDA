@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
+ * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.managers.DirectAudioController;
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -52,9 +53,26 @@ public interface VoiceDispatchInterceptor
      */
     boolean interceptStateUpdate(@Nonnull VoiceStateUpdate update);
 
+    /**
+     * Abstraction for all relevant voice updates
+     *
+     * @see VoiceServerUpdate
+     * @see VoiceStateUpdate
+     */
     interface VoiceUpdate extends JSONString
     {
+        /**
+         * The {@link Guild} for this update
+         *
+         * @return The guild
+         */
         Guild getGuild();
+
+        /**
+         * The raw JSON object that was parsed from this update
+         *
+         * @return The raw JSON object
+         */
         JSONObject getJSON();
 
         @Override
@@ -63,27 +81,60 @@ public interface VoiceDispatchInterceptor
             return getJSON().toString();
         }
 
+        /**
+         * Shortcut to access the audio controller of this JDA instance
+         *
+         * @return The {@link DirectAudioController} for this JDA instance
+         */
+        default DirectAudioController getAudioController()
+        {
+            return getJDA().getAudioController();
+        }
+
+        /**
+         * Shortcut to access the guild id
+         *
+         * @return The guild id
+         */
         default long getGuildIdLong()
         {
             return getGuild().getIdLong();
         }
 
+        /**
+         * Shortcut to access the guild id
+         *
+         * @return The guild id
+         */
         default String getGuildId()
         {
             return Long.toUnsignedString(getGuildIdLong());
         }
 
+        /**
+         * Shortcut to access the JDA instance
+         *
+         * @return The JDA instance
+         */
         default JDA getJDA()
         {
             return getGuild().getJDA();
         }
 
+        /**
+         * Shortcut to access the shard info for this JDA instance
+         *
+         * @return The shard information, or null if this was not for a sharded client
+         */
         default JDA.ShardInfo getShardInfo()
         {
             return getJDA().getShardInfo();
         }
     }
 
+    /**
+     * Wrapper for a <a href="https://discordapp.com/developers/docs/topics/gateway#voice-server-update" target="_blank">Voice Server Update</a>
+     */
     class VoiceServerUpdate implements VoiceUpdate
     {
         private final Guild guild;
@@ -101,62 +152,92 @@ public interface VoiceDispatchInterceptor
             this.json = json;
         }
 
+        @Override
         public Guild getGuild()
         {
             return guild;
         }
 
+        @Override
         public JSONObject getJSON()
         {
             return json;
         }
 
+        /**
+         * The voice server endpoint
+         *
+         * @return The endpoint
+         */
         public String getEndpoint()
         {
             return endpoint;
         }
 
+        /**
+         * The access token for the voice server connection
+         *
+         * @return The access token
+         */
         public String getToken()
         {
             return token;
         }
 
+        /**
+         * The session id for the voice server session
+         *
+         * @return The session id
+         */
         public String getSessionId()
         {
             return sessionId;
         }
     }
 
+    /**
+     * Wrapper for a <a href="https://discordapp.com/developers/docs/topics/gateway#voice-state-update" target="_blank">Voice State Update</a>
+     */
     class VoiceStateUpdate implements VoiceUpdate
     {
-        private final Guild guild;
         private final VoiceChannel channel;
         private final GuildVoiceState voiceState;
         private final JSONObject json;
 
-        public VoiceStateUpdate(Guild guild, VoiceChannel channel, GuildVoiceState voiceState, JSONObject json)
+        public VoiceStateUpdate(VoiceChannel channel, GuildVoiceState voiceState, JSONObject json)
         {
-            this.guild = guild;
             this.channel = channel;
             this.voiceState = voiceState;
             this.json = json;
         }
 
+        @Override
         public Guild getGuild()
         {
-            return guild;
+            return getChannel().getGuild();
         }
 
+        @Override
         public JSONObject getJSON()
         {
             return json;
         }
 
+        /**
+         * The update voice channel
+         *
+         * @return The updated voice channel, or null to signal disconnect
+         */
         public VoiceChannel getChannel()
         {
             return channel;
         }
 
+        /**
+         * The voice state for the guild
+         *
+         * @return The voice state
+         */
         public GuildVoiceState getVoiceState()
         {
             return voiceState;

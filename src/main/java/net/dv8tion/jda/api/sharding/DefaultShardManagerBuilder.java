@@ -150,6 +150,16 @@ public class  DefaultShardManagerBuilder
         return this;
     }
 
+    /**
+     * Configures a custom voice dispatch handler which handles audio connections.
+     *
+     * @param  interceptor
+     *         The new voice dispatch handler, or null to use the default
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @see    VoiceDispatchInterceptor
+     */
     public DefaultShardManagerBuilder setVoiceDispatchInterceptor(VoiceDispatchInterceptor interceptor)
     {
         this.voiceDispatchInterceptor = interceptor;

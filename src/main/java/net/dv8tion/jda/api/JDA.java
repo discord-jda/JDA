@@ -317,6 +317,15 @@ public interface JDA
      */
     OkHttpClient getHttpClient();
 
+    /**
+     * Direct access to audio (dis-)connect requests.
+     * <br>This should not be used when normal audio operation is desired.
+     *
+     * <p>The correct way to open and close an audio connection is through the {@link Guild Guild's}
+     * {@link AudioManager}.
+     *
+     * @return The {@link DirectAudioController} for this JDA instance
+     */
     DirectAudioController getAudioController();
 
     /**
