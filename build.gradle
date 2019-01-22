@@ -176,8 +176,8 @@ javadoc {
 }
 
 bintray {
-    user = bintrayUsername
-    key = bintrayApiKey
+    user = getProjectProperty("bintrayUsername")
+    key = getProjectProperty("bintrayApiKey")
     publications = ["BintrayRelease"]
     pkg {
         repo = 'maven'
