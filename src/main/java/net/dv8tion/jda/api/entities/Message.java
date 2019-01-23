@@ -127,7 +127,7 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Pattern used to find instant invites in messages.
      *
-     * @see #getInvites() retrieveInvites()
+     * @see #getInvites()
      */
     Pattern INVITE_PATTERN = Pattern.compile("(?:https?://)?discord(?:app\\.com/invite|\\.gg)/([a-z0-9-]+)", Pattern.CASE_INSENSITIVE);
 
