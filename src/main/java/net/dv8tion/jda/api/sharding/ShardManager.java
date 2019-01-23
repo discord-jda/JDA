@@ -171,19 +171,19 @@ public interface ShardManager
 
     /**
      * Used to access application details of this bot.
-     * <br>Since this is the same for every shard it picks {@link JDA#getApplicationInfo()} from any shard.
+     * <br>Since this is the same for every shard it picks {@link JDA#retrieveApplicationInfo()} from any shard.
      *
      * @throws java.lang.IllegalStateException
      *         If there is no running shard
      *
      * @return The Application registry for this bot.
      */
-    default RestAction<ApplicationInfo> getApplicationInfo()
+    default RestAction<ApplicationInfo> retrieveApplicationInfo()
     {
         return this.getShardCache().stream()
                 .findAny()
                 .orElseThrow(() -> new IllegalStateException("no active shards"))
-                .getApplicationInfo();
+                .retrieveApplicationInfo();
     }
 
     /**

@@ -43,7 +43,7 @@ import net.dv8tion.jda.api.entities.User;
  *         if (channels.isEmpty()) return; // no log channel
  *         TextChannel channel = channels.get(0); // get first match
  *
- *         AuditLogPaginationAction auditLogs = event.getGuild().getAuditLogs();
+ *         AuditLogPaginationAction auditLogs = event.getGuild().retrieveAuditLogs();
  *         auditLogs.type(ActionType.ROLE_CREATE); // only take ROLE_CREATE type
  *         auditLogs.limit(1); // take first
  *         auditLogs.queue( (entries) {@literal ->}
@@ -59,7 +59,7 @@ import net.dv8tion.jda.api.entities.User;
  *
  * @since  3.2
  *
- * @see    Guild#getAuditLogs()
+ * @see    Guild#retrieveAuditLogs()
  */
 public interface AuditLogPaginationAction extends PaginationAction<AuditLogEntry, AuditLogPaginationAction>
 {

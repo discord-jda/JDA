@@ -21,8 +21,6 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.VerificationLevelException;
-import net.dv8tion.jda.api.requests.Request;
-import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
@@ -64,7 +62,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     }
 
     @Override
-    public RestAction<List<Webhook>> getWebhooks()
+    public RestAction<List<Webhook>> retrieveWebhooks()
     {
         checkPermission(Permission.MANAGE_WEBHOOKS);
 
@@ -349,13 +347,13 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     }
 
     @Override
-    public RestAction<Message> getMessageById(String messageId)
+    public RestAction<Message> retrieveMessageById(String messageId)
     {
         checkPermission(Permission.MESSAGE_READ);
         checkPermission(Permission.MESSAGE_HISTORY);
 
         //Call MessageChannel's default method
-        return TextChannel.super.getMessageById(messageId);
+        return TextChannel.super.retrieveMessageById(messageId);
     }
 
     @Override
@@ -389,12 +387,12 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     }
 
     @Override
-    public RestAction<List<Message>> getPinnedMessages()
+    public RestAction<List<Message>> retrievePinnedMessages()
     {
         checkPermission(Permission.MESSAGE_READ, "Cannot get the pinned message of a channel without MESSAGE_READ access.");
 
         //Call MessageChannel's default method
-        return TextChannel.super.getPinnedMessages();
+        return TextChannel.super.retrievePinnedMessages();
     }
 
     @Override
