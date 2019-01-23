@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.api;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.entities.EmbedType;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
@@ -22,7 +24,7 @@ import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import java.awt.Color;
+import java.awt.*;
 import java.time.*;
 import java.time.temporal.TemporalAccessor;
 import java.util.LinkedList;
@@ -37,7 +39,7 @@ import java.util.regex.Pattern;
  * @since  3.0
  * @author John A. Grosh
  */
-public class EmbedBuilder
+public class EmbedBuilder implements Appendable
 {
     public final static String ZERO_WIDTH_SPACE = "\u200E";
     public final static Pattern URL_PATTERN = Pattern.compile("\\s*(https?|attachment)://\\S+\\s*", Pattern.CASE_INSENSITIVE);
@@ -74,7 +76,7 @@ public class EmbedBuilder
             this.image = builder.image;
         }
     }
-    
+
     /**
      * Creates an EmbedBuilder using fields in an existing embed.
      *
@@ -232,7 +234,7 @@ public class EmbedBuilder
     {
         return setTitle(title, null);
     }
-    
+
     /**
      * Sets the Title of the embed.
      * <br>You can provide {@code null} as url if no url should be used.
@@ -323,14 +325,101 @@ public class EmbedBuilder
      *         </ul>
      *
      * @return the builder after the description has been set
+     *
+     * @deprecated
+     *         EmbedBuilder now implements {@link java.lang.Appendable Appendable}.<br>
+     *         Use {@link java.lang.Appendable#append(CharSequence) append(CharSequence)} instead!
      */
+    @Deprecated
+    @DeprecatedSince("4.0.0")
+    @ReplaceWith("append(description)")
     public EmbedBuilder appendDescription(CharSequence description)
     {
-        Checks.notNull(description, "description");
-        Checks.check(this.description.length() + description.length() <= MessageEmbed.TEXT_MAX_LENGTH,
-                "Description cannot be longer than %d characters.", MessageEmbed.TEXT_MAX_LENGTH);
+        return append(description);
+    }
+
+    /**
+     * Appends the {@code char} to the description of the embed.<br>
+     * This is where the main chunk of text for an embed is typically placed.
+     *
+     * <p><b><a href="http://i.imgur.com/lbchtwk.png">Example</a></b>
+     *
+     * @param  c
+     *         the {@code char} to append to the description of the embed
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided {@code char} is {@code null}</li>
+     *             <li>If this {@code char} causes the length of the {@code description} to be
+     *                 greater than {@link net.dv8tion.jda.api.entities.MessageEmbed#TEXT_MAX_LENGTH}.</li>
+     *         </ul>
+     *
+     * @return the builder after the description has been set
+     */
+    @Override
+    public EmbedBuilder append(char c)
+    {
+        Checks.notNull(c, "c");
+        checkTextMaxLength(1);
+        this.description.append(c);
+        return this;
+    }
+
+    /**
+     * Appends the {@link java.lang.CharSequence CharSequence} to the description of the embed.<br>
+     * This is where the main chunk of text for an embed is typically placed.
+     *
+     * <p><b><a href="http://i.imgur.com/lbchtwk.png">Example</a></b>
+     *
+     * @param  csq
+     *         the {@code CharSequence} to append to the description of the embed
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided {@code CharSequence} is {@code null}</li>
+     *             <li>If the provided {@code CharSequence} causes the length of the {@code description}
+     *                 to be greater than {@link net.dv8tion.jda.api.entities.MessageEmbed#TEXT_MAX_LENGTH}.</li>
+     *         </ul>
+     *
+     * @return the builder after the description has been set
+     */
+    @Override
+    public EmbedBuilder append(CharSequence csq)
+    {
+        Checks.notNull(description, "csq");
+        checkTextMaxLength(csq.length());
         this.description.append(description);
         return this;
+    }
+
+    /**
+     * Appends a sub-sequence of the specified {@link java.lang.CharSequence CharSequence} between
+     * the {@code start} and the {@code end} to the description of the embed.<br>
+     *      * This is where the main chunk of text for an embed is typically placed.<br>
+     * This is a shortcut for <code>{@link #append(CharSequence) append}(csq.{@link java.lang.CharSequence#subSequence(int, int) subSequence}(start, end))</code>.
+     *
+     * <p><b><a href="http://i.imgur.com/lbchtwk.png">Example</a></b>
+     *
+     * @param  csq
+     *         the {@code CharSequence} to append to the description of the embed
+     * @param  start
+     *         the start index (inclusive) of the sub-sequence to append
+     * @param  end
+     *         the end index (exclusive) of the sub-sequence to append
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided {@code CharSequence} is {@code null}</li>
+     *             <li>If the provided {@code CharSequence} sub-sequence causes the length of the {@code description}
+     *                 to be greater than {@link net.dv8tion.jda.api.entities.MessageEmbed#TEXT_MAX_LENGTH}.</li>
+     *         </ul>
+     *
+     * @return the builder after the description has been set
+     */
+    @Override
+    public Appendable append(CharSequence csq, int start, int end)
+    {
+        return append(csq.subSequence(start, end));
     }
 
     /**
@@ -386,9 +475,9 @@ public class EmbedBuilder
                 }
             }
         }
-        return this; 
+        return this;
     }
-    
+
     /**
      * Sets the Color of the embed.
      *
@@ -425,7 +514,7 @@ public class EmbedBuilder
         this.color = color;
         return this;
     }
-    
+
     /**
      * Sets the Thumbnail of the embed.
      *
@@ -521,7 +610,7 @@ public class EmbedBuilder
         }
         return this;
     }
-    
+
     /**
      * Sets the Author of the embed. The author appears in the top left of the embed and can have a small
      * image beside it along with the author's name being made clickable by way of providing a url.
@@ -620,7 +709,7 @@ public class EmbedBuilder
         }
         return this;
     }
-    
+
     /**
      * Sets the Footer of the embed.
      *
@@ -673,11 +762,11 @@ public class EmbedBuilder
         }
         return this;
     }
-    
+
     /**
      * Copies the provided Field into a new Field for this builder.
      * <br>For additional documentation, see {@link #addField(String, String, boolean)}
-     * 
+     *
      * @param  field
      *         the field object to add
      *
@@ -687,7 +776,7 @@ public class EmbedBuilder
     {
         return field == null ? this : addField(field.getName(), field.getValue(), field.isInline());
     }
-    
+
     /**
      * Adds a Field to the embed.
      *
@@ -720,7 +809,7 @@ public class EmbedBuilder
         this.fields.add(new MessageEmbed.Field(name, value, inline));
         return this;
     }
-    
+
     /**
      * Adds a blank (empty) Field to the embed.
      *
@@ -751,7 +840,7 @@ public class EmbedBuilder
         this.fields.clear();
         return this;
     }
-    
+
     /**
      * <b>Modifiable</b> list of {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed} Fields that the builder will
      * use for {@link #build()}.
@@ -772,5 +861,11 @@ public class EmbedBuilder
             Checks.check(url.length() <= MessageEmbed.URL_MAX_LENGTH, "URL cannot be longer than %d characters.", MessageEmbed.URL_MAX_LENGTH);
             Checks.check(URL_PATTERN.matcher(url).matches(), "URL must be a valid http(s) or attachment url.");
         }
+    }
+
+    private void checkTextMaxLength(int adding)
+    {
+        Checks.check(this.description.length() + adding <= MessageEmbed.TEXT_MAX_LENGTH,
+            "Description cannot be longer than %d characters.", MessageEmbed.TEXT_MAX_LENGTH);
     }
 }
