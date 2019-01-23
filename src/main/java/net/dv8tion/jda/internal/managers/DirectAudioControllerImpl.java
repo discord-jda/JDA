@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.managers.DirectAudioController;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
+import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 
 public class DirectAudioControllerImpl implements DirectAudioController
@@ -41,6 +42,7 @@ public class DirectAudioControllerImpl implements DirectAudioController
     @Override
     public void connect(VoiceChannel channel)
     {
+        Checks.notNull(channel, "Voice Channel");
         JDAImpl jda = getJDA();
         WebSocketClient client = jda.getClient();
         client.queueAudioConnect(channel);
@@ -49,6 +51,7 @@ public class DirectAudioControllerImpl implements DirectAudioController
     @Override
     public void disconnect(Guild guild)
     {
+        Checks.notNull(guild, "Guild");
         JDAImpl jda = getJDA();
         WebSocketClient client = jda.getClient();
         client.queueAudioDisconnect(guild);
@@ -57,6 +60,7 @@ public class DirectAudioControllerImpl implements DirectAudioController
     @Override
     public void reconnect(VoiceChannel channel)
     {
+        Checks.notNull(channel, "Voice Channel");
         JDAImpl jda = getJDA();
         WebSocketClient client = jda.getClient();
         client.queueAudioReconnect(channel);
@@ -65,6 +69,7 @@ public class DirectAudioControllerImpl implements DirectAudioController
     @Override
     public void update(Guild guild, VoiceChannel channel)
     {
+        Checks.notNull(guild, "Guild");
         JDAImpl jda = getJDA();
         WebSocketClient client = jda.getClient();
         client.updateAudioConnection(guild.getIdLong(), channel);
