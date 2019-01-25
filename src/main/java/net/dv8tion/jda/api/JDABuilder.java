@@ -396,7 +396,7 @@ public class JDABuilder
      *     <li>Guild Setup - Requesting Members of newly joined guilds</li>
      *     <li>Heartbeats - Regular updates to keep the connection alive (usually once a minute)</li>
      * </ul>
-     * When nothing has to be sent the pool will only be used every 500 seconds to check the queue for new payloads.
+     * When nothing has to be sent the pool will only be used every 500 milliseconds to check the queue for new payloads.
      * Once a new payload is sent we switch to "rapid mode" which means more tasks will be submitted until no more payloads
      * have to be sent.
      *
@@ -425,7 +425,7 @@ public class JDABuilder
      *     <li>Guild Setup - Requesting Members of newly joined guilds</li>
      *     <li>Heartbeats - Regular updates to keep the connection alive (usually once a minute)</li>
      * </ul>
-     * When nothing has to be sent the pool will only be used every 500 seconds to check the queue for new payloads.
+     * When nothing has to be sent the pool will only be used every 500 milliseconds to check the queue for new payloads.
      * Once a new payload is sent we switch to "rapid mode" which means more tasks will be submitted until no more payloads
      * have to be sent.
      *
