@@ -301,9 +301,11 @@ public class MessageEmbed
      */
     public boolean isEmpty()
     {
-        return getLength() == 0
+        return color == Role.DEFAULT_COLOR_RAW
+            && timestamp == null
             && getImage() == null
-            && getThumbnail() == null;
+            && getThumbnail() == null
+            && getLength() == 0;
     }
 
     /**
