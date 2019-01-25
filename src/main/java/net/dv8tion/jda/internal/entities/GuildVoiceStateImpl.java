@@ -135,12 +135,14 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     @Override
     public boolean equals(Object obj)
     {
+        if (obj == this)
+            return true;
         if (!(obj instanceof GuildVoiceState))
         {
             return false;
         }
         GuildVoiceState oStatus = (GuildVoiceState) obj;
-        return this == oStatus || (this.getMember().equals(oStatus.getMember()) && this.getGuild().equals(oStatus.getGuild()));
+        return this.getMember().equals(oStatus.getMember()) && this.getGuild().equals(oStatus.getGuild());
     }
 
     @Override

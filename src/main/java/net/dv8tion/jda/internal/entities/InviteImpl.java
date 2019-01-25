@@ -234,6 +234,23 @@ public class InviteImpl implements Invite
     }
 
     @Override
+    public int hashCode()
+    {
+        return code.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == this)
+            return true;
+        if (!(obj instanceof InviteImpl))
+            return false;
+        InviteImpl impl = (InviteImpl) obj;
+        return impl.code.equals(this.code);
+    }
+
+    @Override
     public String toString()
     {
         return "Invite(" + this.code + ")";

@@ -123,10 +123,10 @@ public class ActivityImpl implements Activity
     @Override
     public boolean equals(Object o)
     {
-        if (!(o instanceof ActivityImpl))
-            return false;
         if (o == this)
             return true;
+        if (!(o instanceof ActivityImpl))
+            return false;
 
         ActivityImpl oGame = (ActivityImpl) o;
         return oGame.getType() == type

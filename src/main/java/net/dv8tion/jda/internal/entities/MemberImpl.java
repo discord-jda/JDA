@@ -236,11 +236,13 @@ public class MemberImpl implements Member
     @Override
     public boolean equals(Object o)
     {
+        if (o == this)
+            return true;
         if (!(o instanceof Member))
             return false;
 
         Member oMember = (Member) o;
-        return this == oMember || (oMember.getUser().equals(user) && oMember.getGuild().equals(getGuild()));
+        return oMember.getUser().equals(user) && oMember.getGuild().equals(getGuild());
     }
 
     @Override
