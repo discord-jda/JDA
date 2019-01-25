@@ -1,11 +1,11 @@
 /*
- *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
+ * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -125,6 +125,7 @@ processTestResources.enabled = false
 jar {
     baseName = project.name
     manifest.attributes 'Implementation-Version': version
+    manifest.attributes 'Automatic-Module-Name': 'net.dv8tion.jda'
 }
 
 shadowJar.classifier = 'withDependencies'
@@ -139,9 +140,7 @@ task noOpusJar(type: ShadowJar, dependsOn: shadowJar) {
     exclude 'club/minnced/opus/util/*'
     exclude 'tomp2p/opuswrapper/*'
 
-    manifest {
-        inheritFrom jar.manifest
-    }
+    manifest.inheritFrom jar.manifest
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -177,8 +176,8 @@ javadoc {
 }
 
 bintray {
-    user = bintrayUsername
-    key = bintrayApiKey
+    user = getProjectProperty("bintrayUsername")
+    key = getProjectProperty("bintrayApiKey")
     publications = ["BintrayRelease"]
     pkg {
         repo = 'maven'

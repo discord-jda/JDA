@@ -1,7 +1,6 @@
 # project files
 config.json
 tokens.json
-src/test/
 
 # music files
 *.mp3
@@ -15,6 +14,7 @@ src/test/
 /build/
 /.gradle/
 /out/
+gradle.properties
 
 # eclipse files
 .classpath
