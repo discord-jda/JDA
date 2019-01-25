@@ -256,10 +256,12 @@ public class RoleImpl implements Role
     @Override
     public boolean equals(Object o)
     {
+        if (o == this)
+            return true;
         if (!(o instanceof Role))
             return false;
         Role oRole = (Role) o;
-        return this == oRole || this.getIdLong() == oRole.getIdLong();
+        return this.getIdLong() == oRole.getIdLong();
     }
 
     @Override
