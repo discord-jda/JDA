@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.entities;
 
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.proxy.VoiceChannelProxy;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -35,6 +36,12 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannel, VoiceCha
     public VoiceChannelImpl(long id, GuildImpl guild)
     {
         super(id, guild);
+    }
+
+    @Override
+    public VoiceChannelProxy getProxy()
+    {
+        return new VoiceChannelProxy(this);
     }
 
     @Override

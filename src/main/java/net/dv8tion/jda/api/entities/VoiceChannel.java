@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.entities.proxy.VoiceChannelProxy;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 
 /**
@@ -26,6 +27,9 @@ import net.dv8tion.jda.api.requests.restaction.ChannelAction;
  */
 public interface VoiceChannel extends GuildChannel, AudioChannel, Comparable<VoiceChannel>
 {
+    @Override
+    VoiceChannelProxy getProxy();
+
     /**
      * The maximum amount of {@link net.dv8tion.jda.api.entities.Member Members} that can be in this
      * {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} at once.

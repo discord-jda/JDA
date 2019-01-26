@@ -16,6 +16,8 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.proxy.GuildChannelProxy;
+import net.dv8tion.jda.api.entities.proxy.ProxySubject;
 import net.dv8tion.jda.api.managers.ChannelManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
@@ -29,7 +31,7 @@ import java.util.List;
 /**
  * Represents a {@link net.dv8tion.jda.api.entities.Guild Guild} channel.
  */
-public interface GuildChannel extends ISnowflake
+public interface GuildChannel extends ISnowflake, ProxySubject<GuildChannel, GuildChannelProxy>
 {
     /**
      * The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} for this GuildChannel

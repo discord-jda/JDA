@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.entities;
 
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.proxy.CategoryProxy;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.InviteAction;
@@ -116,6 +117,12 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
     public RestAction<List<Invite>> getInvites()
     {
         return new EmptyRestAction<>(getJDA(), Collections.emptyList());
+    }
+
+    @Override
+    public CategoryProxy getProxy()
+    {
+        return new CategoryProxy(this);
     }
 
     @Override

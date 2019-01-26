@@ -16,26 +16,22 @@
 
 package net.dv8tion.jda.api.entities.proxy;
 
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.ProxyResolutionException;
-import net.dv8tion.jda.api.managers.ChannelManager;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.restaction.*;
+import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.requests.restaction.ChannelAction;
+import net.dv8tion.jda.api.requests.restaction.WebhookAction;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.List;
 
-public class TextChannelProxy implements TextChannel, ProxyEntity<TextChannel>
+public class TextChannelProxy extends GuildChannelProxy implements TextChannel
 {
-    private final long id;
-    private final JDA api;
-
     public TextChannelProxy(TextChannel channel)
     {
-        this.id = channel.getIdLong();
-        this.api = channel.getJDA();
+        super(channel);
     }
 
     @Override
@@ -45,6 +41,24 @@ public class TextChannelProxy implements TextChannel, ProxyEntity<TextChannel>
         if (channel == null)
             throw new ProxyResolutionException("TextChannel(" + getId() + ")");
         return channel;
+    }
+
+    @Override
+    public TextChannelProxy getProxy()
+    {
+        return this;
+    }
+
+    @Override
+    public ChannelAction<TextChannel> createCopy()
+    {
+        return getSubject().createCopy();
+    }
+
+    @Override
+    public ChannelAction<TextChannel> createCopy(Guild guild)
+    {
+        return getSubject().createCopy(guild);
     }
 
     @Override
@@ -66,12 +80,6 @@ public class TextChannelProxy implements TextChannel, ProxyEntity<TextChannel>
     }
 
     @Override
-    public ChannelType getType()
-    {
-        return ChannelType.TEXT;
-    }
-
-    @Override
     public long getLatestMessageIdLong()
     {
         return getSubject().getLatestMessageIdLong();
@@ -81,138 +89,6 @@ public class TextChannelProxy implements TextChannel, ProxyEntity<TextChannel>
     public boolean hasLatestMessage()
     {
         return getSubject().hasLatestMessage();
-    }
-
-    @Override
-    public String getName()
-    {
-        return getSubject().getName();
-    }
-
-    @Override
-    public Guild getGuild()
-    {
-        return getSubject().getGuild();
-    }
-
-    @Override
-    public Category getParent()
-    {
-        return getSubject().getParent();
-    }
-
-    @Override
-    public List<Member> getMembers()
-    {
-        return getSubject().getMembers();
-    }
-
-    @Override
-    public int getPosition()
-    {
-        return getSubject().getPosition();
-    }
-
-    @Override
-    public int getPositionRaw()
-    {
-        return getSubject().getPositionRaw();
-    }
-
-    @Override
-    public JDA getJDA()
-    {
-        return api;
-    }
-
-    @Override
-    public PermissionOverride getPermissionOverride(Member member)
-    {
-        return getSubject().getPermissionOverride(member);
-    }
-
-    @Override
-    public PermissionOverride getPermissionOverride(Role role)
-    {
-        return getSubject().getPermissionOverride(role);
-    }
-
-    @Override
-    public List<PermissionOverride> getPermissionOverrides()
-    {
-        return getSubject().getPermissionOverrides();
-    }
-
-    @Override
-    public List<PermissionOverride> getMemberPermissionOverrides()
-    {
-        return getSubject().getMemberPermissionOverrides();
-    }
-
-    @Override
-    public List<PermissionOverride> getRolePermissionOverrides()
-    {
-        return getSubject().getRolePermissionOverrides();
-    }
-
-    @Override
-    public ChannelAction<TextChannel> createCopy(Guild guild)
-    {
-        return getSubject().createCopy(guild);
-    }
-
-    @Override
-    public ChannelAction<TextChannel> createCopy()
-    {
-        return getSubject().createCopy();
-    }
-
-    @Override
-    public ChannelManager getManager()
-    {
-        return getSubject().getManager();
-    }
-
-    @Override
-    public AuditableRestAction<Void> delete()
-    {
-        return getSubject().delete();
-    }
-
-    @Override
-    public PermissionOverrideAction createPermissionOverride(Member member)
-    {
-        return getSubject().createPermissionOverride(member);
-    }
-
-    @Override
-    public PermissionOverrideAction createPermissionOverride(Role role)
-    {
-        return getSubject().createPermissionOverride(role);
-    }
-
-    @Override
-    public PermissionOverrideAction putPermissionOverride(Member member)
-    {
-        return getSubject().putPermissionOverride(member);
-    }
-
-    @Override
-    public PermissionOverrideAction putPermissionOverride(Role role)
-    {
-        return getSubject().putPermissionOverride(role);
-    }
-
-    @Override
-    public InviteAction createInvite()
-    {
-        return getSubject().createInvite();
-    }
-
-    @Override
-    public RestAction<List<Invite>> getInvites()
-    {
-        return getSubject().getInvites();
     }
 
     @Override
@@ -279,35 +155,5 @@ public class TextChannelProxy implements TextChannel, ProxyEntity<TextChannel>
     public String getAsMention()
     {
         return getSubject().getAsMention();
-    }
-
-    @Override
-    public long getIdLong()
-    {
-        return id;
-    }
-
-    @Override
-    public TextChannelProxy getProxy()
-    {
-        return this;
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return getSubject().hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj)
-    {
-        return obj == this || getSubject().equals(obj);
-    }
-
-    @Override
-    public String toString()
-    {
-        return getSubject().toString();
     }
 }

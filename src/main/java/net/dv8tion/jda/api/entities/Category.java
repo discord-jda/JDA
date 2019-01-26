@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.entities.proxy.CategoryProxy;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
@@ -32,6 +33,9 @@ import java.util.List;
  */
 public interface Category extends GuildChannel, Comparable<Category>
 {
+    @Override
+    CategoryProxy getProxy();
+
     /**
      * All {@link GuildChannel Channels} listed
      * for this Category
