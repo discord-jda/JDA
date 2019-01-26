@@ -19,6 +19,8 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.proxy.MemberProxy;
+import net.dv8tion.jda.api.entities.proxy.ProxySubject;
 
 import javax.annotation.Nullable;
 import java.awt.Color;
@@ -33,7 +35,7 @@ import java.util.List;
  *
  * @since 3.0
  */
-public interface Member extends IMentionable, IPermissionHolder
+public interface Member extends IMentionable, IPermissionHolder, ProxySubject<Member, MemberProxy>
 {
     /**
      * The user wrapped by this Entity.

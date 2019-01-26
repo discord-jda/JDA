@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.proxy.MemberProxy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -204,6 +205,28 @@ public class MemberImpl implements Member
         return this.equals(getGuild().getOwner());
     }
 
+    @Override
+    public String getAsMention()
+    {
+        return nickname == null ? user.getAsMention() : "<@!" + user.getIdLong() + '>';
+    }
+
+    @Nullable
+    @Override
+    public TextChannel getDefaultChannel()
+    {
+        return getGuild().getTextChannelsView().stream()
+                .sorted(Comparator.reverseOrder())
+                .filter(c -> hasPermission(c, Permission.MESSAGE_READ))
+                .findFirst().orElse(null);
+    }
+
+    @Override
+    public MemberProxy getProxy()
+    {
+        return new MemberProxy(this);
+    }
+
     public MemberImpl setNickname(String nickname)
     {
         this.nickname = nickname;
@@ -255,21 +278,5 @@ public class MemberImpl implements Member
     public String toString()
     {
         return "MB:" + getEffectiveName() + '(' + user.toString() + " / " + getGuild().toString() +')';
-    }
-
-    @Override
-    public String getAsMention()
-    {
-        return nickname == null ? user.getAsMention() : "<@!" + user.getIdLong() + '>';
-    }
-
-    @Nullable
-    @Override
-    public TextChannel getDefaultChannel()
-    {
-        return getGuild().getTextChannelsView().stream()
-                 .sorted(Comparator.reverseOrder())
-                 .filter(c -> hasPermission(c, Permission.MESSAGE_READ))
-                 .findFirst().orElse(null);
     }
 }
