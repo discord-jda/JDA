@@ -16,9 +16,9 @@
 
 package net.dv8tion.jda.api.entities.proxy;
 
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.SelfUser;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
+import net.dv8tion.jda.api.exceptions.ProxyResolutionException;
 import net.dv8tion.jda.api.managers.AccountManager;
 
 public class SelfUserProxy extends UserProxy implements SelfUser
@@ -31,7 +31,10 @@ public class SelfUserProxy extends UserProxy implements SelfUser
     @Override
     public SelfUser getSubject()
     {
-        return (SelfUser) super.getSubject();
+        SelfUser user = getJDA().getSelfUser();
+        if (user == null) // should be impossible but you never know
+            throw new ProxyResolutionException("SelfUser");
+        return user;
     }
 
     @Override
