@@ -135,7 +135,8 @@ public class AuditLogPaginationActionImpl
             JSONObject webhook = webhooks.getJSONObject(i);
             webhookMap.put(webhook.getLong("id"), webhook);
         }
-        
+
+        GuildImpl realGuild = (GuildImpl) getJDA().getGuildById(guild.getIdLong());
         for (int i = 0; i < entries.length(); i++)
         {
             try
@@ -143,7 +144,7 @@ public class AuditLogPaginationActionImpl
                 JSONObject entry = entries.getJSONObject(i);
                 JSONObject user = userMap.get(Helpers.optLong(entry, "user_id", 0));
                 JSONObject webhook = webhookMap.get(Helpers.optLong(entry, "target_id", 0));
-                AuditLogEntry result = builder.createAuditLogEntry((GuildImpl) guild, entry, user, webhook);
+                AuditLogEntry result = builder.createAuditLogEntry(realGuild, entry, user, webhook);
                 list.add(result);
                 if (this.useCache)
                     this.cached.add(result);

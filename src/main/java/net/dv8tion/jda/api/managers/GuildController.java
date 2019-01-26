@@ -33,7 +33,6 @@ import net.dv8tion.jda.api.requests.restaction.order.RoleOrderAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
-import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.requests.EmptyRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
@@ -63,7 +62,7 @@ import java.util.stream.Stream;
  */
 public class GuildController
 {
-    protected final UpstreamReference<GuildImpl> guild;
+    protected final UpstreamReference<Guild> guild;
 
     /**
      * Creates a new GuildController instance
@@ -75,7 +74,7 @@ public class GuildController
      */
     public GuildController(Guild guild)
     {
-        this.guild = new UpstreamReference<>((GuildImpl) guild);
+        this.guild = new UpstreamReference<>(guild);
     }
 
     /**
@@ -1381,7 +1380,7 @@ public class GuildController
             Checks.check(!role.isManaged(), "Cannot remove a Managed role from a Member. Role: %s", role.toString());
         });
 
-        Set<Role> currentRoles = new HashSet<>(((MemberImpl) member).getRoleSet());
+        Set<Role> currentRoles = new HashSet<>(member.getRoles());
         Set<Role> newRolesToAdd = new HashSet<>(rolesToAdd);
         newRolesToAdd.removeAll(rolesToRemove);
 
@@ -1881,7 +1880,8 @@ public class GuildController
         return new AuditableRestActionImpl<>(jda, route, body, (response, request) ->
         {
             JSONObject obj = response.getObject();
-            return jda.getEntityBuilder().createEmote((GuildImpl) getGuild(), obj, true);
+            GuildImpl realGuild = (GuildImpl) getJDA().getGuildById(getGuild().getIdLong());
+            return jda.getEntityBuilder().createEmote(realGuild, obj, true);
         });
     }
 

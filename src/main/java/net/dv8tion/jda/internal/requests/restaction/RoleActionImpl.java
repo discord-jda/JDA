@@ -133,7 +133,8 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
     @Override
     protected void handleSuccess(Response response, Request<Role> request)
     {
-        request.onSuccess(api.get().getEntityBuilder().createRole((GuildImpl) guild, response.getObject(), guild.getIdLong()));
+        GuildImpl realGuild = (GuildImpl) getJDA().getGuildById(guild.getIdLong());
+        request.onSuccess(api.get().getEntityBuilder().createRole(realGuild, response.getObject(), this.guild.getIdLong()));
     }
 
     private void checkPermission(Permission permission)
