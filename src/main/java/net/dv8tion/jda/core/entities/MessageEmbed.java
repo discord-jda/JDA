@@ -398,7 +398,7 @@ public class MessageEmbed
             && Objects.equals(videoInfo, other.videoInfo)
             && Objects.equals(footer, other.footer)
             && Objects.equals(image, other.image)
-            && Objects.equals(color & 0x00FFFFFF, other.color & 0x00FFFFFF)
+            && (color & 0xFFFFFF) == (other.color & 0xFFFFFF)
             && Objects.equals(timestamp, other.timestamp)
             && Helpers.deepEquals(fields, other.fields);
     }
