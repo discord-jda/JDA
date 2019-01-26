@@ -19,6 +19,8 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.annotations.DeprecatedSince;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.proxy.EmoteProxy;
+import net.dv8tion.jda.api.entities.proxy.ProxySubject;
 import net.dv8tion.jda.api.managers.EmoteManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
@@ -44,7 +46,7 @@ import java.util.List;
  *
  * @since  2.2
  */
-public interface Emote extends ISnowflake, IMentionable, IFakeable
+public interface Emote extends ISnowflake, IMentionable, IFakeable, ProxySubject<Emote, EmoteProxy>
 {
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} this emote is attached to.

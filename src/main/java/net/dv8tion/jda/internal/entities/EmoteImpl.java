@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ListedEmote;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.proxy.EmoteProxy;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.EmoteManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
@@ -179,6 +180,12 @@ public class EmoteImpl implements ListedEmote
 
         Route.CompiledRoute route = Route.Emotes.DELETE_EMOTE.compile(getGuild().getId(), getId());
         return new AuditableRestActionImpl<Void>(getJDA(), route);
+    }
+
+    @Override
+    public EmoteProxy getProxy()
+    {
+        return new EmoteProxy(this);
     }
 
     // -- Setters --

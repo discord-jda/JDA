@@ -35,13 +35,11 @@ public class RoleProxy implements Role, ProxyEntity<Role>
 {
     private final GuildProxy guild;
     private final long id;
-    private final JDA api;
 
     public RoleProxy(Role role)
     {
         this.guild = role.getGuild().getProxy();
         this.id = role.getIdLong();
-        this.api = role.getJDA();
     }
 
     @Override
@@ -182,7 +180,7 @@ public class RoleProxy implements Role, ProxyEntity<Role>
     @Override
     public JDA getJDA()
     {
-        return api;
+        return getGuild().getJDA();
     }
 
     @Override
