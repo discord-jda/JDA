@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.entities.proxy;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.exceptions.ProxyResolutionException;
 import net.dv8tion.jda.api.managers.ChannelManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.*;
@@ -40,7 +41,10 @@ public class TextChannelProxy implements TextChannel, ProxyEntity<TextChannel>
     @Override
     public TextChannel getSubject()
     {
-        return api.getTextChannelById(id);
+        TextChannel channel = api.getTextChannelById(id);
+        if (channel == null)
+            throw new ProxyResolutionException("TextChannel(" + getId() + ")");
+        return channel;
     }
 
     @Override

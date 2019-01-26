@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.exceptions.ProxyResolutionException;
 import net.dv8tion.jda.api.managers.RoleManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.RoleAction;
@@ -46,7 +47,10 @@ public class RoleProxy implements Role, ProxyEntity<Role>
     @Override
     public Role getSubject()
     {
-        return getGuild().getRoleById(id);
+        Role role = getGuild().getRoleById(id);
+        if (role == null)
+            throw new ProxyResolutionException("Role(" + getId() + ")");
+        return role;
     }
 
     @Override
@@ -124,7 +128,10 @@ public class RoleProxy implements Role, ProxyEntity<Role>
     @Override
     public Guild getGuild()
     {
-        return api.getGuildById(guildId);
+        Guild guild = api.getGuildById(guildId);
+        if (guild == null)
+            throw new ProxyResolutionException("Guild(" + Long.toUnsignedString(guildId) + ")");
+        return guild;
     }
 
     @Override

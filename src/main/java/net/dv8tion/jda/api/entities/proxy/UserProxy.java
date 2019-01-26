@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.exceptions.ProxyResolutionException;
 import net.dv8tion.jda.api.requests.RestAction;
 
 import java.util.List;
@@ -38,7 +39,10 @@ public class UserProxy implements User, ProxyEntity<User>
     @Override
     public User getSubject()
     {
-        return api.getUserById(id);
+        User user = api.getUserById(id);
+        if (user == null)
+            throw new ProxyResolutionException("User(" + getId() + ")");
+        return user;
     }
 
     @Override
