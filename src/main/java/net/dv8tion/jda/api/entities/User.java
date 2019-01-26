@@ -17,6 +17,8 @@ package net.dv8tion.jda.api.entities;
 
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.proxy.ProxySubject;
+import net.dv8tion.jda.api.entities.proxy.UserProxy;
 import net.dv8tion.jda.api.requests.RestAction;
 
 import javax.annotation.CheckReturnValue;
@@ -51,9 +53,8 @@ import java.util.List;
  *
  * <p>More information on formatting syntax can be found in the {@link java.util.Formatter format syntax documentation}!
  */
-public interface User extends ISnowflake, IMentionable, IFakeable
+public interface User extends ISnowflake, IMentionable, IFakeable, ProxySubject<User, UserProxy>
 {
-
     /**
      * The username of the {@link net.dv8tion.jda.api.entities.User User}. Length is between 2 and 32 characters (inclusive).
      *

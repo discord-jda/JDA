@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.proxy.UserProxy;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -166,6 +167,14 @@ public class UserImpl implements User
     public boolean isFake()
     {
         return fake;
+    }
+
+    @Override
+    public UserProxy getProxy()
+    {
+        if (isFake())
+            throw new IllegalStateException("Cannot create a proxy for a fake user");
+        return new UserProxy(id, getJDA());
     }
 
     @Override

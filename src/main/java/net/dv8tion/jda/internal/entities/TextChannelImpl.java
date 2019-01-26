@@ -19,10 +19,9 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.proxy.TextChannelProxy;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.VerificationLevelException;
-import net.dv8tion.jda.api.requests.Request;
-import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
@@ -472,6 +471,12 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
 
         //Call MessageChannel's default
         return TextChannel.super.editMessageById(id, newContent);
+    }
+
+    @Override
+    public TextChannelProxy getProxy()
+    {
+        return new TextChannelProxy(id, getJDA());
     }
 
     @Override

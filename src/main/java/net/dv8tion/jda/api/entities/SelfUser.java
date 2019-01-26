@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.entities.proxy.SelfUserProxy;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.managers.AccountManager;
 
@@ -23,6 +24,8 @@ import net.dv8tion.jda.api.managers.AccountManager;
  */
 public interface SelfUser extends User
 {
+    @Override
+    SelfUserProxy getProxy();
 
     /**
      * The status of this account's verification.

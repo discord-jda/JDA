@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.entities.proxy.ProxySubject;
+import net.dv8tion.jda.api.entities.proxy.TextChannelProxy;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
@@ -36,7 +38,7 @@ import java.util.List;
  * {@link net.dv8tion.jda.internal.entities.TextChannelImpl TextChannelImpl}.
  * <br>Note: Internal implementation should not be used directly.
  */
-public interface TextChannel extends GuildChannel, MessageChannel, Comparable<TextChannel>, IMentionable
+public interface TextChannel extends GuildChannel, MessageChannel, Comparable<TextChannel>, ProxySubject<TextChannel, TextChannelProxy>, IMentionable
 {
     /**
      * The topic set for this TextChannel.

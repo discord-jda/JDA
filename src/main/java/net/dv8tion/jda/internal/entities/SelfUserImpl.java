@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.SelfUser;
+import net.dv8tion.jda.api.entities.proxy.SelfUserProxy;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.managers.AccountManager;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -45,6 +46,12 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     public SelfUserImpl(long id, JDAImpl api)
     {
         super(id, api);
+    }
+
+    @Override
+    public SelfUserProxy getProxy()
+    {
+        return new SelfUserProxy(id, getJDA());
     }
 
     @Override

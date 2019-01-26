@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.proxy.RoleProxy;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.RoleManager;
@@ -251,6 +252,12 @@ public class RoleImpl implements Role
     public long getIdLong()
     {
         return id;
+    }
+
+    @Override
+    public RoleProxy getProxy()
+    {
+        return new RoleProxy(getGuild().getIdLong(), id, getJDA());
     }
 
     @Override
