@@ -746,10 +746,12 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public boolean equals(Object o)
     {
+        if (o == this)
+            return true;
         if (!(o instanceof ReceivedMessage))
             return false;
         ReceivedMessage oMsg = (ReceivedMessage) o;
-        return this == oMsg || this.id == oMsg.id;
+        return this.id == oMsg.id;
     }
 
     @Override
@@ -770,27 +772,6 @@ public class ReceivedMessage extends AbstractMessage
     protected void unsupported()
     {
         throw new UnsupportedOperationException("This operation is not supported on received messages!");
-    }
-
-    private boolean hasPermission(Permission permission)
-    {
-        switch (channel.getType())
-        {
-            case TEXT:
-                return getMember().hasPermission(getTextChannel(), permission);
-            default:
-                return true;
-        }
-    }
-
-    private void checkPermission(Permission permission)
-    {
-        if (channel.getType() == ChannelType.TEXT)
-        {
-            GuildChannel location = (GuildChannel) channel;
-            if (!location.getGuild().getSelfMember().hasPermission(location, permission))
-                throw new InsufficientPermissionException(permission);
-        }
     }
 
     @Override

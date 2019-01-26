@@ -16,15 +16,12 @@
 
 package net.dv8tion.jda.internal.entities;
 
-import net.dv8tion.jda.api.entities.GuildVoiceState;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 
 public class GuildVoiceStateImpl implements GuildVoiceState
 {
-    private final UpstreamReference<GuildImpl> guild;
     private final UpstreamReference<Member> member;
 
     private VoiceChannel connectedChannel;
@@ -35,9 +32,8 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     private boolean guildDeafened = false;
     private boolean suppressed = false;
 
-    public GuildVoiceStateImpl(GuildImpl guild, Member member)
+    public GuildVoiceStateImpl(Member member)
     {
-        this.guild = new UpstreamReference<>(guild);
         this.member = new UpstreamReference<>(member);
     }
 
@@ -54,7 +50,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     }
 
     @Override
-    public JDAImpl getJDA()
+    public JDA getJDA()
     {
         return getGuild().getJDA();
     }
@@ -102,9 +98,9 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     }
 
     @Override
-    public GuildImpl getGuild()
+    public Guild getGuild()
     {
-        return guild.get();
+        return getMember().getGuild();
     }
 
     @Override
@@ -128,12 +124,12 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     @Override
     public boolean equals(Object obj)
     {
+        if (obj == this)
+            return true;
         if (!(obj instanceof GuildVoiceState))
-        {
             return false;
-        }
         GuildVoiceState oStatus = (GuildVoiceState) obj;
-        return this == oStatus || (this.getMember().equals(oStatus.getMember()) && this.getGuild().equals(oStatus.getGuild()));
+        return this.getMember().equals(oStatus.getMember());
     }
 
     @Override

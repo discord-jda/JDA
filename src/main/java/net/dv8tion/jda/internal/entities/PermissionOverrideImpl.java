@@ -170,11 +170,12 @@ public class PermissionOverrideImpl implements PermissionOverride
     @Override
     public boolean equals(Object o)
     {
+        if (o == this)
+            return true;
         if (!(o instanceof PermissionOverrideImpl))
             return false;
         PermissionOverrideImpl oPerm = (PermissionOverrideImpl) o;
-        return this == oPerm
-                || ((this.permissionHolder.equals(oPerm.permissionHolder)) && this.getChannel().equals(oPerm.getChannel()));
+        return this.permissionHolder.equals(oPerm.permissionHolder) && this.getChannel().equals(oPerm.getChannel());
     }
 
     @Override

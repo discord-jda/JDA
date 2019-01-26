@@ -168,8 +168,12 @@ public class PrivateChannelImpl implements PrivateChannel
     @Override
     public boolean equals(Object obj)
     {
-        return obj instanceof PrivateChannelImpl
-                && this.id == ((PrivateChannelImpl) obj).id;
+        if (obj == this)
+            return true;
+        if (!(obj instanceof PrivateChannelImpl))
+            return false;
+        PrivateChannelImpl impl = (PrivateChannelImpl) obj;
+        return impl.id == this.id;
     }
 
     @Override
