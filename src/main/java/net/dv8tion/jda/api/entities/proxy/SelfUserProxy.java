@@ -23,9 +23,9 @@ import net.dv8tion.jda.api.managers.AccountManager;
 
 public class SelfUserProxy extends UserProxy implements SelfUser
 {
-    public SelfUserProxy(long id, JDA api)
+    public SelfUserProxy(SelfUser user)
     {
-        super(id, api);
+        super(user);
     }
 
     @Override

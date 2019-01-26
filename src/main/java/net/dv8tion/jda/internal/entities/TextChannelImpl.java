@@ -476,7 +476,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     @Override
     public TextChannelProxy getProxy()
     {
-        return new TextChannelProxy(id, getJDA());
+        return new TextChannelProxy(this);
     }
 
     @Override

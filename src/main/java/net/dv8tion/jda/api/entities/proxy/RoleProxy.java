@@ -33,15 +33,15 @@ import java.util.EnumSet;
 
 public class RoleProxy implements Role, ProxyEntity<Role>
 {
-    private final long guildId;
+    private final long guildId; // TODO: Replace with GuildProxy
     private final long id;
     private final JDA api;
 
-    public RoleProxy(long guildId, long id, JDA api)
+    public RoleProxy(Role role)
     {
-        this.guildId = guildId;
-        this.id = id;
-        this.api = api;
+        this.guildId = role.getGuild().getIdLong();
+        this.id = role.getIdLong();
+        this.api = role.getJDA();
     }
 
     @Override

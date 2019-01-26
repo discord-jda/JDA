@@ -51,7 +51,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     @Override
     public SelfUserProxy getProxy()
     {
-        return new SelfUserProxy(id, getJDA());
+        return new SelfUserProxy(this);
     }
 
     @Override

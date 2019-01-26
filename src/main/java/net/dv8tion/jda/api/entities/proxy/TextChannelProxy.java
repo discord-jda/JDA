@@ -32,10 +32,10 @@ public class TextChannelProxy implements TextChannel, ProxyEntity<TextChannel>
     private final long id;
     private final JDA api;
 
-    public TextChannelProxy(long id, JDA api)
+    public TextChannelProxy(TextChannel channel)
     {
-        this.id = id;
-        this.api = api;
+        this.id = channel.getIdLong();
+        this.api = channel.getJDA();
     }
 
     @Override

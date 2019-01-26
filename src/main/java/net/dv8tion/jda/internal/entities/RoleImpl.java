@@ -257,7 +257,7 @@ public class RoleImpl implements Role
     @Override
     public RoleProxy getProxy()
     {
-        return new RoleProxy(getGuild().getIdLong(), id, getJDA());
+        return new RoleProxy(this);
     }
 
     @Override

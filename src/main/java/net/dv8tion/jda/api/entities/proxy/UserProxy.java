@@ -30,10 +30,10 @@ public class UserProxy implements User, ProxyEntity<User>
     private final long id;
     private final JDA api;
 
-    public UserProxy(long id, JDA api)
+    public UserProxy(User user)
     {
-        this.id = id;
-        this.api = api;
+        this.id = user.getIdLong();
+        this.api = user.getJDA();
     }
 
     @Override

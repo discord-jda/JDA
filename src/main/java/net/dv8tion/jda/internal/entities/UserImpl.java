@@ -174,7 +174,7 @@ public class UserImpl implements User
     {
         if (isFake())
             throw new IllegalStateException("Cannot create a proxy for a fake user");
-        return new UserProxy(id, getJDA());
+        return new UserProxy(this);
     }
 
     @Override
