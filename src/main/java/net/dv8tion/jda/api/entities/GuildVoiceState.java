@@ -16,11 +16,14 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.entities.proxy.GuildVoiceStateProxy;
+import net.dv8tion.jda.api.entities.proxy.ProxySubject;
+
 /**
  * Represents the voice state of a {@link net.dv8tion.jda.api.entities.Member Member} in a
  * {@link net.dv8tion.jda.api.entities.Guild Guild}.
  */
-public interface GuildVoiceState extends VoiceState
+public interface GuildVoiceState extends VoiceState, ProxySubject<GuildVoiceState, GuildVoiceStateProxy>
 {
     /**
      * Returns whether the {@link net.dv8tion.jda.api.entities.Member Member} is muted, either

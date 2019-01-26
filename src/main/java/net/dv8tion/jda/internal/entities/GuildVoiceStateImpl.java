@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.proxy.GuildVoiceStateProxy;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 
 public class GuildVoiceStateImpl implements GuildVoiceState
@@ -119,6 +120,12 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     public boolean inVoiceChannel()
     {
         return getChannel() != null;
+    }
+
+    @Override
+    public GuildVoiceStateProxy getProxy()
+    {
+        return new GuildVoiceStateProxy(getMember());
     }
 
     @Override
