@@ -33,13 +33,13 @@ import java.util.EnumSet;
 
 public class RoleProxy implements Role, ProxyEntity<Role>
 {
-    private final long guildId; // TODO: Replace with GuildProxy
+    private final GuildProxy guild;
     private final long id;
     private final JDA api;
 
     public RoleProxy(Role role)
     {
-        this.guildId = role.getGuild().getIdLong();
+        this.guild = role.getGuild().getProxy();
         this.id = role.getIdLong();
         this.api = role.getJDA();
     }
@@ -128,10 +128,7 @@ public class RoleProxy implements Role, ProxyEntity<Role>
     @Override
     public Guild getGuild()
     {
-        Guild guild = api.getGuildById(guildId);
-        if (guild == null)
-            throw new ProxyResolutionException("Guild(" + Long.toUnsignedString(guildId) + ")");
-        return guild;
+        return guild.getSubject();
     }
 
     @Override
@@ -153,8 +150,7 @@ public class RoleProxy implements Role, ProxyEntity<Role>
     }
 
     @Override
-    public boolean hasPermission(
-            GuildChannel channel, Permission... permissions)
+    public boolean hasPermission(GuildChannel channel, Permission... permissions)
     {
         return getSubject().hasPermission(channel, permissions);
     }

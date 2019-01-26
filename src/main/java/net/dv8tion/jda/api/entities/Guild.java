@@ -18,6 +18,8 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
+import net.dv8tion.jda.api.entities.proxy.GuildProxy;
+import net.dv8tion.jda.api.entities.proxy.ProxySubject;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.GuildController;
 import net.dv8tion.jda.api.managers.GuildManager;
@@ -43,7 +45,7 @@ import java.util.Set;
  * Represents a Discord {@link net.dv8tion.jda.api.entities.Guild Guild}.
  * This should contain all information provided from Discord about a Guild.
  */
-public interface Guild extends ISnowflake
+public interface Guild extends ISnowflake, ProxySubject<Guild, GuildProxy>
 {
     /**
      * Retrieves the available regions for this Guild

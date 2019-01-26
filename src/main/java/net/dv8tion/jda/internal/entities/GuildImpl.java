@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.proxy.GuildProxy;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.managers.AudioManager;
@@ -662,6 +663,31 @@ public class GuildImpl implements Guild
         return id;
     }
 
+    @Override
+    public RestAction<List<Invite>> getInvites()
+    {
+        if (!this.getSelfMember().hasPermission(Permission.MANAGE_SERVER))
+            throw new InsufficientPermissionException(Permission.MANAGE_SERVER);
+
+        final Route.CompiledRoute route = Route.Invites.GET_GUILD_INVITES.compile(getId());
+
+        return new RestActionImpl<>(getJDA(), route, (response, request) ->
+        {
+            EntityBuilder entityBuilder = api.get().getEntityBuilder();
+            JSONArray array = response.getArray();
+            List<Invite> invites = new ArrayList<>(array.length());
+            for (int i = 0; i < array.length(); i++)
+                invites.add(entityBuilder.createInvite(array.getJSONObject(i)));
+            return Collections.unmodifiableList(invites);
+        });
+    }
+
+    @Override
+    public GuildProxy getProxy()
+    {
+        return new GuildProxy(this);
+    }
+
     // ---- Setters -----
 
     public GuildImpl setAvailable(boolean available)
@@ -822,24 +848,5 @@ public class GuildImpl implements Guild
     public String toString()
     {
         return "G:" + getName() + '(' + id + ')';
-    }
-
-    @Override
-    public RestAction<List<Invite>> getInvites()
-    {
-        if (!this.getSelfMember().hasPermission(Permission.MANAGE_SERVER))
-            throw new InsufficientPermissionException(Permission.MANAGE_SERVER);
-
-        final Route.CompiledRoute route = Route.Invites.GET_GUILD_INVITES.compile(getId());
-
-        return new RestActionImpl<>(getJDA(), route, (response, request) ->
-        {
-            EntityBuilder entityBuilder = api.get().getEntityBuilder();
-            JSONArray array = response.getArray();
-            List<Invite> invites = new ArrayList<>(array.length());
-            for (int i = 0; i < array.length(); i++)
-                invites.add(entityBuilder.createInvite(array.getJSONObject(i)));
-            return Collections.unmodifiableList(invites);
-        });
     }
 }
