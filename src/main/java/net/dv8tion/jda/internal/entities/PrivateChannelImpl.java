@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.proxy.PrivateChannelProxy;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
@@ -42,6 +43,12 @@ public class PrivateChannelImpl implements PrivateChannel
     {
         this.id = id;
         this.user = new UpstreamReference<>(user);
+    }
+
+    @Override
+    public PrivateChannelProxy getProxy()
+    {
+        return new PrivateChannelProxy(this);
     }
 
     @Override

@@ -17,57 +17,66 @@
 package net.dv8tion.jda.api.entities.proxy;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Emote;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.PrivateChannel;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.exceptions.ProxyResolutionException;
-import net.dv8tion.jda.api.managers.EmoteManager;
-import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.requests.RestAction;
 
-import java.util.List;
-
-public class EmoteProxy implements Emote, ProxyEntity
+public class PrivateChannelProxy implements PrivateChannel, MessageChannelProxy
 {
-    private final GuildProxy guild;
     private final long id;
+    private final JDA api;
 
-    public EmoteProxy(Emote emote)
+    public PrivateChannelProxy(PrivateChannel channel)
     {
-        this.guild = emote.getGuild().getProxy();
-        this.id = emote.getIdLong();
+        this.id = channel.getIdLong();
+        this.api = channel.getJDA();
     }
 
     @Override
-    public Emote getSubject()
+    public PrivateChannel getSubject()
     {
-        Emote emote = getGuild().getEmoteById(id);
-        if (emote == null)
-            throw new ProxyResolutionException("Emote(" + getId() + ")");
-        return emote;
+        PrivateChannel channel = api.getPrivateChannelById(id);
+        if (channel == null)
+            throw new ProxyResolutionException("PrivateChannel(" + getId() + ")");
+        return channel;
     }
 
     @Override
-    public EmoteProxy getProxy()
+    public JDA getJDA()
+    {
+        return api;
+    }
+
+    @Override
+    public RestAction<Void> close()
+    {
+        return getSubject().close();
+    }
+
+    @Override
+    public long getIdLong()
+    {
+        return id;
+    }
+
+    @Override
+    public PrivateChannelProxy getProxy()
     {
         return this;
     }
 
     @Override
-    public Guild getGuild()
+    public long getLatestMessageIdLong()
     {
-        return guild.getSubject();
+        return getSubject().getLatestMessageIdLong();
     }
 
     @Override
-    public List<Role> getRoles()
+    public boolean hasLatestMessage()
     {
-        return getSubject().getRoles();
-    }
-
-    @Override
-    public boolean canProvideRoles()
-    {
-        return getSubject().canProvideRoles();
+        return getSubject().hasLatestMessage();
     }
 
     @Override
@@ -77,39 +86,15 @@ public class EmoteProxy implements Emote, ProxyEntity
     }
 
     @Override
-    public boolean isManaged()
+    public ChannelType getType()
     {
-        return getSubject().isManaged();
+        return getSubject().getType();
     }
 
     @Override
-    public JDA getJDA()
+    public User getUser()
     {
-        return getGuild().getJDA();
-    }
-
-    @Override
-    public AuditableRestAction<Void> delete()
-    {
-        return getSubject().delete();
-    }
-
-    @Override
-    public EmoteManager getManager()
-    {
-        return getSubject().getManager();
-    }
-
-    @Override
-    public boolean isAnimated()
-    {
-        return getSubject().isAnimated();
-    }
-
-    @Override
-    public long getIdLong()
-    {
-        return id;
+        return getSubject().getUser();
     }
 
     @Override

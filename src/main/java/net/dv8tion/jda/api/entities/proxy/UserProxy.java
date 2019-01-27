@@ -25,7 +25,7 @@ import net.dv8tion.jda.api.requests.RestAction;
 
 import java.util.List;
 
-public class UserProxy implements User, ProxyEntity<User>
+public class UserProxy implements User, ProxyEntity
 {
     private final long id;
     private final JDA api;

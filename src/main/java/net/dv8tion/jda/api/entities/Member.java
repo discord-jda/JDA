@@ -35,8 +35,11 @@ import java.util.List;
  *
  * @since 3.0
  */
-public interface Member extends IMentionable, IPermissionHolder, ProxySubject<Member, MemberProxy>
+public interface Member extends IMentionable, IPermissionHolder, ProxySubject
 {
+    @Override
+    MemberProxy getProxy();
+
     /**
      * The user wrapped by this Entity.
      *

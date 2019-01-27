@@ -36,7 +36,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-public class GuildProxy implements Guild, ProxyEntity<Guild>
+public class GuildProxy implements Guild, ProxyEntity
 {
     private final long id;
     private final JDA api;

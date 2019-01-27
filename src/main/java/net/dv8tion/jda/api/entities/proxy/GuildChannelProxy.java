@@ -26,7 +26,7 @@ import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
 
 import java.util.List;
 
-public abstract class GuildChannelProxy implements GuildChannel, ProxyEntity<GuildChannel>
+public abstract class GuildChannelProxy implements GuildChannel, ProxyEntity
 {
     protected final long id;
     protected final JDA api;
@@ -36,6 +36,9 @@ public abstract class GuildChannelProxy implements GuildChannel, ProxyEntity<Gui
         this.id = channel.getIdLong();
         this.api = channel.getJDA();
     }
+
+    @Override
+    public abstract GuildChannel getSubject();
 
     @Override
     public ChannelType getType()

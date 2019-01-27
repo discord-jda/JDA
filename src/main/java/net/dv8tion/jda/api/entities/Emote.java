@@ -46,8 +46,11 @@ import java.util.List;
  *
  * @since  2.2
  */
-public interface Emote extends ISnowflake, IMentionable, IFakeable, ProxySubject<Emote, EmoteProxy>
+public interface Emote extends ISnowflake, IMentionable, IFakeable, ProxySubject
 {
+    @Override
+    EmoteProxy getProxy();
+
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} this emote is attached to.
      *

@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.entities.proxy;
 
-public interface ProxySubject<E, T extends ProxyEntity<E>>
+public interface ProxySubject
 {
-    T getProxy();
+    ProxyEntity getProxy();
 }

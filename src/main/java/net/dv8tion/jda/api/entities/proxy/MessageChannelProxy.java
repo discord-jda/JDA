@@ -16,7 +16,10 @@
 
 package net.dv8tion.jda.api.entities.proxy;
 
-public interface ProxyEntity
+import net.dv8tion.jda.api.entities.MessageChannel;
+
+public interface MessageChannelProxy extends MessageChannel, ProxyEntity
 {
-    ProxySubject getSubject();
+    @Override
+    MessageChannel getSubject();
 }

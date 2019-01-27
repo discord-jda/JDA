@@ -28,8 +28,11 @@ import java.awt.Color;
 /**
  * Represents a {@link net.dv8tion.jda.api.entities.Guild Guild}'s Role. Used to control permissions for Members.
  */
-public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Comparable<Role>, ProxySubject<Role, RoleProxy>
+public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Comparable<Role>, ProxySubject
 {
+    @Override
+    RoleProxy getProxy();
+
     /** Used to keep consistency between color values used in the API */
     int DEFAULT_COLOR_RAW = 0x1FFFFFFF; // java.awt.Color fills the MSB with FF, we just use 1F to provide better consistency
 

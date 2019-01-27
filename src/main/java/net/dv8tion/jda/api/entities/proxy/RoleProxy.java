@@ -31,7 +31,7 @@ import java.awt.Color;
 import java.util.Collection;
 import java.util.EnumSet;
 
-public class RoleProxy implements Role, ProxyEntity<Role>
+public class RoleProxy implements Role, ProxyEntity
 {
     private final GuildProxy guild;
     private final long id;

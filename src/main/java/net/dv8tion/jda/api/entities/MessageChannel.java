@@ -17,6 +17,8 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.proxy.MessageChannelProxy;
+import net.dv8tion.jda.api.entities.proxy.ProxySubject;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
@@ -69,8 +71,11 @@ import java.util.function.Function;
  * <br><b>{@link net.dv8tion.jda.api.entities.TextChannel TextChannel} is a special case which uses {@link IMentionable#getAsMention() IMentionable.getAsMention()}
  * by default and uses the <code>#{@link #getName()}</code> format as <u>alternative</u></b>
  */
-public interface MessageChannel extends ISnowflake, Formattable
+public interface MessageChannel extends ISnowflake, Formattable, ProxySubject
 {
+    @Override
+    MessageChannelProxy getProxy();
+
     /**
      * The id for the most recent message sent
      * in this current MessageChannel.

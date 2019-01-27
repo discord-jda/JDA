@@ -45,8 +45,11 @@ import java.util.Set;
  * Represents a Discord {@link net.dv8tion.jda.api.entities.Guild Guild}.
  * This should contain all information provided from Discord about a Guild.
  */
-public interface Guild extends ISnowflake, ProxySubject<Guild, GuildProxy>
+public interface Guild extends ISnowflake, ProxySubject
 {
+    @Override
+    GuildProxy getProxy();
+
     /**
      * Retrieves the available regions for this Guild
      * <br>Shortcut for {@link #retrieveRegions(boolean) retrieveRegions(true)}

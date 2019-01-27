@@ -29,7 +29,7 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 
-public class MemberProxy implements Member, ProxyEntity<Member>
+public class MemberProxy implements Member, ProxyEntity
 {
     private final GuildProxy guild;
     private final long id;

@@ -31,8 +31,11 @@ import java.util.List;
 /**
  * Represents a {@link net.dv8tion.jda.api.entities.Guild Guild} channel.
  */
-public interface GuildChannel extends ISnowflake, ProxySubject<GuildChannel, GuildChannelProxy>
+public interface GuildChannel extends ISnowflake, ProxySubject
 {
+    @Override
+    GuildChannelProxy getProxy();
+
     /**
      * The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} for this GuildChannel
      *

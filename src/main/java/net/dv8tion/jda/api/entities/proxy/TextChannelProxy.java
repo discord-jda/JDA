@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 import java.util.List;
 
-public class TextChannelProxy extends GuildChannelProxy implements TextChannel
+public class TextChannelProxy extends GuildChannelProxy implements TextChannel, MessageChannelProxy
 {
     public TextChannelProxy(TextChannel channel)
     {

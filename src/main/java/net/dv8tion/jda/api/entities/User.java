@@ -53,8 +53,11 @@ import java.util.List;
  *
  * <p>More information on formatting syntax can be found in the {@link java.util.Formatter format syntax documentation}!
  */
-public interface User extends ISnowflake, IMentionable, IFakeable, ProxySubject<User, UserProxy>
+public interface User extends ISnowflake, IMentionable, IFakeable, ProxySubject
 {
+    @Override
+    UserProxy getProxy();
+
     /**
      * The username of the {@link net.dv8tion.jda.api.entities.User User}. Length is between 2 and 32 characters (inclusive).
      *

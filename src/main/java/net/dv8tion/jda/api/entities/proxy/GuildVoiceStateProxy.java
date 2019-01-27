@@ -19,7 +19,7 @@ package net.dv8tion.jda.api.entities.proxy;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 
-public class GuildVoiceStateProxy implements GuildVoiceState, ProxyEntity<GuildVoiceState>
+public class GuildVoiceStateProxy implements GuildVoiceState, ProxyEntity
 {
     private final MemberProxy member;
 

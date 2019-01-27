@@ -16,6 +16,7 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.proxy.PrivateChannelProxy;
 import net.dv8tion.jda.api.requests.RestAction;
 
 import javax.annotation.CheckReturnValue;
@@ -25,6 +26,9 @@ import javax.annotation.CheckReturnValue;
  */
 public interface PrivateChannel extends MessageChannel, IFakeable
 {
+    @Override
+    PrivateChannelProxy getProxy();
+
     /**
      * The {@link net.dv8tion.jda.api.entities.User User} that this {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} communicates with.
      *
