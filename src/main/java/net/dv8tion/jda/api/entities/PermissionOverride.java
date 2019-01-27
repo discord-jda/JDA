@@ -17,6 +17,8 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.proxy.PermissionOverrideProxy;
+import net.dv8tion.jda.api.entities.proxy.ProxySubject;
 import net.dv8tion.jda.api.managers.PermOverrideManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 
@@ -27,8 +29,11 @@ import java.util.EnumSet;
  * Represents the specific {@link net.dv8tion.jda.api.entities.Member Member} or {@link net.dv8tion.jda.api.entities.Role Role}
  * permission overrides that can be set for channels.
  */
-public interface PermissionOverride
+public interface PermissionOverride extends ProxySubject
 {
+    @Override
+    PermissionOverrideProxy getProxy();
+
     /**
      * This is the raw binary representation (as a base 10 long) of the permissions <b>allowed</b> by this override.
      * <br>The long relates to the offsets used by each {@link net.dv8tion.jda.api.Permission Permission}.

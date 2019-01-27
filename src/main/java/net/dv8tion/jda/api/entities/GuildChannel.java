@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.InviteAction;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
+import net.dv8tion.jda.api.utils.MiscUtil;
 
 import javax.annotation.CheckReturnValue;
 import java.util.List;
@@ -106,6 +107,13 @@ public interface GuildChannel extends ISnowflake, ProxySubject
      * @return the corresponding JDA instance
      */
     JDA getJDA();
+
+    //TODO: Documentation
+    PermissionOverride getPermissionOverrideById(long id);
+    default PermissionOverride getPermissionOverrideById(String id)
+    {
+        return getPermissionOverrideById(MiscUtil.parseSnowflake(id));
+    }
 
     /**
      * The {@link PermissionOverride} relating to the specified {@link net.dv8tion.jda.api.entities.Member Member}.

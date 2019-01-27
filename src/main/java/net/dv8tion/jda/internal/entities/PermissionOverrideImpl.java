@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.proxy.PermissionOverrideProxy;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.PermOverrideManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
@@ -48,6 +49,12 @@ public class PermissionOverrideImpl implements PermissionOverride
         this.channel = new UpstreamReference<>(channel);
         this.id = id;
         this.permissionHolder = permissionHolder;
+    }
+
+    @Override
+    public PermissionOverrideProxy getProxy()
+    {
+        return new PermissionOverrideProxy(this);
     }
 
     @Override

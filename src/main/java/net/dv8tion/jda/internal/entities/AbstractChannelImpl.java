@@ -106,6 +106,12 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     }
 
     @Override
+    public PermissionOverride getPermissionOverrideById(long id)
+    {
+        return overrides.get(id);
+    }
+
+    @Override
     public PermissionOverride getPermissionOverride(Member member)
     {
         return member != null ? overrides.get(member.getUser().getIdLong()) : null;

@@ -95,6 +95,12 @@ public abstract class GuildChannelProxy implements GuildChannel, ProxyEntity
     }
 
     @Override
+    public PermissionOverride getPermissionOverrideById(long id)
+    {
+        return getSubject().getPermissionOverrideById(id);
+    }
+
+    @Override
     public PermissionOverride getPermissionOverride(Member member)
     {
         return getSubject().getPermissionOverride(member);
