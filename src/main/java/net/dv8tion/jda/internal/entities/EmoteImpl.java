@@ -185,6 +185,8 @@ public class EmoteImpl implements ListedEmote
     @Override
     public EmoteProxy getProxy()
     {
+        if (isFake())
+            throw new IllegalStateException("Cannot create a proxy for a fake emote");
         return new EmoteProxy(this);
     }
 

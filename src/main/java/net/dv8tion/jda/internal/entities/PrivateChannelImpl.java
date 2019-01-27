@@ -48,6 +48,8 @@ public class PrivateChannelImpl implements PrivateChannel
     @Override
     public PrivateChannelProxy getProxy()
     {
+        if (isFake())
+            throw new IllegalStateException("Cannot create a proxy for a fake channel");
         return new PrivateChannelProxy(this);
     }
 
