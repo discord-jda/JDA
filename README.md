@@ -199,7 +199,11 @@ Be sure to replace the **VERSION** key below with the one of the versions shown 
     <name>jcenter-bintray</name>
     <url>http://jcenter.bintray.com</url>
 </repository>
-
+<repository> <!-- Required for OkHTTP 3.13.0-SNAPSHOT -->
+    <id>sonatype</id>
+    <name>sonatype-snapshots</name>
+    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+</repository>
 ```
 
 **Maven without Audio**
@@ -225,6 +229,8 @@ dependencies {
 
 repositories {
     jcenter()
+    // Required for OkHTTP 3.13.0-SNAPSHOT
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
 }
 ```
 
