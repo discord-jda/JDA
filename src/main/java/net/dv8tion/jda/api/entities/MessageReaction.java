@@ -351,7 +351,7 @@ public class MessageReaction
                     : MiscUtil.encodeUTF8(emote.getName());
         Route.CompiledRoute route;
         if (user.equals(getJDA().getSelfUser()))
-            route = Route.Messages.REMOVE_OWN_REACTION.compile(channel.getId(), getMessageId(), code);
+            route = Route.Messages.REMOVE_REACTION.compile(channel.getId(), getMessageId(), code, "@me");
         else
             route = Route.Messages.REMOVE_REACTION.compile(channel.getId(), getMessageId(), code, user.getId());
         return new RestActionImpl<>(getJDA(), route);
