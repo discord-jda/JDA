@@ -88,7 +88,7 @@ public class PrivateChannelProxy implements PrivateChannel, MessageChannelProxy
     @Override
     public ChannelType getType()
     {
-        return getSubject().getType();
+        return ChannelType.PRIVATE;
     }
 
     @Override
