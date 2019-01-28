@@ -21,10 +21,10 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.jfrog.bintray.gradle.*
 import com.jfrog.bintray.gradle.tasks.*
 import groovy.util.FileTreeBuilder
-import org.gradle.internal.impldep.org.joda.time.LocalDateTime
 import org.apache.maven.model.*
 import org.apache.tools.ant.filters.*
 import org.gradle.jvm.tasks.*
+import java.util.Date
 
 plugins {
     signing
@@ -47,16 +47,16 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-repositories {
-    jcenter()
-}
-
 configure<SourceSetContainer> {
     register("examples") {
         java.srcDir("src/examples/java")
         compileClasspath += sourceSets["main"].output
         runtimeClasspath += sourceSets["main"].output
     }
+}
+
+repositories {
+    jcenter()
 }
 
 dependencies {
@@ -96,14 +96,15 @@ dependencies {
 }
 
 val bintrayUpload: BintrayUploadTask by tasks
-val shadowJar: ShadowJar by tasks
-val jar: Jar by tasks
-val javadoc: Javadoc by tasks
-val build: Task by tasks
-val clean: Task by tasks
-val compileJava: JavaCompile by tasks
-tasks["compileTestJava"].enabled = false
-tasks["processTestResources"].enabled = false
+val compileJava  : JavaCompile by tasks
+val shadowJar    : ShadowJar by tasks
+val javadoc      : Javadoc by tasks
+val jar          : Jar by tasks
+val build        : Task by tasks
+val clean        : Task by tasks
+val test         : Task by tasks
+val check        : Task by tasks
+
 shadowJar.classifier = "withDependencies"
 
 val sourcesForRelease = task<Copy>("sourcesForRelease") {
@@ -245,7 +246,7 @@ bintray {
         publish = true
         version(delegateClosureOf<BintrayExtension.VersionConfig> {
             name = project.version as String
-//            released = LocalDateTime.now().toString()
+            released = Date().toString()
         })
     })
 }
