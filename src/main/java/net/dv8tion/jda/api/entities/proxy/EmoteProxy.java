@@ -125,6 +125,7 @@ public class EmoteProxy implements Emote, ProxyEntity
     }
 
     @Override
+    @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
     public boolean equals(Object obj)
     {
         return obj == this || getSubject().equals(obj);

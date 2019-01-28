@@ -832,6 +832,8 @@ public class GuildImpl implements Guild
     {
         if (o == this)
             return true;
+        if (o instanceof GuildProxy)
+            return o.equals(this);  // resolve subject
         if (!(o instanceof GuildImpl))
             return false;
         GuildImpl oGuild = (GuildImpl) o;

@@ -110,6 +110,7 @@ public class PrivateChannelProxy implements PrivateChannel, MessageChannelProxy
     }
 
     @Override
+    @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
     public boolean equals(Object obj)
     {
         return obj == this || getSubject().equals(obj);

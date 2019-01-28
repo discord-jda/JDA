@@ -179,6 +179,8 @@ public class PrivateChannelImpl implements PrivateChannel
     {
         if (obj == this)
             return true;
+        if (obj instanceof PrivateChannelProxy)
+            return obj.equals(this); // resolve subject
         if (!(obj instanceof PrivateChannelImpl))
             return false;
         PrivateChannelImpl impl = (PrivateChannelImpl) obj;

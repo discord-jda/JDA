@@ -208,6 +208,7 @@ public class RoleProxy implements Role, ProxyEntity
     }
 
     @Override
+    @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
     public boolean equals(Object obj)
     {
         return obj == this || getSubject().equals(obj);

@@ -182,6 +182,8 @@ public class UserImpl implements User
     {
         if (o == this)
             return true;
+        if (o instanceof UserProxy)
+            return o.equals(this); // resolve subject
         if (!(o instanceof UserImpl))
             return false;
         UserImpl oUser = (UserImpl) o;

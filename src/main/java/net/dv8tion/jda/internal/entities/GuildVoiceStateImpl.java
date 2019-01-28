@@ -139,6 +139,8 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     {
         if (obj == this)
             return true;
+        if (obj instanceof GuildVoiceStateProxy)
+            return obj.equals(this); // resolve subject
         if (!(obj instanceof GuildVoiceState))
             return false;
         GuildVoiceState oStatus = (GuildVoiceState) obj;

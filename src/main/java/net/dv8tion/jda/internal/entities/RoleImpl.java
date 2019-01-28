@@ -265,6 +265,8 @@ public class RoleImpl implements Role
     {
         if (o == this)
             return true;
+        if (o instanceof RoleProxy)
+            return o.equals(this); // resolve subject
         if (!(o instanceof Role))
             return false;
         Role oRole = (Role) o;

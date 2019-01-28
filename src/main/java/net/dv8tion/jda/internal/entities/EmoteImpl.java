@@ -230,6 +230,8 @@ public class EmoteImpl implements ListedEmote
     {
         if (obj == this)
             return true;
+        if (obj instanceof EmoteProxy)
+            return obj.equals(this); // resolve subject
         if (!(obj instanceof EmoteImpl))
             return false;
 

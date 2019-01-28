@@ -261,6 +261,8 @@ public class MemberImpl implements Member
     {
         if (o == this)
             return true;
+        if (o instanceof MemberProxy)
+            return o.equals(this); // resolve subject
         if (!(o instanceof Member))
             return false;
 

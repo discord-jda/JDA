@@ -20,6 +20,7 @@ import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.proxy.GuildChannelProxy;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.ChannelManager;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -259,6 +260,8 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     {
         if (obj == this)
             return true;
+        if (obj instanceof GuildChannelProxy)
+            return obj.equals(this); // resolve subject
         if (!(obj instanceof GuildChannel))
             return false;
         GuildChannel channel = (GuildChannel) obj;

@@ -207,6 +207,7 @@ public class MemberProxy implements Member, ProxyEntity
     }
 
     @Override
+    @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
     public boolean equals(Object obj)
     {
         return obj == this || getSubject().equals(obj);

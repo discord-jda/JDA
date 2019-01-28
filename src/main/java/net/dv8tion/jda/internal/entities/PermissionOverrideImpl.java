@@ -179,6 +179,8 @@ public class PermissionOverrideImpl implements PermissionOverride
     {
         if (o == this)
             return true;
+        if (o instanceof PermissionOverrideProxy)
+            return o.equals(this); // resolve subject
         if (!(o instanceof PermissionOverrideImpl))
             return false;
         PermissionOverrideImpl oPerm = (PermissionOverrideImpl) o;
