@@ -87,7 +87,10 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return The current {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} of the {@link net.dv8tion.jda.api.entities.User User}.
      */
-    OnlineStatus getOnlineStatus();
+    OnlineStatus getOnlineStatus(); //TODO: Is this replaced by the new status map?
+
+    //TODO
+    OnlineStatus getOnlineStatus(ClientType type);
 
     /**
      * Returns the current nickname of this Member for the parent Guild.

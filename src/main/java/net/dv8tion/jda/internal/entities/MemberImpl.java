@@ -41,11 +41,12 @@ public class MemberImpl implements Member
     private final User user;
     private final Set<Role> roles = ConcurrentHashMap.newKeySet();
     private final GuildVoiceState voiceState;
+    private final Map<ClientType, OnlineStatus> status;
 
     private String nickname;
     private long joinDate;
     private List<Activity> activities = null;
-    private OnlineStatus onlineStatus = OnlineStatus.OFFLINE;
+    private OnlineStatus onlineStatus = OnlineStatus.OFFLINE; // TODO: Replaced?
 
     public MemberImpl(GuildImpl guild, User user)
     {
@@ -53,7 +54,9 @@ public class MemberImpl implements Member
         this.user = user;
         JDAImpl jda = (JDAImpl) getJDA();
         boolean cacheState = jda.isCacheFlagSet(CacheFlag.VOICE_STATE) || user.equals(jda.getSelfUser());
+        boolean cacheOnline = jda.isCacheFlagSet(CacheFlag.CLIENT_STATUS);
         this.voiceState = cacheState ? new GuildVoiceStateImpl(this) : null;
+        this.status = cacheOnline ? new ConcurrentHashMap<>() : null;
     }
 
     @Override
@@ -96,6 +99,12 @@ public class MemberImpl implements Member
     public OnlineStatus getOnlineStatus()
     {
         return onlineStatus;
+    }
+
+    @Override
+    public OnlineStatus getOnlineStatus(ClientType type)
+    {
+        return status.get(type);
     }
 
     @Override
@@ -219,6 +228,17 @@ public class MemberImpl implements Member
     public MemberImpl setActivities(List<Activity> activities)
     {
         this.activities = Collections.unmodifiableList(activities);
+        return this;
+    }
+
+    public MemberImpl setOnlineStatus(ClientType type, OnlineStatus status)
+    {
+        if (type == ClientType.UNKNOWN)
+            return this;
+        if (status == null || status == OnlineStatus.UNKNOWN)
+            this.status.remove(type);
+        else
+            this.status.put(type, status);
         return this;
     }
 

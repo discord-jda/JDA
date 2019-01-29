@@ -153,7 +153,7 @@ public class PresenceUpdateHandler extends SocketHandler
                         return null;
                     }
                 }
-                else
+                else //TODO: Client Status - Maybe update existing event if replaced
                 {
                     //The member is already cached, so modify the presence values and fire events as needed.
                     if (!member.getOnlineStatus().equals(status))

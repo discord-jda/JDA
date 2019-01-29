@@ -14,31 +14,35 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.utils.cache;
+package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-
-/**
- * Flags used to enable cache services for JDA
- */
-public enum CacheFlag
+public enum ClientType
 {
-    /**
-     * Enables cache for {@link Member#getActivities()}
-     */
-    PRESENCE,
-    /**
-     * Enables cache for {@link Member#getVoiceState()}
-     * <br>This will always be cached for self member.
-     */
-    VOICE_STATE,
-    /**
-     * Enables cache for {@link Guild#getEmoteCache()}
-     */
-    EMOTE,
-    /**
-     * Enables cache for TODO
-     */
-    CLIENT_STATUS,
+    DESKTOP("desktop"),
+    MOBILE("mobile"),
+    WEB("web"),
+    UNKNOWN("unknown")
+    ;
+
+    private final String key;
+
+    ClientType(String key)
+    {
+        this.key = key;
+    }
+
+    public String getKey()
+    {
+        return key;
+    }
+
+    public static ClientType fromKey(String key)
+    {
+        for (ClientType type : values())
+        {
+            if (type.key.equals(key))
+                return type;
+        }
+        return UNKNOWN;
+    }
 }
