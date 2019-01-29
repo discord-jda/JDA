@@ -19,12 +19,14 @@ package net.dv8tion.jda.api.requests.restaction.pagination;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.Procedure;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -260,6 +262,36 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      * @return limit
      */
     int getLimit();
+
+    default CompletableFuture<List<T>> takeUntilAsync(Predicate<T> rule)
+    {
+        return takeUntilAsync(0, rule);
+    }
+
+    default CompletableFuture<List<T>> takeUntilAsync(int limit, Predicate<T> rule)
+    {
+        Checks.notNull(rule, "Rule");
+        Checks.notNegative(limit, "Limit");
+        List<T> result;
+        if (limit == 0)
+            result = new ArrayList<>();
+        else
+            result = new ArrayList<>(limit);
+        CompletableFuture<List<T>> future = new CompletableFuture<>();
+        CompletableFuture<?> handle = forEachAsync((element) -> {
+            if (!rule.test(element))
+                return false;
+            result.add(element);
+            return limit == 0 || limit > result.size();
+        });
+        handle.whenComplete((r, t) -> {
+           if (t != null)
+               future.completeExceptionally(t);
+           else
+               future.complete(result);
+        });
+        return future;
+    }
 
     /**
      * Convenience method to retrieve an amount of entities from this pagination action.
