@@ -317,7 +317,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      *         returns true to discard the element and finish the task
      *
      * @throws IllegalArgumentException
-     *         If the provided rule is {@code null} or the limit is negative
+     *         If the provided rule is {@code null}
      *
      * @return {@link CompletableFuture} - Type: {@link List List}
      *         <br>Future representing the fetch task, the list will be sorted most recent to oldest
