@@ -263,11 +263,91 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      */
     int getLimit();
 
+    /**
+     * Retrieves elements while the specified condition is met.
+     *
+     * @param  rule
+     *         The rule which must be fulfilled for an element to be added,
+     *         returns false to discard the element and finish the task
+     *
+     * @throws IllegalArgumentException
+     *         If the provided rule is {@code null}
+     *
+     * @return {@link CompletableFuture} - Type: {@link List List}
+     *         <br>Future representing the fetch task
+     *
+     * @see    #takeWhileAsync(int, Predicate)
+     * @see    #takeUntilAsync(Predicate)
+     */
+    default CompletableFuture<List<T>> takeWhileAsync(Predicate<T> rule)
+    {
+        Checks.notNull(rule, "Rule");
+        return takeUntilAsync(rule.negate());
+    }
+
+    /**
+     * Retrieves elements while the specified condition is met.
+     *
+     * @param  limit
+     *         The maximum amount of elements to collect or {@code 0} for no limit
+     * @param  rule
+     *         The rule which must be fulfilled for an element to be added,
+     *         returns false to discard the element and finish the task
+     *
+     * @throws IllegalArgumentException
+     *         If the provided rule is {@code null} or the limit is negative
+     *
+     * @return {@link CompletableFuture} - Type: {@link List List}
+     *         <br>Future representing the fetch task
+     *
+     * @see    #takeWhileAsync(Predicate)
+     * @see    #takeUntilAsync(int, Predicate)
+     */
+    default CompletableFuture<List<T>> takeWhileAsync(int limit, Predicate<T> rule)
+    {
+        Checks.notNull(rule, "Rule");
+        return takeUntilAsync(limit, rule.negate());
+    }
+
+    /**
+     * Retrieves elements until the specified condition is met.
+     *
+     * @param  rule
+     *         The rule which must be fulfilled for an element to be discarded,
+     *         returns true to discard the element and finish the task
+     *
+     * @throws IllegalArgumentException
+     *         If the provided rule is {@code null} or the limit is negative
+     *
+     * @return {@link CompletableFuture} - Type: {@link List List}
+     *         <br>Future representing the fetch task
+     *
+     * @see    #takeWhileAsync(Predicate)
+     * @see    #takeUntilAsync(int, Predicate)
+     */
     default CompletableFuture<List<T>> takeUntilAsync(Predicate<T> rule)
     {
         return takeUntilAsync(0, rule);
     }
 
+    /**
+     * Retrieves elements until the specified condition is met.
+     *
+     * @param  limit
+     *         The maximum amount of elements to collect or {@code 0} for no limit
+     * @param  rule
+     *         The rule which must be fulfilled for an element to be discarded,
+     *         returns true to discard the element and finish the task
+     *
+     * @throws IllegalArgumentException
+     *         If the provided rule is {@code null} or the limit is negative
+     *
+     * @return {@link CompletableFuture} - Type: {@link List List}
+     *         <br>Future representing the fetch task
+     *
+     * @see    #takeWhileAsync(Predicate)
+     * @see    #takeUntilAsync(int, Predicate)
+     */
     default CompletableFuture<List<T>> takeUntilAsync(int limit, Predicate<T> rule)
     {
         Checks.notNull(rule, "Rule");
