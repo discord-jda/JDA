@@ -355,7 +355,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
         List<T> result = new ArrayList<>();
         CompletableFuture<List<T>> future = new CompletableFuture<>();
         CompletableFuture<?> handle = forEachAsync((element) -> {
-            if (!rule.test(element))
+            if (rule.test(element))
                 return false;
             result.add(element);
             return limit == 0 || limit > result.size();
