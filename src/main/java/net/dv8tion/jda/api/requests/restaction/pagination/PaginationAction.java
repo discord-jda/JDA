@@ -274,7 +274,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      *         If the provided rule is {@code null}
      *
      * @return {@link CompletableFuture} - Type: {@link List List}
-     *         <br>Future representing the fetch task
+     *         <br>Future representing the fetch task, the list will be sorted most recent to oldest
      *
      * @see    #takeWhileAsync(int, Predicate)
      * @see    #takeUntilAsync(Predicate)
@@ -298,7 +298,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      *         If the provided rule is {@code null} or the limit is negative
      *
      * @return {@link CompletableFuture} - Type: {@link List List}
-     *         <br>Future representing the fetch task
+     *         <br>Future representing the fetch task, the list will be sorted most recent to oldest
      *
      * @see    #takeWhileAsync(Predicate)
      * @see    #takeUntilAsync(int, Predicate)
@@ -320,7 +320,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      *         If the provided rule is {@code null} or the limit is negative
      *
      * @return {@link CompletableFuture} - Type: {@link List List}
-     *         <br>Future representing the fetch task
+     *         <br>Future representing the fetch task, the list will be sorted most recent to oldest
      *
      * @see    #takeWhileAsync(Predicate)
      * @see    #takeUntilAsync(int, Predicate)
@@ -343,7 +343,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      *         If the provided rule is {@code null} or the limit is negative
      *
      * @return {@link CompletableFuture} - Type: {@link List List}
-     *         <br>Future representing the fetch task
+     *         <br>Future representing the fetch task, the list will be sorted most recent to oldest
      *
      * @see    #takeWhileAsync(Predicate)
      * @see    #takeUntilAsync(int, Predicate)
@@ -352,11 +352,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
     {
         Checks.notNull(rule, "Rule");
         Checks.notNegative(limit, "Limit");
-        List<T> result;
-        if (limit == 0)
-            result = new ArrayList<>();
-        else
-            result = new ArrayList<>(limit);
+        List<T> result = new ArrayList<>();
         CompletableFuture<List<T>> future = new CompletableFuture<>();
         CompletableFuture<?> handle = forEachAsync((element) -> {
             if (!rule.test(element))
