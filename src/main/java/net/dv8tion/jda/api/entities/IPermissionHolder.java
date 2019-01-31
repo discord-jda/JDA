@@ -29,56 +29,6 @@ import java.util.EnumSet;
 public interface IPermissionHolder extends ISnowflake
 {
     /**
-     * Converts this abstraction to the concrete {@link net.dv8tion.jda.api.entities.Role Role} type.
-     * <br>If this is not a role, this will return {@code null} instead.
-     *
-     * @return This permission holder as a concrete Role, or null
-     *
-     * @see    #isRole()
-     * @see    #asMember()
-     */
-    default Role asRole()
-    {
-        return isRole() ? (Role) this : null;
-    }
-
-    /**
-     * Converts this abstraction to the concrete {@link net.dv8tion.jda.api.entities.Member Member} type.
-     * <br>If this is not a member, this will return {@code null} instead.
-     *
-     * @return This permission holder as a concrete Member, or null
-     *
-     * @see    #isMember()
-     * @see    #asRole()
-     */
-    default Member asMember()
-    {
-        return isMember() ? (Member) this : null;
-    }
-
-    /**
-     * Whether this permission holder is a {@link net.dv8tion.jda.api.entities.Role Role}.
-     * <br>Shortcut for {@code holder instanceof Role}.
-     *
-     * @return True, if this is a role
-     */
-    default boolean isRole()
-    {
-        return this instanceof Role;
-    }
-
-    /**
-     * Whether this permission holder is a {@link net.dv8tion.jda.api.entities.Member Member}.
-     * <br>Shortcut for {@code holder instanceof Member}.
-     *
-     * @return True, if this is a member
-     */
-    default boolean isMember()
-    {
-        return this instanceof Member;
-    }
-
-    /**
      * The Guild to which this PermissionHolder is related
      * 
      * @return A never-null Guild to which this PermissionHolder is linked
