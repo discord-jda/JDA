@@ -1,11 +1,11 @@
 /*
- *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
+ * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -114,6 +114,8 @@ public class EmbedBuilder
             throw new IllegalStateException("Cannot build an empty embed!");
         if (description.length() > MessageEmbed.TEXT_MAX_LENGTH)
             throw new IllegalStateException(String.format("Description is longer than %d! Please limit your input!", MessageEmbed.TEXT_MAX_LENGTH));
+        if (length() > MessageEmbed.EMBED_MAX_LENGTH_BOT)
+            throw new IllegalStateException("Cannot build an embed with more than " + MessageEmbed.EMBED_MAX_LENGTH_BOT + " characters!");
         final String descrip = this.description.length() < 1 ? null : this.description.toString();
 
         return EntityBuilder.createMessageEmbed(url, title, descrip, EmbedType.RICH, timestamp,
@@ -149,14 +151,14 @@ public class EmbedBuilder
     public boolean isEmpty()
     {
         return title == null
-                && description.length() == 0
-                && timestamp == null
-                //&& color == null color alone is not enough to send
-                && thumbnail == null
-                && author == null
-                && footer == null
-                && image == null
-                && fields.isEmpty();
+            && timestamp == null
+            && thumbnail == null
+            && author == null
+            && footer == null
+            && image == null
+            && color == Role.DEFAULT_COLOR_RAW
+            && description.length() == 0
+            && fields.isEmpty();
     }
 
     /**
