@@ -32,16 +32,14 @@ public interface GuildVoiceState
     JDA getJDA();
 
     /**
-     * Returns whether the {@link net.dv8tion.jda.api.entities.Member Member}/{@link net.dv8tion.jda.api.entities.User User}
-     * muted themselves.
+     * Returns whether the {@link net.dv8tion.jda.api.entities.Member Member} muted themselves.
      *
      * @return The User's self-mute status
      */
     boolean isSelfMuted();
 
     /**
-     * Returns whether the {@link net.dv8tion.jda.api.entities.Member Member}/{@link net.dv8tion.jda.api.entities.User User}
-     * deafened themselves.
+     * Returns whether the {@link net.dv8tion.jda.api.entities.Member Member} deafened themselves.
      *
      * @return The User's self-deaf status
      */
