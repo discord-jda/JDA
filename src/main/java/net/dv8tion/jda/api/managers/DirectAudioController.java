@@ -75,7 +75,7 @@ public interface DirectAudioController
      * </ol>
      *
      * Note that the voice state update will always be received prior to a voice server update.
-     * <br>THe internal dispatch handlers already call this when needed, a library end-user never needs to call this method.
+     * <br>The internal dispatch handlers already call this when needed, a library end-user never needs to call this method.
      *
      * @param guild
      *        The guild to update the state for
