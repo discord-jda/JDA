@@ -171,10 +171,12 @@ public class UserImpl implements User
     @Override
     public boolean equals(Object o)
     {
+        if (o == this)
+            return true;
         if (!(o instanceof UserImpl))
             return false;
         UserImpl oUser = (UserImpl) o;
-        return this == oUser || this.id == oUser.id;
+        return this.id == oUser.id;
     }
 
     @Override

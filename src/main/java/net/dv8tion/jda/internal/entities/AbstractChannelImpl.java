@@ -251,10 +251,10 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     @Override
     public boolean equals(Object obj)
     {
-        if (!(obj instanceof GuildChannel))
-            return false;
         if (obj == this)
             return true;
+        if (!(obj instanceof GuildChannel))
+            return false;
         GuildChannel channel = (GuildChannel) obj;
         return channel.getIdLong() == getIdLong();
     }

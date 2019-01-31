@@ -171,8 +171,12 @@ public class WebhookImpl implements Webhook
     @Override
     public boolean equals(Object obj)
     {
-        return obj instanceof WebhookImpl
-                && ((WebhookImpl) obj).id == this.id;
+        if (obj == this)
+            return true;
+        if (!(obj instanceof WebhookImpl))
+            return false;
+        WebhookImpl impl = (WebhookImpl) obj;
+        return impl.id == id;
     }
 
     @Override

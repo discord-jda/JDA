@@ -301,9 +301,11 @@ public class MessageEmbed
      */
     public boolean isEmpty()
     {
-        return getLength() == 0
+        return color == Role.DEFAULT_COLOR_RAW
+            && timestamp == null
             && getImage() == null
-            && getThumbnail() == null;
+            && getThumbnail() == null
+            && getLength() == 0;
     }
 
     /**
@@ -398,7 +400,7 @@ public class MessageEmbed
             && Objects.equals(videoInfo, other.videoInfo)
             && Objects.equals(footer, other.footer)
             && Objects.equals(image, other.image)
-            && Objects.equals(color, other.color)
+            && (color & 0xFFFFFF) == (other.color & 0xFFFFFF)
             && Objects.equals(timestamp, other.timestamp)
             && Helpers.deepEquals(fields, other.fields);
     }

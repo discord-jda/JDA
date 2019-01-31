@@ -804,10 +804,12 @@ public class GuildImpl implements Guild
     @Override
     public boolean equals(Object o)
     {
+        if (o == this)
+            return true;
         if (!(o instanceof GuildImpl))
             return false;
         GuildImpl oGuild = (GuildImpl) o;
-        return this == oGuild || this.id == oGuild.id;
+        return this.id == oGuild.id;
     }
 
     @Override
