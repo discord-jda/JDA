@@ -40,7 +40,7 @@ public interface VoiceDispatchInterceptor
      * @param update
      *        The {@link VoiceServerUpdate} to handle
      */
-    void interceptServerUpdate(@Nonnull VoiceServerUpdate update);
+    void onVoiceServerUpdate(@Nonnull VoiceServerUpdate update);
 
     /**
      * Handles the <b>VOICE_STATE_UPDATE</b>.
