@@ -250,9 +250,9 @@ public class ShardCacheViewImpl extends ReadWriteLockCache<JDA> implements Shard
 
     public static class UnifiedShardCacheViewImpl implements ShardCacheView
     {
-        protected final Supplier<Stream<ShardCacheView>> generator;
+        protected final Supplier<? extends Stream<? extends ShardCacheView>> generator;
 
-        public UnifiedShardCacheViewImpl(Supplier<Stream<ShardCacheView>> generator)
+        public UnifiedShardCacheViewImpl(Supplier<? extends Stream<? extends ShardCacheView>> generator)
         {
             this.generator = generator;
         }
@@ -288,7 +288,7 @@ public class ShardCacheViewImpl extends ReadWriteLockCache<JDA> implements Shard
         @Override
         public ClosableIterator<JDA> lockedIterator()
         {
-            Iterator<ShardCacheView> gen = this.generator.get().iterator();
+            Iterator<? extends ShardCacheView> gen = this.generator.get().iterator();
             return new ChainedClosableIterator<>(gen);
         }
 
@@ -328,7 +328,7 @@ public class ShardCacheViewImpl extends ReadWriteLockCache<JDA> implements Shard
             return stream().iterator();
         }
 
-        protected Stream<ShardCacheView> distinctStream()
+        protected Stream<? extends ShardCacheView> distinctStream()
         {
             return generator.get().distinct();
         }
