@@ -25,11 +25,20 @@ public class ThreadingConfig
 {
     private ScheduledExecutorService rateLimitPool;
     private ScheduledExecutorService gatewayPool;
-    private ExecutorService callbackPool = ForkJoinPool.commonPool();
+    private ExecutorService callbackPool;
 
-    private boolean shutdownRateLimitPool = true;
-    private boolean shutdownGatewayPool = true;
-    private boolean shutdownCallbackPool = false;
+    private boolean shutdownRateLimitPool;
+    private boolean shutdownGatewayPool;
+    private boolean shutdownCallbackPool;
+
+    public ThreadingConfig()
+    {
+        this.callbackPool = ForkJoinPool.commonPool();
+
+        this.shutdownRateLimitPool = true;
+        this.shutdownGatewayPool = true;
+        this.shutdownCallbackPool = false;
+    }
 
     public void setRateLimitPool(ScheduledExecutorService executor, boolean shutdown)
     {

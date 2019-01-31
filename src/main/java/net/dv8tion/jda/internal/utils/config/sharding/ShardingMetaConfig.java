@@ -25,6 +25,7 @@ import java.util.function.IntFunction;
 
 public class ShardingMetaConfig extends MetaConfig
 {
+    private static final ShardingMetaConfig defaultConfig = new ShardingMetaConfig(null, null, false, true, true);
     private final boolean enableCompression;
     private final IntFunction<? extends ConcurrentMap<String, String>> contextProvider;
 
@@ -56,6 +57,6 @@ public class ShardingMetaConfig extends MetaConfig
 
     public static ShardingMetaConfig getDefault()
     {
-        return new ShardingMetaConfig(null, null, false, true, true);
+        return defaultConfig;
     }
 }
