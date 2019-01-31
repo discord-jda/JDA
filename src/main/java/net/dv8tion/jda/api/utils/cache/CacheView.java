@@ -129,7 +129,7 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @see    #acceptStream(Consumer)
      */
-    default <R> R applyStream(Function<Stream<T>, R> action)
+    default <R> R applyStream(Function<? super Stream<T>, ? extends R> action)
     {
         Checks.notNull(action, "Action");
         try (ClosableIterator<T> it = lockedIterator())
@@ -160,7 +160,7 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @see    #applyStream(Function)
      */
-    default void acceptStream(Consumer<Stream<T>> action)
+    default void acceptStream(Consumer<? super Stream<T>> action)
     {
         Checks.notNull(action, "Action");
         try (ClosableIterator<T> it = lockedIterator())
@@ -301,7 +301,7 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @return Combined CacheView spanning over all provided implementation instances
      */
-    static <E> CacheView<E> all(Supplier<Stream<CacheView<E>>> generator)
+    static <E> CacheView<E> all(Supplier<? extends Stream<? extends CacheView<E>>> generator)
     {
         Checks.notNull(generator, "Generator");
         return new UnifiedCacheViewImpl<>(generator);
@@ -331,7 +331,7 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @return Combined ShardCacheView spanning over all provided implementation instances
      */
-    static ShardCacheView allShards(Supplier<Stream<ShardCacheView>> generator)
+    static ShardCacheView allShards(Supplier<? extends Stream<? extends ShardCacheView>> generator)
     {
         Checks.notNull(generator, "Generator");
         return new ShardCacheViewImpl.UnifiedShardCacheViewImpl(generator);
@@ -350,7 +350,7 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @return Combined SnowflakeCacheView spanning over all provided implementation instances
      */
-    static <E extends ISnowflake> SnowflakeCacheView<E> allSnowflakes(Collection<SnowflakeCacheView<E>> cacheViews)
+    static <E extends ISnowflake> SnowflakeCacheView<E> allSnowflakes(Collection<? extends SnowflakeCacheView<E>> cacheViews)
     {
         Checks.noneNull(cacheViews, "Collection");
         return new UnifiedCacheViewImpl.UnifiedSnowflakeCacheView<>(cacheViews::stream);
@@ -369,7 +369,7 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @return Combined SnowflakeCacheView spanning over all provided implementation instances
      */
-    static <E extends ISnowflake> SnowflakeCacheView<E> allSnowflakes(Supplier<Stream<SnowflakeCacheView<E>>> generator)
+    static <E extends ISnowflake> SnowflakeCacheView<E> allSnowflakes(Supplier<? extends Stream<? extends SnowflakeCacheView<E>>> generator)
     {
         Checks.notNull(generator, "Generator");
         return new UnifiedCacheViewImpl.UnifiedSnowflakeCacheView<>(generator);
@@ -385,7 +385,7 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @return Combined MemberCacheView spanning over all provided instances
      */
-    static UnifiedMemberCacheView allMembers(Collection<MemberCacheView> cacheViews)
+    static UnifiedMemberCacheView allMembers(Collection<? extends MemberCacheView> cacheViews)
     {
         Checks.noneNull(cacheViews, "Collection");
         return new UnifiedCacheViewImpl.UnifiedMemberCacheViewImpl(cacheViews::stream);
@@ -401,7 +401,7 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @return Combined MemberCacheView spanning over all provided instances
      */
-    static UnifiedMemberCacheView allMembers(Supplier<Stream<MemberCacheView>> generator)
+    static UnifiedMemberCacheView allMembers(Supplier<? extends Stream<? extends MemberCacheView>> generator)
     {
         Checks.notNull(generator, "Generator");
         return new UnifiedCacheViewImpl.UnifiedMemberCacheViewImpl(generator);

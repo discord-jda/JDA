@@ -34,9 +34,9 @@ import java.util.stream.Stream;
 
 public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheView<T>
 {
-    protected final Supplier<Stream<E>> generator;
+    protected final Supplier<? extends Stream<? extends E>> generator;
 
-    public UnifiedCacheViewImpl(Supplier<Stream<E>> generator)
+    public UnifiedCacheViewImpl(Supplier<? extends Stream<? extends E>> generator)
     {
         this.generator = generator;
     }
@@ -78,7 +78,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
     @Override
     public ClosableIterator<T> lockedIterator()
     {
-        Iterator<E> gen = generator.get().iterator();
+        Iterator<? extends E> gen = generator.get().iterator();
         return new ChainedClosableIterator<>(gen);
     }
 
@@ -109,7 +109,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
         return stream().iterator();
     }
 
-    protected Stream<E> distinctStream()
+    protected Stream<? extends E> distinctStream()
     {
         return generator.get().distinct();
     }
@@ -117,7 +117,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
     public static class UnifiedSnowflakeCacheView<T extends ISnowflake>
         extends UnifiedCacheViewImpl<T, SnowflakeCacheView<T>> implements SnowflakeCacheView<T>
     {
-        public UnifiedSnowflakeCacheView(Supplier<Stream<SnowflakeCacheView<T>>> generator)
+        public UnifiedSnowflakeCacheView(Supplier<? extends Stream<? extends SnowflakeCacheView<T>>> generator)
         {
             super(generator);
         }
@@ -136,7 +136,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
         extends UnifiedCacheViewImpl<Member, MemberCacheView> implements UnifiedMemberCacheView
     {
 
-        public UnifiedMemberCacheViewImpl(Supplier<Stream<MemberCacheView>> generator)
+        public UnifiedMemberCacheViewImpl(Supplier<? extends Stream<? extends MemberCacheView>> generator)
         {
             super(generator);
         }
