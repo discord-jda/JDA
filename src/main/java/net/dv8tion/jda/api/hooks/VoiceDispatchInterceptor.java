@@ -51,7 +51,7 @@ public interface VoiceDispatchInterceptor
      *
      * @return True, if a connection was previously established
      */
-    boolean interceptStateUpdate(@Nonnull VoiceStateUpdate update);
+    boolean onVoiceStateUpdate(@Nonnull VoiceStateUpdate update);
 
     /**
      * Abstraction for all relevant voice updates
