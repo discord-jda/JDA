@@ -402,10 +402,8 @@ public interface RestAction<T>
         Checks.notNull(unit, "TimeUnit");
         if (executor == null)
             executor = getJDA().getRateLimitPool();
-        DelayedCompletableFuture<T> task = new DelayedCompletableFuture<>();
-        ScheduledFuture<?> handle = executor.schedule((Runnable) new ContextRunnable<>(() -> queue(task::complete, task::completeExceptionally)), delay, unit);
-        task.initProxy(handle);
-        return task;
+        return DelayedCompletableFuture.make(executor, delay, unit,
+                (task) -> new ContextRunnable<>(() -> queue(task::complete, task::completeExceptionally)));
     }
 
     /**

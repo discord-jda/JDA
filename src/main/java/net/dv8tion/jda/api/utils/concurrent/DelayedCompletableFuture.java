@@ -17,10 +17,8 @@
 package net.dv8tion.jda.api.utils.concurrent;
 
 import javax.annotation.Nonnull;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Delayed;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
+import java.util.function.Function;
 
 /**
  * Specialized {@link CompletableFuture} used in combination with a scheduler.
@@ -35,6 +33,32 @@ public class DelayedCompletableFuture<T> extends CompletableFuture<T> implements
 {
     private ScheduledFuture<?> future;
 
+    private DelayedCompletableFuture() {}
+
+    /**
+     * Creates a new DelayedCompletableFuture scheduled on the supplied executor.
+     *
+     * @param  executor
+     *         The {@link ScheduledExecutorService} to use for scheduling
+     * @param  delay
+     *         The delay of the task
+     * @param  unit
+     *         Conversion {@link TimeUnit} for the delay
+     * @param  mapping
+     *         Conversion function which calls {@link #complete(Object)} of the future it receives
+     * @param  <E>
+     *         The result type of the scheduled task
+     *
+     * @return DelayedCompletableFuture for the specified runnable
+     */
+    public static <E> DelayedCompletableFuture<E> make(ScheduledExecutorService executor, long delay, TimeUnit unit, Function<? super DelayedCompletableFuture<E>, ? extends Runnable> mapping)
+    {
+        DelayedCompletableFuture<E> handle = new DelayedCompletableFuture<>();
+        ScheduledFuture<?> future = executor.schedule(mapping.apply(handle), delay, unit);
+        handle.initProxy(future);
+        return handle;
+    }
+
     /**
      * Initializes the backing scheduled task for this promise.
      *
@@ -47,7 +71,7 @@ public class DelayedCompletableFuture<T> extends CompletableFuture<T> implements
      * @throws IllegalStateException
      *         If this was already initialized
      */
-    public void initProxy(ScheduledFuture<?> future)
+    private void initProxy(ScheduledFuture<?> future)
     {
         if (this.future == null)
             this.future = future;
