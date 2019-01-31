@@ -279,7 +279,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      * @see    #takeWhileAsync(int, Predicate)
      * @see    #takeUntilAsync(Predicate)
      */
-    default CompletableFuture<List<T>> takeWhileAsync(Predicate<T> rule)
+    default CompletableFuture<List<T>> takeWhileAsync(final Predicate<? super T> rule)
     {
         Checks.notNull(rule, "Rule");
         return takeUntilAsync(rule.negate());
@@ -303,7 +303,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      * @see    #takeWhileAsync(Predicate)
      * @see    #takeUntilAsync(int, Predicate)
      */
-    default CompletableFuture<List<T>> takeWhileAsync(int limit, Predicate<T> rule)
+    default CompletableFuture<List<T>> takeWhileAsync(int limit, final Predicate<? super T> rule)
     {
         Checks.notNull(rule, "Rule");
         return takeUntilAsync(limit, rule.negate());
@@ -325,7 +325,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      * @see    #takeWhileAsync(Predicate)
      * @see    #takeUntilAsync(int, Predicate)
      */
-    default CompletableFuture<List<T>> takeUntilAsync(Predicate<T> rule)
+    default CompletableFuture<List<T>> takeUntilAsync(final Predicate<? super T> rule)
     {
         return takeUntilAsync(0, rule);
     }
@@ -348,7 +348,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      * @see    #takeWhileAsync(Predicate)
      * @see    #takeUntilAsync(int, Predicate)
      */
-    default CompletableFuture<List<T>> takeUntilAsync(int limit, Predicate<T> rule)
+    default CompletableFuture<List<T>> takeUntilAsync(int limit, final Predicate<? super T> rule)
     {
         Checks.notNull(rule, "Rule");
         Checks.notNegative(limit, "Limit");
@@ -429,7 +429,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      *
      * @return {@link java.util.concurrent.Future Future} that can be cancelled to stop iteration from outside!
      */
-    default CompletableFuture<?> forEachAsync(final Procedure<T> action)
+    default CompletableFuture<?> forEachAsync(final Procedure<? super T> action)
     {
         return forEachAsync(action, RestActionImpl.getDefaultFailure());
     }
@@ -471,7 +471,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      *
      * @return {@link java.util.concurrent.Future Future} that can be cancelled to stop iteration from outside!
      */
-    CompletableFuture<?> forEachAsync(final Procedure<T> action, final Consumer<? super Throwable> failure);
+    CompletableFuture<?> forEachAsync(final Procedure<? super T> action, final Consumer<? super Throwable> failure);
 
     /**
      * Iterates over all remaining entities until the provided action returns {@code false}!
@@ -508,7 +508,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      *
      * @return {@link java.util.concurrent.Future Future} that can be cancelled to stop iteration from outside!
      */
-    default CompletableFuture<?> forEachRemainingAsync(final Procedure<T> action)
+    default CompletableFuture<?> forEachRemainingAsync(final Procedure<? super T> action)
     {
         return forEachRemainingAsync(action, RestActionImpl.getDefaultFailure());
     }
@@ -550,7 +550,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      *
      * @return {@link java.util.concurrent.Future Future} that can be cancelled to stop iteration from outside!
      */
-    CompletableFuture<?> forEachRemainingAsync(final Procedure<T> action, final Consumer<? super Throwable> failure);
+    CompletableFuture<?> forEachRemainingAsync(final Procedure<? super T> action, final Consumer<? super Throwable> failure);
 
     /**
      * Iterates over all remaining entities until the provided action returns {@code false}!
@@ -562,7 +562,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      *         The {@link net.dv8tion.jda.api.utils.Procedure Procedure}
      *         which should return {@code true} to continue iterating
      */
-    void forEachRemaining(final Procedure<T> action);
+    void forEachRemaining(final Procedure<? super T> action);
 
     @Override
     default Spliterator<T> spliterator()
