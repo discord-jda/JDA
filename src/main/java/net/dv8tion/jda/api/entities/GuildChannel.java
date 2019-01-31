@@ -111,6 +111,9 @@ public interface GuildChannel extends ISnowflake
      *         The {@link net.dv8tion.jda.api.entities.Member Member} or {@link net.dv8tion.jda.api.entities.Role Role} whose
      *         {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride} is requested.
      *
+     * @throws IllegalArgumentException
+     *         If the provided permission holder is null, or from a different guild
+     *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
      *         relating to the provided Member or Role.
      */

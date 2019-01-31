@@ -108,16 +108,14 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     @Override
     public PermissionOverride getPermissionOverride(IPermissionHolder permissionHolder)
     {
-        if (permissionHolder == null)
-            return null;
-
+        Checks.notNull(permissionHolder, "Permission Holder");
+        Checks.check(permissionHolder.getGuild().equals(getGuild()), "Provided permission holder is not from the same guild as this channel!");
         return overrides.get(permissionHolder.getIdLong());
     }
 
     @Override
     public List<PermissionOverride> getPermissionOverrides()
     {
-        // already unmodifiable!
         return Arrays.asList(overrides.values(new PermissionOverride[overrides.size()]));
     }
 
@@ -177,9 +175,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     {
         checkPermission(Permission.MANAGE_PERMISSIONS);
         Checks.notNull(permissionHolder, "PermissionHolder");
-
-        if (!getGuild().equals(permissionHolder.getGuild()))
-            throw new IllegalArgumentException("Provided permission holder is not from the same guild as this channel!");
+        Checks.check(permissionHolder.getGuild().equals(getGuild()), "Provided permission holder is not from the same guild as this channel!");
         return new PermissionOverrideActionImpl(getJDA(), this, permissionHolder);
     }
 
