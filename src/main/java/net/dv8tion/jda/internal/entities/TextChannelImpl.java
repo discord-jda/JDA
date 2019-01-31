@@ -436,7 +436,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         final String code = MiscUtil.encodeUTF8(unicode);
         Route.CompiledRoute route;
         if (user.equals(getJDA().getSelfUser()))
-            route = Route.Messages.REMOVE_OWN_REACTION.compile(getId(), messageId, code);
+            route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, code, "@me");
         else
             route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, code, user.getId());
         return new RestActionImpl<>(getJDA(), route);

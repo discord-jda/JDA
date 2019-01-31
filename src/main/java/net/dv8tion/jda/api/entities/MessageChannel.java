@@ -2153,8 +2153,8 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.noWhitespace(unicode, "Emoji");
 
         final String code = MiscUtil.encodeUTF8(unicode);
-        final Route.CompiledRoute route = Route.Messages.REMOVE_OWN_REACTION.compile(getId(), messageId, code);
-        return new RestActionImpl<Void>(getJDA(), route);
+        final Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, code, "@me");
+        return new RestActionImpl<>(getJDA(), route);
     }
 
     /**
