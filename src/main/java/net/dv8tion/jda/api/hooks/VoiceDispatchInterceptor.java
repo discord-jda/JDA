@@ -88,7 +88,7 @@ public interface VoiceDispatchInterceptor
          */
         default DirectAudioController getAudioController()
         {
-            return getJDA().getAudioController();
+            return getJDA().getDirectAudioController();
         }
 
         /**

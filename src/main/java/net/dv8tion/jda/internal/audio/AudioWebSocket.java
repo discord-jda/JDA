@@ -185,7 +185,7 @@ class AudioWebSocket extends WebSocketAdapter
                     return;
                 }
                 manager.setQueuedAudioConnection(disconnectedChannel);
-                api.getAudioController().reconnect(disconnectedChannel);
+                api.getDirectAudioController().reconnect(disconnectedChannel);
             }
             else if (status == ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD)
             {
@@ -194,7 +194,7 @@ class AudioWebSocket extends WebSocketAdapter
             }
             else if (status != ConnectionStatus.AUDIO_REGION_CHANGE)
             {
-                api.getAudioController().disconnect(guild);
+                api.getDirectAudioController().disconnect(guild);
             }
         });
     }

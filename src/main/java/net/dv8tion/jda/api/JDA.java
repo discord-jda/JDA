@@ -326,7 +326,7 @@ public interface JDA
      *
      * @return The {@link DirectAudioController} for this JDA instance
      */
-    DirectAudioController getAudioController();
+    DirectAudioController getDirectAudioController();
 
     /**
      * Changes the internal EventManager.

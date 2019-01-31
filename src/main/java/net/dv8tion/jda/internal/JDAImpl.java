@@ -471,7 +471,7 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public DirectAudioController getAudioController()
+    public DirectAudioController getDirectAudioController()
     {
         return this.audioController;
     }

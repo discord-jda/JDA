@@ -98,10 +98,8 @@ public class VoiceStateUpdateHandler extends SocketHandler
         if (vState == null)
             return;
         vState.setSessionId(sessionId); //Cant really see a reason for an event for this
-        VoiceDispatchInterceptor voiceInterceptor = null;
+        VoiceDispatchInterceptor voiceInterceptor = getJDA().getVoiceInterceptor();
         boolean isSelf = guild.getSelfMember().equals(member);
-        if (isSelf)
-            voiceInterceptor = getJDA().getVoiceInterceptor();
 
         boolean wasMute = vState.isMuted();
         boolean wasDeaf = vState.isDeafened();
@@ -153,7 +151,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
             {
                 oldChannel.getConnectedMembersMap().remove(userId);
                 if (isSelf)
-                    getJDA().getAudioController().update(guild, null);
+                    getJDA().getDirectAudioController().update(guild, null);
                 getJDA().getEventManager().handle(
                         new GuildVoiceLeaveEvent(
                                 getJDA(), responseNumber,
@@ -176,7 +174,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
                     // we have just joined / moved to is the same as the currently queued audioRequest
                     // (handled by updateAudioConnection)
                     if (mng.isConnected())
-                        getJDA().getAudioController().update(guild, channel);
+                        getJDA().getDirectAudioController().update(guild, channel);
                     //If we are not already connected this will be removed by VOICE_SERVER_UPDATE
                 }
 
@@ -188,10 +186,10 @@ public class VoiceStateUpdateHandler extends SocketHandler
                                 member, oldChannel));
             }
         }
-        if (voiceInterceptor != null)
+        if (isSelf && voiceInterceptor != null)
         {
-            if (voiceInterceptor.interceptStateUpdate(new VoiceDispatchInterceptor.VoiceStateUpdate(channel, vState, allContent)))
-                getJDA().getAudioController().update(guild, channel);
+            if (voiceInterceptor.onVoiceStateUpdate(new VoiceDispatchInterceptor.VoiceStateUpdate(channel, vState, allContent)))
+                getJDA().getDirectAudioController().update(guild, channel);
         }
     }
 }
