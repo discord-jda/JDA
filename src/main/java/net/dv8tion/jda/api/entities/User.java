@@ -1,11 +1,11 @@
 /*
- *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
+ * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -111,7 +111,7 @@ public interface User extends ISnowflake, IMentionable, IFakeable
 
     /**
      * The "tag" for this user
-     * <p>This is the equivalent of calling {@link java.lang.String#format(String, Object...) String.format}("%#s", {@link net.dv8tion.jda.core.entities.User User})
+     * <p>This is the equivalent of calling {@link java.lang.String#format(String, Object...) String.format}("%#s", user)
      *
      * @return Never-null String containing the tag for this user, for example DV8FromTheWorld#6297
      */

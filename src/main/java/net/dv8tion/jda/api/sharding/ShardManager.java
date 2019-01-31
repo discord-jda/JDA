@@ -1,11 +1,11 @@
 /*
- *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
+ * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
  * This class acts as a manager for multiple shards.
  * It contains several methods to make your life with sharding easier.
  *
- * <br>Custom implementations my not support all methods and throw
+ * <br>Custom implementations may not support all methods and throw
  * {@link java.lang.UnsupportedOperationException UnsupportedOperationExceptions} instead.
  *
  * @since  3.4
@@ -195,11 +195,11 @@ public interface ShardManager
      *
      * @return The average time in milliseconds between heartbeat and the heartbeat ack response
      */
-    default double getAveragePing()
+    default double getAverageGatewayPing()
     {
         return this.getShardCache()
                 .stream()
-                .mapToLong(JDA::getPing)
+                .mapToLong(JDA::getGatewayPing)
                 .filter(ping -> ping != -1)
                 .average()
                 .orElse(-1D);

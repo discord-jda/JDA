@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
+ * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import java.util.Collection;
  * @since  3.0
  * @author Aljoscha Grebe
  * 
- * @see    net.dv8tion.jda.bot.JDABot#getApplicationInfo() JDABot.getApplicationInfo()
+ * @see    net.dv8tion.jda.api.JDA#getApplicationInfo()
  */
 public interface ApplicationInfo extends ISnowflake
 {

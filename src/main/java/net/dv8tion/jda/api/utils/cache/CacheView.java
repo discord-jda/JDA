@@ -1,11 +1,11 @@
 /*
- *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
+ * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -88,6 +88,21 @@ public interface CacheView<T> extends Iterable<T>
      * @return {@link ClosableIterator} holding a read-lock on the data structure.
      */
     ClosableIterator<T> lockedIterator();
+
+    /**
+     * Behavior similar to {@link #forEach(Consumer)} but does not preserve order.
+     * <br>This will not copy the data store as sorting is not needed.
+     *
+     * @param  action
+     *         The action to perform
+     *
+     * @throws NullPointerException
+     *         If provided with null
+     */
+    default void forEachUnordered(final Consumer<? super T> action)
+    {
+        forEach(action);
+    }
 
     /**
      * Creates an unordered sequenced stream of the elements in this cache.

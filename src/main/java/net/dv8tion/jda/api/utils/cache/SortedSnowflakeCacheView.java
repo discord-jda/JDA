@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
+ * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ import java.util.stream.Stream;
 public interface SortedSnowflakeCacheView<T extends Comparable<T> & ISnowflake> extends SnowflakeCacheView<T>
 {
     /**
-     * Behavior similar to {@link CacheView#forEach(Consumer)} which does not preserve order.
+     * Behavior similar to {@link CacheView#forEach(Consumer)} but does not preserve order.
      * <br>This will not copy the data store as sorting is not needed.
      *
      * @param  action

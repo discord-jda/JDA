@@ -1,11 +1,11 @@
 /*
- *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
+ * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -53,7 +53,7 @@ public class MemberImpl implements Member
         this.user = user;
         JDAImpl jda = (JDAImpl) getJDA();
         boolean cacheState = jda.isCacheFlagSet(CacheFlag.VOICE_STATE) || user.equals(jda.getSelfUser());
-        this.voiceState = cacheState ? new GuildVoiceStateImpl(guild, this) : null;
+        this.voiceState = cacheState ? new GuildVoiceStateImpl(this) : null;
     }
 
     @Override
@@ -242,11 +242,13 @@ public class MemberImpl implements Member
     @Override
     public boolean equals(Object o)
     {
+        if (o == this)
+            return true;
         if (!(o instanceof Member))
             return false;
 
         Member oMember = (Member) o;
-        return this == oMember || (oMember.getUser().equals(user) && oMember.getGuild().equals(getGuild()));
+        return oMember.getUser().equals(user) && oMember.getGuild().equals(getGuild());
     }
 
     @Override
