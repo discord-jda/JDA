@@ -18,13 +18,14 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 
 /**
- * Represents a Discord Voice GuildChannel. A specification of {@link net.dv8tion.jda.api.entities.AudioChannel}.
- * <br>As a VoiceChannel has no extra functionality as its {@link GuildChannel GuildChannel} parent,
- * this interface is empty.
- * This interface only exists to distinct {@link GuildChannel Channels} into
- * VoiceChannels and {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}.
+ * Represents a Discord Voice GuildChannel.
+ * <br>Adds additional information specific to voice channels in Discord.
+ *
+ * @see GuildChannel
+ * @see TextChannel
+ * @see Category
  */
-public interface VoiceChannel extends GuildChannel, AudioChannel, Comparable<VoiceChannel>
+public interface VoiceChannel extends GuildChannel, Comparable<VoiceChannel>
 {
     /**
      * The maximum amount of {@link net.dv8tion.jda.api.entities.Member Members} that can be in this

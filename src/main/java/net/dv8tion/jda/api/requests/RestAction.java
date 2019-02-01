@@ -353,9 +353,9 @@ public interface RestAction<T>
      * <p>Similar to {@link #queueAfter(long, TimeUnit)} but does not require callbacks to be passed.
      * Continuations of {@link CompletableFuture} can be used instead.
      *
-     * <p>The global JDA RateLimit {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} is used for this operation.
-     * <br>You can change the core pool size for this Executor through {@link net.dv8tion.jda.api.JDABuilder#setCorePoolSize(int) JDABuilder.setCorePoolSize(int)}
-     * or you can provide your own Executor using {@link #submitAfter(long, java.util.concurrent.TimeUnit, java.util.concurrent.ScheduledExecutorService)}!
+     * <p>The global JDA RateLimit {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService}
+     * is used for this operation.
+     * <br>You can provide your own Executor using {@link #submitAfter(long, java.util.concurrent.TimeUnit, java.util.concurrent.ScheduledExecutorService)}!
      *
      * @param  delay
      *         The delay after which this computation should be executed, negative to execute immediately
@@ -448,8 +448,7 @@ public interface RestAction<T>
      * the success consumer for {@link #queue(java.util.function.Consumer)}!
      *
      * <p>The global JDA {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} is used for this operation.
-     * <br>You can change the core pool size for this Executor through {@link net.dv8tion.jda.api.JDABuilder#setCorePoolSize(int) JDABuilder.setCorePoolSize(int)}
-     * or provide your own Executor with {@link #queueAfter(long, java.util.concurrent.TimeUnit, java.util.concurrent.ScheduledExecutorService)}
+     * <br>You can provide your own Executor with {@link #queueAfter(long, java.util.concurrent.TimeUnit, java.util.concurrent.ScheduledExecutorService)}
      *
      * @param  delay
      *         The delay after which this computation should be executed, negative to execute immediately
@@ -477,8 +476,7 @@ public interface RestAction<T>
      * the failure consumer for {@link #queue(java.util.function.Consumer, java.util.function.Consumer)}!
      *
      * <p>The global JDA {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} is used for this operation.
-     * <br>You can change the core pool size for this Executor through {@link net.dv8tion.jda.api.JDABuilder#setCorePoolSize(int) JDABuilder.setCorePoolSize(int)}
-     * or provide your own Executor with {@link #queueAfter(long, java.util.concurrent.TimeUnit, java.util.function.Consumer, java.util.concurrent.ScheduledExecutorService)}
+     * <br>You can provide your own Executor with {@link #queueAfter(long, java.util.concurrent.TimeUnit, java.util.function.Consumer, java.util.concurrent.ScheduledExecutorService)}
      *
      * @param  delay
      *         The delay after which this computation should be executed, negative to execute immediately
@@ -506,9 +504,7 @@ public interface RestAction<T>
      * {@link java.util.concurrent.ScheduledFuture ScheduledFuture} representing the task.
      *
      * <p>The global JDA {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} is used for this operation.
-     * <br>You can change the core pool size for this Executor through {@link net.dv8tion.jda.api.JDABuilder#setCorePoolSize(int) JDABuilder.setCorePoolSize(int)}
-     * or provide your own Executor with
-     * {@link #queueAfter(long, java.util.concurrent.TimeUnit, java.util.function.Consumer, java.util.function.Consumer, java.util.concurrent.ScheduledExecutorService)}
+     * <br>You provide your own Executor with {@link #queueAfter(long, java.util.concurrent.TimeUnit, java.util.function.Consumer, java.util.function.Consumer, java.util.concurrent.ScheduledExecutorService)}
      *
      * @param  delay
      *         The delay after which this computation should be executed, negative to execute immediately

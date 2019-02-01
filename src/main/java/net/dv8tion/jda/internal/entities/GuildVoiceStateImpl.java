@@ -56,12 +56,6 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     }
 
     @Override
-    public AudioChannel getAudioChannel()
-    {
-        return connectedChannel;
-    }
-
-    @Override
     public String getSessionId()
     {
         return sessionId;

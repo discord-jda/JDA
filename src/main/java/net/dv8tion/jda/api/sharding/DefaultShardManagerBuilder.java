@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.config.sharding.*;
 import okhttp3.OkHttpClient;
 
 import javax.security.auth.login.LoginException;
@@ -59,11 +60,10 @@ public class  DefaultShardManagerBuilder
     protected boolean enableCompression = true;
     protected int shardsTotal = -1;
     protected int maxReconnectDelay = 900;
-    protected int corePoolSize = 5;
     protected String token = null;
     protected IntFunction<Boolean> idleProvider = null;
     protected IntFunction<OnlineStatus> statusProvider = null;
-    protected IntFunction<? extends Activity> gameProvider = null;
+    protected IntFunction<? extends Activity> activityProvider = null;
     protected IntFunction<? extends ConcurrentMap<String, String>> contextProvider = null;
     protected IntFunction<? extends IEventManager> eventManagerProvider = null;
     protected ThreadPoolProvider<? extends ScheduledExecutorService> rateLimitPoolProvider = null;
@@ -437,27 +437,6 @@ public class  DefaultShardManagerBuilder
     }
 
     /**
-     * Sets the core pool size for the global JDA {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService}
-     * which is used in various locations throughout the JDA instance created by this ShardManager. (Default: 5)
-     * <br>Note: This has no effect if you set a pool using
-     * {@link #setRateLimitPool(ScheduledExecutorService)} or {@link #setRateLimitPoolProvider(ThreadPoolProvider)}.
-     *
-     * @param  size
-     *         The core pool size for the global JDA executor
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the specified core pool size is not positive
-     *
-     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
-     */
-    public DefaultShardManagerBuilder setCorePoolSize(int size)
-    {
-        Checks.positive(size, "Core pool size");
-        this.corePoolSize = size;
-        return this;
-    }
-
-    /**
      * Enables/Disables the use of a Shutdown hook to clean up the ShardManager and it's JDA instances.
      * <br>When the Java program closes shutdown hooks are run. This is used as a last-second cleanup
      * attempt by JDA to properly close connections.
@@ -567,7 +546,7 @@ public class  DefaultShardManagerBuilder
      */
     public DefaultShardManagerBuilder setActivityProvider(final IntFunction<? extends Activity> gameProvider)
     {
-        this.gameProvider = gameProvider;
+        this.activityProvider = gameProvider;
         return this;
     }
 
@@ -1154,15 +1133,18 @@ public class  DefaultShardManagerBuilder
      */
     public ShardManager build() throws LoginException, IllegalArgumentException
     {
-        final DefaultShardManager manager = new DefaultShardManager(
-                this.shardsTotal, this.shards, this.sessionController,
-                this.listeners, this.listenerProviders, this.token, this.eventManagerProvider,
-                this.audioSendFactory, this.gameProvider, this.statusProvider,
-                this.httpClientBuilder, this.httpClient, this.rateLimitPoolProvider, this.gatewayPoolProvider,
-                this.callbackPoolProvider, this.wsFactory, this.threadFactory,
-                this.maxReconnectDelay, this.corePoolSize, this.enableVoice, this.enableShutdownHook, this.enableBulkDeleteSplitting,
-                this.autoReconnect, this.idleProvider, this.retryOnTimeout, this.useShutdownNow, this.enableContext,
-                this.contextProvider, this.cacheFlags, this.enableCompression);
+        final ShardingConfig shardingConfig = new ShardingConfig(shardsTotal, sessionController, useShutdownNow);
+        final EventConfig eventConfig = new EventConfig(eventManagerProvider);
+        listeners.forEach(eventConfig::addEventListener);
+        listenerProviders.forEach(eventConfig::addEventListenerProvider);
+        final PresenceProviderConfig presenceConfig = new PresenceProviderConfig();
+        presenceConfig.setActivityProvider(activityProvider);
+        presenceConfig.setStatusProvider(statusProvider);
+        presenceConfig.setIdleProvider(idleProvider);
+        final ThreadingProviderConfig threadingConfig = new ThreadingProviderConfig(rateLimitPoolProvider, gatewayPoolProvider, callbackPoolProvider, threadFactory);
+        final ShardingSessionConfig sessionConfig = new ShardingSessionConfig(sessionController, httpClient, httpClientBuilder, wsFactory, audioSendFactory, enableVoice, retryOnTimeout, autoReconnect, enableBulkDeleteSplitting, maxReconnectDelay);
+        final ShardingMetaConfig metaConfig = new ShardingMetaConfig(contextProvider, cacheFlags, enableContext, useShutdownNow, enableCompression);
+        final DefaultShardManager manager = new DefaultShardManager(this.token, this.shards, shardingConfig, eventConfig, presenceConfig, threadingConfig, sessionConfig, metaConfig);
 
         manager.login();
 
