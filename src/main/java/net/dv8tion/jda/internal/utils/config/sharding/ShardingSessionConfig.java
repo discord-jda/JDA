@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.utils.config.sharding;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
+import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.internal.utils.config.SessionConfig;
 import okhttp3.OkHttpClient;
@@ -28,13 +29,13 @@ public class ShardingSessionConfig extends SessionConfig
     private final IAudioSendFactory audioSendFactory;
 
     public ShardingSessionConfig(
-            SessionController sessionController,
+            SessionController sessionController, VoiceDispatchInterceptor interceptor,
             OkHttpClient httpClient, OkHttpClient.Builder httpClientBuilder,
             WebSocketFactory webSocketFactory, IAudioSendFactory audioSendFactory,
             boolean audioEnabled, boolean retryOnTimeout,  boolean autoReconnect,
             boolean bulkDeleteSplittingEnabled, int maxReconnectDelay)
     {
-        super(sessionController, httpClient, webSocketFactory,
+        super(sessionController, httpClient, webSocketFactory, interceptor,
             audioEnabled, retryOnTimeout, autoReconnect,
             bulkDeleteSplittingEnabled, maxReconnectDelay);
         if (httpClient == null)
@@ -56,6 +57,6 @@ public class ShardingSessionConfig extends SessionConfig
 
     public static ShardingSessionConfig getDefault()
     {
-        return new ShardingSessionConfig(null, null, null, null, null, true, true, true, true, 900);
+        return new ShardingSessionConfig(null, null, null, null, null, null, true, true, true, true, 900);
     }
 }

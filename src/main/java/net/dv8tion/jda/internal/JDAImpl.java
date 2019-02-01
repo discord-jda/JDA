@@ -97,7 +97,6 @@ public class JDAImpl implements JDA
     protected final EventCache eventCache = new EventCache();
 
     protected final GuildSetupController guildSetupController;
-    protected final VoiceDispatchInterceptor voiceInterceptor;
     protected final DirectAudioController audioController;
 
     protected final AuthorizationConfig authConfig;
@@ -137,6 +136,7 @@ public class JDAImpl implements JDA
         this.requester = new Requester(this);
         this.requester.setRetryOnTimeout(this.sessionConfig.isRetryOnTimeout());
         this.guildSetupController = new GuildSetupController(this);
+        this.audioController = new DirectAudioControllerImpl(this);
     }
 
     public boolean isCacheFlagSet(CacheFlag flag)
@@ -156,7 +156,7 @@ public class JDAImpl implements JDA
 
     public VoiceDispatchInterceptor getVoiceInterceptor()
     {
-        return voiceInterceptor;
+        return sessionConfig.getVoiceDispatchInterceptor();
     }
 
     public int login() throws LoginException
