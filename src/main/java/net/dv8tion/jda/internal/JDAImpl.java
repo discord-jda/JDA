@@ -32,7 +32,6 @@ import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.InterfacedEventManager;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.managers.AudioManager;
-import net.dv8tion.jda.api.managers.DirectAudioController;
 import net.dv8tion.jda.api.managers.Presence;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
@@ -97,7 +96,7 @@ public class JDAImpl implements JDA
     protected final EventCache eventCache = new EventCache();
 
     protected final GuildSetupController guildSetupController;
-    protected final DirectAudioController audioController;
+    protected final DirectAudioControllerImpl audioController;
 
     protected final AuthorizationConfig authConfig;
     protected final ThreadingConfig threadConfig;
@@ -452,7 +451,7 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public DirectAudioController getDirectAudioController()
+    public DirectAudioControllerImpl getDirectAudioController()
     {
         return this.audioController;
     }
