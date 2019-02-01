@@ -875,7 +875,7 @@ public class EntityBuilder
         }
         else
         {
-            reactionEmote = new MessageReaction.ReactionEmote(name, null, getJDA());
+            reactionEmote = new MessageReaction.ReactionEmote(name, getJDA());
         }
 
         return new MessageReaction(chan, reactionEmote, id, me, count);

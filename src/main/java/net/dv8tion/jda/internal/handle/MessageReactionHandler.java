@@ -124,7 +124,7 @@ public class MessageReactionHandler extends SocketHandler
         }
         else
         {
-            rEmote = new MessageReaction.ReactionEmote(emojiName, null, getJDA());
+            rEmote = new MessageReaction.ReactionEmote(emojiName, getJDA());
         }
         MessageReaction reaction = new MessageReaction(channel, rEmote, messageId, user.equals(getJDA().getSelfUser()), -1);
 
