@@ -375,25 +375,18 @@ public class DefaultShardManager implements ShardManager
     {
         if (worker != null)
             return;
-        try
+        worker = executor.submit(() ->
         {
-            worker = executor.submit(() ->
+            while (!queue.isEmpty())
+                processQueue();
+            this.gatewayURL = null;
+            synchronized (queue)
             {
-                while (!queue.isEmpty())
-                    processQueue();
-                this.gatewayURL = null;
-                synchronized (queue)
-                {
-                    worker = null;
-                    if (!shutdown.get() && !queue.isEmpty())
-                        runQueueWorker();
-                }
-            });
-        }
-        catch (RejectedExecutionException ex)
-        {
-            LOG.debug("ThreadPool rejected queue worker thread", ex);
-        }
+                worker = null;
+                if (!shutdown.get() && !queue.isEmpty())
+                    runQueueWorker();
+            }
+        });
     }
 
     protected void processQueue()
