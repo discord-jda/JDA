@@ -110,6 +110,39 @@ public class VoiceStateUpdateHandler extends SocketHandler
             return;
         vState.setSessionId(sessionId); //Cant really see a reason for an event for this
 
+        boolean wasMute = vState.isMuted();
+        boolean wasDeaf = vState.isDeafened();
+
+        if (selfMuted != vState.isSelfMuted())
+        {
+            vState.setSelfMuted(selfMuted);
+            getJDA().getEventManager().handle(new GuildVoiceSelfMuteEvent(getJDA(), responseNumber, member));
+        }
+        if (selfDeafened != vState.isSelfDeafened())
+        {
+            vState.setSelfDeafened(selfDeafened);
+            getJDA().getEventManager().handle(new GuildVoiceSelfDeafenEvent(getJDA(), responseNumber, member));
+        }
+        if (guildMuted != vState.isGuildMuted())
+        {
+            vState.setGuildMuted(guildMuted);
+            getJDA().getEventManager().handle(new GuildVoiceGuildMuteEvent(getJDA(), responseNumber, member));
+        }
+        if (guildDeafened != vState.isGuildDeafened())
+        {
+            vState.setGuildDeafened(guildDeafened);
+            getJDA().getEventManager().handle(new GuildVoiceGuildDeafenEvent(getJDA(), responseNumber, member));
+        }
+        if (suppressed != vState.isSuppressed())
+        {
+            vState.setSuppressed(suppressed);
+            getJDA().getEventManager().handle(new GuildVoiceSuppressEvent(getJDA(), responseNumber, member));
+        }
+        if (wasMute != vState.isMuted())
+            getJDA().getEventManager().handle(new GuildVoiceMuteEvent(getJDA(), responseNumber, member));
+        if (wasDeaf != vState.isDeafened())
+            getJDA().getEventManager().handle(new GuildVoiceDeafenEvent(getJDA(), responseNumber, member));
+            
         if (!Objects.equals(channel, vState.getChannel()))
         {
             VoiceChannelImpl oldChannel = (VoiceChannelImpl) vState.getChannel();
@@ -162,39 +195,6 @@ public class VoiceStateUpdateHandler extends SocketHandler
                                 member, oldChannel));
             }
         }
-
-        boolean wasMute = vState.isMuted();
-        boolean wasDeaf = vState.isDeafened();
-
-        if (selfMuted != vState.isSelfMuted())
-        {
-            vState.setSelfMuted(selfMuted);
-            getJDA().getEventManager().handle(new GuildVoiceSelfMuteEvent(getJDA(), responseNumber, member));
-        }
-        if (selfDeafened != vState.isSelfDeafened())
-        {
-            vState.setSelfDeafened(selfDeafened);
-            getJDA().getEventManager().handle(new GuildVoiceSelfDeafenEvent(getJDA(), responseNumber, member));
-        }
-        if (guildMuted != vState.isGuildMuted())
-        {
-            vState.setGuildMuted(guildMuted);
-            getJDA().getEventManager().handle(new GuildVoiceGuildMuteEvent(getJDA(), responseNumber, member));
-        }
-        if (guildDeafened != vState.isGuildDeafened())
-        {
-            vState.setGuildDeafened(guildDeafened);
-            getJDA().getEventManager().handle(new GuildVoiceGuildDeafenEvent(getJDA(), responseNumber, member));
-        }
-        if (suppressed != vState.isSuppressed())
-        {
-            vState.setSuppressed(suppressed);
-            getJDA().getEventManager().handle(new GuildVoiceSuppressEvent(getJDA(), responseNumber, member));
-        }
-        if (wasMute != vState.isMuted())
-            getJDA().getEventManager().handle(new GuildVoiceMuteEvent(getJDA(), responseNumber, member));
-        if (wasDeaf != vState.isDeafened())
-            getJDA().getEventManager().handle(new GuildVoiceDeafenEvent(getJDA(), responseNumber, member));
     }
 
     private void handleCallVoiceState(JSONObject content)

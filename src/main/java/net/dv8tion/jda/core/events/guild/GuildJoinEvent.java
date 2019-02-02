@@ -19,7 +19,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 
 /**
- * Indicates that a you joined a {@link net.dv8tion.jda.core.entities.Guild Guild}.
+ * Indicates that you joined a {@link net.dv8tion.jda.core.entities.Guild Guild}.
  *
  * <p><b>Warning: Discord already triggered a mass amount of these events due to a downtime. Be careful!</b>
  */
