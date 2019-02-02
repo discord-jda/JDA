@@ -28,6 +28,7 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.pagination.ReactionPaginationActionImpl;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.util.Objects;
 
 /**
@@ -39,7 +40,6 @@ import java.util.Objects;
  */
 public class MessageReaction
 {
-
     private final MessageChannel channel;
     private final ReactionEmote emote;
     private final long messageId;
@@ -89,6 +89,11 @@ public class MessageReaction
         return self;
     }
 
+    public boolean hasCount()
+    {
+        return count >= 0;
+    }
+
     /**
      * The amount of users that already reacted with this Reaction
      * <br><b>This is not updated, it is a {@code final int} per Reaction instance</b>
@@ -104,7 +109,7 @@ public class MessageReaction
      */
     public int getCount()
     {
-        if (count < 0)
+        if (!hasCount())
             throw new IllegalStateException("Cannot retrieve count for this MessageReaction!");
         return count;
     }
@@ -382,22 +387,24 @@ public class MessageReaction
      */
     public static class ReactionEmote implements ISnowflake
     {
-
         private final JDA api;
         private final String name;
-        private final Long id;
-        private Emote emote = null;
+        private final long id;
+        private final Emote emote;
 
-        public ReactionEmote(String name, Long id, JDA api)
+        public ReactionEmote(String name, JDA api)
         {
             this.name = name;
-            this.id = id;
             this.api = api;
+            this.id = 0;
+            this.emote = null;
         }
 
         public ReactionEmote(Emote emote)
         {
-            this(emote.getName(), emote.getIdLong(), emote.getJDA());
+            this.api = emote.getJDA();
+            this.name = emote.getName();
+            this.id = emote.getIdLong();
             this.emote = emote;
         }
 
@@ -412,18 +419,9 @@ public class MessageReaction
             return emote != null;
         }
 
-        @Override
-        public String getId()
+        public boolean isEmoji()
         {
-            return id != null ? String.valueOf(id) : null;
-        }
-
-        @Override
-        public long getIdLong()
-        {
-            if (id == null)
-                throw new IllegalStateException("No id available");
-            return id;
+            return emote == null;
         }
 
         /**
@@ -437,6 +435,22 @@ public class MessageReaction
             return name;
         }
 
+        @Override
+        public long getIdLong()
+        {
+            if (!isEmote())
+                throw new IllegalStateException("Cannot get id for emoji reaction");
+            return id;
+        }
+
+        @Nonnull
+        public String getEmoji()
+        {
+            if (isEmote())
+                throw new IllegalStateException("Cannot get emoji code for custom emote reaction");
+            return getName();
+        }
+
         /**
          * The instance of {@link net.dv8tion.jda.api.entities.Emote Emote}
          * for the Reaction instance.
@@ -444,8 +458,11 @@ public class MessageReaction
          *
          * @return The possibly-null Emote for the Reaction instance
          */
+        @Nonnull
         public Emote getEmote()
         {
+            if (!isEmote())
+                throw new IllegalStateException("Cannot get custom emote for emoji reaction");
             return emote;
         }
 
@@ -470,7 +487,7 @@ public class MessageReaction
         @Override
         public String toString()
         {
-            return "RE:" + (isEmote() ? getEmote() : getName() + "(" + id + ")");
+            return "RE:" + getName() + (isEmote() ? "(" + getId() + ")" : "");
         }
     }
 
