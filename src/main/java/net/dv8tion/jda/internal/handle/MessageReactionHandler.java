@@ -120,11 +120,11 @@ public class MessageReactionHandler extends SocketHandler
                     return null;
                 }
             }
-            rEmote = new MessageReaction.ReactionEmote(emote);
+            rEmote = MessageReaction.ReactionEmote.makeCustom(emote);
         }
         else
         {
-            rEmote = new MessageReaction.ReactionEmote(emojiName, getJDA());
+            rEmote = MessageReaction.ReactionEmote.makeUnicode(emojiName, getJDA());
         }
         MessageReaction reaction = new MessageReaction(channel, rEmote, messageId, user.equals(getJDA().getSelfUser()), -1);
 

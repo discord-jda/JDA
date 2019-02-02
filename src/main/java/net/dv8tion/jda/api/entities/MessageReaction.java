@@ -89,6 +89,15 @@ public class MessageReaction
         return self;
     }
 
+    /**
+     * Whether this reaction can provide a count via {@link #getCount()}.
+     * <br>This is usually not provided for reactions coming from {@link net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent}
+     * or similar.
+     *
+     * @return True, if a count is available
+     *
+     * @see    #getCount()
+     */
     public boolean hasCount()
     {
         return count >= 0;
@@ -392,7 +401,7 @@ public class MessageReaction
         private final long id;
         private final Emote emote;
 
-        public ReactionEmote(String name, JDA api)
+        private ReactionEmote(String name, JDA api)
         {
             this.name = name;
             this.api = api;
@@ -400,7 +409,7 @@ public class MessageReaction
             this.emote = null;
         }
 
-        public ReactionEmote(Emote emote)
+        private ReactionEmote(Emote emote)
         {
             this.api = emote.getJDA();
             this.name = emote.getName();
@@ -408,17 +417,37 @@ public class MessageReaction
             this.emote = emote;
         }
 
+        public static ReactionEmote makeUnicode(String name, JDA api)
+        {
+            return new ReactionEmote(name, api);
+        }
+
+        public static ReactionEmote makeCustom(Emote emote)
+        {
+            return new ReactionEmote(emote);
+        }
+
         /**
-         * Whether this is an {@link net.dv8tion.jda.api.entities.Emote Emote}
-         * wrapper.
+         * Whether this is an {@link net.dv8tion.jda.api.entities.Emote Emote} wrapper.
+         * <br>This means {@link #getEmoji()} will throw {@link java.lang.IllegalStateException}.
          *
-         * @return True, if {@link #getId()} is not null
+         * @return True, if {@link #getEmote()} can be used
+         *
+         * @see    #getEmote()
          */
         public boolean isEmote()
         {
             return emote != null;
         }
 
+        /**
+         * Whether this represents a unicode emoji.
+         * <br>This means {@link #getEmote()}, {@link #getId()}, and {@link #getIdLong()} will not be available.
+         *
+         * @return True, if this represents a unicode emoji
+         *
+         * @see    #getEmoji()
+         */
         public boolean isEmoji()
         {
             return emote == null;
@@ -426,7 +455,7 @@ public class MessageReaction
 
         /**
          * The name for this emote/emoji
-         * <br>For unicode emojis this will be the unicode of said emoji.
+         * <br>For unicode emojis this will be the unicode of said emoji rather than an alias like {@code :smiley:}.
          *
          * @return The name for this emote/emoji
          */
@@ -443,10 +472,18 @@ public class MessageReaction
             return id;
         }
 
+        /**
+         * The unicode representing the emoji used for reacting.
+         *
+         * @throws java.lang.IllegalStateException
+         *         If this is not an emoji reaction, see {@link #isEmoji()}
+         *
+         * @return The unicode for the emoji
+         */
         @Nonnull
         public String getEmoji()
         {
-            if (isEmote())
+            if (!isEmoji())
                 throw new IllegalStateException("Cannot get emoji code for custom emote reaction");
             return getName();
         }
@@ -454,9 +491,11 @@ public class MessageReaction
         /**
          * The instance of {@link net.dv8tion.jda.api.entities.Emote Emote}
          * for the Reaction instance.
-         * <br>Might be null if {@link #getId()} returns null.
          *
-         * @return The possibly-null Emote for the Reaction instance
+         * @throws java.lang.IllegalStateException
+         *         If this is not a custom emote reaction, see {@link #isEmote()}
+         *
+         * @return The Emote for the Reaction instance
          */
         @Nonnull
         public Emote getEmote()
