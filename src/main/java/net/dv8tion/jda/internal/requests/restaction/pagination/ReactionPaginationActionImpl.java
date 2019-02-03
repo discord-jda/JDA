@@ -21,9 +21,9 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
-import net.dv8tion.jda.api.utils.EncodingUtil;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.utils.EncodingUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 
