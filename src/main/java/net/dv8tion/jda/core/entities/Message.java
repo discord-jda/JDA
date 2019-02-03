@@ -346,9 +346,9 @@ public interface Message extends ISnowflake, Formattable
     String getContentRaw();
 
     /**
-     * Gets the textual content of this message using {@link #getContentDisplay()} and then strips it of all markdown characters
-     * like {@literal *, **, __, ~~} that provide text formatting. Any characters that match these but are not being used
-     * for formatting are escaped to prevent possible formatting.
+     * Gets the textual content of this message using {@link #getContentDisplay()} and then strips it of all spoiler tags and 
+     * markdown characters like {@literal *, **, __, ~~} that provide text formatting. Any characters that match these but are
+     * not being used for formatting are escaped to prevent possible formatting.
      *
      * @return The textual content from {@link #getContentDisplay()} with all text formatting characters removed or escaped.
      */
