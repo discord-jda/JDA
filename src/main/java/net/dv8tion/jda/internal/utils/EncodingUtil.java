@@ -20,7 +20,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.stream.Collectors;
 
-public class EncodingUtil {
+public class EncodingUtil
+{
     public static String encodeUTF8(String chars)
     {
         try
