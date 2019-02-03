@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.MessagePaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
+import net.dv8tion.jda.api.utils.EncodingUtil;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
@@ -1884,9 +1885,9 @@ public interface MessageChannel extends ISnowflake, Formattable
 
         String encoded;
         if (unicode.startsWith("U+"))
-            encoded = MiscUtil.encodeCodePointsUTF8(unicode);
+            encoded = EncodingUtil.encodeCodepointsUTF8(unicode);
         else
-            encoded = MiscUtil.encodeUTF8(unicode);
+            encoded = EncodingUtil.encodeUTF8(unicode);
         Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, encoded);
         return new RestActionImpl<>(getJDA(), route);
     }
@@ -2152,7 +2153,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.isSnowflake(messageId, "Message ID");
         Checks.noWhitespace(unicode, "Emoji");
 
-        final String code = MiscUtil.encodeUTF8(unicode);
+        final String code = EncodingUtil.encodeUTF8(unicode);
         final Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, code, "@me");
         return new RestActionImpl<>(getJDA(), route);
     }

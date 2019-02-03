@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
-import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.EncodingUtil;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.pagination.ReactionPaginationActionImpl;
@@ -362,7 +362,7 @@ public class MessageReaction
 
         String code = emote.isEmote()
                     ? emote.getName() + ":" + emote.getId()
-                    : MiscUtil.encodeUTF8(emote.getName());
+                    : EncodingUtil.encodeUTF8(emote.getName());
         Route.CompiledRoute route;
         if (user.equals(getJDA().getSelfUser()))
             route = Route.Messages.REMOVE_REACTION.compile(channel.getId(), getMessageId(), code, "@me");
@@ -479,7 +479,7 @@ public class MessageReaction
         {
             if (!isEmoji())
                 throw new IllegalStateException("Cannot get codepoint for custom emote reaction");
-            return MiscUtil.toCodePointNotation(name);
+            return EncodingUtil.encodeCodepoints(name);
         }
 
         @Override
