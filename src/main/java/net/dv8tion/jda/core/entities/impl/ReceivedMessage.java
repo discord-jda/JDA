@@ -465,7 +465,7 @@ public class ReceivedMessage extends AbstractMessage
                 return strippedContent;
             String tmp = getContentDisplay();
             //all the formatting keys to keep track of
-            String[] keys = new String[]{ "*", "_", "`", "~~" };
+            String[] keys = new String[]{ "*", "_", "`", "~~", "||" };
 
             //find all tokens (formatting strings described above)
             TreeSet<FormatToken> tokens = new TreeSet<>(Comparator.comparingInt(t -> t.start));
@@ -529,7 +529,7 @@ public class ReceivedMessage extends AbstractMessage
                 out.append(tmp.substring(currIndex));
             //return the stripped text, escape all remaining formatting characters (did not have matching
             // open/close before or were left/right of block
-            return strippedContent = out.toString().replace("*", "\\*").replace("_", "\\_").replace("~", "\\~");
+            return strippedContent = out.toString().replace("*", "\\*").replace("_", "\\_").replace("~", "\\~").replace("|", "\\|");
         }
     }
 
