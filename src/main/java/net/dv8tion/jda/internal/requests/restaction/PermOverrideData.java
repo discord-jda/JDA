@@ -34,7 +34,7 @@ public class PermOverrideData implements JSONString
         this.type = type;
         this.id = id;
         this.allow = allow;
-        this.deny = deny;
+        this.deny = deny & ~allow;
     }
 
     public PermOverrideData(PermissionOverride override)
