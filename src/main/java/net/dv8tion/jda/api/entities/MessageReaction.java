@@ -457,11 +457,29 @@ public class MessageReaction
          * The name for this emote/emoji
          * <br>For unicode emojis this will be the unicode of said emoji rather than an alias like {@code :smiley:}.
          *
+         * <p>For better use in consoles that do not support unicode emoji use {@link #getAsCodepoints()} for a more
+         * readable representation of the emoji.
+         *
          * @return The name for this emote/emoji
          */
         public String getName()
         {
             return name;
+        }
+
+        /**
+         * Converts the unicode name into codepoint notation like {@code U+1F602}.
+         *
+         * @throws java.lang.IllegalStateException
+         *         If this is not an emoji reaction, see {@link #isEmoji()}
+         *
+         * @return String containing the codepoint representation of the reaction emoji
+         */
+        public String getAsCodepoints()
+        {
+            if (!isEmoji())
+                throw new IllegalStateException("Cannot get codepoint for custom emote reaction");
+            return MiscUtil.toCodePointNotation(name);
         }
 
         @Override
@@ -526,7 +544,9 @@ public class MessageReaction
         @Override
         public String toString()
         {
-            return "RE:" + getName() + (isEmote() ? "(" + getId() + ")" : "");
+            if (isEmoji())
+                return "RE:" + getAsCodepoints();
+            return "RE:" + getName() + "(" + getId() + ")";
         }
     }
 

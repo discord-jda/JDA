@@ -34,6 +34,7 @@ import java.net.URLEncoder;
 import java.util.Formatter;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class MiscUtil
 {
@@ -141,6 +142,13 @@ public class MiscUtil
             encoded.append(encodeUTF8(String.valueOf(chars)));
         }
         return encoded.toString();
+    }
+
+    public static String toCodePointNotation(String unicode)
+    {
+        return unicode.codePoints()
+               .mapToObj(code -> "U+" + Integer.toHexString(code))
+               .collect(Collectors.joining());
     }
 
     public static long parseSnowflake(String input)
