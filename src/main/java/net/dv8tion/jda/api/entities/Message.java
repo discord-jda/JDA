@@ -98,21 +98,21 @@ public interface Message extends ISnowflake, Formattable
     /**
      * The maximum sendable file size (8 MiB)
      *
-     * @see MessageAction#addFile(java.io.File) MessageAction.addFile(...)
+     * @see MessageAction#addFile(java.io.File, net.dv8tion.jda.api.utils.AttachmentOption...) MessageAction.addFile(...)
      */
     int MAX_FILE_SIZE = 8 << 20;
 
     /**
      * The maximum sendable file size for nitro (50 MiB)
      *
-     * @see MessageAction#addFile(java.io.File) MessageAction.addFile(...)
+     * @see MessageAction#addFile(java.io.File, net.dv8tion.jda.api.utils.AttachmentOption...) MessageAction.addFile(...)
      */
     int MAX_FILE_SIZE_NITRO = 50 << 20;
 
     /**
      * The maximum amount of files sendable within a single message ({@value})
      *
-     * @see MessageAction#addFile(java.io.File) MessageAction.addFile(...)
+     * @see MessageAction#addFile(java.io.File, net.dv8tion.jda.api.utils.AttachmentOption...) MessageAction.addFile(...)
      */
     int MAX_FILE_AMOUNT = 10;
 
