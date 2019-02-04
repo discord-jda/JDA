@@ -21,8 +21,6 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.VerificationLevelException;
-import net.dv8tion.jda.api.requests.Request;
-import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
@@ -337,7 +335,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     }
 
     @Override
-    public MessageAction sendFile(InputStream data, String fileName, Message message)
+    public MessageAction sendFile(InputStream data, String fileName)
     {
         checkVerification();
         checkPermission(Permission.MESSAGE_READ);
@@ -345,7 +343,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         checkPermission(Permission.MESSAGE_ATTACH_FILES);
 
         //Call MessageChannel's default method
-        return TextChannel.super.sendFile(data, fileName, message);
+        return TextChannel.super.sendFile(data, fileName);
     }
 
     @Override
