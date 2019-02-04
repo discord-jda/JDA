@@ -33,7 +33,7 @@ import java.util.List;
  *
  * @see CacheView CacheView for details on Efficient Memory Usage
  */
-public interface MemberCacheView extends CacheView<Member>
+public interface MemberCacheView extends SnowflakeCacheView<Member>
 {
     /**
      * Retrieves the member represented by the provided ID.
