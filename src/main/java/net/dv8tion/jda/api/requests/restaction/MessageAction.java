@@ -372,7 +372,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
         return addFile(file, file.getName(), options);
     }
 
-        /**
+    /**
      * Adds the provided {@link java.io.File File} as file data.
      *
      * <p>To reset all files use {@link #clearFiles()}
