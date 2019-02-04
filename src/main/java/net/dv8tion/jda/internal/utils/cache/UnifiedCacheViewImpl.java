@@ -67,16 +67,17 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
     @Override
     public Set<T> asSet()
     {
-        try (ClosableIterator<T> it = lockedIterator())
+        try (ChainedClosableIterator<T> it = lockedIterator())
         {
-            Set<T> set = new HashSet<>();
-            it.forEachRemaining(set::add);
-            return Collections.unmodifiableSet(set);
+            //because the iterator needs to retain elements to avoid duplicates,
+            // we can use the resulting HashSet as our return value!
+            while (it.hasNext()) it.next();
+            return it.getItems();
         }
     }
 
     @Override
-    public ClosableIterator<T> lockedIterator()
+    public ChainedClosableIterator<T> lockedIterator()
     {
         Iterator<? extends E> gen = generator.get().iterator();
         return new ChainedClosableIterator<>(gen);
@@ -87,19 +88,20 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
     {
         return Collections.unmodifiableList(distinctStream()
                 .flatMap(view -> view.getElementsByName(name, ignoreCase).stream())
+                .distinct()
                 .collect(Collectors.toList()));
     }
 
     @Override
     public Stream<T> stream()
     {
-        return generator.get().flatMap(CacheView::stream).distinct();
+        return distinctStream().flatMap(CacheView::stream).distinct();
     }
 
     @Override
     public Stream<T> parallelStream()
     {
-        return generator.get().flatMap(CacheView::parallelStream).distinct();
+        return distinctStream().flatMap(CacheView::parallelStream).distinct();
     }
 
     @Nonnull
