@@ -68,7 +68,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
     @Override
     public List<T> asList()
     {
-        List<T> list = new ArrayList<>();
+        List<T> list = new LinkedList<>();
         forEach(list::add);
         return Collections.unmodifiableList(list);
     }
@@ -81,7 +81,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
             //because the iterator needs to retain elements to avoid duplicates,
             // we can use the resulting HashSet as our return value!
             while (it.hasNext()) it.next();
-            return it.getItems();
+            return Collections.unmodifiableSet(it.getItems());
         }
     }
 
