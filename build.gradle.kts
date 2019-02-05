@@ -18,13 +18,10 @@
 //to build and upload everything:  "gradlew bintrayUpload"
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import com.jfrog.bintray.gradle.*
-import com.jfrog.bintray.gradle.tasks.*
-import groovy.util.FileTreeBuilder
-import org.apache.maven.model.*
-import org.apache.tools.ant.filters.*
-import org.gradle.jvm.tasks.*
-import java.util.Date
+import com.jfrog.bintray.gradle.BintrayExtension
+import com.jfrog.bintray.gradle.tasks.BintrayUploadTask
+import org.apache.tools.ant.filters.ReplaceTokens
+import java.util.*
 
 plugins {
     signing
@@ -71,7 +68,7 @@ dependencies {
 
     //Web Connection Support
     api("com.neovisionaries:nv-websocket-client:2.5")
-    api("com.squareup.okhttp3:okhttp:3.12.0")
+    api("com.squareup.okhttp3:okhttp:3.13.0")
 
     //Opus library support
     api("club.minnced:opus-java:1.0.4@pom") {
