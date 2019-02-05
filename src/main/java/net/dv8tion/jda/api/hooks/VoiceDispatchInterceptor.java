@@ -214,7 +214,7 @@ public interface VoiceDispatchInterceptor
         @Override
         public Guild getGuild()
         {
-            return getChannel().getGuild();
+            return voiceState.getGuild();
         }
 
         @Override
