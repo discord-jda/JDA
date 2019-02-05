@@ -16,12 +16,35 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.JDA;
+
 /**
  * Represents the voice state of a {@link net.dv8tion.jda.api.entities.Member Member} in a
  * {@link net.dv8tion.jda.api.entities.Guild Guild}.
  */
-public interface GuildVoiceState extends VoiceState
+public interface GuildVoiceState
 {
+    /**
+     * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance of this VoiceState
+     *
+     * @return The corresponding JDA instance
+     */
+    JDA getJDA();
+
+    /**
+     * Returns whether the {@link net.dv8tion.jda.api.entities.Member Member} muted themselves.
+     *
+     * @return The User's self-mute status
+     */
+    boolean isSelfMuted();
+
+    /**
+     * Returns whether the {@link net.dv8tion.jda.api.entities.Member Member} deafened themselves.
+     *
+     * @return The User's self-deaf status
+     */
+    boolean isSelfDeafened();
+
     /**
      * Returns whether the {@link net.dv8tion.jda.api.entities.Member Member} is muted, either
      * by choice {@link #isSelfMuted()} or deafened by an admin {@link #isGuildMuted()}
@@ -98,4 +121,11 @@ public interface GuildVoiceState extends VoiceState
      *         in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
      */
     boolean inVoiceChannel();
+
+    /**
+     * The Session-Id for this VoiceState
+     *
+     * @return The Session-Id
+     */
+    String getSessionId();
 }

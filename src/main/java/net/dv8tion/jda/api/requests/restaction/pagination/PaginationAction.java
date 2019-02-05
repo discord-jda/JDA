@@ -19,12 +19,14 @@ package net.dv8tion.jda.api.requests.restaction.pagination;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.Procedure;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -262,6 +264,112 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
     int getLimit();
 
     /**
+     * Retrieves elements while the specified condition is met.
+     *
+     * @param  rule
+     *         The rule which must be fulfilled for an element to be added,
+     *         returns false to discard the element and finish the task
+     *
+     * @throws IllegalArgumentException
+     *         If the provided rule is {@code null}
+     *
+     * @return {@link CompletableFuture} - Type: {@link List List}
+     *         <br>Future representing the fetch task, the list will be sorted most recent to oldest
+     *
+     * @see    #takeWhileAsync(int, Predicate)
+     * @see    #takeUntilAsync(Predicate)
+     */
+    default CompletableFuture<List<T>> takeWhileAsync(final Predicate<? super T> rule)
+    {
+        Checks.notNull(rule, "Rule");
+        return takeUntilAsync(rule.negate());
+    }
+
+    /**
+     * Retrieves elements while the specified condition is met.
+     *
+     * @param  limit
+     *         The maximum amount of elements to collect or {@code 0} for no limit
+     * @param  rule
+     *         The rule which must be fulfilled for an element to be added,
+     *         returns false to discard the element and finish the task
+     *
+     * @throws IllegalArgumentException
+     *         If the provided rule is {@code null} or the limit is negative
+     *
+     * @return {@link CompletableFuture} - Type: {@link List List}
+     *         <br>Future representing the fetch task, the list will be sorted most recent to oldest
+     *
+     * @see    #takeWhileAsync(Predicate)
+     * @see    #takeUntilAsync(int, Predicate)
+     */
+    default CompletableFuture<List<T>> takeWhileAsync(int limit, final Predicate<? super T> rule)
+    {
+        Checks.notNull(rule, "Rule");
+        return takeUntilAsync(limit, rule.negate());
+    }
+
+    /**
+     * Retrieves elements until the specified condition is met.
+     *
+     * @param  rule
+     *         The rule which must be fulfilled for an element to be discarded,
+     *         returns true to discard the element and finish the task
+     *
+     * @throws IllegalArgumentException
+     *         If the provided rule is {@code null}
+     *
+     * @return {@link CompletableFuture} - Type: {@link List List}
+     *         <br>Future representing the fetch task, the list will be sorted most recent to oldest
+     *
+     * @see    #takeWhileAsync(Predicate)
+     * @see    #takeUntilAsync(int, Predicate)
+     */
+    default CompletableFuture<List<T>> takeUntilAsync(final Predicate<? super T> rule)
+    {
+        return takeUntilAsync(0, rule);
+    }
+
+    /**
+     * Retrieves elements until the specified condition is met.
+     *
+     * @param  limit
+     *         The maximum amount of elements to collect or {@code 0} for no limit
+     * @param  rule
+     *         The rule which must be fulfilled for an element to be discarded,
+     *         returns true to discard the element and finish the task
+     *
+     * @throws IllegalArgumentException
+     *         If the provided rule is {@code null} or the limit is negative
+     *
+     * @return {@link CompletableFuture} - Type: {@link List List}
+     *         <br>Future representing the fetch task, the list will be sorted most recent to oldest
+     *
+     * @see    #takeWhileAsync(Predicate)
+     * @see    #takeUntilAsync(int, Predicate)
+     */
+    default CompletableFuture<List<T>> takeUntilAsync(int limit, final Predicate<? super T> rule)
+    {
+        Checks.notNull(rule, "Rule");
+        Checks.notNegative(limit, "Limit");
+        List<T> result = new ArrayList<>();
+        CompletableFuture<List<T>> future = new CompletableFuture<>();
+        CompletableFuture<?> handle = forEachAsync((element) -> {
+            if (rule.test(element))
+                return false;
+            result.add(element);
+            return limit == 0 || limit > result.size();
+        });
+        handle.whenComplete((r, t) -> {
+           if (t != null)
+               future.completeExceptionally(t);
+           else
+               future.complete(result);
+        });
+        return future;
+    }
+
+    /**
      * Convenience method to retrieve an amount of entities from this pagination action.
      * <br>This also includes already cached entities similar to {@link #forEachAsync(Procedure)}.
      *
@@ -321,7 +429,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      *
      * @return {@link java.util.concurrent.Future Future} that can be cancelled to stop iteration from outside!
      */
-    default CompletableFuture<?> forEachAsync(final Procedure<T> action)
+    default CompletableFuture<?> forEachAsync(final Procedure<? super T> action)
     {
         return forEachAsync(action, RestActionImpl.getDefaultFailure());
     }
@@ -363,7 +471,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      *
      * @return {@link java.util.concurrent.Future Future} that can be cancelled to stop iteration from outside!
      */
-    CompletableFuture<?> forEachAsync(final Procedure<T> action, final Consumer<? super Throwable> failure);
+    CompletableFuture<?> forEachAsync(final Procedure<? super T> action, final Consumer<? super Throwable> failure);
 
     /**
      * Iterates over all remaining entities until the provided action returns {@code false}!
@@ -400,7 +508,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      *
      * @return {@link java.util.concurrent.Future Future} that can be cancelled to stop iteration from outside!
      */
-    default CompletableFuture<?> forEachRemainingAsync(final Procedure<T> action)
+    default CompletableFuture<?> forEachRemainingAsync(final Procedure<? super T> action)
     {
         return forEachRemainingAsync(action, RestActionImpl.getDefaultFailure());
     }
@@ -442,7 +550,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      *
      * @return {@link java.util.concurrent.Future Future} that can be cancelled to stop iteration from outside!
      */
-    CompletableFuture<?> forEachRemainingAsync(final Procedure<T> action, final Consumer<? super Throwable> failure);
+    CompletableFuture<?> forEachRemainingAsync(final Procedure<? super T> action, final Consumer<? super Throwable> failure);
 
     /**
      * Iterates over all remaining entities until the provided action returns {@code false}!
@@ -454,7 +562,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      *         The {@link net.dv8tion.jda.api.utils.Procedure Procedure}
      *         which should return {@code true} to continue iterating
      */
-    void forEachRemaining(final Procedure<T> action);
+    void forEachRemaining(final Procedure<? super T> action);
 
     @Override
     default Spliterator<T> spliterator()

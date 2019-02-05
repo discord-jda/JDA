@@ -33,10 +33,8 @@ import java.util.function.BooleanSupplier;
  *
  * @since  3.0
  *
- * @see    net.dv8tion.jda.api.entities.GuildChannel#createPermissionOverride(Role)
- * @see    net.dv8tion.jda.api.entities.GuildChannel#createPermissionOverride(Member)
- * @see    net.dv8tion.jda.api.entities.GuildChannel#putPermissionOverride(Role)
- * @see    net.dv8tion.jda.api.entities.GuildChannel#putPermissionOverride(Member)
+ * @see    net.dv8tion.jda.api.entities.GuildChannel#createPermissionOverride(IPermissionHolder)
+ * @see    net.dv8tion.jda.api.entities.GuildChannel#putPermissionOverride(IPermissionHolder)
  */
 public interface PermissionOverrideAction extends AuditableRestAction<PermissionOverride>
 {
@@ -63,23 +61,6 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      * @return The member, or null if this is a role override
      */
     Member getMember();
-
-    /**
-     * Whether this override is for a {@link Member}
-     *
-     * @return True, if this override is for a member
-     */
-    boolean isMemberOverride();
-
-    /**
-     * Whether this override is for a {@link Role}
-     *
-     * @return True, if this override is for a role
-     */
-    default boolean isRoleOverride()
-    {
-        return !isMemberOverride();
-    }
 
     /**
      * The {@link Guild} for this override
@@ -194,6 +175,9 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      * <br>This value can be retrieved through {@link net.dv8tion.jda.api.Permission#getRaw(net.dv8tion.jda.api.Permission...) Permissions.getRaw(Permission...)}!
      * <br><b>Note: Permissions not marked as {@link net.dv8tion.jda.api.Permission#isChannel() isChannel()} will have no affect!</b>
      *
+     * <p>All newly granted permissions will be removed from the currently set denied permissions.
+     * <br>{@code allow = allowBits; deny = deny & ~allowBits;}
+     *
      * @param  allowBits
      *         The <b>positive</b> bits representing the granted
      *         permissions for the new PermissionOverride
@@ -264,10 +248,65 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
     }
 
     /**
+     * Grants the specified permissions.
+     * <br>This does not override already granted permissions.
+     *
+     * @param  allowBits
+     *         The permissions to grant, in addition to already allowed permissions
+     *
+     * @return The current PermissionOverrideAction - for chaining convenience
+     */
+    @CheckReturnValue
+    default PermissionOverrideAction grant(long allowBits)
+    {
+        return setAllow(getAllow() | allowBits);
+    }
+
+    /**
+     * Grants the specified permissions.
+     * <br>This does not override already granted permissions.
+     *
+     * @param  permissions
+     *         The permissions to grant, in addition to already allowed permissions
+     *
+     * @throws IllegalArgumentException
+     *         If any provided argument is null
+     *
+     * @return The current PermissionOverrideAction - for chaining convenience
+     */
+    @CheckReturnValue
+    default PermissionOverrideAction grant(Collection<Permission> permissions)
+    {
+        return setAllow(getAllow() | Permission.getRaw(permissions));
+    }
+
+    /**
+     * Grants the specified permissions.
+     * <br>This does not override already granted permissions.
+     *
+     * @param  permissions
+     *         The permissions to grant, in addition to already allowed permissions
+     *
+     * @throws IllegalArgumentException
+     *         If any provided argument is null
+     *
+     * @return The current PermissionOverrideAction - for chaining convenience
+     */
+    @CheckReturnValue
+    default PermissionOverrideAction grant(Permission... permissions)
+    {
+        return setAllow(getAllow() | Permission.getRaw(permissions));
+    }
+
+
+    /**
      * Sets the value of explicitly denied permissions
      * using the bitwise representation of a set of {@link net.dv8tion.jda.api.Permission Permissions}.
      * <br>This value can be retrieved through {@link net.dv8tion.jda.api.Permission#getRaw(net.dv8tion.jda.api.Permission...) Permissions.getRaw(Permission...)}!
      * <br><b>Note: Permissions not marked as {@link net.dv8tion.jda.api.Permission#isChannel() isChannel()} will have no affect!</b>
+     *
+     * <p>All newly denied permissions will be removed from the currently set allowed permissions.
+     * <br>{@code deny = denyBits; allow = allow & ~denyBits;}
      *
      * @param  denyBits
      *         The <b>positive</b> bits representing the denied
@@ -339,13 +378,66 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
     }
 
     /**
+     * Denies the specified permissions.
+     * <br>This does not override already denied permissions.
+     *
+     * @param  denyBits
+     *         The permissions to deny, in addition to already denied permissions
+     *
+     * @return The current PermissionOverrideAction - for chaining convenience
+     */
+    @CheckReturnValue
+    default PermissionOverrideAction deny(long denyBits)
+    {
+        return setDeny(getDeny() | denyBits);
+    }
+
+    /**
+     * Denies the specified permissions.
+     * <br>This does not override already denied permissions.
+     *
+     * @param  permissions
+     *         The permissions to deny, in addition to already denied permissions
+     *
+     * @throws IllegalArgumentException
+     *         If any provided argument is null
+     *
+     * @return The current PermissionOverrideAction - for chaining convenience
+     */
+    @CheckReturnValue
+    default PermissionOverrideAction deny(Collection<Permission> permissions)
+    {
+        return setDeny(getDeny() | Permission.getRaw(permissions));
+    }
+
+    /**
+     * Denies the specified permissions.
+     * <br>This does not override already denied permissions.
+     *
+     * @param  permissions
+     *         The permissions to deny, in addition to already denied permissions
+     *
+     * @throws IllegalArgumentException
+     *         If any provided argument is null
+     *
+     * @return The current PermissionOverrideAction - for chaining convenience
+     */
+    @CheckReturnValue
+    default PermissionOverrideAction deny(Permission... permissions)
+    {
+        return setDeny(getDeny() | Permission.getRaw(permissions));
+    }
+
+
+    /**
      * Combination of {@link #setAllow(long)} and {@link #setDeny(long)}
+     * <br>First sets the allow bits and then the deny bits.
      *
      * @param  allowBits
-     *         A non-negative bitwise representation
+     *         An unsigned bitwise representation
      *         of granted Permissions
      * @param  denyBits
-     *         A non-negative bitwise representation
+     *         An unsigned bitwise representation
      *         of denied Permissions
      *
      * @throws java.lang.IllegalArgumentException
@@ -363,6 +455,7 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
 
     /**
      * Combination of {@link #setAllow(java.util.Collection)} and {@link #setDeny(java.util.Collection)}
+     * <br>First sets the granted permissions and then the denied permissions.
      * <br>If a passed collection is {@code null} it resets the represented value to {@code 0} - no permission specifics.
      *
      * <p>Example: {@code setPermissions(EnumSet.of(Permission.MESSAGE_READ), EnumSet.of(Permission.MESSAGE_WRITE, Permission.MESSAGE_EXT_EMOJI))}

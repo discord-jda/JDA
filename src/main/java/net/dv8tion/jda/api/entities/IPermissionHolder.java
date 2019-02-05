@@ -26,9 +26,8 @@ import java.util.EnumSet;
  *
  * @since 3.0
  */
-public interface IPermissionHolder
+public interface IPermissionHolder extends ISnowflake
 {
-
     /**
      * The Guild to which this PermissionHolder is related
      * 
