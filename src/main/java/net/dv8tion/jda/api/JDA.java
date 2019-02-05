@@ -19,6 +19,7 @@ package net.dv8tion.jda.api;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.managers.AudioManager;
+import net.dv8tion.jda.api.managers.DirectAudioController;
 import net.dv8tion.jda.api.managers.Presence;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.GuildAction;
@@ -315,6 +316,17 @@ public interface JDA
      * @return The http client
      */
     OkHttpClient getHttpClient();
+
+    /**
+     * Direct access to audio (dis-)connect requests.
+     * <br>This should not be used when normal audio operation is desired.
+     *
+     * <p>The correct way to open and close an audio connection is through the {@link Guild Guild's}
+     * {@link AudioManager}.
+     *
+     * @return The {@link DirectAudioController} for this JDA instance
+     */
+    DirectAudioController getDirectAudioController();
 
     /**
      * Changes the internal EventManager.

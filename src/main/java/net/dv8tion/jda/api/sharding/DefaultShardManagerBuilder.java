@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.hooks.IEventManager;
+import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
@@ -49,6 +50,7 @@ public class  DefaultShardManagerBuilder
     protected final List<Object> listeners = new ArrayList<>();
     protected final List<IntFunction<Object>> listenerProviders = new ArrayList<>();
     protected SessionController sessionController = null;
+    protected VoiceDispatchInterceptor voiceDispatchInterceptor = null;
     protected EnumSet<CacheFlag> cacheFlags = EnumSet.allOf(CacheFlag.class);
     protected boolean enableContext = true;
     protected boolean enableBulkDeleteSplitting = true;
@@ -146,6 +148,22 @@ public class  DefaultShardManagerBuilder
     public DefaultShardManagerBuilder setSessionController(SessionController controller)
     {
         this.sessionController = controller;
+        return this;
+    }
+
+    /**
+     * Configures a custom voice dispatch handler which handles audio connections.
+     *
+     * @param  interceptor
+     *         The new voice dispatch handler, or null to use the default
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @see    VoiceDispatchInterceptor
+     */
+    public DefaultShardManagerBuilder setVoiceDispatchInterceptor(VoiceDispatchInterceptor interceptor)
+    {
+        this.voiceDispatchInterceptor = interceptor;
         return this;
     }
 
@@ -1133,7 +1151,7 @@ public class  DefaultShardManagerBuilder
      */
     public ShardManager build() throws LoginException, IllegalArgumentException
     {
-        final ShardingConfig shardingConfig = new ShardingConfig(shardsTotal, sessionController, useShutdownNow);
+        final ShardingConfig shardingConfig = new ShardingConfig(shardsTotal, useShutdownNow);
         final EventConfig eventConfig = new EventConfig(eventManagerProvider);
         listeners.forEach(eventConfig::addEventListener);
         listenerProviders.forEach(eventConfig::addEventListenerProvider);
@@ -1142,7 +1160,7 @@ public class  DefaultShardManagerBuilder
         presenceConfig.setStatusProvider(statusProvider);
         presenceConfig.setIdleProvider(idleProvider);
         final ThreadingProviderConfig threadingConfig = new ThreadingProviderConfig(rateLimitPoolProvider, gatewayPoolProvider, callbackPoolProvider, threadFactory);
-        final ShardingSessionConfig sessionConfig = new ShardingSessionConfig(sessionController, httpClient, httpClientBuilder, wsFactory, audioSendFactory, enableVoice, retryOnTimeout, autoReconnect, enableBulkDeleteSplitting, maxReconnectDelay);
+        final ShardingSessionConfig sessionConfig = new ShardingSessionConfig(sessionController, voiceDispatchInterceptor, httpClient, httpClientBuilder, wsFactory, audioSendFactory, enableVoice, retryOnTimeout, autoReconnect, enableBulkDeleteSplitting, maxReconnectDelay);
         final ShardingMetaConfig metaConfig = new ShardingMetaConfig(contextProvider, cacheFlags, enableContext, useShutdownNow, enableCompression);
         final DefaultShardManager manager = new DefaultShardManager(this.token, this.shards, shardingConfig, eventConfig, presenceConfig, threadingConfig, sessionConfig, metaConfig);
 

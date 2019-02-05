@@ -69,6 +69,7 @@ dependencies {
     //Web Connection Support
     api("com.neovisionaries:nv-websocket-client:2.5")
     api("com.squareup.okhttp3:okhttp:3.13.0")
+    api("org.json:json:20160810")
 
     //Opus library support
     api("club.minnced:opus-java:1.0.4@pom") {
@@ -84,7 +85,6 @@ dependencies {
 
     //General Utility
     implementation("org.apache.commons:commons-collections4:4.1")
-    implementation("org.json:json:20160810")
     implementation("net.sf.trove4j:trove4j:3.0.3")
 
     //Sets the dependencies for the examples

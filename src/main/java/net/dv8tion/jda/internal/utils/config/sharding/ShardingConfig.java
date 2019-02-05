@@ -16,19 +16,14 @@
 
 package net.dv8tion.jda.internal.utils.config.sharding;
 
-import net.dv8tion.jda.api.utils.SessionController;
-import net.dv8tion.jda.api.utils.SessionControllerAdapter;
-
 public class ShardingConfig
 {
     private int shardsTotal;
-    private final SessionController controller;
     private final boolean useShutdownNow;
 
-    public ShardingConfig(int shardsTotal, SessionController controller, boolean useShutdownNow)
+    public ShardingConfig(int shardsTotal, boolean useShutdownNow)
     {
         this.shardsTotal = shardsTotal;
-        this.controller = controller == null ? new SessionControllerAdapter() : controller;
         this.useShutdownNow = useShutdownNow;
     }
 
@@ -42,11 +37,6 @@ public class ShardingConfig
         return shardsTotal;
     }
 
-    public SessionController getController()
-    {
-        return controller;
-    }
-
     public boolean isUseShutdownNow()
     {
         return useShutdownNow;
@@ -54,6 +44,6 @@ public class ShardingConfig
 
     public static ShardingConfig getDefault()
     {
-        return new ShardingConfig(1, null, false);
+        return new ShardingConfig(1, false);
     }
 }
