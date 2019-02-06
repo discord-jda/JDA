@@ -41,6 +41,14 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
     @Override
     PermissionOverrideAction setCheck(BooleanSupplier checks);
 
+    default PermissionOverrideAction reset()
+    {
+        return resetAllow().resetDeny();
+    }
+
+    PermissionOverrideAction resetAllow();
+    PermissionOverrideAction resetDeny();
+
     /**
      * The {@link GuildChannel} this will be created in
      *

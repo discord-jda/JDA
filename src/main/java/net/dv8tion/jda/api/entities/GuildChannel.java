@@ -316,6 +316,13 @@ public interface GuildChannel extends ISnowflake
     @CheckReturnValue
     PermissionOverrideAction putPermissionOverride(IPermissionHolder permissionHolder);
 
+    @CheckReturnValue
+    default PermissionOverrideAction createOrUpdatePermissionOverride(IPermissionHolder permissionHolder)
+    {
+        PermissionOverride override = getPermissionOverride(permissionHolder);
+        return override != null ? override.getManager() : putPermissionOverride(permissionHolder);
+    }
+
     /**
      * Creates a new {@link InviteAction InviteAction} which can be used to create a
      * new {@link net.dv8tion.jda.api.entities.Invite Invite}.

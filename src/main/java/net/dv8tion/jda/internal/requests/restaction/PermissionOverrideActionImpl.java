@@ -36,10 +36,18 @@ public class PermissionOverrideActionImpl
     extends AuditableRestActionImpl<PermissionOverride>
     implements PermissionOverrideAction
 {
+    private boolean allowSet = false;
+    private boolean denySet = false;
+
     private long allow = 0;
     private long deny = 0;
     private final GuildChannel channel;
     private final IPermissionHolder permissionHolder;
+
+    public PermissionOverrideActionImpl(PermissionOverride override)
+    {
+        this(override.getJDA(), override.getChannel(), override.isRoleOverride() ? override.getRole() : override.getMember());
+    }
 
     public PermissionOverrideActionImpl(JDA api, GuildChannel channel, IPermissionHolder permissionHolder)
     {
@@ -52,6 +60,20 @@ public class PermissionOverrideActionImpl
     public PermissionOverrideActionImpl setCheck(BooleanSupplier checks)
     {
         return (PermissionOverrideActionImpl) super.setCheck(checks);
+    }
+
+    @Override
+    public PermissionOverrideAction resetAllow()
+    {
+        allowSet = false;
+        return this;
+    }
+
+    @Override
+    public PermissionOverrideAction resetDeny()
+    {
+        denySet = false;
+        return this;
     }
 
     @Override
@@ -110,6 +132,7 @@ public class PermissionOverrideActionImpl
         Checks.check(allowBits <= Permission.ALL_PERMISSIONS, "Specified allow value may not be greater than a full permission set");
         this.allow = allowBits;
         this.deny &= ~allowBits;
+        allowSet = denySet = true;
         return this;
     }
 
@@ -121,6 +144,7 @@ public class PermissionOverrideActionImpl
         Checks.check(denyBits <= Permission.ALL_PERMISSIONS, "Specified deny value may not be greater than a full permission set");
         this.deny = denyBits;
         this.allow &= ~denyBits;
+        allowSet = denySet = true;
         return this;
     }
 
@@ -128,9 +152,19 @@ public class PermissionOverrideActionImpl
     @CheckReturnValue
     public PermissionOverrideActionImpl setPermissions(long allowBits, long denyBits)
     {
-        setAllow(allowBits);
-        setDeny(denyBits);
-        return this;
+        return setAllow(allowBits).setDeny(denyBits);
+    }
+
+    private long getCurrentAllow()
+    {
+        PermissionOverride override = channel.getPermissionOverride(permissionHolder);
+        return override == null ? 0 : override.getAllowedRaw();
+    }
+
+    private long getCurrentDeny()
+    {
+        PermissionOverride override = channel.getPermissionOverride(permissionHolder);
+        return override == null ? 0 : override.getDeniedRaw();
     }
 
     @Override
@@ -138,9 +172,9 @@ public class PermissionOverrideActionImpl
     {
         JSONObject object = new JSONObject();
         object.put("type", isRole() ? "role" : "member");
-        object.put("allow", allow);
-        object.put("deny", deny);
-
+        object.put("allow", allowSet ? allow : getCurrentAllow());
+        object.put("deny", denySet ? deny : getCurrentDeny());
+        reset();
         return getRequestBody(object);
     }
 

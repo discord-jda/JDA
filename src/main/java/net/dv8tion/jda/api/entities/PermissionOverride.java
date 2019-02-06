@@ -17,8 +17,8 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.managers.PermOverrideManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
 
 import javax.annotation.CheckReturnValue;
 import java.util.EnumSet;
@@ -141,17 +141,17 @@ public interface PermissionOverride
     boolean isRoleOverride();
 
     /**
-     * Returns the {@link PermOverrideManager PermOverrideManager} for this PermissionOverride.
-     * <br>In the PermOverrideManager you can modify the permissions of the override.
+     * Returns the {@link net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction PermissionOverrideAction} to modify this PermissionOverride.
+     * <br>In the PermissionOverrideAction you can modify the permissions of the override.
      * You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL Permission.MANAGE_CHANNEL}
      *         or {@link net.dv8tion.jda.api.Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
      *
-     * @return The PermOverrideManager of this override.
+     * @return The PermissionOverrideAction of this override.
      */
-    PermOverrideManager getManager();
+    PermissionOverrideAction getManager();
 
     /**
      * Deletes this PermissionOverride.
