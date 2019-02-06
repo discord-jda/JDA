@@ -317,7 +317,7 @@ public interface GuildChannel extends ISnowflake
     PermissionOverrideAction putPermissionOverride(IPermissionHolder permissionHolder);
 
     @CheckReturnValue
-    default PermissionOverrideAction createOrUpdatePermissionOverride(IPermissionHolder permissionHolder)
+    default PermissionOverrideAction upsertPermissionOverride(IPermissionHolder permissionHolder)
     {
         PermissionOverride override = getPermissionOverride(permissionHolder);
         return override != null ? override.getManager() : putPermissionOverride(permissionHolder);
