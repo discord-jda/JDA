@@ -42,7 +42,7 @@ public class EncodingUtil
         StringBuilder encoded = new StringBuilder();
         for (String part : codePoints)
         {
-            String utf16 = decodeCodepoint(part);
+            String utf16 = decodeCodepoint(part, 16);
             String urlEncoded = encodeUTF8(utf16);
             encoded.append(urlEncoded);
         }
@@ -53,9 +53,7 @@ public class EncodingUtil
     {
         if (!codepoint.startsWith("U+"))
             throw new IllegalArgumentException("Invalid format");
-        int codePoint = Integer.parseUnsignedInt(codepoint.substring(2), 16);
-        char[] chars = Character.toChars(codePoint);
-        return String.valueOf(chars);
+        return decodeCodepoint(codepoint.substring(2), 16);
     }
 
     public static String encodeCodepoints(String unicode)
@@ -63,5 +61,11 @@ public class EncodingUtil
         return unicode.codePoints()
                .mapToObj(code -> "U+" + Integer.toHexString(code))
                .collect(Collectors.joining());
+    }
+
+    private static String decodeCodepoint(String hex, int radix)
+    {
+        int codePoint = Integer.parseUnsignedInt(hex, radix);
+        return String.valueOf(Character.toChars(codePoint));
     }
 }
