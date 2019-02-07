@@ -59,7 +59,7 @@ public class AudioConnection
                                                         // to Left and Right mono (stereo that is the same on both sides)
     public static final long MAX_UINT_32 = 4294967295L;
 
-    private static final byte[] silenceBytes = new byte[] {(byte)0xF8, (byte)0xFF, (byte)0xFE};
+    private static final ByteBuffer silenceBytes = ByteBuffer.wrap(new byte[] {(byte)0xF8, (byte)0xFF, (byte)0xFE});
     private static boolean printedError = false;
 
     protected volatile DatagramSocket udpSocket;
@@ -375,11 +375,11 @@ public class AudioConnection
                             Decoder decoder = opusDecoders.get(ssrc);
                             if (userId == ssrcMap.getNoEntryValue())
                             {
-                                byte[] audio = decryptedPacket.getEncodedAudio();
+                                ByteBuffer audio = decryptedPacket.getEncodedAudio();
 
                                 //If the bytes are silence, then this was caused by a User joining the voice channel,
                                 // and as such, we haven't yet received information to pair the SSRC with the UserId.
-                                if (!Arrays.equals(audio, silenceBytes))
+                                if (!audio.equals(silenceBytes))
                                     LOG.debug("Received audio data with an unknown SSRC id. Ignoring");
 
                                 continue;
@@ -560,14 +560,14 @@ public class AudioConnection
         }
     }
 
-    private byte[] encodeToOpus(byte[] rawAudio)
+    private ByteBuffer encodeToOpus(ByteBuffer rawAudio)
     {
-        ShortBuffer nonEncodedBuffer = ShortBuffer.allocate(rawAudio.length / 2);
+        ShortBuffer nonEncodedBuffer = ShortBuffer.allocate(rawAudio.remaining() / 2);
         ByteBuffer encoded = ByteBuffer.allocate(4096);
-        for (int i = 0; i < rawAudio.length; i += 2)
+        for (int i = rawAudio.arrayOffset(); i < rawAudio.limit(); i += 2)
         {
-            int firstByte =  (0x000000FF & rawAudio[i]);      //Promotes to int and handles the fact that it was unsigned.
-            int secondByte = (0x000000FF & rawAudio[i + 1]);  //
+            int firstByte =  (0x000000FF & rawAudio.get(i));      //Promotes to int and handles the fact that it was unsigned.
+            int secondByte = (0x000000FF & rawAudio.get(i + 1));
 
             //Combines the 2 bytes into a short. Opus deals with unsigned shorts, not bytes.
             short toShort = (short) ((firstByte << 8) | secondByte);
@@ -583,11 +583,9 @@ public class AudioConnection
             return null;
         }
 
-        //ENCODING STOPS HERE
-
-        byte[] audio = new byte[result];
-        encoded.get(audio);
-        return audio;
+        encoded.position(0);
+        encoded.limit(result);
+        return encoded;
     }
 
     private void setSpeaking(int raw)
@@ -663,8 +661,8 @@ public class AudioConnection
                 cond: if (sentSilenceOnConnect && sendHandler != null && sendHandler.canProvide())
                 {
                     silenceCounter = -1;
-                    byte[] rawAudio = sendHandler.provide20MsAudio();
-                    if (rawAudio == null || rawAudio.length == 0)
+                    ByteBuffer rawAudio = sendHandler.provide20MsAudio();
+                    if (rawAudio == null || rawAudio.remaining() == 0)
                     {
                         if (speaking && changeTalking)
                             setSpeaking(0);
@@ -718,7 +716,7 @@ public class AudioConnection
             return nextPacket;
         }
 
-        private byte[] encodeAudio(byte[] rawAudio)
+        private ByteBuffer encodeAudio(ByteBuffer rawAudio)
         {
             if (opusEncoder == null)
             {
@@ -748,7 +746,7 @@ public class AudioConnection
             return new DatagramPacket(data, offset, position - offset, webSocket.getAddress());
         }
 
-        private ByteBuffer getPacketData(byte[] rawAudio)
+        private ByteBuffer getPacketData(ByteBuffer rawAudio)
         {
             ensureEncryptionBuffer(rawAudio);
             AudioPacket packet = new AudioPacket(encryptionBuffer, seq, timestamp, webSocket.getSSRC(), rawAudio);
@@ -775,11 +773,11 @@ public class AudioConnection
             return buffer = packet.asEncryptedPacket(buffer, webSocket.getSecretKey(), nonceBuffer, nlen);
         }
 
-        private void ensureEncryptionBuffer(byte[] data)
+        private void ensureEncryptionBuffer(ByteBuffer data)
         {
             ((Buffer) encryptionBuffer).clear();
             int currentCapacity = encryptionBuffer.remaining();
-            int requiredCapacity = AudioPacket.RTP_HEADER_BYTE_LENGTH + data.length;
+            int requiredCapacity = AudioPacket.RTP_HEADER_BYTE_LENGTH + data.remaining();
             if (currentCapacity < requiredCapacity)
                 encryptionBuffer = ByteBuffer.allocate(requiredCapacity);
         }

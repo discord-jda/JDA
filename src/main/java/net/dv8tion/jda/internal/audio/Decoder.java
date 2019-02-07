@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.audio;
 import com.sun.jna.ptr.PointerByReference;
 import tomp2p.opuswrapper.Opus;
 
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
@@ -69,10 +70,10 @@ public class Decoder
             this.lastSeq = decryptedPacket.getSequence();
             this.lastTimestamp = decryptedPacket.getTimestamp();
 
-            byte[] encodedAudio = decryptedPacket.getEncodedAudio();
-
-            result = Opus.INSTANCE.opus_decode(opusDecoder, encodedAudio, encodedAudio.length, decoded,
-                    AudioConnection.OPUS_FRAME_SIZE, 0);
+            ByteBuffer encodedAudio = decryptedPacket.getEncodedAudio();
+            byte[] buf = new byte[encodedAudio.remaining()];
+            System.arraycopy(encodedAudio.array(), encodedAudio.arrayOffset(), buf, 0, encodedAudio.remaining());
+            result = Opus.INSTANCE.opus_decode(opusDecoder, buf, buf.length, decoded, AudioConnection.OPUS_FRAME_SIZE, 0);
         }
 
         //If we get a result that is less than 0, then there was an error. Return null as a signifier.

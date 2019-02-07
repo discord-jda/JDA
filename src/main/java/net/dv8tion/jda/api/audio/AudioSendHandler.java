@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.audio;
 
 import javax.sound.sampled.AudioFormat;
+import java.nio.ByteBuffer;
 
 /**
  * Interface used to send audio to Discord through JDA.
@@ -40,7 +41,7 @@ public interface AudioSendHandler
 
     /**
      * If {@link #canProvide()} returns true JDA will call this method in an attempt to retrieve audio data from the
-     * handler. This method need to provide 20 Milliseconds of audio data as a byte array.
+     * handler. This method need to provide 20 Milliseconds of audio data as a <b>heap buffer</b>.
      * <p>
      * Considering this system needs to be low-latency / high-speed, it is recommended that the loading of audio data
      * be done before hand or in parallel and not loaded from disk when this method is called by JDA. Attempting to load
@@ -50,9 +51,9 @@ public interface AudioSendHandler
      * <br>Defined by: {@link net.dv8tion.jda.api.audio.AudioSendHandler#INPUT_FORMAT AudioSendHandler.INPUT_FORMAT}.
      * <br>If {@link #isOpus()} is set to return true, then it should be in pre-encoded Opus format instead.
      *
-     * @return Should return a byte[] containing 20 Milliseconds of audio.
+     * @return Should return a {@link java.nio.ByteBuffer} containing 20 Milliseconds of audio.
      */
-    byte[] provide20MsAudio();
+    ByteBuffer provide20MsAudio();
 
     /**
      * If this method returns true JDA will treat the audio data provided by {@link #provide20MsAudio()} as a pre-encoded
