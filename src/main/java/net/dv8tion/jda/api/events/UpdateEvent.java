@@ -24,7 +24,7 @@ package net.dv8tion.jda.api.events;
  * @param <T>
  *        The value type
  */
-public interface UpdateEvent<E, T>
+public interface UpdateEvent<E, T> extends GenericEvent
 {
     /**
      * Class representation of the affected entity, useful when dealing with refection.
