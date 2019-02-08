@@ -164,7 +164,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     public PermissionOverrideAction createPermissionOverride(IPermissionHolder permissionHolder)
     {
         Checks.notNull(permissionHolder, "PermissionHolder");
-        if (getPermissionOverride(permissionHolder) == null)
+        if (getPermissionOverride(permissionHolder) != null)
             throw new IllegalStateException("Provided member already has a PermissionOverride in this channel!");
 
         return putPermissionOverride(permissionHolder);
