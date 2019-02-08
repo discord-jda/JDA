@@ -293,7 +293,7 @@ public class AudioConnection
         if (udpSocket != null && !udpSocket.isClosed() && sendHandler != null && sendSystem == null)
         {
             IAudioSendFactory factory = getJDA().getAudioSendFactory();
-            sendSystem = factory.createSendSystem(new PacketProvider());
+            sendSystem = factory.createSendSystem(new PacketProvider(new TweetNaclFast.SecretBox(webSocket.getSecretKey())));
             sendSystem.setContextMap(getJDA().getContextMap());
             sendSystem.start();
         }
@@ -583,8 +583,7 @@ public class AudioConnection
             return null;
         }
 
-        encoded.position(0);
-        encoded.limit(result);
+        ((Buffer) encoded).position(0).limit(result);
         return encoded;
     }
 
@@ -616,10 +615,16 @@ public class AudioConnection
     {
         private char seq = 0;           //Sequence of audio packets. Used to determine the order of the packets.
         private int timestamp = 0;      //Used to sync up our packets within the same timeframe of other people talking.
+        private TweetNaclFast.SecretBox boxer;
         private long nonce = 0;
         private ByteBuffer buffer = ByteBuffer.allocate(512);
         private ByteBuffer encryptionBuffer = ByteBuffer.allocate(512);
         private final byte[] nonceBuffer = new byte[TweetNaclFast.SecretBox.nonceLength];
+
+        public PacketProvider(TweetNaclFast.SecretBox boxer)
+        {
+            this.boxer = boxer;
+        }
 
         @Override
         public String getIdentifier()
@@ -770,7 +775,7 @@ public class AudioConnection
                 default:
                     throw new IllegalStateException("Encryption mode [" + webSocket.encryption + "] is not supported!");
             }
-            return buffer = packet.asEncryptedPacket(buffer, webSocket.getSecretKey(), nonceBuffer, nlen);
+            return buffer = packet.asEncryptedPacket(boxer, buffer, nonceBuffer, nlen);
         }
 
         private void ensureEncryptionBuffer(ByteBuffer data)

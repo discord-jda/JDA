@@ -93,7 +93,7 @@ public class AudioPacket
 
         this.encodedAudio = ByteBuffer.allocate(data.length - offset);
         this.encodedAudio.put(data, offset, encodedAudio.capacity());
-        this.encodedAudio.flip();
+        ((Buffer) this.encodedAudio).flip();
     }
 
     public AudioPacket(ByteBuffer buffer, char seq, int timestamp, int ssrc, ByteBuffer encodedAudio)
@@ -166,7 +166,7 @@ public class AudioPacket
         return timestamp;
     }
 
-    public ByteBuffer asEncryptedPacket(ByteBuffer buffer, byte[] secretKey, byte[] nonce, int nlen)
+    public ByteBuffer asEncryptedPacket(TweetNaclFast.SecretBox boxer, ByteBuffer buffer, byte[] nonce, int nlen)
     {
         //Xsalsa20's Nonce is 24 bytes long, however RTP (and consequently Discord)'s nonce is a different length
         // so we need to create a 24 byte array, and copy the nonce into it.
@@ -176,7 +176,6 @@ public class AudioPacket
             extendedNonce = getNoncePadded();
 
         //Create our SecretBox encoder with the secretKey provided by Discord.
-        TweetNaclFast.SecretBox boxer = new TweetNaclFast.SecretBox(secretKey);
         byte[] encryptedAudio = boxer.box(encodedAudio.array(), encodedAudio.arrayOffset(), encodedAudio.remaining(), extendedNonce);
         ((Buffer) buffer).clear();
         int capacity = RTP_HEADER_BYTE_LENGTH + encryptedAudio.length + nlen;
@@ -267,6 +266,6 @@ public class AudioPacket
         buffer.putInt(timestamp);
         buffer.putInt(ssrc);
         buffer.put(data);
-        data.flip();
+        ((Buffer) data).flip();
     }
 }
