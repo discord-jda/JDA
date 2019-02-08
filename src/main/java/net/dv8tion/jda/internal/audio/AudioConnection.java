@@ -662,7 +662,7 @@ public class AudioConnection
                 {
                     silenceCounter = -1;
                     ByteBuffer rawAudio = sendHandler.provide20MsAudio();
-                    if (rawAudio == null || rawAudio.remaining() == 0)
+                    if (rawAudio == null || !rawAudio.hasRemaining() || !rawAudio.hasArray()) // no array = cannot encrypt
                     {
                         if (speaking && changeTalking)
                             setSpeaking(0);
