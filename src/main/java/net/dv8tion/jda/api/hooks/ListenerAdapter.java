@@ -96,7 +96,7 @@ import net.dv8tion.jda.api.events.user.update.*;
  */
 public abstract class ListenerAdapter implements EventListener
 {
-    public void onGenericEvent(Event event) {}
+    public void onGenericEvent(GenericEvent event) {}
     public void onGenericUpdate(UpdateEvent<?, ?> event) {}
 
     //JDA Events
@@ -279,7 +279,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericEmoteUpdate(GenericEmoteUpdateEvent event) {}
 
     @Override
-    public final void onEvent(Event event)
+    public final void onEvent(GenericEvent event)
     {
         onGenericEvent(event);
         if (event instanceof UpdateEvent)

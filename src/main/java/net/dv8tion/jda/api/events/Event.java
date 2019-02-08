@@ -24,7 +24,7 @@ import net.dv8tion.jda.api.JDA;
  * <p>Can be used to check if an Object is a JDA event in {@link net.dv8tion.jda.api.hooks.EventListener EventListener} implementations to distinguish what event is being fired.
  * <br>Adapter implementation: {@link net.dv8tion.jda.api.hooks.ListenerAdapter ListenerAdapter}
  */
-public abstract class Event
+public abstract class Event implements GenericEvent
 {
     protected final JDA api;
     protected final long responseNumber;
@@ -57,22 +57,13 @@ public abstract class Event
         this(api, api.getResponseTotal());
     }
 
-    /**
-     * The current JDA instance corresponding to this Event
-     *
-     * @return The corresponding JDA instance
-     */
+    @Override
     public JDA getJDA()
     {
         return api;
     }
 
-    /**
-     * The current sequence for this event.
-     * <br>This can be used to keep events in order when making sequencing system.
-     *
-     * @return The current sequence number for this event
-     */
+    @Override
     public long getResponseNumber()
     {
         return responseNumber;
