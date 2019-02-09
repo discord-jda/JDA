@@ -29,7 +29,7 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '2.0.4'
 }
 
-def versionObj = new Version(major: 3, minor: 8, revision: 2)
+def versionObj = new Version(major: 3, minor: 8, revision: 3)
 
 group = "net.dv8tion"
 archivesBaseName = "JDA"
