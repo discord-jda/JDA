@@ -1,3 +1,0 @@
--author
--html5
--tag incubating:a:Incubating:

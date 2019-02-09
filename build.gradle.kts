@@ -182,7 +182,19 @@ javadoc.apply {
     isFailOnError = false
     options.memberLevel = JavadocMemberLevel.PUBLIC
     options.encoding = "UTF-8"
-    options.optionFiles = mutableListOf(file("javadoc-options.txt"))
+
+    if (options is StandardJavadocDocletOptions) {
+        val opt = options as StandardJavadocDocletOptions
+        opt.author()
+        opt.tags("incubating:a:Incubating:")
+        opt.links(
+            "https://docs.oracle.com/javase/8/docs/api/",
+            "https://takahikokawasaki.github.io/nv-websocket-client/",
+            "https://square.github.io/okhttp/3.x/okhttp/")
+        if (JavaVersion.current().isJava9Compatible) {
+            opt.addBooleanOption("html5", true)
+        }
+    }
 
     //### excludes ###
 
