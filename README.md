@@ -121,15 +121,14 @@ public class MessageListener extends ListenerAdapter
 ### More Examples
 We provide a small set of Examples in the [Example Directory](https://github.com/DV8FromTheWorld/JDA/tree/master/src/examples/java).
 
-In addition you can look at the many Discord Bots that were implemented using JDA:
-- [Yui](https://github.com/DV8FromTheWorld/Yui)
-- [Vortex](https://github.com/jagrosh/Vortex)
-- [FredBoat](https://github.com/Frederikam/FredBoat)
-
-[And many more!](https://github.com/search?q=JDA+discord+bot&type=Repositories&utf8=%E2%9C%93)
-
 > **Note**: In these examples we override methods from the inheriting class `ListenerAdapter`.<br>
 > The usage of the `@Override` annotation is recommended to validate methods.
+
+In addition, you can look at the many Discord Bots that were implemented using JDA:
+- [Yui](https://github.com/DV8FromTheWorld/Yui)
+- [Vortex](https://github.com/jagrosh/Vortex)
+
+[And many more!](https://github.com/search?q=JDA+discord+bot&type=Repositories&utf8=%E2%9C%93)
 
 ## Sharding a Bot
 
