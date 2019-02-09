@@ -728,6 +728,7 @@ public class JDAImpl implements JDA
     @Override
     public RestAction<ApplicationInfo> getApplicationInfo()
     {
+        AccountTypeException.check(getAccountType(), AccountType.BOT);
         Route.CompiledRoute route = Route.Applications.GET_BOT_APPLICATION.compile();
         return new RestActionImpl<>(this, route, (response, request) ->
         {
