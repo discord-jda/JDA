@@ -161,9 +161,16 @@ val javadocJar = task<Jar>("javadocJar") {
 }
 
 tasks.withType<JavaCompile> {
+    val arguments = mutableListOf("-Xlint:deprecation", "-Xlint:unchecked")
     options.encoding = "UTF-8"
     options.isIncremental = true
-    options.compilerArgs = listOf("-Xlint:deprecation", "-Xlint:unchecked")
+    if (JavaVersion.current().isJava9Compatible) doLast {
+        arguments += "release"
+        arguments += "8"
+    }
+    doLast {
+        options.compilerArgs = arguments
+    }
 }
 
 compileJava.apply {
