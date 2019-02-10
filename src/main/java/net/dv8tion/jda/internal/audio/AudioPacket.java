@@ -185,6 +185,7 @@ public class AudioPacket
         if (nonce != null)
             buffer.put(nonce, 0, nlen);
 
+        ((Buffer) buffer).flip();
         return buffer;
     }
 

@@ -747,8 +747,8 @@ public class AudioConnection
         {
             byte[] data = b.array();
             int offset = b.arrayOffset();
-            int position = b.position();
-            return new DatagramPacket(data, offset, position - offset, webSocket.getAddress());
+            int length = b.remaining();
+            return new DatagramPacket(data, offset, length, webSocket.getAddress());
         }
 
         private ByteBuffer getPacketData(ByteBuffer rawAudio)
