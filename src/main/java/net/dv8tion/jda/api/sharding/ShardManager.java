@@ -953,8 +953,11 @@ public interface ShardManager
     /**
      * Restarts all shards, shutting old ones down first.
      * 
-     * As all shards need to connect to discord again this will take equally long as the startup of a new ShardManager
-     * (using the 5000ms + backoff as delay between starting new JDA instances). 
+     * <p>As all shards need to connect to discord again this will take equally long as the startup of a new ShardManager
+     * (using the 5000ms + backoff as delay between starting new JDA instances).
+     *
+     * @throws java.util.concurrent.RejectedExecutionException
+     *         If {@link #shutdown()} has already been invoked
      */
     void restart();
 
@@ -967,6 +970,8 @@ public interface ShardManager
      *
      * @throws java.lang.IllegalArgumentException
      *         If shardId is negative or higher than maxShardId
+     * @throws java.util.concurrent.RejectedExecutionException
+     *         If {@link #shutdown()} has already been invoked
      */
     void restart(int id);
 
@@ -1117,12 +1122,16 @@ public interface ShardManager
     /**
      * Shuts down all JDA shards, closing all their connections.
      * After this method has been called the ShardManager instance can not be used anymore.
+     *
+     * <br>This will shutdown the internal queue worker for (re-)starts of shards.
+     * This means {@link #restart(int)}, {@link #restart()}, and {@link #start(int)} will throw
+     * {@link java.util.concurrent.RejectedExecutionException}.
      */
     void shutdown();
 
     /**
      * Shuts down the shard with the given id only.
-     * <br> This does nothing if there is no shard with the given id.
+     * <br>This does nothing, if there is no shard with the given id.
      *
      * @param shardId
      *        The id of the shard that should be stopped
@@ -1132,9 +1141,11 @@ public interface ShardManager
     /**
      * Adds a new shard with the given id to this ShardManager and starts it.
      *
-     * @param shardId
-     *        The id of the shard that should be started
+     * @param  shardId
+     *         The id of the shard that should be started
+     *
+     * @throws java.util.concurrent.RejectedExecutionException
+     *         If {@link #shutdown()} has already been invoked
      */
     void start(int shardId);
-
 }
