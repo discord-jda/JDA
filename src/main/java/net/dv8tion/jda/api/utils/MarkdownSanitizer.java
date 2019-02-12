@@ -160,26 +160,46 @@ public class MarkdownSanitizer
 
     public int findEndIndex(int afterIndex, int region, String sequence)
     {
-        switch (region)
+        if (isEscape(region))
+            return -1;
+        int lastMatch = afterIndex;
+        while (lastMatch != -1)
         {
-            case BOLD | ITALICS_A:
-                return sequence.indexOf("***", afterIndex);
-            case BOLD:
-                return sequence.indexOf("**", afterIndex);
-            case ITALICS_A:
-                return sequence.indexOf('*', afterIndex);
-            case ITALICS_U:
-                return sequence.indexOf('_', afterIndex);
-            case UNDERLINE:
-                return sequence.indexOf("__", afterIndex);
-            case SPOILER:
-                return sequence.indexOf("||", afterIndex);
-            case MONO:
-                return sequence.indexOf('`', afterIndex);
-            case MONO_TWO:
-                return sequence.indexOf("``", afterIndex);
-            case BLOCK:
-                return sequence.indexOf("```", afterIndex);
+            switch (region)
+            {
+                case BOLD | ITALICS_A:
+                    lastMatch = sequence.indexOf("***", lastMatch);
+                    break;
+                case BOLD:
+                    lastMatch = sequence.indexOf("**", lastMatch);
+                    break;
+                case ITALICS_A:
+                    lastMatch = sequence.indexOf('*', lastMatch);
+                    break;
+                case ITALICS_U:
+                    lastMatch = sequence.indexOf('_', lastMatch);
+                    break;
+                case UNDERLINE:
+                    lastMatch = sequence.indexOf("__", lastMatch);
+                    break;
+                case SPOILER:
+                    lastMatch = sequence.indexOf("||", lastMatch);
+                    break;
+                case MONO:
+                    lastMatch = sequence.indexOf('`', lastMatch);
+                    break;
+                case MONO_TWO:
+                    lastMatch = sequence.indexOf("``", lastMatch);
+                    break;
+                case BLOCK:
+                    lastMatch = sequence.indexOf("```", lastMatch);
+                    break;
+                default:
+                    return -1;
+            }
+            if (lastMatch == -1 || sequence.charAt(lastMatch - 1) != '\\')
+                return lastMatch;
+            lastMatch++;
         }
         return -1;
     }
@@ -250,6 +270,11 @@ public class MarkdownSanitizer
         return (Integer.MIN_VALUE & region) != 0;
     }
 
+    private boolean isIgnored(int nextRegion)
+    {
+        return (nextRegion & ignored) == nextRegion;
+    }
+
     public String compute(String sequence)
     {
         StringBuilder builder = new StringBuilder();
@@ -263,7 +288,7 @@ public class MarkdownSanitizer
             }
 
             int endRegion = findEndIndex(i + 1, nextRegion, sequence);
-            if (isEscape(nextRegion) || (nextRegion & ignored) == nextRegion || endRegion == -1)
+            if (isIgnored(nextRegion) || endRegion == -1)
             {
                 int delta = getDelta(nextRegion);
                 for (int j = 0; j < delta; j++)
