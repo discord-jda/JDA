@@ -44,7 +44,7 @@ import java.util.List;
  *
  * @since  2.2
  */
-public interface Emote extends ISnowflake, IMentionable, IFakeable
+public interface Emote extends IMentionable, IFakeable
 {
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} this emote is attached to.

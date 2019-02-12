@@ -33,7 +33,7 @@ import java.util.List;
  *
  * @since 3.0
  */
-public interface Member extends IMentionable, IPermissionHolder, ISnowflake
+public interface Member extends IMentionable, IPermissionHolder
 {
     /**
      * The user wrapped by this Entity.

@@ -529,7 +529,7 @@ public class WidgetUtil
         
         
         
-        public static class Member implements ISnowflake, IMentionable
+        public static class Member implements IMentionable
         {
             private final boolean bot;
             private final long id;
