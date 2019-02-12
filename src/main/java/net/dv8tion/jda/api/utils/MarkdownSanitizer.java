@@ -33,10 +33,12 @@ public class MarkdownSanitizer
     public static final int BLOCK =     1 << 5; // ```x```
     public static final int SPOILER =   1 << 6; // ||x||
     public static final int UNDERLINE = 1 << 7; // __x__
+    public static final int STRIKE =    1 << 8; // ~~x~~ TODO I FORGOT OK
 
 
     private final Deque<Integer> modeStack = new ArrayDeque<>();
     private int ignored = 0;
+    private boolean escape = false;
     private CharSequence sequence;
     private SanitizationStrategy strategy = SanitizationStrategy.REMOVE;
 
@@ -69,48 +71,57 @@ public class MarkdownSanitizer
         return this;
     }
 
-    private int getNextState(char x, int index, int mode)
+    private int getNextState(char x, int index, int mode) // TODO: Handle unclosed region? like "`clear" which has no mono end
     {
-        char nextChar = index + 1 < sequence.length() ? sequence.charAt(index + 1) : ' ';
+        char next1 = index + 1 < sequence.length() ? sequence.charAt(index + 1) : ' ';
+        char next2 = index + 2 < sequence.length() ? sequence.charAt(index + 2) : ' ';
+        char next3 = index + 3 < sequence.length() ? sequence.charAt(index + 3) : ' ';
         switch (x)
         {
             default:
                 return mode;
             case '*':
                 if (mode == ITALICS_A)
-                    return nextChar == '*' ? BOLD : -1;        // *ab**c or *ab*
+                    return next1 == '*' ? BOLD : -1;        // *ab**c or *ab*
                 if (mode == BOLD)
-                    return nextChar == '*' ? -1 : ITALICS_A;   // **ab** or **ab*c
+                    return next1 == '*' ? -1 : ITALICS_A;   // **ab** or **ab*c
                 if (mode == MONO || mode == MONO_TWO || mode == BLOCK)
                     return mode;                               // `ab* or ``ab* or ```ab*
-                return nextChar == '*' ? BOLD : ITALICS_A;
+                return next1 == '*' ? BOLD : ITALICS_A;
             case '_':
                 if (mode == ITALICS_U)
-                    return nextChar == '_' ? UNDERLINE : -1;   // _ab__c or _ab_
+                    return next1 == '_' ? UNDERLINE : -1;   // _ab__c or _ab_
                 if (mode == MONO || mode == MONO_TWO || mode == BLOCK)
                     return mode;                               // `ab_ or ``ab_ or ```ab_
-                return nextChar == '_' ? UNDERLINE : ITALICS_U;
+                return next1 == '_' ? UNDERLINE : ITALICS_U;
             case '|':
                 if (mode == SPOILER)
-                    return nextChar == '|' ? -1 : mode;
+                    return next1 == '|' ? -1 : mode;
                 if (mode == MONO || mode == MONO_TWO || mode == BLOCK)
                     return mode;
-                return nextChar == '|' ? SPOILER : mode;
+                return next1 == '|' ? SPOILER : mode;
             case '`':
-                char lateNext = index + 2 < sequence.length() ? sequence.charAt(index + 2) : ' ';
                 if (mode == MONO)
                     return -1;
                 if (mode == MONO_TWO)
-                    return nextChar == '`' ? -1 : mode;
+                    return next1 == '`' ? -1 : mode;
                 if (mode == BLOCK)
-                    return nextChar == '`' && lateNext == '`' ? -1 : mode;
-                if (nextChar == '`')
-                    if (lateNext == '`')
+                    return next1 == '`' && next2 == '`' ? -1 : mode;
+                if (next1 == '`')
+                    if (next2 == '`')
                         return BLOCK;
                     else
                         return MONO_TWO;
                 return MONO;
-            case '\\': //TODO escaping modes?
+            case '\\': //TODO escaping modes? Handle stuff like "\\*test*" one end escaped? related to unclosed region
+                if (next1 == '`')
+                    return Integer.MIN_VALUE | (next2 == '`' ? (next3 == '`' ? BLOCK : MONO_TWO) : MONO);
+                if (next1 == '*')
+                    return Integer.MIN_VALUE | (next2 == '*' ? BOLD : ITALICS_A);
+                if (next1 == '_')
+                    return Integer.MIN_VALUE | (next2 == '_' ? UNDERLINE : ITALICS_U);
+                if (next1 == '|')
+                    return next2 == '|' ? Integer.MIN_VALUE | SPOILER : mode;
         }
         return mode;
     }
@@ -134,7 +145,43 @@ public class MarkdownSanitizer
         return 0;
     }
 
-    public String compute() // TODO: ignored
+    private int appendToken(char c, int mode, StringBuilder builder)
+    {
+        int delta = 1;
+        builder.append(c);
+        switch (mode)
+        {
+            case BOLD:
+                builder.append("*");
+                delta++;
+            case ITALICS_A:
+                break;
+            case UNDERLINE:
+                builder.append("_");
+                delta++;
+            case ITALICS_U:
+                break;
+            case SPOILER:
+                builder.append("|");
+                delta++;
+                break;
+            case BLOCK:
+                builder.append("`");
+                delta++;
+            case MONO_TWO:
+                builder.append("`");
+                delta++;
+            case MONO:
+                break;
+            case STRIKE:
+                builder.append("~");
+                delta++;
+                break;
+        }
+        return delta;
+    }
+
+    public String compute()
     {
         final StringBuilder builder = new StringBuilder();
         for (int i = 0; i < sequence.length();)
@@ -149,7 +196,7 @@ public class MarkdownSanitizer
                 strategy.compute.accept(state, builder);
                 modeStack.pop();
             }
-            else if (nextState != state)
+            else if (nextState != state && (nextState & ignored) == 0)
             {
                 strategy.compute.accept(nextState, builder);
                 modeStack.push(nextState);
@@ -163,6 +210,10 @@ public class MarkdownSanitizer
                 {
                     i += delta;
                 }
+            }
+            else if ((nextState & ignored) != 0)
+            {
+                i += appendToken(c, nextState, builder);
             }
             else
             {
