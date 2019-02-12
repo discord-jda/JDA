@@ -29,7 +29,7 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '2.0.4'
 }
 
-def versionObj = new Version(major: 3, minor: 8, revision: 2)
+def versionObj = new Version(major: 3, minor: 8, revision: 3)
 
 group = "net.dv8tion"
 archivesBaseName = "JDA"
@@ -39,7 +39,6 @@ sourceCompatibility = targetCompatibility = 1.8
 
 repositories {
     jcenter()
-    maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
 }
 
 sourceSets {
@@ -61,13 +60,13 @@ dependencies {
 
     //Web Connection Support
     api 'com.neovisionaries:nv-websocket-client:2.5'
-    api 'com.squareup.okhttp3:okhttp:3.13.0-SNAPSHOT'
+    api 'com.squareup.okhttp3:okhttp:3.13.0'
 
     //Opus library support
     api ('club.minnced:opus-java:1.0.4@pom') {
         transitive = true
     }
-    
+
     compileOnly 'net.java.dev.jna:jna:4.4.0'
 
     /* Internal dependencies */
