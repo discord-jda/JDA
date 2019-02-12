@@ -181,6 +181,17 @@ public class MarkdownSanitizer
         return delta;
     }
 
+    private boolean cleanupStack(int nextState)
+    {
+        if (modeStack.contains(nextState))
+        {
+            while (!modeStack.isEmpty() && modeStack.peek() != nextState)
+                modeStack.pop(); //TODO: Handle unclosed region here too
+            return true;
+        }
+        return false;
+    }
+
     public String compute()
     {
         final StringBuilder builder = new StringBuilder();
@@ -199,17 +210,18 @@ public class MarkdownSanitizer
             else if (nextState != state && (nextState & ignored) == 0)
             {
                 strategy.compute.accept(nextState, builder);
-                modeStack.push(nextState);
+                if (cleanupStack(nextState))
+                {
+                    i += getDelta(nextState);
+                    continue;
+                }
+                if (nextState != NORMAL)
+                    modeStack.push(nextState);
                 int delta = getDelta(nextState);
                 if (delta == 0)
-                {
-                    builder.append(c);
                     i++;
-                }
                 else
-                {
                     i += delta;
-                }
             }
             else if ((nextState & ignored) != 0)
             {
