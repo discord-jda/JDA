@@ -462,10 +462,7 @@ public class ReceivedMessage extends AbstractMessage
         {
             if (strippedContent != null)
                 return strippedContent;
-            strippedContent = MarkdownSanitizer.sanitizer(getContentDisplay())
-                .withStrategy(MarkdownSanitizer.SanitizationStrategy.REMOVE)
-                .compute();
-            return strippedContent;
+            return strippedContent = MarkdownSanitizer.sanitize(getContentDisplay());
         }
     }
 

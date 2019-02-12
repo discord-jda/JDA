@@ -16,10 +16,6 @@
 
 package net.dv8tion.jda.api.utils;
 
-import net.dv8tion.jda.internal.utils.Checks;
-
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.function.BiConsumer;
 
 public class MarkdownSanitizer
@@ -33,30 +29,19 @@ public class MarkdownSanitizer
     public static final int BLOCK =     1 << 5; // ```x```
     public static final int SPOILER =   1 << 6; // ||x||
     public static final int UNDERLINE = 1 << 7; // __x__
-    public static final int STRIKE =    1 << 8; // ~~x~~ TODO I FORGOT OK
+    public static final int STRIKE =    1 << 8; // ~~x~~
 
-
-    private final Deque<Integer> modeStack = new ArrayDeque<>();
     private int ignored = 0;
-    private boolean escape = false;
-    private CharSequence sequence;
     private SanitizationStrategy strategy = SanitizationStrategy.REMOVE;
 
-    private MarkdownSanitizer(CharSequence sequence)
+    public static String sanitize(String sequence)
     {
-        this.sequence = sequence;
+        return sanitize(sequence, SanitizationStrategy.REMOVE);
     }
 
-    public static MarkdownSanitizer sanitizer(CharSequence sequence)
+    public static String sanitize(String sequence, SanitizationStrategy strategy)
     {
-        Checks.notNull(sequence, "Input");
-        return new MarkdownSanitizer(sequence);
-    }
-
-    public MarkdownSanitizer withStrategy(int flags, SanitizationStrategy strategy)
-    {
-        //TODO: strategy per mode?
-        return this;
+        return new MarkdownSanitizer().withStrategy(strategy).compute(sequence);
     }
 
     public MarkdownSanitizer withStrategy(SanitizationStrategy strategy)
@@ -65,173 +50,140 @@ public class MarkdownSanitizer
         return this;
     }
 
-    public MarkdownSanitizer ignore(int flags)
+    public MarkdownSanitizer withIgnored(int ignored)
     {
-        ignored = flags;
+        this.ignored |= ignored;
         return this;
     }
 
-    private int getNextState(char x, int index, int mode) // TODO: Handle unclosed region? like "`clear" which has no mono end
+    private int getRegion(int index, String sequence)
     {
-        char next1 = index + 1 < sequence.length() ? sequence.charAt(index + 1) : ' ';
-        char next2 = index + 2 < sequence.length() ? sequence.charAt(index + 2) : ' ';
-        char next3 = index + 3 < sequence.length() ? sequence.charAt(index + 3) : ' ';
-        switch (x)
+        if (sequence.length() - index >= 3)
         {
-            default:
-                return mode;
-            case '*':
-                if (mode == ITALICS_A)
-                    return next1 == '*' ? BOLD : -1;        // *ab**c or *ab*
-                if (mode == BOLD)
-                    return next1 == '*' ? -1 : ITALICS_A;   // **ab** or **ab*c
-                if (mode == MONO || mode == MONO_TWO || mode == BLOCK)
-                    return mode;                               // `ab* or ``ab* or ```ab*
-                return next1 == '*' ? BOLD : ITALICS_A;
-            case '_':
-                if (mode == ITALICS_U)
-                    return next1 == '_' ? UNDERLINE : -1;   // _ab__c or _ab_
-                if (mode == MONO || mode == MONO_TWO || mode == BLOCK)
-                    return mode;                               // `ab_ or ``ab_ or ```ab_
-                return next1 == '_' ? UNDERLINE : ITALICS_U;
-            case '|':
-                if (mode == SPOILER)
-                    return next1 == '|' ? -1 : mode;
-                if (mode == MONO || mode == MONO_TWO || mode == BLOCK)
-                    return mode;
-                return next1 == '|' ? SPOILER : mode;
-            case '`':
-                if (mode == MONO)
-                    return -1;
-                if (mode == MONO_TWO)
-                    return next1 == '`' ? -1 : mode;
-                if (mode == BLOCK)
-                    return next1 == '`' && next2 == '`' ? -1 : mode;
-                if (next1 == '`')
-                    if (next2 == '`')
-                        return BLOCK;
-                    else
-                        return MONO_TWO;
-                return MONO;
-            case '\\': //TODO escaping modes? Handle stuff like "\\*test*" one end escaped? related to unclosed region
-                if (next1 == '`')
-                    return Integer.MIN_VALUE | (next2 == '`' ? (next3 == '`' ? BLOCK : MONO_TWO) : MONO);
-                if (next1 == '*')
-                    return Integer.MIN_VALUE | (next2 == '*' ? BOLD : ITALICS_A);
-                if (next1 == '_')
-                    return Integer.MIN_VALUE | (next2 == '_' ? UNDERLINE : ITALICS_U);
-                if (next1 == '|')
-                    return next2 == '|' ? Integer.MIN_VALUE | SPOILER : mode;
+            String threeChars = sequence.substring(index, index + 3);
+            switch (threeChars)
+            {
+                case "```":
+                    return BLOCK;
+                case "***":
+                    return BOLD | ITALICS_A;
+            }
         }
-        return mode;
+        if (sequence.length() - index >= 2)
+        {
+            String twoChars = sequence.substring(index, index + 2);
+            switch (twoChars)
+            {
+                case "**":
+                    return BOLD;
+                case "__":
+                    return UNDERLINE;
+                case "~~":
+                    return STRIKE;
+                case "``":
+                    return MONO_TWO;
+                case "||":
+                    return SPOILER;
+            }
+        }
+        char current = sequence.charAt(index);
+        switch (current)
+        {
+            case '*':
+                return ITALICS_A;
+            case '_':
+                return ITALICS_U;
+            case '`':
+                return MONO;
+        }
+        return NORMAL;
     }
 
-    private int getDelta(int state)
+    public int findEndIndex(int afterIndex, int region, String sequence)
     {
-        switch (state)
+        switch (region)
+        {
+            case BOLD | ITALICS_A:
+                return sequence.indexOf("***", afterIndex);
+            case BOLD:
+                return sequence.indexOf("**", afterIndex);
+            case ITALICS_A:
+                return sequence.indexOf('*', afterIndex);
+            case ITALICS_U:
+                return sequence.indexOf('_', afterIndex);
+            case UNDERLINE:
+                return sequence.indexOf("__", afterIndex);
+            case SPOILER:
+                return sequence.indexOf("||", afterIndex);
+            case MONO:
+                return sequence.indexOf('`', afterIndex);
+            case MONO_TWO:
+                return sequence.indexOf("``", afterIndex);
+            case BLOCK:
+                return sequence.indexOf("```", afterIndex);
+        }
+        return -1;
+    }
+
+    private String handleRegion(int start, int end, String sequence, int region)
+    {
+        String resolved = sequence.substring(start, end);
+        switch (region)
         {
             case BLOCK:
+            case MONO:
+                return resolved;
+            case MONO_TWO:
+                return new MarkdownSanitizer().withIgnored(MONO).compute(resolved);
+            default:
+                return sanitize(resolved);
+        }
+    }
+
+    private int getDelta(int region)
+    {
+        switch (region)
+        {
+            case BLOCK:
+            case BOLD | ITALICS_A:
                 return 3;
+            case MONO_TWO:
             case BOLD:
             case UNDERLINE:
-            case MONO_TWO:
             case SPOILER:
                 return 2;
-            case MONO:
             case ITALICS_A:
             case ITALICS_U:
+            case MONO:
                 return 1;
+            default:
+                return 0;
         }
-        return 0;
     }
 
-    private int appendToken(char c, int mode, StringBuilder builder)
+    public String compute(String sequence) //TODO: Use strategy?
     {
-        int delta = 1;
-        builder.append(c);
-        switch (mode)
-        {
-            case BOLD:
-                builder.append("*");
-                delta++;
-            case ITALICS_A:
-                break;
-            case UNDERLINE:
-                builder.append("_");
-                delta++;
-            case ITALICS_U:
-                break;
-            case SPOILER:
-                builder.append("|");
-                delta++;
-                break;
-            case BLOCK:
-                builder.append("`");
-                delta++;
-            case MONO_TWO:
-                builder.append("`");
-                delta++;
-            case MONO:
-                break;
-            case STRIKE:
-                builder.append("~");
-                delta++;
-                break;
-        }
-        return delta;
-    }
-
-    private boolean cleanupStack(int nextState)
-    {
-        if (modeStack.contains(nextState))
-        {
-            while (!modeStack.isEmpty() && modeStack.peek() != nextState)
-                modeStack.pop(); //TODO: Handle unclosed region here too
-            return true;
-        }
-        return false;
-    }
-
-    public String compute()
-    {
-        final StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder();
         for (int i = 0; i < sequence.length();)
         {
-            char c = sequence.charAt(i);
-            int state = modeStack.isEmpty() ? NORMAL : modeStack.peek();
-            int nextState = getNextState(c, i, state);
-            if (nextState == -1)
+            int nextRegion = getRegion(i, sequence);
+            if (nextRegion == NORMAL)
             {
-                int delta = getDelta(state);
-                i += delta;
-                strategy.compute.accept(state, builder);
-                modeStack.pop();
+                builder.append(sequence.charAt(i++));
+                continue;
             }
-            else if (nextState != state && (nextState & ignored) == 0)
+
+            int endRegion = findEndIndex(i + 1, nextRegion, sequence);
+            if (endRegion == -1)
             {
-                strategy.compute.accept(nextState, builder);
-                if (cleanupStack(nextState))
-                {
-                    i += getDelta(nextState);
-                    continue;
-                }
-                if (nextState != NORMAL)
-                    modeStack.push(nextState);
-                int delta = getDelta(nextState);
-                if (delta == 0)
-                    i++;
-                else
-                    i += delta;
+                int delta = getDelta(nextRegion);
+                for (int j = 0; j < delta; j++)
+                    builder.append(sequence.charAt(i++));
+                continue;
             }
-            else if ((nextState & ignored) != 0)
-            {
-                i += appendToken(c, nextState, builder);
-            }
-            else
-            {
-                builder.append(c);
-                i++;
-            }
+            int delta = getDelta(nextRegion);
+            builder.append(handleRegion(i + delta, endRegion, sequence, nextRegion));
+            i = endRegion + delta;
         }
         return builder.toString();
     }
@@ -239,35 +191,7 @@ public class MarkdownSanitizer
     public enum SanitizationStrategy
     {
         REMOVE((m, b) -> {}),
-        ESCAPE((m, b) -> {
-            if (m == NORMAL)
-                return;
-            b.append('\\');
-            switch (m)
-            {
-                case BOLD:
-                    b.append("**");
-                    break;
-                case ITALICS_A:
-                    b.append('*');
-                    break;
-                case UNDERLINE:
-                    b.append('_');
-                case ITALICS_U:
-                    b.append('_');
-                    break;
-                case BLOCK:
-                    b.append('`');
-                case MONO_TWO:
-                    b.append('`');
-                case MONO:
-                    b.append('`');
-                    break;
-                case SPOILER:
-                    b.append("||");
-                    break;
-            }
-        });
+        ESCAPE((m, b) -> {}); //TODO
 
         private final BiConsumer<Integer, StringBuilder> compute;
 
