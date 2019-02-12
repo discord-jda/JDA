@@ -16,7 +16,8 @@
 
 package net.dv8tion.jda.api.utils;
 
-import java.util.function.BiConsumer;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
 
 public class MarkdownSanitizer
 {
@@ -30,6 +31,22 @@ public class MarkdownSanitizer
     public static final int SPOILER =   1 << 6; // ||x||
     public static final int UNDERLINE = 1 << 7; // __x__
     public static final int STRIKE =    1 << 8; // ~~x~~
+
+    private static final TIntObjectMap<String> tokens;
+    static
+    {
+        tokens = new TIntObjectHashMap<>();
+        tokens.put(NORMAL, "");
+        tokens.put(BOLD, "**");
+        tokens.put(ITALICS_U, "_");
+        tokens.put(ITALICS_A, "*");
+        tokens.put(MONO, "`");
+        tokens.put(MONO_TWO, "``");
+        tokens.put(BLOCK, "```");
+        tokens.put(SPOILER, "||");
+        tokens.put(UNDERLINE, "__");
+        tokens.put(STRIKE, "~~");
+    }
 
     private int ignored = 0;
     private SanitizationStrategy strategy = SanitizationStrategy.REMOVE;
@@ -64,7 +81,7 @@ public class MarkdownSanitizer
         return this;
     }
 
-    private int getRegion(int index, String sequence)
+    private int getRegion(int index, String sequence) //TODO: Handle escape?
     {
         if (sequence.length() - index >= 3)
         {
@@ -169,7 +186,22 @@ public class MarkdownSanitizer
         }
     }
 
-    public String compute(String sequence) //TODO: Use strategy?
+    private void applyStrategy(int region, String seq, StringBuilder builder)
+    {
+        if (strategy == SanitizationStrategy.REMOVE)
+        {
+            builder.append(seq);
+            return;
+        }
+        String token = tokens.get(region);
+        if (token == null)
+            return;
+        builder.append("\\").append(token)
+               .append(seq)
+               .append("\\").append(token);
+    }
+
+    public String compute(String sequence)
     {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < sequence.length();)
@@ -190,7 +222,7 @@ public class MarkdownSanitizer
                 continue;
             }
             int delta = getDelta(nextRegion);
-            builder.append(handleRegion(i + delta, endRegion, sequence, nextRegion));
+            applyStrategy(nextRegion, handleRegion(i + delta, endRegion, sequence, nextRegion), builder);
             i = endRegion + delta;
         }
         return builder.toString();
@@ -198,14 +230,7 @@ public class MarkdownSanitizer
 
     public enum SanitizationStrategy
     {
-        REMOVE((m, b) -> {}),
-        ESCAPE((m, b) -> {}); //TODO
-
-        private final BiConsumer<Integer, StringBuilder> compute;
-
-        SanitizationStrategy(BiConsumer<Integer, StringBuilder> compute)
-        {
-            this.compute = compute;
-        }
+        REMOVE,
+        ESCAPE,
     }
 }
