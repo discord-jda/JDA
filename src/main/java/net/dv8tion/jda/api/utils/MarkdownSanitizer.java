@@ -34,6 +34,14 @@ public class MarkdownSanitizer
     private int ignored = 0;
     private SanitizationStrategy strategy = SanitizationStrategy.REMOVE;
 
+    public MarkdownSanitizer() {}
+
+    public MarkdownSanitizer(int ignored, SanitizationStrategy strategy)
+    {
+        this.ignored = ignored;
+        this.strategy = strategy;
+    }
+
     public static String sanitize(String sequence)
     {
         return sanitize(sequence, SanitizationStrategy.REMOVE);
@@ -134,7 +142,7 @@ public class MarkdownSanitizer
             case MONO:
                 return resolved;
             case MONO_TWO:
-                return new MarkdownSanitizer().withIgnored(MONO).compute(resolved);
+                return new MarkdownSanitizer(ignored | MONO, strategy).compute(resolved);
             default:
                 return sanitize(resolved);
         }
@@ -174,7 +182,7 @@ public class MarkdownSanitizer
             }
 
             int endRegion = findEndIndex(i + 1, nextRegion, sequence);
-            if (endRegion == -1)
+            if ((nextRegion & ignored) == nextRegion || endRegion == -1)
             {
                 int delta = getDelta(nextRegion);
                 for (int j = 0; j < delta; j++)
