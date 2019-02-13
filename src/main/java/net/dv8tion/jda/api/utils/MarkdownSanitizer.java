@@ -222,6 +222,13 @@ public class MarkdownSanitizer
         return NORMAL;
     }
 
+    private boolean hasCollision(int index, String sequence, char c)
+    {
+        if (index < 0)
+            return false;
+        return index < sequence.length() - 1 && sequence.charAt(index + 1) == c;
+    }
+
     private int findEndIndex(int afterIndex, int region, String sequence)
     {
         if (isEscape(region))
@@ -236,27 +243,61 @@ public class MarkdownSanitizer
                     break;
                 case BOLD:
                     lastMatch = sequence.indexOf("**", lastMatch);
+                    if (lastMatch != -1 && hasCollision(lastMatch + 1, sequence, '*')) // did we find a bold italics tag?
+                    {
+                        lastMatch += 3;
+                        continue;
+                    }
                     break;
                 case ITALICS_A:
                     lastMatch = sequence.indexOf('*', lastMatch);
-                    break;
-                case ITALICS_U:
-                    lastMatch = sequence.indexOf('_', lastMatch);
+                    if (lastMatch != -1 && hasCollision(lastMatch, sequence, '*')) // did we find a bold tag?
+                    {
+                        if (hasCollision(lastMatch + 1, sequence, '*'))
+                            lastMatch += 3;
+                        else
+                            lastMatch += 2;
+                        continue;
+                    }
                     break;
                 case UNDERLINE:
                     lastMatch = sequence.indexOf("__", lastMatch);
                     break;
+                case ITALICS_U:
+                    lastMatch = sequence.indexOf('_', lastMatch);
+                    if (lastMatch != -1 && hasCollision(lastMatch, sequence, '_')) // did we find an underline tag?
+                    {
+                        lastMatch += 2;
+                        continue;
+                    }
+                    break;
                 case SPOILER:
                     lastMatch = sequence.indexOf("||", lastMatch);
                     break;
-                case MONO:
-                    lastMatch = sequence.indexOf('`', lastMatch);
+                case BLOCK:
+                    lastMatch = sequence.indexOf("```", lastMatch);
                     break;
                 case MONO_TWO:
                     lastMatch = sequence.indexOf("``", lastMatch);
+                    if (lastMatch != -1 && hasCollision(lastMatch + 1, sequence, '`')) // did we find a codeblock?
+                    {
+                        lastMatch += 3;
+                        continue;
+                    }
                     break;
-                case BLOCK:
-                    lastMatch = sequence.indexOf("```", lastMatch);
+                case MONO:
+                    lastMatch = sequence.indexOf('`', lastMatch);
+                    if (lastMatch != -1 && hasCollision(lastMatch, sequence, '`')) // did we find a codeblock?
+                    {
+                        if (hasCollision(lastMatch + 1, sequence, '`'))
+                            lastMatch += 3;
+                        else
+                            lastMatch += 2;
+                        continue;
+                    }
+                    break;
+                case STRIKE:
+                    lastMatch = sequence.indexOf("~~", lastMatch);
                     break;
                 default:
                     return -1;
@@ -296,11 +337,13 @@ public class MarkdownSanitizer
             case ESCAPED_BOLD:
             case ESCAPED_UNDERLINE:
             case ESCAPED_SPOILER:
+            case ESCAPED_STRIKE:
                 return 3;
             case MONO_TWO:
             case BOLD:
             case UNDERLINE:
             case SPOILER:
+            case STRIKE:
             case ESCAPED_ITALICS_A:
             case ESCAPED_ITALICS_U:
             case ESCAPED_MONO:
