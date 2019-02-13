@@ -817,12 +817,12 @@ public class EntityBuilder
                 JSONObject applicationData = jsonObject.getJSONObject("application");
 
                 final String name = applicationData.getString("name");
-                final String description = applicationData.getString("description");
-                final String iconId = applicationData.getString("icon");
-                final String coverId = applicationData.getString("cover_image");
+                final String description = applicationData.optString("description", applicationData.optString("summary", null));
+                final String iconId = applicationData.optString("icon", null);
+                final String splashId = applicationData.optString("splash", null);
                 final long applicationId = applicationData.getLong("id");
 
-                application = new MessageActivity.Application(name, description, iconId, coverId, applicationId);
+                application = new MessageActivity.Application(name, description, iconId, splashId, applicationId);
             }
             if (activityType == MessageActivity.ActivityType.UNKNOWN)
             {
