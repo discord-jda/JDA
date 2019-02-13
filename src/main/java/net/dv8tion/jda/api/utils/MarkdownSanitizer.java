@@ -74,10 +74,14 @@ public class MarkdownSanitizer
         tokens.put(STRIKE, "~~");
     }
 
-    private int ignored = 0;
-    private SanitizationStrategy strategy = SanitizationStrategy.REMOVE;
+    private int ignored;
+    private SanitizationStrategy strategy;
 
-    public MarkdownSanitizer() {}
+    public MarkdownSanitizer()
+    {
+        this.ignored = 0;
+        this.strategy = SanitizationStrategy.REMOVE;
+    }
 
     public MarkdownSanitizer(int ignored, SanitizationStrategy strategy)
     {
@@ -292,9 +296,8 @@ public class MarkdownSanitizer
         {
             case BLOCK:
             case MONO:
-                return resolved;
             case MONO_TWO:
-                return new MarkdownSanitizer(ignored | MONO, strategy).compute(resolved);
+                return resolved;
             default:
                 return sanitize(resolved);
         }

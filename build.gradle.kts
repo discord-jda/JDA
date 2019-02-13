@@ -90,6 +90,8 @@ dependencies {
     //Sets the dependencies for the examples
     configurations.asMap["examplesCompile"] = configurations["apiElements"]
     configurations.asMap["examplesRuntime"] = configurations["implementation"]
+
+    testCompile("org.junit.jupiter:junit-jupiter:5.4.0")
 }
 
 val bintrayUpload: BintrayUploadTask by tasks
