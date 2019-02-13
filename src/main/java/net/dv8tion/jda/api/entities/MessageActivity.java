@@ -37,7 +37,7 @@ public class MessageActivity
     }
 
     /**
-     * The current {@link net.dv8tion.jda.core.entities.MessageActivity.ActivityType ActivityType}
+     * The current {@link net.dv8tion.jda.api.entities.MessageActivity.ActivityType ActivityType}
      *
      * @return the type of the activity.
      */
@@ -58,9 +58,9 @@ public class MessageActivity
     }
 
     /**
-     * The {@link net.dv8tion.jda.core.entities.MessageActivity.Application Application} this {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity} may have.
+     * The {@link net.dv8tion.jda.api.entities.MessageActivity.Application Application} this {@link net.dv8tion.jda.api.entities.MessageActivity MessageActivity} may have.
      *
-     * @return A possibly-null {@link net.dv8tion.jda.core.entities.MessageActivity.Application}.
+     * @return A possibly-null {@link net.dv8tion.jda.api.entities.MessageActivity.Application}.
      */
     @Nullable
     public MessageActivity.Application getApplication()
@@ -69,8 +69,8 @@ public class MessageActivity
     }
 
     /**
-     * Represents the {@link net.dv8tion.jda.core.entities.MessageActivity.Application Application} of a
-     * {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity} if it's set.
+     * Represents the {@link net.dv8tion.jda.api.entities.MessageActivity.Application Application} of a
+     * {@link net.dv8tion.jda.api.entities.MessageActivity MessageActivity} if it's set.
      *
      * @see <a href="https://discordapp.com/api/v7/games" target="_blank">https://discordapp.com/api/v7/games</a>
      */
@@ -92,7 +92,7 @@ public class MessageActivity
         }
 
         /**
-         * The name of this {@link net.dv8tion.jda.core.entities.MessageActivity.Application}.
+         * The name of this {@link net.dv8tion.jda.api.entities.MessageActivity.Application}.
          *
          * @return the applications name.
          */
@@ -102,7 +102,7 @@ public class MessageActivity
         }
 
         /**
-         * A short description of this {@link net.dv8tion.jda.core.entities.MessageActivity.Application}.
+         * A short description of this {@link net.dv8tion.jda.api.entities.MessageActivity.Application}.
          *
          * @return the applications description.
          */
@@ -112,7 +112,7 @@ public class MessageActivity
         }
 
         /**
-         * The icon id of this {@link net.dv8tion.jda.core.entities.MessageActivity.Application}.
+         * The icon id of this {@link net.dv8tion.jda.api.entities.MessageActivity.Application}.
          *
          * @return the applications icon id.
          */
@@ -132,7 +132,7 @@ public class MessageActivity
         }
 
         /**
-         * The cover aka splash id of this {@link net.dv8tion.jda.core.entities.MessageActivity.Application}.
+         * The cover aka splash id of this {@link net.dv8tion.jda.api.entities.MessageActivity.Application}.
          *
          * @return the applications cover image/id.
          */
@@ -159,28 +159,28 @@ public class MessageActivity
     }
 
     /**
-     * An enum representing {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity} types.
+     * An enum representing {@link net.dv8tion.jda.api.entities.MessageActivity MessageActivity} types.
      */
     public enum ActivityType
     {
         /**
-         * The {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity} type used for inviting people to join a game.
+         * The {@link net.dv8tion.jda.api.entities.MessageActivity MessageActivity} type used for inviting people to join a game.
          */
         JOIN(1),
         /**
-         * The {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity} type used for inviting people to spectate a game.
+         * The {@link net.dv8tion.jda.api.entities.MessageActivity MessageActivity} type used for inviting people to spectate a game.
          */
         SPECTATE(2),
         /**
-         * The {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity} type used for inviting people to listen (Spotify) together.
+         * The {@link net.dv8tion.jda.api.entities.MessageActivity MessageActivity} type used for inviting people to listen (Spotify) together.
          */
         LISTENING(3),
         /**
-         * The {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity} type used for requesting to join a game.
+         * The {@link net.dv8tion.jda.api.entities.MessageActivity MessageActivity} type used for requesting to join a game.
          */
         JOIN_REQUEST(5),
         /**
-         * Represents any unknown or unsupported {@link net.dv8tion.jda.core.entities.MessageActivity MessageActivity} types.
+         * Represents any unknown or unsupported {@link net.dv8tion.jda.api.entities.MessageActivity MessageActivity} types.
          */
         UNKNOWN(-1);
 
@@ -192,7 +192,7 @@ public class MessageActivity
         }
 
         /**
-         * The id of this {@link net.dv8tion.jda.core.entities.MessageActivity.ActivityType ActivityType}.
+         * The id of this {@link net.dv8tion.jda.api.entities.MessageActivity.ActivityType ActivityType}.
          *
          * @return the id of the type.
          */
