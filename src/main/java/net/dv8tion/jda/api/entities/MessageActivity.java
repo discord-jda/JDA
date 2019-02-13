@@ -72,22 +72,22 @@ public class MessageActivity
      * Represents the {@link net.dv8tion.jda.api.entities.MessageActivity.Application Application} of a
      * {@link net.dv8tion.jda.api.entities.MessageActivity MessageActivity} if it's set.
      *
-     * @see <a href="https://discordapp.com/api/v7/games" target="_blank">https://discordapp.com/api/v7/games</a>
+     * @see <a href="https://discordapp.com/api/v7/applications" target="_blank">https://discordapp.com/api/v7/applications</a>
      */
     public static class Application implements ISnowflake
     {
         private final String name;
         private final String description;
         private final String iconId;
-        private final String coverId;
+        private final String splashId;
         private final long id;
 
-        public Application(String name, String description, String iconId, String coverId, long id)
+        public Application(String name, String description, String iconId, String splashId, long id)
         {
             this.name = name;
             this.description = description;
             this.iconId = iconId;
-            this.coverId = coverId;
+            this.splashId = splashId;
             this.id = id;
         }
 
@@ -132,23 +132,23 @@ public class MessageActivity
         }
 
         /**
-         * The cover aka splash id of this {@link net.dv8tion.jda.api.entities.MessageActivity.Application}.
+         * The splash id of this {@link net.dv8tion.jda.api.entities.MessageActivity.Application}.
          *
-         * @return the applications cover image/id.
+         * @return the applications splash image id.
          */
-        public String getCoverId()
+        public String getSplashId()
         {
-            return coverId;
+            return splashId;
         }
 
         /**
-         * The url of the cover image for this application.
+         * The url of the splash image for this application.
          *
-         * @return the url of the cover/splash
+         * @return the url of the splash image
          */
-        public String getCoverUrl()
+        public String getSplashUrl()
         {
-            return "https://cdn.discordapp.com/application/" + getId() + "/" + coverId + ".png";
+            return "https://cdn.discordapp.com/application/" + getId() + "/" + splashId + ".png";
         }
 
         @Override
