@@ -157,33 +157,15 @@ public class MarkdownSanitizer
 
     private int getRegion(int index, String sequence)
     {
-        if (sequence.length() - index >= 4)
-        {
-            String fourChars = sequence.substring(index, index + 4);
-            if (fourChars.equals("\\```"))
-                return ESCAPED_BLOCK;
-            else if (fourChars.equals("\\***"))
-                return ESCAPED_BOLD | ITALICS_A;
-        }
         if (sequence.length() - index >= 3)
         {
             String threeChars = sequence.substring(index, index + 3);
             switch (threeChars)
             {
                 case "```":
-                    return BLOCK;
+                    return doesEscape(index, sequence) ? ESCAPED_BLOCK : BLOCK;
                 case "***":
-                    return BOLD | ITALICS_A;
-                case "\\**":
-                    return ESCAPED_BOLD;
-                case "\\__":
-                    return ESCAPED_UNDERLINE;
-                case "\\~~":
-                    return ESCAPED_STRIKE;
-                case "\\``":
-                    return ESCAPED_MONO_TWO;
-                case "\\||":
-                    return ESCAPED_SPOILER;
+                    return doesEscape(index, sequence) ? ESCAPED_BOLD | ITALICS_A : BOLD | ITALICS_A;
             }
         }
         if (sequence.length() - index >= 2)
@@ -192,32 +174,26 @@ public class MarkdownSanitizer
             switch (twoChars)
             {
                 case "**":
-                    return BOLD;
+                    return doesEscape(index, sequence) ? ESCAPED_BOLD : BOLD;
                 case "__":
-                    return UNDERLINE;
+                    return doesEscape(index, sequence) ? ESCAPED_UNDERLINE : UNDERLINE;
                 case "~~":
-                    return STRIKE;
+                    return doesEscape(index, sequence) ? ESCAPED_STRIKE : STRIKE;
                 case "``":
-                    return MONO_TWO;
+                    return doesEscape(index, sequence) ? ESCAPED_MONO_TWO : MONO_TWO;
                 case "||":
-                    return SPOILER;
-                case "\\*":
-                    return ESCAPED_ITALICS_A;
-                case "\\_":
-                    return ESCAPED_ITALICS_U;
-                case "\\`":
-                    return ESCAPED_MONO;
+                    return doesEscape(index, sequence) ? ESCAPED_SPOILER : SPOILER;
             }
         }
         char current = sequence.charAt(index);
         switch (current)
         {
             case '*':
-                return ITALICS_A;
+                return doesEscape(index, sequence) ? ESCAPED_ITALICS_A : ITALICS_A;
             case '_':
-                return ITALICS_U;
+                return doesEscape(index, sequence) ? ESCAPED_ITALICS_U : ITALICS_U;
             case '`':
-                return MONO;
+                return doesEscape(index, sequence) ? ESCAPED_MONO : MONO;
         }
         return NORMAL;
     }
@@ -302,7 +278,7 @@ public class MarkdownSanitizer
                 default:
                     return -1;
             }
-            if (lastMatch == -1 || sequence.charAt(lastMatch - 1) != '\\')
+            if (lastMatch == -1 || !doesEscape(lastMatch, sequence))
                 return lastMatch;
             lastMatch++;
         }
@@ -370,6 +346,18 @@ public class MarkdownSanitizer
         builder.append("\\").append(token)
                .append(seq)
                .append("\\").append(token);
+    }
+
+    private boolean doesEscape(int index, String seq)
+    {
+        int backslashes = 0;
+        for (int i = index - 1; i > -1; i--)
+        {
+            if (seq.charAt(i) != '\\')
+                break;
+            backslashes++;
+        }
+        return backslashes % 2 != 0;
     }
 
     private boolean isEscape(int region)
