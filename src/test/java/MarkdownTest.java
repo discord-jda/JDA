@@ -188,3 +188,88 @@ class IgnoreMarkdownTest
         Assertions.assertEquals("```Hello `to` World", markdown.compute("```Hello `to` World"));
     }
 }
+
+class EscapeMarkdownTest
+{
+    private MarkdownSanitizer markdown;
+
+    @BeforeEach
+    public void setup()
+    {
+        markdown = new MarkdownSanitizer().withStrategy(MarkdownSanitizer.SanitizationStrategy.ESCAPE);
+    }
+
+    @Test
+    public void testBold()
+    {
+        Assertions.assertEquals("\\**Hello\\**", markdown.compute("**Hello**"));
+        Assertions.assertEquals("**Hello", markdown.compute("**Hello"));
+    }
+
+    @Test
+    public void testItalics()
+    {
+        Assertions.assertEquals("\\*Hello\\*", markdown.compute("*Hello*"));
+        Assertions.assertEquals("\\_Hello\\_", markdown.compute("_Hello_"));
+
+        Assertions.assertEquals("*Hello", markdown.compute("*Hello"));
+        Assertions.assertEquals("_Hello", markdown.compute("_Hello"));
+    }
+
+    @Test
+    public void testUnderline()
+    {
+        Assertions.assertEquals("\\__Hello\\__", markdown.compute("__Hello__"));
+        Assertions.assertEquals("__Hello", markdown.compute("__Hello"));
+    }
+
+    @Test
+    public void testStrike()
+    {
+        Assertions.assertEquals("\\~~Hello\\~~", markdown.compute("~~Hello~~"));
+        Assertions.assertEquals("~~Hello", markdown.compute("~~Hello"));
+    }
+
+    @Test
+    public void testSpoiler()
+    {
+        Assertions.assertEquals("\\||Hello\\||", markdown.compute("||Hello||"));
+        Assertions.assertEquals("||Hello", markdown.compute("||Hello"));
+    }
+
+    @Test
+    public void testMono()
+    {
+        Assertions.assertEquals("\\`Hello\\`", markdown.compute("`Hello`"));
+        Assertions.assertEquals("`Hello", markdown.compute("`Hello"));
+
+        Assertions.assertEquals("\\`Hello **World**\\`", markdown.compute("`Hello **World**`"));
+        Assertions.assertEquals("`Hello \\**World\\**", markdown.compute("`Hello **World**"));
+    }
+
+    @Test
+    public void testMonoTwo()
+    {
+        Assertions.assertEquals("\\``Hello\\``", markdown.compute("``Hello``"));
+        Assertions.assertEquals("``Hello", markdown.compute("``Hello"));
+
+        Assertions.assertEquals("\\``Hello **World**\\``", markdown.compute("``Hello **World**``"));
+        Assertions.assertEquals("``Hello \\**World\\**", markdown.compute("``Hello **World**"));
+
+        Assertions.assertEquals("\\``Hello `to` World\\``", markdown.compute("``Hello `to` World``"));
+        Assertions.assertEquals("``Hello \\`to\\` World", markdown.compute("``Hello `to` World"));
+    }
+
+    @Test
+    public void testBlock()
+    {
+        Assertions.assertEquals("\\```Hello\\```", markdown.compute("```Hello```"));
+        Assertions.assertEquals("```Hello", markdown.compute("```Hello"));
+
+        Assertions.assertEquals("\\```Hello **World**\\```", markdown.compute("```Hello **World**```"));
+        Assertions.assertEquals("```Hello \\**World\\**", markdown.compute("```Hello **World**"));
+
+        Assertions.assertEquals("\\```Hello `to` World\\```", markdown.compute("```Hello `to` World```"));
+        Assertions.assertEquals("```Hello \\`to\\` World", markdown.compute("```Hello `to` World"));
+    }
+}
