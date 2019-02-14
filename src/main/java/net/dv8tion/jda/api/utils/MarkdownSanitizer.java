@@ -28,25 +28,25 @@ import net.dv8tion.jda.internal.utils.Checks;
 public class MarkdownSanitizer
 {
     /** Normal characters that are not special for markdown, ignoring this has no effect */
-    public static final int NORMAL =     0;
+    public static final int NORMAL    = 0;
     /** Bold region such as "**Hello**" */
-    public static final int BOLD      = 1 << 0; // **x**
+    public static final int BOLD      = 1 << 0;
     /** Italics region for underline such as "_Hello_" */
-    public static final int ITALICS_U = 1 << 1; // _x_
+    public static final int ITALICS_U = 1 << 1;
     /** Italics region for asterisks such as "*Hello*" */
-    public static final int ITALICS_A = 1 << 2; // *x*
+    public static final int ITALICS_A = 1 << 2;
     /** Monospace region such as "`Hello`" */
-    public static final int MONO      = 1 << 3; // `x`
+    public static final int MONO      = 1 << 3;
     /** Monospace region such as "``Hello``" */
-    public static final int MONO_TWO  = 1 << 4; // ``x``
+    public static final int MONO_TWO  = 1 << 4;
     /** Codeblock region such as "```Hello```" */
-    public static final int BLOCK     = 1 << 5; // ```x```
+    public static final int BLOCK     = 1 << 5;
     /** Spoiler region such as "||Hello||" */
-    public static final int SPOILER   = 1 << 6; // ||x||
+    public static final int SPOILER   = 1 << 6;
     /** Underline region such as "__Hello__" */
-    public static final int UNDERLINE = 1 << 7; // __x__
+    public static final int UNDERLINE = 1 << 7;
     /** Strikethrough region such as "~~Hello~~" */
-    public static final int STRIKE    = 1 << 8; // ~~x~~
+    public static final int STRIKE    = 1 << 8;
 
     private static final int ESCAPED_BOLD      = Integer.MIN_VALUE | BOLD;
     private static final int ESCAPED_ITALICS_U = Integer.MIN_VALUE | ITALICS_U;
