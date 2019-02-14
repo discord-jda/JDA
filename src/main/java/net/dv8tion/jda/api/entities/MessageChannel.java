@@ -1027,7 +1027,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         <br>The Message defined by the provided id.
      */
     @CheckReturnValue
-    default RestAction<Message> getMessageById(String messageId)
+    default RestAction<Message> retrieveMessageById(String messageId)
     {
         AccountTypeException.check(getJDA().getAccountType(), AccountType.BOT);
         Checks.isSnowflake(messageId, "Message ID");
@@ -1079,9 +1079,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         <br>The Message defined by the provided id.
      */
     @CheckReturnValue
-    default RestAction<Message> getMessageById(long messageId)
+    default RestAction<Message> retrieveMessageById(long messageId)
     {
-        return getMessageById(Long.toUnsignedString(messageId));
+        return retrieveMessageById(Long.toUnsignedString(messageId));
     }
 
     /**
@@ -2325,7 +2325,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     }
 
     /**
-     * Used to pin a message. Pinned messages are retrievable via {@link #getPinnedMessages()}.
+     * Used to pin a message. Pinned messages are retrievable via {@link #retrievePinnedMessages()}.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -2371,7 +2371,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     }
 
     /**
-     * Used to pin a message. Pinned messages are retrievable via {@link #getPinnedMessages()}.
+     * Used to pin a message. Pinned messages are retrievable via {@link #retrievePinnedMessages()}.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -2414,7 +2414,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     }
 
     /**
-     * Used to unpin a message. Pinned messages are retrievable via {@link #getPinnedMessages()}.
+     * Used to unpin a message. Pinned messages are retrievable via {@link #retrievePinnedMessages()}.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -2460,7 +2460,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     }
 
     /**
-     * Used to unpin a message. Pinned messages are retrievable via {@link #getPinnedMessages()}.
+     * Used to unpin a message. Pinned messages are retrievable via {@link #retrievePinnedMessages()}.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -2525,7 +2525,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         <br>An immutable list of pinned messages
      */
     @CheckReturnValue
-    default RestAction<List<Message>> getPinnedMessages()
+    default RestAction<List<Message>> retrievePinnedMessages()
     {
         JDAImpl jda = (JDAImpl) getJDA();
         Route.CompiledRoute route = Route.Messages.GET_PINNED_MESSAGES.compile(getId());

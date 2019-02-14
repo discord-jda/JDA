@@ -113,7 +113,7 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
     }
 
     @Override
-    public RestAction<List<Invite>> getInvites()
+    public RestAction<List<Invite>> retrieveInvites()
     {
         return new EmptyRestAction<>(getJDA(), Collections.emptyList());
     }

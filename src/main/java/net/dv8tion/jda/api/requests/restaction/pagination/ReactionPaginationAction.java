@@ -32,7 +32,7 @@ import net.dv8tion.jda.api.entities.User;
  *
  * <h1>Example</h1>
  * <pre>{@code
- * ReactionPaginationAction users = reaction.getUsers();
+ * ReactionPaginationAction users = reaction.retrieveUsers();
  *
  * Optional<User> optUser = users.stream().skip(ThreadLocalRandom.current().nextInt(reaction.getCount())).findFirst();
  * optUser.ifPresent( (user) -> user.openPrivateChannel().queue(
@@ -42,8 +42,8 @@ import net.dv8tion.jda.api.entities.User;
  *
  * @since  3.1
  *
- * @see    MessageReaction#getUsers()
- * @see    MessageReaction#getUsers(int)
+ * @see    MessageReaction#retrieveUsers()
+ * @see    MessageReaction#retrieveUsers(int)
  */
 public interface ReactionPaginationAction extends PaginationAction<User, ReactionPaginationAction>
 {

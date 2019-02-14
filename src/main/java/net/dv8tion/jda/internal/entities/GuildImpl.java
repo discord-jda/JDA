@@ -174,7 +174,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public RestAction<String> getVanityUrl()
+    public RestAction<String> retrieveVanityUrl()
     {
         if (!getSelfMember().hasPermission(Permission.MANAGE_SERVER))
             throw new InsufficientPermissionException(Permission.MANAGE_SERVER);
@@ -200,7 +200,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public RestAction<List<Webhook>> getWebhooks()
+    public RestAction<List<Webhook>> retrieveWebhooks()
     {
         if (!getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS))
             throw new InsufficientPermissionException(Permission.MANAGE_WEBHOOKS);
@@ -407,7 +407,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestActionImpl<List<Ban>> getBanList()
+    public RestActionImpl<List<Ban>> retrieveBanList()
     {
         if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS))
             throw new InsufficientPermissionException(Permission.BAN_MEMBERS);
@@ -431,7 +431,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<Ban> getBanById(@Nonnull String userId)
+    public RestAction<Ban> retrieveBanById(@Nonnull String userId)
     {
         if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS))
             throw new InsufficientPermissionException(Permission.BAN_MEMBERS);
@@ -450,7 +450,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public RestAction<Integer> getPrunableMemberCount(int days)
+    public RestAction<Integer> retrievePrunableMemberCount(int days)
     {
         if (!getSelfMember().hasPermission(Permission.KICK_MEMBERS))
             throw new InsufficientPermissionException(Permission.KICK_MEMBERS);
@@ -512,7 +512,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public AuditLogPaginationAction getAuditLogs()
+    public AuditLogPaginationAction retrieveAuditLogs()
     {
         return new AuditLogPaginationActionImpl(this);
     }
@@ -825,7 +825,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public RestAction<List<Invite>> getInvites()
+    public RestAction<List<Invite>> retrieveInvites()
     {
         if (!this.getSelfMember().hasPermission(Permission.MANAGE_SERVER))
             throw new InsufficientPermissionException(Permission.MANAGE_SERVER);

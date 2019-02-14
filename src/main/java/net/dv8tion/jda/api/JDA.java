@@ -1259,7 +1259,7 @@ public interface JDA
      *         <br>The {@link ApplicationInfo ApplicationInfo} of the bot's application.
      */
     @CheckReturnValue
-    RestAction<ApplicationInfo> getApplicationInfo();
+    RestAction<ApplicationInfo> retrieveApplicationInfo();
 
     /**
      * Creates an authorization invite url for the currently logged in Bot-Account.
@@ -1327,10 +1327,10 @@ public interface JDA
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.Webhook Webhook}
      *          <br>The webhook object.
      *
-     * @see    Guild#getWebhooks()
-     * @see    TextChannel#getWebhooks()
+     * @see    Guild#retrieveWebhooks()
+     * @see    TextChannel#retrieveWebhooks()
      */
-    RestAction<Webhook> getWebhookById(String webhookId);
+    RestAction<Webhook> retrieveWebhookById(String webhookId);
 
     /**
      * Retrieves a {@link net.dv8tion.jda.api.entities.Webhook Webhook} by its id.
@@ -1351,11 +1351,11 @@ public interface JDA
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.Webhook Webhook}
      *          <br>The webhook object.
      *
-     * @see    Guild#getWebhooks()
-     * @see    TextChannel#getWebhooks()
+     * @see    Guild#retrieveWebhooks()
+     * @see    TextChannel#retrieveWebhooks()
      */
-    default RestAction<Webhook> getWebhookById(long webhookId)
+    default RestAction<Webhook> retrieveWebhookById(long webhookId)
     {
-        return getWebhookById(Long.toUnsignedString(webhookId));
+        return retrieveWebhookById(Long.toUnsignedString(webhookId));
     }
 }

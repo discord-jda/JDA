@@ -344,8 +344,8 @@ public interface GuildChannel extends ISnowflake
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.api.entities.Invite Invite}{@literal >}
      *         <br>The list of expanded Invite objects
      *
-     * @see    net.dv8tion.jda.api.entities.Guild#getInvites()
+     * @see    net.dv8tion.jda.api.entities.Guild#retrieveInvites()
      */
     @CheckReturnValue
-    RestAction<List<Invite>> getInvites();
+    RestAction<List<Invite>> retrieveInvites();
 }
