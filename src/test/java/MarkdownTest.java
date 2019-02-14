@@ -214,7 +214,7 @@ class EscapeMarkdownTest
     @Test
     public void testComplex()
     {
-        Assertions.assertEquals("\\**A\\_B\\||C\\~~D\\__E\\`F\\`\\__\\~~\\||\\_\\**", markdown.compute("**A_B||C~~D__E`F`__~~||_**"));
+        Assertions.assertEquals("\\**A\\_B\\||C\\~~D\\_\\_E\\`F\\`\\_\\_\\~~\\||\\_\\**", markdown.compute("**A_B||C~~D__E`F`__~~||_**"));
     }
 
     @Test
@@ -237,7 +237,7 @@ class EscapeMarkdownTest
     @Test
     public void testUnderline()
     {
-        Assertions.assertEquals("\\__Hello\\__", markdown.compute("__Hello__"));
+        Assertions.assertEquals("\\_\\_Hello\\_\\_", markdown.compute("__Hello__"));
         Assertions.assertEquals("__Hello", markdown.compute("__Hello"));
     }
 

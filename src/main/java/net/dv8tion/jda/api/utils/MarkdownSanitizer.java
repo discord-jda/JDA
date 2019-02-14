@@ -346,6 +346,8 @@ public class MarkdownSanitizer
         String token = tokens.get(region);
         if (token == null)
             return;
+        if (region == UNDERLINE)
+            token = "_\\_"; // UNDERLINE needs special handling because the client thinks its ITALICS_U if you only escape once
         builder.append("\\").append(token)
                .append(seq)
                .append("\\").append(token);
