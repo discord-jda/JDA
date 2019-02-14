@@ -299,7 +299,7 @@ public class MarkdownSanitizer
             case MONO_TWO:
                 return resolved;
             default:
-                return sanitize(resolved);
+                return new MarkdownSanitizer(ignored, strategy).compute(resolved);
         }
     }
 

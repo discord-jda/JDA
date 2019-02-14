@@ -30,6 +30,12 @@ class MarkdownTest
     }
 
     @Test
+    public void testComplex()
+    {
+        Assertions.assertEquals("ABCDEF", markdown.compute("**A_B||C~~D__E`F`__~~||_**"));
+    }
+
+    @Test
     public void testBold()
     {
         Assertions.assertEquals("Hello", markdown.compute("**Hello**"));
@@ -115,6 +121,12 @@ class IgnoreMarkdownTest
     }
 
     @Test
+    public void testComplex()
+    {
+        Assertions.assertEquals("**A_B||C~~D__E`F`__~~||_**", markdown.compute("**A_B||C~~D__E`F`__~~||_**"));
+    }
+
+    @Test
     public void testBold()
     {
         Assertions.assertEquals("**Hello**", markdown.compute("**Hello**"));
@@ -197,6 +209,12 @@ class EscapeMarkdownTest
     public void setup()
     {
         markdown = new MarkdownSanitizer().withStrategy(MarkdownSanitizer.SanitizationStrategy.ESCAPE);
+    }
+
+    @Test
+    public void testComplex()
+    {
+        Assertions.assertEquals("\\**A\\_B\\||C\\~~D\\__E\\`F\\`\\__\\~~\\||\\_\\**", markdown.compute("**A_B||C~~D__E`F`__~~||_**"));
     }
 
     @Test
