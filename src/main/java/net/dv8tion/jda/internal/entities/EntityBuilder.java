@@ -886,8 +886,8 @@ public class EntityBuilder
         final int width = Helpers.optInt(jsonObject, "width", -1);
         final int height = Helpers.optInt(jsonObject, "height", -1);
         final int size = jsonObject.getInt("size");
-        final String url = jsonObject.optString("url", null);
-        final String proxyUrl = jsonObject.optString("proxy_url", null);
+        final String url = jsonObject.getString("url");
+        final String proxyUrl = jsonObject.getString("proxy_url");
         final String filename = jsonObject.getString("filename");
         final long id = jsonObject.getLong("id");
         return new Message.Attachment(id, url, proxyUrl, filename, size, height, width, getJDA());
