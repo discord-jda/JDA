@@ -1092,9 +1092,7 @@ public interface Message extends ISnowflake, Formattable
         }
 
         /**
-         * The url of the Attachment, proxied by Discord.
-         * <br>Url to the resource proxied by https://images.discordapp.net
-         * <br><b>Note: </b> This URL will most likely only work for images. ({@link #isImage()})
+         * Url to the resource proxied by the Discord CDN.
          *
          * @return Non-null String containing the proxied Attachment url.
          */
