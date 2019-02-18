@@ -19,26 +19,16 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
-import net.dv8tion.jda.api.utils.IOConsumer;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.Requester;
-import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.IOUtil;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import okhttp3.*;
 
 import javax.annotation.CheckReturnValue;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.*;
 import java.time.OffsetDateTime;
 import java.util.Formattable;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 
 /**
@@ -1113,114 +1103,95 @@ public interface Message extends ISnowflake, Formattable
             return fileName;
         }
 
-        /**
-         * Creates an {@link net.dv8tion.jda.api.entities.Icon Icon} instance for
-         * this attachment if {@link #isImage() isImage()} is {@code true}!
-         * <br>This is a convenience method that can be used to retrieve an Icon from an attachment image link which
-         * requires a set user-agent to be loaded.
-         *
-         * <p>When a global proxy was specified via {@link net.dv8tion.jda.api.JDABuilder JDABuilder} this will use the
-         * specified proxy to create an {@link java.io.InputStream InputStream} otherwise it will use a normal {@link java.net.URLConnection URLConnection}
-         * with the User-Agent for the currently logged in account.
-         *
-         * @throws IOException
-         *         If an IOError occurs while reading the image
-         * @throws java.lang.IllegalStateException
-         *         If this is not an image attachment
-         *
-         * @return {@link net.dv8tion.jda.api.entities.Icon Icon} for this image attachment
-         *
-         * @since  3.4.0
-         */
-        public Icon getAsIcon() throws IOException
+        public CompletableFuture<InputStream> retrieveData() // it is expected that the response is closed by the callback!
+        {
+            CompletableFuture<InputStream> future = new CompletableFuture<>();
+            Request req = getRequest();
+            OkHttpClient httpClient = getJDA().getHttpClient();
+            httpClient.newCall(req).enqueue(new Callback()
+            {
+                @Override
+                public void onFailure(Call call, IOException e)
+                {
+                    future.completeExceptionally(new IllegalStateException(e));
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException
+                {
+                    InputStream body = Requester.getBody(response);
+                    future.complete(body);
+                }
+            });
+            return future;
+        }
+
+        public CompletableFuture<File> downloadToFile() // using relative path
+        {
+            return downloadToFile(getFileName());
+        }
+
+        public CompletableFuture<File> downloadToFile(String path)
+        {
+            return retrieveData().thenApplyAsync((stream) -> {
+                try (FileOutputStream out = new FileOutputStream(path))
+                {
+                    byte[] buf = new byte[1024];
+                    int count;
+                    while ((count = stream.read(buf)) > 0)
+                    {
+                        out.write(buf, 0, count);
+                    }
+                    return new File(path);
+                }
+                catch (IOException e)
+                {
+                    throw new IllegalStateException(e);
+                }
+                finally
+                {
+                    silentClose(stream);
+                }
+            }, getJDA().getCallbackPool());
+        }
+
+        public CompletableFuture<Icon> retrieveAsIcon()
         {
             if (!isImage())
                 throw new IllegalStateException("Cannot create an Icon out of this attachment. This is not an image.");
-            AtomicReference<Icon> icon = new AtomicReference<>();
-            withInputStream((in) -> icon.set(Icon.from(in)));
-            return icon.get();
+            return retrieveData().thenApplyAsync((stream) ->
+            {
+                try
+                {
+                    return Icon.from(stream);
+                }
+                catch (IOException e)
+                {
+                    throw new IllegalStateException(e);
+                }
+                finally
+                {
+                    silentClose(stream);
+                }
+            }, getJDA().getCallbackPool());
         }
 
-        /**
-         * Downloads this attachment to given File
-         *
-         * @param  file
-         *         The file, where the attachment will get downloaded to
-         *
-         * @return boolean true, if successful, otherwise false
-         */
-        public boolean download(File file)
+        private void silentClose(Closeable closeable)
         {
             try
             {
-                withInputStream((in) -> Files.copy(in, Paths.get(file.getAbsolutePath())));
-                return true;
+                closeable.close();
             }
-            catch (Exception e)
-            {
-                JDAImpl.LOG.error("Error while downloading an attachment", e);
-            }
-            return false;
+            catch (IOException ignored) {}
         }
 
-        /**
-         * Creates a copy of the {@link java.io.InputStream InputStream} that is created using an {@link okhttp3.OkHttpClient OkHttpClient}.
-         *
-         * <p>You can access the input stream directly using {@link #withInputStream(net.dv8tion.jda.api.utils.IOConsumer) withInputStream(IOConsumer)}
-         * which will have an open input stream available within the consumer scope. The stream will be closed once that method returns.
-         *
-         * @throws java.io.IOException
-         *         If an IO error occurs trying to read from the opened HTTP channel
-         *
-         * @return InputStream copy of the response body for this Attachment
-         *
-         * @since  3.4.0
-         */
-        public InputStream getInputStream() throws IOException
+        protected Request getRequest()
         {
-            try (Response response = openConnection())
-            {
-                // creates a copy in order to properly close the response
-                InputStream in = Requester.getBody(response);
-                return new ByteArrayInputStream(IOUtil.readFully(in));
-            }
-        }
-
-        /**
-         * Allows to access the InputStream that is available from the HTTP {@link okhttp3.Response Response}
-         * to be used without having to copy it.
-         * <br>Unlike {@link #getInputStream()} this does not return a full copy of the input stream.
-         * Instead this method will provide the InputStream data in the specified consumer in which it is still accessible.
-         *
-         * <p><b>When this method returns the InputStream will be closed accordingly!</b>
-         *
-         * @param  then
-         *         Not-null {@link net.dv8tion.jda.api.utils.IOConsumer IOConsumer} to accept the InputStream
-         *
-         * @throws java.lang.IllegalArgumentException
-         *         If the provided IOConsumer is {@code null}
-         * @throws IOException
-         *         If an IOException occurs within the IOConsumer or while opening an HTTP channel
-         *
-         * @since  3.4.0
-         */
-        public void withInputStream(IOConsumer<InputStream> then) throws IOException
-        {
-            Checks.notNull(then, "Consumer");
-            try (Response response = openConnection())
-            {
-                then.accept(Requester.getBody(response));
-            }
-        }
-
-        protected Response openConnection() throws IOException
-        {
-            final OkHttpClient client = jda.getRequester().getHttpClient();
-            final Request request = new Request.Builder().url(getUrl())
-                        .addHeader("user-agent", Requester.USER_AGENT)
-                        .addHeader("accept-encoding", "gzip")
-                        .build();
-            return client.newCall(request).execute();
+            return new Request.Builder()
+                .url(getUrl())
+                .addHeader("user-agent", Requester.USER_AGENT)
+                .addHeader("accept-encoding", "gzip")
+                .build();
         }
 
         /**
