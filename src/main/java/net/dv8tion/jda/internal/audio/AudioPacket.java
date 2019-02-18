@@ -176,7 +176,11 @@ public class AudioPacket
             extendedNonce = getNoncePadded();
 
         //Create our SecretBox encoder with the secretKey provided by Discord.
-        byte[] encryptedAudio = boxer.box(encodedAudio.array(), encodedAudio.arrayOffset(), encodedAudio.remaining(), extendedNonce);
+        byte[] array = encodedAudio.array();
+        int offset = encodedAudio.arrayOffset() + encodedAudio.position();
+        int length = encodedAudio.remaining();
+        byte[] encryptedAudio = boxer.box(array, offset, length, extendedNonce);
+
         ((Buffer) buffer).clear();
         int capacity = RTP_HEADER_BYTE_LENGTH + encryptedAudio.length + nlen;
         if (capacity > buffer.remaining())
@@ -218,7 +222,7 @@ public class AudioPacket
 
         ByteBuffer encodedAudio = encryptedPacket.encodedAudio;
         int length = encodedAudio.remaining();
-        int offset = encodedAudio.arrayOffset();
+        int offset = encodedAudio.arrayOffset() + encodedAudio.position();
         switch (encryption)
         {
             case XSALSA20_POLY1305:

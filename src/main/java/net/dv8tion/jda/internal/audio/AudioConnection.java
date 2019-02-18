@@ -564,7 +564,7 @@ public class AudioConnection
     {
         ShortBuffer nonEncodedBuffer = ShortBuffer.allocate(rawAudio.remaining() / 2);
         ByteBuffer encoded = ByteBuffer.allocate(4096);
-        for (int i = rawAudio.arrayOffset(); i < rawAudio.limit(); i += 2)
+        for (int i = rawAudio.position(); i < rawAudio.limit(); i += 2)
         {
             int firstByte =  (0x000000FF & rawAudio.get(i));      //Promotes to int and handles the fact that it was unsigned.
             int secondByte = (0x000000FF & rawAudio.get(i + 1));
@@ -746,7 +746,7 @@ public class AudioConnection
         private DatagramPacket getDatagramPacket(ByteBuffer b)
         {
             byte[] data = b.array();
-            int offset = b.arrayOffset();
+            int offset = b.arrayOffset() + b.position();
             int length = b.remaining();
             return new DatagramPacket(data, offset, length, webSocket.getAddress());
         }

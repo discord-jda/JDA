@@ -71,8 +71,11 @@ public class Decoder
             this.lastTimestamp = decryptedPacket.getTimestamp();
 
             ByteBuffer encodedAudio = decryptedPacket.getEncodedAudio();
-            byte[] buf = new byte[encodedAudio.remaining()];
-            System.arraycopy(encodedAudio.array(), encodedAudio.arrayOffset(), buf, 0, encodedAudio.remaining());
+            int length = encodedAudio.remaining();
+            int offset = encodedAudio.arrayOffset() + encodedAudio.position();
+            byte[] buf = new byte[length];
+            byte[] data = encodedAudio.array();
+            System.arraycopy(data, offset, buf, 0, length);
             result = Opus.INSTANCE.opus_decode(opusDecoder, buf, buf.length, decoded, AudioConnection.OPUS_FRAME_SIZE, 0);
         }
 
