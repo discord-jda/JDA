@@ -62,6 +62,12 @@ public abstract class AbstractMessage implements Message
         return isTTS;
     }
 
+    @Override
+    public RestAction<Message> refresh()
+    {
+        return getChannel().retrieveMessageById(getId());
+    }
+
     protected abstract void unsupported();
 
     @Override

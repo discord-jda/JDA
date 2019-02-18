@@ -739,6 +739,33 @@ public interface Message extends ISnowflake, Formattable
     AuditableRestAction<Void> delete();
 
     /**
+     * Retrieves an updated version of this {@link net.dv8tion.jda.api.entities.Message}.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public CompletableFuture<List<MessageReaction>> retrieveReactions(Message m)
+     * {
+     *     return m.refresh().submit().thenApply(Message::getReactions);
+     * }
+     *
+     * public void deleteIfExists(Message m)
+     * {
+     *     m.refresh().queue(
+     *         existing -> existing.delete().queue(), // the message still exists
+     *         failure -> {} // the message has already been removed
+     *     );
+     * }
+     * }</pre>
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is a Data Message (output of {@link net.dv8tion.jda.api.MessageBuilder MessageBuilder})
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction} - Type: Message
+     */
+    @CheckReturnValue
+    RestAction<Message> refresh();
+
+    /**
      * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance related to this Message.
      *
      * @throws java.lang.UnsupportedOperationException
