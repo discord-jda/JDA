@@ -183,7 +183,7 @@ public interface Guild extends ISnowflake
      * <b>Possible known features:</b>
      * <ul>
      *     <li>VIP_REGIONS - Guild has VIP voice regions</li>
-     *     <li>VANITY_URL - Guild a vanity URL (custom invite link). See {@link #getVanityUrl()}</li>
+     *     <li>VANITY_URL - Guild a vanity URL (custom invite link). See {@link #retrieveVanityUrl()}</li>
      *     <li>INVITE_SPLASH - Guild has custom invite splash. See {@link #getSplashId()} and {@link #getSplashUrl()}</li>
      *     <li>VERIFIED - Guild is "verified"</li>
      *     <li>MORE_EMOJI - Guild is able to use more than 50 emoji</li>
@@ -245,7 +245,7 @@ public interface Guild extends ISnowflake
      * @see    #getFeatures()
      */
     @CheckReturnValue
-    RestAction<String> getVanityUrl();
+    RestAction<String> retrieveVanityUrl();
 
     /**
      * Provides the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} that has been set as the channel
@@ -1100,7 +1100,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<List<Ban>> getBanList();
+    RestAction<List<Ban>> retrieveBanList();
 
     /**
      * Retrieves a {@link net.dv8tion.jda.api.entities.Guild.Ban Ban} of the provided ID
@@ -1131,9 +1131,9 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Ban> getBanById(long userId)
+    default RestAction<Ban> retrieveBanById(long userId)
     {
-        return getBanById(Long.toUnsignedString(userId));
+        return retrieveBanById(Long.toUnsignedString(userId));
     }
 
     /**
@@ -1165,7 +1165,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Ban> getBanById(@Nonnull String userId);
+    RestAction<Ban> retrieveBanById(@Nonnull String userId);
 
     /**
      * Retrieves a {@link net.dv8tion.jda.api.entities.Guild.Ban Ban} of the provided {@link net.dv8tion.jda.api.entities.User User}
@@ -1196,10 +1196,10 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Ban> getBan(@Nonnull User bannedUser)
+    default RestAction<Ban> retrieveBan(@Nonnull User bannedUser)
     {
         Checks.notNull(bannedUser, "bannedUser");
-        return getBanById(bannedUser.getId());
+        return retrieveBanById(bannedUser.getId());
     }
 
     /**
@@ -1228,7 +1228,7 @@ public interface Guild extends ISnowflake
      *         <br>The amount of Members that would be affected.
      */
     @CheckReturnValue
-    RestAction<Integer> getPrunableMemberCount(int days);
+    RestAction<Integer> retrievePrunableMemberCount(int days);
 
     /**
      * The @everyone {@link net.dv8tion.jda.api.entities.Role Role} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -1287,7 +1287,7 @@ public interface Guild extends ISnowflake
      * <pre><code>
      * public boolean isLogged(Guild guild, ActionType type, long targetId)
      * {
-     *     for (AuditLogEntry entry : guild.<u>getAuditLogs().cache(false)</u>)
+     *     for (AuditLogEntry entry : guild.<u>retrieveAuditLogs().cache(false)</u>)
      *     {
      *         if (entry.getType() == type{@literal &&} entry.getTargetIdLong() == targetId)
      *             return true; // The action is logged
@@ -1297,7 +1297,7 @@ public interface Guild extends ISnowflake
      *
      * public{@literal List<AuditLogEntry>} getActionsBy(Guild guild, User user)
      * {
-     *     return guild.<u>getAuditLogs().cache(false)</u>.stream()
+     *     return guild.<u>retrieveAuditLogs().cache(false)</u>.stream()
      *         .filter(it{@literal ->} it.getUser().equals(user))
      *         .collect(Collectors.toList()); // collects actions done by user
      * }
@@ -1310,7 +1310,7 @@ public interface Guild extends ISnowflake
      * @return {@link AuditLogPaginationAction AuditLogPaginationAction}
      */
     @CheckReturnValue
-    AuditLogPaginationAction getAuditLogs();
+    AuditLogPaginationAction retrieveAuditLogs();
 
     /**
      * Used to leave a Guild. If the currently logged in account is the owner of this guild ({@link net.dv8tion.jda.api.entities.Guild#getOwner()})
@@ -1385,7 +1385,7 @@ public interface Guild extends ISnowflake
      * Will throw a {@link net.dv8tion.jda.api.exceptions.InsufficientPermissionException InsufficientPermissionException} otherwise.
      *
      * <p>To get all invites for a {@link GuildChannel GuildChannel}
-     * use {@link GuildChannel#getInvites() GuildChannel.getInvites()}
+     * use {@link GuildChannel#retrieveInvites() GuildChannel.retrieveInvites()}
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         if the account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} in this Guild.
@@ -1393,17 +1393,17 @@ public interface Guild extends ISnowflake
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.api.entities.Invite Invite}{@literal >}
      *         <br>The list of expanded Invite objects
      *
-     * @see     GuildChannel#getInvites()
+     * @see     GuildChannel#retrieveInvites()
      */
     @CheckReturnValue
-    RestAction<List<Invite>> getInvites();
+    RestAction<List<Invite>> retrieveInvites();
 
     /**
      * Retrieves all {@link net.dv8tion.jda.api.entities.Webhook Webhooks} for this Guild.
      * <br>Requires {@link net.dv8tion.jda.api.Permission#MANAGE_WEBHOOKS MANAGE_WEBHOOKS} in this Guild.
      *
      * <p>To get all webhooks for a specific {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}, use
-     * {@link TextChannel#getWebhooks()}
+     * {@link TextChannel#retrieveWebhooks()}
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         if the account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_WEBHOOKS MANAGE_WEBHOOKS} in this Guild.
@@ -1411,10 +1411,10 @@ public interface Guild extends ISnowflake
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.api.entities.Webhook Webhook}{@literal >}
      *         <br>A list of all Webhooks in this Guild.
      *
-     * @see     TextChannel#getWebhooks()
+     * @see     TextChannel#retrieveWebhooks()
      */
     @CheckReturnValue
-    RestAction<List<Webhook>> getWebhooks();
+    RestAction<List<Webhook>> retrieveWebhooks();
 
     /**
      * A list containing the {@link net.dv8tion.jda.api.entities.GuildVoiceState GuildVoiceState} of every {@link net.dv8tion.jda.api.entities.Member Member}
@@ -1749,7 +1749,7 @@ public interface Guild extends ISnowflake
     /**
      * Represents a Ban object.
      *
-     * @see #getBanList()
+     * @see #retrieveBanList()
      * @see <a href="https://discordapp.com/developers/docs/resources/guild#ban-object" target="_blank">Discord Docs: Ban Object</a>
      */
     class Ban

@@ -103,31 +103,21 @@ public interface GuildChannel extends ISnowflake
     JDA getJDA();
 
     /**
-     * The {@link PermissionOverride} relating to the specified {@link net.dv8tion.jda.api.entities.Member Member}.
+     * The {@link PermissionOverride} relating to the specified {@link net.dv8tion.jda.api.entities.Member Member} or {@link net.dv8tion.jda.api.entities.Role Role}.
      * If there is no {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride} for this {@link GuildChannel GuildChannel}
-     * relating to the provided {@link net.dv8tion.jda.api.entities.Member Member}, then this returns {@code null}.
+     * relating to the provided Member or Role, then this returns {@code null}.
      *
-     * @param  member
-     *         The {@link net.dv8tion.jda.api.entities.Member Member} whose
+     * @param  permissionHolder
+     *         The {@link net.dv8tion.jda.api.entities.Member Member} or {@link net.dv8tion.jda.api.entities.Role Role} whose
      *         {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride} is requested.
      *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
-     *         relating to the provided {@link net.dv8tion.jda.api.entities.Member Member}.
-     */
-    PermissionOverride getPermissionOverride(Member member);
-
-    /**
-     * The {@link PermissionOverride} relating to the specified {@link net.dv8tion.jda.api.entities.Role Role}.
-     * If there is no {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride} for this {@link GuildChannel GuildChannel}
-     * relating to the provided {@link net.dv8tion.jda.api.entities.Role Role}, then this returns {@code null}.
-     *
-     * @param  role
-     *         The {@link net.dv8tion.jda.api.entities.User Role} whose {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride} is requested.
+     * @throws IllegalArgumentException
+     *         If the provided permission holder is null, or from a different guild
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
-     *         relating to the provided {@link net.dv8tion.jda.api.entities.Role Role}.
+     *         relating to the provided Member or Role.
      */
-    PermissionOverride getPermissionOverride(Role role);
+    PermissionOverride getPermissionOverride(IPermissionHolder permissionHolder);
 
     /**
      * Gets all of the {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides} that are part
@@ -273,8 +263,8 @@ public interface GuildChannel extends ISnowflake
 
     /**
      * Creates a {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
-     * for the specified {@link net.dv8tion.jda.api.entities.Member Member} in this GuildChannel.
-     * You can use {@link #putPermissionOverride(Member)} to replace existing overrides.
+     * for the specified {@link net.dv8tion.jda.api.entities.Member Member} or {@link net.dv8tion.jda.api.entities.Role Role} in this GuildChannel.
+     * You can use {@link #putPermissionOverride(IPermissionHolder)} to replace existing overrides.
      *
      * <p>Possible ErrorResponses include:
      * <ul>
@@ -285,101 +275,46 @@ public interface GuildChannel extends ISnowflake
      *     <br>If we were removed from the Guild</li>
      * </ul>
      *
-     * @param  member
-     *         The Member to create an override for
+     * @param  permissionHolder
+     *         The Member or Role to create an override for
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         if we don't have the permission to {@link net.dv8tion.jda.api.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS}
      * @throws IllegalArgumentException
-     *         if the specified Member is null or the Member is not from {@link #getGuild()}
+     *         if the specified permission holder is null or is not from {@link #getGuild()}
      * @throws java.lang.IllegalStateException
-     *         If the specified Member already has a PermissionOverride. Use {@link #getPermissionOverride(Member)} to retrieve it.
-     *         You can use {@link #putPermissionOverride(Member)} to replace existing overrides.
+     *         If the specified permission holder already has a PermissionOverride. Use {@link #getPermissionOverride(IPermissionHolder)} to retrieve it.
+     *         You can use {@link #putPermissionOverride(IPermissionHolder)} to replace existing overrides.
      *
      * @return {@link PermissionOverrideAction PermissionOverrideAction}
-     *         Provides the newly created PermissionOverride for the specified Role
+     *         Provides the newly created PermissionOverride for the specified permission holder
      *
-     * @see    #createPermissionOverride(Role)
-     * @see    #putPermissionOverride(Member)
+     * @see    #createPermissionOverride(IPermissionHolder)
+     * @see    #putPermissionOverride(IPermissionHolder)
      */
     @CheckReturnValue
-    PermissionOverrideAction createPermissionOverride(Member member);
+    PermissionOverrideAction createPermissionOverride(IPermissionHolder permissionHolder);
 
     /**
      * Creates a {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
-     * for the specified {@link net.dv8tion.jda.api.entities.Role Role} in this GuildChannel.
-     * You can use {@link #putPermissionOverride(Role)} to replace existing overrides.
+     * for the specified {@link net.dv8tion.jda.api.entities.Member Member} or {@link net.dv8tion.jda.api.entities.Role Role} in this GuildChannel.
+     * <br>If the permission holder already has an existing override it will be replaced.
      *
-     * <p>Possible ErrorResponses include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>If this channel was already deleted</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>If we were removed from the Guild</li>
-     * </ul>
-     *
-     * @param  role
-     *         The Role to create an override for
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         if we don't have the permission to {@link net.dv8tion.jda.api.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS}
-     * @throws IllegalArgumentException
-     *         if the specified Role is null or the Role is not from {@link #getGuild()}
-     * @throws java.lang.IllegalStateException
-     *         If the specified Role already has a PermissionOverride. Use {@link #getPermissionOverride(Role)} to retrieve it.
-     *         You can use {@link #putPermissionOverride(Role)} to replace existing overrides.
-     *
-     * @return {@link PermissionOverrideAction PermissionOverrideAction}
-     *         Provides the newly created PermissionOverride for the specified Role
-     *
-     * @see    #createPermissionOverride(Member)
-     * @see    #putPermissionOverride(Role)
-     */
-    @CheckReturnValue
-    PermissionOverrideAction createPermissionOverride(Role role);
-
-    /**
-     * Creates a {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
-     * for the specified {@link net.dv8tion.jda.api.entities.Member Member} in this GuildChannel.
-     * <br>If the member already has an existing override it will be replaced.
-     *
-     * @param  member
-     *         The Member to create the override for
+     * @param  permissionHolder
+     *         The Member or Role to create the override for
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         if we don't have the permission to {@link net.dv8tion.jda.api.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS}
      * @throws java.lang.IllegalArgumentException
-     *         If the provided member is null or from a different guild
+     *         If the provided permission holder is null or from a different guild
      *
      * @return {@link PermissionOverrideAction PermissionOverrideAction}
-     *         Provides the newly created PermissionOverride for the specified Member
+     *         Provides the newly created PermissionOverride for the specified permission holder
      *
-     * @see    #putPermissionOverride(Role)
+     * @see    #putPermissionOverride(IPermissionHolder)
      */
     @CheckReturnValue
-    PermissionOverrideAction putPermissionOverride(Member member);
-
-    /**
-     * Creates a {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
-     * for the specified {@link net.dv8tion.jda.api.entities.Role Role} in this GuildChannel.
-     * <br>If the role already has an existing override it will be replaced.
-     *
-     * @param  role
-     *         The Role to create the override for
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         if we don't have the permission to {@link net.dv8tion.jda.api.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS}
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided role is null or from a different guild
-     *
-     * @return {@link PermissionOverrideAction PermissionOverrideAction}
-     *         Provides the newly created PermissionOverride for the specified Role
-     *
-     * @see    #putPermissionOverride(Member)
-     */
-    @CheckReturnValue
-    PermissionOverrideAction putPermissionOverride(Role role);
+    PermissionOverrideAction putPermissionOverride(IPermissionHolder permissionHolder);
 
     /**
      * Creates a new {@link InviteAction InviteAction} which can be used to create a
@@ -409,8 +344,8 @@ public interface GuildChannel extends ISnowflake
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.api.entities.Invite Invite}{@literal >}
      *         <br>The list of expanded Invite objects
      *
-     * @see    net.dv8tion.jda.api.entities.Guild#getInvites()
+     * @see    net.dv8tion.jda.api.entities.Guild#retrieveInvites()
      */
     @CheckReturnValue
-    RestAction<List<Invite>> getInvites();
+    RestAction<List<Invite>> retrieveInvites();
 }

@@ -18,13 +18,10 @@
 //to build and upload everything:  "gradlew bintrayUpload"
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import com.jfrog.bintray.gradle.*
-import com.jfrog.bintray.gradle.tasks.*
-import groovy.util.FileTreeBuilder
-import org.apache.maven.model.*
-import org.apache.tools.ant.filters.*
-import org.gradle.jvm.tasks.*
-import java.util.Date
+import com.jfrog.bintray.gradle.BintrayExtension
+import com.jfrog.bintray.gradle.tasks.BintrayUploadTask
+import org.apache.tools.ant.filters.ReplaceTokens
+import java.util.*
 
 plugins {
     signing
@@ -71,7 +68,8 @@ dependencies {
 
     //Web Connection Support
     api("com.neovisionaries:nv-websocket-client:2.5")
-    api("com.squareup.okhttp3:okhttp:3.12.0")
+    api("com.squareup.okhttp3:okhttp:3.13.0")
+    api("org.json:json:20160810")
 
     //Opus library support
     api("club.minnced:opus-java:1.0.4@pom") {
@@ -87,7 +85,6 @@ dependencies {
 
     //General Utility
     implementation("org.apache.commons:commons-collections4:4.1")
-    implementation("org.json:json:20160810")
     implementation("net.sf.trove4j:trove4j:3.0.3")
 
     //Sets the dependencies for the examples
@@ -164,9 +161,16 @@ val javadocJar = task<Jar>("javadocJar") {
 }
 
 tasks.withType<JavaCompile> {
+    val arguments = mutableListOf("-Xlint:deprecation", "-Xlint:unchecked")
     options.encoding = "UTF-8"
     options.isIncremental = true
-    options.compilerArgs = listOf("-Xlint:deprecation", "-Xlint:unchecked")
+    if (JavaVersion.current().isJava9Compatible) doLast {
+        arguments += "release"
+        arguments += "8"
+    }
+    doLast {
+        options.compilerArgs = arguments
+    }
 }
 
 compileJava.apply {
@@ -185,7 +189,22 @@ javadoc.apply {
     isFailOnError = false
     options.memberLevel = JavadocMemberLevel.PUBLIC
     options.encoding = "UTF-8"
-    options.optionFiles = mutableListOf(file("javadoc-options.txt"))
+
+    if (options is StandardJavadocDocletOptions) {
+        val opt = options as StandardJavadocDocletOptions
+        opt.author()
+        opt.tags("incubating:a:Incubating:")
+        opt.links(
+            "https://docs.oracle.com/javase/8/docs/api/",
+            "https://takahikokawasaki.github.io/nv-websocket-client/",
+            "https://square.github.io/okhttp/3.x/okhttp/")
+        if (JavaVersion.current().isJava9Compatible) {
+            opt.addBooleanOption("html5", true)
+        }
+        if (JavaVersion.current().isJava11Compatible) {
+            opt.addBooleanOption("-no-module-directories", true)
+        }
+    }
 
     //### excludes ###
 

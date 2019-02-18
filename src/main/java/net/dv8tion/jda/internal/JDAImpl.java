@@ -30,6 +30,7 @@ import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.InterfacedEventManager;
+import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.Presence;
 import net.dv8tion.jda.api.requests.Request;
@@ -45,6 +46,7 @@ import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.handle.GuildSetupController;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
+import net.dv8tion.jda.internal.managers.DirectAudioControllerImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
 import net.dv8tion.jda.internal.requests.*;
 import net.dv8tion.jda.internal.requests.restaction.GuildActionImpl;
@@ -94,6 +96,7 @@ public class JDAImpl implements JDA
     protected final EventCache eventCache = new EventCache();
 
     protected final GuildSetupController guildSetupController;
+    protected final DirectAudioControllerImpl audioController;
 
     protected final AuthorizationConfig authConfig;
     protected final ThreadingConfig threadConfig;
@@ -132,6 +135,7 @@ public class JDAImpl implements JDA
         this.requester = new Requester(this);
         this.requester.setRetryOnTimeout(this.sessionConfig.isRetryOnTimeout());
         this.guildSetupController = new GuildSetupController(this);
+        this.audioController = new DirectAudioControllerImpl(this);
     }
 
     public boolean isCacheFlagSet(CacheFlag flag)
@@ -147,6 +151,11 @@ public class JDAImpl implements JDA
     public GuildSetupController getGuildSetupController()
     {
         return guildSetupController;
+    }
+
+    public VoiceDispatchInterceptor getVoiceInterceptor()
+    {
+        return sessionConfig.getVoiceDispatchInterceptor();
     }
 
     public int login() throws LoginException
@@ -442,6 +451,12 @@ public class JDAImpl implements JDA
     }
 
     @Override
+    public DirectAudioControllerImpl getDirectAudioController()
+    {
+        return this.audioController;
+    }
+
+    @Override
     public List<String> getCloudflareRays()
     {
         WebSocketClient client = getClient();
@@ -696,7 +711,7 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public RestAction<Webhook> getWebhookById(String webhookId)
+    public RestAction<Webhook> retrieveWebhookById(String webhookId)
     {
         Checks.isSnowflake(webhookId, "Webhook ID");
 
@@ -711,8 +726,9 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public RestAction<ApplicationInfo> getApplicationInfo()
+    public RestAction<ApplicationInfo> retrieveApplicationInfo()
     {
+        AccountTypeException.check(getAccountType(), AccountType.BOT);
         Route.CompiledRoute route = Route.Applications.GET_BOT_APPLICATION.compile();
         return new RestActionImpl<>(this, route, (response, request) ->
         {
@@ -743,7 +759,7 @@ public class JDAImpl implements JDA
     private StringBuilder buildBaseInviteUrl()
     {
         if (clientId == null)
-            getApplicationInfo().complete();
+            retrieveApplicationInfo().complete();
         StringBuilder builder = new StringBuilder("https://discordapp.com/oauth2/authorize?scope=bot&client_id=");
         builder.append(clientId);
         return builder;

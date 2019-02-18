@@ -255,7 +255,7 @@ public class GuildController
     /**
      * This method will prune (kick) all members who were offline for at least <i>days</i> days.
      * <br>The RestAction returned from this method will return the amount of Members that were pruned.
-     * <br>You can use {@link Guild#getPrunableMemberCount(int)} to determine how many Members would be pruned if you were to
+     * <br>You can use {@link Guild#retrievePrunableMemberCount(int)} to determine how many Members would be pruned if you were to
      * call this method.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by

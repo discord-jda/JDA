@@ -48,7 +48,7 @@ import java.util.Formatter;
  *
  * @since 3.0
  */
-public interface IMentionable extends Formattable
+public interface IMentionable extends Formattable, ISnowflake
 {
     /**
      * Retrieve a Mention for this Entity.

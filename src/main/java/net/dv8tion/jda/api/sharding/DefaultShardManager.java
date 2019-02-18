@@ -375,25 +375,18 @@ public class DefaultShardManager implements ShardManager
     {
         if (worker != null)
             return;
-        try
+        worker = executor.submit(() ->
         {
-            worker = executor.submit(() ->
+            while (!queue.isEmpty())
+                processQueue();
+            this.gatewayURL = null;
+            synchronized (queue)
             {
-                while (!queue.isEmpty())
-                    processQueue();
-                this.gatewayURL = null;
-                synchronized (queue)
-                {
-                    worker = null;
-                    if (!shutdown.get() && !queue.isEmpty())
-                        runQueueWorker();
-                }
-            });
-        }
-        catch (RejectedExecutionException ex)
-        {
-            LOG.debug("ThreadPool rejected queue worker thread", ex);
-        }
+                worker = null;
+                if (!shutdown.get() && !queue.isEmpty())
+                    runQueueWorker();
+            }
+        });
     }
 
     protected void processQueue()
@@ -472,8 +465,8 @@ public class DefaultShardManager implements ShardManager
         boolean shutdownCallbackPool = callbackPair.automaticShutdown;
 
         AuthorizationConfig authConfig = new AuthorizationConfig(AccountType.BOT, token);
-        SessionConfig sessionConfig = new SessionConfig(shardingConfig.getController(), httpClient,
-                this.sessionConfig.getWebSocketFactory(), this.sessionConfig.isAudioEnabled(),
+        SessionConfig sessionConfig = new SessionConfig(this.sessionConfig.getSessionController(), httpClient,
+                this.sessionConfig.getWebSocketFactory(), this.sessionConfig.getVoiceDispatchInterceptor(), this.sessionConfig.isAudioEnabled(),
                 this.sessionConfig.isRetryOnTimeout(), this.sessionConfig.isAutoReconnect(),
                 this.sessionConfig.isBulkDeleteSplittingEnabled(), this.sessionConfig.getMaxReconnectDelay());
         ThreadingConfig threadingConfig = new ThreadingConfig();

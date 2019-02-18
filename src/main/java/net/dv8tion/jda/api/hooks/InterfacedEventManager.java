@@ -15,7 +15,7 @@
  */
 package net.dv8tion.jda.api.hooks;
 
-import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.internal.JDAImpl;
 
 import java.util.Collections;
@@ -75,7 +75,7 @@ public class InterfacedEventManager implements IEventManager
     }
 
     @Override
-    public void handle(Event event)
+    public void handle(GenericEvent event)
     {
         for (EventListener listener : listeners)
         {

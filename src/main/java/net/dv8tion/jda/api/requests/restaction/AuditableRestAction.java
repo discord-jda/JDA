@@ -42,7 +42,7 @@ public interface AuditableRestAction<T> extends RestAction<T>
      * <p>Reasons for any AuditableRestAction may be retrieved
      * via {@link net.dv8tion.jda.api.audit.AuditLogEntry#getReason() AuditLogEntry.getReason()}
      * in iterable {@link AuditLogPaginationAction AuditLogPaginationActions}
-     * from {@link net.dv8tion.jda.api.entities.Guild#getAuditLogs() Guild.getAuditLogs()}!
+     * from {@link net.dv8tion.jda.api.entities.Guild#retrieveAuditLogs() Guild.retrieveAuditLogs()}!
      *
      * <p>This will specify the reason via the {@code X-Audit-Log-Reason} Request Header.
      * <br><b>Note: This may not be available to accounts for {@link net.dv8tion.jda.api.AccountType#CLIENT AccountType.CLIENT}.

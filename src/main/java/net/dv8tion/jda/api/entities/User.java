@@ -51,7 +51,7 @@ import java.util.List;
  *
  * <p>More information on formatting syntax can be found in the {@link java.util.Formatter format syntax documentation}!
  */
-public interface User extends ISnowflake, IMentionable, IFakeable
+public interface User extends IMentionable, IFakeable
 {
 
     /**

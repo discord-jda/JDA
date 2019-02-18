@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.hooks.IEventManager;
+import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.SessionControllerAdapter;
@@ -62,6 +63,7 @@ public class JDABuilder
     protected EnumSet<CacheFlag> cacheFlags = EnumSet.allOf(CacheFlag.class);
     protected ConcurrentMap<String, String> contextMap = null;
     protected SessionController controller = null;
+    protected VoiceDispatchInterceptor voiceDispatchInterceptor = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
     protected OkHttpClient httpClient = null;
     protected WebSocketFactory wsFactory = null;
@@ -775,6 +777,22 @@ public class JDABuilder
     }
 
     /**
+     * Configures a custom voice dispatch handler which handles audio connections.
+     *
+     * @param  interceptor
+     *         The new voice dispatch handler, or null to use the default
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @see    VoiceDispatchInterceptor
+     */
+    public JDABuilder setVoiceDispatchInterceptor(VoiceDispatchInterceptor interceptor)
+    {
+        this.voiceDispatchInterceptor = interceptor;
+        return this;
+    }
+
+    /**
      * Builds a new {@link net.dv8tion.jda.api.JDA} instance and uses the provided token to start the login process.
      * <br>The login process runs in a different thread, so while this will return immediately, {@link net.dv8tion.jda.api.JDA} has not
      * finished loading, thus many {@link net.dv8tion.jda.api.JDA} methods have the chance to return incorrect information.
@@ -814,7 +832,7 @@ public class JDABuilder
         threadingConfig.setCallbackPool(callbackPool, shutdownCallbackPool);
         threadingConfig.setGatewayPool(mainWsPool, shutdownMainWsPool);
         threadingConfig.setRateLimitPool(rateLimitPool, shutdownRateLimitPool);
-        SessionConfig sessionConfig = new SessionConfig(controller, httpClient, wsFactory, enableVoice, requestTimeoutRetry,autoReconnect, enableBulkDeleteSplitting, maxReconnectDelay);
+        SessionConfig sessionConfig = new SessionConfig(controller, httpClient, wsFactory, voiceDispatchInterceptor, enableVoice, requestTimeoutRetry,autoReconnect, enableBulkDeleteSplitting, maxReconnectDelay);
         MetaConfig metaConfig = new MetaConfig(contextMap, cacheFlags, enableContext, enableShutdownHook);
 
         JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig);

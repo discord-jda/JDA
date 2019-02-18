@@ -97,7 +97,7 @@ public class AudioManagerImpl implements AudioManager
             checkChannel(channel, self);
             //Start establishing connection, joining provided channel
             queuedAudioConnection = channel;
-            getJDA().getClient().queueAudioConnect(channel);
+            getJDA().getDirectAudioController().connect(channel);
         }
         else
         {
@@ -109,7 +109,7 @@ public class AudioManagerImpl implements AudioManager
 
             checkChannel(channel, self);
 
-            getJDA().getClient().queueAudioConnect(channel);
+            getJDA().getDirectAudioController().connect(channel);
             audioConnection.setChannel(channel);
         }
     }
@@ -154,7 +154,7 @@ public class AudioManagerImpl implements AudioManager
             if (audioConnection != null)
                 this.audioConnection.close(reason);
             else
-                getJDA().getClient().queueAudioDisconnect(getGuild());
+                getJDA().getDirectAudioController().disconnect(getGuild());
             this.audioConnection = null;
         });
     }
@@ -368,7 +368,7 @@ public class AudioManagerImpl implements AudioManager
             VoiceChannel channel = isConnected() ? getConnectedChannel() : getQueuedAudioConnection();
 
             //This is technically equivalent to an audio open/move packet.
-            getJDA().getClient().queueAudioConnect(channel);
+            getJDA().getDirectAudioController().connect(channel);
         }
     }
 

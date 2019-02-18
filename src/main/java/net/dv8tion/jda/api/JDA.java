@@ -19,6 +19,7 @@ package net.dv8tion.jda.api;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.managers.AudioManager;
+import net.dv8tion.jda.api.managers.DirectAudioController;
 import net.dv8tion.jda.api.managers.Presence;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.GuildAction;
@@ -315,6 +316,17 @@ public interface JDA
      * @return The http client
      */
     OkHttpClient getHttpClient();
+
+    /**
+     * Direct access to audio (dis-)connect requests.
+     * <br>This should not be used when normal audio operation is desired.
+     *
+     * <p>The correct way to open and close an audio connection is through the {@link Guild Guild's}
+     * {@link AudioManager}.
+     *
+     * @return The {@link DirectAudioController} for this JDA instance
+     */
+    DirectAudioController getDirectAudioController();
 
     /**
      * Changes the internal EventManager.
@@ -1240,11 +1252,14 @@ public interface JDA
      * the application that owns the logged in Bot-Account.
      * <br>This contains information about the owner of the currently logged in bot account!
      *
+     * @throws net.dv8tion.jda.api.exceptions.AccountTypeException
+     *         If the currently logged in account is not from {@link net.dv8tion.jda.api.AccountType#BOT AccountType.BOT}
+     *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link ApplicationInfo ApplicationInfo}
      *         <br>The {@link ApplicationInfo ApplicationInfo} of the bot's application.
      */
     @CheckReturnValue
-    RestAction<ApplicationInfo> getApplicationInfo();
+    RestAction<ApplicationInfo> retrieveApplicationInfo();
 
     /**
      * Creates an authorization invite url for the currently logged in Bot-Account.
@@ -1256,6 +1271,9 @@ public interface JDA
      * @param  permissions
      *         The permissions to use in your invite, these can be changed by the link user.
      *         <br>If no permissions are provided the {@code permissions} parameter is omitted
+     *
+     * @throws net.dv8tion.jda.api.exceptions.AccountTypeException
+     *         If the currently logged in account is not from {@link net.dv8tion.jda.api.AccountType#BOT AccountType.BOT}
      *
      * @return A valid OAuth2 invite url for the currently logged in Bot-Account
      */
@@ -1271,6 +1289,9 @@ public interface JDA
      * @param  permissions
      *         The permissions to use in your invite, these can be changed by the link user.
      *         <br>If no permissions are provided the {@code permissions} parameter is omitted
+     *
+     * @throws net.dv8tion.jda.api.exceptions.AccountTypeException
+     *         If the currently logged in account is not from {@link net.dv8tion.jda.api.AccountType#BOT AccountType.BOT}
      *
      * @return A valid OAuth2 invite url for the currently logged in Bot-Account
      */
@@ -1306,10 +1327,10 @@ public interface JDA
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.Webhook Webhook}
      *          <br>The webhook object.
      *
-     * @see    Guild#getWebhooks()
-     * @see    TextChannel#getWebhooks()
+     * @see    Guild#retrieveWebhooks()
+     * @see    TextChannel#retrieveWebhooks()
      */
-    RestAction<Webhook> getWebhookById(String webhookId);
+    RestAction<Webhook> retrieveWebhookById(String webhookId);
 
     /**
      * Retrieves a {@link net.dv8tion.jda.api.entities.Webhook Webhook} by its id.
@@ -1330,11 +1351,11 @@ public interface JDA
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.Webhook Webhook}
      *          <br>The webhook object.
      *
-     * @see    Guild#getWebhooks()
-     * @see    TextChannel#getWebhooks()
+     * @see    Guild#retrieveWebhooks()
+     * @see    TextChannel#retrieveWebhooks()
      */
-    default RestAction<Webhook> getWebhookById(long webhookId)
+    default RestAction<Webhook> retrieveWebhookById(long webhookId)
     {
-        return getWebhookById(Long.toUnsignedString(webhookId));
+        return retrieveWebhookById(Long.toUnsignedString(webhookId));
     }
 }
