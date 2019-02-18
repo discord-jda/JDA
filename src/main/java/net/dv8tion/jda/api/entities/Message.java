@@ -22,10 +22,14 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.Requester;
+import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.*;
 
 import javax.annotation.CheckReturnValue;
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.Formattable;
 import java.util.List;
@@ -1123,12 +1127,13 @@ public interface Message extends ISnowflake, Formattable
                     if (response.isSuccessful())
                     {
                         InputStream body = Requester.getBody(response);
-                        future.complete(body);
+                        if (!future.complete(body))
+                            IOUtil.silentClose(response);
                     }
                     else
                     {
                         future.completeExceptionally(new HttpException(response.code() + ": " + response.message()));
-                        response.close();
+                        IOUtil.silentClose(response);
                     }
                 }
             });
@@ -1159,7 +1164,7 @@ public interface Message extends ISnowflake, Formattable
                 }
                 finally
                 {
-                    silentClose(stream);
+                    IOUtil.silentClose(stream);
                 }
             }, getJDA().getCallbackPool());
         }
@@ -1180,18 +1185,9 @@ public interface Message extends ISnowflake, Formattable
                 }
                 finally
                 {
-                    silentClose(stream);
+                    IOUtil.silentClose(stream);
                 }
             }, getJDA().getCallbackPool());
-        }
-
-        private void silentClose(Closeable closeable)
-        {
-            try
-            {
-                closeable.close();
-            }
-            catch (IOException ignored) {}
         }
 
         protected Request getRequest()
