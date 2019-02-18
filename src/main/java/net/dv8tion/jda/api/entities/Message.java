@@ -1108,6 +1108,33 @@ public interface Message extends ISnowflake, Formattable
             return fileName;
         }
 
+        /**
+         * Enqueues a request to retrieve the contents of this Attachment.
+         * <br>The receiver is expected to close the retrieved {@link java.io.InputStream}.
+         *
+         * <h2>Example</h2>
+         * <pre>{@code
+         * public void printContents(Message.Attachment attachment)
+         * {
+         *     attachment.retrieveData().thenAccept(in -> {
+         *         StringBuilder builder = new StringBuilder();
+         *         byte[] buf = byte[1024];
+         *         int count = 0;
+         *         while ((count = in.read(buf)) > 0)
+         *         {
+         *             builder.append(new String(buf, 0, count));
+         *         }
+         *         in.close();
+         *         System.out.println(builder);
+         *     }).exceptionally(t -> { // handle failure
+         *         t.printStackTrace();
+         *         return null;
+         *     });
+         * }
+         * }</pre>
+         *
+         * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.InputStream}
+         */
         public CompletableFuture<InputStream> retrieveData() // it is expected that the response is closed by the callback!
         {
             CompletableFuture<InputStream> future = new CompletableFuture<>();
@@ -1140,11 +1167,56 @@ public interface Message extends ISnowflake, Formattable
             return future;
         }
 
+        /**
+         * Downloads the attachment to a file with the {@link #getFileName()} into the current working directory.
+         * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
+         * Alternatively you can use {@link #retrieveData()} and use a continuation with a different executor.
+         *
+         * <h2>Example</h2>
+         * <pre>{@code
+         * public void saveLocally(Message.Attachment attachment)
+         * {
+         *     attachment.downloadToFile()
+         *         .thenAccept(file -> System.out.println("Saved attachment to " + file.getName())
+         *         .exceptionally(t ->
+         *     { // handle failure
+         *         t.printStackTrace();
+         *         return null;
+         *     });
+         * }
+         * }</pre>
+         *
+         * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
+         */
         public CompletableFuture<File> downloadToFile() // using relative path
         {
             return downloadToFile(getFileName());
         }
 
+        /**
+         * Downloads the attachment to a file at the specified path (relative or absolute).
+         * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
+         * Alternatively you can use {@link #retrieveData()} and use a continuation with a different executor.
+         *
+         * <h2>Example</h2>
+         * <pre>{@code
+         * public void saveLocally(Message.Attachment attachment)
+         * {
+         *     attachment.downloadToFile("/tmp/" + attachment.getFileName())
+         *         .thenAccept(file -> System.out.println("Saved attachment to " + file.getName())
+         *         .exceptionally(t ->
+         *     { // handle failure
+         *         t.printStackTrace();
+         *         return null;
+         *     });
+         * }
+         * }</pre>
+         *
+         * @param  path
+         *         The path to save the file to
+         *
+         * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
+         */
         public CompletableFuture<File> downloadToFile(String path)
         {
             return retrieveData().thenApplyAsync((stream) -> {
@@ -1169,6 +1241,32 @@ public interface Message extends ISnowflake, Formattable
             }, getJDA().getCallbackPool());
         }
 
+        /**
+         * Retrieves the image of this attachment and provides an {@link net.dv8tion.jda.api.entities.Icon} equivalent.
+         * <br>Useful with {@link net.dv8tion.jda.api.managers.AccountManager#setAvatar(Icon)}.
+         * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
+         * Alternatively you can use {@link #retrieveData()} and use a continuation with a different executor.
+         *
+         * <h2>Example</h2>
+         * <pre>{@code
+         * public void changeAvatar(Message.Attachment attachment)
+         * {
+         *     attachment.retrieveAsIcon().thenCompose(icon -> {
+         *         SelfUser self = attachment.getJDA().getSelfUser();
+         *         AccountManager manager = self.getManager();
+         *         return manager.setAvatar(icon).submit();
+         *     }).exceptionally(t -> {
+         *         t.printStackTrace();
+         *         return null;
+         *     });
+         * }
+         * }</pre>
+         *
+         * @throws java.lang.IllegalStateException
+         *         If this is not an image ({@link #isImage()})
+         *
+         * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link net.dv8tion.jda.api.entities.Icon}
+         */
         public CompletableFuture<Icon> retrieveAsIcon()
         {
             if (!isImage())

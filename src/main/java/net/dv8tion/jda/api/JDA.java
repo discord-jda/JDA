@@ -303,7 +303,8 @@ public interface JDA
 
     /**
      * {@link ExecutorService} used to handle {@link RestAction} callbacks
-     * and completions.
+     * and completions. This is also used for handling {@link net.dv8tion.jda.api.entities.Message.Attachment} downloads
+     * when needed.
      * <br>By default this uses the {@link ForkJoinPool#commonPool() CommonPool} of the runtime.
      *
      * @return The {@link ExecutorService} used for callbacks
