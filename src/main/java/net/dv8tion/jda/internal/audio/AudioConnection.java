@@ -667,7 +667,12 @@ public class AudioConnection
                 {
                     silenceCounter = -1;
                     ByteBuffer rawAudio = sendHandler.provide20MsAudio();
-                    if (rawAudio == null || !rawAudio.hasRemaining() || !rawAudio.hasArray()) // no array = cannot encrypt
+                    if (rawAudio != null && !rawAudio.hasArray())
+                    {
+                        // we can't use the boxer without an array so encryption would not work
+                        LOG.error("AudioSendHandler provided ByteBuffer without a backing array! This is unsupported.");
+                    }
+                    if (rawAudio == null || !rawAudio.hasRemaining() || !rawAudio.hasArray())
                     {
                         if (speaking && changeTalking)
                             setSpeaking(0);

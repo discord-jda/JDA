@@ -41,7 +41,8 @@ public interface AudioSendHandler
 
     /**
      * If {@link #canProvide()} returns true JDA will call this method in an attempt to retrieve audio data from the
-     * handler. This method need to provide 20 Milliseconds of audio data as a <b>heap buffer</b>.
+     * handler. This method need to provide 20 Milliseconds of audio data as a <b>array-backed</b> {@link java.nio.ByteBuffer}.
+     * Use either {@link java.nio.ByteBuffer#allocate(int)} or {@link java.nio.ByteBuffer#wrap(byte[])}.
      * <p>
      * Considering this system needs to be low-latency / high-speed, it is recommended that the loading of audio data
      * be done before hand or in parallel and not loaded from disk when this method is called by JDA. Attempting to load
@@ -52,6 +53,11 @@ public interface AudioSendHandler
      * <br>If {@link #isOpus()} is set to return true, then it should be in pre-encoded Opus format instead.
      *
      * @return Should return a {@link java.nio.ByteBuffer} containing 20 Milliseconds of audio.
+     *
+     * @see    #isOpus()
+     * @see    #canProvide()
+     * @see    java.nio.ByteBuffer#allocate(int)
+     * @see    java.nio.ByteBuffer#wrap(byte[])
      */
     ByteBuffer provide20MsAudio();
 
