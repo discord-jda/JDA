@@ -16,6 +16,7 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.exceptions.HttpException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
@@ -1119,8 +1120,16 @@ public interface Message extends ISnowflake, Formattable
                 @Override
                 public void onResponse(Call call, Response response) throws IOException
                 {
-                    InputStream body = Requester.getBody(response);
-                    future.complete(body);
+                    if (response.isSuccessful())
+                    {
+                        InputStream body = Requester.getBody(response);
+                        future.complete(body);
+                    }
+                    else
+                    {
+                        future.completeExceptionally(new HttpException(response.code() + ": " + response.message()));
+                        response.close();
+                    }
                 }
             });
             return future;
