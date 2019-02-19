@@ -701,7 +701,7 @@ public class JDAImpl implements JDA
         {
             case BOT:
                 if (guildCache.size() >= 10)
-                    throw new IllegalStateException("Cannot create a Guild with a Bot in more than 10 guilds!");
+                    throw new IllegalStateException("Cannot create a Guild with a Bot in 10 or more guilds!");
                 break;
             case CLIENT:
                 if (guildCache.size() >= 100)
