@@ -212,10 +212,10 @@ public class AudioEchoExample extends ListenerAdapter
         @Override
         public void handleCombinedAudio(CombinedAudio combinedAudio)
         {
+            // we only want to send data when a user actually sent something, otherwise we would just send silence
             if (combinedAudio.getUsers().isEmpty())
                 return;
 
-            // we only want to send data when a user actually sent something, otherwise we just send silence
             byte[] data = combinedAudio.getAudioData(1.0f); // volume at 100% = 1.0 (50% = 0.5 / 55% = 0.55)
             queue.add(data);
         }
