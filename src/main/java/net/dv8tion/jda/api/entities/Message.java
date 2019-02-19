@@ -1177,7 +1177,7 @@ public interface Message extends ISnowflake, Formattable
          * public void saveLocally(Message.Attachment attachment)
          * {
          *     attachment.downloadToFile()
-         *         .thenAccept(file -> System.out.println("Saved attachment to " + file.getName())
+         *         .thenAccept(file -> System.out.println("Saved attachment to " + file.getName()))
          *         .exceptionally(t ->
          *     { // handle failure
          *         t.printStackTrace();
@@ -1203,7 +1203,7 @@ public interface Message extends ISnowflake, Formattable
          * public void saveLocally(Message.Attachment attachment)
          * {
          *     attachment.downloadToFile("/tmp/" + attachment.getFileName())
-         *         .thenAccept(file -> System.out.println("Saved attachment to " + file.getName())
+         *         .thenAccept(file -> System.out.println("Saved attachment to " + file.getName()))
          *         .exceptionally(t ->
          *     { // handle failure
          *         t.printStackTrace();
