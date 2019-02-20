@@ -78,6 +78,7 @@ public class AudioConnection
     private Thread receiveThread;
     private long queueTimeout;
     private boolean sentSilenceOnConnect = false;
+    private int speakingDelay = 10;
 
     private volatile AudioSendHandler sendHandler = null;
     private volatile AudioReceiveHandler receiveHandler = null;
@@ -112,6 +113,11 @@ public class AudioConnection
     public void setAutoReconnect(boolean shouldReconnect)
     {
         webSocket.setAutoReconnect(shouldReconnect);
+    }
+
+    public void setSpeakingDelay(int millis)
+    {
+        speakingDelay = (Math.max(0, millis) / 20) + 10; // millis / frame-length + minimum
     }
 
     public void setSendingHandler(AudioSendHandler handler)
@@ -598,8 +604,6 @@ public class AudioConnection
                 .put("ssrc", webSocket.getSSRC())
                 .put("delay", 0);
         webSocket.send(VoiceCode.USER_SPEAKING_UPDATE, obj);
-        if (raw == 0)
-            sendSilentPackets();
     }
 
     private void sendSilentPackets()
@@ -667,7 +671,7 @@ public class AudioConnection
                     if (rawAudio == null || rawAudio.length == 0)
                     {
                         if (speaking && changeTalking)
-                            setSpeaking(0);
+                            sendSilentPackets();
                     }
                     else
                     {
@@ -696,15 +700,18 @@ public class AudioConnection
                     else
                         seq++;
 
-                    if (++silenceCounter > 10)
+                    silenceCounter++;
+                    if ((!sentSilenceOnConnect && silenceCounter > 10) || silenceCounter > speakingDelay)
                     {
+                        if (sentSilenceOnConnect)
+                            setSpeaking(0);
                         silenceCounter = -1;
                         sentSilenceOnConnect = true;
                     }
                 }
                 else if (speaking && changeTalking)
                 {
-                    setSpeaking(0);
+                    sendSilentPackets();
                 }
             }
             catch (Exception e)

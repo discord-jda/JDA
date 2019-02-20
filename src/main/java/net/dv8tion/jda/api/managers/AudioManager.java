@@ -141,6 +141,8 @@ public interface AudioManager
     @Incubating
     EnumSet<SpeakingMode> getSpeakingMode();
 
+    void setSpeakingDelay(int millis);
+
     /**
      * Gets the {@link net.dv8tion.jda.api.JDA JDA} instance that this AudioManager is a part of.
      *
