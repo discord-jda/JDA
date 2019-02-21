@@ -147,7 +147,7 @@ public interface AudioManager
      * By default the delay is 200 milliseconds which is also the minimum delay.
      *
      * <p>If the delay is less than 200 milliseconds it will reset it the minimum delay. The provided delay
-     * will be aligned the audio frame length of 20 milliseconds by means of integer division. This means
+     * will be aligned to the audio frame length of 20 milliseconds by means of integer division. This means
      * it will be rounded down to the next biggest multiple of 20.
      *
      * <p>Note that this delay is not reliable and operates entirely based on the send system polling times
