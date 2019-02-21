@@ -117,7 +117,7 @@ public class AudioConnection
 
     public void setSpeakingDelay(int millis)
     {
-        speakingDelay = (Math.max(0, millis) / 20) + 10; // millis / frame-length + minimum
+        speakingDelay = Math.max(millis / 20, 10); // max { millis / frame-length, 200 millis }
     }
 
     public void setSendingHandler(AudioSendHandler handler)
