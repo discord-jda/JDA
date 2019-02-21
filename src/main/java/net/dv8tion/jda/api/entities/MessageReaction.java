@@ -228,7 +228,6 @@ public class MessageReaction
     /**
      * Retrieves the {@link net.dv8tion.jda.api.entities.User Users} that
      * already reacted with this MessageReaction.
-     * <br>This is an overload of {@link #retrieveUsers(int)} with {@code 100}.
      *
      * <p>Possible ErrorResponses include:
      * <ul>
@@ -243,44 +242,11 @@ public class MessageReaction
      * </ul>
      *
      * @return {@link ReactionPaginationAction ReactionPaginationAction}
-     *         <br>Retrieves an immutable list of users that reacted with this Reaction.
      */
     @CheckReturnValue
     public ReactionPaginationAction retrieveUsers()
     {
-        return retrieveUsers(100);
-    }
-
-    /**
-     * Retrieves the {@link net.dv8tion.jda.api.entities.User Users} that
-     * already reacted with this MessageReaction. The maximum amount of users
-     * that can be retrieved is 100.
-     *
-     * <p>Possible ErrorResponses include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>If the message this reaction was attached to got deleted.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>If the channel this reaction was used in got deleted.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>If we were removed from the channel/guild</li>
-     * </ul>
-     *
-     * @param  amount
-     *         the amount of users to retrieve
-     *
-     * @throws IllegalArgumentException
-     *         if the provided amount is not between 1-100
-     *
-     * @return {@link ReactionPaginationAction ReactionPaginationAction}
-     *         <br>Retrieves an immutable list of users that reacted with this Reaction.
-     */
-    @CheckReturnValue
-    public ReactionPaginationAction retrieveUsers(int amount)
-    {
-        return new ReactionPaginationActionImpl(this).limit(amount);
+        return new ReactionPaginationActionImpl(this);
     }
 
     /**
