@@ -343,7 +343,24 @@ this plugin will help catch those cases quickly as it will cause a build failure
 More info about RestAction: [Wiki](https://github.com/DV8FromTheWorld/JDA/wiki/7\)-Using-RestAction)
 -->
 
-### [JDA-Reactor](https://github.com/MinnDevelopment/jda-reactor)
+<!--
+TODO: Ensure this is compatible with version 4
+### [jda-nas](https://github.com/sedmelluq/jda-nas)
+
+Created and maintained by [sedmelluq](https://github.com/sedmelluq)
+<br>Provides a native implementation for the JDA Audio Send-System to avoid GC pauses.
+
+Note that this send system creates an extra UDP-Client which causes audio receive to no longer function properly
+since discord identifies the sending UDP-Client as the receiver.
+
+```java
+JDABuilder builder = new JDABuilder(BOT_TOKEN)
+    .setAudioSendFactory(new NativeAudioSendFactory());
+```
+
+-->
+
+### [jda-reactor](https://github.com/MinnDevelopment/jda-reactor)
 
 Created and maintained by [MinnDevelopment](https://github.com/MinnDevelopment).
 <br>Provides [Kotlin](https://kotlinlang.org/) extensions for **RestAction** and events that provide a [reactive](https://en.wikipedia.org/wiki/Reactive_programming) alternative to common JDA interfaces.
