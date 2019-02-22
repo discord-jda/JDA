@@ -15,10 +15,7 @@
  */
 package net.dv8tion.jda.core.entities;
 
-import net.dv8tion.jda.core.utils.Checks;
-
 import javax.annotation.Nullable;
-import java.time.OffsetDateTime;
 
 /**
  * Represents a {@link net.dv8tion.jda.core.entities.Message} activity.
@@ -134,8 +131,9 @@ public class MessageActivity
         /**
          * The cover aka splash id of this {@link net.dv8tion.jda.core.entities.MessageActivity.Application}.
          *
-         * @return the applications cover image/id.
+         * @return the applications cover image/id, or null
          */
+        @Nullable
         public String getCoverId()
         {
             return coverId;
@@ -144,10 +142,13 @@ public class MessageActivity
         /**
          * The url of the cover image for this application.
          *
-         * @return the url of the cover/splash
+         * @return the url of the cover/splash, or null
          */
+        @Nullable
         public String getCoverUrl()
         {
+            if (coverId == null)
+                return null;
             return "https://cdn.discordapp.com/application/" + getId() + "/" + coverId + ".png";
         }
 
