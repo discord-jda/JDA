@@ -783,7 +783,7 @@ public class EntityBuilder
                 final String name = applicationData.getString("name");
                 final String description = applicationData.getString("description");
                 final String iconId = applicationData.getString("icon");
-                final String coverId = applicationData.getString("cover_image");
+                final String coverId = applicationData.optString("cover_image", null);
                 final long applicationId = applicationData.getLong("id");
 
                 application = new MessageActivity.Application(name, description, iconId, coverId, applicationId);
