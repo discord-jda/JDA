@@ -26,10 +26,7 @@ import net.dv8tion.jda.internal.requests.ratelimit.BotRateLimiter;
 import net.dv8tion.jda.internal.requests.ratelimit.ClientRateLimiter;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.config.AuthorizationConfig;
-import okhttp3.Call;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.RequestBody;
+import okhttp3.*;
 import okhttp3.internal.http.HttpMethod;
 import org.jetbrains.annotations.Async;
 import org.slf4j.Logger;
@@ -293,11 +290,14 @@ public class Requester
      *
      * @return InputStream representing the body of this response
      */
+    @SuppressWarnings("ConstantConditions")
     public static InputStream getBody(okhttp3.Response response) throws IOException
     {
         String encoding = response.header("content-encoding", "");
-        if (encoding.equals("gzip"))
-            return new GZIPInputStream(response.body().byteStream());
-        return response.body().byteStream();
+        ResponseBody body = response.body();
+        long length = body.contentLength();
+        if (length >= 10 && encoding.equals("gzip"))
+            return new GZIPInputStream(body.byteStream());
+        return body.byteStream();
     }
 }
