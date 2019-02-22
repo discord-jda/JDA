@@ -15,10 +15,17 @@
 <img align="right" src="https://i.imgur.com/OG7Tne8.png" height="200" width="200">
 
 # JDA (Java Discord API)
+
 JDA strives to provide a clean and full wrapping of the Discord REST api and its Websocket-Events for Java.
 
-## JDA 3.x
-JDA will be continued with version 3.x and will support Bot-features (for bot-accounts) and Client-features (for user-accounts).
+## JDA 4.x BETA
+
+Due to official statements made by the Discord developers we will no longer support unofficial features. These features
+are undocumented API endpoints or protocols that are not available to bot-accounts. We will however continue support
+for the usage of JDA through the client account type through `JDABuilder(AccountType.CLIENT)`. This does not mean
+it is encouraged or recommended to create applications such as selfbots or custom clients which are prohibited by
+the Discord Terms of Service.
+
 _Please see the [Discord docs](https://discordapp.com/developers/docs/reference) for more information about bot accounts._
 
 1. [Examples](#creating-the-jda-object)
@@ -97,6 +104,9 @@ public class MessageListener extends ListenerAdapter
             throws LoginException
     {
         JDA jda = new JDABuilder("token").build();
+        //You can also add event listeners to the already built JDA instance
+        // Note that some events may not be received if the listener is added after calling build()
+        // This includes events such as the ReadyEvent
         jda.addEventListener(new MessageListener());
     }
 
@@ -118,18 +128,12 @@ public class MessageListener extends ListenerAdapter
 }
 ```
 
-### More Examples
+<!-- ### More Examples
+TODO: Call for examples
 We provide a small set of Examples in the [Example Directory](https://github.com/DV8FromTheWorld/JDA/tree/master/src/examples/java).
 
-In addition you can look at the many Discord Bots that were implemented using JDA:
-- [Yui](https://github.com/DV8FromTheWorld/Yui)
-- [Vortex](https://github.com/jagrosh/Vortex)
-- [FredBoat](https://github.com/Frederikam/FredBoat)
-
 [And many more!](https://github.com/search?q=JDA+discord+bot&type=Repositories&utf8=%E2%9C%93)
-
-> **Note**: In these examples we override methods from the inheriting class `ListenerAdapter`.<br>
-> The usage of the `@Override` annotation is recommended to validate methods.
+-->
 
 ## Sharding a Bot
 
@@ -249,6 +253,7 @@ the audio api of JDA. This works without `opus-java-natives` as it only requires
 See [opus-java](https://github.com/discord-java/opus-java)
 
 ### Logging Framework - SLF4J
+
 JDA is using [SLF4J](https://www.slf4j.org/) to log its messages.
 
 That means you should add some SLF4J implementation to your build path in addition to JDA.
@@ -265,6 +270,7 @@ We strongly recommend to use one though, as that can improve speed and allows yo
 The most popular implementations are [Log4j 2](https://logging.apache.org/log4j/2.x/) and [Logback](https://logback.qos.ch/)
 
 ## Documentation
+
 Docs can be found on the [Jenkins](https://ci.dv8tion.net/job/JDA) or directly [here](https://ci.dv8tion.net/job/JDA/javadoc/)
 <br>A simple Wiki can also be found in this repository's [Wiki section](https://github.com/DV8FromTheWorld/JDA/wiki)
 
@@ -311,7 +317,8 @@ to understand a proper implementation.
 <br>Sedmelluq provided a demo in his repository which presents an example implementation for JDA:
 https://github.com/sedmelluq/lavaplayer/tree/master/demo-jda
 
-
+<!--
+TODO: Ensure this is compatible with version 4
 ### [JDA-Utilities](https://github.com/JDA-Applications/JDA-Utilities)
 
 Created and maintained by [jagrosh](https://github.com/jagrosh).
@@ -321,6 +328,10 @@ Features include:
 - Paginated Message using Reactions
 - EventWaiter allowing to wait for a response and other events
 
+-->
+
+<!--
+TODO: Ensure this is compatible with version 4
 ### [JDAction](https://github.com/sedmelluq/jdaction)
 
 Created and maintained by [sedmelluq](https://github.com/sedmelluq)
@@ -330,16 +341,37 @@ and it is often only discovered after noticing that something doesn't work,
 this plugin will help catch those cases quickly as it will cause a build failure in such case.
 
 More info about RestAction: [Wiki](https://github.com/DV8FromTheWorld/JDA/wiki/7\)-Using-RestAction)
+-->
+
+### [JDA-Reactor](https://github.com/MinnDevelopment/jda-reactor)
+
+Created and maintained by [MinnDevelopment](https://github.com/MinnDevelopment).
+<br>Provides [Kotlin](https://kotlinlang.org/) extensions for **RestAction** and events that provide a [reactive](https://en.wikipedia.org/wiki/Reactive_programming) alternative to common JDA interfaces.
+
+```kotlin
+fun main() {
+    val manager = ReactiveEventManager()
+    manager.on<ReadyEvent>()
+           .subscribe { println("Ready to serve!") }
+    manager.on<MessageReceivedEvent>()
+           .filter { it.message.contentRaw == "!ping" }
+           .subscribe { it.channel.sendMessage("Pong!").queue() }
+
+    val jda = JDABuilder(BOT_TOKEN)
+               .setEventManager(manager)
+               .build()
+}
+```
 
 ------
 
 More can be found in our github organization: [JDA-Applications](https://github.com/JDA-Applications)
 
 ## Contributing to JDA
-If you want to contribute to JDA, make sure to base your branch off of our **development** branch (or a feature-branch)
+If you want to contribute to JDA, make sure to base your branch off of our **v4** branch (or a feature-branch)
 and create your PR into that **same** branch. **We will be rejecting any PRs between branches or into release branches!**
 
-It is also highly recommended to get in touch with the Devs before opening Pull Requests (either through an issue or the Discord servers mentioned above).<br>
+It is also highly recommended to get in touch with the Developers before opening Pull Requests (either through an issue or the Discord servers mentioned above).<br>
 It is very possible that your change might already be in development or you missed something.
 
 More information can be found at the wiki page [Contributing](https://github.com/DV8FromTheWorld/JDA/wiki/5\)-Contributing)
@@ -366,7 +398,8 @@ The `RR` in version `3.4.RR` should be replaced by the latest version that was p
 version was by looking at the [release page](https://github.com/DV8FromTheWorld/JDA/releases)
 
 ## Dependencies:
-This project requires **Java 8**.<br>
+
+This project requires **Java 8+**.<br>
 All dependencies are managed automatically by Gradle.
  * NV Websocket Client
    * Version: **2.5**
