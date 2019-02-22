@@ -34,7 +34,6 @@ import net.dv8tion.jda.core.entities.MessageEmbed.*;
 import net.dv8tion.jda.core.entities.impl.*;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.handle.EventCache;
-import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.Helpers;
 import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.cache.CacheFlag;
@@ -783,7 +782,7 @@ public class EntityBuilder
                 final String name = applicationData.getString("name");
                 final String description = applicationData.getString("description");
                 final String iconId = applicationData.getString("icon");
-                final String coverId = applicationData.getString("cover_image");
+                final String coverId = applicationData.optString("cover_image", null);
                 final long applicationId = applicationData.getLong("id");
 
                 application = new MessageActivity.Application(name, description, iconId, coverId, applicationId);
