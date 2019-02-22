@@ -130,6 +130,8 @@ class MarkdownTest
         Assertions.assertEquals("Hello `to` World", markdown.compute("```Hello `to` World```"));
         Assertions.assertEquals("```Hello to World", markdown.compute("```Hello `to` World"));
         Assertions.assertEquals("\\```Hello to World```", markdown.compute("\\```Hello `to` World```"));
+
+        Assertions.assertEquals("Test", markdown.compute("```java\nTest```"));
     }
 }
 
@@ -229,6 +231,8 @@ class IgnoreMarkdownTest
 
         Assertions.assertEquals("```Hello `to` World```", markdown.compute("```Hello `to` World```"));
         Assertions.assertEquals("```Hello `to` World", markdown.compute("```Hello `to` World"));
+
+        Assertions.assertEquals("```java\nTest```", markdown.compute("```java\nTest```"));
     }
 }
 
@@ -344,5 +348,7 @@ class EscapeMarkdownTest
         Assertions.assertEquals("\\```Hello `to` World\\```", markdown.compute("```Hello `to` World```"));
         Assertions.assertEquals("```Hello \\`to\\` World", markdown.compute("```Hello `to` World"));
         Assertions.assertEquals("\\```Hello \\`to\\` World", markdown.compute("\\```Hello `to` World"));
+
+        Assertions.assertEquals("\\```java\nTest\\```", markdown.compute("```java\nTest```"));
     }
 }

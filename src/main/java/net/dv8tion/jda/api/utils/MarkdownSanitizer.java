@@ -20,6 +20,8 @@ import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import java.util.regex.Pattern;
+
 /**
  * Implements and algorithm that can strip or replace markdown in any supplied string.
  *
@@ -57,6 +59,8 @@ public class MarkdownSanitizer
     private static final int ESCAPED_SPOILER   = Integer.MIN_VALUE | SPOILER;
     private static final int ESCAPED_UNDERLINE = Integer.MIN_VALUE | UNDERLINE;
     private static final int ESCAPED_STRIKE    = Integer.MIN_VALUE | STRIKE;
+
+    private static final Pattern codeLanguage = Pattern.compile("^\\w+\n.*", Pattern.MULTILINE | Pattern.DOTALL);
 
     private static final TIntObjectMap<String> tokens;
     static
@@ -341,7 +345,10 @@ public class MarkdownSanitizer
     {
         if (strategy == SanitizationStrategy.REMOVE)
         {
-            builder.append(seq);
+            if (codeLanguage.matcher(seq).matches())
+                builder.append(seq.substring(seq.indexOf("\n") + 1));
+            else
+                builder.append(seq);
             return;
         }
         String token = tokens.get(region);
