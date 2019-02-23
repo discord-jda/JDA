@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.requests.restaction;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
@@ -54,6 +55,16 @@ public class PermissionOverrideActionImpl
         super(api, Route.Channels.CREATE_PERM_OVERRIDE.compile(channel.getId(), permissionHolder.getId()));
         this.channel = channel;
         this.permissionHolder = permissionHolder;
+    }
+
+    @Override
+    protected BooleanSupplier finalizeChecks()
+    {
+        return () -> {
+            if (!getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_PERMISSIONS))
+                throw new InsufficientPermissionException(Permission.MANAGE_PERMISSIONS);
+            return true;
+        };
     }
 
     @Override

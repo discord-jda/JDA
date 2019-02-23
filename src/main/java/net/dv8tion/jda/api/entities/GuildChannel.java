@@ -16,6 +16,8 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.ChannelManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
@@ -288,9 +290,6 @@ public interface GuildChannel extends ISnowflake
      *
      * @return {@link PermissionOverrideAction PermissionOverrideAction}
      *         Provides the newly created PermissionOverride for the specified permission holder
-     *
-     * @see    #createPermissionOverride(IPermissionHolder)
-     * @see    #putPermissionOverride(IPermissionHolder)
      */
     @CheckReturnValue
     PermissionOverrideAction createPermissionOverride(IPermissionHolder permissionHolder);
@@ -310,15 +309,30 @@ public interface GuildChannel extends ISnowflake
      *
      * @return {@link PermissionOverrideAction PermissionOverrideAction}
      *         Provides the newly created PermissionOverride for the specified permission holder
-     *
-     * @see    #putPermissionOverride(IPermissionHolder)
      */
     @CheckReturnValue
     PermissionOverrideAction putPermissionOverride(IPermissionHolder permissionHolder);
 
+    /**
+     * Creates a new override or updates an existing one.
+     * <br>This is similar to calling {@link PermissionOverride#getManager()} if an override exists.
+     *
+     * @param  permissionHolder
+     *         The Member/Role for the override
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If we don't have the permission to {@link net.dv8tion.jda.api.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS}
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided permission holder is null or not from this guild
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction}
+     *         <br>With the current settings of an existing override or a fresh override with no permissions set
+     */
     @CheckReturnValue
     default PermissionOverrideAction upsertPermissionOverride(IPermissionHolder permissionHolder)
     {
+        if (!getGuild().getSelfMember().hasPermission(this, Permission.MANAGE_PERMISSIONS))
+            throw new InsufficientPermissionException(Permission.MANAGE_PERMISSIONS);
         PermissionOverride override = getPermissionOverride(permissionHolder);
         return override != null ? override.getManager() : putPermissionOverride(permissionHolder);
     }

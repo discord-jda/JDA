@@ -33,6 +33,8 @@ import java.util.function.BooleanSupplier;
  *
  * @since  3.0
  *
+ * @see    net.dv8tion.jda.api.entities.PermissionOverride#getManager()
+ * @see    net.dv8tion.jda.api.entities.GuildChannel#upsertPermissionOverride(IPermissionHolder)
  * @see    net.dv8tion.jda.api.entities.GuildChannel#createPermissionOverride(IPermissionHolder)
  * @see    net.dv8tion.jda.api.entities.GuildChannel#putPermissionOverride(IPermissionHolder)
  */
