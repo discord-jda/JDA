@@ -139,11 +139,11 @@ public class PermissionOverrideImpl implements PermissionOverride
             mng = MiscUtil.locked(mngLock, () ->
             {
                 if (manager == null)
-                    manager = new PermissionOverrideActionImpl(this);
+                    manager = new PermissionOverrideActionImpl(this).setOverride(false);
                 return manager;
             });
         }
-        return mng;
+        return mng.reset();
     }
 
     @Override

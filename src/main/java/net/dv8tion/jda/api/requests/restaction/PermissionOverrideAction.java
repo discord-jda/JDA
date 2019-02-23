@@ -43,12 +43,31 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
     @Override
     PermissionOverrideAction setCheck(BooleanSupplier checks);
 
+    /**
+     * Shortcut for {@code resetAllow().resetDeny()}.
+     * <br>The permission override will be empty after this operation
+     *
+     * @return The current PermissionOverrideAction for chaining convenience
+     */
     default PermissionOverrideAction reset()
     {
         return resetAllow().resetDeny();
     }
 
+    /**
+     * Resets the allowed permissions to the current original value.
+     * <br>For a new override this will just be 0.
+     *
+     * @return The current PermissionOverrideAction for chaining convenience
+     */
     PermissionOverrideAction resetAllow();
+
+    /**
+     * Resets the denied permissions to the current original value.
+     * <br>For a new override this will just be 0.
+     *
+     * @return The current PermissionOverrideAction for chaining convenience
+     */
     PermissionOverrideAction resetDeny();
 
     /**

@@ -37,6 +37,7 @@ public class PermissionOverrideActionImpl
     extends AuditableRestActionImpl<PermissionOverride>
     implements PermissionOverrideAction
 {
+    private boolean isOverride = true;
     private boolean allowSet = false;
     private boolean denySet = false;
 
@@ -55,6 +56,13 @@ public class PermissionOverrideActionImpl
         super(api, Route.Channels.CREATE_PERM_OVERRIDE.compile(channel.getId(), permissionHolder.getId()));
         this.channel = channel;
         this.permissionHolder = permissionHolder;
+    }
+
+    // Whether to keep original value of the current override or not - by default we override the value
+    public PermissionOverrideActionImpl setOverride(boolean override)
+    {
+        isOverride = override;
+        return this;
     }
 
     @Override
@@ -76,6 +84,8 @@ public class PermissionOverrideActionImpl
     @Override
     public PermissionOverrideAction resetAllow()
     {
+        if (!isOverride)
+            allow = getCurrentAllow();
         allowSet = false;
         return this;
     }
@@ -83,6 +93,8 @@ public class PermissionOverrideActionImpl
     @Override
     public PermissionOverrideAction resetDeny()
     {
+        if (!isOverride)
+            deny = getCurrentDeny();
         denySet = false;
         return this;
     }
@@ -168,12 +180,16 @@ public class PermissionOverrideActionImpl
 
     private long getCurrentAllow()
     {
+        if (isOverride)
+            return 0;
         PermissionOverride override = channel.getPermissionOverride(permissionHolder);
         return override == null ? 0 : override.getAllowedRaw();
     }
 
     private long getCurrentDeny()
     {
+        if (isOverride)
+            return 0;
         PermissionOverride override = channel.getPermissionOverride(permissionHolder);
         return override == null ? 0 : override.getDeniedRaw();
     }
