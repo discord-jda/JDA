@@ -84,8 +84,7 @@ public class PermissionOverrideActionImpl
     @Override
     public PermissionOverrideAction resetAllow()
     {
-        if (!isOverride)
-            allow = getCurrentAllow();
+        allow = getCurrentAllow();
         allowSet = false;
         return this;
     }
@@ -93,8 +92,7 @@ public class PermissionOverrideActionImpl
     @Override
     public PermissionOverrideAction resetDeny()
     {
-        if (!isOverride)
-            deny = getCurrentDeny();
+        deny = getCurrentDeny();
         denySet = false;
         return this;
     }
