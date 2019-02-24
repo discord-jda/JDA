@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.requests.RestAction;
 
 import javax.annotation.CheckReturnValue;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Represents a Discord User.
@@ -53,6 +54,7 @@ import java.util.List;
  */
 public interface User extends IMentionable, IFakeable
 {
+    Pattern USER_TAG = Pattern.compile(".{2,32}#\\d{4}");
 
     /**
      * The username of the {@link net.dv8tion.jda.api.entities.User User}. Length is between 2 and 32 characters (inclusive).

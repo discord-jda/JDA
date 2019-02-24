@@ -408,6 +408,12 @@ public interface Guild extends ISnowflake
         return getMemberCache().getElementById(userId);
     }
 
+    default Member getMemberByTag(String tag)
+    {
+        User user = getJDA().getUserByTag(tag);
+        return getMember(user);
+    }
+
     /**
      * A list of all {@link net.dv8tion.jda.api.entities.Member Members} in this Guild.
      * <br>The Members are not provided in any particular order.

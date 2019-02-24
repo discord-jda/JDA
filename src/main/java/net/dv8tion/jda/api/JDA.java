@@ -28,6 +28,7 @@ import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.OkHttpClient;
 
 import javax.annotation.CheckReturnValue;
@@ -479,6 +480,17 @@ public interface JDA
     default User getUserById(long id)
     {
         return getUserCache().getElementById(id);
+    }
+
+    default User getUserByTag(String tag)
+    {
+        Checks.notNull(tag, "Tag");
+        Checks.check(User.USER_TAG.matcher(tag).matches(), "Invalid tag format!");
+        return getUserCache().applyStream(stream ->
+              stream.filter(it -> it.getAsTag().equals(tag))
+                    .findFirst()
+                    .orElse(null)
+        );
     }
 
     /**
