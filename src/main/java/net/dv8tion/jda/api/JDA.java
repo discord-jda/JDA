@@ -505,9 +505,7 @@ public interface JDA
     {
         Checks.notNull(tag, "Tag");
         Checks.check(User.USER_TAG.matcher(tag).matches(), "Invalid tag format!");
-        int index = tag.lastIndexOf('#');
-        if (index < 0)
-            throw new AssertionError(); // should never happen since the regex has a # in it
+        int index = tag.length() - 5; // index of # in the string
         String username = tag.substring(0, index);
         String discriminator = tag.substring(index + 1);
         return getUserByTag(username, discriminator);
