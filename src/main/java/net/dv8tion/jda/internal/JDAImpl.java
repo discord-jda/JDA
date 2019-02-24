@@ -701,7 +701,7 @@ public class JDAImpl implements JDA
         {
             case BOT:
                 if (guildCache.size() >= 10)
-                    throw new IllegalStateException("Cannot create a Guild with a Bot in more than 10 guilds!");
+                    throw new IllegalStateException("Cannot create a Guild with a Bot in 10 or more guilds!");
                 break;
             case CLIENT:
                 if (guildCache.size() >= 100)
@@ -711,7 +711,7 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public RestAction<Webhook> getWebhookById(String webhookId)
+    public RestAction<Webhook> retrieveWebhookById(String webhookId)
     {
         Checks.isSnowflake(webhookId, "Webhook ID");
 
@@ -726,8 +726,9 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public RestAction<ApplicationInfo> getApplicationInfo()
+    public RestAction<ApplicationInfo> retrieveApplicationInfo()
     {
+        AccountTypeException.check(getAccountType(), AccountType.BOT);
         Route.CompiledRoute route = Route.Applications.GET_BOT_APPLICATION.compile();
         return new RestActionImpl<>(this, route, (response, request) ->
         {
@@ -758,7 +759,7 @@ public class JDAImpl implements JDA
     private StringBuilder buildBaseInviteUrl()
     {
         if (clientId == null)
-            getApplicationInfo().complete();
+            retrieveApplicationInfo().complete();
         StringBuilder builder = new StringBuilder("https://discordapp.com/oauth2/authorize?scope=bot&client_id=");
         builder.append(clientId);
         return builder;

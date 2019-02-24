@@ -164,7 +164,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     public PermissionOverrideAction createPermissionOverride(IPermissionHolder permissionHolder)
     {
         Checks.notNull(permissionHolder, "PermissionHolder");
-        if (getPermissionOverride(permissionHolder) == null)
+        if (getPermissionOverride(permissionHolder) != null)
             throw new IllegalStateException("Provided member already has a PermissionOverride in this channel!");
 
         return putPermissionOverride(permissionHolder);
@@ -189,7 +189,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     }
 
     @Override
-    public RestAction<List<Invite>> getInvites()
+    public RestAction<List<Invite>> retrieveInvites()
     {
         if (!this.getGuild().getSelfMember().hasPermission(this, Permission.MANAGE_CHANNEL))
             throw new InsufficientPermissionException(Permission.MANAGE_CHANNEL);

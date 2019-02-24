@@ -94,7 +94,7 @@ public interface TextChannel extends GuildChannel, MessageChannel, Comparable<Te
      *         <br>An immutable list of Webhook attached to this channel
      */
     @CheckReturnValue
-    RestAction<List<Webhook>> getWebhooks();
+    RestAction<List<Webhook>> retrieveWebhooks();
 
     /**
      * Creates a new {@link net.dv8tion.jda.api.entities.Webhook Webhook}.

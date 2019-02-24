@@ -33,6 +33,6 @@ public class GuildVoiceMoveEvent extends GenericGuildVoiceUpdateEvent
 {
     public GuildVoiceMoveEvent(JDA api, long responseNumber, Member member, VoiceChannel channelLeft)
     {
-        super(api, responseNumber, member, member.getVoiceState().getChannel(), channelLeft);
+        super(api, responseNumber, member, channelLeft, member.getVoiceState().getChannel());
     }
 }

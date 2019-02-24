@@ -214,7 +214,7 @@ public class MessageReaction
     /**
      * Retrieves the {@link net.dv8tion.jda.api.entities.User Users} that
      * already reacted with this MessageReaction.
-     * <br>This is an overload of {@link #getUsers(int)} with {@code 100}.
+     * <br>This is an overload of {@link #retrieveUsers(int)} with {@code 100}.
      *
      * <p>Possible ErrorResponses include:
      * <ul>
@@ -232,9 +232,9 @@ public class MessageReaction
      *         <br>Retrieves an immutable list of users that reacted with this Reaction.
      */
     @CheckReturnValue
-    public ReactionPaginationAction getUsers()
+    public ReactionPaginationAction retrieveUsers()
     {
-        return getUsers(100);
+        return retrieveUsers(100);
     }
 
     /**
@@ -264,7 +264,7 @@ public class MessageReaction
      *         <br>Retrieves an immutable list of users that reacted with this Reaction.
      */
     @CheckReturnValue
-    public ReactionPaginationAction getUsers(int amount)
+    public ReactionPaginationAction retrieveUsers(int amount)
     {
         return new ReactionPaginationActionImpl(this).limit(amount);
     }

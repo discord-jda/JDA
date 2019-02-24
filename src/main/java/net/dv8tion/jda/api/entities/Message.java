@@ -127,7 +127,7 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Pattern used to find instant invites in messages.
      *
-     * @see #getInvites() getInvites()
+     * @see #getInvites()
      */
     Pattern INVITE_PATTERN = Pattern.compile("(?:https?://)?discord(?:app\\.com/invite|\\.gg)/([a-z0-9-]+)", Pattern.CASE_INSENSITIVE);
 
@@ -344,8 +344,8 @@ public interface Message extends ISnowflake, Formattable
     String getContentRaw();
 
     /**
-     * Gets the textual content of this message using {@link #getContentDisplay()} and then strips it of all markdown characters
-     * like {@literal *, **, __, ~~} that provide text formatting. Any characters that match these but are not being used
+     * Gets the textual content of this message using {@link #getContentDisplay()} and then strips it of markdown characters 
+     * like {@literal *, **, __, ~~, ||} that provide text formatting. Any characters that match these but are not being used 
      * for formatting are escaped to prevent possible formatting.
      *
      * @return The textual content from {@link #getContentDisplay()} with all text formatting characters removed or escaped.

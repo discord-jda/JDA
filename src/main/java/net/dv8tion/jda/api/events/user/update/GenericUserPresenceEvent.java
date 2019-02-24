@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.events.user.update;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.GenericEvent;
 
 /**
  * Indicates that the presence of a {@link net.dv8tion.jda.api.entities.User User} has changed.
@@ -26,7 +27,7 @@ import net.dv8tion.jda.api.entities.Member;
  *
  * <p>Can be used to track the presence updates of members.
  */
-public interface GenericUserPresenceEvent
+public interface GenericUserPresenceEvent extends GenericEvent
 {
     /**
      * Possibly-null guild in which the presence has changed.
