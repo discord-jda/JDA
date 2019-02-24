@@ -54,6 +54,9 @@ import java.util.regex.Pattern;
  */
 public interface User extends IMentionable, IFakeable
 {
+    /**
+     * Compiled pattern for a Discord Tag: {@code .{2,32}#\d{4}}
+     */
     Pattern USER_TAG = Pattern.compile(".{2,32}#\\d{4}");
 
     /**
