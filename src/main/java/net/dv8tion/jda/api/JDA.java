@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 import okhttp3.OkHttpClient;
 
 import javax.annotation.CheckReturnValue;
@@ -504,10 +505,45 @@ public interface JDA
     {
         Checks.notNull(tag, "Tag");
         Checks.check(User.USER_TAG.matcher(tag).matches(), "Invalid tag format!");
+        int index = tag.lastIndexOf('#');
+        if (index < 0)
+            throw new AssertionError(); // should never happen since the regex has a # in it
+        String username = tag.substring(0, index);
+        String discriminator = tag.substring(index + 1);
+        return getUserByTag(username, discriminator);
+    }
+
+    /**
+     * Searches for a user that has the matching Discord Tag.
+     * <br>Format has to be in the form {@code Username#Discriminator} where the
+     * username must be between 2 and 32 characters (inclusive) matching the exact casing and the discriminator
+     * must be exactly 4 digits.
+     *
+     * <p>This only checks users that are known to the currently logged in account (shard). If a user exists
+     * with the tag that is not available in the {@link #getUserCache() User-Cache} it will not be detected.
+     * <br>Currently Discord does not offer a way to retrieve a user by their discord tag.
+     *
+     * @param  username
+     *         The name of the user
+     * @param  discriminator
+     *         The discriminator of the user
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided arguments are null or not in the described format
+     *
+     * @return The {@link net.dv8tion.jda.api.entities.User} for the discord tag or null if no user has the provided tag
+     */
+    default User getUserByTag(String username, String discriminator)
+    {
+        Checks.notNull(username, "Username");
+        Checks.notNull(discriminator, "Discriminator");
+        Checks.check(discriminator.length() == 4 && Helpers.isNumeric(discriminator), "Invalid format for discriminator!");
+        Checks.check(username.length() >= 2 && username.length() <= 32, "Username must be between 2 and 32 characters in length!");
         return getUserCache().applyStream(stream ->
-              stream.filter(it -> it.getAsTag().equals(tag))
-                    .findFirst()
-                    .orElse(null)
+            stream.filter(it -> it.getDiscriminator().equals(discriminator))
+                  .filter(it -> it.getName().equals(username))
+                  .findFirst()
+                  .orElse(null)
         );
     }
 
