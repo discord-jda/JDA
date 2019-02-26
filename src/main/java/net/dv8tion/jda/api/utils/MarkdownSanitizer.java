@@ -146,7 +146,7 @@ public class MarkdownSanitizer
      */
     public static String escape(String sequence)
     {
-        return escape(sequence, 0);
+        return escape(sequence, NORMAL);
     }
 
     /**
