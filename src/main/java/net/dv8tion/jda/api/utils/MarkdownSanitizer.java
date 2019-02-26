@@ -84,7 +84,7 @@ public class MarkdownSanitizer
 
     public MarkdownSanitizer()
     {
-        this.ignored = 0;
+        this.ignored = NORMAL;
         this.strategy = SanitizationStrategy.REMOVE;
     }
 
