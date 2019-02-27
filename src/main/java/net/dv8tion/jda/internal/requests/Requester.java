@@ -296,6 +296,8 @@ public class Requester
         String encoding = response.header("content-encoding", "");
         ResponseBody body = response.body();
         long length = body.contentLength();
+        //We believe that discord might send content-encoding without actual content attached
+        // this causes an exception since the constructor tries to read the header which is missing
         if (length >= 10 && encoding.equals("gzip"))
             return new GZIPInputStream(body.byteStream());
         return body.byteStream();
