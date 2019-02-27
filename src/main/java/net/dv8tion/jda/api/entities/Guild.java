@@ -369,6 +369,9 @@ public interface Guild extends ISnowflake
      * @param  user
      *         The {@link net.dv8tion.jda.api.entities.User User} which to retrieve a related Member object for.
      *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided user is null
+     *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.Member Member} for the related {@link net.dv8tion.jda.api.entities.User User}.
      */
     Member getMember(User user);
@@ -433,7 +436,7 @@ public interface Guild extends ISnowflake
     default Member getMemberByTag(String tag)
     {
         User user = getJDA().getUserByTag(tag);
-        return getMember(user);
+        return user == null ? null : getMember(user);
     }
 
     /**
@@ -461,7 +464,7 @@ public interface Guild extends ISnowflake
     default Member getMemberByTag(String username, String discriminator)
     {
         User user = getJDA().getUserByTag(username, discriminator);
-        return getMember(user);
+        return user == null ? null : getMember(user);
     }
 
     /**

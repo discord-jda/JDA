@@ -55,9 +55,9 @@ import java.util.regex.Pattern;
 public interface User extends IMentionable, IFakeable
 {
     /**
-     * Compiled pattern for a Discord Tag: {@code .{2,32}#\d{4}}
+     * Compiled pattern for a Discord Tag: {@code (.{2,32})#(\d{4})}
      */
-    Pattern USER_TAG = Pattern.compile(".{2,32}#\\d{4}");
+    Pattern USER_TAG = Pattern.compile("(.{2,32})#(\\d{4})");
 
     /**
      * The username of the {@link net.dv8tion.jda.api.entities.User User}. Length is between 2 and 32 characters (inclusive).

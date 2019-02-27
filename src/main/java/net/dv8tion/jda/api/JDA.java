@@ -39,6 +39,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.regex.Matcher;
 
 /**
  * The core of JDA. Acts as a registry system of JDA. All parts of the the API can be accessed starting from this class.
@@ -504,10 +505,10 @@ public interface JDA
     default User getUserByTag(String tag)
     {
         Checks.notNull(tag, "Tag");
-        Checks.check(User.USER_TAG.matcher(tag).matches(), "Invalid tag format!");
-        int index = tag.length() - 5; // index of # in the string
-        String username = tag.substring(0, index);
-        String discriminator = tag.substring(index + 1);
+        Matcher matcher = User.USER_TAG.matcher(tag);
+        Checks.check(matcher.matches(), "Invalid tag format!");
+        String username = matcher.group(1);
+        String discriminator = matcher.group(2);
         return getUserByTag(username, discriminator);
     }
 
