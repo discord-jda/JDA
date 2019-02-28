@@ -168,7 +168,7 @@ public class JDABuilder
     @Nonnull
     public JDABuilder setDisabledCacheFlags(@Nullable EnumSet<CacheFlag> flags)
     {
-        return setEnabledCacheFlags(flags == null ? null : EnumSet.complementOf(flags));
+        return setEnabledCacheFlags(flags == null ? EnumSet.allOf(CacheFlag.class) : EnumSet.complementOf(flags));
     }
 
     /**

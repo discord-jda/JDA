@@ -44,7 +44,7 @@ public class SessionConfig
         boolean bulkDeleteSplittingEnabled, int maxReconnectDelay)
     {
         this.sessionController = sessionController == null ? new SessionControllerAdapter() : sessionController;
-        this.httpClient = httpClient == null ? new OkHttpClient() : httpClient;
+        this.httpClient = httpClient;
         this.webSocketFactory = webSocketFactory == null ? new WebSocketFactory() : webSocketFactory;
         this.interceptor = interceptor;
         this.audioEnabled = audioEnabled;
@@ -65,7 +65,7 @@ public class SessionConfig
         return sessionController;
     }
 
-    @Nonnull
+    @Nullable
     public OkHttpClient getHttpClient()
     {
         return httpClient;
