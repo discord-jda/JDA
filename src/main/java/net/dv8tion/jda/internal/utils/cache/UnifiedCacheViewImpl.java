@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.utils.cache.UnifiedMemberCacheView;
 import net.dv8tion.jda.internal.utils.ChainedClosableIterator;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -65,6 +66,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
         }
     }
 
+    @Nonnull
     @Override
     public List<T> asList()
     {
@@ -73,6 +75,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
         return Collections.unmodifiableList(list);
     }
 
+    @Nonnull
     @Override
     public Set<T> asSet()
     {
@@ -85,6 +88,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
         }
     }
 
+    @Nonnull
     @Override
     public ChainedClosableIterator<T> lockedIterator()
     {
@@ -92,8 +96,9 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
         return new ChainedClosableIterator<>(gen);
     }
 
+    @Nonnull
     @Override
-    public List<T> getElementsByName(String name, boolean ignoreCase)
+    public List<T> getElementsByName(@Nonnull String name, boolean ignoreCase)
     {
         return Collections.unmodifiableList(distinctStream()
                 .flatMap(view -> view.getElementsByName(name, ignoreCase).stream())
@@ -101,12 +106,14 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
                 .collect(Collectors.toList()));
     }
 
+    @Nonnull
     @Override
     public Stream<T> stream()
     {
         return distinctStream().flatMap(CacheView::stream).distinct();
     }
 
+    @Nonnull
     @Override
     public Stream<T> parallelStream()
     {
@@ -152,6 +159,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
             super(generator);
         }
 
+        @Nonnull
         @Override
         public List<Member> getElementsById(long id)
         {
@@ -161,32 +169,36 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
                 .collect(Collectors.toList()));
         }
 
+        @Nonnull
         @Override
-        public List<Member> getElementsByUsername(String name, boolean ignoreCase)
+        public List<Member> getElementsByUsername(@Nonnull String name, boolean ignoreCase)
         {
             return Collections.unmodifiableList(distinctStream()
                 .flatMap(view -> view.getElementsByUsername(name, ignoreCase).stream())
                 .collect(Collectors.toList()));
         }
 
+        @Nonnull
         @Override
-        public List<Member> getElementsByNickname(String name, boolean ignoreCase)
+        public List<Member> getElementsByNickname(@Nullable String name, boolean ignoreCase)
         {
             return Collections.unmodifiableList(distinctStream()
                 .flatMap(view -> view.getElementsByNickname(name, ignoreCase).stream())
                 .collect(Collectors.toList()));
         }
 
+        @Nonnull
         @Override
-        public List<Member> getElementsWithRoles(Role... roles)
+        public List<Member> getElementsWithRoles(@Nonnull Role... roles)
         {
             return Collections.unmodifiableList(distinctStream()
                 .flatMap(view -> view.getElementsWithRoles(roles).stream())
                 .collect(Collectors.toList()));
         }
 
+        @Nonnull
         @Override
-        public List<Member> getElementsWithRoles(Collection<Role> roles)
+        public List<Member> getElementsWithRoles(@Nonnull Collection<Role> roles)
         {
             return Collections.unmodifiableList(distinctStream()
                 .flatMap(view -> view.getElementsWithRoles(roles).stream())

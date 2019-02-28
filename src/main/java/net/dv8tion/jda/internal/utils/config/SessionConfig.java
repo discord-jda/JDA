@@ -22,6 +22,9 @@ import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.SessionControllerAdapter;
 import okhttp3.OkHttpClient;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 public class SessionConfig
 {
     private final SessionController sessionController;
@@ -35,7 +38,8 @@ public class SessionConfig
     private int maxReconnectDelay;
 
     public SessionConfig(
-        SessionController sessionController, OkHttpClient httpClient, WebSocketFactory webSocketFactory, VoiceDispatchInterceptor interceptor,
+        @Nullable SessionController sessionController, @Nullable OkHttpClient httpClient,
+        @Nullable WebSocketFactory webSocketFactory, @Nullable VoiceDispatchInterceptor interceptor,
         boolean audioEnabled, boolean retryOnTimeout, boolean autoReconnect,
         boolean bulkDeleteSplittingEnabled, int maxReconnectDelay)
     {
@@ -55,21 +59,25 @@ public class SessionConfig
         this.autoReconnect = autoReconnect;
     }
 
+    @Nonnull
     public SessionController getSessionController()
     {
         return sessionController;
     }
 
+    @Nonnull
     public OkHttpClient getHttpClient()
     {
         return httpClient;
     }
 
+    @Nonnull
     public WebSocketFactory getWebSocketFactory()
     {
         return webSocketFactory;
     }
 
+    @Nullable
     public VoiceDispatchInterceptor getVoiceDispatchInterceptor()
     {
         return interceptor;
@@ -100,6 +108,7 @@ public class SessionConfig
         return maxReconnectDelay;
     }
 
+    @Nonnull
     public static SessionConfig getDefault()
     {
         return new SessionConfig(null, null, null, null, true, true, true, true, 900);
