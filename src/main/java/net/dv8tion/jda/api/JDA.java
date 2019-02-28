@@ -33,6 +33,8 @@ import net.dv8tion.jda.internal.utils.Helpers;
 import okhttp3.OkHttpClient;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -180,6 +182,7 @@ public interface JDA
      *
      * @return Current JDA status.
      */
+    @Nonnull
     Status getStatus();
 
     /**
@@ -210,6 +213,7 @@ public interface JDA
      *
      * @see    #getGatewayPing()
      */
+    @Nonnull
     default RestAction<Long> getRestPing()
     {
         AtomicLong time = new AtomicLong();
@@ -250,7 +254,8 @@ public interface JDA
      *
      * @return The current JDA instance, for chaining convenience
      */
-    JDA awaitStatus(JDA.Status status) throws InterruptedException;
+    @Nonnull
+    JDA awaitStatus(@Nonnull JDA.Status status) throws InterruptedException;
 
     /**
      * This method will block until JDA has reached the status {@link Status#CONNECTED}.
@@ -263,6 +268,7 @@ public interface JDA
      *
      * @return The current JDA instance, for chaining convenience
      */
+    @Nonnull
     default JDA awaitReady() throws InterruptedException
     {
         return awaitStatus(Status.CONNECTED);
@@ -277,6 +283,7 @@ public interface JDA
      *
      * @return Immutable list of all cf-ray values for this session
      */
+    @Nonnull
     List<String> getCloudflareRays();
 
     /**
@@ -286,6 +293,7 @@ public interface JDA
      *
      * @return List of all websocket traces
      */
+    @Nonnull
     List<String> getWebSocketTrace();
 
     /**
@@ -294,6 +302,7 @@ public interface JDA
      *
      * @return The {@link ScheduledExecutorService} used for http request handling
      */
+    @Nonnull
     ScheduledExecutorService getRateLimitPool();
 
     /**
@@ -302,6 +311,7 @@ public interface JDA
      *
      * @return The {@link ScheduledExecutorService} used for WebSocket transmissions
      */
+    @Nonnull
     ScheduledExecutorService getGatewayPool();
 
     /**
@@ -311,6 +321,7 @@ public interface JDA
      *
      * @return The {@link ExecutorService} used for callbacks
      */
+    @Nonnull
     ExecutorService getCallbackPool();
 
     /**
@@ -318,6 +329,7 @@ public interface JDA
      *
      * @return The http client
      */
+    @Nonnull
     OkHttpClient getHttpClient();
 
     /**
@@ -329,6 +341,7 @@ public interface JDA
      *
      * @return The {@link DirectAudioController} for this JDA instance
      */
+    @Nonnull
     DirectAudioController getDirectAudioController();
 
     /**
@@ -340,7 +353,7 @@ public interface JDA
      * @param  manager
      *         The new EventManager to use
      */
-    void setEventManager(IEventManager manager);
+    void setEventManager(@Nullable IEventManager manager);
 
     /**
      * Adds all provided listeners to the event-listeners that will be used to handle events.
@@ -356,7 +369,7 @@ public interface JDA
      * @throws java.lang.IllegalArgumentException
      *         If either listeners or one of it's objects is {@code null}.
      */
-    void addEventListener(Object... listeners);
+    void addEventListener(@Nonnull Object... listeners);
 
     /**
      * Removes all provided listeners from the event-listeners and no longer uses them to handle events.
@@ -367,13 +380,14 @@ public interface JDA
      * @throws java.lang.IllegalArgumentException
      *         If either listeners or one of it's objects is {@code null}.
      */
-    void removeEventListener(Object... listeners);
+    void removeEventListener(@Nonnull Object... listeners);
 
     /**
      * Returns an unmodifiable List of Objects that have been registered as EventListeners.
      *
      * @return List of currently registered Objects acting as EventListeners.
      */
+    @Nonnull
     List<Object> getRegisteredListeners();
 
     /**
@@ -399,7 +413,9 @@ public interface JDA
      * @return {@link GuildAction GuildAction}
      *         <br>Allows for setting various details for the resulting Guild
      */
-    GuildAction createGuild(String name);
+    @Nonnull
+    @CheckReturnValue
+    GuildAction createGuild(@Nonnull String name);
 
     /**
      * {@link net.dv8tion.jda.api.utils.cache.CacheView CacheView} of
@@ -411,6 +427,7 @@ public interface JDA
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.CacheView CacheView}
      */
+    @Nonnull
     CacheView<AudioManager> getAudioManagerCache();
 
     /**
@@ -418,6 +435,7 @@ public interface JDA
      *
      * @return Immutable list of all created AudioManager instances
      */
+    @Nonnull
     default List<AudioManager> getAudioManagers()
     {
         return getAudioManagerCache().asList();
@@ -430,6 +448,7 @@ public interface JDA
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
+    @Nonnull
     SnowflakeCacheView<User> getUserCache();
 
     /**
@@ -448,6 +467,7 @@ public interface JDA
      *
      * @return List of all {@link net.dv8tion.jda.api.entities.User Users} that are visible to JDA.
      */
+    @Nonnull
     default List<User> getUsers()
     {
         return getUserCache().asList();
@@ -465,7 +485,8 @@ public interface JDA
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.User User} with matching id.
      */
-    default User getUserById(String id)
+    @Nullable
+    default User getUserById(@Nonnull String id)
     {
         return getUserCache().getElementById(id);
     }
@@ -479,6 +500,7 @@ public interface JDA
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.User User} with matching id.
      */
+    @Nullable
     default User getUserById(long id)
     {
         return getUserCache().getElementById(id);
@@ -502,7 +524,8 @@ public interface JDA
      *
      * @return The {@link net.dv8tion.jda.api.entities.User} for the discord tag or null if no user has the provided tag
      */
-    default User getUserByTag(String tag)
+    @Nullable
+    default User getUserByTag(@Nonnull String tag)
     {
         Checks.notNull(tag, "Tag");
         Matcher matcher = User.USER_TAG.matcher(tag);
@@ -532,7 +555,8 @@ public interface JDA
      *
      * @return The {@link net.dv8tion.jda.api.entities.User} for the discord tag or null if no user has the provided tag
      */
-    default User getUserByTag(String username, String discriminator)
+    @Nullable
+    default User getUserByTag(@Nonnull String username, @Nonnull String discriminator)
     {
         Checks.notNull(username, "Username");
         Checks.notNull(discriminator, "Discriminator");
@@ -559,7 +583,8 @@ public interface JDA
      *
      * @return Possibly-empty list of {@link net.dv8tion.jda.api.entities.User Users} that all have the same name as the provided name.
      */
-    default List<User> getUsersByName(String name, boolean ignoreCase)
+    @Nonnull
+    default List<User> getUsersByName(@Nonnull String name, boolean ignoreCase)
     {
         return getUserCache().getElementsByName(name, ignoreCase);
     }
@@ -572,7 +597,8 @@ public interface JDA
      *
      * @return Unmodifiable list of all {@link net.dv8tion.jda.api.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.api.entities.User Users} in them.
      */
-    List<Guild> getMutualGuilds(User... users);
+    @Nonnull
+    List<Guild> getMutualGuilds(@Nonnull User... users);
 
     /**
      * Gets all {@link net.dv8tion.jda.api.entities.Guild Guilds} that contain all given users as their members.
@@ -582,7 +608,8 @@ public interface JDA
      *
      * @return Unmodifiable list of all {@link net.dv8tion.jda.api.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.api.entities.User Users} in them.
      */
-    List<Guild> getMutualGuilds(Collection<User> users);
+    @Nonnull
+    List<Guild> getMutualGuilds(@Nonnull Collection<User> users);
 
     /**
      * Attempts to retrieve a {@link net.dv8tion.jda.api.entities.User User} object based on the provided id.
@@ -613,8 +640,9 @@ public interface JDA
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.User User}
      *         <br>On request, gets the User with id matching provided id from Discord.
      */
+    @Nonnull
     @CheckReturnValue
-    RestAction<User> retrieveUserById(String id);
+    RestAction<User> retrieveUserById(@Nonnull String id);
 
     /**
      * Attempts to retrieve a {@link net.dv8tion.jda.api.entities.User User} object based on the provided id.
@@ -637,6 +665,7 @@ public interface JDA
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.User User}
      *         <br>On request, gets the User with id matching provided id from Discord.
      */
+    @Nonnull
     @CheckReturnValue
     RestAction<User> retrieveUserById(long id);
 
@@ -646,6 +675,7 @@ public interface JDA
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
+    @Nonnull
     SnowflakeCacheView<Guild> getGuildCache();
 
     /**
@@ -665,6 +695,7 @@ public interface JDA
      *
      * @return Possibly-empty list of all the {@link net.dv8tion.jda.api.entities.Guild Guilds} that this account is connected to.
      */
+    @Nonnull
     default List<Guild> getGuilds()
     {
         return getGuildCache().asList();
@@ -682,7 +713,8 @@ public interface JDA
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.Guild Guild} with matching id.
      */
-    default Guild getGuildById(String id)
+    @Nullable
+    default Guild getGuildById(@Nonnull String id)
     {
         return getGuildCache().getElementById(id);
     }
@@ -696,6 +728,7 @@ public interface JDA
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.Guild Guild} with matching id.
      */
+    @Nullable
     default Guild getGuildById(long id)
     {
         return getGuildCache().getElementById(id);
@@ -712,7 +745,8 @@ public interface JDA
      *
      * @return Possibly-empty list of all the {@link net.dv8tion.jda.api.entities.Guild Guilds} that all have the same name as the provided name.
      */
-    default List<Guild> getGuildsByName(String name, boolean ignoreCase)
+    @Nonnull
+    default List<Guild> getGuildsByName(@Nonnull String name, boolean ignoreCase)
     {
         return getGuildCache().getElementsByName(name, ignoreCase);
     }
@@ -725,6 +759,7 @@ public interface JDA
      *
      * @see    net.dv8tion.jda.api.utils.cache.CacheView#allSnowflakes(java.util.function.Supplier) CacheView.allSnowflakes(...)
      */
+    @Nonnull
     SnowflakeCacheView<Role> getRoleCache();
 
     /**
@@ -739,6 +774,7 @@ public interface JDA
      *
      * @return Immutable List of all visible Roles
      */
+    @Nonnull
     default List<Role> getRoles()
     {
         return getRoleCache().asList();
@@ -755,7 +791,8 @@ public interface JDA
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      */
-    default Role getRoleById(String id)
+    @Nullable
+    default Role getRoleById(@Nonnull String id)
     {
         return getRoleCache().getElementById(id);
     }
@@ -769,6 +806,7 @@ public interface JDA
      *         The id of the searched Role
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.Role Role} for the specified ID
      */
+    @Nullable
     default Role getRoleById(long id)
     {
         return getRoleCache().getElementById(id);
@@ -785,7 +823,8 @@ public interface JDA
      *         Whether to use {@link String#equalsIgnoreCase(String)}
      * @return Immutable List of all Roles matching the parameters provided.
      */
-    default List<Role> getRolesByName(String name, boolean ignoreCase)
+    @Nonnull
+    default List<Role> getRolesByName(@Nonnull String name, boolean ignoreCase)
     {
         return getRoleCache().getElementsByName(name, ignoreCase);
     }
@@ -796,6 +835,7 @@ public interface JDA
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
+    @Nonnull
     SnowflakeCacheView<Category> getCategoryCache();
 
     /**
@@ -808,7 +848,8 @@ public interface JDA
      * @throws java.lang.IllegalArgumentException
      *         If the provided ID is not a valid {@code long}
      */
-    default Category getCategoryById(String id)
+    @Nullable
+    default Category getCategoryById(@Nonnull String id)
     {
         return getCategoryCache().getElementById(id);
     }
@@ -821,6 +862,7 @@ public interface JDA
      *         The snowflake ID of the wanted Category
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.Category Category} for the provided ID.
      */
+    @Nullable
     default Category getCategoryById(long id)
     {
         return getCategoryCache().getElementById(id);
@@ -836,6 +878,7 @@ public interface JDA
      *
      * @return An immutable list of all visible {@link net.dv8tion.jda.api.entities.Category Categories}.
      */
+    @Nonnull
     default List<Category> getCategories()
     {
         return getCategoryCache().asList();
@@ -853,7 +896,8 @@ public interface JDA
      * @throws java.lang.IllegalArgumentException
      *         If the provided name is {@code null}
      */
-    default List<Category> getCategoriesByName(String name, boolean ignoreCase)
+    @Nonnull
+    default List<Category> getCategoriesByName(@Nonnull String name, boolean ignoreCase)
     {
         return getCategoryCache().getElementsByName(name, ignoreCase);
     }
@@ -864,6 +908,7 @@ public interface JDA
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
+    @Nonnull
     SnowflakeCacheView<TextChannel> getTextChannelCache();
 
     /**
@@ -883,6 +928,7 @@ public interface JDA
      *
      * @return Possibly-empty list of all known {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}.
      */
+    @Nonnull
     default List<TextChannel> getTextChannels()
     {
         return getTextChannelCache().asList();
@@ -906,7 +952,8 @@ public interface JDA
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} with matching id.
      */
-    default TextChannel getTextChannelById(String id)
+    @Nullable
+    default TextChannel getTextChannelById(@Nonnull String id)
     {
         return getTextChannelCache().getElementById(id);
     }
@@ -927,6 +974,7 @@ public interface JDA
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} with matching id.
      */
+    @Nullable
     default TextChannel getTextChannelById(long id)
     {
         return getTextChannelCache().getElementById(id);
@@ -950,7 +998,8 @@ public interface JDA
      * @return Possibly-empty list of all the {@link net.dv8tion.jda.api.entities.TextChannel TextChannels} that all have the
      *         same name as the provided name.
      */
-    default List<TextChannel> getTextChannelsByName(String name, boolean ignoreCase)
+    @Nonnull
+    default List<TextChannel> getTextChannelsByName(@Nonnull String name, boolean ignoreCase)
     {
         return getTextChannelCache().getElementsByName(name, ignoreCase);
     }
@@ -961,6 +1010,7 @@ public interface JDA
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
+    @Nonnull
     SnowflakeCacheView<VoiceChannel> getVoiceChannelCache();
 
     /**
@@ -974,6 +1024,7 @@ public interface JDA
      *
      * @return Possible-empty list of all known {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}.
      */
+    @Nonnull
     default List<VoiceChannel> getVoiceChannels()
     {
         return getVoiceChannelCache().asList();
@@ -991,7 +1042,8 @@ public interface JDA
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} with matching id.
      */
-    default VoiceChannel getVoiceChannelById(String id)
+    @Nullable
+    default VoiceChannel getVoiceChannelById(@Nonnull String id)
     {
         return getVoiceChannelCache().getElementById(id);
     }
@@ -1006,6 +1058,7 @@ public interface JDA
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} with matching id.
      */
+    @Nullable
     default VoiceChannel getVoiceChannelById(long id)
     {
         return getVoiceChannelCache().getElementById(id);
@@ -1023,7 +1076,8 @@ public interface JDA
      * @return Possibly-empty list of all the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} that all have the
      *         same name as the provided name.
      */
-    default List<VoiceChannel> getVoiceChannelByName(String name, boolean ignoreCase)
+    @Nonnull
+    default List<VoiceChannel> getVoiceChannelByName(@Nonnull String name, boolean ignoreCase)
     {
         return getVoiceChannelCache().getElementsByName(name, ignoreCase);
     }
@@ -1034,6 +1088,7 @@ public interface JDA
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
+    @Nonnull
     SnowflakeCacheView<PrivateChannel> getPrivateChannelCache();
 
     /**
@@ -1046,6 +1101,7 @@ public interface JDA
      *
      * @return Possibly-empty list of all {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannels}.
      */
+    @Nonnull
     default List<PrivateChannel> getPrivateChannels()
     {
         return getPrivateChannelCache().asList();
@@ -1063,7 +1119,8 @@ public interface JDA
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} with matching id.
      */
-    default PrivateChannel getPrivateChannelById(String id)
+    @Nullable
+    default PrivateChannel getPrivateChannelById(@Nonnull String id)
     {
         return getPrivateChannelCache().getElementById(id);
     }
@@ -1078,6 +1135,7 @@ public interface JDA
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} with matching id.
      */
+    @Nullable
     default PrivateChannel getPrivateChannelById(long id)
     {
         return getPrivateChannelCache().getElementById(id);
@@ -1091,6 +1149,7 @@ public interface JDA
      *
      * @see    net.dv8tion.jda.api.utils.cache.CacheView#allSnowflakes(java.util.function.Supplier) CacheView.allSnowflakes(...)
      */
+    @Nonnull
     SnowflakeCacheView<Emote> getEmoteCache();
 
     /**
@@ -1110,6 +1169,7 @@ public interface JDA
      *
      * @return An immutable list of Emotes (which may or may not be available to usage).
      */
+    @Nonnull
     default List<Emote> getEmotes()
     {
         return getEmoteCache().asList();
@@ -1128,7 +1188,8 @@ public interface JDA
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      */
-    default Emote getEmoteById(String id)
+    @Nullable
+    default Emote getEmoteById(@Nonnull String id)
     {
         return getEmoteCache().getElementById(id);
     }
@@ -1144,6 +1205,7 @@ public interface JDA
      * @return An {@link net.dv8tion.jda.api.entities.Emote Emote} represented by this id or null if none is found in
      *         our cache.
      */
+    @Nullable
     default Emote getEmoteById(long id)
     {
         return getEmoteCache().getElementById(id);
@@ -1165,7 +1227,8 @@ public interface JDA
      * @return Possibly-empty list of all the {@link net.dv8tion.jda.api.entities.Emote Emotes} that all have the same
      *         name as the provided name.
      */
-    default List<Emote> getEmotesByName(String name, boolean ignoreCase)
+    @Nonnull
+    default List<Emote> getEmotesByName(@Nonnull String name, boolean ignoreCase)
     {
         return getEmoteCache().getElementsByName(name, ignoreCase);
     }
@@ -1175,6 +1238,7 @@ public interface JDA
      *
      * @return The {@link net.dv8tion.jda.api.hooks.IEventManager}
      */
+    @Nonnull
     IEventManager getEventManager();
 
     /**
@@ -1184,6 +1248,7 @@ public interface JDA
      *
      * @return The currently logged in account.
      */
+    @Nonnull
     SelfUser getSelfUser();
 
     /**
@@ -1192,6 +1257,7 @@ public interface JDA
      *
      * @return The never-null {@link net.dv8tion.jda.api.managers.Presence Presence} for this session.
      */
+    @Nonnull
     Presence getPresence();
 
     /**
@@ -1200,6 +1266,7 @@ public interface JDA
      *
      * @return The shard information for this shard or {@code null} if this JDA instance isn't sharding.
      */
+    @Nullable
     ShardInfo getShardInfo();
 
     /**
@@ -1207,6 +1274,7 @@ public interface JDA
      *
      * @return Never-null, 18 character length string containing the auth token.
      */
+    @Nonnull
     String getToken();
 
     /**
@@ -1310,6 +1378,7 @@ public interface JDA
      *
      * @return The current AccountType.
      */
+    @Nonnull
     AccountType getAccountType();
 
     /**
@@ -1323,6 +1392,7 @@ public interface JDA
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link ApplicationInfo ApplicationInfo}
      *         <br>The {@link ApplicationInfo ApplicationInfo} of the bot's application.
      */
+    @Nonnull
     @CheckReturnValue
     RestAction<ApplicationInfo> retrieveApplicationInfo();
 
@@ -1342,7 +1412,8 @@ public interface JDA
      *
      * @return A valid OAuth2 invite url for the currently logged in Bot-Account
      */
-    String getInviteUrl(Permission... permissions);
+    @Nonnull
+    String getInviteUrl(@Nullable Permission... permissions);
 
     /**
      * Creates an authorization invite url for the currently logged in Bot-Account.
@@ -1360,7 +1431,8 @@ public interface JDA
      *
      * @return A valid OAuth2 invite url for the currently logged in Bot-Account
      */
-    String getInviteUrl(Collection<Permission> permissions);
+    @Nonnull
+    String getInviteUrl(@Nullable Collection<Permission> permissions);
 
     /**
      * Returns the {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager} that manages this JDA instances or null if this instance is not managed
@@ -1368,6 +1440,7 @@ public interface JDA
      *
      * @return The corresponding ShardManager or {@code null} if there is no such manager
      */
+    @Nullable
     ShardManager getShardManager();
 
     /**
@@ -1395,7 +1468,8 @@ public interface JDA
      * @see    Guild#retrieveWebhooks()
      * @see    TextChannel#retrieveWebhooks()
      */
-    RestAction<Webhook> retrieveWebhookById(String webhookId);
+    @Nonnull
+    RestAction<Webhook> retrieveWebhookById(@Nonnull String webhookId);
 
     /**
      * Retrieves a {@link net.dv8tion.jda.api.entities.Webhook Webhook} by its id.
@@ -1419,6 +1493,7 @@ public interface JDA
      * @see    Guild#retrieveWebhooks()
      * @see    TextChannel#retrieveWebhooks()
      */
+    @Nonnull
     default RestAction<Webhook> retrieveWebhookById(long webhookId)
     {
         return retrieveWebhookById(Long.toUnsignedString(webhookId));
