@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 
+import javax.annotation.Nonnull;
+
 /**
  * Direct access to internal gateway communication.
  * <br>This should only be used if a {@link net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor VoiceDispatchInterceptor} has been provided.
@@ -33,6 +35,7 @@ public interface DirectAudioController
      *
      * @return The JDA instance
      */
+    @Nonnull
     JDA getJDA();
 
     /**
@@ -43,7 +46,7 @@ public interface DirectAudioController
      *
      * @see   #reconnect(VoiceChannel)
      */
-    void connect(VoiceChannel channel);
+    void connect(@Nonnull VoiceChannel channel);
 
     /**
      * Requests to terminate the connection to a voice channel.
@@ -53,7 +56,7 @@ public interface DirectAudioController
      *
      * @see   #reconnect(VoiceChannel)
      */
-    void disconnect(Guild guild);
+    void disconnect(@Nonnull Guild guild);
 
     /**
      * Requests to reconnect to the voice channel in the target guild.
@@ -61,5 +64,5 @@ public interface DirectAudioController
      * @param channel
      *        The channel we were connected to
      */
-    void reconnect(VoiceChannel channel);
+    void reconnect(@Nonnull VoiceChannel channel);
 }

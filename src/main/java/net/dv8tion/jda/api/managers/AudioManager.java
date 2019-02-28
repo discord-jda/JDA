@@ -29,6 +29,8 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -103,7 +105,7 @@ public interface AudioManager
      * @see    #setSpeakingMode(SpeakingMode...)
      */
     @Incubating
-    void setSpeakingMode(Collection<SpeakingMode> mode);
+    void setSpeakingMode(@Nonnull Collection<SpeakingMode> mode);
 
     /**
      * The {@link SpeakingMode} that should be used when sending audio via
@@ -121,7 +123,7 @@ public interface AudioManager
      * @see    #getSpeakingMode()
      */
     @Incubating
-    default void setSpeakingMode(SpeakingMode... mode)
+    default void setSpeakingMode(@Nonnull SpeakingMode... mode)
     {
         Checks.notNull(mode, "Speaking Mode");
         setSpeakingMode(Arrays.asList(mode));
@@ -138,6 +140,7 @@ public interface AudioManager
      *
      * @see    #setSpeakingMode(Collection)
      */
+    @Nonnull
     @Incubating
     EnumSet<SpeakingMode> getSpeakingMode();
 
@@ -146,6 +149,7 @@ public interface AudioManager
      *
      * @return The corresponding JDA instance
      */
+    @Nonnull
     JDA getJDA();
 
     /**
@@ -153,6 +157,7 @@ public interface AudioManager
      *
      * @return The Guild that this AudioManager manages.
      */
+    @Nonnull
     Guild getGuild();
 
     /**
@@ -174,6 +179,7 @@ public interface AudioManager
      * @return The {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} that JDA is attempting to create an
      *         audio connection with, or {@code null} if JDA isn't attempting to create a connection.
      */
+    @Nullable
     VoiceChannel getQueuedAudioConnection();
 
     /**
@@ -184,6 +190,7 @@ public interface AudioManager
      * @return The {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} the audio connection is connected to
      *         or {@code null} if not connected.
      */
+    @Nullable
     VoiceChannel getConnectedChannel();
 
     /**
@@ -230,7 +237,7 @@ public interface AudioManager
      * @param handler
      *        The {@link net.dv8tion.jda.api.audio.AudioSendHandler AudioSendHandler} used to provide audio data.
      */
-    void setSendingHandler(AudioSendHandler handler);
+    void setSendingHandler(@Nullable AudioSendHandler handler);
 
     /**
      * The currently set {@link net.dv8tion.jda.api.audio.AudioSendHandler AudioSendHandler}. If there is
@@ -238,6 +245,7 @@ public interface AudioManager
      *
      * @return The currently active {@link net.dv8tion.jda.api.audio.AudioSendHandler AudioSendHandler} or {@code null}.
      */
+    @Nullable
     AudioSendHandler getSendingHandler();
 
     /**
@@ -253,7 +261,7 @@ public interface AudioManager
      *        The {@link net.dv8tion.jda.api.audio.AudioReceiveHandler AudioReceiveHandler} used to process
      *        received audio data.
      */
-    void setReceivingHandler(AudioReceiveHandler handler);
+    void setReceivingHandler(@Nullable AudioReceiveHandler handler);
 
     /**
      * The currently set {@link net.dv8tion.jda.api.audio.AudioReceiveHandler AudioReceiveHandler}.
@@ -261,6 +269,7 @@ public interface AudioManager
      *
      * @return The currently active {@link net.dv8tion.jda.api.audio.AudioReceiveHandler AudioReceiveHandler} or {@code null}.
      */
+    @Nullable
     AudioReceiveHandler getReceivingHandler();
 
     /**
@@ -271,7 +280,7 @@ public interface AudioManager
      * @param listener
      *        A {@link net.dv8tion.jda.api.audio.hooks.ConnectionListener ConnectionListener} instance
      */
-    void setConnectionListener(ConnectionListener listener);
+    void setConnectionListener(@Nullable ConnectionListener listener);
 
     /**
      * The currently set {@link net.dv8tion.jda.api.audio.hooks.ConnectionListener ConnectionListener}
@@ -280,6 +289,7 @@ public interface AudioManager
      * @return The current {@link net.dv8tion.jda.api.audio.hooks.ConnectionListener ConnectionListener} instance
      *         for this AudioManager.
      */
+    @Nullable
     ConnectionListener getConnectionListener();
 
     /**
@@ -288,6 +298,7 @@ public interface AudioManager
      *
      * @return The current {@link net.dv8tion.jda.api.audio.hooks.ConnectionStatus ConnectionStatus}.
      */
+    @Nonnull
     ConnectionStatus getConnectionStatus();
 
     /**

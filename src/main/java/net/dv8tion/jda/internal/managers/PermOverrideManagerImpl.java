@@ -26,6 +26,7 @@ import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 
 public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> implements PermOverrideManager
 {
@@ -62,12 +63,14 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
             this.denied = getPermissionOverride().getDeniedRaw();
     }
 
+    @Nonnull
     @Override
     public PermissionOverride getPermissionOverride()
     {
         return override.get();
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public PermOverrideManagerImpl reset(long fields)
@@ -76,6 +79,7 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public PermOverrideManagerImpl reset(long... fields)
@@ -84,11 +88,7 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
         return this;
     }
 
-    /**
-     * Resets all fields for this manager.
-     *
-     * @return PermOverrideManager for chaining convenience
-     */
+    @Nonnull
     @Override
     @CheckReturnValue
     public PermOverrideManagerImpl reset()
@@ -97,6 +97,7 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public PermOverrideManagerImpl grant(long permissions)
@@ -110,6 +111,7 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public PermOverrideManagerImpl deny(long permissions)
@@ -123,6 +125,7 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public PermOverrideManagerImpl clear(long permissions)

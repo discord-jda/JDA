@@ -36,6 +36,7 @@ import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.concurrent.locks.ReentrantLock;
@@ -160,7 +161,7 @@ public class AudioManagerImpl implements AudioManager
     }
 
     @Override
-    public void setSpeakingMode(Collection<SpeakingMode> mode)
+    public void setSpeakingMode(@Nonnull Collection<SpeakingMode> mode)
     {
         Checks.notEmpty(mode, "Speaking Mode");
         this.speakingModes = EnumSet.copyOf(mode);
@@ -168,18 +169,21 @@ public class AudioManagerImpl implements AudioManager
             audioConnection.setSpeakingMode(this.speakingModes);
     }
 
+    @Nonnull
     @Override
     public EnumSet<SpeakingMode> getSpeakingMode()
     {
         return EnumSet.copyOf(this.speakingModes);
     }
 
+    @Nonnull
     @Override
     public JDAImpl getJDA()
     {
         return getGuild().getJDA();
     }
 
+    @Nonnull
     @Override
     public GuildImpl getGuild()
     {
@@ -262,6 +266,7 @@ public class AudioManagerImpl implements AudioManager
         return connectionListener.getListener();
     }
 
+    @Nonnull
     @Override
     public ConnectionStatus getConnectionStatus()
     {
