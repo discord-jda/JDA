@@ -27,6 +27,7 @@ import net.dv8tion.jda.internal.requests.Route;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import javax.annotation.Nonnull;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -57,6 +58,7 @@ public class ReactionPaginationActionImpl
             : MiscUtil.encodeUTF8(emote.getName());
     }
 
+    @Nonnull
     @Override
     public MessageReaction getReaction()
     {

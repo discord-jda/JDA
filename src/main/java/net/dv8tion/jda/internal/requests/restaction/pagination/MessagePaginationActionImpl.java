@@ -30,6 +30,7 @@ import net.dv8tion.jda.internal.requests.Route;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +54,7 @@ public class MessagePaginationActionImpl
         this.channel = channel;
     }
 
+    @Nonnull
     @Override
     public MessageChannel getChannel()
     {

@@ -31,6 +31,7 @@ import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.util.function.BooleanSupplier;
 
 public class PermissionOverrideActionImpl
@@ -75,12 +76,14 @@ public class PermissionOverrideActionImpl
         };
     }
 
+    @Nonnull
     @Override
     public PermissionOverrideActionImpl setCheck(BooleanSupplier checks)
     {
         return (PermissionOverrideActionImpl) super.setCheck(checks);
     }
 
+    @Nonnull
     @Override
     public PermissionOverrideAction resetAllow()
     {
@@ -89,6 +92,7 @@ public class PermissionOverrideActionImpl
         return this;
     }
 
+    @Nonnull
     @Override
     public PermissionOverrideAction resetDeny()
     {
@@ -97,6 +101,7 @@ public class PermissionOverrideActionImpl
         return this;
     }
 
+    @Nonnull
     @Override
     public GuildChannel getChannel()
     {
@@ -145,6 +150,7 @@ public class PermissionOverrideActionImpl
         return permissionHolder instanceof Role;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public PermissionOverrideActionImpl setAllow(long allowBits)
@@ -157,6 +163,7 @@ public class PermissionOverrideActionImpl
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public PermissionOverrideActionImpl setDeny(long denyBits)
@@ -169,6 +176,7 @@ public class PermissionOverrideActionImpl
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public PermissionOverrideActionImpl setPermissions(long allowBits, long denyBits)
