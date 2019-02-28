@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import java.util.EnumSet;
 
 public class ListenerProxy implements ConnectionListener
@@ -46,7 +47,7 @@ public class ListenerProxy implements ConnectionListener
     }
 
     @Override
-    public void onStatusChange(ConnectionStatus status)
+    public void onStatusChange(@Nonnull ConnectionStatus status)
     {
         if (listener == null)
             return;
@@ -63,7 +64,7 @@ public class ListenerProxy implements ConnectionListener
     }
 
     @Override
-    public void onUserSpeaking(User user, EnumSet<SpeakingMode> modes)
+    public void onUserSpeaking(@Nonnull User user, @Nonnull EnumSet<SpeakingMode> modes)
     {
         if (listener == null)
             return;
@@ -84,7 +85,7 @@ public class ListenerProxy implements ConnectionListener
     }
 
     @Override
-    public void onUserSpeaking(User user, boolean speaking) {}
+    public void onUserSpeaking(@Nonnull User user, boolean speaking) {}
 
     public void setListener(ConnectionListener listener)
     {

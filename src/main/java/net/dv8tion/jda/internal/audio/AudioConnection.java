@@ -40,6 +40,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import tomp2p.opuswrapper.Opus;
 
+import javax.annotation.Nonnull;
 import java.net.*;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -626,24 +627,28 @@ public class AudioConnection
             this.boxer = boxer;
         }
 
+        @Nonnull
         @Override
         public String getIdentifier()
         {
             return threadIdentifier;
         }
 
+        @Nonnull
         @Override
         public VoiceChannel getConnectedChannel()
         {
             return getChannel();
         }
 
+        @Nonnull
         @Override
         public DatagramSocket getUdpSocket()
         {
             return udpSocket;
         }
 
+        @Nonnull
         @Override
         public InetSocketAddress getSocketAddress()
         {
@@ -801,7 +806,7 @@ public class AudioConnection
         }
 
         @Override
-        public void onConnectionError(ConnectionStatus status)
+        public void onConnectionError(@Nonnull ConnectionStatus status)
         {
             LOG.warn("IAudioSendSystem reported a connection error of: {}", status);
             LOG.warn("Shutting down AudioConnection.");
