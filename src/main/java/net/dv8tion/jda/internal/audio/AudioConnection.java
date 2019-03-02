@@ -59,6 +59,7 @@ public class AudioConnection
                                                         // to Left and Right mono (stereo that is the same on both sides)
     public static final long MAX_UINT_32 = 4294967295L;
 
+    private static final int NOT_SPEAKING = 0;
     private static final byte[] silenceBytes = new byte[] {(byte)0xF8, (byte)0xFF, (byte)0xFE};
     private static boolean printedError = false;
 
@@ -706,7 +707,7 @@ public class AudioConnection
                     if ((!sentSilenceOnConnect && silenceCounter > 10) || silenceCounter > speakingDelay)
                     {
                         if (sentSilenceOnConnect)
-                            setSpeaking(0);
+                            setSpeaking(NOT_SPEAKING);
                         silenceCounter = -1;
                         sentSilenceOnConnect = true;
                     }
