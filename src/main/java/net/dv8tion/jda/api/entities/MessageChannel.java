@@ -515,191 +515,11 @@ public interface MessageChannel extends ISnowflake, Formattable
     /**
      * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
      * Sends the provided {@link net.dv8tion.jda.api.entities.Message Message} with the uploaded file.
-     * <br>If you do not wish to send a Message with the uploaded file, you can provide {@code null} for
-     * the {@code message} parameter.
+     * <br>If you want to send a Message with the uploaded file, you can add the file to the {@link net.dv8tion.jda.api.requests.restaction.MessageAction}
+     * returned by {@link #sendMessage(Message)}.
      *
-     * <p>This is a shortcut to {@link #sendFile(java.io.File, String, Message)} by way of using {@link java.io.File#getName()}.
-     * <pre>sendFile(file, file.getName(), message)</pre>
-     *
-     * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String, Message)}.
-     *
-     * @param  file
-     *         The file to upload to the {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         <ul>
-     *             <li>Provided {@code file} is null.</li>
-     *             <li>Provided {@code file} does not exist.</li>
-     *             <li>Provided {@code file} is unreadable.</li>
-     *             <li>Provided {@code file} is greater than 8MiB for normal and 50MiB for nitro accounts.</li>
-     *             <li>Provided {@link net.dv8tion.jda.api.entities.Message Message} is not {@code null} <b>and</b>
-     *                 contains a {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed} which
-     *                 is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable(net.dv8tion.jda.api.AccountType) sendable}</li>
-     *         </ul>
-     * @throws net.dv8tion.jda.api.exceptions.PermissionException
-     *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the logged in account does not have
-     *         <ul>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}</li>
-     *         </ul>
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
-     *         and both the currently logged in account and the target user are bots.
-     *
-     * @return {@link MessageAction MessageAction}
-     *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
-     */
-    @CheckReturnValue
-    default MessageAction sendFile(File file)
-    {
-        return sendFile(file, (Message) null);
-    }
-
-    /**
-     * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
-     * Sends the provided {@link net.dv8tion.jda.api.entities.Message Message} with the uploaded file.
-     * <br>If you do not wish to send a Message with the uploaded file, you can provide {@code null} for
-     * the {@code message} parameter.
-     *
-     * <p>The {@code fileName} parameter is used to inform Discord about what the file should be called. This is 2 fold:
-     * <ol>
-     *     <li>The file name provided is the name that is found in {@link net.dv8tion.jda.api.entities.Message.Attachment#getFileName()}
-     *          after upload and it is the name that will show up in the client when the upload is displayed.
-     *     <br>Note: The fileName does not show up on the Desktop client for images. It does on mobile however.</li>
-     *     <li>The extension of the provided fileName also determines who Discord will treat the file. Discord currently only
-     *         has special handling for image file types, but the fileName's extension must indicate that it is an image file.
-     *         This means it has to end in something like .png, .jpg, .jpeg, .gif, etc. As a note, you can also not provide
-     *         a full name for the file and instead ONLY provide the extension like "png" or "gif" and Discord will generate
-     *         a name for the upload and append the fileName as the extension.</li>
-     * </ol>
-     *
-     * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String, Message)}.
-     *
-     * @param  file
-     *         The file to upload to the {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
-     * @param  fileName
-     *         The name that should be sent to discord
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         <ul>
-     *             <li>Provided {@code file} is null.</li>
-     *             <li>Provided {@code file} does not exist.</li>
-     *             <li>Provided {@code file} is unreadable.</li>
-     *             <li>Provided {@code file} is greater than 8MiB for normal and 50MiB for nitro accounts.</li>
-     *             <li>Provided {@link net.dv8tion.jda.api.entities.Message Message} is not {@code null} <b>and</b>
-     *                 contains a {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed} which
-     *                 is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable(net.dv8tion.jda.api.AccountType) sendable}</li>
-     *         </ul>
-     * @throws net.dv8tion.jda.api.exceptions.PermissionException
-     *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the logged in account does not have
-     *         <ul>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}</li>
-     *         </ul>
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
-     *         and both the currently logged in account and the target user are bots.
-     *
-     * @return {@link MessageAction MessageAction}
-     *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
-     */
-    @CheckReturnValue
-    default MessageAction sendFile(File file, String fileName)
-    {
-        return sendFile(file, fileName, null);
-    }
-
-    /**
-     * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
-     * Sends the provided {@link net.dv8tion.jda.api.entities.Message Message} with the uploaded file.
-     * <br>If you do not wish to send a Message with the uploaded file, you can provide {@code null} for
-     * the {@code message} parameter.
-     * <br>This allows you to send an {@link java.io.InputStream InputStream} as substitute to a file.
-     *
-     * <p>For information about the {@code fileName} parameter, Refer to the documentation for {@link #sendFile(java.io.File, String, Message)}.
-     * <br>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String, Message)}.
-     *
-     * @param  data
-     *         The InputStream data to upload to the {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
-     * @param  fileName
-     *         The name that should be sent to discord
-     *         <br>Refer to the documentation for {@link #sendFile(java.io.File, String, Message)} for information about this parameter.
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided filename is {@code null} or {@code empty}.
-     * @throws net.dv8tion.jda.api.exceptions.PermissionException
-     *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the logged in account does not have
-     *         <ul>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}</li>
-     *         </ul>
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
-     *         and both the currently logged in account and the target user are bots.
-     *
-     * @return {@link MessageAction MessageAction}
-     *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
-     */
-    @CheckReturnValue
-    default MessageAction sendFile(InputStream data, String fileName)
-    {
-        return sendFile(data, fileName, null);
-    }
-
-    /**
-     * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
-     * Sends the provided {@link net.dv8tion.jda.api.entities.Message Message} with the uploaded file.
-     * <br>If you do not wish to send a Message with the uploaded file, you can provide {@code null} for
-     * the {@code message} parameter.
-     * <br>This allows you to send an {@code byte[]} as substitute to a file.
-     *
-     * <p>For information about the {@code fileName} parameter, Refer to the documentation for {@link #sendFile(java.io.File, String, Message)}.
-     * <br>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String, Message)}.
-     *
-     * @param  data
-     *         The {@code byte[]} data to upload to the {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
-     * @param  fileName
-     *         The name that should be sent to discord.
-     *         <br>Refer to the documentation for {@link #sendFile(java.io.File, String, Message)} for information about this parameter.
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         <ul>
-     *             <li>If the provided filename is {@code null} or {@code empty} or the provided data is larger than 8MiB on normal or 50MiB on nitro accounts.</li>
-     *             <li>If the provided {@link net.dv8tion.jda.api.entities.Message Message}
-     *                 contains an {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}
-     *                 that is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable(net.dv8tion.jda.api.AccountType) sendable}</li>
-     *         </ul>
-     * @throws net.dv8tion.jda.api.exceptions.PermissionException
-     *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the logged in account does not have
-     *         <ul>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}</li>
-     *         </ul>
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
-     *         and both the currently logged in account and the target user are bots.
-     *
-     * @return {@link MessageAction MessageAction}
-     *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
-     */
-    @CheckReturnValue
-    default MessageAction sendFile(byte[] data, String fileName)
-    {
-        return sendFile(data, fileName, null);
-    }
-
-    /**
-     * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
-     * Sends the provided {@link net.dv8tion.jda.api.entities.Message Message} with the uploaded file.
-     * <br>If you do not wish to send a Message with the uploaded file, you can provide {@code null} for
-     * the {@code message} parameter.
-     *
-     * <p>This is a shortcut to {@link #sendFile(java.io.File, String, Message)} by way of using {@link java.io.File#getName()}.
-     * <pre>sendFile(file, file.getName(), message)</pre>
+     * <p>This is a shortcut to {@link #sendFile(java.io.File, String)} by way of using {@link java.io.File#getName()}.
+     * <pre>sendFile(file, file.getName())</pre>
      *
      * <p><b>Uploading images with Embeds</b>
      * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
@@ -707,21 +527,17 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p><u>Example</u>
      * <pre><code>
      * MessageChannel channel; // = reference of a MessageChannel
-     * MessageBuilder message = new MessageBuilder();
      * EmbedBuilder embed = new EmbedBuilder();
      * File file = new File("cat.gif");
      * embed.setImage("attachment://cat.gif")
      *      .setDescription("This is a cute cat :3");
-     * message.setEmbed(embed.build());
-     * channel.sendFile(file, message.build()).queue();
+     * channel.sendFile(file).embed(embed.build()).queue();
      * </code></pre>
      *
-     * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String, Message)}.
+     * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String)}.
      *
      * @param  file
      *         The file to upload to the {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
-     * @param  message
-     *         The message to be sent along with the uploaded file. This value can be {@code null}.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -729,9 +545,6 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>Provided {@code file} does not exist.</li>
      *             <li>Provided {@code file} is unreadable.</li>
      *             <li>Provided {@code file} is greater than 8 MiB on a normal or 50 MiB on a nitro account.</li>
-     *             <li>Provided {@link net.dv8tion.jda.api.entities.Message Message} is not {@code null} <b>and</b>
-     *                 contains a {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed} which
-     *                 is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable(net.dv8tion.jda.api.AccountType) sendable}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the logged in account does not have
@@ -745,28 +558,28 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         and both the currently logged in account and the target user are bots.
      *
      * @return {@link MessageAction MessageAction}
-     *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
+     *         <br>Providing the {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
      */
     @CheckReturnValue
-    default MessageAction sendFile(File file, Message message)
+    default MessageAction sendFile(File file)
     {
         Checks.notNull(file, "file");
 
-        return sendFile(file, file.getName(), message);
+        return sendFile(file, file.getName());
     }
 
     /**
      * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
      * Sends the provided {@link net.dv8tion.jda.api.entities.Message Message} with the uploaded file.
-     * <br>If you do not wish to send a Message with the uploaded file, you can provide {@code null} for
-     * the {@code message} parameter.
+     * <br>If you want to send a Message with the uploaded file, you can add the file to the {@link net.dv8tion.jda.api.requests.restaction.MessageAction}
+     * returned by {@link #sendMessage(Message)}.
      *
      * <p>The {@code fileName} parameter is used to inform Discord about what the file should be called. This is 2 fold:
      * <ol>
      *     <li>The file name provided is the name that is found in {@link net.dv8tion.jda.api.entities.Message.Attachment#getFileName()}
      *          after upload and it is the name that will show up in the client when the upload is displayed.
      *     <br>Note: The fileName does not show up on the Desktop client for images. It does on mobile however.</li>
-     *     <li>The extension of the provided fileName also determines who Discord will treat the file. Discord currently only
+     *     <li>The extension of the provided fileName also determines how Discord will treat the file. Discord currently only
      *         has special handling for image file types, but the fileName's extension must indicate that it is an image file.
      *         This means it has to end in something like .png, .jpg, .jpeg, .gif, etc. As a note, you can also not provide
      *         a full name for the file and instead ONLY provide the extension like "png" or "gif" and Discord will generate
@@ -779,13 +592,11 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p><u>Example</u>
      * <pre><code>
      * MessageChannel channel; // = reference of a MessageChannel
-     * MessageBuilder message = new MessageBuilder();
      * EmbedBuilder embed = new EmbedBuilder();
      * File file = new File("cat_01.gif");
      * embed.setImage("attachment://cat.gif") // we specify this in sendFile as "cat.gif"
      *      .setDescription("This is a cute cat :3");
-     * message.setEmbed(embed.build());
-     * channel.sendFile(file, "cat.gif", message.build()).queue();
+     * channel.sendFile(file, "cat.gif").embed(embed.build()).queue();
      * </code></pre>
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
@@ -814,8 +625,6 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         The file to upload to the {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
      * @param  fileName
      *         The name that should be sent to discord
-     * @param  message
-     *         The message to be sent along with the uploaded file. This value can be {@code null}.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -823,9 +632,6 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>Provided {@code file} does not exist.</li>
      *             <li>Provided {@code file} is unreadable.</li>
      *             <li>Provided {@code file} is greater than 8 MiB on a normal or 50 MiB on a nitro account.</li>
-     *             <li>Provided {@link net.dv8tion.jda.api.entities.Message Message} is not {@code null} <b>and</b>
-     *                 contains a {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed} which
-     *                 is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable(net.dv8tion.jda.api.AccountType) sendable}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the logged in account does not have
@@ -839,10 +645,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         and both the currently logged in account and the target user are bots.
      *
      * @return {@link MessageAction MessageAction}
-     *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
+     *         <br>Providing the {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
      */
     @CheckReturnValue
-    default MessageAction sendFile(File file, String fileName, Message message)
+    default MessageAction sendFile(File file, String fileName)
     {
         Checks.notNull(file, "file");
         Checks.check(file.exists() && file.canRead(),
@@ -853,7 +659,7 @@ public interface MessageChannel extends ISnowflake, Formattable
 
         try
         {
-            return sendFile(new FileInputStream(file), fileName, message);
+            return sendFile(new FileInputStream(file), fileName);
         }
         catch (FileNotFoundException ex)
         {
@@ -864,12 +670,12 @@ public interface MessageChannel extends ISnowflake, Formattable
     /**
      * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
      * Sends the provided {@link net.dv8tion.jda.api.entities.Message Message} with the uploaded file.
-     * <br>If you do not wish to send a Message with the uploaded file, you can provide {@code null} for
-     * the {@code message} parameter.
+     * <br>If you want to send a Message with the uploaded file, you can add the file to the {@link net.dv8tion.jda.api.requests.restaction.MessageAction}
+     * returned by {@link #sendMessage(Message)}.
      * <br>This allows you to send an {@link java.io.InputStream InputStream} as substitute to a file.
      *
-     * <p>For information about the {@code fileName} parameter, Refer to the documentation for {@link #sendFile(java.io.File, String, Message)}.
-     * <br>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String, Message)}.
+     * <p>For information about the {@code fileName} parameter, Refer to the documentation for {@link #sendFile(java.io.File, String)}.
+     * <br>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String)}.
      *
      * <p><b>Uploading images with Embeds</b>
      * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
@@ -877,25 +683,21 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p><u>Example</u>
      * <pre><code>
      * MessageChannel channel; // = reference of a MessageChannel
-     * MessageBuilder message = new MessageBuilder();
      * EmbedBuilder embed = new EmbedBuilder();
      * InputStream file = new URL("https://http.cat/500").openStream();
      * embed.setImage("attachment://cat.png") // we specify this in sendFile as "cat.png"
      *      .setDescription("This is a cute cat :3");
-     * message.setEmbed(embed.build());
-     * channel.sendFile(file, "cat.png", message.build()).queue();
+     * channel.sendFile(file, "cat.png").embed(embed.build()).queue();
      * </code></pre>
      *
      * @param  data
      *         The InputStream data to upload to the {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
      * @param  fileName
      *         The name that should be sent to discord
-     *         <br>Refer to the documentation for {@link #sendFile(java.io.File, String, Message)} for information about this parameter.
-     * @param  message
-     *         The message to be sent along with the uploaded file. This value can be {@code null}.
+     *         <br>Refer to the documentation for {@link #sendFile(java.io.File, String)} for information about this parameter.
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the provided filename is {@code null} or {@code empty}.
+     *         If the provided file or filename is {@code null} or {@code empty}.
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
@@ -908,27 +710,27 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         and both the currently logged in account and the target user are bots.
      *
      * @return {@link MessageAction MessageAction}
-     *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
+     *         <br>Provides the {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
      */
     @CheckReturnValue
-    default MessageAction sendFile(InputStream data, String fileName, Message message)
+    default MessageAction sendFile(InputStream data, String fileName)
     {
         Checks.notNull(data, "data InputStream");
         Checks.notNull(fileName, "fileName");
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
-        return new MessageActionImpl(getJDA(), route, this).apply(message).addFile(data, fileName);
+        return new MessageActionImpl(getJDA(), route, this).addFile(data, fileName);
     }
 
     /**
      * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
      * Sends the provided {@link net.dv8tion.jda.api.entities.Message Message} with the uploaded file.
-     * <br>If you do not wish to send a Message with the uploaded file, you can provide {@code null} for
-     * the {@code message} parameter.
+     * <br>If you want to send a Message with the uploaded file, you can add the file to the {@link net.dv8tion.jda.api.requests.restaction.MessageAction}
+     * returned by {@link #sendMessage(Message)}.
      * <br>This allows you to send an {@code byte[]} as substitute to a file.
      *
-     * <p>For information about the {@code fileName} parameter, Refer to the documentation for {@link #sendFile(java.io.File, String, Message)}.
-     * <br>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String, Message)}.
+     * <p>For information about the {@code fileName} parameter, Refer to the documentation for {@link #sendFile(java.io.File, String)}.
+     * <br>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String)}.
      *
      * <p><b>Uploading images with Embeds</b>
      * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
@@ -936,29 +738,23 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p><u>Example</u>
      * <pre><code>
      * MessageChannel channel; // = reference of a MessageChannel
-     * MessageBuilder message = new MessageBuilder();
      * EmbedBuilder embed = new EmbedBuilder();
      * byte[] file = IOUtil.readFully(new URL("https://http.cat/500").openStream());
      * embed.setImage("attachment://cat.png") // we specify this in sendFile as "cat.png"
      *      .setDescription("This is a cute cat :3");
-     * message.setEmbed(embed.build());
-     * channel.sendFile(file, "cat.png", message.build()).queue();
+     * channel.sendFile(file, "cat.png").embed(embed.build()).queue();
      * </code></pre>
      *
      * @param  data
      *         The {@code byte[]} data to upload to the {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
      * @param  fileName
      *         The name that should be sent to discord.
-     *         <br>Refer to the documentation for {@link #sendFile(java.io.File, String, Message)} for information about this parameter.
-     * @param  message
-     *         The message to be sent along with the uploaded file. This value can be {@code null}.
+     *         <br>Refer to the documentation for {@link #sendFile(java.io.File, String)} for information about this parameter.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
-     *             <li>If the provided filename is {@code null} or {@code empty} or the provided data is larger than 8 MiB on a normal or 50 MiB on a nitro account.</li>
-     *             <li>If the provided {@link net.dv8tion.jda.api.entities.Message Message}
-     *                 contains an {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}
-     *                 that is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable(net.dv8tion.jda.api.AccountType) sendable}</li>
+     *             <li>If the provided filename is {@code null} or {@code empty}</li>
+     *             <li>If the provided data is larger than 8 MiB on a normal or 50 MiB on a nitro account</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the logged in account does not have
@@ -972,16 +768,16 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         and both the currently logged in account and the target user are bots.
      *
      * @return {@link MessageAction MessageAction}
-     *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
+     *         <br>Provides the {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
      */
     @CheckReturnValue
-    default MessageAction sendFile(byte[] data, String fileName, Message message)
+    default MessageAction sendFile(byte[] data, String fileName)
     {
         Checks.notNull(data, "data");
         Checks.notNull(fileName, "fileName");
         final long maxSize = getJDA().getSelfUser().getAllowedFileSize();
         Checks.check(data.length <= maxSize, "File is too big! Max file-size is %d bytes", maxSize);
-        return sendFile(new ByteArrayInputStream(data), fileName, message);
+        return sendFile(new ByteArrayInputStream(data), fileName);
     }
 
     /**

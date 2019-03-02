@@ -28,6 +28,8 @@ import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 import okhttp3.OkHttpClient;
 
 import javax.annotation.CheckReturnValue;
@@ -37,6 +39,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.regex.Matcher;
 
 /**
  * The core of JDA. Acts as a registry system of JDA. All parts of the the API can be accessed starting from this class.
@@ -479,6 +482,68 @@ public interface JDA
     default User getUserById(long id)
     {
         return getUserCache().getElementById(id);
+    }
+
+    /**
+     * Searches for a user that has the matching Discord Tag.
+     * <br>Format has to be in the form {@code Username#Discriminator} where the
+     * username must be between 2 and 32 characters (inclusive) matching the exact casing and the discriminator
+     * must be exactly 4 digits.
+     *
+     * <p>This only checks users that are known to the currently logged in account (shard). If a user exists
+     * with the tag that is not available in the {@link #getUserCache() User-Cache} it will not be detected.
+     * <br>Currently Discord does not offer a way to retrieve a user by their discord tag.
+     *
+     * @param  tag
+     *         The Discord Tag in the format {@code Username#Discriminator}
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided tag is null or not in the described format
+     *
+     * @return The {@link net.dv8tion.jda.api.entities.User} for the discord tag or null if no user has the provided tag
+     */
+    default User getUserByTag(String tag)
+    {
+        Checks.notNull(tag, "Tag");
+        Matcher matcher = User.USER_TAG.matcher(tag);
+        Checks.check(matcher.matches(), "Invalid tag format!");
+        String username = matcher.group(1);
+        String discriminator = matcher.group(2);
+        return getUserByTag(username, discriminator);
+    }
+
+    /**
+     * Searches for a user that has the matching Discord Tag.
+     * <br>Format has to be in the form {@code Username#Discriminator} where the
+     * username must be between 2 and 32 characters (inclusive) matching the exact casing and the discriminator
+     * must be exactly 4 digits.
+     *
+     * <p>This only checks users that are known to the currently logged in account (shard). If a user exists
+     * with the tag that is not available in the {@link #getUserCache() User-Cache} it will not be detected.
+     * <br>Currently Discord does not offer a way to retrieve a user by their discord tag.
+     *
+     * @param  username
+     *         The name of the user
+     * @param  discriminator
+     *         The discriminator of the user
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided arguments are null or not in the described format
+     *
+     * @return The {@link net.dv8tion.jda.api.entities.User} for the discord tag or null if no user has the provided tag
+     */
+    default User getUserByTag(String username, String discriminator)
+    {
+        Checks.notNull(username, "Username");
+        Checks.notNull(discriminator, "Discriminator");
+        Checks.check(discriminator.length() == 4 && Helpers.isNumeric(discriminator), "Invalid format for discriminator!");
+        Checks.check(username.length() >= 2 && username.length() <= 32, "Username must be between 2 and 32 characters in length!");
+        return getUserCache().applyStream(stream ->
+            stream.filter(it -> it.getDiscriminator().equals(discriminator))
+                  .filter(it -> it.getName().equals(username))
+                  .findFirst()
+                  .orElse(null)
+        );
     }
 
     /**

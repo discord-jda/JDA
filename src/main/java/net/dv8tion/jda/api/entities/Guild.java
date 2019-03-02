@@ -369,6 +369,9 @@ public interface Guild extends ISnowflake
      * @param  user
      *         The {@link net.dv8tion.jda.api.entities.User User} which to retrieve a related Member object for.
      *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided user is null
+     *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.Member Member} for the related {@link net.dv8tion.jda.api.entities.User User}.
      */
     Member getMember(User user);
@@ -406,6 +409,62 @@ public interface Guild extends ISnowflake
     default Member getMemberById(long userId)
     {
         return getMemberCache().getElementById(userId);
+    }
+
+    /**
+     * Searches for a {@link net.dv8tion.jda.api.entities.Member} that has the matching Discord Tag.
+     * <br>Format has to be in the form {@code Username#Discriminator} where the
+     * username must be between 2 and 32 characters (inclusive) matching the exact casing and the discriminator
+     * must be exactly 4 digits.
+     * <br>This does not check the {@link net.dv8tion.jda.api.entities.Member#getNickname() nickname} of the member
+     * but the username.
+     *
+     * <p>This only checks users that are in this guild. If a user exists
+     * with the tag that is not available in the {@link #getMemberCache() Member-Cache} it will not be detected.
+     * <br>Currently Discord does not offer a way to retrieve a user by their discord tag.
+     *
+     * @param  tag
+     *         The Discord Tag in the format {@code Username#Discriminator}
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided tag is null or not in the described format
+     *
+     * @return The {@link net.dv8tion.jda.api.entities.Member} for the discord tag or null if no member has the provided tag
+     *
+     * @see    net.dv8tion.jda.api.JDA#getUserByTag(String)
+     */
+    default Member getMemberByTag(String tag)
+    {
+        User user = getJDA().getUserByTag(tag);
+        return user == null ? null : getMember(user);
+    }
+
+    /**
+     * Searches for a {@link net.dv8tion.jda.api.entities.Member} that has the matching Discord Tag.
+     * <br>Format has to be in the form {@code Username#Discriminator} where the
+     * username must be between 2 and 32 characters (inclusive) matching the exact casing and the discriminator
+     * must be exactly 4 digits.
+     * <br>This does not check the {@link net.dv8tion.jda.api.entities.Member#getNickname() nickname} of the member
+     * but the username.
+     *
+     * <p>This only checks users that are in this guild. If a user exists
+     * with the tag that is not available in the {@link #getMemberCache() Member-Cache} it will not be detected.
+     * <br>Currently Discord does not offer a way to retrieve a user by their discord tag.
+     *
+     * @param  username
+     *         The name of the user
+     * @param  discriminator
+     *         The discriminator of the user
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided arguments are null or not in the described format
+     *
+     * @return The {@link net.dv8tion.jda.api.entities.Member} for the discord tag or null if no member has the provided tag
+     */
+    default Member getMemberByTag(String username, String discriminator)
+    {
+        User user = getJDA().getUserByTag(username, discriminator);
+        return user == null ? null : getMember(user);
     }
 
     /**

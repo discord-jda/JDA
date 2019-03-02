@@ -268,6 +268,7 @@ public class GuildImpl implements Guild
     @Override
     public Member getMember(User user)
     {
+        Checks.notNull(user, "User");
         return getMemberById(user.getIdLong());
     }
 
