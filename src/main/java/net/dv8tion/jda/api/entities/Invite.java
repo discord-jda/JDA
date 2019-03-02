@@ -57,7 +57,7 @@ public interface Invite
      *         <br>The Invite object
      */
     @Nonnull
-    static RestAction<Invite> resolve(final JDA api, final String code)
+    static RestAction<Invite> resolve(@Nonnull final JDA api, @Nonnull final String code)
     {
         return resolve(api, code, false);
     }
@@ -83,7 +83,7 @@ public interface Invite
      *         <br>The Invite object
      */
     @Nonnull
-    static RestAction<Invite> resolve(final JDA api, final String code, final boolean withCounts)
+    static RestAction<Invite> resolve(@Nonnull final JDA api, @Nonnull final String code, final boolean withCounts)
     {
         return InviteImpl.resolve(api, code, withCounts);
     }
