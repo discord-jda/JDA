@@ -63,6 +63,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         return "<#" + id + '>';
     }
 
+    @Nonnull
     @Override
     public RestAction<List<Webhook>> retrieveWebhooks()
     {
@@ -92,8 +93,9 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         });
     }
 
+    @Nonnull
     @Override
-    public WebhookAction createWebhook(String name)
+    public WebhookAction createWebhook(@Nonnull String name)
     {
         Checks.notBlank(name, "Webhook name");
         name = name.trim();
@@ -103,8 +105,9 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         return new WebhookActionImpl(getJDA(), this, name);
     }
 
+    @Nonnull
     @Override
-    public RestAction<Void> deleteMessages(Collection<Message> messages)
+    public RestAction<Void> deleteMessages(@Nonnull Collection<Message> messages)
     {
         Checks.notEmpty(messages, "Messages collection");
 
@@ -113,8 +116,9 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
                 .collect(Collectors.toList()));
     }
 
+    @Nonnull
     @Override
-    public RestAction<Void> deleteMessagesByIds(Collection<String> messageIds)
+    public RestAction<Void> deleteMessagesByIds(@Nonnull Collection<String> messageIds)
     {
         checkPermission(Permission.MESSAGE_MANAGE, "Must have MESSAGE_MANAGE in order to bulk delete messages in this channel regardless of author.");
         if (messageIds.size() < 2 || messageIds.size() > 100)
@@ -127,8 +131,9 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         return deleteMessages0(messageIds);
     }
 
+    @Nonnull
     @Override
-    public AuditableRestAction<Void> deleteWebhookById(String id)
+    public AuditableRestAction<Void> deleteWebhookById(@Nonnull String id)
     {
         Checks.isSnowflake(id, "Webhook ID");
 
@@ -146,7 +151,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     }
 
     @Override
-    public boolean canTalk(Member member)
+    public boolean canTalk(@Nonnull Member member)
     {
         if (!getGuild().equals(member.getGuild()))
             throw new IllegalArgumentException("Provided Member is not from the Guild that this TextChannel is part of.");
@@ -433,7 +438,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
 
     @Nonnull
     @Override
-    public RestAction<Void> clearReactionsById(String messageId)
+    public RestAction<Void> clearReactionsById(@Nonnull String messageId)
     {
         Checks.isSnowflake(messageId, "Message ID");
 
@@ -444,7 +449,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
 
     @Nonnull
     @Override
-    public RestActionImpl<Void> removeReactionById(String messageId, String unicode, User user)
+    public RestActionImpl<Void> removeReactionById(@Nonnull String messageId, @Nonnull String unicode, @Nonnull User user)
     {
         Checks.isSnowflake(messageId, "Message ID");
         Checks.noWhitespace(unicode, "Unicode emoji");
