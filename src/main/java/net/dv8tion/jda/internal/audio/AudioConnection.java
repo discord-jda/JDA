@@ -701,6 +701,8 @@ public class AudioConnection
                         seq++;
 
                     silenceCounter++;
+                    //If we have sent our 10 silent packets on initial connect, or if we have sent enough silent packets
+                    // to satisfy the speaking delay, stop transmitting silence.
                     if ((!sentSilenceOnConnect && silenceCounter > 10) || silenceCounter > speakingDelay)
                     {
                         if (sentSilenceOnConnect)
