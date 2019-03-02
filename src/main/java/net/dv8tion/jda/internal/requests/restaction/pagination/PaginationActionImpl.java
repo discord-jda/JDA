@@ -41,6 +41,7 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
     protected final int minLimit;
     protected final AtomicInteger limit;
 
+    protected volatile long iteratorIndex = 0;
     protected volatile long lastKey = 0;
     protected volatile T last = null;
     protected volatile boolean useCache = true;
@@ -95,6 +96,7 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
         }
         if (this.lastKey != id)
             this.last = null;
+        this.iteratorIndex = id;
         this.lastKey = id;
         return (M) this;
     }
@@ -153,11 +155,7 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
     {
         Checks.check(maxLimit == 0 || limit <= maxLimit, "Limit must not exceed %d!", maxLimit);
         Checks.check(minLimit == 0 || limit >= minLimit, "Limit must be greater or equal to %d", minLimit);
-
-        synchronized (this.limit)
-        {
-            this.limit.set(limit);
-        }
+        this.limit.set(limit);
         return (M) this;
     }
 
@@ -265,8 +263,7 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
         });
         try
         {
-            //not starting with cache here unlike forEachAsync
-            acceptor.accept(Collections.emptyList());
+            acceptor.accept(getRemainingCache());
         }
         catch (Exception ex)
         {
@@ -285,22 +282,58 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
         {
             while (!queue.isEmpty())
             {
-                if (!action.execute(queue.poll()))
+                T it = queue.poll();
+                if (!action.execute(it))
+                {
+                    // set the iterator index for next call of remaining
+                    updateIndex(it);
                     return;
+                }
             }
         }
     }
 
+    protected List<T> getRemainingCache()
+    {
+        int index = getIteratorIndex();
+        if (useCache && index > -1 && index < cached.size())
+            return cached.subList(index, cached.size());
+        return Collections.emptyList();
+    }
+
     public List<T> getNextChunk()
     {
-        List<T> items;
-        synchronized (limit)
+        List<T> list = getRemainingCache();
+        if (!list.isEmpty())
+            return list;
+
+        final int current = limit.getAndSet(getMaxLimit());
+        list = complete();
+        limit.set(current);
+        return list;
+    }
+
+    protected abstract long getKey(T it);
+
+    protected int getIteratorIndex()
+    {
+        for (int i = 0; i < cached.size(); i++)
         {
-            final int current = limit.getAndSet(getMaxLimit());
-            items = complete();
-            limit.set(current);
+            if (getKey(cached.get(i)) == iteratorIndex)
+                return i + 1;
         }
-        return items;
+        return -1;
+    }
+
+    protected void updateIndex(T it)
+    {
+        long key = getKey(it);
+        iteratorIndex = key;
+        if (!useCache)
+        {
+            lastKey = key;
+            last = it;
+        }
     }
 
     protected class ChainedConsumer implements Consumer<List<T>>
@@ -334,15 +367,14 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
                     return;
                 if (action.execute(it))
                     continue;
+                // set the iterator index for next call of remaining
+                updateIndex(it);
                 task.complete(null);
                 return;
             }
-            synchronized (limit)
-            {
-                final int currentLimit = limit.getAndSet(maxLimit);
-                queue(this, throwableConsumer);
-                limit.set(currentLimit);
-            }
+            final int currentLimit = limit.getAndSet(maxLimit);
+            queue(this, throwableConsumer);
+            limit.set(currentLimit);
         }
     }
 }

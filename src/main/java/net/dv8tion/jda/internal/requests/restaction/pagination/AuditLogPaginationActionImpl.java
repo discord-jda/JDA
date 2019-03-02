@@ -158,4 +158,10 @@ public class AuditLogPaginationActionImpl
 
         request.onSuccess(list);
     }
+
+    @Override
+    protected long getKey(AuditLogEntry it)
+    {
+        return it.getIdLong();
+    }
 }
