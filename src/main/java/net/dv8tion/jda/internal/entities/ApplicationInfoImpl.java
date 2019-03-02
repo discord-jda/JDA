@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ApplicationInfo;
 import net.dv8tion.jda.api.entities.User;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 
 public class ApplicationInfoImpl implements ApplicationInfo
@@ -61,6 +62,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
         return obj instanceof ApplicationInfoImpl && this.id == ((ApplicationInfoImpl) obj).id;
     }
 
+    @Nonnull
     @Override
     public String getDescription()
     {
@@ -86,6 +88,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
         return this.id;
     }
 
+    @Nonnull
     @Override
     public String getInviteUrl(final String guildId, final Collection<Permission> permissions)
     {
@@ -105,18 +108,21 @@ public class ApplicationInfoImpl implements ApplicationInfo
         return builder.toString();
     }
 
+    @Nonnull
     @Override
     public JDA getJDA()
     {
         return this.api;
     }
 
+    @Nonnull
     @Override
     public String getName()
     {
         return this.name;
     }
 
+    @Nonnull
     @Override
     public User getOwner()
     {

@@ -38,6 +38,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.annotation.Nonnull;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -55,6 +56,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         super(id, guild);
     }
 
+    @Nonnull
     @Override
     public String getAsMention()
     {
@@ -152,8 +154,9 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         return member.hasPermission(this, Permission.MESSAGE_READ, Permission.MESSAGE_WRITE);
     }
 
+    @Nonnull
     @Override
-    public List<CompletableFuture<Void>> purgeMessages(List<? extends Message> messages)
+    public List<CompletableFuture<Void>> purgeMessages(@Nonnull List<? extends Message> messages)
     {
         if (messages == null || messages.isEmpty())
             return Collections.emptyList();
@@ -170,9 +173,10 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         return TextChannel.super.purgeMessages(messages);
     }
 
+    @Nonnull
     @Override
     @SuppressWarnings("ConstantConditions")
-    public List<CompletableFuture<Void>> purgeMessagesById(long... messageIds)
+    public List<CompletableFuture<Void>> purgeMessagesById(@Nonnull long... messageIds)
     {
         if (messageIds == null || messageIds.length == 0)
             return Collections.emptyList();
@@ -233,6 +237,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         return lastMessageId != 0;
     }
 
+    @Nonnull
     @Override
     public ChannelType getType()
     {
@@ -256,6 +261,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         return slowmode;
     }
 
+    @Nonnull
     @Override
     public List<Member> getMembers()
     {
@@ -278,8 +284,9 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         throw new AssertionError("Somehow when determining position we never found the TextChannel in the Guild's channels? wtf?");
     }
 
+    @Nonnull
     @Override
-    public ChannelAction<TextChannel> createCopy(Guild guild)
+    public ChannelAction<TextChannel> createCopy(@Nonnull Guild guild)
     {
         Checks.notNull(guild, "Guild");
         ChannelAction<TextChannel> action = guild.getController().createTextChannel(name).setNSFW(nsfw).setTopic(topic).setSlowmode(slowmode);
@@ -299,8 +306,9 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         return action;
     }
 
+    @Nonnull
     @Override
-    public MessageAction sendMessage(CharSequence text)
+    public MessageAction sendMessage(@Nonnull CharSequence text)
     {
         checkVerification();
         checkPermission(Permission.MESSAGE_READ);
@@ -308,8 +316,9 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         return TextChannel.super.sendMessage(text);
     }
 
+    @Nonnull
     @Override
-    public MessageAction sendMessage(MessageEmbed embed)
+    public MessageAction sendMessage(@Nonnull MessageEmbed embed)
     {
         checkVerification();
         checkPermission(Permission.MESSAGE_READ);
@@ -319,8 +328,9 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         return TextChannel.super.sendMessage(embed);
     }
 
+    @Nonnull
     @Override
-    public MessageAction sendMessage(Message msg)
+    public MessageAction sendMessage(@Nonnull Message msg)
     {
         Checks.notNull(msg, "Message");
 
@@ -334,6 +344,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         return TextChannel.super.sendMessage(msg);
     }
 
+    @Nonnull
     @Override
     public MessageAction sendFile(InputStream data, String fileName, Message message)
     {
@@ -346,8 +357,9 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         return TextChannel.super.sendFile(data, fileName, message);
     }
 
+    @Nonnull
     @Override
-    public RestAction<Message> retrieveMessageById(String messageId)
+    public RestAction<Message> retrieveMessageById(@Nonnull String messageId)
     {
         checkPermission(Permission.MESSAGE_READ);
         checkPermission(Permission.MESSAGE_HISTORY);
@@ -356,8 +368,9 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         return TextChannel.super.retrieveMessageById(messageId);
     }
 
+    @Nonnull
     @Override
-    public AuditableRestAction<Void> deleteMessageById(String messageId)
+    public AuditableRestAction<Void> deleteMessageById(@Nonnull String messageId)
     {
         Checks.isSnowflake(messageId, "Message ID");
         checkPermission(Permission.MESSAGE_READ);
@@ -366,8 +379,9 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         return TextChannel.super.deleteMessageById(messageId);
     }
 
+    @Nonnull
     @Override
-    public RestAction<Void> pinMessageById(String messageId)
+    public RestAction<Void> pinMessageById(@Nonnull String messageId)
     {
         checkPermission(Permission.MESSAGE_READ, "You cannot pin a message in a channel you can't access. (MESSAGE_READ)");
         checkPermission(Permission.MESSAGE_MANAGE, "You need MESSAGE_MANAGE to pin or unpin messages.");
@@ -376,8 +390,9 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         return TextChannel.super.pinMessageById(messageId);
     }
 
+    @Nonnull
     @Override
-    public RestAction<Void> unpinMessageById(String messageId)
+    public RestAction<Void> unpinMessageById(@Nonnull String messageId)
     {
         checkPermission(Permission.MESSAGE_READ, "You cannot unpin a message in a channel you can't access. (MESSAGE_READ)");
         checkPermission(Permission.MESSAGE_MANAGE, "You need MESSAGE_MANAGE to pin or unpin messages.");
@@ -386,6 +401,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         return TextChannel.super.unpinMessageById(messageId);
     }
 
+    @Nonnull
     @Override
     public RestAction<List<Message>> retrievePinnedMessages()
     {
@@ -395,8 +411,9 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         return TextChannel.super.retrievePinnedMessages();
     }
 
+    @Nonnull
     @Override
-    public RestAction<Void> addReactionById(String messageId, String unicode)
+    public RestAction<Void> addReactionById(@Nonnull String messageId, @Nonnull String unicode)
     {
         checkPermission(Permission.MESSAGE_HISTORY);
 
@@ -404,8 +421,9 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         return TextChannel.super.addReactionById(messageId, unicode);
     }
 
+    @Nonnull
     @Override
-    public RestAction<Void> addReactionById(String messageId, Emote emote)
+    public RestAction<Void> addReactionById(@Nonnull String messageId, @Nonnull Emote emote)
     {
         checkPermission(Permission.MESSAGE_HISTORY);
 
@@ -413,6 +431,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         return TextChannel.super.addReactionById(messageId, emote);
     }
 
+    @Nonnull
     @Override
     public RestAction<Void> clearReactionsById(String messageId)
     {
@@ -423,6 +442,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         return new RestActionImpl<>(getJDA(), route);
     }
 
+    @Nonnull
     @Override
     public RestActionImpl<Void> removeReactionById(String messageId, String unicode, User user)
     {
@@ -440,16 +460,18 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         return new RestActionImpl<>(getJDA(), route);
     }
 
+    @Nonnull
     @Override
-    public MessageAction editMessageById(String messageId, CharSequence newContent)
+    public MessageAction editMessageById(@Nonnull String messageId, @Nonnull CharSequence newContent)
     {
         checkPermission(Permission.MESSAGE_READ);
         checkPermission(Permission.MESSAGE_WRITE);
         return TextChannel.super.editMessageById(messageId, newContent);
     }
 
+    @Nonnull
     @Override
-    public MessageAction editMessageById(String messageId, MessageEmbed newEmbed)
+    public MessageAction editMessageById(@Nonnull String messageId, @Nonnull MessageEmbed newEmbed)
     {
         checkPermission(Permission.MESSAGE_READ);
         checkPermission(Permission.MESSAGE_WRITE);
@@ -457,8 +479,9 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         return TextChannel.super.editMessageById(messageId, newEmbed);
     }
 
+    @Nonnull
     @Override
-    public MessageAction editMessageById(String id, Message newContent)
+    public MessageAction editMessageById(@Nonnull String id, @Nonnull Message newContent)
     {
         Checks.notNull(newContent, "Message");
 
@@ -479,7 +502,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     }
 
     @Override
-    public int compareTo(TextChannel chan)
+    public int compareTo(@Nonnull TextChannel chan)
     {
         Checks.notNull(chan, "Other TextChannel");
         if (this == chan)

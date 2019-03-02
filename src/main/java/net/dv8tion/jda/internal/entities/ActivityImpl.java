@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.RichPresence;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
@@ -51,69 +52,38 @@ public class ActivityImpl implements Activity
         this.timestamps = timestamps;
     }
 
-    /**
-     * Whether this is a <a href="https://discordapp.com/developers/docs/rich-presence/best-practices" target="_blank">Rich Presence</a>
-     * <br>If {@code false} the result of {@link #asRichPresence()} is {@code null}
-     *
-     * @return {@code true} if this is a {@link net.dv8tion.jda.api.entities.RichPresence RichPresence}
-     */
     @Override
     public boolean isRich()
     {
         return false;
     }
 
-    /**
-     * {@link net.dv8tion.jda.api.entities.RichPresence RichPresence} representation of
-     * this Activity.
-     *
-     * @return RichPresence or {@code null} if {@link #isRich()} returns {@code false}
-     */
     @Override
     public RichPresence asRichPresence()
     {
         return null;
     }
 
-    /**
-     * The displayed name of the {@link Activity Activity}. If no name has been set, this returns null.
-     *
-     * @return Possibly-null String containing the Activity's name.
-     */
+    @Nonnull
     @Override
     public String getName()
     {
         return name;
     }
 
-    /**
-     * The URL of the {@link Activity Activity} if the game is actually a Stream.
-     * <br>This will return null for regular games.
-     *
-     * @return Possibly-null String containing the Activity's URL.
-     */
     @Override
     public String getUrl()
     {
         return url;
     }
 
-    /**
-     * The type of {@link Activity Activity}.
-     *
-     * @return Never-null {@link net.dv8tion.jda.api.entities.Activity.ActivityType ActivityType} representing the type of Activity
-     */
+    @Nonnull
     @Override
     public ActivityType getType()
     {
         return type;
     }
 
-    /**
-     * Information on the match duration, start, and end.
-     *
-     * @return {@link net.dv8tion.jda.api.entities.RichPresence.Timestamps Timestamps} wrapper of {@code null} if unset
-     */
     @Nullable
     public RichPresence.Timestamps getTimestamps()
     {

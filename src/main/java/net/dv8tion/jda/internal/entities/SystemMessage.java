@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 
+import javax.annotation.Nonnull;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -37,56 +38,65 @@ public class SystemMessage extends ReceivedMessage
             tts, pinned, content, nonce, author, editTime, reactions, attachments, embeds);
     }
 
+    @Nonnull
     @Override
     public RestAction<Void> pin()
     {
         throw new UnsupportedOperationException("Cannot pin message of this Message Type. MessageType: " + getType());
     }
 
+    @Nonnull
     @Override
     public RestAction<Void> unpin()
     {
         throw new UnsupportedOperationException("Cannot unpin message of this Message Type. MessageType: " + getType());
     }
 
+    @Nonnull
     @Override
-    public RestAction<Void> addReaction(Emote emote)
+    public RestAction<Void> addReaction(@Nonnull Emote emote)
     {
         throw new UnsupportedOperationException("Cannot add reactions to message of this Message Type. MessageType: " + getType());
     }
 
+    @Nonnull
     @Override
-    public RestAction<Void> addReaction(String unicode)
+    public RestAction<Void> addReaction(@Nonnull String unicode)
     {
         throw new UnsupportedOperationException("Cannot add reactions to message of this Message Type. MessageType: " + getType());
     }
 
+    @Nonnull
     @Override
     public RestAction<Void> clearReactions()
     {
         throw new UnsupportedOperationException("Cannot clear reactions for message of this Message Type. MessageType: " + getType());
     }
 
+    @Nonnull
     @Override
-    public MessageAction editMessage(CharSequence newContent)
+    public MessageAction editMessage(@Nonnull CharSequence newContent)
     {
         throw new UnsupportedOperationException("Cannot edit message of this Message Type. MessageType: " + getType());
     }
 
+    @Nonnull
     @Override
-    public MessageAction editMessage(MessageEmbed newContent)
+    public MessageAction editMessage(@Nonnull MessageEmbed newContent)
     {
         throw new UnsupportedOperationException("Cannot edit message of this Message Type. MessageType: " + getType());
     }
 
+    @Nonnull
     @Override
-    public MessageAction editMessageFormat(String format, Object... args)
+    public MessageAction editMessageFormat(@Nonnull String format, @Nonnull Object... args)
     {
         throw new UnsupportedOperationException("Cannot edit message of this Message Type. MessageType: " + getType());
     }
 
+    @Nonnull
     @Override
-    public MessageAction editMessage(Message newContent)
+    public MessageAction editMessage(@Nonnull Message newContent)
     {
         throw new UnsupportedOperationException("Cannot edit message of this Message Type. MessageType: " + getType());
     }
