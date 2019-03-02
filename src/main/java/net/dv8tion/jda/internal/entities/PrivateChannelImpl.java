@@ -147,10 +147,10 @@ public class PrivateChannelImpl implements PrivateChannel
 
     @Nonnull
     @Override
-    public MessageAction sendFile(InputStream data, String fileName, Message message)
+    public MessageAction sendFile(InputStream data, String fileName)
     {
         checkBot();
-        return PrivateChannel.super.sendFile(data, fileName, message);
+        return PrivateChannel.super.sendFile(data, fileName);
     }
 
     public PrivateChannelImpl setFake(boolean fake)

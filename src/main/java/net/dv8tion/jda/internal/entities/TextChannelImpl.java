@@ -346,7 +346,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
 
     @Nonnull
     @Override
-    public MessageAction sendFile(InputStream data, String fileName, Message message)
+    public MessageAction sendFile(InputStream data, String fileName)
     {
         checkVerification();
         checkPermission(Permission.MESSAGE_READ);
@@ -354,7 +354,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         checkPermission(Permission.MESSAGE_ATTACH_FILES);
 
         //Call MessageChannel's default method
-        return TextChannel.super.sendFile(data, fileName, message);
+        return TextChannel.super.sendFile(data, fileName);
     }
 
     @Nonnull

@@ -447,19 +447,17 @@ public class EmbedBuilder
      *
      * <p><b>Uploading images with Embeds</b>
      * <br>When uploading an <u>image</u>
-     * (using {@link net.dv8tion.jda.api.entities.MessageChannel#sendFile(java.io.File, net.dv8tion.jda.api.entities.Message) MessageChannel.sendFile(...)})
+     * (using {@link net.dv8tion.jda.api.entities.MessageChannel#sendFile(java.io.File) MessageChannel.sendFile(...)})
      * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
      *
      * <p><u>Example</u>
      * <pre><code>
      * MessageChannel channel; // = reference of a MessageChannel
-     * MessageBuilder message = new MessageBuilder();
      * EmbedBuilder embed = new EmbedBuilder();
      * InputStream file = new URL("https://http.cat/500").openStream();
      * embed.setThumbnail("attachment://cat.png") // we specify this in sendFile as "cat.png"
      *      .setDescription("This is a cute cat :3");
-     * message.setEmbed(embed.build());
-     * channel.sendFile(file, "cat.png", message.build()).queue();
+     * channel.sendFile(file, "cat.png").embed(embed.build()).queue();
      * </code></pre>
      *
      * @param  url
@@ -495,19 +493,17 @@ public class EmbedBuilder
      *
      * <p><b>Uploading images with Embeds</b>
      * <br>When uploading an <u>image</u>
-     * (using {@link net.dv8tion.jda.api.entities.MessageChannel#sendFile(java.io.File, net.dv8tion.jda.api.entities.Message) MessageChannel.sendFile(...)})
+     * (using {@link net.dv8tion.jda.api.entities.MessageChannel#sendFile(java.io.File) MessageChannel.sendFile(...)})
      * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
      *
      * <p><u>Example</u>
      * <pre><code>
      * MessageChannel channel; // = reference of a MessageChannel
-     * MessageBuilder message = new MessageBuilder();
      * EmbedBuilder embed = new EmbedBuilder();
      * InputStream file = new URL("https://http.cat/500").openStream();
      * embed.setImage("attachment://cat.png") // we specify this in sendFile as "cat.png"
      *      .setDescription("This is a cute cat :3");
-     * message.setEmbed(embed.build());
-     * channel.sendFile(file, "cat.png", message.build()).queue();
+     * channel.sendFile(file, "cat.png").embed(embed.build()).queue();
      * </code></pre>
      *
      * @param  url
@@ -521,7 +517,7 @@ public class EmbedBuilder
      *
      * @return the builder after the image has been set
      *
-     * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(java.io.File, String, net.dv8tion.jda.api.entities.Message) MessageChannel.sendFile(...)
+     * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(java.io.File, String) MessageChannel.sendFile(...)
      */
     @Nonnull
     public EmbedBuilder setImage(@Nullable String url)
@@ -590,19 +586,17 @@ public class EmbedBuilder
      *
      * <p><b>Uploading images with Embeds</b>
      * <br>When uploading an <u>image</u>
-     * (using {@link net.dv8tion.jda.api.entities.MessageChannel#sendFile(java.io.File, net.dv8tion.jda.api.entities.Message) MessageChannel.sendFile(...)})
+     * (using {@link net.dv8tion.jda.api.entities.MessageChannel#sendFile(java.io.File) MessageChannel.sendFile(...)})
      * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
      *
      * <p><u>Example</u>
      * <pre><code>
      * MessageChannel channel; // = reference of a MessageChannel
-     * MessageBuilder message = new MessageBuilder();
      * EmbedBuilder embed = new EmbedBuilder();
      * InputStream file = new URL("https://http.cat/500").openStream();
      * embed.setAuthor("Minn", null, "attachment://cat.png") // we specify this in sendFile as "cat.png"
      *      .setDescription("This is a cute cat :3");
-     * message.setEmbed(embed.build());
-     * channel.sendFile(file, "cat.png", message.build()).queue();
+     * channel.sendFile(file, "cat.png").embed(embed.build()).queue();
      * </code></pre>
      *
      * @param  name
@@ -647,19 +641,17 @@ public class EmbedBuilder
      *
      * <p><b>Uploading images with Embeds</b>
      * <br>When uploading an <u>image</u>
-     * (using {@link net.dv8tion.jda.api.entities.MessageChannel#sendFile(java.io.File, net.dv8tion.jda.api.entities.Message) MessageChannel.sendFile(...)})
+     * (using {@link net.dv8tion.jda.api.entities.MessageChannel#sendFile(java.io.File) MessageChannel.sendFile(...)})
      * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
      *
      * <p><u>Example</u>
      * <pre><code>
      * MessageChannel channel; // = reference of a MessageChannel
-     * MessageBuilder message = new MessageBuilder();
      * EmbedBuilder embed = new EmbedBuilder();
      * InputStream file = new URL("https://http.cat/500").openStream();
      * embed.setFooter("Cool footer!", "attachment://cat.png") // we specify this in sendFile as "cat.png"
      *      .setDescription("This is a cute cat :3");
-     * message.setEmbed(embed.build());
-     * channel.sendFile(file, "cat.png", message.build()).queue();
+     * channel.sendFile(file, "cat.png").embed(embed.build()).queue();
      * </code></pre>
      *
      * @param  text
