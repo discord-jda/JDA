@@ -575,7 +575,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction sendFile(File file)
+    default MessageAction sendFile(@Nonnull File file)
     {
         Checks.notNull(file, "file");
 
@@ -663,7 +663,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction sendFile(File file, String fileName)
+    default MessageAction sendFile(@Nonnull File file, @Nonnull String fileName)
     {
         Checks.notNull(file, "file");
         Checks.check(file.exists() && file.canRead(),
@@ -729,7 +729,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction sendFile(InputStream data, String fileName)
+    default MessageAction sendFile(@Nonnull InputStream data, @Nonnull String fileName)
     {
         Checks.notNull(data, "data InputStream");
         Checks.notNull(fileName, "fileName");
@@ -788,7 +788,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction sendFile(byte[] data, String fileName)
+    default MessageAction sendFile(@Nonnull byte[] data, @Nonnull String fileName)
     {
         Checks.notNull(data, "data");
         Checks.notNull(fileName, "fileName");
