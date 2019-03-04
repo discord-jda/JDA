@@ -125,7 +125,7 @@ public class GuildSetupController
     {
         setupNodes.remove(id);
         WebSocketClient client = getJDA().getClient();
-        if (!client.isReady() && --incompleteCount < 1)
+        if (--incompleteCount < 1 && !client.isReady())
             client.ready();
         else
             tryChunking();
