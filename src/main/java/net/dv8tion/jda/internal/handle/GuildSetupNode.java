@@ -326,10 +326,18 @@ public class GuildSetupNode
         int cacheSize = cachedEvents.size();
         if (cacheSize >= 2000 && cacheSize % 1000 == 0)
         {
+            GuildSetupController controller = getController();
             GuildSetupController.log.warn(
                 "Accumulating suspicious amounts of cached events during guild setup, " +
-                "something might be wrong. Cached: {} Members: {}/{} Status: {} GuildId: {}",
-                cacheSize, getCurrentMemberCount(), getExpectedMemberCount(), status, id);
+                "something might be wrong. Cached: {} Members: {}/{} Status: {} GuildId: {} Incomplete: {}/{}",
+                cacheSize, getCurrentMemberCount(), getExpectedMemberCount(),
+                status, id, controller.getChunkingCount(), controller.getIncompleteCount());
+
+            if (status == GuildSetupController.Status.CHUNKING)
+            {
+                GuildSetupController.log.debug("Forcing new chunk request for guild: {}", id);
+                controller.sendChunkRequest(id);
+            }
         }
     }
 
