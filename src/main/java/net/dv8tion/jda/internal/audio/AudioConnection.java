@@ -59,6 +59,7 @@ public class AudioConnection
                                                         // to Left and Right mono (stereo that is the same on both sides)
     public static final long MAX_UINT_32 = 4294967295L;
 
+    private static final int NOT_SPEAKING = 0;
     private static final ByteBuffer silenceBytes = ByteBuffer.wrap(new byte[] {(byte)0xF8, (byte)0xFF, (byte)0xFE});
     private static boolean printedError = false;
 
@@ -78,6 +79,7 @@ public class AudioConnection
     private Thread receiveThread;
     private long queueTimeout;
     private boolean sentSilenceOnConnect = false;
+    private int speakingDelay = 10;
 
     private volatile AudioSendHandler sendHandler = null;
     private volatile AudioReceiveHandler receiveHandler = null;
@@ -112,6 +114,11 @@ public class AudioConnection
     public void setAutoReconnect(boolean shouldReconnect)
     {
         webSocket.setAutoReconnect(shouldReconnect);
+    }
+
+    public void setSpeakingDelay(int millis)
+    {
+        speakingDelay = Math.max(millis / 20, 10); // max { millis / frame-length, 200 millis }
     }
 
     public void setSendingHandler(AudioSendHandler handler)
@@ -595,8 +602,6 @@ public class AudioConnection
                 .put("ssrc", webSocket.getSSRC())
                 .put("delay", 0);
         webSocket.send(VoiceCode.USER_SPEAKING_UPDATE, obj);
-        if (raw == 0)
-            sendSilentPackets();
     }
 
     private void sendSilentPackets()
@@ -675,7 +680,7 @@ public class AudioConnection
                     if (rawAudio == null || !rawAudio.hasRemaining() || !rawAudio.hasArray())
                     {
                         if (speaking && changeTalking)
-                            setSpeaking(0);
+                            sendSilentPackets();
                     }
                     else
                     {
@@ -704,15 +709,20 @@ public class AudioConnection
                     else
                         seq++;
 
-                    if (++silenceCounter > 10)
+                    silenceCounter++;
+                    //If we have sent our 10 silent packets on initial connect, or if we have sent enough silent packets
+                    // to satisfy the speaking delay, stop transmitting silence.
+                    if ((!sentSilenceOnConnect && silenceCounter > 10) || silenceCounter > speakingDelay)
                     {
+                        if (sentSilenceOnConnect)
+                            setSpeaking(NOT_SPEAKING);
                         silenceCounter = -1;
                         sentSilenceOnConnect = true;
                     }
                 }
                 else if (speaking && changeTalking)
                 {
-                    setSpeaking(0);
+                    sendSilentPackets();
                 }
             }
             catch (Exception e)
