@@ -30,13 +30,14 @@ _Please see the [Discord docs](https://discordapp.com/developers/docs/reference)
 
 1. [Examples](#creating-the-jda-object)
 2. [Sharding](#sharding-a-bot)
-3. [Download](#download)
-4. [Documentation](#documentation)
-5. [Support](#getting-help)
-6. [Extensions And Plugins](#third-party-recommendations)
-7. [Contributing](#contributing-to-jda)
-8. [Dependencies](#dependencies)
-9. [Other Libraries](#related-projects)
+3. [Entity Lifetimes](#entity-lifetimes)
+4. [Download](#download)
+5. [Documentation](#documentation)
+6. [Support](#getting-help)
+7. [Extensions And Plugins](#third-party-recommendations)
+8. [Contributing](#contributing-to-jda)
+9. [Dependencies](#dependencies)
+10. [Other Libraries](#related-projects)
 
 ## UserBots and SelfBots
 
@@ -181,8 +182,85 @@ public static void main(String[] args) throws Exception
 }
 ```
 
+## Entity Lifetimes
+
+An **Entity** is the term used to describe types such as **GuildChannel**/**Message**/**User** and other entities
+that Discord provides.
+Instances of these entities are created and deleted by JDA when Discord instructs it. This means
+the lifetime depends on signals provided by the Discord API which are used to create/update/delete entities.
+This is done through Gateway Events known as "dispatches" that are handled by the JDA WebSocket handlers.
+When Discord instructs JDA to delete entities they are simply removed from the JDA cache and lose their references.
+Once that happens nothing in JDA interacts or updates the instances of those entities and they become useless. Discord
+may instruct to delete these entities randomly for cache synchronization with the API.
+
+**It is not recommended to store _any_ of these entities for a longer period of time!**
+
+### Fake Entities
+
+Some entities in JDA are marked through an interface called `IFakeable`. These entities can exist outside
+of the JDA cache and are inaccessible through the common `get...ById(id)` methods.
+Fake entities are essentially instances that are not directly referenced by the JDA cached and are only
+temporarily created for a specific usage. It may be used for the author of a message that has left the guild
+when requesting the history of a `MessageChannel` or for `Emote` instances used in a `Message` that are not part
+of any of the guilds available to the bot.
+
+### Entity Updates
+
+When an entity is updated through its manager they will send a request to the Discord API which will update the state
+of the entity. The success of this request **does not** imply the entity has been updated yet. All entities are updated
+by the aforementioned **Gateway Events** which means you cannot rely on the cache being updated yet once the
+execution of a RestAction has completed. Some requests rely on the cache being updated to correctly update the entity.
+An example of this is updating roles of a member which overrides all roles of the member by sending a list of the
+new set of roles. This is done by first checking the current cache, the roles the member has right now, and appending
+or removing the requested roles. If the cache has not yet been updated by an event this will result in unexpected behavior.
+
+### Entity Deletion
+
+Discord may request that a client (the JDA session) invalidates its entire cache. When this happens JDA will
+remove all of its current entities and reconnect the session. This is signaled through the `ReconnectEvent`.
+When entities are removed from the JDA cache they lose access to the encapsulating entities. For instance
+a channel loses access to its guild. Once that happens they are unable to make any API requests through RestAction
+and instead throw an `IllegalStateException`. It is **highly recommended** to only keep references to entities
+by storing their **id** and using the respective `get...ById(id)` method when needed.
+
+#### Example
+
+```java
+public class UserLogger extends ListenerAdapter 
+{
+    private final long userId;
+    
+    public UserLogger(User user)
+    {
+        this.userId = user.getIdLong();
+    }
+    
+    @Override
+    public void onMessageReceived(MessageReceivedEvent event)
+    {
+        if (event.getAuthor().getIdLong() == userId)
+        {
+            // Print the message of the user
+            System.out.println(event.getAuthor().getAsTag() + ": " + event.getMessage().getContentDisplay());
+        }
+    }
+    
+    @Override
+    public void onGuildJoin(GuildJoinEvent event)
+    {
+        JDA api = event.getJDA();
+        User user = api.getUserById(userId); // Acquire a reference to the User instance through the id
+        user.openPrivateChannel().queue((channel) ->
+        {
+            // Send a private message to the user
+            channel.sendMessageFormat("I have joined a new guild: **%s**", event.getGuild().getName()).queue();
+        });
+    }
+}
+```
 
 ## Download
+
 Latest Stable Version: [GitHub Release](https://github.com/DV8FromTheWorld/JDA/releases/latest)
 Latest Version:
 [ ![version][] ][download]
