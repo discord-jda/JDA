@@ -489,8 +489,11 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      */
     @Nonnull
     @CheckReturnValue
+    @SuppressWarnings("ConstantConditions")
     default PermissionOverrideAction setInherited(@Nonnull Collection<Permission> permissions)
     {
+        if (permissions == null || permissions.isEmpty())
+            return this;
         return setInherited(Permission.getRaw(permissions));
     }
 
@@ -507,8 +510,11 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      */
     @Nonnull
     @CheckReturnValue
+    @SuppressWarnings("ConstantConditions")
     default PermissionOverrideAction setInherited(@Nonnull Permission... permissions)
     {
+        if (permissions == null || permissions.length == 0)
+            return this;
         return setInherited(Permission.getRaw(permissions));
     }
 
@@ -537,6 +543,9 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      * @param  permissions
      *         The permissions to clear from the {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
      *
+     * @throws IllegalArgumentException
+     *         If any provided argument is null
+     *
      * @return The current PermissionOverrideAction - for chaining convenience
      */
     @Nonnull
@@ -553,6 +562,9 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      *
      * @param  permissions
      *         The permissions to clear from the {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
+     *
+     * @throws IllegalArgumentException
+     *         If any provided argument is null
      *
      * @return The current PermissionOverrideAction - for chaining convenience
      */
