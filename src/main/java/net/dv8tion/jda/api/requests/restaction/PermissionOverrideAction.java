@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.function.BooleanSupplier;
@@ -455,6 +456,111 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
     default PermissionOverrideAction deny(Permission... permissions)
     {
         return setDeny(getDeny() | Permission.getRaw(permissions));
+    }
+
+    /**
+     * Clears the allowed and denied permissions as specified by the inherited bits.
+     * <br>The permissions that are inherited are neither denied nor granted.
+     *
+     * <p>Shortcut for: {@code setDeny(getDeny() & ~bits).setAllow(getAllow() & ~bits)}
+     *
+     * @param  inheritedBits
+     *         The permissions that should be inherited
+     *
+     * @return The current PermissionOverrideAction - for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default PermissionOverrideAction setInherited(long inheritedBits)
+    {
+        return setDeny(getDeny() & ~inheritedBits).setAllow(getAllow() & ~inheritedBits);
+    }
+
+    /**
+     * Clears the allowed and denied permissions as specified by the inherited bits.
+     * <br>The permissions that are inherited are neither denied nor granted.
+     *
+     * <p>Shortcut for: {@code setInherited(Permission.getRaw(permissions))}
+     *
+     * @param  permissions
+     *         The permissions that should be inherited
+     *
+     * @return The current PermissionOverrideAction - for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default PermissionOverrideAction setInherited(@Nonnull Collection<Permission> permissions)
+    {
+        return setInherited(Permission.getRaw(permissions));
+    }
+
+    /**
+     * Clears the allowed and denied permissions as specified by the inherited bits.
+     * <br>The permissions that are inherited are neither denied nor granted.
+     *
+     * <p>Shortcut for: {@code setInherited(Permission.getRaw(permissions))}
+     *
+     * @param  permissions
+     *         The permissions that should be inherited
+     *
+     * @return The current PermissionOverrideAction - for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default PermissionOverrideAction setInherited(@Nonnull Permission... permissions)
+    {
+        return setInherited(Permission.getRaw(permissions));
+    }
+
+    /**
+     * Clears the provided {@link net.dv8tion.jda.api.Permission Permissions} bits
+     * from the {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}.
+     * <br>This will cause the provided Permissions to be inherited
+     *
+     * @param  inheritedBits
+     *         The permissions to clear from the {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
+     *
+     * @return The current PermissionOverrideAction - for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default PermissionOverrideAction clear(long inheritedBits)
+    {
+        return setInherited(getInherited() | inheritedBits);
+    }
+
+    /**
+     * Clears the provided {@link net.dv8tion.jda.api.Permission Permissions} bits
+     * from the {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}.
+     * <br>This will cause the provided Permissions to be inherited
+     *
+     * @param  permissions
+     *         The permissions to clear from the {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
+     *
+     * @return The current PermissionOverrideAction - for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default PermissionOverrideAction clear(@Nonnull Collection<Permission> permissions)
+    {
+        return clear(Permission.getRaw(permissions));
+    }
+
+    /**
+     * Clears the provided {@link net.dv8tion.jda.api.Permission Permissions} bits
+     * from the {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}.
+     * <br>This will cause the provided Permissions to be inherited
+     *
+     * @param  permissions
+     *         The permissions to clear from the {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
+     *
+     * @return The current PermissionOverrideAction - for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default PermissionOverrideAction clear(@Nonnull Permission... permissions)
+    {
+        return clear(Permission.getRaw(permissions));
     }
 
 
