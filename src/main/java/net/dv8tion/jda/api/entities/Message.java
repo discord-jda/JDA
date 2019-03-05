@@ -26,10 +26,7 @@ import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.*;
 
 import javax.annotation.CheckReturnValue;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.time.OffsetDateTime;
 import java.util.Formattable;
 import java.util.List;
@@ -1145,7 +1142,7 @@ public interface Message extends ISnowflake, Formattable
                 @Override
                 public void onFailure(Call call, IOException e)
                 {
-                    future.completeExceptionally(new IllegalStateException(e));
+                    future.completeExceptionally(new UncheckedIOException(e));
                 }
 
                 @Override
@@ -1232,7 +1229,7 @@ public interface Message extends ISnowflake, Formattable
                 }
                 catch (IOException e)
                 {
-                    throw new IllegalStateException(e);
+                    throw new UncheckedIOException(e);
                 }
                 finally
                 {
@@ -1279,7 +1276,7 @@ public interface Message extends ISnowflake, Formattable
                 }
                 catch (IOException e)
                 {
-                    throw new IllegalStateException(e);
+                    throw new UncheckedIOException(e);
                 }
                 finally
                 {
@@ -1293,7 +1290,7 @@ public interface Message extends ISnowflake, Formattable
             return new Request.Builder()
                 .url(getUrl())
                 .addHeader("user-agent", Requester.USER_AGENT)
-                .addHeader("accept-encoding", "gzip")
+                .addHeader("accept-encoding", "gzip, deflate")
                 .build();
         }
 

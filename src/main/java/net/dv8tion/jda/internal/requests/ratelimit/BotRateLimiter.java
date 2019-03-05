@@ -29,6 +29,7 @@ import org.json.JSONTokener;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
@@ -93,7 +94,7 @@ public class BotRateLimiter extends RateLimiter
                     }
                     catch (IOException e)
                     {
-                        throw new IllegalStateException(e);
+                        throw new UncheckedIOException(e);
                     }
                 }
                 long retryAfter = Long.parseLong(retry);
