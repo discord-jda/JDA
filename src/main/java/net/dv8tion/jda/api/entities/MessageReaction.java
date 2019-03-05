@@ -383,12 +383,12 @@ public class MessageReaction
             this.emote = emote;
         }
 
-        public static ReactionEmote makeUnicode(String name, JDA api)
+        public static ReactionEmote fromUnicode(String name, JDA api)
         {
             return new ReactionEmote(name, api);
         }
 
-        public static ReactionEmote makeCustom(Emote emote)
+        public static ReactionEmote fromCustom(Emote emote)
         {
             return new ReactionEmote(emote);
         }
