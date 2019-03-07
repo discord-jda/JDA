@@ -1107,7 +1107,7 @@ public interface Message extends ISnowflake, Formattable
 
         /**
          * Enqueues a request to retrieve the contents of this Attachment.
-         * <br>The receiver is expected to close the retrieved {@link java.io.InputStream}.
+         * <br><b>The receiver is expected to close the retrieved {@link java.io.InputStream}.</b>
          *
          * <h2>Example</h2>
          * <pre>{@code
