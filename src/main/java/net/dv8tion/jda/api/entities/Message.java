@@ -1165,7 +1165,7 @@ public interface Message extends ISnowflake, Formattable
         }
 
         /**
-         * Downloads the attachment to a file with the {@link #getFileName()} into the current working directory.
+         * Downloads the attachment into the current working directory using the file name provided by {@link #getFileName()}.
          * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
          * Alternatively you can use {@link #retrieveData()} and use a continuation with a different executor.
          *
