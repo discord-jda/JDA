@@ -94,7 +94,7 @@ public class RoleOrderActionImpl
             if (self.getRoles().isEmpty())
                 throw new IllegalStateException("Cannot move roles above your highest role unless you are the guild owner");
             if (!self.hasPermission(Permission.MANAGE_ROLES))
-                throw new InsufficientPermissionException(Permission.MANAGE_ROLES);
+                throw new InsufficientPermissionException(guild, null, Permission.MANAGE_ROLES);
         }
 
         JSONArray array = new JSONArray();

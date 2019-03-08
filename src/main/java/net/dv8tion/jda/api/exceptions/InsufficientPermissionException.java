@@ -16,17 +16,55 @@
 
 package net.dv8tion.jda.api.exceptions;
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.internal.utils.Checks;
 
 public class InsufficientPermissionException extends PermissionException
 {
-    public InsufficientPermissionException(Permission permission)
+    private final long guildId;
+    private final long channelId;
+
+    public InsufficientPermissionException(Guild guild, GuildChannel channel, Permission permission)
     {
         super(permission, "Cannot perform action due to a lack of Permission. Missing permission: " + permission.toString());
+        this.guildId = guild.getIdLong();
+        this.channelId = channel == null ? 0 : channel.getIdLong();
     }
 
-    public InsufficientPermissionException(Permission permission, String reason)
+    public InsufficientPermissionException(Guild guild, GuildChannel channel, Permission permission, String reason)
     {
         super(permission, reason);
+        this.guildId = guild.getIdLong();
+        this.channelId = channel == null ? 0 : channel.getIdLong();
+    }
+
+    public long getGuildId()
+    {
+        return guildId;
+    }
+
+    public long getChannelId()
+    {
+        return channelId;
+    }
+
+    public Guild getGuild(JDA api)
+    {
+        Checks.notNull(api, "JDA");
+        return api.getGuildById(guildId);
+    }
+
+    public GuildChannel getChannel(JDA api)
+    {
+        Checks.notNull(api, "JDA");
+        GuildChannel channel = api.getTextChannelById(channelId);
+        if (channel == null)
+            channel = api.getVoiceChannelById(channelId);
+        if (channel == null)
+            channel = api.getCategoryById(channelId);
+        return channel;
     }
 }

@@ -62,7 +62,7 @@ public class MessageHistory
         {
             TextChannel tc = (TextChannel) channel;
             if (!tc.getGuild().getSelfMember().hasPermission(tc, Permission.MESSAGE_HISTORY))
-                throw new InsufficientPermissionException(Permission.MESSAGE_HISTORY);
+                throw new InsufficientPermissionException(tc.getGuild(), tc, Permission.MESSAGE_HISTORY);
         }
     }
 
@@ -455,7 +455,7 @@ public class MessageHistory
         {
             TextChannel t = (TextChannel) channel;
             if (!t.getGuild().getSelfMember().hasPermission(t, Permission.MESSAGE_HISTORY))
-                throw new InsufficientPermissionException(Permission.MESSAGE_HISTORY);
+                throw new InsufficientPermissionException(t.getGuild(), t, Permission.MESSAGE_HISTORY);
         }
     }
 

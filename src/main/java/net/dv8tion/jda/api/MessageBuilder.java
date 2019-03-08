@@ -778,8 +778,9 @@ public class MessageBuilder implements Appendable
      * @throws java.lang.IllegalArgumentException
      *         If the provided channel is {@code null}
      * @throws net.dv8tion.jda.api.exceptions.PermissionException
-     *         If the currently logged in account does not have permission to send or read messages in this channel,
-     *         or if this is a PrivateChannel and both users (sender and receiver) are bots.
+     *         If the currently logged in account does not have permission to send or read messages in this channel.
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is a PrivateChannel and both users (sender and receiver) are bots
      *
      * @return {@link MessageAction MessageAction}
      */
@@ -793,9 +794,9 @@ public class MessageBuilder implements Appendable
                 final TextChannel text = (TextChannel) channel;
                 final Member self = text.getGuild().getSelfMember();
                 if (!self.hasPermission(text, Permission.MESSAGE_READ))
-                    throw new InsufficientPermissionException(Permission.MESSAGE_READ);
+                    throw new InsufficientPermissionException(text.getGuild(), text, Permission.MESSAGE_READ);
                 if (!self.hasPermission(text, Permission.MESSAGE_WRITE))
-                    throw new InsufficientPermissionException(Permission.MESSAGE_WRITE);
+                    throw new InsufficientPermissionException(text.getGuild(), text, Permission.MESSAGE_WRITE);
                 break;
             case PRIVATE:
                 final PrivateChannel priv = (PrivateChannel) channel;

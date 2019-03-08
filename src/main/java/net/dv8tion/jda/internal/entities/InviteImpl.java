@@ -126,7 +126,7 @@ public class InviteImpl implements Invite
         }
         else
         {
-            throw new InsufficientPermissionException(Permission.MANAGE_CHANNEL, "You don't have the permission to view the full invite info");
+            throw new InsufficientPermissionException(guild, channel, Permission.MANAGE_CHANNEL, "You don't have the permission to view the full invite info");
         }
 
         return new RestActionImpl<>(this.api, route, (response, request) ->

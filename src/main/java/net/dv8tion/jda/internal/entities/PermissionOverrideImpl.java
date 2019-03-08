@@ -132,7 +132,7 @@ public class PermissionOverrideImpl implements PermissionOverride
     public PermissionOverrideAction getManager()
     {
         if (!getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
-            throw new InsufficientPermissionException(Permission.MANAGE_PERMISSIONS);
+            throw new InsufficientPermissionException(getGuild(), getChannel(), Permission.MANAGE_PERMISSIONS);
         PermissionOverrideAction mng = manager;
         if (mng == null)
         {
@@ -150,7 +150,7 @@ public class PermissionOverrideImpl implements PermissionOverride
     public AuditableRestAction<Void> delete()
     {
         if (!getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
-            throw new InsufficientPermissionException(Permission.MANAGE_PERMISSIONS);
+            throw new InsufficientPermissionException(getGuild(), getChannel(), Permission.MANAGE_PERMISSIONS);
 
         String targetId = isRoleOverride() ? getRole().getId() : getMember().getUser().getId();
         Route.CompiledRoute route = Route.Channels.DELETE_PERM_OVERRIDE.compile(getChannel().getId(), targetId);

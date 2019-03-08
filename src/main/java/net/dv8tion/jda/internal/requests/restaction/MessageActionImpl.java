@@ -349,7 +349,10 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     protected void checkPermission(Permission perm)
     {
         if (!hasPermission(perm))
-            throw new InsufficientPermissionException(perm);
+        {
+            TextChannel channel = (TextChannel) this.channel;
+            throw new InsufficientPermissionException(channel.getGuild(), channel, perm);
+        }
     }
 
     protected boolean hasPermission(Permission perm)

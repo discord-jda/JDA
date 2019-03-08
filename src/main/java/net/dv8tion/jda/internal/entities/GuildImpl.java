@@ -133,7 +133,7 @@ public class GuildImpl implements Guild
         Checks.isSnowflake(userId, "User ID");
         Checks.check(getMemberById(userId) == null, "User is already in this guild");
         if (!getSelfMember().hasPermission(Permission.CREATE_INSTANT_INVITE))
-            throw new InsufficientPermissionException(Permission.CREATE_INSTANT_INVITE);
+            throw new InsufficientPermissionException(this, null, Permission.CREATE_INSTANT_INVITE);
         return new MemberActionImpl(getJDA(), this, userId, accessToken);
     }
 
@@ -177,7 +177,7 @@ public class GuildImpl implements Guild
     public RestAction<String> retrieveVanityUrl()
     {
         if (!getSelfMember().hasPermission(Permission.MANAGE_SERVER))
-            throw new InsufficientPermissionException(Permission.MANAGE_SERVER);
+            throw new InsufficientPermissionException(this, null, Permission.MANAGE_SERVER);
         if (!getFeatures().contains("VANITY_URL"))
             throw new IllegalStateException("This guild doesn't have a vanity url");
 
@@ -203,7 +203,7 @@ public class GuildImpl implements Guild
     public RestAction<List<Webhook>> retrieveWebhooks()
     {
         if (!getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS))
-            throw new InsufficientPermissionException(Permission.MANAGE_WEBHOOKS);
+            throw new InsufficientPermissionException(this, null, Permission.MANAGE_WEBHOOKS);
 
         Route.CompiledRoute route = Route.Guilds.GET_WEBHOOKS.compile(getId());
 
@@ -411,7 +411,7 @@ public class GuildImpl implements Guild
     public RestActionImpl<List<Ban>> retrieveBanList()
     {
         if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS))
-            throw new InsufficientPermissionException(Permission.BAN_MEMBERS);
+            throw new InsufficientPermissionException(this, null, Permission.BAN_MEMBERS);
 
         Route.CompiledRoute route = Route.Guilds.GET_BANS.compile(getId());
         return new RestActionImpl<>(getJDA(), route, (response, request) ->
@@ -435,7 +435,7 @@ public class GuildImpl implements Guild
     public RestAction<Ban> retrieveBanById(@Nonnull String userId)
     {
         if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS))
-            throw new InsufficientPermissionException(Permission.BAN_MEMBERS);
+            throw new InsufficientPermissionException(this, null, Permission.BAN_MEMBERS);
 
         Checks.isSnowflake(userId, "User ID");
 
@@ -454,7 +454,7 @@ public class GuildImpl implements Guild
     public RestAction<Integer> retrievePrunableMemberCount(int days)
     {
         if (!getSelfMember().hasPermission(Permission.KICK_MEMBERS))
-            throw new InsufficientPermissionException(Permission.KICK_MEMBERS);
+            throw new InsufficientPermissionException(this, null, Permission.KICK_MEMBERS);
 
         if (days < 1)
             throw new IllegalArgumentException("Days amount must be at minimum 1 day.");
@@ -829,7 +829,7 @@ public class GuildImpl implements Guild
     public RestAction<List<Invite>> retrieveInvites()
     {
         if (!this.getSelfMember().hasPermission(Permission.MANAGE_SERVER))
-            throw new InsufficientPermissionException(Permission.MANAGE_SERVER);
+            throw new InsufficientPermissionException(this, null, Permission.MANAGE_SERVER);
 
         final Route.CompiledRoute route = Route.Invites.GET_GUILD_INVITES.compile(getId());
 

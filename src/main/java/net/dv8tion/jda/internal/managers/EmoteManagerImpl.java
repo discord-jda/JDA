@@ -158,7 +158,7 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
     protected boolean checkPermissions()
     {
         if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
-            throw new InsufficientPermissionException(Permission.MANAGE_EMOTES);
+            throw new InsufficientPermissionException(getGuild(), null, Permission.MANAGE_EMOTES);
         return super.checkPermissions();
     }
 }

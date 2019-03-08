@@ -113,7 +113,7 @@ public class ChannelOrderActionImpl<T extends GuildChannel>
     {
         final Member self = guild.getSelfMember();
         if (!self.hasPermission(Permission.MANAGE_CHANNEL))
-            throw new InsufficientPermissionException(Permission.MANAGE_CHANNEL);
+            throw new InsufficientPermissionException(guild, null, Permission.MANAGE_CHANNEL);
         JSONArray array = new JSONArray();
         for (int i = 0; i < orderList.size(); i++)
         {

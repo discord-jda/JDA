@@ -131,7 +131,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         Checks.isSnowflake(id, "Webhook ID");
 
         if (!getGuild().getSelfMember().hasPermission(this, Permission.MANAGE_WEBHOOKS))
-            throw new InsufficientPermissionException(Permission.MANAGE_WEBHOOKS);
+            throw new InsufficientPermissionException(getGuild(), this, Permission.MANAGE_WEBHOOKS);
 
         Route.CompiledRoute route = Route.Webhooks.DELETE_WEBHOOK.compile(id);
         return new AuditableRestActionImpl<>(getJDA(), route);
@@ -164,7 +164,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
             {
                 if (m.getAuthor().equals(getJDA().getSelfUser()))
                     continue;
-                throw new InsufficientPermissionException(Permission.MESSAGE_MANAGE, "Cannot delete messages of other users");
+                throw new InsufficientPermissionException(getGuild(), this, Permission.MESSAGE_MANAGE, "Cannot delete messages of other users");
             }
         }
         return TextChannel.super.purgeMessages(messages);

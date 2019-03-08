@@ -158,19 +158,21 @@ public class GuildController
         if (!vState.inVoiceChannel())
             throw new IllegalStateException("You cannot move a Member who isn't in a VoiceChannel!");
 
-        if (!PermissionUtil.checkPermission(vState.getChannel(), getGuild().getSelfMember(), Permission.VOICE_MOVE_OTHERS))
-            throw new InsufficientPermissionException(Permission.VOICE_MOVE_OTHERS, "This account does not have Permission to MOVE_OTHERS out of the channel that the Member is currently in.");
+        VoiceChannel channel = vState.getChannel();
+        Guild guild = getGuild();
+        if (!PermissionUtil.checkPermission(channel, guild.getSelfMember(), Permission.VOICE_MOVE_OTHERS))
+            throw new InsufficientPermissionException(guild, channel, Permission.VOICE_MOVE_OTHERS, "This account does not have Permission to MOVE_OTHERS out of the channel that the Member is currently in.");
 
-        if (!PermissionUtil.checkPermission(voiceChannel, getGuild().getSelfMember(), Permission.VOICE_CONNECT)
+        if (!PermissionUtil.checkPermission(voiceChannel, guild.getSelfMember(), Permission.VOICE_CONNECT)
                 && !PermissionUtil.checkPermission(voiceChannel, member, Permission.VOICE_CONNECT))
-            throw new InsufficientPermissionException(Permission.VOICE_CONNECT,
+            throw new InsufficientPermissionException(guild, channel, Permission.VOICE_CONNECT,
                     "Neither this account nor the Member that is attempting to be moved have the VOICE_CONNECT permission " +
                             "for the destination VoiceChannel, so the move cannot be done.");
 
         JSONObject body = new JSONObject().put("channel_id", voiceChannel.getId());
-        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), member.getUser().getId());
+        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(guild.getId(), member.getUser().getId());
 
-        return new RestActionImpl<>(getGuild().getJDA(), route, body);
+        return new RestActionImpl<>(guild.getJDA(), route, body);
     }
 
     /**
@@ -223,11 +225,12 @@ public class GuildController
         Checks.notNull(member, "Member");
         checkGuild(member.getGuild(), "Member");
 
-        if(member.equals(getGuild().getSelfMember()))
+        Guild guild = getGuild();
+        if(member.equals(guild.getSelfMember()))
         {
             if(!member.hasPermission(Permission.NICKNAME_CHANGE)
                     && !member.hasPermission(Permission.NICKNAME_MANAGE))
-                throw new InsufficientPermissionException(Permission.NICKNAME_CHANGE, "You neither have NICKNAME_CHANGE nor NICKNAME_MANAGE permission!");
+                throw new InsufficientPermissionException(guild, null, Permission.NICKNAME_CHANGE, "You neither have NICKNAME_CHANGE nor NICKNAME_MANAGE permission!");
         }
         else
         {
@@ -244,12 +247,12 @@ public class GuildController
         JSONObject body = new JSONObject().put("nick", nickname);
 
         Route.CompiledRoute route;
-        if (member.equals(getGuild().getSelfMember()))
-            route = Route.Guilds.MODIFY_SELF_NICK.compile(getGuild().getId());
+        if (member.equals(guild.getSelfMember()))
+            route = Route.Guilds.MODIFY_SELF_NICK.compile(guild.getId());
         else
-            route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), member.getUser().getId());
+            route = Route.Guilds.MODIFY_MEMBER.compile(guild.getId(), member.getUser().getId());
 
-        return new AuditableRestActionImpl<>(getGuild().getJDA(), route, body);
+        return new AuditableRestActionImpl<>(guild.getJDA(), route, body);
     }
 
     /**
@@ -2094,8 +2097,9 @@ public class GuildController
 
     protected void checkPermission(Permission perm)
     {
-        if (!getGuild().getSelfMember().hasPermission(perm))
-            throw new InsufficientPermissionException(perm);
+        Guild guild = getGuild();
+        if (!guild.getSelfMember().hasPermission(perm))
+            throw new InsufficientPermissionException(guild, null, perm);
     }
 
     protected void checkPosition(Member member)

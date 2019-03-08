@@ -332,7 +332,7 @@ public interface GuildChannel extends ISnowflake
     default PermissionOverrideAction upsertPermissionOverride(IPermissionHolder permissionHolder)
     {
         if (!getGuild().getSelfMember().hasPermission(this, Permission.MANAGE_PERMISSIONS))
-            throw new InsufficientPermissionException(Permission.MANAGE_PERMISSIONS);
+            throw new InsufficientPermissionException(getGuild(), this, Permission.MANAGE_PERMISSIONS);
         PermissionOverride override = getPermissionOverride(permissionHolder);
         return override != null ? override.getManager() : putPermissionOverride(permissionHolder);
     }

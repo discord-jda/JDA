@@ -139,6 +139,6 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
     private void checkPermission(Permission permission)
     {
         if (!guild.getSelfMember().hasPermission(permission))
-            throw new InsufficientPermissionException(permission);
+            throw new InsufficientPermissionException(guild, null, permission);
     }
 }

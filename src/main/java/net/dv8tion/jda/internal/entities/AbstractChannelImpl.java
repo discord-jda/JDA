@@ -183,7 +183,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     public InviteAction createInvite()
     {
         if (!this.getGuild().getSelfMember().hasPermission(this, Permission.CREATE_INSTANT_INVITE))
-            throw new InsufficientPermissionException(Permission.CREATE_INSTANT_INVITE);
+            throw new InsufficientPermissionException(getGuild(), this, Permission.CREATE_INSTANT_INVITE);
 
         return new InviteActionImpl(this.getJDA(), this.getId());
     }
@@ -192,7 +192,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     public RestAction<List<Invite>> retrieveInvites()
     {
         if (!this.getGuild().getSelfMember().hasPermission(this, Permission.MANAGE_CHANNEL))
-            throw new InsufficientPermissionException(Permission.MANAGE_CHANNEL);
+            throw new InsufficientPermissionException(getGuild(), this, Permission.MANAGE_CHANNEL);
 
         final Route.CompiledRoute route = Route.Invites.GET_CHANNEL_INVITES.compile(getId());
 
@@ -263,9 +263,9 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
         if (!getGuild().getSelfMember().hasPermission(this, permission))
         {
             if (message != null)
-                throw new InsufficientPermissionException(permission, message);
+                throw new InsufficientPermissionException(getGuild(), this, permission, message);
             else
-                throw new InsufficientPermissionException(permission);
+                throw new InsufficientPermissionException(getGuild(), this, permission);
         }
     }
 }
