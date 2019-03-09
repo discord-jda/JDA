@@ -47,6 +47,7 @@ public class ChannelCreateHandler extends SocketHandler
 
         switch (type)
         {
+            case NEWS:
             case TEXT:
             {
                 getJDA().getEventManager().handle(

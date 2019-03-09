@@ -77,6 +77,7 @@ public class CategoryOrderActionImpl<T extends GuildChannel>
         // supporting them via CategoryOrderAction is just a matter of adding a new case here.
         switch(type)
         {
+            case NEWS:
             case TEXT:
                 return category.getTextChannels();
             case VOICE:

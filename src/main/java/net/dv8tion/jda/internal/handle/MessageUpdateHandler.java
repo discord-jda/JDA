@@ -110,6 +110,7 @@ public class MessageUpdateHandler extends SocketHandler
 
         switch (message.getChannelType())
         {
+            case NEWS:
             case TEXT:
             {
                 TextChannel channel = message.getTextChannel();
@@ -174,6 +175,7 @@ public class MessageUpdateHandler extends SocketHandler
 
         switch (channel.getType())
         {
+            case NEWS:
             case TEXT:
                 TextChannel tChannel = (TextChannel) channel;
                 if (getJDA().getGuildSetupController().isLocked(tChannel.getGuild().getIdLong()))

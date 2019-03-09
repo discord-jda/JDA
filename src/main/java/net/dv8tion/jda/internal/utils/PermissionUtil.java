@@ -199,6 +199,7 @@ public class PermissionUtil
         final boolean external = emote.isManaged() || (issuer.isBot() && botOverride) || isNitro(issuer);
         switch (channel.getType())
         {
+            case NEWS:
             case TEXT:
                 TextChannel text = (TextChannel) channel;
                 member = text.getGuild().getMemberById(issuer.getIdLong());

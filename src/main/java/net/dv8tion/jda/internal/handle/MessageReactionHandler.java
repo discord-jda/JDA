@@ -140,6 +140,7 @@ public class MessageReactionHandler extends SocketHandler
         IEventManager manager = getJDA().getEventManager();
         switch (reaction.getChannelType())
         {
+            case NEWS:
             case TEXT:
                 manager.handle(
                     new GuildMessageReactionAddEvent(
@@ -168,6 +169,7 @@ public class MessageReactionHandler extends SocketHandler
         IEventManager manager = getJDA().getEventManager();
         switch (reaction.getChannelType())
         {
+            case NEWS:
             case TEXT:
                 manager.handle(
                     new GuildMessageReactionRemoveEvent(

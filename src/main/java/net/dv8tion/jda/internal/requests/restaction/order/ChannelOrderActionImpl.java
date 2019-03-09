@@ -137,6 +137,7 @@ public class ChannelOrderActionImpl<T extends GuildChannel>
     {
         switch(type)
         {
+            case NEWS:
             case TEXT:
                 return guild.getTextChannels();
             case VOICE:

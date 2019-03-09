@@ -84,6 +84,7 @@ public class MessageCreateHandler extends SocketHandler
         final IEventManager manager = getJDA().getEventManager();
         switch (message.getChannelType())
         {
+            case NEWS:
             case TEXT:
             {
                 TextChannelImpl channel = (TextChannelImpl) message.getTextChannel();

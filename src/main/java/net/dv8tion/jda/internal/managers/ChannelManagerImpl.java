@@ -228,7 +228,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     {
         Checks.notBlank(name, "Name");
         Checks.check(name.length() > 0 && name.length() <= 100, "Name must be between 1-100 characters long");
-        if (getType() == ChannelType.TEXT)
+        if (getType() == ChannelType.TEXT || getType() == ChannelType.NEWS)
             Checks.noWhitespace(name, "Name");
         this.name = name;
         set |= NAME;
@@ -263,7 +263,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     @CheckReturnValue
     public ChannelManagerImpl setTopic(String topic)
     {
-        if (getType() != ChannelType.TEXT)
+        if (getType() != ChannelType.TEXT && getType() != ChannelType.NEWS)
             throw new IllegalStateException("Can only set topic on text channels");
         Checks.check(topic == null || topic.length() <= 1024, "Topic must be less or equal to 1024 characters in length");
         this.topic = topic;
@@ -275,7 +275,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     @CheckReturnValue
     public ChannelManagerImpl setNSFW(boolean nsfw)
     {
-        if (getType() != ChannelType.TEXT)
+        if (getType() != ChannelType.TEXT && getType() != ChannelType.NEWS)
             throw new IllegalStateException("Can only set nsfw on text channels");
         this.nsfw = nsfw;
         set |= NSFW;

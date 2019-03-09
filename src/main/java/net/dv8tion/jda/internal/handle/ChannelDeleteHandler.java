@@ -54,6 +54,7 @@ public class ChannelDeleteHandler extends SocketHandler
 
         switch (type)
         {
+            case NEWS:
             case TEXT:
             {
                 GuildImpl guild = (GuildImpl) getJDA().getGuildsView().get(guildId);

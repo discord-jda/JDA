@@ -789,9 +789,12 @@ public class MessageBuilder implements Appendable
         Checks.notNull(channel, "Target Channel");
         switch (channel.getType())
         {
+            case NEWS:
             case TEXT:
                 final TextChannel text = (TextChannel) channel;
                 final Member self = text.getGuild().getSelfMember();
+                if (channel.getType() == ChannelType.NEWS && !self.hasPermission(text, Permission.MESSAGE_MANAGE))
+                    throw new InsufficientPermissionException(Permission.MESSAGE_MANAGE);
                 if (!self.hasPermission(text, Permission.MESSAGE_READ))
                     throw new InsufficientPermissionException(Permission.MESSAGE_READ);
                 if (!self.hasPermission(text, Permission.MESSAGE_WRITE))

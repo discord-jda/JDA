@@ -253,6 +253,7 @@ public class EntityBuilder
         final ChannelType channelType = ChannelType.fromId(channelData.getInt("type"));
         switch (channelType)
         {
+        case NEWS:
         case TEXT:
             createTextChannel(guildObj, channelData, guildObj.getIdLong());
             break;
@@ -263,7 +264,7 @@ public class EntityBuilder
             createCategory(guildObj, channelData, guildObj.getIdLong());
             break;
         default:
-            throw new IllegalArgumentException("Cannot create channel for type " + channelData.getInt("type"));
+            LOG.error("Cannot create channel for type " + channelData.getInt("type"));
         }
     }
 
@@ -627,6 +628,8 @@ public class EntityBuilder
             JSONArray overrides = json.getJSONArray("permission_overwrites");
             createOverridesPass(channel, overrides);
         }
+
+        channel.setNews(ChannelType.fromId(json.getInt("type")) == ChannelType.NEWS);
 
         channel
             .setParent(Helpers.optLong(json, "parent_id", 0))

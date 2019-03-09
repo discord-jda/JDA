@@ -354,7 +354,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     protected boolean hasPermission(Permission perm)
     {
-        if (channel.getType() != ChannelType.TEXT)
+        if (!channel.getType().isGuild())
             return true;
         TextChannel text = (TextChannel) channel;
         Member self = text.getGuild().getSelfMember();

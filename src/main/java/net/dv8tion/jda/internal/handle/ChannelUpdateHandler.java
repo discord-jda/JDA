@@ -66,6 +66,7 @@ public class ChannelUpdateHandler extends SocketHandler
         JSONArray permOverwrites = content.getJSONArray("permission_overwrites");
         switch (type)
         {
+            case NEWS:
             case TEXT:
             {
                 String topic = content.optString("topic", null);
@@ -84,7 +85,13 @@ public class ChannelUpdateHandler extends SocketHandler
                 final String oldTopic = textChannel.getTopic();
                 final int oldPosition = textChannel.getPositionRaw();
                 final boolean oldNsfw = textChannel.isNSFW();
+                final ChannelType oldType = textChannel.getType();
                 final int oldSlowmode = textChannel.getSlowmode();
+                if (!Objects.equals(oldType, type))
+                {
+                    textChannel.setNews(type == ChannelType.NEWS);
+                    //TODO Event?
+                }
                 if (!Objects.equals(oldName, name))
                 {
                     textChannel.setName(name);

@@ -47,7 +47,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
 {
     private String topic;
     private long lastMessageId;
-    private boolean nsfw;
+    private boolean nsfw, news;
     private int slowmode;
 
     public TextChannelImpl(long id, GuildImpl guild)
@@ -236,7 +236,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     @Override
     public ChannelType getType()
     {
-        return ChannelType.TEXT;
+        return news ? ChannelType.NEWS : ChannelType.TEXT;
     }
 
     @Override
@@ -303,6 +303,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     public MessageAction sendMessage(CharSequence text)
     {
         checkVerification();
+        checkNews();
         checkPermission(Permission.MESSAGE_READ);
         checkPermission(Permission.MESSAGE_WRITE);
         return TextChannel.super.sendMessage(text);
@@ -312,6 +313,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     public MessageAction sendMessage(MessageEmbed embed)
     {
         checkVerification();
+        checkNews();
         checkPermission(Permission.MESSAGE_READ);
         checkPermission(Permission.MESSAGE_WRITE);
         // this is checked because you cannot send an empty message
@@ -325,6 +327,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         Checks.notNull(msg, "Message");
 
         checkVerification();
+        checkNews();
         checkPermission(Permission.MESSAGE_READ);
         checkPermission(Permission.MESSAGE_WRITE);
         if (msg.getContentRaw().isEmpty() && !msg.getEmbeds().isEmpty())
@@ -338,6 +341,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     public MessageAction sendFile(InputStream data, String fileName)
     {
         checkVerification();
+        checkNews();
         checkPermission(Permission.MESSAGE_READ);
         checkPermission(Permission.MESSAGE_WRITE);
         checkPermission(Permission.MESSAGE_ATTACH_FILES);
@@ -510,6 +514,12 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         return this;
     }
 
+    public TextChannelImpl setNews(boolean news)
+    {
+        this.news = news;
+        return this;
+    }
+
     public TextChannelImpl setSlowmode(int slowmode)
     {
         this.slowmode = slowmode;
@@ -528,5 +538,11 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     {
         if (!getGuild().checkVerification())
             throw new VerificationLevelException(getGuild().getVerificationLevel());
+    }
+
+    private void checkNews()
+    {
+        if (news && !getGuild().getSelfMember().hasPermission(this, Permission.MESSAGE_MANAGE))
+            throw new InsufficientPermissionException(Permission.MESSAGE_MANAGE);
     }
 }

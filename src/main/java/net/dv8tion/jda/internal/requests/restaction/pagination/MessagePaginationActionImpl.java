@@ -43,7 +43,7 @@ public class MessagePaginationActionImpl
     {
         super(channel.getJDA(), Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId()), 1, 100, 100);
 
-        if (channel.getType() == ChannelType.TEXT)
+        if (channel.getType() == ChannelType.TEXT || channel.getType() == ChannelType.NEWS)
         {
             TextChannel textChannel = (TextChannel) channel;
             if (!textChannel.getGuild().getSelfMember().hasPermission(textChannel, Permission.MESSAGE_HISTORY))
