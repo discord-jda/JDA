@@ -68,6 +68,7 @@ public class ChannelUpdateHandler extends SocketHandler
         JSONArray permOverwrites = content.getJSONArray("permission_overwrites");
         switch (type)
         {
+            case NEWS:
             case TEXT:
             {
                 String topic = content.optString("topic", null);
