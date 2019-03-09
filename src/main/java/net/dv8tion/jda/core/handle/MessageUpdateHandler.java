@@ -113,6 +113,7 @@ public class MessageUpdateHandler extends SocketHandler
 
         switch (message.getChannelType())
         {
+            case NEWS:
             case TEXT:
             {
                 TextChannel channel = message.getTextChannel();

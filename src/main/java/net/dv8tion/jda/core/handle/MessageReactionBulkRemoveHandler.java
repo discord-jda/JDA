@@ -49,6 +49,7 @@ public class MessageReactionBulkRemoveHandler extends SocketHandler
 
         switch (channel.getType())
         {
+            case NEWS:
             case TEXT:
                manager.handle(
                    new GuildMessageReactionRemoveAllEvent(

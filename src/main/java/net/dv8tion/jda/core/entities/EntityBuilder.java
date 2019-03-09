@@ -34,7 +34,6 @@ import net.dv8tion.jda.core.entities.MessageEmbed.*;
 import net.dv8tion.jda.core.entities.impl.*;
 import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.handle.EventCache;
-import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.Helpers;
 import net.dv8tion.jda.core.utils.JDALogger;
 import net.dv8tion.jda.core.utils.cache.CacheFlag;
@@ -238,6 +237,7 @@ public class EntityBuilder
         final ChannelType channelType = ChannelType.fromId(channelData.getInt("type"));
         switch (channelType)
         {
+        case NEWS:
         case TEXT:
             createTextChannel(guildObj, channelData, guildObj.getIdLong());
             break;
@@ -248,7 +248,7 @@ public class EntityBuilder
             createCategory(guildObj, channelData, guildObj.getIdLong());
             break;
         default:
-            throw new IllegalArgumentException("Cannot create channel for type " + channelData.getInt("type"));
+            LOG.error("Cannot create channel for type " + channelData.getInt("type"));
         }
     }
 
