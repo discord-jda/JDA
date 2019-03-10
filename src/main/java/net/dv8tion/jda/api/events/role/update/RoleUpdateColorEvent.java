@@ -19,6 +19,8 @@ package net.dv8tion.jda.api.events.role.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Role;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.Color;
 
 /**
@@ -32,7 +34,7 @@ public class RoleUpdateColorEvent extends GenericRoleUpdateEvent<Integer>
 {
     public static final String IDENTIFIER = "color";
 
-    public RoleUpdateColorEvent(JDA api, long responseNumber, Role role, int oldColor)
+    public RoleUpdateColorEvent(@Nonnull JDA api, long responseNumber, @Nonnull Role role, int oldColor)
     {
         super(api, responseNumber, role, oldColor, role.getColorRaw(), IDENTIFIER);
     }
@@ -42,6 +44,7 @@ public class RoleUpdateColorEvent extends GenericRoleUpdateEvent<Integer>
      *
      * @return The old color, or null
      */
+    @Nullable
     public Color getOldColor()
     {
         return previous != Role.DEFAULT_COLOR_RAW ? new Color(previous) : null;
@@ -62,6 +65,7 @@ public class RoleUpdateColorEvent extends GenericRoleUpdateEvent<Integer>
      *
      * @return The new color, or null
      */
+    @Nullable
     public Color getNewColor()
     {
         return next != Role.DEFAULT_COLOR_RAW ? new Color(next) : null;
@@ -75,5 +79,19 @@ public class RoleUpdateColorEvent extends GenericRoleUpdateEvent<Integer>
     public int getNewColorRaw()
     {
         return getNewValue();
+    }
+
+    @Nonnull
+    @Override
+    public Integer getOldValue()
+    {
+        return super.getOldValue();
+    }
+
+    @Nonnull
+    @Override
+    public Integer getNewValue()
+    {
+        return super.getNewValue();
     }
 }

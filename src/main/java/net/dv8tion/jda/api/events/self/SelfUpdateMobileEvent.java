@@ -18,6 +18,8 @@ package net.dv8tion.jda.api.events.self;
 
 import net.dv8tion.jda.api.JDA;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that you login to your discord account with a mobile device for the first time. (client-only)
  *
@@ -29,7 +31,7 @@ public class SelfUpdateMobileEvent extends GenericSelfUpdateEvent<Boolean>
 {
     public static final String IDENTIFIER = "mobile";
 
-    public SelfUpdateMobileEvent(JDA api, long responseNumber, boolean wasMobile)
+    public SelfUpdateMobileEvent(@Nonnull JDA api, long responseNumber, boolean wasMobile)
     {
         super(api, responseNumber, wasMobile, !wasMobile, IDENTIFIER);
     }
@@ -42,5 +44,19 @@ public class SelfUpdateMobileEvent extends GenericSelfUpdateEvent<Boolean>
     public boolean wasMobile()
     {
         return getOldValue();
+    }
+
+    @Nonnull
+    @Override
+    public Boolean getOldValue()
+    {
+        return super.getOldValue();
+    }
+
+    @Nonnull
+    @Override
+    public Boolean getNewValue()
+    {
+        return super.getNewValue();
     }
 }

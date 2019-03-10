@@ -19,6 +19,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.handle.GuildSetupController;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that JDA finished loading all entities.
  * <br>Before this event was fired all entity related functions were not guaranteed to work as expected.
@@ -31,7 +33,7 @@ public class ReadyEvent extends Event
     private final int availableGuilds;
     private final int unavailableGuilds;
 
-    public ReadyEvent(JDA api, long responseNumber)
+    public ReadyEvent(@Nonnull JDA api, long responseNumber)
     {
         super(api, responseNumber);
         this.availableGuilds = (int) getJDA().getGuildCache().size();

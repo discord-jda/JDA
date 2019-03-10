@@ -194,7 +194,7 @@ public class Request<T>
 
     public void handleResponse(@Nonnull Response response)
     {
-        api.getEventManager().handle(new HttpRequestEvent(this, response));
         restAction.handleResponse(response, this);
+        api.getEventManager().handle(new HttpRequestEvent(this, response));
     }
 }
