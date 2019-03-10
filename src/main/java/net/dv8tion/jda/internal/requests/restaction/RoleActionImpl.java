@@ -70,7 +70,7 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
     public RoleActionImpl setName(String name)
     {
         Checks.check(name == null || name.length() > 0 && name.length() <= 100, "Name must be between 1-100 characters long");
-        this.name = name == null ? null : name;
+        this.name = name;
         return this;
     }
 
