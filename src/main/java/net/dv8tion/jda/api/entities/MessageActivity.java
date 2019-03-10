@@ -17,6 +17,7 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.internal.utils.Checks;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 
@@ -41,6 +42,7 @@ public class MessageActivity
      *
      * @return the type of the activity.
      */
+    @Nonnull
     public ActivityType getType()
     {
         return type;
@@ -96,6 +98,7 @@ public class MessageActivity
          *
          * @return the applications name.
          */
+        @Nonnull
         public String getName()
         {
             return name;
@@ -106,6 +109,7 @@ public class MessageActivity
          *
          * @return the applications description.
          */
+        @Nonnull
         public String getDescription()
         {
             return description;
@@ -116,6 +120,7 @@ public class MessageActivity
          *
          * @return the applications icon id.
          */
+        @Nonnull
         public String getIconId()
         {
             return iconId;
@@ -126,6 +131,7 @@ public class MessageActivity
          *
          * @return the url of the icon
          */
+        @Nonnull
         public String getIconUrl()
         {
             return "https://cdn.discordapp.com/application/" + getId() + "/" + iconId + ".png";
@@ -136,6 +142,7 @@ public class MessageActivity
          *
          * @return the applications cover image/id.
          */
+        @Nullable
         public String getCoverId()
         {
             return coverId;
@@ -146,9 +153,10 @@ public class MessageActivity
          *
          * @return the url of the cover/splash
          */
+        @Nullable
         public String getCoverUrl()
         {
-            return "https://cdn.discordapp.com/application/" + getId() + "/" + coverId + ".png";
+            return coverId == null ? null : "https://cdn.discordapp.com/application/" + getId() + "/" + coverId + ".png";
         }
 
         @Override
@@ -201,6 +209,7 @@ public class MessageActivity
             return id;
         }
 
+        @Nonnull
         public static ActivityType fromId(int id)
         {
             for (ActivityType activityType : values())
