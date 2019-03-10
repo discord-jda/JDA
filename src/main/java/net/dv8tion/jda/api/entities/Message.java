@@ -22,10 +22,12 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.Requester;
+import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.*;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.io.*;
 import java.time.OffsetDateTime;
 import java.util.Formattable;
@@ -1113,7 +1115,7 @@ public interface Message extends ISnowflake, Formattable
          * <pre>{@code
          * public void printContents(Message.Attachment attachment)
          * {
-         *     attachment.retrieveData().thenAccept(in -> {
+         *     attachment.retrieveInputStream().thenAccept(in -> {
          *         StringBuilder builder = new StringBuilder();
          *         byte[] buf = byte[1024];
          *         int count = 0;
@@ -1132,7 +1134,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.InputStream}
          */
-        public CompletableFuture<InputStream> retrieveData() // it is expected that the response is closed by the callback!
+        public CompletableFuture<InputStream> retrieveInputStream() // it is expected that the response is closed by the callback!
         {
             CompletableFuture<InputStream> future = new CompletableFuture<>();
             Request req = getRequest();
@@ -1140,13 +1142,13 @@ public interface Message extends ISnowflake, Formattable
             httpClient.newCall(req).enqueue(new Callback()
             {
                 @Override
-                public void onFailure(Call call, IOException e)
+                public void onFailure(@Nonnull Call call, @Nonnull IOException e)
                 {
                     future.completeExceptionally(new UncheckedIOException(e));
                 }
 
                 @Override
-                public void onResponse(Call call, Response response) throws IOException
+                public void onResponse(@Nonnull Call call, @Nonnull Response response) throws IOException
                 {
                     if (response.isSuccessful())
                     {
@@ -1167,7 +1169,7 @@ public interface Message extends ISnowflake, Formattable
         /**
          * Downloads the attachment into the current working directory using the file name provided by {@link #getFileName()}.
          * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
-         * Alternatively you can use {@link #retrieveData()} and use a continuation with a different executor.
+         * Alternatively you can use {@link #retrieveInputStream()} and use a continuation with a different executor.
          *
          * <h2>Example</h2>
          * <pre>{@code
@@ -1176,10 +1178,10 @@ public interface Message extends ISnowflake, Formattable
          *     attachment.downloadToFile()
          *         .thenAccept(file -> System.out.println("Saved attachment to " + file.getName()))
          *         .exceptionally(t ->
-         *     { // handle failure
-         *         t.printStackTrace();
-         *         return null;
-         *     });
+         *         { // handle failure
+         *             t.printStackTrace();
+         *             return null;
+         *         });
          * }
          * }</pre>
          *
@@ -1193,7 +1195,7 @@ public interface Message extends ISnowflake, Formattable
         /**
          * Downloads the attachment to a file at the specified path (relative or absolute).
          * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
-         * Alternatively you can use {@link #retrieveData()} and use a continuation with a different executor.
+         * Alternatively you can use {@link #retrieveInputStream()} and use a continuation with a different executor.
          *
          * <h2>Example</h2>
          * <pre>{@code
@@ -1202,22 +1204,60 @@ public interface Message extends ISnowflake, Formattable
          *     attachment.downloadToFile("/tmp/" + attachment.getFileName())
          *         .thenAccept(file -> System.out.println("Saved attachment to " + file.getName()))
          *         .exceptionally(t ->
-         *     { // handle failure
-         *         t.printStackTrace();
-         *         return null;
-         *     });
+         *         { // handle failure
+         *             t.printStackTrace();
+         *             return null;
+         *         });
          * }
          * }</pre>
          *
          * @param  path
          *         The path to save the file to
          *
+         * @throws java.lang.IllegalArgumentException
+         *         If the provided path is null
+         *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
          */
         public CompletableFuture<File> downloadToFile(String path)
         {
-            return retrieveData().thenApplyAsync((stream) -> {
-                try (FileOutputStream out = new FileOutputStream(path))
+            Checks.notNull(path, "Path");
+            return downloadToFile(new File(path));
+        }
+
+        /**
+         * Downloads the attachment to a file at the specified path (relative or absolute).
+         * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
+         * Alternatively you can use {@link #retrieveInputStream()} and use a continuation with a different executor.
+         *
+         * <h2>Example</h2>
+         * <pre>{@code
+         * public void saveLocally(Message.Attachment attachment)
+         * {
+         *     attachment.downloadToFile(new File("/tmp/" + attachment.getFileName()))
+         *         .thenAccept(file -> System.out.println("Saved attachment to " + file.getName()))
+         *         .exceptionally(t ->
+         *         { // handle failure
+         *             t.printStackTrace();
+         *             return null;
+         *         });
+         * }
+         * }</pre>
+         *
+         * @param  file
+         *         The file to write to
+         *
+         * @throws java.lang.IllegalArgumentException
+         *         If the provided file is null or cannot be written to
+         *
+         * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
+         */
+        public CompletableFuture<File> downloadToFile(File file)
+        {
+            Checks.notNull(file, "File");
+            Checks.check(file.canWrite(), "Cannot write to file %s", file.getName());
+            return retrieveInputStream().thenApplyAsync((stream) -> {
+                try (FileOutputStream out = new FileOutputStream(file))
                 {
                     byte[] buf = new byte[1024];
                     int count;
@@ -1225,7 +1265,7 @@ public interface Message extends ISnowflake, Formattable
                     {
                         out.write(buf, 0, count);
                     }
-                    return new File(path);
+                    return file;
                 }
                 catch (IOException e)
                 {
@@ -1242,7 +1282,7 @@ public interface Message extends ISnowflake, Formattable
          * Retrieves the image of this attachment and provides an {@link net.dv8tion.jda.api.entities.Icon} equivalent.
          * <br>Useful with {@link net.dv8tion.jda.api.managers.AccountManager#setAvatar(Icon)}.
          * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
-         * Alternatively you can use {@link #retrieveData()} and use a continuation with a different executor.
+         * Alternatively you can use {@link #retrieveInputStream()} and use a continuation with a different executor.
          *
          * <h2>Example</h2>
          * <pre>{@code
@@ -1268,7 +1308,7 @@ public interface Message extends ISnowflake, Formattable
         {
             if (!isImage())
                 throw new IllegalStateException("Cannot create an Icon out of this attachment. This is not an image.");
-            return retrieveData().thenApplyAsync((stream) ->
+            return retrieveInputStream().thenApplyAsync((stream) ->
             {
                 try
                 {
