@@ -263,7 +263,7 @@ public class EntityBuilder
             createCategory(guildObj, channelData, guildObj.getIdLong());
             break;
         default:
-            throw new IllegalArgumentException("Cannot create channel for type " + channelData.getInt("type"));
+            LOG.debug("Cannot create channel for type " + channelData.getInt("type"));
         }
     }
 
