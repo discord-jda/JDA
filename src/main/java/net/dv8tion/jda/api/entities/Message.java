@@ -886,8 +886,8 @@ public interface Message extends ISnowflake, Formattable
     RestAction<Void> addReaction(Emote emote);
 
     /**
-     * Adds a reaction to this Message using a UTF8 emoji.
-     * <br>A reference of UTF8 emojis can be found here:
+     * Adds a reaction to this Message using a unicode emoji.
+     * <br>A reference of unicode emojis can be found here:
      * <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a>.
      *
      * <p>This message instance will not be updated by this operation.
@@ -925,7 +925,7 @@ public interface Message extends ISnowflake, Formattable
      * </ul>
      *
      * @param  unicode
-     *         The UTF8 emoji to add as a reaction to this Message.
+     *         The unicode emoji to add as a reaction to this Message.
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
