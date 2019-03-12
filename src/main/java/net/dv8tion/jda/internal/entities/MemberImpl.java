@@ -26,6 +26,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.Color;
 import java.time.Instant;
@@ -41,12 +42,12 @@ public class MemberImpl implements Member
     private final User user;
     private final Set<Role> roles = ConcurrentHashMap.newKeySet();
     private final GuildVoiceState voiceState;
-    private final Map<ClientType, OnlineStatus> status;
+    private final Map<ClientType, OnlineStatus> clientStatus;
 
     private String nickname;
     private long joinDate;
     private List<Activity> activities = null;
-    private OnlineStatus onlineStatus = OnlineStatus.OFFLINE; // TODO: Replaced?
+    private OnlineStatus onlineStatus = OnlineStatus.OFFLINE;
 
     public MemberImpl(GuildImpl guild, User user)
     {
@@ -56,7 +57,7 @@ public class MemberImpl implements Member
         boolean cacheState = jda.isCacheFlagSet(CacheFlag.VOICE_STATE) || user.equals(jda.getSelfUser());
         boolean cacheOnline = jda.isCacheFlagSet(CacheFlag.CLIENT_STATUS);
         this.voiceState = cacheState ? new GuildVoiceStateImpl(this) : null;
-        this.status = cacheOnline ? new ConcurrentHashMap<>() : null;
+        this.clientStatus = cacheOnline ? new ConcurrentHashMap<>(5) : null;
     }
 
     @Override
@@ -101,10 +102,13 @@ public class MemberImpl implements Member
         return onlineStatus;
     }
 
+    @Nonnull
     @Override
-    public OnlineStatus getOnlineStatus(ClientType type)
+    public OnlineStatus getOnlineStatus(@Nonnull ClientType type)
     {
-        return status.get(type);
+        Checks.notNull(type, "Type");
+        OnlineStatus status = this.clientStatus.get(type);
+        return status == null ? OnlineStatus.OFFLINE : status;
     }
 
     @Override
@@ -239,12 +243,12 @@ public class MemberImpl implements Member
 
     public MemberImpl setOnlineStatus(ClientType type, OnlineStatus status)
     {
-        if (type == ClientType.UNKNOWN)
+        if (this.clientStatus == null || type == ClientType.UNKNOWN || type == null)
             return this;
-        if (status == null || status == OnlineStatus.UNKNOWN)
-            this.status.remove(type);
+        if (status == null || status == OnlineStatus.UNKNOWN || status == OnlineStatus.OFFLINE)
+            this.clientStatus.remove(type);
         else
-            this.status.put(type, status);
+            this.clientStatus.put(type, status);
         return this;
     }
 

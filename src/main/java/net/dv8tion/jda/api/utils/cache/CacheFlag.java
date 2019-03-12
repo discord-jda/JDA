@@ -38,7 +38,7 @@ public enum CacheFlag
      */
     EMOTE,
     /**
-     * Enables cache for TODO
+     * Enables cache for {@link Member#getOnlineStatus(net.dv8tion.jda.api.entities.ClientType) Member.getOnlineStatus(ClientType)}
      */
     CLIENT_STATUS,
 }

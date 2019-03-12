@@ -17,6 +17,7 @@ package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.ClientType;
 import net.dv8tion.jda.api.events.user.UserActivityEndEvent;
 import net.dv8tion.jda.api.events.user.UserActivityStartEvent;
 import net.dv8tion.jda.api.events.user.update.*;
@@ -130,6 +131,7 @@ public class PresenceUpdateHandler extends SocketHandler
                 else
                     EntityBuilder.LOG.warn("Encountered exception trying to parse a presence! UserID: {} Message: {} Enable debug for details", userId, ex.getMessage());
             }
+
             OnlineStatus status = OnlineStatus.fromKey(content.getString("status"));
 
             //If we are in a Guild, then we will use Member.
@@ -153,8 +155,19 @@ public class PresenceUpdateHandler extends SocketHandler
                         return null;
                     }
                 }
-                else //TODO: Client Status - Maybe update existing event if replaced
+                else
                 {
+                    if (!content.isNull("client_status"))
+                    {
+                        JSONObject json = content.getJSONObject("client_status");
+                        for (String key : json.keySet())
+                        {
+                            ClientType type = ClientType.fromKey(key);
+                            String raw = String.valueOf(json.get(key));
+                            OnlineStatus clientStatus = OnlineStatus.fromKey(raw);
+                            member.setOnlineStatus(type, clientStatus);
+                        }
+                    }
                     //The member is already cached, so modify the presence values and fire events as needed.
                     if (!member.getOnlineStatus().equals(status))
                     {

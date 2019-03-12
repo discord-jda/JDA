@@ -16,12 +16,21 @@
 
 package net.dv8tion.jda.api.entities;
 
+/**
+ * The type of client a user might be active on.
+ *
+ * @see net.dv8tion.jda.api.entities.Member#getOnlineStatus(ClientType) Member.getOnlineStatus(type)
+ */
 public enum ClientType
 {
+    /** The official discord desktop client */
     DESKTOP("desktop"),
+    /** The official discord mobile app */
     MOBILE("mobile"),
+    /** Discord from the browser (or bot) */
     WEB("web"),
-    UNKNOWN("unknown")
+    /** Placeholder for a new type that is not yet supported here */
+    UNKNOWN("unknown"),
     ;
 
     private final String key;
