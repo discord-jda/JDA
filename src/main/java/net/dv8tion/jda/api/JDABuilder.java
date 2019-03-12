@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.hooks.IEventManager;
+import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.SessionControllerAdapter;
@@ -28,6 +29,10 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.config.AuthorizationConfig;
+import net.dv8tion.jda.internal.utils.config.MetaConfig;
+import net.dv8tion.jda.internal.utils.config.SessionConfig;
+import net.dv8tion.jda.internal.utils.config.ThreadingConfig;
 import okhttp3.OkHttpClient;
 
 import javax.security.auth.login.LoginException;
@@ -58,6 +63,7 @@ public class JDABuilder
     protected EnumSet<CacheFlag> cacheFlags = EnumSet.allOf(CacheFlag.class);
     protected ConcurrentMap<String, String> contextMap = null;
     protected SessionController controller = null;
+    protected VoiceDispatchInterceptor voiceDispatchInterceptor = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
     protected OkHttpClient httpClient = null;
     protected WebSocketFactory wsFactory = null;
@@ -68,7 +74,6 @@ public class JDABuilder
     protected Activity activity = null;
     protected OnlineStatus status = OnlineStatus.ONLINE;
     protected int maxReconnectDelay = 900;
-    protected int corePoolSize = 5;
     protected boolean enableContext = true;
     protected boolean enableVoice = true;
     protected boolean enableShutdownHook = true;
@@ -309,27 +314,6 @@ public class JDABuilder
     public JDABuilder setWebsocketFactory(WebSocketFactory factory)
     {
         this.wsFactory = factory;
-        return this;
-    }
-
-    /**
-     * Sets the core pool size for the global JDA
-     * {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} which is used
-     * in various locations throughout the JDA instance created by this builder. (Default: 5)
-     * <br>Note: This has no effect if you set a pool using {@link #setRateLimitPool(ScheduledExecutorService)}.
-     *
-     * @param  size
-     *         The core pool size for the global JDA executor
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the specified core pool size is not positive
-     *
-     * @return The JDABuilder instance. Useful for chaining.
-     */
-    public JDABuilder setCorePoolSize(int size)
-    {
-        Checks.positive(size, "Core pool size");
-        this.corePoolSize = size;
         return this;
     }
 
@@ -793,6 +777,22 @@ public class JDABuilder
     }
 
     /**
+     * Configures a custom voice dispatch handler which handles audio connections.
+     *
+     * @param  interceptor
+     *         The new voice dispatch handler, or null to use the default
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @see    VoiceDispatchInterceptor
+     */
+    public JDABuilder setVoiceDispatchInterceptor(VoiceDispatchInterceptor interceptor)
+    {
+        this.voiceDispatchInterceptor = interceptor;
+        return this;
+    }
+
+    /**
      * Builds a new {@link net.dv8tion.jda.api.JDA} instance and uses the provided token to start the login process.
      * <br>The login process runs in a different thread, so while this will return immediately, {@link net.dv8tion.jda.api.JDA} has not
      * finished loading, thus many {@link net.dv8tion.jda.api.JDA} methods have the chance to return incorrect information.
@@ -827,12 +827,15 @@ public class JDABuilder
         if (controller == null && shardInfo != null)
             controller = new SessionControllerAdapter();
 
-        JDAImpl jda = new JDAImpl(accountType, token, controller, httpClient, wsFactory, rateLimitPool, mainWsPool,
-                                  callbackPool,
-                                  autoReconnect, enableVoice, enableShutdownHook, enableBulkDeleteSplitting,
-                                  requestTimeoutRetry, enableContext,
-                                  shutdownRateLimitPool, shutdownMainWsPool, shutdownCallbackPool,
-                                  corePoolSize, maxReconnectDelay, contextMap, cacheFlags);
+        AuthorizationConfig authConfig = new AuthorizationConfig(accountType, token);
+        ThreadingConfig threadingConfig = new ThreadingConfig();
+        threadingConfig.setCallbackPool(callbackPool, shutdownCallbackPool);
+        threadingConfig.setGatewayPool(mainWsPool, shutdownMainWsPool);
+        threadingConfig.setRateLimitPool(rateLimitPool, shutdownRateLimitPool);
+        SessionConfig sessionConfig = new SessionConfig(controller, httpClient, wsFactory, voiceDispatchInterceptor, enableVoice, requestTimeoutRetry,autoReconnect, enableBulkDeleteSplitting, maxReconnectDelay);
+        MetaConfig metaConfig = new MetaConfig(contextMap, cacheFlags, enableContext, enableShutdownHook);
+
+        JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig);
 
         if (eventManager != null)
             jda.setEventManager(eventManager);
@@ -843,14 +846,12 @@ public class JDABuilder
         listeners.forEach(jda::addEventListener);
         jda.setStatus(JDA.Status.INITIALIZED);  //This is already set by JDA internally, but this is to make sure the listeners catch it.
 
-        String gateway = jda.getGateway();
-
         // Set the presence information before connecting to have the correct information ready when sending IDENTIFY
         ((PresenceImpl) jda.getPresence())
                 .setCacheActivity(activity)
                 .setCacheIdle(idle)
                 .setCacheStatus(status);
-        jda.login(gateway, shardInfo, enableCompression, true);
+        jda.login(shardInfo, enableCompression, true);
         return jda;
     }
 }

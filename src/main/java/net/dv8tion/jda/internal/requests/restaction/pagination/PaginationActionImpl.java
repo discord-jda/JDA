@@ -228,7 +228,7 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
     }
 
     @Override
-    public CompletableFuture<?> forEachAsync(final Procedure<T> action, final Consumer<? super Throwable> failure)
+    public CompletableFuture<?> forEachAsync(final Procedure<? super T> action, final Consumer<? super Throwable> failure)
     {
         Checks.notNull(action, "Procedure");
         Checks.notNull(failure, "Failure Consumer");
@@ -252,7 +252,7 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
     }
 
     @Override
-    public CompletableFuture<?> forEachRemainingAsync(final Procedure<T> action, final Consumer<? super Throwable> failure)
+    public CompletableFuture<?> forEachRemainingAsync(final Procedure<? super T> action, final Consumer<? super Throwable> failure)
     {
         Checks.notNull(action, "Procedure");
         Checks.notNull(failure, "Failure Consumer");
@@ -277,7 +277,7 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
     }
 
     @Override
-    public void forEachRemaining(final Procedure<T> action)
+    public void forEachRemaining(final Procedure<? super T> action)
     {
         Checks.notNull(action, "Procedure");
         Queue<T> queue = new LinkedList<>();
@@ -306,11 +306,11 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
     protected class ChainedConsumer implements Consumer<List<T>>
     {
         protected final CompletableFuture<?> task;
-        protected final Procedure<T> action;
+        protected final Procedure<? super T> action;
         protected final Consumer<Throwable> throwableConsumer;
         protected boolean initial = true;
 
-        protected ChainedConsumer(final CompletableFuture<?> task, final Procedure<T> action,
+        protected ChainedConsumer(final CompletableFuture<?> task, final Procedure<? super T> action,
                                   final Consumer<Throwable> throwableConsumer)
         {
             this.task = task;

@@ -13,30 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-//TODO: Remove
-package net.dv8tion.jda.internal.utils;
 
-import net.dv8tion.jda.api.requests.RequestFuture;
+package net.dv8tion.jda.api.events;
 
-import java.util.concurrent.CompletableFuture;
+import net.dv8tion.jda.api.JDA;
 
-public class Promise<T> extends CompletableFuture<T> implements RequestFuture<T>
+public interface GenericEvent
 {
-    public Promise() {}
+    /**
+     * The current JDA instance corresponding to this Event
+     *
+     * @return The corresponding JDA instance
+     */
+    JDA getJDA();
 
-    public Promise(final Throwable t)
-    {
-        this.completeExceptionally(t);
-    }
-
-    public Promise(final T t)
-    {
-        this.complete(t);
-    }
-
-    @Override
-    public CompletableFuture<T> toCompletableFuture()
-    {
-        throw new UnsupportedOperationException("Access to the CompletableFuture is not supported to secure JDA integrity.");
-    }
+    /**
+     * The current sequence for this event.
+     * <br>This can be used to keep events in order when making sequencing system.
+     *
+     * @return The current sequence number for this event
+     */
+    long getResponseNumber();
 }

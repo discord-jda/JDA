@@ -74,6 +74,9 @@ public interface IPacketProvider
      * encrypted, and as such is completely ready to be sent to Discord. The {@code changeTalking} parameter is used
      * to control whether or not the talking indicator should be changed if the
      * {@link net.dv8tion.jda.api.audio.AudioSendHandler AudioSendHandler} cannot provide an audio packet.
+     * <br>The {@link java.nio.ByteBuffer#position()} will be positioned on the start of the packet to send
+     * and the {@link java.nio.ByteBuffer#limit()} at the end of it. Use {@link java.nio.ByteBuffer#remaining()}
+     * to check the length of the packet.
      *
      * <p>Use case for this parameter would be front-loading or queuing many audio packets ahead of send time, and if the AudioSendHandler
      * did not have enough to fill the entire queue, you would have {@code changeTalking} set to {@code false} until the queue

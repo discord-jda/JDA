@@ -23,7 +23,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import java.util.*;
 
-public class MemberCacheViewImpl extends AbstractCacheView<Member> implements MemberCacheView
+public class MemberCacheViewImpl extends SnowflakeCacheViewImpl<Member> implements MemberCacheView
 {
     public MemberCacheViewImpl()
     {
@@ -68,22 +68,6 @@ public class MemberCacheViewImpl extends AbstractCacheView<Member> implements Me
                 return;
             }
 
-            if (equals(ignoreCase, nick, name))
-                members.add(member);
-        });
-        return Collections.unmodifiableList(members);
-    }
-
-    @Override
-    public List<Member> getElementsByName(String name, boolean ignoreCase)
-    {
-        Checks.notEmpty(name, "Name");
-        if (isEmpty())
-            return Collections.emptyList();
-        List<Member> members = new ArrayList<>();
-        forEach(member ->
-        {
-            final String nick = member.getEffectiveName();
             if (equals(ignoreCase, nick, name))
                 members.add(member);
         });

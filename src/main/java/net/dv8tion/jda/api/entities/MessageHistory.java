@@ -282,7 +282,7 @@ public class MessageHistory
      * <br>If a Message with the provided id has not already been retrieved (thus, doesn't not exist in this MessageHistory
      * object), then this method returns null.
      * <p>
-     * <b>Note:</b> This methods is not the same as {@link MessageChannel#getMessageById(String)}, which itself queries
+     * <b>Note:</b> This methods is not the same as {@link MessageChannel#retrieveMessageById(String)}, which itself queries
      * Discord. This method is for getting a message that has already been retrieved by this MessageHistory object.
      *
      * @param  id
@@ -305,7 +305,7 @@ public class MessageHistory
      * <br>If a Message with the provided id has not already been retrieved (thus, doesn't not exist in this MessageHistory
      * object), then this method returns null.
      * <p>
-     * <b>Note:</b> This methods is not the same as {@link MessageChannel#getMessageById(long)}, which itself queries
+     * <b>Note:</b> This methods is not the same as {@link MessageChannel#retrieveMessageById(long)}, which itself queries
      * Discord. This method is for getting a message that has already been retrieved by this MessageHistory object.
      *
      * @param  id

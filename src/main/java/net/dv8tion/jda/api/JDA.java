@@ -19,6 +19,7 @@ package net.dv8tion.jda.api;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.managers.AudioManager;
+import net.dv8tion.jda.api.managers.DirectAudioController;
 import net.dv8tion.jda.api.managers.Presence;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.GuildAction;
@@ -27,6 +28,8 @@ import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 import okhttp3.OkHttpClient;
 
 import javax.annotation.CheckReturnValue;
@@ -36,6 +39,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.regex.Matcher;
 
 /**
  * The core of JDA. Acts as a registry system of JDA. All parts of the the API can be accessed starting from this class.
@@ -317,6 +321,17 @@ public interface JDA
     OkHttpClient getHttpClient();
 
     /**
+     * Direct access to audio (dis-)connect requests.
+     * <br>This should not be used when normal audio operation is desired.
+     *
+     * <p>The correct way to open and close an audio connection is through the {@link Guild Guild's}
+     * {@link AudioManager}.
+     *
+     * @return The {@link DirectAudioController} for this JDA instance
+     */
+    DirectAudioController getDirectAudioController();
+
+    /**
      * Changes the internal EventManager.
      *
      * <p>The default EventManager is {@link net.dv8tion.jda.api.hooks.InterfacedEventManager InterfacedEventListener}.
@@ -467,6 +482,68 @@ public interface JDA
     default User getUserById(long id)
     {
         return getUserCache().getElementById(id);
+    }
+
+    /**
+     * Searches for a user that has the matching Discord Tag.
+     * <br>Format has to be in the form {@code Username#Discriminator} where the
+     * username must be between 2 and 32 characters (inclusive) matching the exact casing and the discriminator
+     * must be exactly 4 digits.
+     *
+     * <p>This only checks users that are known to the currently logged in account (shard). If a user exists
+     * with the tag that is not available in the {@link #getUserCache() User-Cache} it will not be detected.
+     * <br>Currently Discord does not offer a way to retrieve a user by their discord tag.
+     *
+     * @param  tag
+     *         The Discord Tag in the format {@code Username#Discriminator}
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided tag is null or not in the described format
+     *
+     * @return The {@link net.dv8tion.jda.api.entities.User} for the discord tag or null if no user has the provided tag
+     */
+    default User getUserByTag(String tag)
+    {
+        Checks.notNull(tag, "Tag");
+        Matcher matcher = User.USER_TAG.matcher(tag);
+        Checks.check(matcher.matches(), "Invalid tag format!");
+        String username = matcher.group(1);
+        String discriminator = matcher.group(2);
+        return getUserByTag(username, discriminator);
+    }
+
+    /**
+     * Searches for a user that has the matching Discord Tag.
+     * <br>Format has to be in the form {@code Username#Discriminator} where the
+     * username must be between 2 and 32 characters (inclusive) matching the exact casing and the discriminator
+     * must be exactly 4 digits.
+     *
+     * <p>This only checks users that are known to the currently logged in account (shard). If a user exists
+     * with the tag that is not available in the {@link #getUserCache() User-Cache} it will not be detected.
+     * <br>Currently Discord does not offer a way to retrieve a user by their discord tag.
+     *
+     * @param  username
+     *         The name of the user
+     * @param  discriminator
+     *         The discriminator of the user
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided arguments are null or not in the described format
+     *
+     * @return The {@link net.dv8tion.jda.api.entities.User} for the discord tag or null if no user has the provided tag
+     */
+    default User getUserByTag(String username, String discriminator)
+    {
+        Checks.notNull(username, "Username");
+        Checks.notNull(discriminator, "Discriminator");
+        Checks.check(discriminator.length() == 4 && Helpers.isNumeric(discriminator), "Invalid format for discriminator!");
+        Checks.check(username.length() >= 2 && username.length() <= 32, "Username must be between 2 and 32 characters in length!");
+        return getUserCache().applyStream(stream ->
+            stream.filter(it -> it.getDiscriminator().equals(discriminator))
+                  .filter(it -> it.getName().equals(username))
+                  .findFirst()
+                  .orElse(null)
+        );
     }
 
     /**
@@ -1240,11 +1317,14 @@ public interface JDA
      * the application that owns the logged in Bot-Account.
      * <br>This contains information about the owner of the currently logged in bot account!
      *
+     * @throws net.dv8tion.jda.api.exceptions.AccountTypeException
+     *         If the currently logged in account is not from {@link net.dv8tion.jda.api.AccountType#BOT AccountType.BOT}
+     *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link ApplicationInfo ApplicationInfo}
      *         <br>The {@link ApplicationInfo ApplicationInfo} of the bot's application.
      */
     @CheckReturnValue
-    RestAction<ApplicationInfo> getApplicationInfo();
+    RestAction<ApplicationInfo> retrieveApplicationInfo();
 
     /**
      * Creates an authorization invite url for the currently logged in Bot-Account.
@@ -1256,6 +1336,9 @@ public interface JDA
      * @param  permissions
      *         The permissions to use in your invite, these can be changed by the link user.
      *         <br>If no permissions are provided the {@code permissions} parameter is omitted
+     *
+     * @throws net.dv8tion.jda.api.exceptions.AccountTypeException
+     *         If the currently logged in account is not from {@link net.dv8tion.jda.api.AccountType#BOT AccountType.BOT}
      *
      * @return A valid OAuth2 invite url for the currently logged in Bot-Account
      */
@@ -1271,6 +1354,9 @@ public interface JDA
      * @param  permissions
      *         The permissions to use in your invite, these can be changed by the link user.
      *         <br>If no permissions are provided the {@code permissions} parameter is omitted
+     *
+     * @throws net.dv8tion.jda.api.exceptions.AccountTypeException
+     *         If the currently logged in account is not from {@link net.dv8tion.jda.api.AccountType#BOT AccountType.BOT}
      *
      * @return A valid OAuth2 invite url for the currently logged in Bot-Account
      */
@@ -1306,10 +1392,10 @@ public interface JDA
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.Webhook Webhook}
      *          <br>The webhook object.
      *
-     * @see    Guild#getWebhooks()
-     * @see    TextChannel#getWebhooks()
+     * @see    Guild#retrieveWebhooks()
+     * @see    TextChannel#retrieveWebhooks()
      */
-    RestAction<Webhook> getWebhookById(String webhookId);
+    RestAction<Webhook> retrieveWebhookById(String webhookId);
 
     /**
      * Retrieves a {@link net.dv8tion.jda.api.entities.Webhook Webhook} by its id.
@@ -1330,11 +1416,11 @@ public interface JDA
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.Webhook Webhook}
      *          <br>The webhook object.
      *
-     * @see    Guild#getWebhooks()
-     * @see    TextChannel#getWebhooks()
+     * @see    Guild#retrieveWebhooks()
+     * @see    TextChannel#retrieveWebhooks()
      */
-    default RestAction<Webhook> getWebhookById(long webhookId)
+    default RestAction<Webhook> retrieveWebhookById(long webhookId)
     {
-        return getWebhookById(Long.toUnsignedString(webhookId));
+        return retrieveWebhookById(Long.toUnsignedString(webhookId));
     }
 }

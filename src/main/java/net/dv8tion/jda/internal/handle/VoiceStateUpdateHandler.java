@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.guild.voice.*;
+import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildVoiceStateImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
@@ -97,6 +98,8 @@ public class VoiceStateUpdateHandler extends SocketHandler
         if (vState == null)
             return;
         vState.setSessionId(sessionId); //Cant really see a reason for an event for this
+        VoiceDispatchInterceptor voiceInterceptor = getJDA().getVoiceInterceptor();
+        boolean isSelf = guild.getSelfMember().equals(member);
 
         boolean wasMute = vState.isMuted();
         boolean wasDeaf = vState.isDeafened();
@@ -147,8 +150,8 @@ public class VoiceStateUpdateHandler extends SocketHandler
             else if (channel == null)
             {
                 oldChannel.getConnectedMembersMap().remove(userId);
-                if (guild.getSelfMember().equals(member))
-                    getJDA().getClient().updateAudioConnection(guildId, null);
+                if (isSelf)
+                    getJDA().getDirectAudioController().update(guild, null);
                 getJDA().getEventManager().handle(
                         new GuildVoiceLeaveEvent(
                                 getJDA(), responseNumber,
@@ -159,7 +162,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
                 AudioManagerImpl mng = (AudioManagerImpl) getJDA().getAudioManagersView().get(guildId);
 
                 //If the currently connected account is the one that is being moved
-                if (guild.getSelfMember().equals(member) && mng != null)
+                if (isSelf && mng != null && voiceInterceptor == null)
                 {
                     //And this instance of JDA is connected or attempting to connect,
                     // then change the channel we expect to be connected to.
@@ -171,7 +174,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
                     // we have just joined / moved to is the same as the currently queued audioRequest
                     // (handled by updateAudioConnection)
                     if (mng.isConnected())
-                        getJDA().getClient().updateAudioConnection(guildId, channel);
+                        getJDA().getDirectAudioController().update(guild, channel);
                     //If we are not already connected this will be removed by VOICE_SERVER_UPDATE
                 }
 
@@ -182,6 +185,11 @@ public class VoiceStateUpdateHandler extends SocketHandler
                                 getJDA(), responseNumber,
                                 member, oldChannel));
             }
+        }
+        if (isSelf && voiceInterceptor != null)
+        {
+            if (voiceInterceptor.onVoiceStateUpdate(new VoiceDispatchInterceptor.VoiceStateUpdate(channel, vState, allContent)))
+                getJDA().getDirectAudioController().update(guild, channel);
         }
     }
 }

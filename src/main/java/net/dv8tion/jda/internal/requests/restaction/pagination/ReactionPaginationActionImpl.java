@@ -21,9 +21,9 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
-import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.utils.EncodingUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -54,7 +54,7 @@ public class ReactionPaginationActionImpl
 
         return emote.isEmote()
             ? emote.getName() + ":" + emote.getId()
-            : MiscUtil.encodeUTF8(emote.getName());
+            : EncodingUtil.encodeUTF8(emote.getName());
     }
 
     @Override

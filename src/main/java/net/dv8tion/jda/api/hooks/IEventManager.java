@@ -15,7 +15,7 @@
  */
 package net.dv8tion.jda.api.hooks;
 
-import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.events.GenericEvent;
 
 import java.util.List;
 
@@ -63,13 +63,13 @@ public interface IEventManager
     void unregister(Object listener);
 
     /**
-     * Handles the provided {@link net.dv8tion.jda.api.events.Event Event}.
+     * Handles the provided {@link net.dv8tion.jda.api.events.GenericEvent GenericEvent}.
      * How this is handled is specified by the implementation.
      *
      * @param event
      *        The event to handle
      */
-    void handle(Event event);
+    void handle(GenericEvent event);
 
     /**
      * The currently registered listeners

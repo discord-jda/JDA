@@ -881,11 +881,11 @@ public class EntityBuilder
             // creates fake emoji because no guild has this emoji id
             if (emote == null)
                 emote = new EmoteImpl(emojiID, getJDA()).setAnimated(animated).setName(name);
-            reactionEmote = new MessageReaction.ReactionEmote(emote);
+            reactionEmote = MessageReaction.ReactionEmote.fromCustom(emote);
         }
         else
         {
-            reactionEmote = new MessageReaction.ReactionEmote(name, null, getJDA());
+            reactionEmote = MessageReaction.ReactionEmote.fromUnicode(name, getJDA());
         }
 
         return new MessageReaction(chan, reactionEmote, id, me, count);
@@ -896,8 +896,8 @@ public class EntityBuilder
         final int width = Helpers.optInt(jsonObject, "width", -1);
         final int height = Helpers.optInt(jsonObject, "height", -1);
         final int size = jsonObject.getInt("size");
-        final String url = jsonObject.optString("url", null);
-        final String proxyUrl = jsonObject.optString("proxy_url", null);
+        final String url = jsonObject.getString("url");
+        final String proxyUrl = jsonObject.getString("proxy_url");
         final String filename = jsonObject.getString("filename");
         final long id = jsonObject.getLong("id");
         return new Message.Attachment(id, url, proxyUrl, filename, size, height, width, getJDA());

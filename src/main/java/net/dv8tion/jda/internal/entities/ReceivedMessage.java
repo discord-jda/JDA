@@ -26,9 +26,9 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.requests.EmptyRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -104,13 +104,13 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public RestAction<Void> pin()
     {
-        return channel.pinMessageById(getIdLong());
+        return channel.pinMessageById(getId());
     }
 
     @Override
     public RestAction<Void> unpin()
     {
-        return channel.unpinMessageById(getIdLong());
+        return channel.unpinMessageById(getId());
     }
 
     @Override
@@ -127,27 +127,13 @@ public class ReceivedMessage extends AbstractMessage
             Checks.check(emote.canInteract(getJDA().getSelfUser(), channel),
                          "Cannot react with the provided emote because it is not available in the current channel.");
         }
-        else if (reaction.isSelf())
-        {
-            return new EmptyRestAction<>(getJDA(), null);
-        }
-
-        return channel.addReactionById(getIdLong(), emote);
+        return channel.addReactionById(getId(), emote);
     }
 
     @Override
     public RestAction<Void> addReaction(String unicode)
     {
-        Checks.notEmpty(unicode, "Provided Unicode");
-
-        MessageReaction reaction = reactions.stream()
-                .filter(r -> Objects.equals(r.getReactionEmote().getName(), unicode))
-                .findFirst().orElse(null);
-
-        if (reaction != null && reaction.isSelf())
-            return new EmptyRestAction<>(getJDA(), null);
-
-        return channel.addReactionById(getIdLong(), unicode);
+        return channel.addReactionById(getId(), unicode);
     }
 
     @Override
@@ -461,73 +447,7 @@ public class ReceivedMessage extends AbstractMessage
         {
             if (strippedContent != null)
                 return strippedContent;
-            String tmp = getContentDisplay();
-            //all the formatting keys to keep track of
-            String[] keys = new String[]{ "*", "_", "`", "~~" };
-
-            //find all tokens (formatting strings described above)
-            TreeSet<FormatToken> tokens = new TreeSet<>(Comparator.comparingInt(t -> t.start));
-            for (String key : keys)
-            {
-                Matcher matcher = Pattern.compile(Pattern.quote(key)).matcher(tmp);
-                while (matcher.find())
-                    tokens.add(new FormatToken(key, matcher.start()));
-            }
-
-            //iterate over all tokens, find all matching pairs, and add them to the list toRemove
-            Deque<FormatToken> stack = new ArrayDeque<>();
-            List<FormatToken> toRemove = new ArrayList<>();
-            boolean inBlock = false;
-            for (FormatToken token : tokens)
-            {
-                if (stack.isEmpty() || !stack.peek().format.equals(token.format) || stack.peek().start + token
-                        .format.length() == token.start)
-
-                {
-                    //we are at opening tag
-                    if (!inBlock)
-                    {
-                        //we are outside of block -> handle normally
-                        if (token.format.equals("`"))
-                        {
-                            //block start... invalidate all previous tags
-                            stack.clear();
-                            inBlock = true;
-                        }
-                        stack.push(token);
-                    }
-                    else if (token.format.equals("`"))
-                    {
-                        //we are inside of a block -> handle only block tag
-                        stack.push(token);
-                    }
-                }
-                else if (!stack.isEmpty())
-                {
-                    //we found a matching close-tag
-                    toRemove.add(stack.pop());
-                    toRemove.add(token);
-                    if (token.format.equals("`") && stack.isEmpty())
-                        //close tag closed the block
-                        inBlock = false;
-                }
-            }
-
-            //sort tags to remove by their start-index and iteratively build the remaining string
-            toRemove.sort(Comparator.comparingInt(t -> t.start));
-            StringBuilder out = new StringBuilder();
-            int currIndex = 0;
-            for (FormatToken formatToken : toRemove)
-            {
-                if (currIndex < formatToken.start)
-                    out.append(tmp.substring(currIndex, formatToken.start));
-                currIndex = formatToken.start + formatToken.format.length();
-            }
-            if (currIndex < tmp.length())
-                out.append(tmp.substring(currIndex));
-            //return the stripped text, escape all remaining formatting characters (did not have matching
-            // open/close before or were left/right of block
-            return strippedContent = out.toString().replace("*", "\\*").replace("_", "\\_").replace("~", "\\~");
+            return strippedContent = MarkdownSanitizer.sanitize(getContentDisplay());
         }
     }
 

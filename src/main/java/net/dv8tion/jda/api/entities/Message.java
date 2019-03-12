@@ -127,7 +127,7 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Pattern used to find instant invites in messages.
      *
-     * @see #getInvites() getInvites()
+     * @see #getInvites()
      */
     Pattern INVITE_PATTERN = Pattern.compile("(?:https?://)?discord(?:app\\.com/invite|\\.gg)/([a-z0-9-]+)", Pattern.CASE_INSENSITIVE);
 
@@ -344,8 +344,8 @@ public interface Message extends ISnowflake, Formattable
     String getContentRaw();
 
     /**
-     * Gets the textual content of this message using {@link #getContentDisplay()} and then strips it of all markdown characters
-     * like {@literal *, **, __, ~~} that provide text formatting. Any characters that match these but are not being used
+     * Gets the textual content of this message using {@link #getContentDisplay()} and then strips it of markdown characters 
+     * like {@literal *, **, __, ~~, ||} that provide text formatting. Any characters that match these but are not being used 
      * for formatting are escaped to prevent possible formatting.
      *
      * @return The textual content from {@link #getContentDisplay()} with all text formatting characters removed or escaped.
@@ -886,8 +886,8 @@ public interface Message extends ISnowflake, Formattable
     RestAction<Void> addReaction(Emote emote);
 
     /**
-     * Adds a reaction to this Message using a UTF8 emoji.
-     * <br>A reference of UTF8 emojis can be found here:
+     * Adds a reaction to this Message using a unicode emoji.
+     * <br>A reference of unicode emojis can be found here:
      * <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a>.
      *
      * <p>This message instance will not be updated by this operation.
@@ -925,7 +925,7 @@ public interface Message extends ISnowflake, Formattable
      * </ul>
      *
      * @param  unicode
-     *         The UTF8 emoji to add as a reaction to this Message.
+     *         The unicode emoji to add as a reaction to this Message.
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
@@ -1092,9 +1092,7 @@ public interface Message extends ISnowflake, Formattable
         }
 
         /**
-         * The url of the Attachment, proxied by Discord.
-         * <br>Url to the resource proxied by https://images.discordapp.net
-         * <br><b>Note: </b> This URL will most likely only work for images. ({@link #isImage()})
+         * Url to the resource proxied by the Discord CDN.
          *
          * @return Non-null String containing the proxied Attachment url.
          */

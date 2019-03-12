@@ -28,15 +28,16 @@ import net.dv8tion.jda.internal.utils.ChainedClosableIterator;
 
 import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheView<T>
 {
-    protected final Supplier<Stream<E>> generator;
+    protected final Supplier<? extends Stream<? extends E>> generator;
 
-    public UnifiedCacheViewImpl(Supplier<Stream<E>> generator)
+    public UnifiedCacheViewImpl(Supplier<? extends Stream<? extends E>> generator)
     {
         this.generator = generator;
     }
@@ -54,31 +55,40 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
     }
 
     @Override
-    public List<T> asList()
+    public void forEach(Consumer<? super T> action)
     {
+        Objects.requireNonNull(action);
         try (ClosableIterator<T> it = lockedIterator())
         {
-            List<T> list = new ArrayList<>();
-            it.forEachRemaining(list::add);
-            return Collections.unmodifiableList(list);
+            while (it.hasNext())
+                action.accept(it.next());
         }
+    }
+
+    @Override
+    public List<T> asList()
+    {
+        List<T> list = new LinkedList<>();
+        forEach(list::add);
+        return Collections.unmodifiableList(list);
     }
 
     @Override
     public Set<T> asSet()
     {
-        try (ClosableIterator<T> it = lockedIterator())
+        try (ChainedClosableIterator<T> it = lockedIterator())
         {
-            Set<T> set = new HashSet<>();
-            it.forEachRemaining(set::add);
-            return Collections.unmodifiableSet(set);
+            //because the iterator needs to retain elements to avoid duplicates,
+            // we can use the resulting HashSet as our return value!
+            while (it.hasNext()) it.next();
+            return Collections.unmodifiableSet(it.getItems());
         }
     }
 
     @Override
-    public ClosableIterator<T> lockedIterator()
+    public ChainedClosableIterator<T> lockedIterator()
     {
-        Iterator<E> gen = generator.get().iterator();
+        Iterator<? extends E> gen = generator.get().iterator();
         return new ChainedClosableIterator<>(gen);
     }
 
@@ -87,19 +97,20 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
     {
         return Collections.unmodifiableList(distinctStream()
                 .flatMap(view -> view.getElementsByName(name, ignoreCase).stream())
+                .distinct()
                 .collect(Collectors.toList()));
     }
 
     @Override
     public Stream<T> stream()
     {
-        return generator.get().flatMap(CacheView::stream).distinct();
+        return distinctStream().flatMap(CacheView::stream).distinct();
     }
 
     @Override
     public Stream<T> parallelStream()
     {
-        return generator.get().flatMap(CacheView::parallelStream).distinct();
+        return distinctStream().flatMap(CacheView::parallelStream).distinct();
     }
 
     @Nonnull
@@ -109,7 +120,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
         return stream().iterator();
     }
 
-    protected Stream<E> distinctStream()
+    protected Stream<? extends E> distinctStream()
     {
         return generator.get().distinct();
     }
@@ -117,7 +128,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
     public static class UnifiedSnowflakeCacheView<T extends ISnowflake>
         extends UnifiedCacheViewImpl<T, SnowflakeCacheView<T>> implements SnowflakeCacheView<T>
     {
-        public UnifiedSnowflakeCacheView(Supplier<Stream<SnowflakeCacheView<T>>> generator)
+        public UnifiedSnowflakeCacheView(Supplier<? extends Stream<? extends SnowflakeCacheView<T>>> generator)
         {
             super(generator);
         }
@@ -136,7 +147,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
         extends UnifiedCacheViewImpl<Member, MemberCacheView> implements UnifiedMemberCacheView
     {
 
-        public UnifiedMemberCacheViewImpl(Supplier<Stream<MemberCacheView>> generator)
+        public UnifiedMemberCacheViewImpl(Supplier<? extends Stream<? extends MemberCacheView>> generator)
         {
             super(generator);
         }

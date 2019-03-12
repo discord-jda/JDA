@@ -29,12 +29,15 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * Represents a Discord Text GuildChannel. See {@link GuildChannel GuildChannel} and
- * {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel} for more information.
+ * Represents a Discord Text GuildChannel.
+ * <br>Adds additional functionality and information for text channels in Discord.
  *
- * <p>Internal implementation of this class is available at
- * {@link net.dv8tion.jda.internal.entities.TextChannelImpl TextChannelImpl}.
- * <br>Note: Internal implementation should not be used directly.
+ * <p>This is a {@link GuildChannel GuildChannel} capable of sending messages.
+ *
+ * @see GuildChannel
+ * @see MessageChannel
+ * @see VoiceChannel
+ * @see Category
  */
 public interface TextChannel extends GuildChannel, MessageChannel, Comparable<TextChannel>, IMentionable
 {
@@ -91,7 +94,7 @@ public interface TextChannel extends GuildChannel, MessageChannel, Comparable<Te
      *         <br>An immutable list of Webhook attached to this channel
      */
     @CheckReturnValue
-    RestAction<List<Webhook>> getWebhooks();
+    RestAction<List<Webhook>> retrieveWebhooks();
 
     /**
      * Creates a new {@link net.dv8tion.jda.api.entities.Webhook Webhook}.

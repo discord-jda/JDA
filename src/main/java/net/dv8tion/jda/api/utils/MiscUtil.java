@@ -34,6 +34,7 @@ import java.net.URLEncoder;
 import java.util.Formatter;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class MiscUtil
 {
@@ -105,42 +106,6 @@ public class MiscUtil
     public static <T> TLongObjectMap<T> newLongMap()
     {
         return new TSynchronizedLongObjectMap<>(new TLongObjectHashMap<T>(), new Object());
-    }
-
-    /**
-     * URL-Encodes the given String to UTF-8 after
-     * form-data specifications (space {@literal ->} +)
-     *
-     * @param  chars
-     *         The characters to encode
-     *
-     * @return The encoded String
-     */
-    public static String encodeUTF8(String chars)
-    {
-        try
-        {
-            return URLEncoder.encode(chars, "UTF-8");
-        }
-        catch (UnsupportedEncodingException e)
-        {
-            throw new AssertionError(e); // thanks JDK 1.4
-        }
-    }
-
-    public static String encodeCodePointsUTF8(String input)
-    {
-        if (!input.startsWith("U+"))
-            throw new IllegalArgumentException("Invalid format");
-        String[] codePoints = input.substring(2).split("\\s*U\\+\\s*");
-        StringBuilder encoded = new StringBuilder();
-        for (String part : codePoints)
-        {
-            int codePoint = Integer.parseUnsignedInt(part, 16);
-            char[] chars = Character.toChars(codePoint);
-            encoded.append(encodeUTF8(String.valueOf(chars)));
-        }
-        return encoded.toString();
     }
 
     public static long parseSnowflake(String input)

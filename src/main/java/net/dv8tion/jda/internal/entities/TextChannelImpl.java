@@ -21,8 +21,6 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.VerificationLevelException;
-import net.dv8tion.jda.api.requests.Request;
-import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
@@ -36,6 +34,7 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.WebhookActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EncodingUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -64,7 +63,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     }
 
     @Override
-    public RestAction<List<Webhook>> getWebhooks()
+    public RestAction<List<Webhook>> retrieveWebhooks()
     {
         checkPermission(Permission.MANAGE_WEBHOOKS);
 
@@ -337,7 +336,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     }
 
     @Override
-    public MessageAction sendFile(InputStream data, String fileName, Message message)
+    public MessageAction sendFile(InputStream data, String fileName)
     {
         checkVerification();
         checkPermission(Permission.MESSAGE_READ);
@@ -345,17 +344,17 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         checkPermission(Permission.MESSAGE_ATTACH_FILES);
 
         //Call MessageChannel's default method
-        return TextChannel.super.sendFile(data, fileName, message);
+        return TextChannel.super.sendFile(data, fileName);
     }
 
     @Override
-    public RestAction<Message> getMessageById(String messageId)
+    public RestAction<Message> retrieveMessageById(String messageId)
     {
         checkPermission(Permission.MESSAGE_READ);
         checkPermission(Permission.MESSAGE_HISTORY);
 
         //Call MessageChannel's default method
-        return TextChannel.super.getMessageById(messageId);
+        return TextChannel.super.retrieveMessageById(messageId);
     }
 
     @Override
@@ -389,12 +388,12 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     }
 
     @Override
-    public RestAction<List<Message>> getPinnedMessages()
+    public RestAction<List<Message>> retrievePinnedMessages()
     {
         checkPermission(Permission.MESSAGE_READ, "Cannot get the pinned message of a channel without MESSAGE_READ access.");
 
         //Call MessageChannel's default method
-        return TextChannel.super.getPinnedMessages();
+        return TextChannel.super.retrievePinnedMessages();
     }
 
     @Override
@@ -433,7 +432,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         Checks.notNull(user, "User");
         if (!getJDA().getSelfUser().equals(user))
             checkPermission(Permission.MESSAGE_MANAGE);
-        final String code = MiscUtil.encodeUTF8(unicode);
+        final String code = EncodingUtil.encodeUTF8(unicode);
         Route.CompiledRoute route;
         if (user.equals(getJDA().getSelfUser()))
             route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, code, "@me");

@@ -16,6 +16,7 @@
 package net.dv8tion.jda.api.hooks;
 
 import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.internal.JDAImpl;
 
 import java.lang.reflect.InvocationTargetException;
@@ -31,14 +32,14 @@ import java.util.*;
  * <p>Listeners for this manager do <u>not</u> need to implement {@link net.dv8tion.jda.api.hooks.EventListener EventListener}
  * <br>Example
  * <pre><code>
- *     public class Foo
+ * public class Foo
+ * {
+ *    {@literal @SubscribeEvent}
+ *     public void onMsg(MessageReceivedEvent event)
  *     {
- *        {@literal @SubscribeEvent}
- *         public void onMsg(MessageReceivedEvent event)
- *         {
- *             System.out.printf("%s: %s\n", event.getAuthor().getName(), event.getMessage().getContentDisplay());
- *         }
+ *         System.out.printf("%s: %s\n", event.getAuthor().getName(), event.getMessage().getContentDisplay());
  *     }
+ * }
  * </code></pre>
  *
  * @see net.dv8tion.jda.api.hooks.InterfacedEventManager
@@ -48,7 +49,7 @@ import java.util.*;
 public class AnnotatedEventManager implements IEventManager
 {
     private final Set<Object> listeners = new HashSet<>();
-    private final Map<Class<? extends Event>, Map<Object, List<Method>>> methods = new HashMap<>();
+    private final Map<Class<?>, Map<Object, List<Method>>> methods = new HashMap<>();
 
     @Override
     public void register(Object listener)
@@ -76,20 +77,20 @@ public class AnnotatedEventManager implements IEventManager
 
     @Override
     @SuppressWarnings("unchecked")
-    public void handle(Event event)
+    public void handle(GenericEvent event)
     {
-        Class<? extends Event> eventClass = event.getClass();
+        Class<?> eventClass = event.getClass();
         do
         {
             Map<Object, List<Method>> listeners = methods.get(eventClass);
             if (listeners != null)
             {
-                listeners.entrySet().forEach(e -> e.getValue().forEach(method ->
+                listeners.forEach((key, value) -> value.forEach(method ->
                 {
                     try
                     {
                         method.setAccessible(true);
-                        method.invoke(e.getKey(), event);
+                        method.invoke(key, event);
                     }
                     catch (IllegalAccessException | InvocationTargetException e1)
                     {
@@ -101,7 +102,7 @@ public class AnnotatedEventManager implements IEventManager
                     }
                 }));
             }
-            eventClass = eventClass == Event.class ? null : (Class<? extends Event>) eventClass.getSuperclass();
+            eventClass = eventClass == Event.class ? null : (Class<? extends GenericEvent>) eventClass.getSuperclass();
         }
         while (eventClass != null);
     }
@@ -121,10 +122,9 @@ public class AnnotatedEventManager implements IEventManager
                     continue;
                 }
                 Class<?>[] pType  = m.getParameterTypes();
-                if (pType.length == 1 && Event.class.isAssignableFrom(pType[0]))
+                if (pType.length == 1 && GenericEvent.class.isAssignableFrom(pType[0]))
                 {
-                    @SuppressWarnings("unchecked")
-                    Class<? extends Event> eventClass = (Class<? extends Event>) pType[0];
+                    Class<?> eventClass = pType[0];
                     if (!methods.containsKey(eventClass))
                     {
                         methods.put(eventClass, new HashMap<>());
