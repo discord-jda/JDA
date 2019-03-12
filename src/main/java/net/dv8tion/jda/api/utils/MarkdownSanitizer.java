@@ -266,7 +266,7 @@ public class MarkdownSanitizer
     {
         if (isEscape(region))
             return -1;
-        int lastMatch = afterIndex;
+        int lastMatch = afterIndex + getDelta(region) + 1;
         while (lastMatch != -1)
         {
             switch (region)
@@ -459,7 +459,7 @@ public class MarkdownSanitizer
                 continue;
             }
 
-            int endRegion = findEndIndex(i + 1, nextRegion, sequence);
+            int endRegion = findEndIndex(i, nextRegion, sequence);
             if (isIgnored(nextRegion) || endRegion == -1)
             {
                 int delta = getDelta(nextRegion);
