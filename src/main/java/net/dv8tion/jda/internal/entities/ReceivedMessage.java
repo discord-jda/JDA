@@ -29,7 +29,6 @@ import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.requests.EmptyRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -105,13 +104,13 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public RestAction<Void> pin()
     {
-        return channel.pinMessageById(getIdLong());
+        return channel.pinMessageById(getId());
     }
 
     @Override
     public RestAction<Void> unpin()
     {
-        return channel.unpinMessageById(getIdLong());
+        return channel.unpinMessageById(getId());
     }
 
     @Override
@@ -128,27 +127,13 @@ public class ReceivedMessage extends AbstractMessage
             Checks.check(emote.canInteract(getJDA().getSelfUser(), channel),
                          "Cannot react with the provided emote because it is not available in the current channel.");
         }
-        else if (reaction.isSelf())
-        {
-            return new EmptyRestAction<>(getJDA(), null);
-        }
-
-        return channel.addReactionById(getIdLong(), emote);
+        return channel.addReactionById(getId(), emote);
     }
 
     @Override
     public RestAction<Void> addReaction(String unicode)
     {
-        Checks.notEmpty(unicode, "Provided Unicode");
-
-        MessageReaction reaction = reactions.stream()
-                .filter(r -> Objects.equals(r.getReactionEmote().getName(), unicode))
-                .findFirst().orElse(null);
-
-        if (reaction != null && reaction.isSelf())
-            return new EmptyRestAction<>(getJDA(), null);
-
-        return channel.addReactionById(getIdLong(), unicode);
+        return channel.addReactionById(getId(), unicode);
     }
 
     @Override

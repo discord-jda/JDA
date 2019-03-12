@@ -34,6 +34,7 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.WebhookActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EncodingUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -431,7 +432,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         Checks.notNull(user, "User");
         if (!getJDA().getSelfUser().equals(user))
             checkPermission(Permission.MESSAGE_MANAGE);
-        final String code = MiscUtil.encodeUTF8(unicode);
+        final String code = EncodingUtil.encodeUTF8(unicode);
         Route.CompiledRoute route;
         if (user.equals(getJDA().getSelfUser()))
             route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, code, "@me");

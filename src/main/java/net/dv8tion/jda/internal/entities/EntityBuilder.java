@@ -871,11 +871,11 @@ public class EntityBuilder
             // creates fake emoji because no guild has this emoji id
             if (emote == null)
                 emote = new EmoteImpl(emojiID, getJDA()).setAnimated(animated).setName(name);
-            reactionEmote = new MessageReaction.ReactionEmote(emote);
+            reactionEmote = MessageReaction.ReactionEmote.fromCustom(emote);
         }
         else
         {
-            reactionEmote = new MessageReaction.ReactionEmote(name, null, getJDA());
+            reactionEmote = MessageReaction.ReactionEmote.fromUnicode(name, getJDA());
         }
 
         return new MessageReaction(chan, reactionEmote, id, me, count);

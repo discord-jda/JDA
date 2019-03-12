@@ -30,7 +30,6 @@ import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.OrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.RoleOrderAction;
-import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
@@ -44,6 +43,7 @@ import net.dv8tion.jda.internal.requests.restaction.order.CategoryOrderActionImp
 import net.dv8tion.jda.internal.requests.restaction.order.ChannelOrderActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.order.RoleOrderActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EncodingUtil;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import org.json.JSONObject;
@@ -339,7 +339,7 @@ public class GuildController
 
         Route.CompiledRoute route = Route.Guilds.KICK_MEMBER.compile(guildId, userId);
         if (reason != null && !reason.isEmpty())
-            route = route.withQueryParams("reason", MiscUtil.encodeUTF8(reason));
+            route = route.withQueryParams("reason", EncodingUtil.encodeUTF8(reason));
 
         return new AuditableRestActionImpl<>(getGuild().getJDA(), route);
     }
@@ -580,7 +580,7 @@ public class GuildController
 
         Route.CompiledRoute route = Route.Guilds.BAN.compile(getGuild().getId(), userId);
         if (reason != null && !reason.isEmpty())
-            route = route.withQueryParams("reason", MiscUtil.encodeUTF8(reason));
+            route = route.withQueryParams("reason", EncodingUtil.encodeUTF8(reason));
         if (delDays > 0)
             route = route.withQueryParams("delete-message-days", Integer.toString(delDays));
 
@@ -647,7 +647,7 @@ public class GuildController
 
         Route.CompiledRoute route = Route.Guilds.BAN.compile(getGuild().getId(), userId);
         if (reason != null && !reason.isEmpty())
-            route = route.withQueryParams("reason", MiscUtil.encodeUTF8(reason));
+            route = route.withQueryParams("reason", EncodingUtil.encodeUTF8(reason));
         if (delDays > 0)
             route = route.withQueryParams("delete-message-days", Integer.toString(delDays));
 
