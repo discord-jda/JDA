@@ -806,31 +806,7 @@ public class EntityBuilder
         MessageActivity activity = null;
 
         if (!jsonObject.isNull("activity"))
-        {
-            JSONObject activityData = jsonObject.getJSONObject("activity");
-            final MessageActivity.ActivityType activityType = MessageActivity.ActivityType.fromId(activityData.getInt("type"));
-            final String partyId = activityData.optString("party_id", null);
-            MessageActivity.Application application = null;
-
-            if (!jsonObject.isNull("application"))
-            {
-                JSONObject applicationData = jsonObject.getJSONObject("application");
-
-                final String name = applicationData.getString("name");
-                final String description = applicationData.getString("description");
-                final String iconId = applicationData.getString("icon");
-                final String coverId = applicationData.optString("cover_image", null);
-                final long applicationId = applicationData.getLong("id");
-
-                application = new MessageActivity.Application(name, description, iconId, coverId, applicationId);
-            }
-            if (activityType == MessageActivity.ActivityType.UNKNOWN)
-            {
-                LOG.debug("Received an unknown ActivityType, Activity: {}", activityData);
-            }
-
-            activity = new MessageActivity(activityType, partyId, application);
-        }
+            activity = createMessageActivity(jsonObject);
 
         User user;
         switch (chan.getType())
@@ -882,6 +858,35 @@ public class EntityBuilder
                     content, nonce, user, activity, editTime, reactions, attachments, embeds);
         }
 
+    }
+
+    private static MessageActivity createMessageActivity(JSONObject jsonObject)
+    {
+        MessageActivity activity;
+        JSONObject activityData = jsonObject.getJSONObject("activity");
+        final MessageActivity.ActivityType activityType = MessageActivity.ActivityType.fromId(activityData.getInt("type"));
+        final String partyId = activityData.optString("party_id", null);
+        MessageActivity.Application application = null;
+
+        if (!jsonObject.isNull("application"))
+        {
+            JSONObject applicationData = jsonObject.getJSONObject("application");
+
+            final String name = applicationData.getString("name");
+            final String description = applicationData.getString("description");
+            final String iconId = applicationData.getString("icon");
+            final String coverId = applicationData.optString("cover_image", null);
+            final long applicationId = applicationData.getLong("id");
+
+            application = new MessageActivity.Application(name, description, iconId, coverId, applicationId);
+        }
+        if (activityType == MessageActivity.ActivityType.UNKNOWN)
+        {
+            LOG.debug("Received an unknown ActivityType, Activity: {}", activityData);
+        }
+
+        activity = new MessageActivity(activityType, partyId, application);
+        return activity;
     }
 
     public MessageReaction createMessageReaction(MessageChannel chan, long id, JSONObject obj)
