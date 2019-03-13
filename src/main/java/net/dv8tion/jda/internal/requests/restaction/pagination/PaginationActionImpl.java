@@ -361,17 +361,26 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
             }
             initial = false;
 
+            T previous = null;
             for (T it : list)
             {
                 if (task.isCancelled())
+                {
+                    if (previous != null)
+                        updateIndex(previous);
                     return;
+                }
                 if (action.execute(it))
+                {
+                    previous = it;
                     continue;
+                }
                 // set the iterator index for next call of remaining
                 updateIndex(it);
                 task.complete(null);
                 return;
             }
+
             final int currentLimit = limit.getAndSet(maxLimit);
             queue(this, throwableConsumer);
             limit.set(currentLimit);
