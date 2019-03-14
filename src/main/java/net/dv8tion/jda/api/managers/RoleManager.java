@@ -128,7 +128,7 @@ public interface RoleManager extends Manager<RoleManager>
      *         The new name for the selected {@link net.dv8tion.jda.api.entities.Role Role}
      *
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or not between 1-32 characters long
+     *         If the provided name is {@code null} or not between 1-100 characters long
      *
      * @return RoleManager for chaining convenience
      */
