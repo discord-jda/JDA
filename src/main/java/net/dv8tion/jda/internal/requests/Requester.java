@@ -44,6 +44,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.Inflater;
+import java.util.zip.InflaterInputStream;
+import java.util.zip.ZipException;
 
 public class Requester
 {
@@ -296,8 +299,19 @@ public class Requester
     public static InputStream getBody(okhttp3.Response response) throws IOException
     {
         String encoding = response.header("content-encoding", "");
-        if (encoding.equals("gzip"))
-            return new GZIPInputStream(response.body().byteStream());
+        try
+        {
+            if (encoding.equalsIgnoreCase("gzip"))
+                return new GZIPInputStream(response.body().byteStream());
+            else if (encoding.equalsIgnoreCase("deflate"))
+                return new InflaterInputStream(response.body().byteStream(), new Inflater(true));
+        }
+        catch (ZipException ex)
+        {
+            LOG.error("Failed to read gzip content for response. Header: 'content-encoding: {}' Content: '{}'",
+                     encoding, JDALogger.getLazyString(() -> new String(response.body().bytes())), ex);
+            return null;
+        }
         return response.body().byteStream();
     }
 }
