@@ -32,6 +32,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 
@@ -160,13 +161,17 @@ public class PresenceUpdateHandler extends SocketHandler
                     if (!content.isNull("client_status"))
                     {
                         JSONObject json = content.getJSONObject("client_status");
+                        EnumSet<ClientType> types = EnumSet.of(ClientType.UNKNOWN);
                         for (String key : json.keySet())
                         {
                             ClientType type = ClientType.fromKey(key);
+                            types.add(type);
                             String raw = String.valueOf(json.get(key));
                             OnlineStatus clientStatus = OnlineStatus.fromKey(raw);
                             member.setOnlineStatus(type, clientStatus);
                         }
+                        for (ClientType type : EnumSet.complementOf(types))
+                            member.setOnlineStatus(type, null); // set remaining types to offline
                     }
                     //The member is already cached, so modify the presence values and fire events as needed.
                     if (!member.getOnlineStatus().equals(status))
