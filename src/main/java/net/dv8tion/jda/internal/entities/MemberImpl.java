@@ -107,6 +107,8 @@ public class MemberImpl implements Member
     public OnlineStatus getOnlineStatus(@Nonnull ClientType type)
     {
         Checks.notNull(type, "Type");
+        if (this.clientStatus == null || this.clientStatus.isEmpty())
+            return OnlineStatus.OFFLINE;
         OnlineStatus status = this.clientStatus.get(type);
         return status == null ? OnlineStatus.OFFLINE : status;
     }
