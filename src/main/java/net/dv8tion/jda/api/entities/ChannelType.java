@@ -23,41 +23,50 @@ public enum ChannelType
     /**
      * A {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}, Guild-Only.
      */
-    TEXT(0, true),
+    TEXT(0, 0, true),
     /**
      * A {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}.
      */
-    PRIVATE(1),
+    PRIVATE(1, -1),
     /**
      * A {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}, Guild-Only.
      */
-    VOICE(2, true),
+    VOICE(2, 1, true),
     /**
      * A Group. {@link net.dv8tion.jda.api.AccountType#CLIENT AccountType.CLIENT} only.
      */
-    GROUP(3),
+    GROUP(3, -1),
     /**
      * A {@link net.dv8tion.jda.api.entities.Category Category}, Guild-Only.
      */
-    CATEGORY(4, true),
+    CATEGORY(4, 2, true),
+
+    STORE(6, 0, true),
     /**
      * Unknown Discord channel type. Should never happen and would only possibly happen if Discord implemented a new
      * channel type and JDA had yet to implement support for it.
      */
-    UNKNOWN(-1);
+    UNKNOWN(-1, -2);
 
-    protected final int id;
-    protected final boolean isGuild;
+    private final int sortBucket;
+    private final int id;
+    private final boolean isGuild;
 
-    ChannelType(int id)
+    ChannelType(int id, int sortBucket)
     {
-        this(id, false);
+        this(id, sortBucket, false);
     }
 
-    ChannelType(int id, boolean isGuild)
+    ChannelType(int id, int sortBucket, boolean isGuild)
     {
         this.id = id;
+        this.sortBucket = sortBucket;
         this.isGuild = isGuild;
+    }
+
+    public int getSortBucket()
+    {
+        return sortBucket;
     }
 
     /**

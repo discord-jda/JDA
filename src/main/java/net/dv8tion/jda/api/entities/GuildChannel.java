@@ -31,7 +31,7 @@ import java.util.List;
 /**
  * Represents a {@link net.dv8tion.jda.api.entities.Guild Guild} channel.
  */
-public interface GuildChannel extends ISnowflake
+public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
 {
     /**
      * The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} for this GuildChannel

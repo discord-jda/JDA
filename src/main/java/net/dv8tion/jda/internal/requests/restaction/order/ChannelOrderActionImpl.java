@@ -30,6 +30,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 public class ChannelOrderActionImpl<T extends GuildChannel>
     extends OrderActionImpl<T, ChannelOrderAction<T>>
@@ -133,18 +134,11 @@ public class ChannelOrderActionImpl<T extends GuildChannel>
         Checks.check(orderList.contains(entity), "Provided channel is not in the list of orderable channels!");
     }
 
-    private static Collection<? extends GuildChannel> getChannelsOfType(Guild guild, ChannelType type)
+    protected static Collection<? extends GuildChannel> getChannelsOfType(Guild guild, ChannelType type)
     {
-        switch(type)
-        {
-            case TEXT:
-                return guild.getTextChannels();
-            case VOICE:
-                return guild.getVoiceChannels();
-            case CATEGORY:
-                return guild.getCategories();
-            default:
-                throw new IllegalArgumentException("Cannot order specified channel type " + type);
-        }
+        return guild.getChannels().stream()
+            .filter(it -> it.getType().getSortBucket() == type.getSortBucket())
+            .sorted()
+            .collect(Collectors.toList());
     }
 }

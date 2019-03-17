@@ -47,18 +47,6 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
     }
 
     @Override
-    public int compareTo(Category other)
-    {
-        Checks.notNull(other, "Other Category");
-        if (other.equals(this))
-            return 0;
-        Checks.check(getGuild().equals(other.getGuild()), "Cannot compare categories from different guilds!");
-        if (rawPosition == other.getPositionRaw())
-            return Long.compare(id, other.getIdLong());
-        return Integer.compare(rawPosition, other.getPositionRaw());
-    }
-
-    @Override
     public ChannelType getType()
     {
         return ChannelType.CATEGORY;
@@ -122,6 +110,7 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
     public List<GuildChannel> getChannels()
     {
         List<GuildChannel> channels = new ArrayList<>();
+        //TODO: Handle store channels
         channels.addAll(getTextChannels());
         channels.addAll(getVoiceChannels());
         return Collections.unmodifiableList(channels);
@@ -162,7 +151,7 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
     }
 
     @Override
-    public CategoryOrderAction<TextChannel> modifyTextChannelPositions()
+    public CategoryOrderAction<GuildChannel> modifyTextChannelPositions()
     {
         return getGuild().getController().modifyTextChannelPositions(this);
     }

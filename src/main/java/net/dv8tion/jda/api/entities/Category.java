@@ -30,7 +30,7 @@ import java.util.List;
  *
  * @since 3.4.0
  */
-public interface Category extends GuildChannel, Comparable<Category>
+public interface Category extends GuildChannel
 {
     /**
      * All {@link GuildChannel Channels} listed
@@ -144,7 +144,7 @@ public interface Category extends GuildChannel, Comparable<Category>
      *         ordering the Category's {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}.
      */
     @CheckReturnValue
-    CategoryOrderAction<TextChannel> modifyTextChannelPositions();
+    CategoryOrderAction<GuildChannel> modifyTextChannelPositions();
 
     /**
      * Modifies the positional order of this Category's nested {@link #getVoiceChannels() VoiceChannels}.

@@ -32,7 +32,7 @@ import java.util.stream.Stream;
  *
  * @see   CacheView CacheView for details on Efficient Memory Usage
  */
-public interface SortedSnowflakeCacheView<T extends Comparable<T> & ISnowflake> extends SnowflakeCacheView<T>
+public interface SortedSnowflakeCacheView<T extends Comparable<? super T> & ISnowflake> extends SnowflakeCacheView<T>
 {
     /**
      * Behavior similar to {@link CacheView#forEach(Consumer)} but does not preserve order.

@@ -24,6 +24,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 public class CategoryOrderActionImpl<T extends GuildChannel>
     extends ChannelOrderActionImpl<T>
@@ -73,16 +74,9 @@ public class CategoryOrderActionImpl<T extends GuildChannel>
     {
         Checks.notNull(type, "ChannelType");
         Checks.notNull(category, "Category");
-        // In the event Discord allows a new channel type to be nested in categories,
-        // supporting them via CategoryOrderAction is just a matter of adding a new case here.
-        switch(type)
-        {
-            case TEXT:
-                return category.getTextChannels();
-            case VOICE:
-                return category.getVoiceChannels();
-            default:
-                throw new IllegalArgumentException("Cannot order category with specified channel type " + type);
-        }
+        return ChannelOrderActionImpl.getChannelsOfType(category.getGuild(), type).stream()
+             .filter(it -> category.equals(it.getParent()))
+             .sorted()
+             .collect(Collectors.toList());
     }
 }

@@ -479,18 +479,6 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         return "TC:" + getName() + '(' + id + ')';
     }
 
-    @Override
-    public int compareTo(TextChannel chan)
-    {
-        Checks.notNull(chan, "Other TextChannel");
-        if (this == chan)
-            return 0;
-        Checks.check(getGuild().equals(chan.getGuild()), "Cannot compare TextChannels that aren't from the same guild!");
-        if (this.getPositionRaw() == chan.getPositionRaw())
-            return Long.compare(id, chan.getIdLong());
-        return Integer.compare(rawPosition, chan.getPositionRaw());
-    }
-
     // -- Setters --
 
     public TextChannelImpl setTopic(String topic)

@@ -39,6 +39,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import org.json.JSONArray;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -64,6 +65,17 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     {
         this.id = id;
         this.guild = new UpstreamReference<>(guild);
+    }
+
+    @Override
+    public int compareTo(@Nonnull GuildChannel o)
+    {
+        Checks.notNull(o, "Channel");
+        if (getType().getSortBucket() != o.getType().getSortBucket()) // if bucket matters
+            return Integer.compare(getType().getSortBucket(), o.getType().getSortBucket());
+        if (getPositionRaw() != o.getPositionRaw())                   // if position matters
+            return Integer.compare(getPositionRaw(), o.getPositionRaw());
+        return Long.compareUnsigned(id, o.getIdLong());               // last resort by id
     }
 
     @Override

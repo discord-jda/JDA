@@ -1925,10 +1925,10 @@ public class GuildController
      *     <br>The currently logged in account was removed from the Guild</li>
      * </ul>
      *
-     * @return {@link ChannelOrderAction ChannelOrderAction} - Type: {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     * @return {@link ChannelOrderAction ChannelOrderAction} - Type: {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}
      */
     @CheckReturnValue
-    public ChannelOrderAction<TextChannel> modifyTextChannelPositions()
+    public ChannelOrderAction<GuildChannel> modifyTextChannelPositions()
     {
         return new ChannelOrderActionImpl<>(getGuild(), ChannelType.TEXT);
     }
@@ -1984,7 +1984,7 @@ public class GuildController
      * @return {@link CategoryOrderAction CategoryOrderAction} - Type: {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      */
     @CheckReturnValue
-    public CategoryOrderAction<TextChannel> modifyTextChannelPositions(Category category)
+    public CategoryOrderAction<GuildChannel> modifyTextChannelPositions(Category category)
     {
         Checks.notNull(category, "Category");
         checkGuild(category.getGuild(), "Category");
