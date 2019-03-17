@@ -459,69 +459,9 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
     }
 
     /**
-     * Clears the allowed and denied permissions as specified by the inherited bits.
-     * <br>The permissions that are inherited are neither denied nor granted.
-     *
-     * <p>Shortcut for: {@code setDeny(getDeny() & ~bits).setAllow(getAllow() & ~bits)}
-     *
-     * @param  inheritedBits
-     *         The permissions that should be inherited
-     *
-     * @return The current PermissionOverrideAction - for chaining convenience
-     */
-    @Nonnull
-    @CheckReturnValue
-    default PermissionOverrideAction setInherited(long inheritedBits)
-    {
-        return setDeny(getDeny() & ~inheritedBits).setAllow(getAllow() & ~inheritedBits);
-    }
-
-    /**
-     * Clears the allowed and denied permissions as specified by the inherited bits.
-     * <br>The permissions that are inherited are neither denied nor granted.
-     *
-     * <p>Shortcut for: {@code setInherited(Permission.getRaw(permissions))}
-     *
-     * @param  permissions
-     *         The permissions that should be inherited
-     *
-     * @return The current PermissionOverrideAction - for chaining convenience
-     */
-    @Nonnull
-    @CheckReturnValue
-    @SuppressWarnings("ConstantConditions")
-    default PermissionOverrideAction setInherited(@Nonnull Collection<Permission> permissions)
-    {
-        if (permissions == null || permissions.isEmpty())
-            return this;
-        return setInherited(Permission.getRaw(permissions));
-    }
-
-    /**
-     * Clears the allowed and denied permissions as specified by the inherited bits.
-     * <br>The permissions that are inherited are neither denied nor granted.
-     *
-     * <p>Shortcut for: {@code setInherited(Permission.getRaw(permissions))}
-     *
-     * @param  permissions
-     *         The permissions that should be inherited
-     *
-     * @return The current PermissionOverrideAction - for chaining convenience
-     */
-    @Nonnull
-    @CheckReturnValue
-    @SuppressWarnings("ConstantConditions")
-    default PermissionOverrideAction setInherited(@Nonnull Permission... permissions)
-    {
-        if (permissions == null || permissions.length == 0)
-            return this;
-        return setInherited(Permission.getRaw(permissions));
-    }
-
-    /**
      * Clears the provided {@link net.dv8tion.jda.api.Permission Permissions} bits
      * from the {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}.
-     * <br>This will cause the provided Permissions to be inherited
+     * <br>This will cause the provided Permissions to be inherited from other overrides or roles.
      *
      * @param  inheritedBits
      *         The permissions to clear from the {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
@@ -532,7 +472,7 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
     @CheckReturnValue
     default PermissionOverrideAction clear(long inheritedBits)
     {
-        return setInherited(getInherited() | inheritedBits);
+        return setDeny(getDeny() & ~inheritedBits).setAllow(getAllow() & ~inheritedBits);
     }
 
     /**
