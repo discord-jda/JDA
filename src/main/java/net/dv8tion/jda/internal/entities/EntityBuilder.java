@@ -604,6 +604,7 @@ public class EntityBuilder
 
     public StoreChannel createStoreChannel(GuildImpl guild, JSONObject json, long guildId)
     {
+        boolean playbackCache = false;
         final long id = json.getLong("id");
         StoreChannelImpl channel = (StoreChannelImpl) getJDA().getStoreChannelsView().get(id);
         if (channel == null)
@@ -619,7 +620,7 @@ public class EntityBuilder
             {
                 channel = new StoreChannelImpl(id, guild);
                 guildStoreView.getMap().put(id, channel);
-                //playbackCache todo
+                playbackCache = storeView.getMap().put(id, channel) == null;
             }
         }
 
@@ -633,6 +634,8 @@ public class EntityBuilder
             .setParent(Helpers.optLong(json, "parent_id", 0))
             .setName(json.getString("name"))
             .setPosition(json.getInt("position"));
+        if (playbackCache)
+            getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
         return channel;
     }
 
