@@ -58,7 +58,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class GuildImpl implements Guild //TODO: Handle store channels
+public class GuildImpl implements Guild
 {
     private final long id;
     private final UpstreamReference<JDAImpl> api;
