@@ -655,6 +655,14 @@ public interface Guild extends ISnowflake
      */
     SortedSnowflakeCacheView<Category> getCategoryCache();
 
+    default StoreChannel getStoreChannelById(String id) { return getStoreChannelCache().getElementById(id); }
+    default StoreChannel getStoreChannelById(long id) { return getStoreChannelCache().getElementById(id); }
+    default List<StoreChannel> getStoreChannels() { return getStoreChannelCache().asList(); }
+    default List<StoreChannel> getStoreChannelsByName(String name, boolean ignoreCase) { return getStoreChannelCache().getElementsByName(name, ignoreCase); }
+
+    @Nonnull
+    SortedSnowflakeCacheView<StoreChannel> getStoreChannelCache();
+
     /**
      * Gets a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} from this guild that has the same id as the
      * one provided. This method is similar to {@link net.dv8tion.jda.api.JDA#getTextChannelById(String)}, but it only
@@ -820,11 +828,11 @@ public interface Guild extends ISnowflake
      *
      * <p>The returned list is ordered in the same fashion as it would be by the official discord client.
      * <ol>
-     *     <li>TextChannel without parent</li>
+     *     <li>TextChannel and StoreChannel without parent</li>
      *     <li>VoiceChannel without parent</li>
      *     <li>Categories
      *         <ol>
-     *             <li>TextChannel with category as parent</li>
+     *             <li>TextChannel and StoreChannel with category as parent</li>
      *             <li>VoiceChannel with category as parent</li>
      *         </ol>
      *     </li>
@@ -845,11 +853,11 @@ public interface Guild extends ISnowflake
      *
      * <p>The returned list is ordered in the same fashion as it would be by the official discord client.
      * <ol>
-     *     <li>TextChannel without parent</li>
+     *     <li>TextChannel and StoreChannel without parent</li>
      *     <li>VoiceChannel without parent</li>
      *     <li>Categories
      *         <ol>
-     *             <li>TextChannel with category as parent</li>
+     *             <li>TextChannel and StoreChannel with category as parent</li>
      *             <li>VoiceChannel with category as parent</li>
      *         </ol>
      *     </li>

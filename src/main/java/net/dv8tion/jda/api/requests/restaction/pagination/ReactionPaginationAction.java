@@ -43,7 +43,6 @@ import net.dv8tion.jda.api.entities.User;
  * @since  3.1
  *
  * @see    MessageReaction#retrieveUsers()
- * @see    MessageReaction#retrieveUsers(int)
  */
 public interface ReactionPaginationAction extends PaginationAction<User, ReactionPaginationAction>
 {

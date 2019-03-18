@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.OrderAction;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
@@ -41,6 +42,9 @@ public interface Category extends GuildChannel
      * @return Immutable list of all child channels
      */
     List<GuildChannel> getChannels();
+
+    @Nonnull
+    List<StoreChannel> getStoreChannels();
 
     /**
      * All {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}

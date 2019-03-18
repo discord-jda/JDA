@@ -33,6 +33,7 @@ import net.dv8tion.jda.internal.utils.Helpers;
 import okhttp3.OkHttpClient;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -858,6 +859,14 @@ public interface JDA
     {
         return getCategoryCache().getElementsByName(name, ignoreCase);
     }
+
+    default StoreChannel getStoreChannelById(String id) { return getStoreChannelCache().getElementById(id); }
+    default StoreChannel getStoreChannelById(long id) { return getStoreChannelCache().getElementById(id); }
+    default List<StoreChannel> getStoreChannels() { return getStoreChannelCache().asList(); }
+    default List<StoreChannel> getStoreChannelsByName(String name, boolean ignoreCase) { return getStoreChannelCache().getElementsByName(name, ignoreCase); }
+
+    @Nonnull
+    SnowflakeCacheView<StoreChannel> getStoreChannelCache();
 
     /**
      * {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
