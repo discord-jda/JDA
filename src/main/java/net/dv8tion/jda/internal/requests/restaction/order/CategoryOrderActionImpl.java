@@ -47,10 +47,9 @@ public class CategoryOrderActionImpl<T extends GuildChannel>
      *         If the {@code ChannelType} is not one that can be retrieved from a {@code Category}.
      *         Currently the only two allowed are {@link ChannelType#TEXT} and {@link ChannelType#VOICE}.
      */
-    @SuppressWarnings("unchecked")
-    public CategoryOrderActionImpl(Category category, ChannelType type)
+    public CategoryOrderActionImpl(Class<T> clazz, Category category, ChannelType type)
     {
-        super(category.getGuild(), type, (Collection<T>) getChannelsOfType(category, type));
+        super(category.getGuild(), type, getChannelsOfType(clazz, category, type));
         this.category = category;
     }
 
@@ -70,11 +69,11 @@ public class CategoryOrderActionImpl<T extends GuildChannel>
     }
 
     @Nonnull
-    private static Collection<? extends GuildChannel> getChannelsOfType(Category category, ChannelType type)
+    private static <E extends GuildChannel> Collection<E> getChannelsOfType(Class<E> clazz, Category category, ChannelType type)
     {
         Checks.notNull(type, "ChannelType");
         Checks.notNull(category, "Category");
-        return ChannelOrderActionImpl.getChannelsOfType(category.getGuild(), type).stream()
+        return ChannelOrderActionImpl.getChannelsOfType(clazz, category.getGuild(), type).stream()
              .filter(it -> category.equals(it.getParent()))
              .sorted()
              .collect(Collectors.toList());

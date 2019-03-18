@@ -53,10 +53,9 @@ public class ChannelOrderActionImpl<T extends GuildChannel>
      * @throws java.lang.IllegalArgumentException
      *         If one of the specified Guild has no channels of the ChannelType.
      */
-    @SuppressWarnings("unchecked")
-    public ChannelOrderActionImpl(Guild guild, ChannelType type)
+    public ChannelOrderActionImpl(Class<T> clazz, Guild guild, ChannelType type)
     {
-        this(guild, type, (Collection<T>) getChannelsOfType(guild, type));
+        this(guild, type, getChannelsOfType(clazz, guild, type));
     }
 
     /**
@@ -81,7 +80,7 @@ public class ChannelOrderActionImpl<T extends GuildChannel>
      *         or any of them do not have the same ChannelType as the one
      *         provided.
      */
-    public ChannelOrderActionImpl(Guild guild, ChannelType type, Collection<T> channels)
+    public ChannelOrderActionImpl(Guild guild, ChannelType type, Collection<? extends T> channels)
     {
         super(guild.getJDA(), Route.Guilds.MODIFY_CHANNELS.compile(guild.getId()));
 
@@ -134,10 +133,11 @@ public class ChannelOrderActionImpl<T extends GuildChannel>
         Checks.check(orderList.contains(entity), "Provided channel is not in the list of orderable channels!");
     }
 
-    protected static Collection<? extends GuildChannel> getChannelsOfType(Guild guild, ChannelType type)
+    protected static <E extends GuildChannel> Collection<E> getChannelsOfType(Class<E> clazz, Guild guild, ChannelType type)
     {
         return guild.getChannels().stream()
             .filter(it -> it.getType().getSortBucket() == type.getSortBucket())
+            .map(clazz::cast)
             .sorted()
             .collect(Collectors.toList());
     }
