@@ -54,6 +54,20 @@ public class ChannelDeleteHandler extends SocketHandler
 
         switch (type)
         {
+            case STORE:
+            {
+                GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
+                StoreChannel channel = getJDA().getStoreChannelsView().remove(channelId);
+                if (channel == null)
+                {
+                    WebSocketClient.LOG.debug("CHANNEL_DELETE attempted to delete a store channel that is not yet cached. JSON: {}", content);
+                    return null;
+                }
+
+                guild.getStoreChannelView().remove(channelId);
+                //TODO: Events?
+                break;
+            }
             case TEXT:
             {
                 GuildImpl guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
@@ -142,7 +156,7 @@ public class ChannelDeleteHandler extends SocketHandler
                 WebSocketClient.LOG.warn("Received a CHANNEL_DELETE for a channel of type GROUP which is not supported!");
                 return null;
             default:
-                throw new IllegalArgumentException("CHANNEL_DELETE provided an unknown channel type. JSON: " + content);
+                WebSocketClient.LOG.debug("CHANNEL_DELETE provided an unknown channel type. JSON: {}", content);
         }
         getJDA().getEventCache().clear(EventCache.Type.CHANNEL, channelId);
         return null;

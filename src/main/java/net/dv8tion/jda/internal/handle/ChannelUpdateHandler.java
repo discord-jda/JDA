@@ -66,6 +66,33 @@ public class ChannelUpdateHandler extends SocketHandler
         JSONArray permOverwrites = content.getJSONArray("permission_overwrites");
         switch (type)
         {
+            case STORE:
+            {
+                StoreChannelImpl storeChannel = (StoreChannelImpl) getJDA().getStoreChannelById(channelId);
+                if (storeChannel == null)
+                {
+                    getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
+                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a StoreChannel that does not exist. JSON: {}", content);
+                    return null;
+                }
+                final String oldName = storeChannel.getName();
+                final int oldPositon = storeChannel.getPositionRaw();
+
+                if (!Objects.equals(oldName, name))
+                {
+                    storeChannel.setName(name);
+                    //TODO: Events?
+                }
+                if (!Objects.equals(oldPositon, position))
+                {
+                    storeChannel.setPosition(position);
+                    //TODO: Events?
+                }
+
+                applyPermissions(storeChannel, content, permOverwrites, contained, changed);
+                //TODO: Events?
+                break;
+            }
             case TEXT:
             {
                 String topic = content.optString("topic", null);
@@ -265,14 +292,6 @@ public class ChannelUpdateHandler extends SocketHandler
         return null;
     }
 
-    private long getIdLong(IPermissionHolder permHolder)
-    {
-        if (permHolder instanceof Member)
-            return ((Member) permHolder).getUser().getIdLong();
-        else
-            return ((Role) permHolder).getIdLong();
-    }
-
     private void applyPermissions(AbstractChannelImpl<?,?> channel, JSONObject content,
                                   JSONArray permOverwrites, List<IPermissionHolder> contained, List<IPermissionHolder> changed)
     {
@@ -298,7 +317,7 @@ public class ChannelUpdateHandler extends SocketHandler
             .forEach(permHolder ->
             {
                 changed.add(permHolder);
-                toRemove.add(getIdLong(permHolder));
+                toRemove.add(permHolder.getIdLong());
             });
 
         toRemove.forEach((id) ->
