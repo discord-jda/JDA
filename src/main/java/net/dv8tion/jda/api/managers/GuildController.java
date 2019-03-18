@@ -1981,7 +1981,7 @@ public class GuildController
      *         The {@link net.dv8tion.jda.api.entities.Category Category} to order
      *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannels} from.
      *
-     * @return {@link CategoryOrderAction CategoryOrderAction} - Type: {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     * @return {@link CategoryOrderAction CategoryOrderAction} - Type: {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}
      */
     @CheckReturnValue
     public CategoryOrderAction<GuildChannel> modifyTextChannelPositions(Category category)
