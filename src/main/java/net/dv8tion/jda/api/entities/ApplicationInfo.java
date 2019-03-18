@@ -28,7 +28,7 @@ import java.util.Collection;
  * @since  3.0
  * @author Aljoscha Grebe
  * 
- * @see    net.dv8tion.jda.api.JDA#getApplicationInfo()
+ * @see    net.dv8tion.jda.api.JDA#retrieveApplicationInfo()
  */
 public interface ApplicationInfo extends ISnowflake
 {

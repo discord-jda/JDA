@@ -142,6 +142,23 @@ public interface AudioManager
     EnumSet<SpeakingMode> getSpeakingMode();
 
     /**
+     * Configures the delay between the last provided frame and removing the speaking indicator.
+     * <br>This can be useful for send systems that buffer a certain interval of audio frames that will be sent.
+     * By default the delay is 200 milliseconds which is also the minimum delay.
+     *
+     * <p>If the delay is less than 200 milliseconds it will reset it the minimum delay. The provided delay
+     * will be aligned to the audio frame length of 20 milliseconds by means of integer division. This means
+     * it will be rounded down to the next biggest multiple of 20.
+     *
+     * <p>Note that this delay is not reliable and operates entirely based on the send system polling times
+     * which can cause it to be released earlier or later than the provided delay specifies.
+     *
+     * @param millis
+     *        The delay that should be used, in milliseconds
+     */
+    void setSpeakingDelay(int millis);
+
+    /**
      * Gets the {@link net.dv8tion.jda.api.JDA JDA} instance that this AudioManager is a part of.
      *
      * @return The corresponding JDA instance

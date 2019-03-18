@@ -33,6 +33,8 @@ import java.util.function.BooleanSupplier;
  *
  * @since  3.0
  *
+ * @see    net.dv8tion.jda.api.entities.PermissionOverride#getManager()
+ * @see    net.dv8tion.jda.api.entities.GuildChannel#upsertPermissionOverride(IPermissionHolder)
  * @see    net.dv8tion.jda.api.entities.GuildChannel#createPermissionOverride(IPermissionHolder)
  * @see    net.dv8tion.jda.api.entities.GuildChannel#putPermissionOverride(IPermissionHolder)
  */
@@ -40,6 +42,33 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
 {
     @Override
     PermissionOverrideAction setCheck(BooleanSupplier checks);
+
+    /**
+     * Shortcut for {@code resetAllow().resetDeny()}.
+     * <br>The permission override will be empty after this operation
+     *
+     * @return The current PermissionOverrideAction for chaining convenience
+     */
+    default PermissionOverrideAction reset()
+    {
+        return resetAllow().resetDeny();
+    }
+
+    /**
+     * Resets the allowed permissions to the current original value.
+     * <br>For a new override this will just be 0.
+     *
+     * @return The current PermissionOverrideAction for chaining convenience
+     */
+    PermissionOverrideAction resetAllow();
+
+    /**
+     * Resets the denied permissions to the current original value.
+     * <br>For a new override this will just be 0.
+     *
+     * @return The current PermissionOverrideAction for chaining convenience
+     */
+    PermissionOverrideAction resetDeny();
 
     /**
      * The {@link GuildChannel} this will be created in

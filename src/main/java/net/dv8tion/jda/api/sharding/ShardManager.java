@@ -171,19 +171,19 @@ public interface ShardManager
 
     /**
      * Used to access application details of this bot.
-     * <br>Since this is the same for every shard it picks {@link JDA#getApplicationInfo()} from any shard.
+     * <br>Since this is the same for every shard it picks {@link JDA#retrieveApplicationInfo()} from any shard.
      *
      * @throws java.lang.IllegalStateException
      *         If there is no running shard
      *
      * @return The Application registry for this bot.
      */
-    default RestAction<ApplicationInfo> getApplicationInfo()
+    default RestAction<ApplicationInfo> retrieveApplicationInfo()
     {
         return this.getShardCache().stream()
                 .findAny()
                 .orElseThrow(() -> new IllegalStateException("no active shards"))
-                .getApplicationInfo();
+                .retrieveApplicationInfo();
     }
 
     /**
@@ -540,6 +540,64 @@ public interface ShardManager
         JDAImpl jda = (JDAImpl) api;
         Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
         return new RestActionImpl<>(jda, route, (response, request) -> jda.getEntityBuilder().createFakeUser(response.getObject(), false));
+    }
+
+    /**
+     * Searches for the first user that has the matching Discord Tag.
+     * <br>Format has to be in the form {@code Username#Discriminator} where the
+     * username must be between 2 and 32 characters (inclusive) matching the exact casing and the discriminator
+     * must be exactly 4 digits.
+     *
+     * <p>This only checks users that are known to the currently logged in account (shards). If a user exists
+     * with the tag that is not available in the {@link #getUserCache() User-Cache} it will not be detected.
+     * <br>Currently Discord does not offer a way to retrieve a user by their discord tag.
+     *
+     * @param  tag
+     *         The Discord Tag in the format {@code Username#Discriminator}
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided tag is null or not in the described format
+     *
+     * @return The {@link net.dv8tion.jda.api.entities.User} for the discord tag or null if no user has the provided tag
+     */
+    default User getUserByTag(String tag)
+    {
+        return getShardCache().applyStream(stream ->
+            stream.map(jda -> jda.getUserByTag(tag))
+                  .filter(Objects::nonNull)
+                  .findFirst()
+                  .orElse(null)
+        );
+    }
+
+    /**
+     * Searches for the first user that has the matching Discord Tag.
+     * <br>Format has to be in the form {@code Username#Discriminator} where the
+     * username must be between 2 and 32 characters (inclusive) matching the exact casing and the discriminator
+     * must be exactly 4 digits.
+     *
+     * <p>This only checks users that are known to the currently logged in account (shards). If a user exists
+     * with the tag that is not available in the {@link #getUserCache() User-Cache} it will not be detected.
+     * <br>Currently Discord does not offer a way to retrieve a user by their discord tag.
+     *
+     * @param  username
+     *         The name of the user
+     * @param  discriminator
+     *         The discriminator of the user
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided arguments are null or not in the described format
+     *
+     * @return The {@link net.dv8tion.jda.api.entities.User} for the discord tag or null if no user has the provided tag
+     */
+    default User getUserByTag(String username, String discriminator)
+    {
+        return getShardCache().applyStream(stream ->
+            stream.map(jda -> jda.getUserByTag(username, discriminator))
+                  .filter(Objects::nonNull)
+                  .findFirst()
+                  .orElse(null)
+        );
     }
 
     /**

@@ -90,6 +90,8 @@ dependencies {
     //Sets the dependencies for the examples
     configurations.asMap["examplesCompile"] = configurations["apiElements"]
     configurations.asMap["examplesRuntime"] = configurations["implementation"]
+
+    testImplementation("org.junit.jupiter:junit-jupiter:5.4.0")
 }
 
 val bintrayUpload: BintrayUploadTask by tasks
@@ -200,6 +202,9 @@ javadoc.apply {
             "https://square.github.io/okhttp/3.x/okhttp/")
         if (JavaVersion.current().isJava9Compatible) {
             opt.addBooleanOption("html5", true)
+        }
+        if (JavaVersion.current().isJava11Compatible) {
+            opt.addBooleanOption("-no-module-directories", true)
         }
     }
 

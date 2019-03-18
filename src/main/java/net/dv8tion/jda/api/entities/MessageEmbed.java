@@ -900,6 +900,8 @@ public class MessageEmbed
                     throw new IllegalArgumentException("Name cannot be longer than " + TITLE_MAX_LENGTH + " characters.");
                 else if (value.length() > VALUE_MAX_LENGTH)
                     throw new IllegalArgumentException("Value cannot be longer than " + VALUE_MAX_LENGTH + " characters.");
+                name = name.trim();
+                value = value.trim();
                 if (name.isEmpty())
                     this.name = EmbedBuilder.ZERO_WIDTH_SPACE;
                 else

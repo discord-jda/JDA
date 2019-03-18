@@ -20,6 +20,23 @@ import java.io.*;
 
 public class IOUtil
 {
+    public static void silentClose(AutoCloseable closeable)
+    {
+        try
+        {
+            closeable.close();
+        }
+        catch (Exception ignored) {}
+    }
+
+    public static void silentClose(Closeable closeable)
+    {
+        try
+        {
+            closeable.close();
+        }
+        catch (IOException ignored) {}
+    }
 
     /**
      * Used as an alternate to Java's nio Files.readAllBytes.

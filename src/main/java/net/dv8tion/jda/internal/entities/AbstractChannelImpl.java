@@ -189,7 +189,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     }
 
     @Override
-    public RestAction<List<Invite>> getInvites()
+    public RestAction<List<Invite>> retrieveInvites()
     {
         if (!this.getGuild().getSelfMember().hasPermission(this, Permission.MANAGE_CHANNEL))
             throw new InsufficientPermissionException(Permission.MANAGE_CHANNEL);

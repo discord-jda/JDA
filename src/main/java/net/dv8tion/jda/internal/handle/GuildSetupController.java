@@ -125,7 +125,7 @@ public class GuildSetupController
     {
         setupNodes.remove(id);
         WebSocketClient client = getJDA().getClient();
-        if (!client.isReady() && --incompleteCount < 1)
+        if (--incompleteCount < 1 && !client.isReady())
             client.ready();
         else
             tryChunking();
@@ -333,7 +333,17 @@ public class GuildSetupController
 
     // Chunking
 
-    private void sendChunkRequest(Object obj)
+    int getIncompleteCount()
+    {
+        return incompleteCount;
+    }
+
+    int getChunkingCount()
+    {
+        return chunkingGuilds.size();
+    }
+
+    void sendChunkRequest(Object obj)
     {
         log.debug("Sending chunking requests for {} guilds", obj instanceof JSONArray ? ((JSONArray) obj).length() : 1);
 

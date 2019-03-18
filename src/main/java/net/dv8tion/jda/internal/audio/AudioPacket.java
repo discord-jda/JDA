@@ -61,8 +61,8 @@ public class AudioPacket
     private final char seq;
     private final int timestamp;
     private final int ssrc;
-    private final byte[] encodedAudio;
     private final byte[] rawPacket;
+    private final ByteBuffer encodedAudio;
 
     public AudioPacket(DatagramPacket packet)
     {
@@ -91,16 +91,12 @@ public class AudioPacket
         if (hasExtension && extension == RTP_DISCORD_EXTENSION)
             offset = getPayloadOffset(data, csrcLength);
 
-        this.encodedAudio = new byte[data.length - offset];
-        System.arraycopy(data, offset, this.encodedAudio, 0, this.encodedAudio.length);
+        this.encodedAudio = ByteBuffer.allocate(data.length - offset);
+        this.encodedAudio.put(data, offset, encodedAudio.capacity());
+        ((Buffer) this.encodedAudio).flip();
     }
 
-    public AudioPacket(char seq, int timestamp, int ssrc, byte[] encodedAudio)
-    {
-        this(null, seq, timestamp, ssrc, encodedAudio);
-    }
-
-    public AudioPacket(ByteBuffer buffer, char seq, int timestamp, int ssrc, byte[] encodedAudio)
+    public AudioPacket(ByteBuffer buffer, char seq, int timestamp, int ssrc, ByteBuffer encodedAudio)
     {
         this.seq = seq;
         this.ssrc = ssrc;
@@ -150,16 +146,9 @@ public class AudioPacket
         return rawPacket;
     }
 
-    public byte[] getEncodedAudio()
+    public ByteBuffer getEncodedAudio()
     {
         return encodedAudio;
-    }
-
-    public byte[] getEncodedAudio(int nonceLength)
-    {
-        if (nonceLength == 0)
-            return encodedAudio;
-        return Arrays.copyOf(encodedAudio, encodedAudio.length - nonceLength);
     }
 
     public char getSequence()
@@ -177,7 +166,7 @@ public class AudioPacket
         return timestamp;
     }
 
-    public ByteBuffer asEncryptedPacket(ByteBuffer buffer, byte[] secretKey, byte[] nonce, int nlen)
+    public ByteBuffer asEncryptedPacket(TweetNaclFast.SecretBox boxer, ByteBuffer buffer, byte[] nonce, int nlen)
     {
         //Xsalsa20's Nonce is 24 bytes long, however RTP (and consequently Discord)'s nonce is a different length
         // so we need to create a 24 byte array, and copy the nonce into it.
@@ -187,16 +176,20 @@ public class AudioPacket
             extendedNonce = getNoncePadded();
 
         //Create our SecretBox encoder with the secretKey provided by Discord.
-        TweetNaclFast.SecretBox boxer = new TweetNaclFast.SecretBox(secretKey);
-        byte[] encryptedAudio = boxer.box(encodedAudio, extendedNonce);
+        byte[] array = encodedAudio.array();
+        int offset = encodedAudio.arrayOffset() + encodedAudio.position();
+        int length = encodedAudio.remaining();
+        byte[] encryptedAudio = boxer.box(array, offset, length, extendedNonce);
+
         ((Buffer) buffer).clear();
         int capacity = RTP_HEADER_BYTE_LENGTH + encryptedAudio.length + nlen;
         if (capacity > buffer.remaining())
             buffer = ByteBuffer.allocate(capacity);
-        populateBuffer(seq, timestamp, ssrc, encryptedAudio, buffer);
+        populateBuffer(seq, timestamp, ssrc, ByteBuffer.wrap(encryptedAudio), buffer);
         if (nonce != null)
             buffer.put(nonce, 0, nlen);
 
+        ((Buffer) buffer).flip();
         return buffer;
     }
 
@@ -227,24 +220,26 @@ public class AudioPacket
                 return null;
         }
 
-        byte[] encodedAudio;
+        ByteBuffer encodedAudio = encryptedPacket.encodedAudio;
+        int length = encodedAudio.remaining();
+        int offset = encodedAudio.arrayOffset() + encodedAudio.position();
         switch (encryption)
         {
             case XSALSA20_POLY1305:
-                encodedAudio = encryptedPacket.getEncodedAudio();
+//                length = encodedAudio.remaining();
                 break;
             case XSALSA20_POLY1305_LITE:
-                encodedAudio = encryptedPacket.getEncodedAudio(4);
+                length -= 4;
                 break;
             case XSALSA20_POLY1305_SUFFIX:
-                encodedAudio = encryptedPacket.getEncodedAudio(TweetNaclFast.SecretBox.nonceLength);
+                length -= TweetNaclFast.SecretBox.nonceLength;
                 break;
             default:
                 AudioConnection.LOG.debug("Failed to decrypt audio packet, unsupported encryption mode!");
                 return null;
         }
 
-        final byte[] decryptedAudio = boxer.open(encodedAudio, extendedNonce);
+        final byte[] decryptedAudio = boxer.open(encodedAudio.array(), offset, length, extendedNonce);
         if (decryptedAudio == null)
         {
             AudioConnection.LOG.trace("Failed to decrypt audio packet");
@@ -260,15 +255,15 @@ public class AudioPacket
         return new AudioPacket(decryptedRawPacket);
     }
 
-    private static byte[] generateRawPacket(ByteBuffer buffer, char seq, int timestamp, int ssrc, byte[] data)
+    private static byte[] generateRawPacket(ByteBuffer buffer, char seq, int timestamp, int ssrc, ByteBuffer data)
     {
         if (buffer == null)
-            buffer = ByteBuffer.allocate(RTP_HEADER_BYTE_LENGTH + data.length);
+            buffer = ByteBuffer.allocate(RTP_HEADER_BYTE_LENGTH + data.remaining());
         populateBuffer(seq, timestamp, ssrc, data, buffer);
         return buffer.array();
     }
 
-    private static void populateBuffer(char seq, int timestamp, int ssrc, byte[] data, ByteBuffer buffer)
+    private static void populateBuffer(char seq, int timestamp, int ssrc, ByteBuffer data, ByteBuffer buffer)
     {
         buffer.put(RTP_VERSION_PAD_EXTEND);
         buffer.put(RTP_PAYLOAD_TYPE);
@@ -276,5 +271,6 @@ public class AudioPacket
         buffer.putInt(timestamp);
         buffer.putInt(ssrc);
         buffer.put(data);
+        ((Buffer) data).flip();
     }
 }
