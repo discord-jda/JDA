@@ -417,14 +417,15 @@ public class EntityBuilder
         return member;
     }
 
-    //Effectively the same as createFriendPresence
     public void createPresence(MemberImpl member, JSONObject presenceJson)
     {
         if (member == null)
             throw new NullPointerException("Provided member was null!");
         boolean cacheGame = getJDA().isCacheFlagSet(CacheFlag.PRESENCE);
+        boolean cacheStatus = getJDA().isCacheFlagSet(CacheFlag.CLIENT_STATUS);
 
         JSONArray activityArray = !cacheGame || presenceJson.isNull("activities") ? null : presenceJson.getJSONArray("activities");
+        JSONObject clientStatusJson = !cacheStatus || presenceJson.isNull("client_status") ? null : presenceJson.getJSONObject("client_status");
         OnlineStatus onlineStatus = OnlineStatus.fromKey(presenceJson.getString("status"));
         List<Activity> activities = new ArrayList<>();
         boolean parsedActivity = false;
@@ -449,9 +450,18 @@ public class EntityBuilder
                 }
             }
         }
-        member.setOnlineStatus(onlineStatus);
         if (cacheGame && parsedActivity)
             member.setActivities(activities);
+        member.setOnlineStatus(onlineStatus);
+        if (clientStatusJson != null)
+        {
+            for (String key : clientStatusJson.keySet())
+            {
+                ClientType type = ClientType.fromKey(key);
+                OnlineStatus status = OnlineStatus.fromKey(clientStatusJson.getString(key));
+                member.setOnlineStatus(type, status);
+            }
+        }
     }
 
     public static Activity createAcitvity(JSONObject gameJson)

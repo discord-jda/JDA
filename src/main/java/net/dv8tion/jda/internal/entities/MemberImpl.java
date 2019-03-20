@@ -26,6 +26,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.Color;
 import java.time.Instant;
@@ -41,6 +42,7 @@ public class MemberImpl implements Member
     private final User user;
     private final Set<Role> roles = ConcurrentHashMap.newKeySet();
     private final GuildVoiceState voiceState;
+    private final Map<ClientType, OnlineStatus> clientStatus;
 
     private String nickname;
     private long joinDate;
@@ -53,7 +55,9 @@ public class MemberImpl implements Member
         this.user = user;
         JDAImpl jda = (JDAImpl) getJDA();
         boolean cacheState = jda.isCacheFlagSet(CacheFlag.VOICE_STATE) || user.equals(jda.getSelfUser());
+        boolean cacheOnline = jda.isCacheFlagSet(CacheFlag.CLIENT_STATUS);
         this.voiceState = cacheState ? new GuildVoiceStateImpl(this) : null;
+        this.clientStatus = cacheOnline ? new ConcurrentHashMap<>(5) : null;
     }
 
     @Override
@@ -96,6 +100,17 @@ public class MemberImpl implements Member
     public OnlineStatus getOnlineStatus()
     {
         return onlineStatus;
+    }
+
+    @Nonnull
+    @Override
+    public OnlineStatus getOnlineStatus(@Nonnull ClientType type)
+    {
+        Checks.notNull(type, "Type");
+        if (this.clientStatus == null || this.clientStatus.isEmpty())
+            return OnlineStatus.OFFLINE;
+        OnlineStatus status = this.clientStatus.get(type);
+        return status == null ? OnlineStatus.OFFLINE : status;
     }
 
     @Override
@@ -225,6 +240,17 @@ public class MemberImpl implements Member
     public MemberImpl setActivities(List<Activity> activities)
     {
         this.activities = Collections.unmodifiableList(activities);
+        return this;
+    }
+
+    public MemberImpl setOnlineStatus(ClientType type, OnlineStatus status)
+    {
+        if (this.clientStatus == null || type == ClientType.UNKNOWN || type == null)
+            return this;
+        if (status == null || status == OnlineStatus.UNKNOWN || status == OnlineStatus.OFFLINE)
+            this.clientStatus.remove(type);
+        else
+            this.clientStatus.put(type, status);
         return this;
     }
 
