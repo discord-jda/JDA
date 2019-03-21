@@ -1637,7 +1637,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> setNickname(@Nonnull Member member, String nickname);
+    AuditableRestAction<Void> setNickname(@Nonnull Member member, @Nullable String nickname);
 
     /**
      * This method will prune (kick) all members who were offline for at least <i>days</i> days.
@@ -1708,7 +1708,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> kick(@Nonnull Member member, String reason);
+    AuditableRestAction<Void> kick(@Nonnull Member member, @Nullable String reason);
 
     /**
      * Kicks the {@link net.dv8tion.jda.api.entities.Member Member} specified by the userId from the from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -1747,7 +1747,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> kick(@Nonnull String userId, String reason);
+    AuditableRestAction<Void> kick(@Nonnull String userId, @Nullable String reason);
 
     /**
      * Kicks a {@link net.dv8tion.jda.api.entities.Member Member} from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -1869,7 +1869,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> ban(@Nonnull Member member, int delDays, String reason);
+    AuditableRestAction<Void> ban(@Nonnull Member member, int delDays, @Nullable String reason);
 
     /**
      * Bans a {@link net.dv8tion.jda.api.entities.User User} and deletes messages sent by the user
@@ -1917,7 +1917,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> ban(@Nonnull User user, int delDays, String reason);
+    AuditableRestAction<Void> ban(@Nonnull User user, int delDays, @Nullable String reason);
 
     /**
      * Bans the a user specified by the userId and deletes messages sent by the user
@@ -1965,7 +1965,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> ban(@Nonnull String userId, int delDays, String reason);
+    AuditableRestAction<Void> ban(@Nonnull String userId, int delDays, @Nullable String reason);
 
     /**
      * Bans a {@link net.dv8tion.jda.api.entities.Member Member} and deletes messages sent by the user
