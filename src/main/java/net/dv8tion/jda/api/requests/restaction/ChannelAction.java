@@ -30,10 +30,10 @@ import java.util.function.BooleanSupplier;
  *
  * @since  3.0
  *
- * @see    net.dv8tion.jda.api.managers.GuildController
- * @see    net.dv8tion.jda.api.managers.GuildController#createTextChannel(String)
- * @see    net.dv8tion.jda.api.managers.GuildController#createVoiceChannel(String)
- * @see    net.dv8tion.jda.api.managers.GuildController#createCategory(String)
+ * @see    net.dv8tion.jda.api.entities.Guild
+ * @see    net.dv8tion.jda.api.entities.Guild#createTextChannel(String)
+ * @see    net.dv8tion.jda.api.entities.Guild#createVoiceChannel(String)
+ * @see    net.dv8tion.jda.api.entities.Guild#createCategory(String)
  * @see    GuildChannel#createCopy()
  * @see    GuildChannel#createCopy(Guild)
  *

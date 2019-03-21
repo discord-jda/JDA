@@ -332,7 +332,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      * Sets the <b><u>position</u></b> of the selected {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}.
      *
      * <p><b>To modify multiple channels you should use
-     * <code>Guild.{@link net.dv8tion.jda.api.managers.GuildController getController()}.{@link GuildController#modifyTextChannelPositions() modifyTextChannelPositions()}</code>
+     * <code>Guild.{@link net.dv8tion.jda.api.entities.Guild#modifyTextChannelPositions() modifyTextChannelPositions()}</code>
      * instead! This is not the same as looping through channels and using this to update positions!</b>
      *
      * @param  position

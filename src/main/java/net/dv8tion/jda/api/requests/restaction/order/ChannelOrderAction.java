@@ -19,7 +19,6 @@ package net.dv8tion.jda.api.requests.restaction.order;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.managers.GuildController;
 
 /**
  * Implementation of {@link OrderAction OrderAction}
@@ -35,10 +34,10 @@ import net.dv8tion.jda.api.managers.GuildController;
  *
  * @since 3.0
  *
- * @see   GuildController
- * @see   GuildController#modifyTextChannelPositions()
- * @see   GuildController#modifyVoiceChannelPositions()
- * @see   GuildController#modifyCategoryPositions()
+ * @see   net.dv8tion.jda.api.entities.Guild
+ * @see   net.dv8tion.jda.api.entities.Guild#modifyTextChannelPositions()
+ * @see   net.dv8tion.jda.api.entities.Guild#modifyVoiceChannelPositions()
+ * @see   net.dv8tion.jda.api.entities.Guild#modifyCategoryPositions()
  * @see   CategoryOrderAction
  */
 public interface ChannelOrderAction<T extends GuildChannel> extends OrderAction<T, ChannelOrderAction<T>>

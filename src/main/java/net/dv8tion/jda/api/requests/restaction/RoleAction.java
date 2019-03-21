@@ -19,7 +19,6 @@ package net.dv8tion.jda.api.requests.restaction;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.managers.GuildController;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -34,8 +33,8 @@ import java.util.function.BooleanSupplier;
  *
  * @since  3.0
  *
- * @see    net.dv8tion.jda.api.managers.GuildController
- * @see    GuildController#createRole()
+ * @see    net.dv8tion.jda.api.entities.Guild
+ * @see    net.dv8tion.jda.api.entities.Guild#createRole()
  * @see    Role#createCopy()
  * @see    Role#createCopy(Guild)
  */

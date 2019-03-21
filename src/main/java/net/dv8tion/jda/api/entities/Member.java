@@ -93,7 +93,7 @@ public interface Member extends IMentionable, IPermissionHolder
      * Returns the current nickname of this Member for the parent Guild.
      *
      * <p>This can be changed using
-     * {@link net.dv8tion.jda.api.managers.GuildController#setNickname(Member, String) GuildController.setNickname(Member, String)}.
+     * {@link net.dv8tion.jda.api.entities.Guild#setNickname(Member, String) GuildController.setNickname(Member, String)}.
      *
      * @return The nickname or null, if no nickname is set.
      */
@@ -112,7 +112,7 @@ public interface Member extends IMentionable, IPermissionHolder
      * and the lowest at the last index.
      *
      * <p>A Member's roles can be changed using the <b>addRolesToMember</b>, <b>removeRolesFromMember</b>, and <b>modifyMemberRoles</b>
-     * methods in {@link net.dv8tion.jda.api.managers.GuildController GuildController}.
+     * methods in {@link net.dv8tion.jda.api.entities.Guild Guild}.
      *
      * <p><b>The Public Role ({@code @everyone}) is not included in the returned immutable list of roles
      * <br>It is implicit that every member holds the Public Role in a Guild thus it is not listed here!</b>
