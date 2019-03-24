@@ -33,6 +33,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
+import java.util.stream.Collectors;
 import java.util.List;
 import java.util.Set;
 
@@ -385,7 +386,9 @@ public class InviteImpl implements Invite
             this.iconId = iconId;
             this.name = name;
             this.id = id;
-            this.users = users;
+            this.users = users.stream()
+                              .map(user -> new JSONObject(user).getString("username"))
+                              .collect(Collectors.toList());
         }
 
         @Override
