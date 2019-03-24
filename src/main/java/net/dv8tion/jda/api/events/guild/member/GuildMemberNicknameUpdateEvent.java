@@ -26,12 +26,12 @@ import net.dv8tion.jda.api.entities.Member;
  */
 public class GuildMemberNicknameUpdateEvent extends GenericGuildMemberEvent
 {
-    private final String prevNick, newNick;
+    private final String oldNick, newNick;
 
-    public GuildMemberNicknameUpdateEvent(JDA api, long responseNumber, Member member, String prevNick, String newNick)
+    public GuildMemberNicknameUpdateEvent(JDA api, long responseNumber, Member member, String oldNick, String newNick)
     {
         super(api, responseNumber, member);
-        this.prevNick = prevNick;
+        this.oldNick = oldNick;
         this.newNick = newNick;
     }
 
@@ -40,9 +40,9 @@ public class GuildMemberNicknameUpdateEvent extends GenericGuildMemberEvent
      *
      * @return The old nickname
      */
-    public String getPreviousNickname()
+    public String getOldNickname()
     {
-        return prevNick;
+        return oldNick;
     }
 
     /**
