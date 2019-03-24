@@ -24,11 +24,11 @@ import net.dv8tion.jda.api.entities.Member;
  *
  * <p>Can be used to retrieve members who change their nickname, triggering guild, the old nick and the new nick.
  */
-public class GuildMemberNickChangeEvent extends GenericGuildMemberEvent
+public class GuildMemberNicknameUpdateEvent extends GenericGuildMemberEvent
 {
     private final String prevNick, newNick;
 
-    public GuildMemberNickChangeEvent(JDA api, long responseNumber, Member member, String prevNick, String newNick)
+    public GuildMemberNicknameUpdateEvent(JDA api, long responseNumber, Member member, String prevNick, String newNick)
     {
         super(api, responseNumber, member);
         this.prevNick = prevNick;
@@ -40,7 +40,7 @@ public class GuildMemberNickChangeEvent extends GenericGuildMemberEvent
      *
      * @return The old nickname
      */
-    public String getPrevNick()
+    public String getPreviousNickname()
     {
         return prevNick;
     }
@@ -50,7 +50,7 @@ public class GuildMemberNickChangeEvent extends GenericGuildMemberEvent
      *
      * @return The new nickname
      */
-    public String getNewNick()
+    public String getNewNickname()
     {
         return newNick;
     }
