@@ -18,13 +18,14 @@ package net.dv8tion.jda.api.events.guild.member;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.UpdateEvent;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} updated their {@link net.dv8tion.jda.api.entities.Guild Guild} nickname.
  *
  * <p>Can be used to retrieve members who change their nickname, triggering guild, the old nick and the new nick.
  */
-public class GuildMemberUpdateNicknameEvent extends GenericGuildMemberEvent
+public class GuildMemberUpdateNicknameEvent extends GenericGuildMemberEvent implements UpdateEvent<Member, String>
 {
     private final String oldNick, newNick;
 
@@ -42,7 +43,7 @@ public class GuildMemberUpdateNicknameEvent extends GenericGuildMemberEvent
      */
     public String getOldNickname()
     {
-        return oldNick;
+        return getOldValue();
     }
 
     /**
@@ -52,6 +53,36 @@ public class GuildMemberUpdateNicknameEvent extends GenericGuildMemberEvent
      */
     public String getNewNickname()
     {
+        return getNewValue();
+    }
+
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return "nick";
+    }
+
+    @Override
+    public Member getEntity()
+    {
+        return getMember();
+    }
+
+    @Override
+    public String getOldValue()
+    {
+        return oldNick;
+    }
+
+    @Override
+    public String getNewValue()
+    {
         return newNick;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "MemberUpdate[" + getPropertyIdentifier() + "](" + getOldValue() + "->" + getNewValue() + ')';
     }
 }
