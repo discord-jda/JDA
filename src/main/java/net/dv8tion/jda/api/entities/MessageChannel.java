@@ -1066,10 +1066,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * @param messageId
-     *        The id of the message that will act as a marker.
-     * @param limit
-     *        The amount of messages to be retrieved around the marker. Minimum: 1, Max: 100.
+     * @param  messageId
+     *         The id of the message that will act as a marker.
+     * @param  limit
+     *         The amount of messages to be retrieved around the marker. Minimum: 1, Max: 100.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -1131,10 +1131,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * @param messageId
-     *        The id of the message that will act as a marker. The id must refer to a message from this MessageChannel.
-     * @param limit
-     *        The amount of messages to be retrieved around the marker. Minimum: 1, Max: 100.
+     * @param  messageId
+     *         The id of the message that will act as a marker. The id must refer to a message from this MessageChannel.
+     * @param  limit
+     *         The amount of messages to be retrieved around the marker. Minimum: 1, Max: 100.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -1195,11 +1195,11 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * @param message
-     *        The {@link net.dv8tion.jda.api.entities.Message Message} that will act as a marker. The provided Message
-     *        must be from this MessageChannel.
-     * @param limit
-     *        The amount of messages to be retrieved around the marker. Minimum: 1, Max: 100.
+     * @param  message
+     *         The {@link net.dv8tion.jda.api.entities.Message Message} that will act as a marker. The provided Message
+     *         must be from this MessageChannel.
+     * @param  limit
+     *         The amount of messages to be retrieved around the marker. Minimum: 1, Max: 100.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -1254,10 +1254,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * @param messageId
-     *        The id of the message that will act as a marker.
-     * @param limit
-     *        The amount of messages to be retrieved after the marker. Minimum: 1, Max: 100.
+     * @param  messageId
+     *         The id of the message that will act as a marker.
+     * @param  limit
+     *         The amount of messages to be retrieved after the marker. Minimum: 1, Max: 100.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -1311,10 +1311,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * @param messageId
-     *        The id of the message that will act as a marker.
-     * @param limit
-     *        The amount of messages to be retrieved after the marker. Minimum: 1, Max: 100.
+     * @param  messageId
+     *         The id of the message that will act as a marker.
+     * @param  limit
+     *         The amount of messages to be retrieved after the marker. Minimum: 1, Max: 100.
      *
      * @throws java.lang.IllegalArgumentException
      *         Provided {@code limit} is less than {@code 1} or greater than {@code 100}.
@@ -1365,10 +1365,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * @param message
-     *        The message that will act as a marker.
-     * @param limit
-     *        The amount of messages to be retrieved after the marker. Minimum: 1, Max: 100.
+     * @param  message
+     *         The message that will act as a marker.
+     * @param  limit
+     *         The amount of messages to be retrieved after the marker. Minimum: 1, Max: 100.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -1423,10 +1423,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * @param messageId
-     *        The id of the message that will act as a marker.
-     * @param limit
-     *        The amount of messages to be retrieved after the marker. Minimum: 1, Max: 100.
+     * @param  messageId
+     *         The id of the message that will act as a marker.
+     * @param  limit
+     *         The amount of messages to be retrieved after the marker. Minimum: 1, Max: 100.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -1480,10 +1480,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * @param messageId
-     *        The id of the message that will act as a marker.
-     * @param limit
-     *        The amount of messages to be retrieved after the marker. Minimum: 1, Max: 100.
+     * @param  messageId
+     *         The id of the message that will act as a marker.
+     * @param  limit
+     *         The amount of messages to be retrieved after the marker. Minimum: 1, Max: 100.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -1537,10 +1537,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * @param message
-     *        The message that will act as a marker.
-     * @param limit
-     *        The amount of messages to be retrieved after the marker. Minimum: 1, Max: 100.
+     * @param  message
+     *         The message that will act as a marker.
+     * @param  limit
+     *         The amount of messages to be retrieved after the marker. Minimum: 1, Max: 100.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -1603,8 +1603,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * @param limit
-     *        The amount of messages to be retrieved. Minimum: 1, Max: 100.
+     * @param  limit
+     *         The amount of messages to be retrieved. Minimum: 1, Max: 100.
      *
      * @throws java.lang.IllegalArgumentException
      *         Provided {@code limit} is less than {@code 1} or greater than {@code 100}.
