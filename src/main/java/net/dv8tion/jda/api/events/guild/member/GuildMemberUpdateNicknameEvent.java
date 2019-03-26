@@ -33,11 +33,11 @@ public class GuildMemberUpdateNicknameEvent extends GenericGuildMemberEvent impl
 
     private final String oldNick, newNick;
 
-    public GuildMemberUpdateNicknameEvent(JDA api, long responseNumber, Member member, String oldNick, String newNick)
+    public GuildMemberUpdateNicknameEvent(JDA api, long responseNumber, Member member, String oldNick)
     {
         super(api, responseNumber, member);
         this.oldNick = oldNick;
-        this.newNick = newNick;
+        this.newNick = member.getNickname();
     }
 
     /**

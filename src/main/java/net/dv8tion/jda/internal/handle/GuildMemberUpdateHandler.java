@@ -114,7 +114,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
                 getJDA().getEventManager().handle(
                         new GuildMemberUpdateNicknameEvent(
                                 getJDA(), responseNumber,
-                                member, oldNick, newNick));
+                                member, oldNick));
             }
         }
         return null;
