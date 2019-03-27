@@ -59,7 +59,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
@@ -658,55 +657,8 @@ public class GuildImpl implements Guild
         return id;
     }
 
-    /**
-     * Used to move a {@link net.dv8tion.jda.api.entities.Member Member} from one {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}
-     * to another {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
-     * <br>As a note, you cannot move a Member that isn't already in a VoiceChannel. Also they must be in a VoiceChannel
-     * in the same Guild as the one that you are moving them to.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The target Member cannot be moved due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>We were removed from the Guild before finishing the task</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The specified Member was removed from the Guild before finishing the task</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>The specified channel was deleted before finishing the task</li>
-     * </ul>
-     *
-     * @param  member
-     *         The {@link net.dv8tion.jda.api.entities.Member Member} that you are moving.
-     * @param  voiceChannel
-     *         The destination {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} to which the member is being
-     *         moved to.
-     *
-     * @throws IllegalStateException
-     *         If the Member isn't currently in a VoiceChannel in this Guild, or {@link net.dv8tion.jda.api.utils.cache.CacheFlag#VOICE_STATE} is disabled.
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If any of the provided arguments is {@code null}</li>
-     *             <li>If the provided Member isn't part of this {@link net.dv8tion.jda.api.entities.Guild Guild}</li>
-     *             <li>If the provided VoiceChannel isn't part of this {@link net.dv8tion.jda.api.entities.Guild Guild}</li>
-     *         </ul>
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         <ul>
-     *             <li>If this account doesn't have {@link net.dv8tion.jda.api.Permission#VOICE_MOVE_OTHERS}
-     *                 in the VoiceChannel that the Member is currently in.</li>
-     *             <li>If this account <b>AND</b> the Member being moved don't have
-     *                 {@link net.dv8tion.jda.api.Permission#VOICE_CONNECT} for the destination VoiceChannel.</li>
-     *         </ul>
-     *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
-     */
     @Nonnull
     @Override
-    @CheckReturnValue
     public RestAction<Void> moveVoiceMember(@Nonnull Member member, @Nonnull VoiceChannel voiceChannel)
     {
         Checks.notNull(member, "Member");
@@ -735,53 +687,8 @@ public class GuildImpl implements Guild
         return new RestActionImpl<>(getJDA(), route, body);
     }
 
-    /**
-     * Changes a Member's nickname in this guild.
-     * The nickname is visible to all members of this guild.
-     *
-     * <p>To change the nickname for the currently logged in account
-     * only the Permission {@link net.dv8tion.jda.api.Permission#NICKNAME_CHANGE NICKNAME_CHANGE} is required.
-     * <br>To change the nickname of <b>any</b> {@link net.dv8tion.jda.api.entities.Member Member} for this {@link net.dv8tion.jda.api.entities.Guild Guild}
-     * the Permission {@link net.dv8tion.jda.api.Permission#NICKNAME_MANAGE NICKNAME_MANAGE} is required.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The nickname of the target Member is not modifiable due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>We were removed from the Guild before finishing the task</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The specified Member was removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @param  member
-     *         The {@link net.dv8tion.jda.api.entities.Member Member} for which the nickname should be changed.
-     * @param  nickname
-     *         The new nickname of the {@link net.dv8tion.jda.api.entities.Member Member}, provide {@code null} or an
-     *         empty String to reset the nickname
-     *
-     * @throws IllegalArgumentException
-     *         If the specified {@link net.dv8tion.jda.api.entities.Member Member}
-     *         is not from the same {@link net.dv8tion.jda.api.entities.Guild Guild}.
-     *         Or if the provided member is {@code null}
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         <ul>
-     *             <li>If attempting to set nickname for self and the logged in account has neither {@link net.dv8tion.jda.api.Permission#NICKNAME_CHANGE}
-     *                 or {@link net.dv8tion.jda.api.Permission#NICKNAME_MANAGE}</li>
-     *             <li>If attempting to set nickname for another member and the logged in account does not have {@link net.dv8tion.jda.api.Permission#NICKNAME_MANAGE}</li>
-     *         </ul>
-     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If attempting to set nickname for another member and the logged in account cannot manipulate the other user due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     */
     @Nonnull
     @Override
-    @CheckReturnValue
     public AuditableRestAction<Void> setNickname(@Nonnull Member member, String nickname)
     {
         Checks.notNull(member, "Member");
@@ -816,36 +723,8 @@ public class GuildImpl implements Guild
         return new AuditableRestActionImpl<>(getJDA(), route, body);
     }
 
-    /**
-     * This method will prune (kick) all members who were offline for at least <i>days</i> days.
-     * <br>The RestAction returned from this method will return the amount of Members that were pruned.
-     * <br>You can use {@link Guild#retrievePrunableMemberCount(int)} to determine how many Members would be pruned if you were to
-     * call this method.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The prune cannot finished due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>We were removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @param  days
-     *         Minimum number of days since a member has been offline to get affected.
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the account doesn't have {@link net.dv8tion.jda.api.Permission#KICK_MEMBERS KICK_MEMBER} Permission.
-     * @throws IllegalArgumentException
-     *         If the provided days are less than {@code 1}
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction} - Type: Integer
-     *         <br>The amount of Members that were pruned from the Guild.
-     */
     @Nonnull
     @Override
-    @CheckReturnValue
     public AuditableRestAction<Integer> prune(int days)
     {
         checkPermission(Permission.KICK_MEMBERS);
@@ -856,45 +735,8 @@ public class GuildImpl implements Guild
         return new AuditableRestActionImpl<>(getJDA(), route, (response, request) -> response.getObject().getInt("pruned"));
     }
 
-    /**
-     * Kicks a {@link net.dv8tion.jda.api.entities.Member Member} from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
-     *
-     * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User}
-     * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The target Member cannot be kicked due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>We were removed from the Guild before finishing the task</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The specified Member was removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @param  member
-     *         The {@link net.dv8tion.jda.api.entities.Member Member} to kick
-     *         from the from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
-     * @param  reason
-     *         The reason for this action or {@code null} if there is no specified reason
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided member is not a Member of this Guild or is {@code null}
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#KICK_MEMBERS} permission.
-     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the logged in account cannot kick the other member due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         Kicks the provided Member from the current Guild
-     */
     @Nonnull
     @Override
-    @CheckReturnValue
     public AuditableRestAction<Void> kick(@Nonnull Member member, String reason)
     {
         Checks.notNull(member, "member");
@@ -912,53 +754,8 @@ public class GuildImpl implements Guild
         return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
-    /**
-     * Bans a {@link net.dv8tion.jda.api.entities.User User} and deletes messages sent by the user
-     * based on the amount of delDays.
-     * <br>If you wish to ban a user without deleting any messages, provide delDays with a value of 0.
-     * This change will be applied immediately.
-     *
-     * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User's}
-     * {@link net.dv8tion.jda.api.entities.Member Member} object (if the User was in the Guild)
-     * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The target Member cannot be banned due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>We were removed from the Guild before finishing the task</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The specified Member was removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @param  user
-     *         The {@link net.dv8tion.jda.api.entities.User User} to ban.
-     * @param  delDays
-     *         The history of messages, in days, that will be deleted.
-     * @param  reason
-     *         The reason for this action or {@code null} if there is no specified reason
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
-     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the logged in account cannot ban the other user due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
-     * @throws java.lang.IllegalArgumentException
-     *         <ul>
-     *             <li>If the provided amount of days (delDays) is less than 0.</li>
-     *             <li>If the provided amount of days (delDays) is bigger than 7.</li>
-     *             <li>If the provided user is null</li>
-     *         </ul>
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     */
     @Nonnull
     @Override
-    @CheckReturnValue
     public AuditableRestAction<Void> ban(@Nonnull User user, int delDays, String reason)
     {
         Checks.notNull(user, "User");
@@ -982,53 +779,8 @@ public class GuildImpl implements Guild
         return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
-    /**
-     * Bans the a user specified by the userId and deletes messages sent by the user
-     * based on the amount of delDays.
-     * <br>If you wish to ban a user without deleting any messages, provide delDays with a value of 0.
-     * This change will be applied immediately.
-     *
-     * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User's}
-     * {@link net.dv8tion.jda.api.entities.Member Member} object (if the User was in the Guild)
-     * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The target Member cannot be banned due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>We were removed from the Guild before finishing the task</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER UNKNOWN_USER}
-     *     <br>The specified User does not exit</li>
-     * </ul>
-     *
-     * @param  userId
-     *         The id of the {@link net.dv8tion.jda.api.entities.User User} to ban.
-     * @param  delDays
-     *         The history of messages, in days, that will be deleted.
-     * @param  reason
-     *         The reason for this action or {@code null} if there is no specified reason
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
-     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the logged in account cannot ban the other user due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
-     * @throws java.lang.IllegalArgumentException
-     *         <ul>
-     *             <li>If the provided amount of days (delDays) is less than 0.</li>
-     *             <li>If the provided amount of days (delDays) is bigger than 7.</li>
-     *             <li>If the provided userId is null</li>
-     *         </ul>
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     */
     @Nonnull
     @Override
-    @CheckReturnValue
     public AuditableRestAction<Void> ban(@Nonnull String userId, int delDays, String reason)
     {
         Checks.notNull(userId, "User");
@@ -1051,35 +803,8 @@ public class GuildImpl implements Guild
         return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
-    /**
-     * Unbans the a user specified by the userId from this Guild.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The target Member cannot be unbanned due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>We were removed from the Guild before finishing the task</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER UNKNOWN_USER}
-     *     <br>The specified User does not exist</li>
-     * </ul>
-     *
-     * @param  userId
-     *         The id of the {@link net.dv8tion.jda.api.entities.User User} to unban.
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
-     * @throws IllegalArgumentException
-     *         If the provided id is null or blank
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     */
     @Nonnull
     @Override
-    @CheckReturnValue
     public AuditableRestAction<Void> unban(@Nonnull String userId)
     {
         Checks.isSnowflake(userId, "User ID");
@@ -1089,43 +814,8 @@ public class GuildImpl implements Guild
         return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
-    /**
-     * Sets the Guild Deafened state state of the {@link net.dv8tion.jda.api.entities.Member Member} based on the provided
-     * boolean.
-     *
-     * <p><b>Note:</b> The Member's {@link net.dv8tion.jda.api.entities.GuildVoiceState#isGuildDeafened() GuildVoiceState.isGuildDeafened()} value won't change
-     * until JDA receives the {@link net.dv8tion.jda.api.events.guild.voice.GuildVoiceGuildDeafenEvent GuildVoiceGuildDeafenEvent} event related to this change.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The target Member cannot be deafened due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>We were removed from the Guild before finishing the task</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The specified Member was removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @param  member
-     *         The {@link net.dv8tion.jda.api.entities.Member Member} who's {@link GuildVoiceState VoiceState} is being changed.
-     * @param  deafen
-     *         Whether this {@link net.dv8tion.jda.api.entities.Member Member} should be deafened or undeafened.
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#VOICE_DEAF_OTHERS} permission.
-     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the provided member is the Guild's owner. You cannot modify the owner of a Guild.
-     * @throws IllegalArgumentException
-     *         If the provided member is not from this Guild or null.
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     */
     @Nonnull
     @Override
-    @CheckReturnValue
     public AuditableRestAction<Void> setDeafen(@Nonnull Member member, boolean deafen)
     {
         Checks.notNull(member, "Member");
@@ -1146,43 +836,8 @@ public class GuildImpl implements Guild
         return new AuditableRestActionImpl<>(getJDA(), route, body);
     }
 
-    /**
-     * Sets the Guild Muted state state of the {@link net.dv8tion.jda.api.entities.Member Member} based on the provided
-     * boolean.
-     *
-     * <p><b>Note:</b> The Member's {@link net.dv8tion.jda.api.entities.GuildVoiceState#isGuildMuted() GuildVoiceState.isGuildMuted()} value won't change
-     * until JDA receives the {@link net.dv8tion.jda.api.events.guild.voice.GuildVoiceGuildMuteEvent GuildVoiceGuildMuteEvent} event related to this change.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The target Member cannot be muted due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>We were removed from the Guild before finishing the task</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The specified Member was removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @param  member
-     *         The {@link net.dv8tion.jda.api.entities.Member Member} who's {@link GuildVoiceState VoiceState} is being changed.
-     * @param  mute
-     *         Whether this {@link net.dv8tion.jda.api.entities.Member Member} should be muted or unmuted.
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#VOICE_DEAF_OTHERS} permission.
-     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the provided member is the Guild's owner. You cannot modify the owner of a Guild.
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided member is not from this Guild or null.
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     */
     @Nonnull
     @Override
-    @CheckReturnValue
     public AuditableRestAction<Void> setMute(@Nonnull Member member, boolean mute)
     {
         Checks.notNull(member, "Member");
@@ -1203,52 +858,8 @@ public class GuildImpl implements Guild
         return new AuditableRestActionImpl<>(getJDA(), route, body);
     }
 
-    /**
-     * Atomically assigns the provided {@link net.dv8tion.jda.api.entities.Role Role} to the specified {@link net.dv8tion.jda.api.entities.Member Member}.
-     * <br><b>This can be used together with other role modification methods as it does not require an updated cache!</b>
-     *
-     * <p>If multiple roles should be added/removed (efficiently) in one request
-     * you may use {@link #modifyMemberRoles(Member, Collection, Collection) modifyMemberRoles(Member, Collection, Collection)} or similar methods.
-     *
-     * <p>If the specified role is already present in the member's set of roles this does nothing.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The Members Roles could not be modified due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>We were removed from the Guild before finishing the task</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The target Member was removed from the Guild before finishing the task</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_ROLE UNKNOWN_ROLE}
-     *     <br>If the specified Role does not exist</li>
-     * </ul>
-     *
-     * @param  member
-     *         The target member who will receive the new role
-     * @param  role
-     *         The role which should be assigned atomically
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         <ul>
-     *             <li>If the specified member/role are not from the current Guild</li>
-     *             <li>Either member or role are {@code null}</li>
-     *         </ul>
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
-     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the provided roles are higher in the Guild's hierarchy
-     *         and thus cannot be modified by the currently logged in account
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     */
     @Nonnull
     @Override
-    @CheckReturnValue
     public AuditableRestAction<Void> addSingleRoleToMember(@Nonnull Member member, @Nonnull Role role)
     {
         Checks.notNull(member, "Member");
@@ -1262,52 +873,8 @@ public class GuildImpl implements Guild
         return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
-    /**
-     * Atomically removes the provided {@link net.dv8tion.jda.api.entities.Role Role} from the specified {@link net.dv8tion.jda.api.entities.Member Member}.
-     * <br><b>This can be used together with other role modification methods as it does not require an updated cache!</b>
-     *
-     * <p>If multiple roles should be added/removed (efficiently) in one request
-     * you may use {@link #modifyMemberRoles(Member, Collection, Collection) modifyMemberRoles(Member, Collection, Collection)} or similar methods.
-     *
-     * <p>If the specified role is not present in the member's set of roles this does nothing.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The Members Roles could not be modified due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>We were removed from the Guild before finishing the task</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The target Member was removed from the Guild before finishing the task</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_ROLE UNKNOWN_ROLE}
-     *     <br>If the specified Role does not exist</li>
-     * </ul>
-     *
-     * @param  member
-     *         The target member who will lose the specified role
-     * @param  role
-     *         The role which should be removed atomically
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         <ul>
-     *             <li>If the specified member/role are not from the current Guild</li>
-     *             <li>Either member or role are {@code null}</li>
-     *         </ul>
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
-     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the provided roles are higher in the Guild's hierarchy
-     *         and thus cannot be modified by the currently logged in account
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     */
     @Nonnull
     @Override
-    @CheckReturnValue
     public AuditableRestAction<Void> removeSingleRoleFromMember(@Nonnull Member member, @Nonnull Role role)
     {
         Checks.notNull(member, "Member");
@@ -1321,59 +888,8 @@ public class GuildImpl implements Guild
         return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
-    /**
-     * Modifies the {@link net.dv8tion.jda.api.entities.Role Roles} of the specified {@link net.dv8tion.jda.api.entities.Member Member}
-     * by adding and removing a collection of roles.
-     * <br>None of the provided roles may be the <u>Public Role</u> of the current Guild.
-     * <br>If a role is both in {@code rolesToAdd} and {@code rolesToRemove} it will be removed.
-     *
-     * <p>None of the provided collections may be null
-     * <br>To only add or remove roles use either {@link #removeRolesFromMember(Member, Collection)} or {@link #addRolesToMember(Member, Collection)}
-     *
-     * <h1>Warning</h1>
-     * <b>This may <u>not</u> be used together with any other role add/remove/modify methods for the same Member
-     * within one event listener cycle! The changes made by this require cache updates which are triggered by
-     * lifecycle events which are received later. This may only be called again once the specific Member has been updated
-     * by a {@link net.dv8tion.jda.api.events.guild.member.GenericGuildMemberEvent GenericGuildMemberEvent} targeting the same Member.</b>
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The Members Roles could not be modified due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>We were removed from the Guild before finishing the task</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The target Member was removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @param  member
-     *         The {@link net.dv8tion.jda.api.entities.Member Member} that should be modified
-     * @param  rolesToAdd
-     *         A {@link java.util.Collection Collection} of {@link net.dv8tion.jda.api.entities.Role Roles}
-     *         to add to the current Roles the specified {@link net.dv8tion.jda.api.entities.Member Member} already has
-     * @param  rolesToRemove
-     *         A {@link java.util.Collection Collection} of {@link net.dv8tion.jda.api.entities.Role Roles}
-     *         to remove from the current Roles the specified {@link net.dv8tion.jda.api.entities.Member Member} already has
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
-     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the provided roles are higher in the Guild's hierarchy
-     *         and thus cannot be modified by the currently logged in account
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If any of the provided arguments is {@code null}</li>
-     *             <li>If any of the specified Roles is managed or is the {@code Public Role} of the Guild</li>
-     *         </ul>
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     */
     @Nonnull
     @Override
-    @CheckReturnValue
     public AuditableRestAction<Void> modifyMemberRoles(@Nonnull Member member, @Nonnull Collection<Role> rolesToAdd, @Nonnull Collection<Role> rolesToRemove)
     {
         Checks.notNull(member, "Member");
@@ -1416,56 +932,8 @@ public class GuildImpl implements Guild
         return new AuditableRestActionImpl<>(getJDA(), route, body);
     }
 
-    /**
-     * Modifies the complete {@link net.dv8tion.jda.api.entities.Role Role} set of the specified {@link net.dv8tion.jda.api.entities.Member Member}
-     * <br>The provided roles will replace all current Roles of the specified Member.
-     *
-     * <p><u>The new roles <b>must not</b> contain the Public Role of the Guild</u>
-     *
-     * <h1>Warning</h1>
-     * <b>This may <u>not</u> be used together with any other role add/remove/modify methods for the same Member
-     * within one event listener cycle! The changes made by this require cache updates which are triggered by
-     * lifecycle events which are received later. This may only be called again once the specific Member has been updated
-     * by a {@link net.dv8tion.jda.api.events.guild.member.GenericGuildMemberEvent GenericGuildMemberEvent} targeting the same Member.</b>
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The Members Roles could not be modified due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>We were removed from the Guild before finishing the task</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The target Member was removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @param  member
-     *         A {@link net.dv8tion.jda.api.entities.Member Member} of which to override the Roles of
-     * @param  roles
-     *         New collection of {@link net.dv8tion.jda.api.entities.Role Roles} for the specified Member
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
-     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the provided roles are higher in the Guild's hierarchy
-     *         and thus cannot be modified by the currently logged in account
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If any of the provided arguments is {@code null}</li>
-     *             <li>If any of the provided arguments is not from this Guild</li>
-     *             <li>If any of the specified {@link net.dv8tion.jda.api.entities.Role Roles} is managed</li>
-     *             <li>If any of the specified {@link net.dv8tion.jda.api.entities.Role Roles} is the {@code Public Role} of this Guild</li>
-     *         </ul>
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     *
-     * @see    #modifyMemberRoles(Member, Collection)
-     */
     @Nonnull
     @Override
-    @CheckReturnValue
     public AuditableRestAction<Void> modifyMemberRoles(@Nonnull Member member, @Nonnull Collection<Role> roles)
     {
         Checks.notNull(member, "Member");
@@ -1511,40 +979,8 @@ public class GuildImpl implements Guild
         return new AuditableRestActionImpl<>(getJDA(), route, body);
     }
 
-    /**
-     * Transfers the Guild ownership to the specified {@link net.dv8tion.jda.api.entities.Member Member}
-     * <br>Only available if the currently logged in account is the owner of this Guild
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The currently logged in account lost ownership before completing the task</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>We were removed from the Guild before finishing the task</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The target Member was removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @param  newOwner
-     *         Not-null Member to transfer ownership to
-     *
-     * @throws net.dv8tion.jda.api.exceptions.PermissionException
-     *         If the currently logged in account is not the owner of this Guild
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If the specified Member is {@code null} or not from the same Guild</li>
-     *             <li>If the specified Member already is the Guild owner</li>
-     *             <li>If the specified Member is a bot account ({@link net.dv8tion.jda.api.AccountType#BOT AccountType.BOT})</li>
-     *         </ul>
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     */
     @Nonnull
     @Override
-    @CheckReturnValue
     public AuditableRestAction<Void> transferOwnership(@Nonnull Member newOwner)
     {
         Checks.notNull(newOwner, "Member");
@@ -1562,34 +998,8 @@ public class GuildImpl implements Guild
         return new AuditableRestActionImpl<>(getJDA(), route, body);
     }
 
-    /**
-     * Creates a new {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} in this Guild.
-     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The channel could not be created due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>We were removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @param  name
-     *         The name of the TextChannel to create
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
-     * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or empty or greater than 100 characters in length
-     *
-     * @return A specific {@link net.dv8tion.jda.api.requests.restaction.ChannelAction ChannelAction}
-     *         <br>This action allows to set fields for the new TextChannel before creating it
-     */
     @Nonnull
     @Override
-    @CheckReturnValue
     public ChannelAction<TextChannel> createTextChannel(@Nonnull String name)
     {
         checkPermission(Permission.MANAGE_CHANNEL);
@@ -1600,34 +1010,8 @@ public class GuildImpl implements Guild
         return new ChannelActionImpl<>(TextChannel.class, name, this, ChannelType.TEXT);
     }
 
-    /**
-     * Creates a new {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} in this Guild.
-     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The channel could not be created due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>We were removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @param  name
-     *         The name of the VoiceChannel to create
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
-     * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or empty or greater than 100 characters in length
-     *
-     * @return A specific {@link ChannelAction ChannelAction}
-     *         <br>This action allows to set fields for the new VoiceChannel before creating it
-     */
     @Nonnull
     @Override
-    @CheckReturnValue
     public ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name)
     {
         checkPermission(Permission.MANAGE_CHANNEL);
@@ -1638,34 +1022,8 @@ public class GuildImpl implements Guild
         return new ChannelActionImpl<>(VoiceChannel.class, name, this, ChannelType.VOICE);
     }
 
-    /**
-     * Creates a new {@link net.dv8tion.jda.api.entities.Category Category} in this Guild.
-     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The channel could not be created due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>We were removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @param  name
-     *         The name of the Category to create
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
-     * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or empty or greater than 100 characters in length
-     *
-     * @return A specific {@link ChannelAction ChannelAction}
-     *         <br>This action allows to set fields for the new Category before creating it
-     */
     @Nonnull
     @Override
-    @CheckReturnValue
     public ChannelAction<Category> createCategory(@Nonnull String name)
     {
         checkPermission(Permission.MANAGE_CHANNEL);
@@ -1676,77 +1034,16 @@ public class GuildImpl implements Guild
         return new ChannelActionImpl<>(Category.class, name, this, ChannelType.CATEGORY);
     }
 
-    /**
-     * Creates a new {@link net.dv8tion.jda.api.entities.Role Role} in this Guild.
-     * <br>It will be placed at the bottom (just over the Public Role) to avoid permission hierarchy conflicts.
-     * <br>For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES MANAGE_ROLES} Permission
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The role could not be created due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>We were removed from the Guild before finishing the task</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_ROLES_PER_GUILD MAX_ROLES_PER_GUILD}
-     *     <br>There are too many roles in this Guild</li>
-     * </ul>
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES} Permission
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.RoleAction RoleAction}
-     *         <br>Creates a new role with previously selected field values
-     */
     @Nonnull
     @Override
-    @CheckReturnValue
     public RoleAction createRole()
     {
         checkPermission(Permission.MANAGE_ROLES);
         return new RoleActionImpl(this);
     }
 
-    /**
-     * Creates a new {@link net.dv8tion.jda.api.entities.Emote Emote} in this Guild.
-     * <br>If one or more Roles are specified the new Emote will only be available to Members with any of the specified Roles (see {@link Member#canInteract(Emote)})
-     * <br>For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES MANAGE_EMOTES} Permission.
-     *
-     * <p><b><u>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</u></b>
-     *
-     * <p>Note that a guild is limited to 50 normal and 50 animated emotes by default.
-     * Some guilds are able to add additional emotes beyond this limitation due to the
-     * {@code MORE_EMOJI} feature (see {@link net.dv8tion.jda.api.entities.Guild#getFeatures() Guild.getFeatures()}).
-     * <br>Due to simplicity we do not check for these limits.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The emote could not be created due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>We were removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @param  name
-     *         The name for the new Emote
-     * @param  icon
-     *         The {@link net.dv8tion.jda.api.entities.Icon} for the new Emote
-     * @param  roles
-     *         The {@link net.dv8tion.jda.api.entities.Role Roles} the new Emote should be restricted to
-     *         <br>If no roles are provided the Emote will be available to all Members of this Guild
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES MANAGE_EMOTES} Permission
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction} - Type: {@link net.dv8tion.jda.api.entities.Emote Emote}
-     */
     @Nonnull
     @Override
-    @CheckReturnValue
     public AuditableRestAction<Emote> createEmote(@Nonnull String name, @Nonnull Icon icon, @Nonnull Role... roles)
     {
         checkPermission(Permission.MANAGE_EMOTES);
@@ -1769,113 +1066,29 @@ public class GuildImpl implements Guild
         });
     }
 
-    /**
-     * Modifies the positional order of {@link net.dv8tion.jda.api.entities.Guild#getCategories() Guild.getCategories()}
-     * using a specific {@link net.dv8tion.jda.api.requests.RestAction RestAction} extension to allow moving Channels
-     * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveDown(int) down}
-     * or {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
-     * <br>This uses <b>ascending</b> order with a 0 based index.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNNKOWN_CHANNEL}
-     *     <br>One of the channels has been deleted before the completion of the task</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The currently logged in account was removed from the Guild</li>
-     * </ul>
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction ChannelOrderAction} - Type: {@link net.dv8tion.jda.api.entities.Category Category}
-     */
     @Nonnull
     @Override
-    @CheckReturnValue
     public ChannelOrderAction<Category> modifyCategoryPositions()
     {
         return new ChannelOrderActionImpl<>(this, ChannelType.CATEGORY);
     }
 
-    /**
-     * Modifies the positional order of {@link net.dv8tion.jda.api.entities.Guild#getTextChannels() Guild.getTextChannels()}
-     * using a specific {@link net.dv8tion.jda.api.requests.RestAction RestAction} extension to allow moving Channels
-     * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveDown(int) down}
-     * or {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
-     * <br>This uses <b>ascending</b> order with a 0 based index.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNNKOWN_CHANNEL}
-     *     <br>One of the channels has been deleted before the completion of the task</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The currently logged in account was removed from the Guild</li>
-     * </ul>
-     *
-     * @return {@link ChannelOrderAction ChannelOrderAction} - Type: {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
-     */
     @Nonnull
     @Override
-    @CheckReturnValue
     public ChannelOrderAction<TextChannel> modifyTextChannelPositions()
     {
         return new ChannelOrderActionImpl<>(this, ChannelType.TEXT);
     }
 
-    /**
-     * Modifies the positional order of {@link net.dv8tion.jda.api.entities.Guild#getVoiceChannels() Guild.getVoiceChannels()}
-     * using a specific {@link net.dv8tion.jda.api.requests.RestAction RestAction} extension to allow moving Channels
-     * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveDown(int) down}
-     * or {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
-     * <br>This uses <b>ascending</b> order with a 0 based index.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNNKOWN_CHANNEL}
-     *     <br>One of the channels has been deleted before the completion of the task</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The currently logged in account was removed from the Guild</li>
-     * </ul>
-     *
-     * @return {@link ChannelOrderAction ChannelOrderAction} - Type: {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}
-     */
     @Nonnull
     @Override
-    @CheckReturnValue
     public ChannelOrderAction<VoiceChannel> modifyVoiceChannelPositions()
     {
         return new ChannelOrderActionImpl<>(this, ChannelType.VOICE);
     }
 
-    /**
-     * Modifies the positional order of {@link net.dv8tion.jda.api.entities.Category#getTextChannels() Category#getTextChannels()}
-     * using an extension of {@link ChannelOrderAction ChannelOrderAction}
-     * specialized for ordering the nested {@link net.dv8tion.jda.api.entities.TextChannel TextChannels} of this
-     * {@link net.dv8tion.jda.api.entities.Category Category}.
-     * <br>Like {@code ChannelOrderAction}, the returned {@link net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction CategoryOrderAction}
-     * can be used to move TextChannels {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveUp(int) up},
-     * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveDown(int) down}, or
-     * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
-     * <br>This uses <b>ascending</b> order with a 0 based index.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNNKOWN_CHANNEL}
-     *     <br>One of the channels has been deleted before the completion of the task.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The currently logged in account was removed from the Guild.</li>
-     * </ul>
-     *
-     * @param  category
-     *         The {@link net.dv8tion.jda.api.entities.Category Category} to order
-     *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannels} from.
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction CategoryOrderAction} - Type: {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
-     */
     @Nonnull
     @Override
-    @CheckReturnValue
     public CategoryOrderAction<TextChannel> modifyTextChannelPositions(@Nonnull Category category)
     {
         Checks.notNull(category, "Category");
@@ -1883,35 +1096,8 @@ public class GuildImpl implements Guild
         return new CategoryOrderActionImpl<>(category, ChannelType.TEXT);
     }
 
-    /**
-     * Modifies the positional order of {@link net.dv8tion.jda.api.entities.Category#getVoiceChannels() Category#getVoiceChannels()}
-     * using an extension of {@link ChannelOrderAction ChannelOrderAction}
-     * specialized for ordering the nested {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} of this
-     * {@link net.dv8tion.jda.api.entities.Category Category}.
-     * <br>Like {@code ChannelOrderAction}, the returned {@link CategoryOrderAction CategoryOrderAction}
-     * can be used to move VoiceChannels {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveUp(int) up},
-     * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveDown(int) down}, or
-     * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
-     * <br>This uses <b>ascending</b> order with a 0 based index.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNNKOWN_CHANNEL}
-     *     <br>One of the channels has been deleted before the completion of the task.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The currently logged in account was removed from the Guild.</li>
-     * </ul>
-     *
-     * @param  category
-     *         The {@link net.dv8tion.jda.api.entities.Category Category} to order
-     *         {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} from.
-     *
-     * @return {@link CategoryOrderAction CategoryOrderAction} - Type: {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}
-     */
     @Nonnull
     @Override
-    @CheckReturnValue
     public CategoryOrderAction<VoiceChannel> modifyVoiceChannelPositions(@Nonnull Category category)
     {
         Checks.notNull(category, "Category");
@@ -1919,34 +1105,8 @@ public class GuildImpl implements Guild
         return new CategoryOrderActionImpl<>(category, ChannelType.VOICE);
     }
 
-    /**
-     * Modifies the positional order of {@link net.dv8tion.jda.api.entities.Guild#getRoles() Guild.getRoles()}
-     * using a specific {@link net.dv8tion.jda.api.requests.RestAction RestAction} extension to allow moving Roles
-     * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveDown(int) down}
-     * or {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_ROLE UNKNOWN_ROLE}
-     *     <br>One of the roles was deleted before the completion of the task</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The currently logged in account was removed from the Guild</li>
-     * </ul>
-     *
-     * @param  useAscendingOrder
-     *         Defines the ordering of the OrderAction. If {@code false}, the OrderAction will be in the ordering
-     *         defined by Discord for roles, which is Descending. This means that the highest role appears at index {@code 0}
-     *         and the lowest role at index {@code n - 1}. Providing {@code true} will result in the ordering being
-     *         in ascending order, with the lower role at index {@code 0} and the highest at index {@code n - 1}.
-     *         <br>As a note: {@link net.dv8tion.jda.api.entities.Member#getRoles() Member.getRoles()}
-     *         and {@link net.dv8tion.jda.api.entities.Guild#getRoles() Guild.getRoles()} are both in descending order.
-     *
-     * @return {@link RoleOrderAction RoleOrderAction}
-     */
     @Nonnull
     @Override
-    @CheckReturnValue
     public RoleOrderAction modifyRolePositions(boolean useAscendingOrder)
     {
         return new RoleOrderActionImpl(this, useAscendingOrder);
