@@ -782,7 +782,7 @@ public class GuildImpl implements Guild
     @Nonnull
     @Override
     @CheckReturnValue
-    public AuditableRestAction<Void> modifyNickname(@Nonnull Member member, String nickname)
+    public AuditableRestAction<Void> setNickname(@Nonnull Member member, String nickname)
     {
         Checks.notNull(member, "Member");
         checkGuild(member.getGuild(), "Member");
