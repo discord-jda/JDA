@@ -39,10 +39,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Represents a Discord {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -1747,7 +1744,13 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> kick(@Nonnull String userId, @Nullable String reason);
+    default AuditableRestAction<Void> kick(@Nonnull String userId, @Nullable String reason)
+    {
+        Member member = getMemberById(userId);
+        Checks.check(member != null, "The provided userId does not correspond to a member in this guild! Provided userId: %s");
+
+        return kick(member, reason);
+    }
 
     /**
      * Kicks a {@link net.dv8tion.jda.api.entities.Member Member} from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -1784,7 +1787,10 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> kick(@Nonnull Member member);
+    default AuditableRestAction<Void> kick(@Nonnull Member member)
+    {
+        return kick(member, null);
+    }
 
     /**
      * Kicks the {@link net.dv8tion.jda.api.entities.Member Member} specified by the userId from the from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -1820,56 +1826,10 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> kick(@Nonnull String userId);
-
-    /**
-     * Bans a {@link net.dv8tion.jda.api.entities.Member Member} and deletes messages sent by the user
-     * based on the amount of delDays.
-     * <br>If you wish to ban a member without deleting any messages, provide delDays with a value of 0.
-     * This change will be applied immediately.
-     *
-     * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the
-     * {@link net.dv8tion.jda.api.entities.Member Member} until Discord sends the
-     * {@link net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The target Member cannot be banned due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>We were removed from the Guild before finishing the task</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The specified Member was removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @param  member
-     *         The {@link net.dv8tion.jda.api.entities.Member Member} to ban.
-     * @param  delDays
-     *         The history of messages, in days, that will be deleted.
-     * @param  reason
-     *         The reason for this action or {@code null} if there is no specified reason
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
-     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the logged in account cannot ban the other user due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
-     * @throws java.lang.IllegalArgumentException
-     *         <ul>
-     *             <li>If the provided amount of days (delDays) is less than 0.</li>
-     *             <li>If the provided amount of days (delDays) is bigger than 7.</li>
-     *             <li>If the provided member is {@code null}</li>
-     *         </ul>
-     *
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    AuditableRestAction<Void> ban(@Nonnull Member member, int delDays, @Nullable String reason);
+    default AuditableRestAction<Void> kick(@Nonnull String userId)
+    {
+        return kick(userId, null);
+    }
 
     /**
      * Bans a {@link net.dv8tion.jda.api.entities.User User} and deletes messages sent by the user
@@ -1994,6 +1954,61 @@ public interface Guild extends ISnowflake
      *         The {@link net.dv8tion.jda.api.entities.Member Member} to ban.
      * @param  delDays
      *         The history of messages, in days, that will be deleted.
+     * @param  reason
+     *         The reason for this action or {@code null} if there is no specified reason
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the logged in account cannot ban the other user due to permission hierarchy position.
+     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided amount of days (delDays) is less than 0.</li>
+     *             <li>If the provided amount of days (delDays) is bigger than 7.</li>
+     *             <li>If the provided member is {@code null}</li>
+     *         </ul>
+     *
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default AuditableRestAction<Void> ban(@Nonnull Member member, int delDays, @Nullable String reason)
+    {
+        Checks.notNull(member, "Member");
+        //Don't check if the provided member is from this guild. It doesn't matter if they are or aren't.
+
+        return ban(member.getUser(), delDays, reason);
+    }
+
+    /**
+     * Bans a {@link net.dv8tion.jda.api.entities.Member Member} and deletes messages sent by the user
+     * based on the amount of delDays.
+     * <br>If you wish to ban a member without deleting any messages, provide delDays with a value of 0.
+     * This change will be applied immediately.
+     *
+     * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the
+     * {@link net.dv8tion.jda.api.entities.Member Member} until Discord sends the
+     * {@link net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The target Member cannot be banned due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>We were removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The specified Member was removed from the Guild before finishing the task</li>
+     * </ul>
+     *
+     * @param  member
+     *         The {@link net.dv8tion.jda.api.entities.Member Member} to ban.
+     * @param  delDays
+     *         The history of messages, in days, that will be deleted.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
@@ -2011,7 +2026,10 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> ban(@Nonnull Member member, int delDays);
+    default AuditableRestAction<Void> ban(@Nonnull Member member, int delDays)
+    {
+        return ban(member, delDays, null);
+    }
 
     /**
      * Bans a {@link net.dv8tion.jda.api.entities.Member Member} and deletes messages sent by the user
@@ -2057,7 +2075,10 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> ban(@Nonnull User user, int delDays);
+    default AuditableRestAction<Void> ban(@Nonnull User user, int delDays)
+    {
+        return ban(user, delDays, null);
+    }
 
     /**
      * Bans the a user specified by the userId and deletes messages sent by the user
@@ -2103,7 +2124,10 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> ban(@Nonnull String userId, int delDays);
+    default AuditableRestAction<Void> ban(@Nonnull String userId, int delDays)
+    {
+        return ban(userId, delDays, null);
+    }
 
     /**
      * Unbans the specified {@link net.dv8tion.jda.api.entities.User User} from this Guild.
@@ -2133,7 +2157,12 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> unban(@Nonnull User user);
+    default AuditableRestAction<Void> unban(@Nonnull User user)
+    {
+        Checks.notNull(user, "User");
+
+        return unban(user.getId());
+    }
 
     /**
      * Unbans the a user specified by the userId from this Guild.
@@ -2385,7 +2414,10 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> addRolesToMember(@Nonnull Member member, @Nonnull Role... roles);
+    default AuditableRestAction<Void> addRolesToMember(@Nonnull Member member, @Nonnull Role... roles)
+    {
+        return modifyMemberRoles(member, Arrays.asList(roles), Collections.emptyList());
+    }
 
     /**
      * Adds all provided {@link net.dv8tion.jda.api.entities.Role Roles}
@@ -2437,7 +2469,10 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> addRolesToMember(@Nonnull Member member, @Nonnull Collection<Role> roles);
+    default AuditableRestAction<Void> addRolesToMember(@Nonnull Member member, @Nonnull Collection<Role> roles)
+    {
+        return modifyMemberRoles(member, roles, Collections.emptyList());
+    }
 
     /**
      * Removes all provided {@link net.dv8tion.jda.api.entities.Role Roles}
@@ -2489,7 +2524,10 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> removeRolesFromMember(@Nonnull Member member, @Nonnull Role... roles);
+    default AuditableRestAction<Void> removeRolesFromMember(@Nonnull Member member, @Nonnull Role... roles)
+    {
+        return modifyMemberRoles(member, Collections.emptyList(), Arrays.asList(roles));
+    }
 
     /**
      * Removes all provided {@link net.dv8tion.jda.api.entities.Role Roles}
@@ -2541,7 +2579,10 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> removeRolesFromMember(@Nonnull Member member, @Nonnull Collection<Role> roles);
+    default AuditableRestAction<Void> removeRolesFromMember(@Nonnull Member member, @Nonnull Collection<Role> roles)
+    {
+        return modifyMemberRoles(member, Collections.emptyList(), roles);
+    }
 
     /**
      * Modifies the {@link net.dv8tion.jda.api.entities.Role Roles} of the specified {@link net.dv8tion.jda.api.entities.Member Member}
@@ -2646,7 +2687,10 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> modifyMemberRoles(@Nonnull Member member, @Nonnull Role... roles);
+    default AuditableRestAction<Void> modifyMemberRoles(@Nonnull Member member, @Nonnull Role... roles)
+    {
+        return modifyMemberRoles(member, Arrays.asList(roles));
+    }
 
     /**
      * Modifies the complete {@link net.dv8tion.jda.api.entities.Role Role} set of the specified {@link net.dv8tion.jda.api.entities.Member Member}
@@ -2866,7 +2910,11 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    <T extends GuildChannel> ChannelAction<T> createCopyOfChannel(@Nonnull T channel);
+    default <T extends GuildChannel> ChannelAction<T> createCopyOfChannel(@Nonnull T channel)
+    {
+        Checks.notNull(channel, "Channel");
+        return (ChannelAction<T>) channel.createCopy(this);
+    }
 
     /**
      * Creates a new {@link net.dv8tion.jda.api.entities.Role Role} in this Guild.
@@ -2931,7 +2979,11 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    RoleAction createCopyOfRole(@Nonnull Role role);
+    default RoleAction createCopyOfRole(@Nonnull Role role)
+    {
+        Checks.notNull(role, "Role");
+        return role.createCopy(this);
+    }
 
     /**
      * Creates a new {@link net.dv8tion.jda.api.entities.Emote Emote} in this Guild.
@@ -3124,7 +3176,10 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    RoleOrderAction modifyRolePositions();
+    default RoleOrderAction modifyRolePositions()
+    {
+        return modifyRolePositions(true);
+    }
 
     /**
      * Modifies the positional order of {@link net.dv8tion.jda.api.entities.Guild#getRoles() Guild.getRoles()}
