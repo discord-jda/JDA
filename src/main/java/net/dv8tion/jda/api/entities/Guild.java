@@ -1634,7 +1634,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> setNickname(@Nonnull Member member, @Nullable String nickname);
+    AuditableRestAction<Void> modifyNickname(@Nonnull Member member, @Nullable String nickname);
 
     /**
      * This method will prune (kick) all members who were offline for at least <i>days</i> days.
