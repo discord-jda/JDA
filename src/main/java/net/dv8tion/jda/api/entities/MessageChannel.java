@@ -35,7 +35,9 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
 import org.json.JSONArray;
 
+import javax.annotation.Nonnull;
 import javax.annotation.CheckReturnValue;
+
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -1567,10 +1569,10 @@ public interface MessageChannel extends ISnowflake, Formattable
     }
     
     /**
-     * Retrieves messages from the beginning of this MessageChannel.
+     * Retrieves messages from the beginning of this {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
      * The {@code limit} determines the amount of messages being retrieved.
      * 
-     * <p><b>Example:</b>
+     * <h2>Example</h2>
      * <pre><code>
      * public void resendFirstMessage(MessageChannel channel)
      * {
@@ -1616,15 +1618,17 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
-     *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages - beginning from the start - loaded into it.
+     *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with with the first messages of this channel loaded into it.
+     *         <br><b>Note: The messages are ordered from the most recent to oldest!</b>
      *
-     * @see    net.dv8tion.jda.api.entities.MessageChannel#getHistoryAfter(long, String) MessageChannel.getHistoryAfter(long, String)
+     * @see    net.dv8tion.jda.api.entities.MessageHistory#retrieveFuture(int)                     MessageHistory.retrieveFuture(int)
      * @see    net.dv8tion.jda.api.entities.MessageHistory#getHistoryAfter(MessageChannel, String) MessageHistory.getHistoryAfter(MessageChannel, String)
      */
+    @Nonnull
     @CheckReturnValue
     default MessageHistory.MessageRetrieveAction getHistoryFromBeginning(int limit)
     {
-        return getHistoryAfter(0L, limit);
+        return MessageHistory.getHistoryFromBeginning(this).limit(limit);
     }
     
     /**

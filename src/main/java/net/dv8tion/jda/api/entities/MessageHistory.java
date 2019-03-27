@@ -447,6 +447,36 @@ public class MessageHistory
         return new MessageRetrieveAction(route, channel);
     }
 
+    /**
+     * Constructs a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} with the initially retrieved history
+     * of messages sent.
+     *
+     * <p>Alternatively you can use {@link net.dv8tion.jda.api.entities.MessageChannel#getHistoryFromBeginning(int) MessageChannel.getHistoryFromBeginning(...)}
+     *
+     * <h2>Example</h2>
+     * <br>{@code MessageHistory history = MessageHistory.getHistoryFromBeginning(channel).limit(60).complete()}
+     * <br>Will return a MessageHistory instance with the first 60 messages of the given {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
+
+     *
+     * @param  channel
+     *         The {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If any of the provided arguments is {@code null};
+     *         Or if the provided messageId contains whitespace
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If this is a TextChannel and the currently logged in account does not
+     *         have the permission {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
+     *
+     * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageRetrieveAction}
+     *
+     * @see    net.dv8tion.jda.api.entities.MessageChannel#getHistoryFromBeginning(int)  MessageChannel.getHistoryFromBeginning(int)
+     */
+    public static MessageRetrieveAction getHistoryFromBeginning(MessageChannel channel)
+    {
+        return getHistoryAfter(channel, "0L");
+    }
+
     private static void checkArguments(MessageChannel channel, String messageId)
     {
         Checks.isSnowflake(messageId, "Message ID");
