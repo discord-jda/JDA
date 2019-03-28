@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that the owner of a {@link net.dv8tion.jda.api.entities.Guild Guild} changed.
  *
@@ -31,7 +33,7 @@ public class GuildUpdateOwnerEvent extends GenericGuildUpdateEvent<Member>
 {
     public static final String IDENTIFIER = "owner";
 
-    public GuildUpdateOwnerEvent(JDA api, long responseNumber, Guild guild, Member oldOwner)
+    public GuildUpdateOwnerEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull Member oldOwner)
     {
         super(api, responseNumber, guild, oldOwner, guild.getOwner(), IDENTIFIER);
     }
@@ -41,6 +43,7 @@ public class GuildUpdateOwnerEvent extends GenericGuildUpdateEvent<Member>
      *
      * @return The old owner
      */
+    @Nonnull
     public Member getOldOwner()
     {
         return getOldValue();
@@ -51,8 +54,23 @@ public class GuildUpdateOwnerEvent extends GenericGuildUpdateEvent<Member>
      *
      * @return The new owner
      */
+    @Nonnull
     public Member getNewOwner()
     {
         return getNewValue();
+    }
+
+    @Nonnull
+    @Override
+    public Member getOldValue()
+    {
+        return super.getOldValue();
+    }
+
+    @Nonnull
+    @Override
+    public Member getNewValue()
+    {
+        return super.getNewValue();
     }
 }

@@ -171,6 +171,7 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null String containing the Guild's icon hash-id.
      */
+    @Nullable
     String getIconId();
 
     /**
@@ -181,6 +182,7 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null String containing the Guild's icon URL.
      */
+    @Nullable
     String getIconUrl();
 
     /**
@@ -210,6 +212,7 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null String containing the Guild's splash hash-id
      */
+    @Nullable
     String getSplashId();
 
     /**
@@ -222,6 +225,7 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null String containing the Guild's splash URL.
      */
+    @Nullable
     String getSplashUrl();
 
     /**
@@ -265,6 +269,7 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} that is the AFK Channel.
      */
+    @Nullable
     VoiceChannel getAfkChannel();
 
     /**
@@ -276,6 +281,7 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that is the system Channel.
      */
+    @Nullable
     TextChannel getSystemChannel();
 
     /**

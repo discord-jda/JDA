@@ -19,6 +19,8 @@ package net.dv8tion.jda.api.events.guild.voice;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} was (un-)muted.
  * <br>Combines {@link net.dv8tion.jda.api.events.guild.voice.GuildVoiceGuildMuteEvent GuildVoiceGuildMuteEvent}
@@ -30,7 +32,7 @@ public class GuildVoiceMuteEvent extends GenericGuildVoiceEvent
 {
     protected final boolean muted;
 
-    public GuildVoiceMuteEvent(JDA api, long responseNumber, Member member)
+    public GuildVoiceMuteEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member)
     {
         super(api, responseNumber, member);
         this.muted = member.getVoiceState().isMuted();

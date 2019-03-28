@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.events.guild.voice;
 
+import jdk.internal.jline.internal.Nullable;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.UpdateEvent;
@@ -40,6 +41,7 @@ public interface GuildVoiceUpdateEvent extends UpdateEvent<Member, VoiceChannel>
      *
      * @return The {@link net.dv8tion.jda.api.entities.VoiceChannel}
      */
+    @Nullable
     VoiceChannel getChannelLeft();
 
     /**
@@ -47,5 +49,6 @@ public interface GuildVoiceUpdateEvent extends UpdateEvent<Member, VoiceChannel>
      *
      * @return The {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}
      */
+    @Nullable
     VoiceChannel getChannelJoined();
 }
