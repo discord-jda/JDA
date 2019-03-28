@@ -25,6 +25,7 @@ import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.time.OffsetDateTime;
 import java.util.FormattableFlags;
 import java.util.Formatter;
@@ -98,7 +99,7 @@ public abstract class AbstractMessage implements Message
         }
         catch (IOException e)
         {
-            throw new AssertionError(e);
+            throw new UncheckedIOException(e);
         }
     }
 

@@ -61,6 +61,9 @@ public interface RoleAction extends AuditableRestAction<Role>
      * @param  name
      *         The name for the new role, null to use default name
      *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided name is longer than 100 characters
+     *
      * @return The current RoleAction, for chaining convenience
      */
     @Nonnull

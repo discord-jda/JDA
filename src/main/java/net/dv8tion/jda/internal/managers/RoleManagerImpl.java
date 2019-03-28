@@ -104,7 +104,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
     public RoleManagerImpl setName(@Nonnull String name)
     {
         Checks.notBlank(name, "Name");
-        Checks.check(name.length() <= 32, "Name must be within 32 characters in length");
+        Checks.check(name.length() <= 100, "Name must be less or equal to 100 characters in length");
         this.name = name;
         set |= NAME;
         return this;

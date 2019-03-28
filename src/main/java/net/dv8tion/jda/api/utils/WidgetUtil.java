@@ -39,6 +39,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -191,6 +192,8 @@ public class WidgetUtil
      * @param  guildId
      *         The id of the Guild
      *
+     * @throws java.io.UncheckedIOException
+     *         If an I/O error occurs
      * @throws net.dv8tion.jda.api.exceptions.RateLimitedException
      *         If the request was rate limited, <b>respect the timeout</b>!
      *
@@ -230,7 +233,7 @@ public class WidgetUtil
                     }
                     catch (IOException e)
                     {
-                        throw new IllegalStateException(e);
+                        throw new UncheckedIOException(e);
                     }
                 }
                 case 400: // not valid snowflake
@@ -257,7 +260,7 @@ public class WidgetUtil
         }
         catch (IOException e)
         {
-            throw new IllegalStateException(e);
+            throw new UncheckedIOException(e);
         }
     }
     

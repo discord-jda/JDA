@@ -98,6 +98,25 @@ public interface Member extends IMentionable, IPermissionHolder
     OnlineStatus getOnlineStatus();
 
     /**
+     * The platform dependent {@link net.dv8tion.jda.api.OnlineStatus} of this member.
+     * <br>Since a user can be connected from multiple different devices such as web and mobile,
+     * discord specifies a status for each {@link net.dv8tion.jda.api.entities.ClientType}.
+     *
+     * <p>If a user is not online on the specified type,
+     * {@link net.dv8tion.jda.api.OnlineStatus#OFFLINE OFFLINE} is returned.
+     *
+     * @param  type
+     *         The type of client
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided type is null
+     *
+     * @return The status for that specific client or OFFLINE
+     */
+    @Nonnull
+    OnlineStatus getOnlineStatus(@Nonnull ClientType type);
+
+    /**
      * Returns the current nickname of this Member for the parent Guild.
      *
      * <p>This can be changed using

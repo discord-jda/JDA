@@ -32,6 +32,7 @@ import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.MessagePaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EncodingUtil;
 import org.json.JSONArray;
 
 import javax.annotation.CheckReturnValue;
@@ -1637,7 +1638,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * in this MessageChannel.
      *
      * <p>The unicode provided has to be a unicode representation of the emoji
-     * that is supposed to be represented by the Reaction.
+     * that is supposed to be used for the Reaction.
      * <br>To retrieve the characters needed you can use an api or
      * the official discord client by escaping the emoji (\:emoji-name:)
      * and copying the resulting emoji from the sent message.
@@ -1669,7 +1670,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION} in the
      *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
      *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI}
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
      *     <br>The provided unicode character does not refer to a known emoji unicode character.
      *     <br>Proper unicode characters for emojis can be found at
      *         <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">http://unicode.org/emoji/charts/full-emoji-list.html</a></li>
@@ -1694,7 +1695,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
-     *         and the logged in account does not have
+     *         and the logged in account does not have:
      *         <ul>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
@@ -1713,9 +1714,9 @@ public interface MessageChannel extends ISnowflake, Formattable
 
         String encoded;
         if (unicode.startsWith("U+"))
-            encoded = MiscUtil.encodeCodePointsUTF8(unicode);
+            encoded = EncodingUtil.encodeCodepointsUTF8(unicode);
         else
-            encoded = MiscUtil.encodeUTF8(unicode);
+            encoded = EncodingUtil.encodeUTF8(unicode);
         Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, encoded);
         return new RestActionImpl<>(getJDA(), route);
     }
@@ -1725,7 +1726,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * in this MessageChannel.
      *
      * <p>The unicode provided has to be a unicode representation of the emoji
-     * that is supposed to be represented by the Reaction.
+     * that is supposed to be used for the Reaction.
      * <br>To retrieve the characters needed you can use an api or
      * the official discord client by escaping the emoji (\:emoji-name:)
      * and copying the resulting emoji from the sent message.
@@ -1757,7 +1758,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION} in the
      *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
      *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI}
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
      *     <br>The provided unicode character does not refer to a known emoji unicode character.
      *     <br>Proper unicode characters for emojis can be found at
      *         <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">http://unicode.org/emoji/charts/full-emoji-list.html</a></li>
@@ -1776,12 +1777,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         The unicode characters to react with
      *
      * @throws java.lang.IllegalArgumentException
-     *         <ul>
-     *             <li>If provided {@code unicode} is {@code null} or empty.</li>
-     *         </ul>
+     *         If provided {@code unicode} is {@code null} or empty.
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
-     *         and the logged in account does not have
+     *         and the logged in account does not have:
      *         <ul>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
@@ -1985,7 +1984,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.isSnowflake(messageId, "Message ID");
         Checks.noWhitespace(unicode, "Emoji");
 
-        final String code = MiscUtil.encodeUTF8(unicode);
+        final String code = EncodingUtil.encodeUTF8(unicode);
         final Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, code, "@me");
         return new RestActionImpl<>(getJDA(), route);
     }
