@@ -862,7 +862,6 @@ public class EntityBuilder
 
     private static MessageActivity createMessageActivity(JSONObject jsonObject)
     {
-        MessageActivity activity;
         JSONObject activityData = jsonObject.getJSONObject("activity");
         final MessageActivity.ActivityType activityType = MessageActivity.ActivityType.fromId(activityData.getInt("type"));
         final String partyId = activityData.optString("party_id", null);
@@ -873,8 +872,8 @@ public class EntityBuilder
             JSONObject applicationData = jsonObject.getJSONObject("application");
 
             final String name = applicationData.getString("name");
-            final String description = applicationData.getString("description");
-            final String iconId = applicationData.getString("icon");
+            final String description = applicationData.optString("description", "");
+            final String iconId = applicationData.optString("icon", null);
             final String coverId = applicationData.optString("cover_image", null);
             final long applicationId = applicationData.getLong("id");
 
@@ -885,8 +884,7 @@ public class EntityBuilder
             LOG.debug("Received an unknown ActivityType, Activity: {}", activityData);
         }
 
-        activity = new MessageActivity(activityType, partyId, application);
-        return activity;
+        return new MessageActivity(activityType, partyId, application);
     }
 
     public MessageReaction createMessageReaction(MessageChannel chan, long id, JSONObject obj)

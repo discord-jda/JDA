@@ -117,7 +117,7 @@ public class MessageActivity
          *
          * @return the applications icon id.
          */
-        @Nonnull
+        @Nullable
         public String getIconId()
         {
             return iconId;
@@ -128,10 +128,10 @@ public class MessageActivity
          *
          * @return the url of the icon
          */
-        @Nonnull
+        @Nullable
         public String getIconUrl()
         {
-            return "https://cdn.discordapp.com/application/" + getId() + "/" + iconId + ".png";
+            return iconId == null ? null : "https://cdn.discordapp.com/application/" + getId() + "/" + iconId + ".png";
         }
 
         /**
