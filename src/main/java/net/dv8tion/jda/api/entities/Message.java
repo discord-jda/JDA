@@ -416,6 +416,12 @@ public interface Message extends ISnowflake, Formattable
      */
     boolean isFromType(@Nonnull ChannelType type);
 
+    //TODO: Docs
+    default boolean isFromGuild()
+    {
+        return getChannelType().isGuild();
+    }
+
     /**
      * Gets the {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} that this message was received from.
      * <br>This will never be {@link net.dv8tion.jda.api.entities.ChannelType#VOICE} as Messages can't be sent to
@@ -449,6 +455,7 @@ public interface Message extends ISnowflake, Formattable
     @Nonnull
     MessageChannel getChannel();
 
+    //TODO: Docs for throw
     /**
      * Returns the {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} that this message was sent in.
      * <br><b>This is only valid if the Message was actually sent in a PrivateChannel.</b> This will return {@code null}
@@ -463,7 +470,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The PrivateChannel this message was sent in, or {@code null} if it was not sent from a PrivateChannel.
      */
-    @Nullable
+    @Nonnull
     PrivateChannel getPrivateChannel();
 
     /**
@@ -480,7 +487,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The TextChannel this message was sent in, or {@code null} if it was not sent from a TextChannel.
      */
-    @Nullable
+    @Nonnull
     TextChannel getTextChannel();
 
     /**
@@ -508,7 +515,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The Guild this message was sent in, or {@code null} if it was not sent from a TextChannel.
      */
-    @Nullable
+    @Nonnull
     Guild getGuild();
 
     /**

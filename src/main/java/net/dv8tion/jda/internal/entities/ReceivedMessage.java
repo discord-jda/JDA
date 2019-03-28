@@ -570,15 +570,21 @@ public class ReceivedMessage extends AbstractMessage
         return channel;
     }
 
+    @Nonnull
     @Override
     public PrivateChannel getPrivateChannel()
     {
+        if (!isFromType(ChannelType.PRIVATE))
+            throw new IllegalStateException("This message was not sent in a private channel");
         return isFromType(ChannelType.PRIVATE) ? (PrivateChannel) channel : null;
     }
 
+    @Nonnull
     @Override
     public TextChannel getTextChannel()
     {
+        if (!isFromType(ChannelType.TEXT))
+            throw new IllegalStateException("This message was not sent in a text channel");
         return isFromType(ChannelType.TEXT) ? (TextChannel) channel : null;
     }
 
@@ -588,10 +594,11 @@ public class ReceivedMessage extends AbstractMessage
         return isFromType(ChannelType.TEXT) ? getTextChannel().getParent() : null;
     }
 
+    @Nonnull
     @Override
     public Guild getGuild()
     {
-        return isFromType(ChannelType.TEXT) ? getTextChannel().getGuild() : null;
+        return getTextChannel().getGuild();
     }
 
     @Nonnull

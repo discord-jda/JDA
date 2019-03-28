@@ -255,6 +255,7 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @Nonnull
     @Override
     public PrivateChannel getPrivateChannel()
     {
@@ -262,6 +263,7 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @Nonnull
     @Override
     public TextChannel getTextChannel()
     {
@@ -276,6 +278,7 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @Nonnull
     @Override
     public Guild getGuild()
     {
