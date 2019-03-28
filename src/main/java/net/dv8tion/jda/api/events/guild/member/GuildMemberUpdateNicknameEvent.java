@@ -65,12 +65,14 @@ public class GuildMemberUpdateNicknameEvent extends GenericGuildMemberEvent impl
         return getNewValue();
     }
 
+    @Nonnull
     @Override
     public String getPropertyIdentifier()
     {
         return IDENTIFIER;
     }
 
+    @Nonnull
     @Override
     public Member getEntity()
     {

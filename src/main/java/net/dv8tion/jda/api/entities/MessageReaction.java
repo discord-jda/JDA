@@ -372,14 +372,14 @@ public class MessageReaction
      * Represents an Emoji/Emote of a MessageReaction
      * <br>This is used to wrap both emojis and emotes
      */
-    public static class ReactionEmote implements ISnowflake //TODO: add annotations
+    public static class ReactionEmote implements ISnowflake
     {
         private final JDA api;
         private final String name;
         private final long id;
         private final Emote emote;
 
-        private ReactionEmote(String name, JDA api)
+        private ReactionEmote(@Nonnull String name, @Nonnull JDA api)
         {
             this.name = name;
             this.api = api;
@@ -387,7 +387,7 @@ public class MessageReaction
             this.emote = null;
         }
 
-        private ReactionEmote(Emote emote)
+        private ReactionEmote(@Nonnull Emote emote)
         {
             this.api = emote.getJDA();
             this.name = emote.getName();
@@ -395,12 +395,14 @@ public class MessageReaction
             this.emote = emote;
         }
 
-        public static ReactionEmote fromUnicode(String name, JDA api)
+        @Nonnull
+        public static ReactionEmote fromUnicode(@Nonnull String name, @Nonnull JDA api)
         {
             return new ReactionEmote(name, api);
         }
 
-        public static ReactionEmote fromCustom(Emote emote)
+        @Nonnull
+        public static ReactionEmote fromCustom(@Nonnull Emote emote)
         {
             return new ReactionEmote(emote);
         }
@@ -440,6 +442,7 @@ public class MessageReaction
          *
          * @return The name for this emote/emoji
          */
+        @Nonnull
         public String getName()
         {
             return name;
@@ -453,6 +456,7 @@ public class MessageReaction
          *
          * @return String containing the codepoint representation of the reaction emoji
          */
+        @Nonnull
         public String getAsCodepoints()
         {
             if (!isEmoji())
@@ -506,6 +510,7 @@ public class MessageReaction
          *
          * @return The JDA instance of the Reaction
          */
+        @Nonnull
         public JDA getJDA()
         {
             return api;
@@ -527,5 +532,4 @@ public class MessageReaction
             return "RE:" + getName() + "(" + getId() + ")";
         }
     }
-
 }

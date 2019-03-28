@@ -29,7 +29,6 @@ import okhttp3.*;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.Nonnull;
 import java.io.*;
 import java.time.OffsetDateTime;
 import java.util.Formattable;
@@ -1183,6 +1182,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.InputStream}
          */
+        @Nonnull
         public CompletableFuture<InputStream> retrieveInputStream() // it is expected that the response is closed by the callback!
         {
             CompletableFuture<InputStream> future = new CompletableFuture<>();
@@ -1236,6 +1236,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
          */
+        @Nonnull
         public CompletableFuture<File> downloadToFile() // using relative path
         {
             return downloadToFile(getFileName());
@@ -1268,6 +1269,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
          */
+        @Nonnull
         public CompletableFuture<File> downloadToFile(String path)
         {
             Checks.notNull(path, "Path");
@@ -1301,6 +1303,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
          */
+        @Nonnull
         public CompletableFuture<File> downloadToFile(File file)
         {
             Checks.notNull(file, "File");
@@ -1353,6 +1356,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link net.dv8tion.jda.api.entities.Icon}
          */
+        @Nonnull
         public CompletableFuture<Icon> retrieveAsIcon()
         {
             if (!isImage())
