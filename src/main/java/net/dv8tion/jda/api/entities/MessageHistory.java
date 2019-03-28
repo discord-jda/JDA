@@ -365,6 +365,7 @@ public class MessageHistory
      * @see    net.dv8tion.jda.api.entities.MessageChannel#getHistoryAfter(Message, int) MessageChannel.getHistoryAfter(Message, int)
      */
     @Nonnull
+    @CheckReturnValue
     public static MessageRetrieveAction getHistoryAfter(@Nonnull MessageChannel channel, @Nonnull String messageId)
     {
         checkArguments(channel, messageId);
@@ -409,6 +410,7 @@ public class MessageHistory
      * @see    net.dv8tion.jda.api.entities.MessageChannel#getHistoryBefore(Message, int) MessageChannel.getHistoryBefore(Message, int)
      */
     @Nonnull
+    @CheckReturnValue
     public static MessageRetrieveAction getHistoryBefore(@Nonnull MessageChannel channel, @Nonnull String messageId)
     {
         checkArguments(channel, messageId);
@@ -453,6 +455,7 @@ public class MessageHistory
      * @see    net.dv8tion.jda.api.entities.MessageChannel#getHistoryAround(Message, int) MessageChannel.getHistoryAround(Message, int)
      */
     @Nonnull
+    @CheckReturnValue
     public static MessageRetrieveAction getHistoryAround(@Nonnull MessageChannel channel, @Nonnull String messageId)
     {
         checkArguments(channel, messageId);
@@ -499,6 +502,7 @@ public class MessageHistory
          * @return The current MessageRetrieveAction for chaining convenience
          */
         @Nonnull
+        @CheckReturnValue
         public MessageRetrieveAction limit(@Nullable Integer limit)
         {
             if (limit != null)
