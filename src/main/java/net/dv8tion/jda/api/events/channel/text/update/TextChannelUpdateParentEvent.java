@@ -20,6 +20,9 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Category;
 import net.dv8tion.jda.api.entities.TextChannel;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}'s parent changed.
  *
@@ -31,7 +34,7 @@ public class TextChannelUpdateParentEvent extends GenericTextChannelUpdateEvent<
 {
     public static final String IDENTIFIER = "parent";
 
-    public TextChannelUpdateParentEvent(JDA api, long responseNumber, TextChannel channel, Category oldParent)
+    public TextChannelUpdateParentEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel, @Nullable Category oldParent)
     {
         super(api, responseNumber, channel, oldParent, channel.getParent(), IDENTIFIER);
     }
@@ -41,6 +44,7 @@ public class TextChannelUpdateParentEvent extends GenericTextChannelUpdateEvent<
      *
      * @return The old parent category, or null
      */
+    @Nullable
     public Category getOldParent()
     {
         return getOldValue();
@@ -51,6 +55,7 @@ public class TextChannelUpdateParentEvent extends GenericTextChannelUpdateEvent<
      *
      * @return The new parent category, or null
      */
+    @Nullable
     public Category getNewParent()
     {
         return getNewValue();

@@ -18,6 +18,8 @@ package net.dv8tion.jda.api.events.channel.voice.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that a {@link VoiceChannel VoiceChannel}'s position changed.
  *
@@ -29,14 +31,9 @@ public class VoiceChannelUpdatePositionEvent extends GenericVoiceChannelUpdateEv
 {
     public static final String IDENTIFIER = "position";
 
-    private final int oldPosition;
-    private final int newPosition;
-
-    public VoiceChannelUpdatePositionEvent(JDA api, long responseNumber, VoiceChannel channel, int oldPosition)
+    public VoiceChannelUpdatePositionEvent(@Nonnull JDA api, long responseNumber, @Nonnull VoiceChannel channel, int oldPosition)
     {
-        super(api, responseNumber, channel);
-        this.oldPosition = oldPosition;
-        this.newPosition = channel.getPositionRaw();
+        super(api, responseNumber, channel, oldPosition, channel.getPositionRaw(), IDENTIFIER);
     }
 
     /**
@@ -46,7 +43,7 @@ public class VoiceChannelUpdatePositionEvent extends GenericVoiceChannelUpdateEv
      */
     public int getOldPosition()
     {
-        return oldPosition;
+        return getOldValue();
     }
 
     /**
@@ -56,24 +53,6 @@ public class VoiceChannelUpdatePositionEvent extends GenericVoiceChannelUpdateEv
      */
     public int getNewPosition()
     {
-        return newPosition;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public Integer getOldValue()
-    {
-        return oldPosition;
-    }
-
-    @Override
-    public Integer getNewValue()
-    {
-        return newPosition;
+        return getNewValue();
     }
 }
