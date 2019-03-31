@@ -1157,7 +1157,7 @@ public class EntityBuilder
             if (usernameArray == null)
                 usernames = null;
             else
-                usernames = Collections.unmodifiableList(StreamSupport.stream(usernameArray.spliterator(), false).map(json -> new JSONObject(String.valueOf(json)).getString("username")).collect(Collectors.toList()));
+                usernames = map(channelObject, "recipients", (json) -> json.getString("username"));
 
             group = new InviteImpl.GroupImpl(groupIconId, groupName, groupId, usernames);
         }
