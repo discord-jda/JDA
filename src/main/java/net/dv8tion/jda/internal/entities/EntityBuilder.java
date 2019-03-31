@@ -813,6 +813,11 @@ public class EntityBuilder
         final List<MessageEmbed>       embeds      = map(jsonObject, "embeds",      this::createMessageEmbed);
         final List<MessageReaction>    reactions   = map(jsonObject, "reactions",   (obj) -> createMessageReaction(chan, id, obj));
 
+        MessageActivity activity = null;
+
+        if (!jsonObject.isNull("activity"))
+            activity = createMessageActivity(jsonObject);
+
         User user;
         switch (chan.getType())
         {
@@ -854,15 +859,42 @@ public class EntityBuilder
             case DEFAULT:
                 return new ReceivedMessage(id, chan, type, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
-                    content, nonce, user, editTime, reactions, attachments, embeds);
+                    content, nonce, user, activity, editTime, reactions, attachments, embeds);
             case UNKNOWN:
                 throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
             default:
                 return new SystemMessage(id, chan, type, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
-                    content, nonce, user, editTime, reactions, attachments, embeds);
+                    content, nonce, user, activity, editTime, reactions, attachments, embeds);
         }
 
+    }
+
+    private static MessageActivity createMessageActivity(JSONObject jsonObject)
+    {
+        JSONObject activityData = jsonObject.getJSONObject("activity");
+        final MessageActivity.ActivityType activityType = MessageActivity.ActivityType.fromId(activityData.getInt("type"));
+        final String partyId = activityData.optString("party_id", null);
+        MessageActivity.Application application = null;
+
+        if (!jsonObject.isNull("application"))
+        {
+            JSONObject applicationData = jsonObject.getJSONObject("application");
+
+            final String name = applicationData.getString("name");
+            final String description = applicationData.optString("description", "");
+            final String iconId = applicationData.optString("icon", null);
+            final String coverId = applicationData.optString("cover_image", null);
+            final long applicationId = applicationData.getLong("id");
+
+            application = new MessageActivity.Application(name, description, iconId, coverId, applicationId);
+        }
+        if (activityType == MessageActivity.ActivityType.UNKNOWN)
+        {
+            LOG.debug("Received an unknown ActivityType, Activity: {}", activityData);
+        }
+
+        return new MessageActivity(activityType, partyId, application);
     }
 
     public MessageReaction createMessageReaction(MessageChannel chan, long id, JSONObject obj)
