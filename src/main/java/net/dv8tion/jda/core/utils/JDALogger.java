@@ -65,6 +65,9 @@ public class JDALogger
             {
                 // there was no service provider interface (SLF4J 1.8.x+)
 
+                //prints warning of missing implementation
+                LoggerFactory.getLogger(JDALogger.class);
+
                 tmp = false;
             }
         }
