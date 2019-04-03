@@ -35,6 +35,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+
 import java.util.*;
 
 /**
@@ -462,8 +464,7 @@ public class MessageHistory
      *         The {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
      *
      * @throws java.lang.IllegalArgumentException
-     *         If any of the provided arguments is {@code null};
-     *         Or if the provided messageId contains whitespace
+     *         If the provided MessageChannel is {@code null};
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a TextChannel and the currently logged in account does not
      *         have the permission {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
@@ -472,7 +473,9 @@ public class MessageHistory
      *
      * @see    net.dv8tion.jda.api.entities.MessageChannel#getHistoryFromBeginning(int)  MessageChannel.getHistoryFromBeginning(int)
      */
-    public static MessageRetrieveAction getHistoryFromBeginning(MessageChannel channel)
+    @Nonnull
+    @CheckReturnValue
+    public static MessageRetrieveAction getHistoryFromBeginning(@Nonnull MessageChannel channel)
     {
         return getHistoryAfter(channel, "0L");
     }
