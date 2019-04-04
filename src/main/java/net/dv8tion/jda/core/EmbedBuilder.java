@@ -675,6 +675,22 @@ public class EmbedBuilder
     }
     
     /**
+     * Sets the Footer of the embed without icon.
+     * @param  text
+     *         the text of the footer of the embed. If this is not set, the footer will not appear in the embed.
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the length of {@code text} is longer than {@link net.dv8tion.jda.core.entities.MessageEmbed#TEXT_MAX_LENGTH}.</li>
+     *         </ul>
+     *
+     * @return the builder after the footer has been set
+     */
+    public EmbedBuilder setFooter(String text)
+    {
+        return setFooter(text, null);
+    }
+    
+    /**
      * Copies the provided Field into a new Field for this builder.
      * <br>For additional documentation, see {@link #addField(String, String, boolean)}
      * 
