@@ -477,7 +477,7 @@ public class MessageHistory
     @CheckReturnValue
     public static MessageRetrieveAction getHistoryFromBeginning(@Nonnull MessageChannel channel)
     {
-        return getHistoryAfter(channel, "0L");
+        return getHistoryAfter(channel, "0");
     }
 
     private static void checkArguments(MessageChannel channel, String messageId)
