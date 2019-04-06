@@ -17,11 +17,13 @@
 package net.dv8tion.jda.api.events.message.react;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that a MessageReaction was added/removed.
@@ -34,7 +36,7 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
     protected User issuer;
     protected MessageReaction reaction;
 
-    public GenericMessageReactionEvent(JDA api, long responseNumber, User user, MessageReaction reaction)
+    public GenericMessageReactionEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, @Nonnull MessageReaction reaction)
     {
         super(api, responseNumber, reaction.getMessageIdLong(), reaction.getChannel());
         this.issuer = user;
@@ -46,21 +48,23 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
      *
      * @return The reacting user
      */
+    @Nonnull
     public User getUser()
     {
         return issuer;
     }
 
+    //TODO: Docs for throw
     /**
      * The {@link net.dv8tion.jda.api.entities.Member Member} instance for the reacting user
      * or {@code null} if the reaction was not in a guild.
      *
      * @return Member of the reacting user or null
      */
+    @Nullable
     public Member getMember()
     {
-        Guild guild = getGuild();
-        return guild != null ? guild.getMember(getUser()) : null;
+        return getGuild().getMember(getUser());
     }
 
     /**
@@ -68,6 +72,7 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
      *
      * @return The MessageReaction
      */
+    @Nonnull
     public MessageReaction getReaction()
     {
         return reaction;
@@ -79,6 +84,7 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
      *
      * @return The ReactionEmote instance
      */
+    @Nonnull
     public MessageReaction.ReactionEmote getReactionEmote()
     {
         return reaction.getReactionEmote();

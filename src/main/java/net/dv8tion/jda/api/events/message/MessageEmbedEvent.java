@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
+import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class MessageEmbedEvent extends GenericMessageEvent
 {
     private final List<MessageEmbed> embeds;
 
-    public MessageEmbedEvent(JDA api, long responseNumber, long messageId, MessageChannel channel, List<MessageEmbed> embeds)
+    public MessageEmbedEvent(@Nonnull JDA api, long responseNumber, long messageId, @Nonnull MessageChannel channel, @Nonnull List<MessageEmbed> embeds)
     {
         super(api, responseNumber, messageId, channel);
         this.embeds = Collections.unmodifiableList(embeds);
@@ -43,6 +44,7 @@ public class MessageEmbedEvent extends GenericMessageEvent
      *
      * @return The list of MessageEmbeds
      */
+    @Nonnull
     public List<MessageEmbed> getMessageEmbeds()
     {
         return embeds;

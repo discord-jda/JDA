@@ -21,6 +21,9 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Indicates that a Message was received in a {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
  * <br>This includes {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}!
@@ -31,7 +34,7 @@ public class MessageReceivedEvent extends GenericMessageEvent
 {
     private final Message message;
 
-    public MessageReceivedEvent(JDA api, long responseNumber, Message message)
+    public MessageReceivedEvent(@Nonnull JDA api, long responseNumber, @Nonnull Message message)
     {
         super(api, responseNumber, message.getIdLong(), message.getChannel());
         this.message = message;
@@ -42,6 +45,7 @@ public class MessageReceivedEvent extends GenericMessageEvent
      *
      * @return The received {@link net.dv8tion.jda.api.entities.Message Message} object.
      */
+    @Nonnull
     public Message getMessage()
     {
         return message;
@@ -56,6 +60,7 @@ public class MessageReceivedEvent extends GenericMessageEvent
      * @see #isWebhookMessage()
      * @see net.dv8tion.jda.api.entities.User#isFake()
      */
+    @Nonnull
     public User getAuthor()
     {
         return message.getAuthor();
@@ -71,6 +76,7 @@ public class MessageReceivedEvent extends GenericMessageEvent
      *
      * @see    #isWebhookMessage()
      */
+    @Nullable
     public Member getMember()
     {
         return isFromType(ChannelType.TEXT) && !isWebhookMessage() ? getGuild().getMember(getAuthor()) : null;
