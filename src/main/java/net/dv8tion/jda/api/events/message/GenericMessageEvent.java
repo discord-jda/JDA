@@ -84,7 +84,12 @@ public abstract class GenericMessageEvent extends Event
         return channel.getType() == type;
     }
 
-    //TODO: Docs
+    /**
+     * Whether this message was sent in a {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * <br>If this is {@code false} then {@link #getGuild()} will throw an {@link java.lang.IllegalStateException}.
+     *
+     * @return True, if {@link #getChannelType()}.{@link ChannelType#isGuild() isGuild()} is true.
+     */
     public boolean isFromGuild()
     {
         return getChannelType().isGuild();
@@ -101,15 +106,19 @@ public abstract class GenericMessageEvent extends Event
         return channel.getType();
     }
 
-    //TODO: Docs for throw
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} the Message was received in.
      * <br>If this Message was not received in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel},
-     * this will return {@code null}.
+     * this will throw an {@link java.lang.IllegalStateException}.
      *
-     * @return The Guild the Message was received in or null if not from a TextChannel
+     * @throws java.lang.IllegalStateException
+     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.TextChannel}.
      *
-     * @see    net.dv8tion.jda.api.events.message.GenericMessageEvent#isFromType(ChannelType)
+     * @return The Guild the Message was received in
+     *
+     * @see    #isFromGuild()
+     * @see    #isFromType(ChannelType)
+     * @see    #getChannelType()
      */
     @Nonnull
     public Guild getGuild()
@@ -120,11 +129,16 @@ public abstract class GenericMessageEvent extends Event
     /**
      * The {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} the Message was received in.
      * <br>If this Message was not received in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel},
-     * this will return {@code null}.
+     * this will throw an {@link java.lang.IllegalStateException}.
      *
-     * @return The TextChannel the Message was received in or null if not from a TextChannel
+     * @throws java.lang.IllegalStateException
+     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.TextChannel}.
      *
-     * @see    net.dv8tion.jda.api.events.message.GenericMessageEvent#isFromType(ChannelType)
+     * @return The TextChannel the Message was received in
+     *
+     * @see    #isFromGuild()
+     * @see    #isFromType(ChannelType)
+     * @see    #getChannelType()
      */
     @Nonnull
     public TextChannel getTextChannel()
@@ -137,11 +151,16 @@ public abstract class GenericMessageEvent extends Event
     /**
      * The {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} the Message was received in.
      * <br>If this Message was not received in a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel},
-     * this will return {@code null}.
+     * this will throw an {@link java.lang.IllegalStateException}.
      *
-     * @return The PrivateChannel the Message was received in or null if not from a PrivateChannel
+     * @throws java.lang.IllegalStateException
+     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.PrivateChannel}.
      *
-     * @see    net.dv8tion.jda.api.events.message.GenericMessageEvent#isFromType(ChannelType)
+     * @return The PrivateChannel the Message was received in
+     *
+     * @see    #isFromGuild()
+     * @see    #isFromType(ChannelType)
+     * @see    #getChannelType()
      */
     @Nonnull
     public PrivateChannel getPrivateChannel()

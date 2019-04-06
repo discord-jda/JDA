@@ -27,13 +27,6 @@ import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.*;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nullable;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.*;
@@ -416,7 +409,12 @@ public interface Message extends ISnowflake, Formattable
      */
     boolean isFromType(@Nonnull ChannelType type);
 
-    //TODO: Docs
+    /**
+     * Whether this message was sent in a {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * <br>If this is {@code false} then {@link #getGuild()} will throw an {@link java.lang.IllegalStateException}.
+     *
+     * @return True, if {@link #getChannelType()}.{@link ChannelType#isGuild() isGuild()} is true.
+     */
     default boolean isFromGuild()
     {
         return getChannelType().isGuild();
@@ -455,11 +453,9 @@ public interface Message extends ISnowflake, Formattable
     @Nonnull
     MessageChannel getChannel();
 
-    //TODO: Docs for throw
     /**
      * Returns the {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} that this message was sent in.
-     * <br><b>This is only valid if the Message was actually sent in a PrivateChannel.</b> This will return {@code null}
-     * if it was not sent from a PrivateChannel.
+     * <br><b>This is only valid if the Message was actually sent in a PrivateChannel.</b>
      * <br>You can check the type of channel this message was sent from using {@link #isFromType(ChannelType)} or {@link #getChannelType()}.
      *
      * <p>Use {@link #getChannel()} for an ambiguous {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
@@ -467,16 +463,21 @@ public interface Message extends ISnowflake, Formattable
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     * @throws java.lang.IllegalStateException
+     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.PrivateChannel}.
      *
-     * @return The PrivateChannel this message was sent in, or {@code null} if it was not sent from a PrivateChannel.
+     * @return The PrivateChannel this message was sent in
+     *
+     * @see    #isFromGuild()
+     * @see    #isFromType(ChannelType)
+     * @see    #getChannelType()
      */
     @Nonnull
     PrivateChannel getPrivateChannel();
 
     /**
      * Returns the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that this message was sent in.
-     * <br><b>This is only valid if the Message was actually sent in a TextChannel.</b> This will return {@code null}
-     * if it was not sent from a TextChannel.
+     * <br><b>This is only valid if the Message was actually sent in a TextChannel.</b>
      * <br>You can check the type of channel this message was sent from using {@link #isFromType(ChannelType)} or {@link #getChannelType()}.
      *
      * <p>Use {@link #getChannel()} for an ambiguous {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
@@ -484,16 +485,22 @@ public interface Message extends ISnowflake, Formattable
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     * @throws java.lang.IllegalStateException
+     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.TextChannel}.
      *
-     * @return The TextChannel this message was sent in, or {@code null} if it was not sent from a TextChannel.
+     * @return The TextChannel this message was sent in
+     *
+     * @see    #isFromGuild()
+     * @see    #isFromType(ChannelType)
+     * @see    #getChannelType()
      */
     @Nonnull
     TextChannel getTextChannel();
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Category Category} this
-     * message was sent in. This will always be {@code null} for DMs and Groups.
-     * <br>Equivalent to {@code getTextChannel().getParent()}.
+     * message was sent in. This will always be {@code null} for DMs.
+     * <br>Equivalent to {@code getTextChannel().getParent()} if this was sent in a {@link net.dv8tion.jda.api.entities.TextChannel}.
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
@@ -505,15 +512,20 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * Returns the {@link net.dv8tion.jda.api.entities.Guild Guild} that this message was sent in.
-     * <br>This is just a shortcut to {@link #getTextChannel()}{@link net.dv8tion.jda.api.entities.TextChannel#getGuild() .getGuild()}.
-     * <br><b>This is only valid if the Message was actually sent in a TextChannel.</b> This will return {@code null}
-     * if it was not sent from a TextChannel.
+     * <br>This is just a shortcut to {@link #getTextChannel()}.{@link net.dv8tion.jda.api.entities.TextChannel#getGuild() getGuild()}.
+     * <br><b>This is only valid if the Message was actually sent in a TextChannel.</b>
      * <br>You can check the type of channel this message was sent from using {@link #isFromType(ChannelType)} or {@link #getChannelType()}.
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     * @throws java.lang.IllegalStateException
+     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.TextChannel}.
      *
-     * @return The Guild this message was sent in, or {@code null} if it was not sent from a TextChannel.
+     * @return The Guild this message was sent in
+     *
+     * @see    #isFromGuild()
+     * @see    #isFromType(ChannelType)
+     * @see    #getChannelType()
      */
     @Nonnull
     Guild getGuild();

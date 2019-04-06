@@ -54,12 +54,17 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
         return issuer;
     }
 
-    //TODO: Docs for throw
     /**
      * The {@link net.dv8tion.jda.api.entities.Member Member} instance for the reacting user
-     * or {@code null} if the reaction was not in a guild.
+     * or {@code null} if the reaction was from a user not in this guild.
      *
-     * @return Member of the reacting user or null
+     * @throws java.lang.IllegalStateException
+     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.TextChannel}.
+     *
+     * @return Member of the reacting user or null if they are no longer member of this guild
+     *
+     * @see    #isFromGuild()
+     * @see    #getChannelType()
      */
     @Nullable
     public Member getMember()
