@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
@@ -304,7 +305,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      * @return Updated MessageAction for chaining convenience
      */
     @CheckReturnValue
-    MessageAction addFile(final InputStream data, final String name, AttachmentOption... options);
+    MessageAction addFile(@Nonnull final InputStream data, @Nonnull final String name, @Nonnull AttachmentOption... options);
 
     /**
      * Adds the provided byte[] as file data.
@@ -335,7 +336,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      * @see    net.dv8tion.jda.api.entities.SelfUser#getAllowedFileSize() SelfUser.getAllowedFileSize()
      */
     @CheckReturnValue
-    default MessageAction addFile(final byte[] data, final String name, AttachmentOption... options)
+    default MessageAction addFile(@Nonnull final byte[] data, @Nonnull final String name, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(data, "Data");
         final long maxSize = getJDA().getSelfUser().getAllowedFileSize();
@@ -366,7 +367,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      * @see    net.dv8tion.jda.api.entities.SelfUser#getAllowedFileSize() SelfUser.getAllowedFileSize()
      */
     @CheckReturnValue
-    default MessageAction addFile(final File file, AttachmentOption... options)
+    default MessageAction addFile(@Nonnull final File file, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(file, "File");
         return addFile(file, file.getName(), options);
@@ -403,7 +404,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      * @see    net.dv8tion.jda.api.entities.SelfUser#getAllowedFileSize() SelfUser.getAllowedFileSize()
      */
     @CheckReturnValue
-    MessageAction addFile(final File file, final String name, AttachmentOption... options);
+    MessageAction addFile(@Nonnull final File file, @Nonnull final String name, @Nonnull AttachmentOption... options);
 
     /**
      * Clears all previously added files

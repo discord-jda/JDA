@@ -37,6 +37,7 @@ import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.io.*;
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -182,12 +183,12 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     @Override
     @CheckReturnValue
-    public MessageActionImpl addFile(final InputStream data, String name, AttachmentOption... options)
+    public MessageActionImpl addFile(@Nonnull final InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
         checkEdit();
         Checks.notNull(data, "Data");
         Checks.notBlank(name, "Name");
-        Checks.notNull(options, "Options");
+        Checks.noneNull(options, "Options");
         checkFileAmount();
         checkPermission(Permission.MESSAGE_ATTACH_FILES);
         name = applyOptions(name, options);
@@ -197,10 +198,10 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     @Override
     @CheckReturnValue
-    public MessageActionImpl addFile(final File file, String name, AttachmentOption... options)
+    public MessageActionImpl addFile(@Nonnull final File file, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(file, "File");
-        Checks.notNull(options, "Options");
+        Checks.noneNull(options, "Options");
         Checks.check(file.exists() && file.canRead(), "Provided file either does not exist or cannot be read from!");
         final long maxSize = getJDA().getSelfUser().getAllowedFileSize();
         Checks.check(file.length() <= maxSize, "File may not exceed the maximum file length of %d bytes!", maxSize);
@@ -265,15 +266,12 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     private String applyOptions(String name, AttachmentOption[] options)
     {
-        if (options.length > 0)
+        for (AttachmentOption opt : options)
         {
-            for (AttachmentOption opt : options)
+            if (opt == AttachmentOption.SPOILER)
             {
-                if (opt == AttachmentOption.SPOILER)
-                {
-                    name = "SPOILER_" + name;
-                    break;
-                }
+                name = "SPOILER_" + name;
+                break;
             }
         }
         return name;
