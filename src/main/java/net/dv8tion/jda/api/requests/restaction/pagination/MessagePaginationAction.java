@@ -25,6 +25,8 @@ import javax.annotation.Nonnull;
 /**
  * {@link PaginationAction PaginationAction}
  * that paginates the endpoints {@link net.dv8tion.jda.internal.requests.Route.Messages#GET_MESSAGE_HISTORY Route.Messages.GET_MESSAGE_HISTORY}.
+ * <br>Note that this implementation is not considered thread-safe as modifications to the cache are not done
+ * with a lock. Calling methods on this class from multiple threads is not recommended.
  *
  * <p><b>Must provide not-null {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel} to compile a valid
  * pagination route.</b>

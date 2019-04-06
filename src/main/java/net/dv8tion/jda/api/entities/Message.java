@@ -27,6 +27,13 @@ import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.*;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.*;
@@ -562,6 +569,14 @@ public interface Message extends ISnowflake, Formattable
      * @return If this message is TTS.
      */
     boolean isTTS();
+
+    /**
+     * A {@link net.dv8tion.jda.api.entities.MessageActivity MessageActivity} that contains its type and party id.
+     *
+     * @return The activity, or {@code null} if no activity was added to the message.
+     */
+    @Nullable
+    MessageActivity getActivity();
 
     /**
      * Edits this Message's content to the provided String.

@@ -110,4 +110,9 @@ public class ReactionPaginationActionImpl
         request.onSuccess(users);
     }
 
+    @Override
+    protected long getKey(User it)
+    {
+        return it.getIdLong();
+    }
 }

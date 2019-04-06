@@ -102,4 +102,10 @@ public class MessagePaginationActionImpl
 
         request.onSuccess(messages);
     }
+
+    @Override
+    protected long getKey(Message it)
+    {
+        return it.getIdLong();
+    }
 }

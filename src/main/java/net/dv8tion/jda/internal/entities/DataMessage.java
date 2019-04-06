@@ -18,8 +18,10 @@ package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageType;
+import net.dv8tion.jda.api.entities.MessageActivity;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -86,6 +88,14 @@ public class DataMessage extends AbstractMessage
     protected void unsupported()
     {
         throw new UnsupportedOperationException("This operation is not supported for Messages that were created by a MessageBuilder!");
+    }
+
+    @Nullable
+    @Override
+    public MessageActivity getActivity()
+    {
+        unsupported();
+        return null;
     }
 
     @Override
