@@ -1152,12 +1152,11 @@ public class EntityBuilder
             final long groupId = channelObject.getLong("id");
             final String groupIconId = channelObject.optString("icon", null);
 
-            final JSONArray usernameArray = channelObject.optJSONArray("recipients");
             final List<String> usernames;
-            if (usernameArray == null)
+            if (channelObject.isNull("recipients"))
                 usernames = null;
             else
-                usernames = Collections.unmodifiableList(StreamSupport.stream(usernameArray.spliterator(), false).map(String::valueOf).collect(Collectors.toList()));
+                usernames = map(channelObject, "recipients", (json) -> json.getString("username"));
 
             group = new InviteImpl.GroupImpl(groupIconId, groupName, groupId, usernames);
         }
