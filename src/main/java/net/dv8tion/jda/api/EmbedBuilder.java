@@ -22,6 +22,8 @@ import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.Color;
 import java.time.*;
 import java.time.temporal.TemporalAccessor;
@@ -616,7 +618,26 @@ public class EmbedBuilder
         }
         return this;
     }
-    
+
+    /**
+     * Sets the Footer of the embed without icon.
+     *
+     * <p><b><a href="http://i.imgur.com/jdf4sbi.png">Example</a></b>
+     *
+     * @param  text
+     *         the text of the footer of the embed. If this is not set or set to null, the footer will not appear in the embed.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the length of {@code text} is longer than {@link net.dv8tion.jda.api.entities.MessageEmbed#TEXT_MAX_LENGTH}.
+     *
+     * @return the builder after the footer has been set
+     */
+    @Nonnull
+    public EmbedBuilder setFooter(@Nullable String text)
+    {
+        return setFooter(text, null);
+    }
+
     /**
      * Sets the Footer of the embed.
      *
@@ -667,23 +688,7 @@ public class EmbedBuilder
         }
         return this;
     }
-    
-    /**
-     * Sets the Footer of the embed without icon.
-     * @param  text
-     *         the text of the footer of the embed. If this is not set, the footer will not appear in the embed.
-     * @throws java.lang.IllegalArgumentException
-     *         <ul>
-     *             <li>If the length of {@code text} is longer than {@link net.dv8tion.jda.core.entities.MessageEmbed#TEXT_MAX_LENGTH}.</li>
-     *         </ul>
-     *
-     * @return the builder after the footer has been set
-     */
-    public EmbedBuilder setFooter(String text)
-    {
-        return setFooter(text, null);
-    }
-    
+
     /**
      * Copies the provided Field into a new Field for this builder.
      * <br>For additional documentation, see {@link #addField(String, String, boolean)}
