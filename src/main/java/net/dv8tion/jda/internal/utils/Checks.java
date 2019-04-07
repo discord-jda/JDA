@@ -53,42 +53,42 @@ public class Checks
     public static void notNull(final Object argument, final String name)
     {
         if (argument == null)
-            throw new IllegalArgumentException(name + " may not be null");
+            throw new IllegalArgumentException(name + " must not be null");
     }
 
     public static void notEmpty(final CharSequence argument, final String name)
     {
         notNull(argument, name);
         if (Helpers.isEmpty(argument))
-            throw new IllegalArgumentException(name + " may not be empty");
+            throw new IllegalArgumentException(name + " must not be empty");
     }
 
     public static void notBlank(final CharSequence argument, final String name)
     {
         notNull(argument, name);
         if (Helpers.isBlank(argument))
-            throw new IllegalArgumentException(name + " may not be blank");
+            throw new IllegalArgumentException(name + " must not be blank");
     }
 
     public static void noWhitespace(final CharSequence argument, final String name)
     {
         notNull(argument, name);
         if (Helpers.containsWhitespace(argument))
-            throw new IllegalArgumentException(name + " may not contain blanks");
+            throw new IllegalArgumentException(name + " must not contain blanks");
     }
 
     public static void notEmpty(final Collection<?> argument, final String name)
     {
         notNull(argument, name);
         if (argument.isEmpty())
-            throw new IllegalArgumentException(name + " may not be empty");
+            throw new IllegalArgumentException(name + " must not be empty");
     }
 
     public static void notEmpty(final Object[] argument, final String name)
     {
         notNull(argument, name);
         if (argument.length == 0)
-            throw new IllegalArgumentException(name + " may not be empty");
+            throw new IllegalArgumentException(name + " must not be empty");
     }
 
     public static void noneNull(final Collection<?> argument, final String name)
@@ -126,25 +126,25 @@ public class Checks
     public static void positive(final int n, final String name)
     {
         if (n <= 0)
-            throw new IllegalArgumentException(name + " may not be negative or zero");
+            throw new IllegalArgumentException(name + " must not be negative or zero");
     }
 
     public static void positive(final long n, final String name)
     {
         if (n <= 0)
-            throw new IllegalArgumentException(name + " may not be negative or zero");
+            throw new IllegalArgumentException(name + " must not be negative or zero");
     }
 
     public static void notNegative(final int n, final String name)
     {
         if (n < 0)
-            throw new IllegalArgumentException(name + " may not be negative");
+            throw new IllegalArgumentException(name + " must not be negative");
     }
 
     public static void notNegative(final long n, final String name)
     {
         if (n < 0)
-            throw new IllegalArgumentException(name + " may not be negative");
+            throw new IllegalArgumentException(name + " must not be negative");
     }
 
 }
