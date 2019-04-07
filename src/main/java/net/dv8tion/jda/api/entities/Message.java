@@ -25,16 +25,11 @@ import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.*;
+import org.apache.commons.collections4.Bag;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nullable;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.*;
 import java.time.OffsetDateTime;
 import java.util.Formattable;
@@ -143,6 +138,9 @@ public interface Message extends ISnowflake, Formattable
      */
     List<User> getMentionedUsers();
 
+    @Nonnull
+    Bag<User> getMentionedUsersBag();
+
     /**
      * A immutable list of all mentioned {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}.
      * <br>If none were mentioned, this list is empty.
@@ -156,6 +154,9 @@ public interface Message extends ISnowflake, Formattable
      */
     List<TextChannel> getMentionedChannels();
 
+    @Nonnull
+    Bag<TextChannel> getMentionedChannelsBag();
+
     /**
      * A immutable list of all mentioned {@link net.dv8tion.jda.api.entities.Role Roles}.
      * <br>If none were mentioned, this list is empty.
@@ -168,6 +169,9 @@ public interface Message extends ISnowflake, Formattable
      * @return immutable list of mentioned Roles
      */
     List<Role> getMentionedRoles();
+
+    @Nonnull
+    Bag<Role> getMentionedRolesBag();
 
     /**
      * Creates an immutable list of {@link net.dv8tion.jda.api.entities.Member Members}
@@ -522,6 +526,9 @@ public interface Message extends ISnowflake, Formattable
      * @return An immutable list of the Emotes used in this message (example match {@literal <:jda:230988580904763393>})
      */
     List<Emote> getEmotes();
+
+    @Nonnull
+    Bag<Emote> getEmotesBag();
 
     /**
      * All {@link net.dv8tion.jda.api.entities.MessageReaction MessageReactions} that are on this Message.

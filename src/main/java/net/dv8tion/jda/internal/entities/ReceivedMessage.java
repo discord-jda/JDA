@@ -30,8 +30,11 @@ import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.apache.commons.collections4.Bag;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.bag.HashBag;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -192,6 +195,30 @@ public class ReceivedMessage extends AbstractMessage
         return userMentions;
     }
 
+    @Nonnull
+    @Override
+    public Bag<User> getMentionedUsersBag()
+    {
+        Bag<User> bag = new HashBag<>();
+        Matcher matcher = MentionType.USER.getPattern().matcher(content);
+        while (matcher.find())
+        {
+            try
+            {
+                long id = MiscUtil.parseSnowflake(matcher.group(1));
+                if (!mentionedUsers.contains(id))
+                    continue;
+                User user = getJDA().getUserById(id);
+                if (user == null)
+                    user = api.getFakeUserMap().get(id);
+                if (user != null)
+                    bag.add(user);
+            }
+            catch (NumberFormatException ignored) {}
+        }
+        return bag;
+    }
+
     @Override
     public synchronized List<TextChannel> getMentionedChannels()
     {
@@ -214,6 +241,26 @@ public class ReceivedMessage extends AbstractMessage
         }
 
         return channelMentions;
+    }
+
+    @Nonnull
+    @Override
+    public Bag<TextChannel> getMentionedChannelsBag()
+    {
+        Bag<TextChannel> bag = new HashBag<>();
+        Matcher matcher = MentionType.CHANNEL.getPattern().matcher(content);
+        while (matcher.find())
+        {
+            try
+            {
+                long id = MiscUtil.parseSnowflake(matcher.group(1));
+                TextChannel channel = getJDA().getTextChannelById(id);
+                if (channel != null)
+                    bag.add(channel);
+            }
+            catch (NumberFormatException ignored) {}
+        }
+        return bag;
     }
 
     @Override
@@ -244,6 +291,30 @@ public class ReceivedMessage extends AbstractMessage
         }
 
         return roleMentions;
+    }
+
+    @Nonnull
+    @Override
+    public Bag<Role> getMentionedRolesBag()
+    {
+        Bag<Role> bag = new HashBag<>();
+        if (!getChannelType().isGuild())
+            return bag;
+        Matcher matcher = MentionType.ROLE.getPattern().matcher(content);
+        while (matcher.find())
+        {
+            try
+            {
+                long id = MiscUtil.parseSnowflake(matcher.group(1));
+                if (!mentionedRoles.contains(id))
+                    continue;
+                Role role = getGuild().getRoleById(id);
+                if (role != null)
+                    bag.add(role);
+            }
+            catch (NumberFormatException ignored) {}
+        }
+        return bag;
     }
 
     @Override
@@ -604,6 +675,29 @@ public class ReceivedMessage extends AbstractMessage
             emoteMentions = Collections.unmodifiableList(emoteMentions);
         }
         return emoteMentions;
+    }
+
+    @Nonnull
+    @Override
+    public Bag<Emote> getEmotesBag()
+    {
+        Bag<Emote> bag = new HashBag<>();
+        Matcher matcher = MentionType.EMOTE.getPattern().matcher(getContentRaw());
+        while (matcher.find())
+        {
+            try
+            {
+                long emoteId = MiscUtil.parseSnowflake(matcher.group(2));
+                String name = matcher.group(1);
+                boolean animated = matcher.group(0).startsWith("<a:");
+                Emote emote = getJDA().getEmoteById(emoteId);
+                if (emote == null)
+                    emote = new EmoteImpl(emoteId, api).setAnimated(animated).setName(name);
+                bag.add(emote);
+            }
+            catch (NumberFormatException ignored) {}
+        }
+        return bag;
     }
 
     @Override
