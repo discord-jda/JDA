@@ -1049,8 +1049,8 @@ public interface Message extends ISnowflake, Formattable
      * This specifies the {@link net.dv8tion.jda.api.entities.MessageType MessageType} of this Message.
      *
      * <p>Messages can represent more than just simple text sent by Users, they can also be special messages that
-     * inform about events occurs. A few examples are the system message informing that a message has been pinned.
-     * Another would be the system message informing that a call has been started or ended in a group.
+     * inform about events that occur. Messages can either be {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT default messages}
+     * or special messages like {@link net.dv8tion.jda.api.entities.MessageType#GUILD_MEMBER_JOIN welcome messages}.
      *
      * @return The {@link net.dv8tion.jda.api.entities.MessageType MessageType} of this message.
      */
