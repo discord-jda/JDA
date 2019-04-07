@@ -42,7 +42,7 @@ public class JDALogger
     public static final boolean SLF4J_ENABLED;
     static
     {
-        boolean tmp;
+        boolean tmp = false;
 
         try
         {
