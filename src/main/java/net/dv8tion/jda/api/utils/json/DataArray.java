@@ -55,7 +55,7 @@ public class DataArray implements Iterable<Object>
     @Nonnull
     public static DataArray fromCollection(@Nonnull Collection<?> list)
     {
-        return new DataArray(new ArrayList<>(list));
+        return empty().addAll(list);
     }
 
     @Nonnull
