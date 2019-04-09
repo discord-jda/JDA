@@ -37,9 +37,9 @@ import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.WebhookActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
-import org.json.JSONException;
 
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -81,7 +81,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
                 {
                     webhooks.add(builder.createWebhook(array.getObject(i)));
                 }
-                catch (JSONException | NullPointerException e)
+                catch (UncheckedIOException | NullPointerException e)
                 {
                     JDAImpl.LOG.error("Error while creating websocket from json", e);
                 }

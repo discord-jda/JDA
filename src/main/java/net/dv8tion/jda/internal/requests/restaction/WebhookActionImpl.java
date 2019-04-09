@@ -27,7 +27,6 @@ import net.dv8tion.jda.api.utils.json.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
-import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 import java.util.function.BooleanSupplier;
@@ -85,7 +84,7 @@ public class WebhookActionImpl extends AuditableRestActionImpl<Webhook> implemen
     {
         DataObject object = DataObject.empty();
         object.put("name",   name);
-        object.put("avatar", avatar != null ? avatar.getEncoding() : JSONObject.NULL);
+        object.put("avatar", avatar != null ? avatar.getEncoding() : null);
 
         return getRequestBody(object);
     }

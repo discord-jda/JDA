@@ -46,10 +46,10 @@ import net.dv8tion.jda.internal.requests.restaction.pagination.AuditLogPaginatio
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.*;
-import org.json.JSONException;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.UncheckedIOException;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -218,7 +218,7 @@ public class GuildImpl implements Guild
                 {
                     webhooks.add(builder.createWebhook(array.getObject(i)));
                 }
-                catch (JSONException | NullPointerException e)
+                catch (UncheckedIOException | NullPointerException e)
                 {
                     JDAImpl.LOG.error("Error creating webhook from json", e);
                 }

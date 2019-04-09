@@ -29,7 +29,6 @@ import net.dv8tion.jda.internal.entities.PermissionOverrideImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
-import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 import java.util.function.BooleanSupplier;
@@ -208,7 +207,7 @@ public class PermissionOverrideActionImpl
     protected void handleSuccess(Response response, Request<PermissionOverride> request)
     {
         long id = permissionHolder.getIdLong();
-        JSONObject object = (JSONObject) request.getRawBody();
+        DataObject object = (DataObject) request.getRawBody();
         PermissionOverrideImpl override = new PermissionOverrideImpl(channel, id, permissionHolder);
         override.setAllow(object.getLong("allow"));
         override.setDeny(object.getLong("deny"));

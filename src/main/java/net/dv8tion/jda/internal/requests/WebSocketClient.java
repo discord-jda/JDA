@@ -43,13 +43,12 @@ import net.dv8tion.jda.internal.managers.PresenceImpl;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.SoftReference;
 import java.time.OffsetDateTime;
@@ -243,7 +242,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         locked("Interrupted while trying to add request to queue", () -> ratelimitQueue.add(message));
     }
 
-    public void chunkOrSyncRequest(JSONObject request)
+    public void chunkOrSyncRequest(DataObject request)
     {
         locked("Interrupted while trying to add chunk request", () -> chunkSyncQueue.add(request.toString()));
     }
@@ -601,7 +600,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected void sendKeepAlive()
     {
         String keepAlivePacket =
-                new JSONObject()
+                DataObject.empty()
                     .put("op", WebSocketCode.HEARTBEAT)
                     .put("d", api.getResponseTotal()
                 ).toString();
@@ -649,9 +648,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected void sendResume()
     {
         LOG.debug("Sending Resume-packet...");
-        JSONObject resume = new JSONObject()
+        DataObject resume = DataObject.empty()
             .put("op", WebSocketCode.RESUME)
-            .put("d", new JSONObject()
+            .put("d", DataObject.empty()
                 .put("session_id", sessionId)
                 .put("token", getToken())
                 .put("seq", api.getResponseTotal()));
@@ -863,7 +862,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         LOG.debug("Unrecognized event:\n{}", raw);
             }
         }
-        catch (JSONException ex)
+        catch (UncheckedIOException ex)
         {
             LOG.warn("Got an unexpected Json-parse error. Please redirect following message to the devs:\n\t{}\n\t{} -> {}",
                 ex.getMessage(), type, content, ex);

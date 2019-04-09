@@ -142,7 +142,7 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
 
         //Required fields. Populate with current values..
         body.put("username", getSelfUser().getName());
-        body.put("avatar", opt(getSelfUser().getAvatarId()));
+        body.put("avatar", getSelfUser().getAvatarId());
 
         if (shouldUpdate(NAME))
             body.put("username", name);

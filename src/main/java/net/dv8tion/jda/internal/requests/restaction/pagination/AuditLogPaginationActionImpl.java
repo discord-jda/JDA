@@ -33,8 +33,8 @@ import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
-import org.json.JSONException;
 
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -149,7 +149,7 @@ public class AuditLogPaginationActionImpl
                 this.last = result;
                 this.lastKey = last.getIdLong();
             }
-            catch (JSONException | NullPointerException e)
+            catch (UncheckedIOException | NullPointerException e)
             {
                 LOG.warn("Encountered exception in AuditLogPagination", e);
             }

@@ -22,12 +22,12 @@ import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.requests.restaction.GuildAction;
+import net.dv8tion.jda.api.utils.json.DataArray;
 import net.dv8tion.jda.api.utils.json.DataObject;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
-import org.json.JSONArray;
 
 import javax.annotation.CheckReturnValue;
 import java.util.LinkedList;
@@ -187,9 +187,9 @@ public class GuildActionImpl extends RestActionImpl<Void> implements GuildAction
     {
         final DataObject object = DataObject.empty();
         object.put("name", name);
-        object.put("roles", new JSONArray(roles));
+        object.put("roles", DataArray.fromCollection(roles));
         if (!channels.isEmpty())
-            object.put("channels", new JSONArray(channels));
+            object.put("channels", DataArray.fromCollection(channels));
         if (icon != null)
             object.put("icon", icon.getEncoding());
         if (verificationLevel != null)

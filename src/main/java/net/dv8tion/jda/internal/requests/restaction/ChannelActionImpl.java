@@ -21,12 +21,12 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
+import net.dv8tion.jda.api.utils.json.DataArray;
 import net.dv8tion.jda.api.utils.json.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
-import org.json.JSONArray;
 
 import javax.annotation.CheckReturnValue;
 import java.util.Collection;
@@ -205,7 +205,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         DataObject object = DataObject.empty();
         object.put("name", name);
         object.put("type", type.getId());
-        object.put("permission_overwrites", new JSONArray(overrides));
+        object.put("permission_overwrites", DataArray.fromCollection(overrides));
         if (position != null)
             object.put("position", position);
         switch (type)

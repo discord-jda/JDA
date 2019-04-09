@@ -235,9 +235,9 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
         if (shouldUpdate(SPLASH))
             body.put("splash", splash == null ? null : splash.getEncoding());
         if (shouldUpdate(AFK_CHANNEL))
-            body.put("afk_channel_id", opt(afkChannel));
+            body.put("afk_channel_id", afkChannel);
         if (shouldUpdate(SYSTEM_CHANNEL))
-            body.put("system_channel_id", opt(systemChannel));
+            body.put("system_channel_id", systemChannel);
         if (shouldUpdate(VERIFICATION_LEVEL))
             body.put("verification_level", verificationLevel);
         if (shouldUpdate(NOTIFICATION_LEVEL))

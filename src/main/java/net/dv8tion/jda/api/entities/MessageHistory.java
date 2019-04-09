@@ -32,10 +32,10 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.apache.commons.collections4.map.ListOrderedMap;
-import org.json.JSONException;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.io.UncheckedIOException;
 import java.util.*;
 
 /**
@@ -548,7 +548,7 @@ public class MessageHistory
                     DataObject obj = array.getObject(i);
                     result.history.put(obj.getLong("id"), builder.createMessage(obj, channel, false));
                 }
-                catch (JSONException | NullPointerException e)
+                catch (UncheckedIOException | NullPointerException e)
                 {
                     LOG.warn("Encountered exception in MessagePagination", e);
                 }

@@ -17,10 +17,10 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.utils.json.DataArray;
+import net.dv8tion.jda.api.utils.json.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.awt.Color;
 import java.time.OffsetDateTime;
@@ -108,7 +108,7 @@ public class MessageEmbed
     protected final List<Field> fields;
 
     protected volatile int length = -1;
-    protected volatile JSONObject json = null;
+    protected volatile DataObject json = null;
 
     public MessageEmbed(
         String url, String title, String description, EmbedType type, OffsetDateTime timestamp,
@@ -406,12 +406,12 @@ public class MessageEmbed
     }
 
     /**
-     * Creates a new {@link org.json.JSONObject JSONObject}
+     * Creates a new {@link net.dv8tion.jda.api.utils.json.DataObject}
      * used for sending.
      *
      * @return JSONObject for this embed
      */
-    public JSONObject toJSONObject()
+    public DataObject toJSONObject()
     {
         if (json != null)
             return json;
@@ -419,7 +419,7 @@ public class MessageEmbed
         {
             if (json != null)
                 return json;
-            JSONObject obj = new JSONObject();
+            DataObject obj = DataObject.empty();
             if (url != null)
                 obj.put("url", url);
             if (title != null)
@@ -431,10 +431,10 @@ public class MessageEmbed
             if (color != Role.DEFAULT_COLOR_RAW)
                 obj.put("color", color & 0xFFFFFF);
             if (thumbnail != null)
-                obj.put("thumbnail", new JSONObject().put("url", thumbnail.getUrl()));
+                obj.put("thumbnail", DataObject.empty().put("url", thumbnail.getUrl()));
             if (siteProvider != null)
             {
-                JSONObject siteProviderObj = new JSONObject();
+                DataObject siteProviderObj = DataObject.empty();
                 if (siteProvider.getName() != null)
                     siteProviderObj.put("name", siteProvider.getName());
                 if (siteProvider.getUrl() != null)
@@ -443,7 +443,7 @@ public class MessageEmbed
             }
             if (author != null)
             {
-                JSONObject authorObj = new JSONObject();
+                DataObject authorObj = DataObject.empty();
                 if (author.getName() != null)
                     authorObj.put("name", author.getName());
                 if (author.getUrl() != null)
@@ -453,10 +453,10 @@ public class MessageEmbed
                 obj.put("author", authorObj);
             }
             if (videoInfo != null)
-                obj.put("video", new JSONObject().put("url", videoInfo.getUrl()));
+                obj.put("video", DataObject.empty().put("url", videoInfo.getUrl()));
             if (footer != null)
             {
-                JSONObject footerObj = new JSONObject();
+                DataObject footerObj = DataObject.empty();
                 if (footer.getText() != null)
                     footerObj.put("text", footer.getText());
                 if (footer.getIconUrl() != null)
@@ -464,14 +464,14 @@ public class MessageEmbed
                 obj.put("footer", footerObj);
             }
             if (image != null)
-                obj.put("image", new JSONObject().put("url", image.getUrl()));
+                obj.put("image", DataObject.empty().put("url", image.getUrl()));
             if (!fields.isEmpty())
             {
-                JSONArray fieldsArray = new JSONArray();
+                DataArray fieldsArray = DataArray.empty();
                 for (Field field : fields)
                 {
                     fieldsArray
-                        .put(new JSONObject()
+                        .add(DataObject.empty()
                             .put("name", field.getName())
                             .put("value", field.getValue())
                             .put("inline", field.isInline()));

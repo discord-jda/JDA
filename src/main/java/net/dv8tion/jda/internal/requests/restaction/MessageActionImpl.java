@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.json.DataObject;
 import net.dv8tion.jda.internal.requests.Method;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
@@ -33,7 +34,6 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 import java.io.*;
@@ -297,21 +297,21 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return RequestBody.create(Requester.MEDIA_TYPE_JSON, getJSON().toString());
     }
 
-    protected JSONObject getJSON()
+    protected DataObject getJSON()
     {
-        final JSONObject obj = new JSONObject();
+        final DataObject obj = DataObject.empty();
         if (override)
         {
             if (embed == null)
-                obj.put("embed", JSONObject.NULL);
+                obj.putNull("embed");
             else
                 obj.put("embed", getJSONEmbed(embed));
             if (content.length() == 0)
-                obj.put("content", JSONObject.NULL);
+                obj.putNull("content");
             else
                 obj.put("content", content.toString());
             if (nonce == null)
-                obj.put("nonce", JSONObject.NULL);
+                obj.putNull("nonce");
             else
                 obj.put("nonce", nonce);
             obj.put("tts", tts);
@@ -329,7 +329,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return obj;
     }
 
-    protected static JSONObject getJSONEmbed(final MessageEmbed embed)
+    protected static DataObject getJSONEmbed(final MessageEmbed embed)
     {
         return embed.toJSONObject();
     }

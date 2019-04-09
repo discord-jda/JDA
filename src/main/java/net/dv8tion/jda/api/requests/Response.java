@@ -16,11 +16,11 @@
 
 package net.dv8tion.jda.api.requests;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import net.dv8tion.jda.api.utils.IOFunction;
 import net.dv8tion.jda.api.utils.json.DataArray;
 import net.dv8tion.jda.api.utils.json.DataObject;
 import net.dv8tion.jda.internal.requests.Requester;
-import org.json.JSONException;
 
 import java.io.*;
 import java.util.Optional;
@@ -203,7 +203,7 @@ public class Response implements Closeable
                 reader.close();
             }
             catch (NullPointerException | IOException ignored) {}
-            if (opt && e instanceof JSONException)
+            if (opt && e instanceof JsonProcessingException)
                 return Optional.empty();
             else
                 throw new IllegalStateException("An error occurred while parsing the response for a RestAction", e);

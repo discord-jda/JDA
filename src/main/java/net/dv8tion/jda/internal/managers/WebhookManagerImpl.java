@@ -27,7 +27,6 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import okhttp3.RequestBody;
-import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 
@@ -131,7 +130,7 @@ public class WebhookManagerImpl extends ManagerBase<WebhookManager> implements W
         if (shouldUpdate(CHANNEL))
             data.put("channel_id", channel);
         if (shouldUpdate(AVATAR))
-            data.put("avatar", avatar == null ? JSONObject.NULL : avatar.getEncoding());
+            data.put("avatar", avatar == null ? null : avatar.getEncoding());
 
         return getRequestBody(data);
     }

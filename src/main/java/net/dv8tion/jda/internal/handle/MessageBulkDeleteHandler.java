@@ -20,7 +20,6 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent;
 import net.dv8tion.jda.api.utils.json.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import org.json.JSONObject;
 
 import java.util.LinkedList;
 
@@ -49,7 +48,7 @@ public class MessageBulkDeleteHandler extends SocketHandler
             {
                 handler.handle(responseNumber, DataObject.empty()
                     .put("t", "MESSAGE_DELETE")
-                    .put("d", new JSONObject()
+                    .put("d", DataObject.empty()
                         .put("channel_id", Long.toUnsignedString(channelId))
                         .put("id", id)));
             });

@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.internal.utils;
 
-import org.json.JSONObject;
+import net.dv8tion.jda.api.utils.json.DataObject;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -171,17 +171,17 @@ public final class Helpers
 
     // ## JSONObject ##
 
-    public static boolean optBoolean(JSONObject object, String key)
+    public static boolean optBoolean(DataObject object, String key)
     {
         return !object.isNull(key) && object.getBoolean(key);
     }
 
-    public static int optInt(JSONObject object, String key, int defaultValue)
+    public static int optInt(DataObject object, String key, int defaultValue)
     {
         return object.isNull(key) ? defaultValue : object.getInt(key);
     }
 
-    public static long optLong(JSONObject object, String key, long defaultValue)
+    public static long optLong(DataObject object, String key, long defaultValue)
     {
         return object.isNull(key) ? defaultValue : object.getLong(key);
     }

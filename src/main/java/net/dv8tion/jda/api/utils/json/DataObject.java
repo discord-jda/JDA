@@ -105,6 +105,11 @@ public class DataObject
         return data.get(key) == null;
     }
 
+    public boolean isArray(@Nonnull String key)
+    {
+        return optArray(key).isPresent();
+    }
+
     public boolean isObject(@Nonnull String key)
     {
         return optObject(key).isPresent();
@@ -253,22 +258,22 @@ public class DataObject
     }
 
     @Nonnull
-    public DataObject put(@Nonnull String key, @Nullable Object value)
+    public DataObject putNull(@Nonnull String key)
     {
-        data.put(key, value);
+        data.put(key, null);
         return this;
     }
 
     @Nonnull
-    public DataObject put(@Nonnull String key, @Nullable DataObject map)
+    public DataObject put(@Nonnull String key, @Nullable Object value)
     {
-        return put(key, map == null ? null : map.data);
-    }
-
-    @Nonnull
-    public DataObject put(@Nonnull String key, @Nullable DataArray list)
-    {
-        return put(key, list == null ? null : list.data);
+        if (value instanceof DataObject)
+            data.put(key, ((DataObject) value).data);
+        else if (value instanceof DataArray)
+            data.put(key, ((DataArray) value).data);
+        else
+            data.put(key, value);
+        return this;
     }
 
     @Nonnull

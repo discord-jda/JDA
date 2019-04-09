@@ -40,9 +40,6 @@ import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import java.time.Instant;
@@ -935,7 +932,7 @@ public class EntityBuilder
     public MessageEmbed createMessageEmbed(DataObject content)
     {
         if (content.isNull("type"))
-            throw new JSONException("Encountered embed object with missing/null type field for Json: " + content);
+            throw new IllegalStateException("Encountered embed object with missing/null type field for Json: " + content);
         EmbedType type = EmbedType.fromKey(content.getString("type"));
         final String url = content.getString("url", null);
         final String title = content.getString("title", null);
@@ -1095,8 +1092,8 @@ public class EntityBuilder
             throw new NullPointerException(String.format("Tried to create Webhook for an un-cached TextChannel! WebhookId: %s ChannelId: %s GuildId: %s",
                     id, channelId, guildId));
 
-        Object name = !object.isNull("name") ? object.get("name") : JSONObject.NULL;
-        Object avatar = !object.isNull("avatar") ? object.get("avatar") : JSONObject.NULL;
+        Object name = !object.isNull("name") ? object.get("name") : null;
+        Object avatar = !object.isNull("avatar") ? object.get("avatar") : null;
 
         DataObject fakeUser = DataObject.empty()
                     .put("username", name)
@@ -1281,19 +1278,6 @@ public class EntityBuilder
         final String key = change.getString("key");
         Object oldValue = change.isNull("old_value") ? null : change.get("old_value");
         Object newValue = change.isNull("new_value") ? null : change.get("new_value");
-
-        // Don't confront users with JSON
-        if (oldValue instanceof JSONArray || newValue instanceof JSONArray)
-        {
-            oldValue = oldValue instanceof JSONArray ? ((JSONArray) oldValue).toList() : oldValue;
-            newValue = newValue instanceof JSONArray ? ((JSONArray) newValue).toList() : newValue;
-        }
-        else if (oldValue instanceof JSONObject || newValue instanceof JSONObject)
-        {
-            oldValue = oldValue instanceof JSONObject ? ((JSONObject) oldValue).toMap() : oldValue;
-            newValue = newValue instanceof JSONObject ? ((JSONObject) newValue).toMap() : newValue;
-        }
-
         return new AuditLogChange(oldValue, newValue, key);
     }
 

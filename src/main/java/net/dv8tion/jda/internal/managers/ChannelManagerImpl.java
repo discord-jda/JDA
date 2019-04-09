@@ -330,7 +330,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         if (shouldUpdate(POSITION))
             frame.put("position", position);
         if (shouldUpdate(TOPIC))
-            frame.put("topic", opt(topic));
+            frame.put("topic", topic);
         if (shouldUpdate(NSFW))
             frame.put("nsfw", nsfw);
         if (shouldUpdate(SLOWMODE))
@@ -340,7 +340,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         if (shouldUpdate(BITRATE))
             frame.put("bitrate", bitrate);
         if (shouldUpdate(PARENT))
-            frame.put("parent_id", opt(parent));
+            frame.put("parent_id", parent);
         withLock(lock, (lock) ->
         {
             if (shouldUpdate(PERMISSION))

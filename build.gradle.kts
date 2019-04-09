@@ -69,7 +69,7 @@ dependencies {
     //Web Connection Support
     api("com.neovisionaries:nv-websocket-client:2.5")
     api("com.squareup.okhttp3:okhttp:3.13.0")
-    api("org.json:json:20160810")
+//    api("org.json:json:20160810")
     api("com.fasterxml.jackson.core:jackson-databind:2.9.8")
 
 

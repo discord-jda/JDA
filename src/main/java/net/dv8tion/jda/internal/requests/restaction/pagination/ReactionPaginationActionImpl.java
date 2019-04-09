@@ -25,8 +25,8 @@ import net.dv8tion.jda.api.utils.json.DataArray;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
-import org.json.JSONException;
 
+import java.io.UncheckedIOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -99,7 +99,7 @@ public class ReactionPaginationActionImpl
                 last = user;
                 lastKey = last.getIdLong();
             }
-            catch (JSONException | NullPointerException e)
+            catch (UncheckedIOException | NullPointerException e)
             {
                 LOG.warn("Encountered exception in ReactionPagination", e);
             }

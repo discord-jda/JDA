@@ -28,8 +28,8 @@ import net.dv8tion.jda.api.requests.restaction.pagination.MessagePaginationActio
 import net.dv8tion.jda.api.utils.json.DataArray;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.Route;
-import org.json.JSONException;
 
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,7 +92,7 @@ public class MessagePaginationActionImpl
                 last = msg;
                 lastKey = last.getIdLong();
             }
-            catch (JSONException | NullPointerException e)
+            catch (UncheckedIOException | NullPointerException e)
             {
                 LOG.warn("Encountered an exception in MessagePagination", e);
             }
