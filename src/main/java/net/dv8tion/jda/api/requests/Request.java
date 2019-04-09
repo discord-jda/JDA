@@ -153,7 +153,7 @@ public class Request<T>
         return checks == null || checks.getAsBoolean();
     }
 
-    @Nonnull
+    @Nullable
     public CaseInsensitiveMap<String, String> getHeaders()
     {
         return headers;
