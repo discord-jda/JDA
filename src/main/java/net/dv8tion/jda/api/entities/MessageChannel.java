@@ -992,7 +992,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     }
 
     /**
-     * Creates a new {@link MessageHistory MessageHistory} object for each call of this method.
+     * Creates a new {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object for each call of this method.
      * <br>MessageHistory is <b>NOT</b> an internal message cache, but rather it queries the Discord servers for previously sent messages.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
@@ -1053,7 +1053,7 @@ public interface MessageChannel extends ISnowflake, Formattable
 
     /**
      * Uses the provided {@code id} of a message as a marker and retrieves messages sent around
-     * the marker. The {@code limit} determines the amount of message retrieved near the marker. Discord will
+     * the marker. The {@code limit} determines the amount of messages retrieved near the marker. Discord will
      * attempt to evenly split the limit between before and after the marker, however in the case that the marker is set
      * near the beginning or near the end of the channel's history the amount of messages on each side of the marker may
      * be different, and their total count may not equal the provided {@code limit}.
@@ -1088,10 +1088,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * @param messageId
-     *        The id of the message that will act as a marker.
-     * @param limit
-     *        The amount of message to be retrieved around the marker. Minimum: 1, Max: 100.
+     * @param  messageId
+     *         The id of the message that will act as a marker.
+     * @param  limit
+     *         The amount of messages to be retrieved around the marker. Minimum: 1, Max: 100.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -1106,7 +1106,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
-     *         <br>Provides a MessageHistory object with message around the provided message loaded into it.
+     *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages around the provided message loaded into it.
      *
      * @see    net.dv8tion.jda.api.entities.MessageHistory#getHistoryAround(MessageChannel, String) MessageHistory.getHistoryAround(MessageChannel, String)
      */
@@ -1119,7 +1119,7 @@ public interface MessageChannel extends ISnowflake, Formattable
 
     /**
      * Uses the provided {@code id} of a message as a marker and retrieves messages around
-     * the marker. The {@code limit} determines the amount of message retrieved near the marker. Discord will
+     * the marker. The {@code limit} determines the amount of messages retrieved near the marker. Discord will
      * attempt to evenly split the limit between before and after the marker, however in the case that the marker is set
      * near the beginning or near the end of the channel's history the amount of messages on each side of the marker may
      * be different, and their total count may not equal the provided {@code limit}.
@@ -1154,10 +1154,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * @param messageId
-     *        The id of the message that will act as a marker. The id must refer to a message from this MessageChannel.
-     * @param limit
-     *        The amount of message to be retrieved around the marker. Minimum: 1, Max: 100.
+     * @param  messageId
+     *         The id of the message that will act as a marker. The id must refer to a message from this MessageChannel.
+     * @param  limit
+     *         The amount of messages to be retrieved around the marker. Minimum: 1, Max: 100.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -1172,7 +1172,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
-     *         <br>Provides a MessageHistory object with message around the provided message loaded into it.
+     *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages around the provided message loaded into it.
      *
      * @see    net.dv8tion.jda.api.entities.MessageHistory#getHistoryAround(MessageChannel, String) MessageHistory.getHistoryAround(MessageChannel, String)
      */
@@ -1185,7 +1185,7 @@ public interface MessageChannel extends ISnowflake, Formattable
 
     /**
      * Uses the provided {@link net.dv8tion.jda.api.entities.Message Message} as a marker and retrieves messages around
-     * the marker. The {@code limit} determines the amount of message retrieved near the marker. Discord will
+     * the marker. The {@code limit} determines the amount of messages retrieved near the marker. Discord will
      * attempt to evenly split the limit between before and after the marker, however in the case that the marker is set
      * near the beginning or near the end of the channel's history the amount of messages on each side of the marker may
      * be different, and their total count may not equal the provided {@code limit}.
@@ -1219,11 +1219,11 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * @param message
-     *        The {@link net.dv8tion.jda.api.entities.Message Message} that will act as a marker. The provided Message
-     *        must be from this MessageChannel.
-     * @param limit
-     *        The amount of message to be retrieved around the marker. Minimum: 1, Max: 100.
+     * @param  message
+     *         The {@link net.dv8tion.jda.api.entities.Message Message} that will act as a marker. The provided Message
+     *         must be from this MessageChannel.
+     * @param  limit
+     *         The amount of messages to be retrieved around the marker. Minimum: 1, Max: 100.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -1238,7 +1238,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
-     *         <br>Provides a MessageHistory object with message around the provided message loaded into it.
+     *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages around the provided message loaded into it.
      *
      * @see    net.dv8tion.jda.api.entities.MessageHistory#getHistoryAround(MessageChannel, String) MessageHistory.getHistoryAround(MessageChannel, String)
      */
@@ -1252,7 +1252,7 @@ public interface MessageChannel extends ISnowflake, Formattable
 
     /**
      * Uses the provided {@code id} of a message as a marker and retrieves messages sent after
-     * the marker ID. The {@code limit} determines the amount of message retrieved near the marker.
+     * the marker ID. The {@code limit} determines the amount of messages retrieved near the marker.
      *
      * <p><b>Examples:</b>
      * <br>Retrieve 100 messages from the middle of history. {@literal >}100 message exist in history and the marker is {@literal >}50 messages
@@ -1279,10 +1279,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * @param messageId
-     *        The id of the message that will act as a marker.
-     * @param limit
-     *        The amount of message to be retrieved after the marker. Minimum: 1, Max: 100.
+     * @param  messageId
+     *         The id of the message that will act as a marker.
+     * @param  limit
+     *         The amount of messages to be retrieved after the marker. Minimum: 1, Max: 100.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -1297,7 +1297,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
-     *         <br>Provides a MessageHistory object with message after the provided message loaded into it.
+     *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages after the provided message loaded into it.
      *
      * @see    net.dv8tion.jda.api.entities.MessageHistory#getHistoryAfter(MessageChannel, String) MessageHistory.getHistoryAfter(MessageChannel, String)
      */
@@ -1310,7 +1310,7 @@ public interface MessageChannel extends ISnowflake, Formattable
 
     /**
      * Uses the provided {@code id} of a message as a marker and retrieves messages sent after
-     * the marker ID. The {@code limit} determines the amount of message retrieved near the marker.
+     * the marker ID. The {@code limit} determines the amount of messages retrieved near the marker.
      *
      * <p><b>Examples:</b>
      * <br>Retrieve 100 messages from the middle of history. {@literal >}100 message exist in history and the marker is {@literal >}50 messages
@@ -1337,10 +1337,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * @param messageId
-     *        The id of the message that will act as a marker.
-     * @param limit
-     *        The amount of message to be retrieved after the marker. Minimum: 1, Max: 100.
+     * @param  messageId
+     *         The id of the message that will act as a marker.
+     * @param  limit
+     *         The amount of messages to be retrieved after the marker. Minimum: 1, Max: 100.
      *
      * @throws java.lang.IllegalArgumentException
      *         Provided {@code limit} is less than {@code 1} or greater than {@code 100}.
@@ -1352,7 +1352,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
-     *         <br>Provides a MessageHistory object with message after the provided message loaded into it.
+     *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages after the provided message loaded into it.
      *
      * @see    net.dv8tion.jda.api.entities.MessageHistory#getHistoryAfter(MessageChannel, String) MessageHistory.getHistoryAfter(MessageChannel, String)
      */
@@ -1365,7 +1365,7 @@ public interface MessageChannel extends ISnowflake, Formattable
 
     /**
      * Uses the provided message as a marker and retrieves messages sent after
-     * the marker. The {@code limit} determines the amount of message retrieved near the marker.
+     * the marker. The {@code limit} determines the amount of messages retrieved near the marker.
      *
      * <p><b>Examples:</b>
      * <br>Retrieve 100 messages from the middle of history. {@literal >}100 message exist in history and the marker is {@literal >}50 messages
@@ -1392,10 +1392,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * @param message
-     *        The message that will act as a marker.
-     * @param limit
-     *        The amount of message to be retrieved after the marker. Minimum: 1, Max: 100.
+     * @param  message
+     *         The message that will act as a marker.
+     * @param  limit
+     *         The amount of messages to be retrieved after the marker. Minimum: 1, Max: 100.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -1410,7 +1410,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
-     *         <br>Provides a MessageHistory object with message after the provided message loaded into it.
+     *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages after the provided message loaded into it.
      *
      * @see    net.dv8tion.jda.api.entities.MessageHistory#getHistoryAfter(MessageChannel, String) MessageHistory.getHistoryAfter(MessageChannel, String)
      */
@@ -1424,7 +1424,7 @@ public interface MessageChannel extends ISnowflake, Formattable
 
     /**
      * Uses the provided {@code id} of a message as a marker and retrieves messages sent before
-     * the marker ID. The {@code limit} determines the amount of message retrieved near the marker.
+     * the marker ID. The {@code limit} determines the amount of messages retrieved near the marker.
      *
      * <p><b>Examples:</b>
      * <br>Retrieve 100 messages from the middle of history. {@literal >}100 message exist in history and the marker is {@literal >}50 messages
@@ -1451,10 +1451,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * @param messageId
-     *        The id of the message that will act as a marker.
-     * @param limit
-     *        The amount of message to be retrieved after the marker. Minimum: 1, Max: 100.
+     * @param  messageId
+     *         The id of the message that will act as a marker.
+     * @param  limit
+     *         The amount of messages to be retrieved after the marker. Minimum: 1, Max: 100.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -1469,7 +1469,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
-     *         <br>Provides a MessageHistory object with message before the provided message loaded into it.
+     *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages before the provided message loaded into it.
      *
      * @see    net.dv8tion.jda.api.entities.MessageHistory#getHistoryBefore(MessageChannel, String) MessageHistory.getHistoryBefore(MessageChannel, String)
      */
@@ -1482,7 +1482,7 @@ public interface MessageChannel extends ISnowflake, Formattable
 
     /**
      * Uses the provided {@code id} of a message as a marker and retrieves messages sent before
-     * the marker ID. The {@code limit} determines the amount of message retrieved near the marker.
+     * the marker ID. The {@code limit} determines the amount of messages retrieved near the marker.
      *
      * <p><b>Examples:</b>
      * <br>Retrieve 100 messages from the middle of history. {@literal >}100 message exist in history and the marker is {@literal >}50 messages
@@ -1509,10 +1509,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * @param messageId
-     *        The id of the message that will act as a marker.
-     * @param limit
-     *        The amount of message to be retrieved after the marker. Minimum: 1, Max: 100.
+     * @param  messageId
+     *         The id of the message that will act as a marker.
+     * @param  limit
+     *         The amount of messages to be retrieved after the marker. Minimum: 1, Max: 100.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -1527,7 +1527,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
-     *         <br>Provides a MessageHistory object with message before the provided message loaded into it.
+     *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages before the provided message loaded into it.
      *
      * @see    net.dv8tion.jda.api.entities.MessageHistory#getHistoryBefore(MessageChannel, String) MessageHistory.getHistoryBefore(MessageChannel, String)
      */
@@ -1540,7 +1540,7 @@ public interface MessageChannel extends ISnowflake, Formattable
 
     /**
      * Uses the provided message as a marker and retrieves messages sent before
-     * the marker. The {@code limit} determines the amount of message retrieved near the marker.
+     * the marker. The {@code limit} determines the amount of messages retrieved near the marker.
      *
      * <p><b>Examples:</b>
      * <br>Retrieve 100 messages from the middle of history. {@literal >}100 message exist in history and the marker is {@literal >}50 messages
@@ -1567,10 +1567,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * @param message
-     *        The message that will act as a marker.
-     * @param limit
-     *        The amount of message to be retrieved after the marker. Minimum: 1, Max: 100.
+     * @param  message
+     *         The message that will act as a marker.
+     * @param  limit
+     *         The amount of messages to be retrieved after the marker. Minimum: 1, Max: 100.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -1585,7 +1585,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
-     *         <br>Provides a MessageHistory object with message before the provided message loaded into it.
+     *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages before the provided message loaded into it.
      *
      * @see    net.dv8tion.jda.api.entities.MessageHistory#getHistoryBefore(MessageChannel, String) MessageHistory.getHistoryBefore(MessageChannel, String)
      */
@@ -1595,6 +1595,69 @@ public interface MessageChannel extends ISnowflake, Formattable
     {
         Checks.notNull(message, "Message");
         return getHistoryBefore(message.getId(), limit);
+    }
+
+    /**
+     * Retrieves messages from the beginning of this {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
+     * The {@code limit} determines the amount of messages being retrieved.
+     *
+     * <h2>Example</h2>
+     * <pre><code>
+     * public void resendFirstMessage(MessageChannel channel)
+     * {
+     *     channel.getHistoryFromBeginning(1).queue(history ->
+     *     {
+     *         if (!history.isEmpty())
+     *         {
+     *             Message firstMsg = history.getRetrievedHistory().get(0);
+     *             channel.sendMessage(firstMsg).queue();
+     *         }
+     *         else
+     *             channel.sendMessage("No history for this channel!").queue();
+     *     });
+     * }
+     * </code></pre>
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The request was attempted after the account lost
+     *         {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the
+     *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * @param  limit
+     *         The amount of messages to be retrieved. Minimum: 1, Max: 100.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         Provided {@code limit} is less than {@code 1} or greater than {@code 100}.
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the logged in account does not have
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
+     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
+     *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with with the first messages of this channel loaded into it.
+     *         <br><b>Note: The messages are ordered from the most recent to oldest!</b>
+     *
+     * @see    net.dv8tion.jda.api.entities.MessageHistory#retrieveFuture(int)                     MessageHistory.retrieveFuture(int)
+     * @see    net.dv8tion.jda.api.entities.MessageHistory#getHistoryAfter(MessageChannel, String) MessageHistory.getHistoryAfter(MessageChannel, String)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageHistory.MessageRetrieveAction getHistoryFromBeginning(int limit)
+    {
+        return MessageHistory.getHistoryFromBeginning(this).limit(limit);
     }
 
     /**
