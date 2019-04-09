@@ -106,6 +106,15 @@ public class DataArray
         return child != null ? new DataArray(child) : null;
     }
 
+    @Nonnull
+    public String getString(int index)
+    {
+        String value = get(String.class, index, UnaryOperator.identity(), String::valueOf);
+        if (value == null)
+            throw valueError(index, "String");
+        return value;
+    }
+
     @Contract("_, null -> null; _, !null -> !null")
     public String getString(int index, @Nullable String defaultValue)
     {
@@ -124,10 +133,26 @@ public class DataArray
         return value == null ? defaultValue : value;
     }
 
+    public int getInt(int index)
+    {
+        Integer value = get(Integer.class, index, Integer::parseInt, Number::intValue);
+        if (value == null)
+            throw valueError(index, "int");
+        return value;
+    }
+
     public int getInt(int index, int defaultValue)
     {
         Integer value = get(Integer.class, index, Integer::parseInt, Number::intValue);
         return value == null ? defaultValue : value;
+    }
+
+    public int getUnsignedInt(int index)
+    {
+        Integer value = get(Integer.class, index, Integer::parseUnsignedInt, Number::intValue);
+        if (value == null)
+            throw valueError(index, "unsigned int");
+        return value;
     }
 
     public int getUnsignedInt(int index, int defaultValue)
@@ -136,10 +161,26 @@ public class DataArray
         return value == null ? defaultValue : value;
     }
 
+    public long getLong(int index)
+    {
+        Long value = get(Long.class, index, Long::parseLong, Number::longValue);
+        if (value == null)
+            throw valueError(index, "long");
+        return value;
+    }
+
     public long getLong(int index, long defaultValue)
     {
         Long value = get(Long.class, index, Long::parseLong, Number::longValue);
         return value == null ? defaultValue : value;
+    }
+
+    public long getUnsignedLong(int index)
+    {
+        Long value = get(Long.class, index, Long::parseUnsignedLong, Number::longValue);
+        if (value == null)
+            throw valueError(index, "unsigned long");
+        return value;
     }
 
     public long getUnsignedLong(int index, long defaultValue)
@@ -197,6 +238,11 @@ public class DataArray
     public List<Object> toList()
     {
         return data;
+    }
+
+    private IllegalStateException valueError(int index, String expectedType)
+    {
+        return new IllegalStateException("Unable to access value at " + index + " with type " + expectedType + ": " + data.get(index));
     }
 
     @Nullable

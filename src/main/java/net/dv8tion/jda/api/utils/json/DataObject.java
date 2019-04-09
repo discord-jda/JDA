@@ -106,7 +106,25 @@ public class DataObject
         return child != null ? new DataArray(child) : null;
     }
 
-    @Contract("_, null -> null; _, !null -> !null")
+    @Nonnull
+    public Object get(@Nonnull String key)
+    {
+        Object value = data.get(key);
+        if (value == null)
+            throw valueError(key, "any");
+        return value;
+    }
+
+    @Nonnull
+    public String getString(@Nonnull String key)
+    {
+        String value = getString(key, null);
+        if (value == null)
+            throw valueError(key, "String");
+        return value;
+    }
+
+    @Contract("_, !null -> !null")
     public String getString(@Nonnull String key, @Nullable String defaultValue)
     {
         String value = get(String.class, key, UnaryOperator.identity(), String::valueOf);
@@ -124,10 +142,26 @@ public class DataObject
         return value == null ? defaultValue : value;
     }
 
+    public long getLong(@Nonnull String key)
+    {
+        Long value = get(Long.class, key, Long::parseLong, Number::longValue);
+        if (value == null)
+            throw valueError(key, "long");
+        return value;
+    }
+
     public long getLong(@Nonnull String key, long defaultValue)
     {
         Long value = get(Long.class, key, Long::parseLong, Number::longValue);
         return value == null ? defaultValue : value;
+    }
+
+    public long getUnsignedLong(@Nonnull String key)
+    {
+        Long value = get(Long.class, key, Long::parseUnsignedLong, Number::longValue);
+        if (value == null)
+            throw valueError(key, "unsigned long");
+        return value;
     }
 
     public long getUnsignedLong(@Nonnull String key, long defaultValue)
@@ -136,10 +170,26 @@ public class DataObject
         return value == null ? defaultValue : value;
     }
 
+    public int getInt(@Nonnull String key)
+    {
+        Integer value = get(Integer.class, key, Integer::parseInt, Number::intValue);
+        if (value == null)
+            throw valueError(key, "int");
+        return value;
+    }
+
     public int getInt(@Nonnull String key, int defaultValue)
     {
         Integer value = get(Integer.class, key, Integer::parseInt, Number::intValue);
         return value == null ? defaultValue : value;
+    }
+
+    public int getUnsignedInt(@Nonnull String key)
+    {
+        Integer value = get(Integer.class, key, Integer::parseUnsignedInt, Number::intValue);
+        if (value == null)
+            throw valueError(key, "unsigned int");
+        return value;
     }
 
     public int getUnsignedInt(@Nonnull String key, int defaultValue)
@@ -196,6 +246,11 @@ public class DataObject
     public Map<String, Object> toMap()
     {
         return data;
+    }
+
+    private IllegalStateException valueError(String key, String expectedType)
+    {
+        return new IllegalStateException("Unable to access " + key + " with type " + expectedType + ": " + data.get(key));
     }
 
     @Nullable
