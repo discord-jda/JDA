@@ -16,10 +16,11 @@
 
 package net.dv8tion.jda.api.events.guild.voice;
 
-import jdk.internal.jline.internal.Nullable;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.UpdateEvent;
+
+import javax.annotation.Nullable;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} joined or left a {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
