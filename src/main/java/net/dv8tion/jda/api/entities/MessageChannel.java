@@ -1605,7 +1605,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <pre><code>
      * public void resendFirstMessage(MessageChannel channel)
      * {
-     *     channel.getHistoryFromBeginning(1).queue(history ->
+     *     channel.getHistoryFromBeginning(1).queue(history {@literal ->}
      *     {
      *         if (!history.isEmpty())
      *         {

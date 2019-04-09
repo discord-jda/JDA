@@ -47,7 +47,6 @@ import javax.annotation.Nonnull;
  * @since  3.1
  *
  * @see    MessageReaction#retrieveUsers()
- * @see    MessageReaction#retrieveUsers(int)
  */
 public interface ReactionPaginationAction extends PaginationAction<User, ReactionPaginationAction>
 {
