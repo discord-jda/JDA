@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.Webhook;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.WebhookManager;
+import net.dv8tion.jda.api.utils.json.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
@@ -124,7 +125,7 @@ public class WebhookManagerImpl extends ManagerBase<WebhookManager> implements W
     @Override
     protected RequestBody finalizeData()
     {
-        JSONObject data = new JSONObject();
+        DataObject data = DataObject.empty();
         if (shouldUpdate(NAME))
             data.put("name", name);
         if (shouldUpdate(CHANNEL))

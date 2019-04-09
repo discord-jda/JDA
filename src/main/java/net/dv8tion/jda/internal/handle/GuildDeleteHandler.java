@@ -24,17 +24,16 @@ import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.api.events.guild.GuildUnavailableEvent;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.json.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.PrivateChannelImpl;
 import net.dv8tion.jda.internal.entities.UserImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
-import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
-import org.json.JSONObject;
 
 public class GuildDeleteHandler extends SocketHandler
 {
@@ -44,7 +43,7 @@ public class GuildDeleteHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         final long id = content.getLong("id");
         boolean wasInit = getJDA().getGuildSetupController().onDelete(id, content);
@@ -52,7 +51,7 @@ public class GuildDeleteHandler extends SocketHandler
             return null;
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(id);
-        boolean unavailable = Helpers.optBoolean(content, "unavailable");
+        boolean unavailable = content.getBoolean("unavailable");
         if (guild == null)
         {
             //getJDA().getEventCache().cache(EventCache.Type.GUILD, id, () -> handle(responseNumber, allContent));

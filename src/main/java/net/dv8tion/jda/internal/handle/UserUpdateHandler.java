@@ -18,9 +18,9 @@ package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.events.self.*;
+import net.dv8tion.jda.api.utils.json.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.SelfUserImpl;
-import org.json.JSONObject;
 
 import java.util.Objects;
 
@@ -32,21 +32,21 @@ public class UserUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         SelfUserImpl self = (SelfUserImpl) getJDA().getSelfUser();
 
         String name = content.getString("username");
         String discriminator = content.getString("discriminator");
-        String avatarId = content.optString("avatar", null);
-        Boolean verified = content.has("verified") ? content.getBoolean("verified") : null;
-        Boolean mfaEnabled = content.has("mfa_enabled") ? content.getBoolean("mfa_enabled") : null;
+        String avatarId = content.getString("avatar", null);
+        Boolean verified = content.hasKey("verified") ? content.getBoolean("verified") : null;
+        Boolean mfaEnabled = content.hasKey("mfa_enabled") ? content.getBoolean("mfa_enabled") : null;
 
         //Client only
-        String email = content.optString("email", null);
-        Boolean mobile = content.has("mobile") ? content.getBoolean("mobile") : null; // mobile device
-        Boolean nitro = content.has("premium") ? content.getBoolean("premium") : null; // nitro
-        String phoneNumber = content.optString("phone", null); // verified phone number (verification level !)
+        String email = content.getString("email", null);
+        Boolean mobile = content.hasKey("mobile") ? content.getBoolean("mobile") : null; // mobile device
+        Boolean nitro = content.hasKey("premium") ? content.getBoolean("premium") : null; // nitro
+        String phoneNumber = content.getString("phone", null); // verified phone number (verification level !)
 
         if (!Objects.equals(name, self.getName()) || !Objects.equals(discriminator, self.getDiscriminator()))
         {

@@ -17,10 +17,10 @@ package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.role.update.*;
+import net.dv8tion.jda.api.utils.json.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.RoleImpl;
-import org.json.JSONObject;
 
 import java.util.Objects;
 
@@ -32,13 +32,13 @@ public class GuildRoleUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         final long guildId = content.getLong("guild_id");
         if (getJDA().getGuildSetupController().isLocked(guildId))
             return guildId;
 
-        JSONObject rolejson = content.getJSONObject("role");
+        DataObject rolejson = content.getObject("role");
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
         if (guild == null)
         {

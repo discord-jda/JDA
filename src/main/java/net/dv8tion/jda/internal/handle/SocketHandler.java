@@ -15,26 +15,26 @@
  */
 package net.dv8tion.jda.internal.handle;
 
+import net.dv8tion.jda.api.utils.json.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
-import org.json.JSONObject;
 
 public abstract class SocketHandler
 {
     protected final UpstreamReference<JDAImpl> api;
     protected long responseNumber;
-    protected JSONObject allContent;
+    protected DataObject allContent;
 
     public SocketHandler(JDAImpl api)
     {
         this.api = new UpstreamReference<>(api);
     }
 
-    public final synchronized void handle(long responseTotal, JSONObject o)
+    public final synchronized void handle(long responseTotal, DataObject o)
     {
         this.allContent = o;
         this.responseNumber = responseTotal;
-        final Long guildId = handleInternally(o.getJSONObject("d"));
+        final Long guildId = handleInternally(o.getObject("d"));
         if (guildId != null)
             getJDA().getGuildSetupController().cacheEvent(guildId, o);
         this.allContent = null;
@@ -52,7 +52,7 @@ public abstract class SocketHandler
      * @return
      *      Guild-id if that guild has a lock, or null if successful
      */
-    protected abstract Long handleInternally(JSONObject content);
+    protected abstract Long handleInternally(DataObject content);
 
     public static class NOPHandler extends SocketHandler
     {
@@ -62,7 +62,7 @@ public abstract class SocketHandler
         }
 
         @Override
-        protected Long handleInternally(JSONObject content)
+        protected Long handleInternally(DataObject content)
         {
             return null;
         }

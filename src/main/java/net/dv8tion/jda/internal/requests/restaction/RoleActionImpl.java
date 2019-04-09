@@ -23,11 +23,11 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.RoleAction;
+import net.dv8tion.jda.api.utils.json.DataObject;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
-import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 import java.util.function.BooleanSupplier;
@@ -116,7 +116,7 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
     @Override
     protected RequestBody finalizeData()
     {
-        JSONObject object = new JSONObject();
+        DataObject object = DataObject.empty();
         if (name != null)
             object.put("name", name);
         if (color != null)
@@ -124,9 +124,9 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
         if (permissions != null)
             object.put("permissions", permissions);
         if (hoisted != null)
-            object.put("hoist", hoisted.booleanValue());
+            object.put("hoist", hoisted);
         if (mentionable != null)
-            object.put("mentionable", mentionable.booleanValue());
+            object.put("mentionable", mentionable);
 
         return getRequestBody(object);
     }

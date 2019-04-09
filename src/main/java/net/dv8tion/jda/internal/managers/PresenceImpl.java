@@ -20,11 +20,11 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.managers.Presence;
+import net.dv8tion.jda.api.utils.json.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.WebSocketCode;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
-import org.json.JSONObject;
 
 /**
  * The Presence associated with the provided JDA instance
@@ -103,19 +103,16 @@ public class PresenceImpl implements Presence
     @Override
     public void setPresence(OnlineStatus status, Activity activity, boolean idle)
     {
-        JSONObject gameObj = getGameJson(activity);
+        DataObject gameObj = getGameJson(activity);
 
         Checks.check(status != OnlineStatus.UNKNOWN,
                 "Cannot set the presence status to an unknown OnlineStatus!");
         if (status == OnlineStatus.OFFLINE || status == null)
             status = OnlineStatus.INVISIBLE;
 
-        JSONObject object = new JSONObject();
+        DataObject object = DataObject.empty();
 
-        if (gameObj == null)
-            object.put("game", JSONObject.NULL);
-        else
-            object.put("game", gameObj);
+        object.put("game", gameObj);
         object.put("afk", idle);
         object.put("status", status.getKey());
         object.put("since", System.currentTimeMillis());
@@ -173,21 +170,21 @@ public class PresenceImpl implements Presence
     /* -- Internal Methods -- */
 
 
-    public JSONObject getFullPresence()
+    public DataObject getFullPresence()
     {
-        JSONObject activity = getGameJson(this.activity);
-        return new JSONObject()
+        DataObject activity = getGameJson(this.activity);
+        return DataObject.empty()
               .put("afk", idle)
               .put("since", System.currentTimeMillis())
-              .put("game", activity == null ? JSONObject.NULL : activity)
+              .put("game", activity)
               .put("status", getStatus().getKey());
     }
 
-    private JSONObject getGameJson(Activity activity)
+    private DataObject getGameJson(Activity activity)
     {
         if (activity == null || activity.getName() == null || activity.getType() == null)
             return null;
-        JSONObject gameObj = new JSONObject();
+        DataObject gameObj = DataObject.empty();
         gameObj.put("name", activity.getName());
         gameObj.put("type", activity.getType().getKey());
         if (activity.getUrl() != null)
@@ -200,13 +197,13 @@ public class PresenceImpl implements Presence
     /* -- Terminal -- */
 
 
-    protected void update(JSONObject data)
+    protected void update(DataObject data)
     {
         JDAImpl jda = api.get();
         JDA.Status status = jda.getStatus();
         if (status == JDA.Status.RECONNECT_QUEUED || status == JDA.Status.SHUTDOWN || status == JDA.Status.SHUTTING_DOWN)
             return;
-        jda.getClient().send(new JSONObject()
+        jda.getClient().send(DataObject.empty()
             .put("d", data)
             .put("op", WebSocketCode.PRESENCE).toString());
     }

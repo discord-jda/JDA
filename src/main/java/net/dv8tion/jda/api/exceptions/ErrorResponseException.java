@@ -18,7 +18,7 @@ package net.dv8tion.jda.api.exceptions;
 
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.Response;
-import org.json.JSONObject;
+import net.dv8tion.jda.api.utils.json.DataObject;
 
 import java.util.Optional;
 
@@ -111,7 +111,7 @@ public class ErrorResponseException extends RuntimeException
 
     public static ErrorResponseException create(ErrorResponse errorResponse, Response response)
     {
-        Optional<JSONObject> optObj = response.optObject();
+        Optional<DataObject> optObj = response.optObject();
         String meaning = errorResponse.getMeaning();
         int code = errorResponse.getCode();
         if (response.isError() && response.getException() != null)
@@ -124,7 +124,7 @@ public class ErrorResponseException extends RuntimeException
         }
         else if (optObj.isPresent())
         {
-            JSONObject obj = optObj.get();
+            DataObject obj = optObj.get();
             if (!obj.isNull("code") || !obj.isNull("message"))
             {
                 if (!obj.isNull("code"))

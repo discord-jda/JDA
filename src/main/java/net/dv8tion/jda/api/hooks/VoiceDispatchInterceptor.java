@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.managers.DirectAudioController;
-import org.json.JSONObject;
+import net.dv8tion.jda.api.utils.json.DataObject;
 import org.json.JSONString;
 
 import javax.annotation.Nonnull;
@@ -73,7 +73,7 @@ public interface VoiceDispatchInterceptor
          *
          * @return The raw JSON object
          */
-        JSONObject getJSON();
+        DataObject getJSON();
 
         @Override
         default String toJSONString()
@@ -141,9 +141,9 @@ public interface VoiceDispatchInterceptor
         private final String endpoint;
         private final String token;
         private final String sessionId;
-        private final JSONObject json;
+        private final DataObject json;
 
-        public VoiceServerUpdate(Guild guild, String endpoint, String token, String sessionId, JSONObject json)
+        public VoiceServerUpdate(Guild guild, String endpoint, String token, String sessionId, DataObject json)
         {
             this.guild = guild;
             this.endpoint = endpoint;
@@ -159,7 +159,7 @@ public interface VoiceDispatchInterceptor
         }
 
         @Override
-        public JSONObject getJSON()
+        public DataObject getJSON()
         {
             return json;
         }
@@ -202,9 +202,9 @@ public interface VoiceDispatchInterceptor
     {
         private final VoiceChannel channel;
         private final GuildVoiceState voiceState;
-        private final JSONObject json;
+        private final DataObject json;
 
-        public VoiceStateUpdate(VoiceChannel channel, GuildVoiceState voiceState, JSONObject json)
+        public VoiceStateUpdate(VoiceChannel channel, GuildVoiceState voiceState, DataObject json)
         {
             this.channel = channel;
             this.voiceState = voiceState;
@@ -218,7 +218,7 @@ public interface VoiceDispatchInterceptor
         }
 
         @Override
-        public JSONObject getJSON()
+        public DataObject getJSON()
         {
             return json;
         }

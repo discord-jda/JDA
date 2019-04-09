@@ -22,11 +22,11 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageEmbedEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageEmbedEvent;
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageUpdateEvent;
+import net.dv8tion.jda.api.utils.json.DataArray;
+import net.dv8tion.jda.api.utils.json.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.LinkedList;
 
@@ -39,7 +39,7 @@ public class MessageUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         if (!content.isNull("guild_id"))
         {
@@ -48,9 +48,9 @@ public class MessageUpdateHandler extends SocketHandler
                 return guildId;
         }
 
-        if (content.has("author"))
+        if (content.hasKey("author"))
         {
-            if (content.has("type"))
+            if (content.hasKey("type"))
             {
                 MessageType type = MessageType.fromId(content.getInt("type"));
                 switch (type)
@@ -69,7 +69,7 @@ public class MessageUpdateHandler extends SocketHandler
                 return null;
             }
         }
-        else if (content.has("call"))
+        else if (content.hasKey("call"))
         {
             handleCallMessage(content);
             return null;
@@ -78,7 +78,7 @@ public class MessageUpdateHandler extends SocketHandler
             return handleMessageEmbed(content);
     }
 
-    private Long handleMessage(JSONObject content)
+    private Long handleMessage(DataObject content)
     {
         Message message;
         try
@@ -98,7 +98,7 @@ public class MessageUpdateHandler extends SocketHandler
                 }
                 case EntityBuilder.MISSING_USER:
                 {
-                    final long authorId = content.getJSONObject("author").getLong("id");
+                    final long authorId = content.getObject("author").getLong("id");
                     getJDA().getEventCache().cache(EventCache.Type.USER, authorId, responseNumber, allContent, this::handle);
                     EventCache.LOG.debug("Received a message update for a user that JDA does not currently have cached");
                     return null;
@@ -148,7 +148,7 @@ public class MessageUpdateHandler extends SocketHandler
         return null;
     }
 
-    private Long handleMessageEmbed(JSONObject content)
+    private Long handleMessageEmbed(DataObject content)
     {
         EntityBuilder builder = getJDA().getEntityBuilder();
         final long messageId = content.getLong("id");
@@ -166,11 +166,9 @@ public class MessageUpdateHandler extends SocketHandler
             return null;
         }
 
-        JSONArray embedsJson = content.getJSONArray("embeds");
+        DataArray embedsJson = content.getArray("embeds");
         for (int i = 0; i < embedsJson.length(); i++)
-        {
-            embeds.add(builder.createMessageEmbed(embedsJson.getJSONObject(i)));
-        }
+            embeds.add(builder.createMessageEmbed(embedsJson.getObject(i)));
 
         switch (channel.getType())
         {
@@ -204,7 +202,7 @@ public class MessageUpdateHandler extends SocketHandler
         return null;
     }
 
-    public void handleCallMessage(JSONObject content)
+    public void handleCallMessage(DataObject content)
     {
         WebSocketClient.LOG.debug("Received a MESSAGE_UPDATE of type CALL: {}", content);
         //Called when someone joins call for first time.

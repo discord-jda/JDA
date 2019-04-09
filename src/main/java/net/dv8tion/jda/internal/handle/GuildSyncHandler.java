@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.internal.handle;
 
+import net.dv8tion.jda.api.utils.json.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import org.json.JSONObject;
 
 public class GuildSyncHandler extends SocketHandler
 {
@@ -27,7 +27,7 @@ public class GuildSyncHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         final long guildId = content.getLong("id");
         getJDA().getGuildSetupController().onSync(guildId, content);

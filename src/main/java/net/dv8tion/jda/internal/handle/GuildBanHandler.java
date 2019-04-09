@@ -18,10 +18,10 @@ package net.dv8tion.jda.internal.handle;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.guild.GuildBanEvent;
 import net.dv8tion.jda.api.events.guild.GuildUnbanEvent;
+import net.dv8tion.jda.api.utils.json.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.utils.JDALogger;
-import org.json.JSONObject;
 
 public class GuildBanHandler extends SocketHandler
 {
@@ -34,13 +34,13 @@ public class GuildBanHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         final long id = content.getLong("guild_id");
         if (getJDA().getGuildSetupController().isLocked(id))
             return id;
 
-        JSONObject userJson = content.getJSONObject("user");
+        DataObject userJson = content.getObject("user");
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(id);
         if (guild == null)
         {

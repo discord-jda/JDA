@@ -22,14 +22,14 @@ import net.dv8tion.jda.api.events.user.UserActivityEndEvent;
 import net.dv8tion.jda.api.events.user.UserActivityStartEvent;
 import net.dv8tion.jda.api.events.user.update.*;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import net.dv8tion.jda.api.utils.json.DataArray;
+import net.dv8tion.jda.api.utils.json.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.entities.UserImpl;
 import net.dv8tion.jda.internal.utils.Helpers;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -45,7 +45,7 @@ public class PresenceUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         GuildImpl guild = null;
         //Do a pre-check to see if this is for a Guild, and if it is, if the guild is currently locked or not cached.
@@ -59,12 +59,12 @@ public class PresenceUpdateHandler extends SocketHandler
             {
                 getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
                 EventCache.LOG.debug("Received a PRESENCE_UPDATE for a guild that is not yet cached! " +
-                    "GuildId: " + guildId + " UserId: " + content.getJSONObject("user").get("id"));
+                    "GuildId: " + guildId + " UserId: " + content.getObject("user").get("id"));
                 return null;
             }
         }
 
-        JSONObject jsonUser = content.getJSONObject("user");
+        DataObject jsonUser = content.getObject("user");
         final long userId = jsonUser.getLong("id");
         UserImpl user = (UserImpl) getJDA().getUsersView().get(userId);
 
@@ -75,11 +75,11 @@ public class PresenceUpdateHandler extends SocketHandler
         // due to a User leaving a guild or no longer being a relation.
         if (user != null)
         {
-            if (jsonUser.has("username"))
+            if (jsonUser.hasKey("username"))
             {
                 String name = jsonUser.getString("username");
                 String discriminator = jsonUser.get("discriminator").toString();
-                String avatarId = jsonUser.optString("avatar", null);
+                String avatarId = jsonUser.getString("avatar", null);
                 String oldAvatar = user.getAvatarId();
 
                 if (!user.getName().equals(name))
@@ -113,7 +113,7 @@ public class PresenceUpdateHandler extends SocketHandler
 
             //Now that we've update the User's info, lets see if we need to set the specific Presence information.
             // This is stored in the Member or Relation objects.
-            final JSONArray activityArray = !getJDA().isCacheFlagSet(CacheFlag.PRESENCE) || content.isNull("activities") ? null : content.getJSONArray("activities");
+            final DataArray activityArray = !getJDA().isCacheFlagSet(CacheFlag.PRESENCE) || content.isNull("activities") ? null : content.getArray("activities");
             List<Activity> newActivities = new ArrayList<>();
             boolean parsedGame = false;
             try
@@ -121,7 +121,7 @@ public class PresenceUpdateHandler extends SocketHandler
                 if (activityArray != null)
                 {
                     for (int i = 0; i < activityArray.length(); i++)
-                        newActivities.add(EntityBuilder.createAcitvity(activityArray.getJSONObject(i)));
+                        newActivities.add(EntityBuilder.createAcitvity(activityArray.getObject(i)));
                     parsedGame = true;
                 }
             }
@@ -160,9 +160,9 @@ public class PresenceUpdateHandler extends SocketHandler
                 {
                     if (!content.isNull("client_status"))
                     {
-                        JSONObject json = content.getJSONObject("client_status");
+                        DataObject json = content.getObject("client_status");
                         EnumSet<ClientType> types = EnumSet.of(ClientType.UNKNOWN);
-                        for (String key : json.keySet())
+                        for (String key : json.keys())
                         {
                             ClientType type = ClientType.fromKey(key);
                             types.add(type);

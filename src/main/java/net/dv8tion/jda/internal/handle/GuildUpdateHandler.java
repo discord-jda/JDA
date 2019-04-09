@@ -20,11 +20,11 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.guild.update.*;
+import net.dv8tion.jda.api.utils.json.DataArray;
+import net.dv8tion.jda.api.utils.json.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.Collections;
 import java.util.Objects;
@@ -41,7 +41,7 @@ public class GuildUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         final long id = content.getLong("id");
         if (getJDA().getGuildSetupController().isLocked(id))
@@ -54,8 +54,8 @@ public class GuildUpdateHandler extends SocketHandler
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(id);
         long ownerId = content.getLong("owner_id");
         String name = content.getString("name");
-        String iconId = content.optString("icon", null);
-        String splashId = content.optString("splash", null);
+        String iconId = content.getString("icon", null);
+        String splashId = content.getString("splash", null);
         String region = content.getString("region");
         Guild.VerificationLevel verificationLevel = Guild.VerificationLevel.fromKey(content.getInt("verification_level"));
         Guild.NotificationLevel notificationLevel = Guild.NotificationLevel.fromKey(content.getInt("default_message_notifications"));
@@ -69,7 +69,7 @@ public class GuildUpdateHandler extends SocketHandler
         Set<String> features;
         if (!content.isNull("features"))
         {
-            JSONArray featureArr = content.getJSONArray("features");
+            DataArray featureArr = content.getArray("features");
             features = StreamSupport.stream(featureArr.spliterator(), false).map(String::valueOf).collect(Collectors.toSet());
         }
         else

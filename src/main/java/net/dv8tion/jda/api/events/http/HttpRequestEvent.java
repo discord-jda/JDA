@@ -20,12 +20,12 @@ import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.json.DataArray;
+import net.dv8tion.jda.api.utils.json.DataObject;
 import net.dv8tion.jda.internal.requests.Route.CompiledRoute;
 import okhttp3.Headers;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.Set;
 
@@ -82,12 +82,12 @@ public class HttpRequestEvent extends Event
         return this.response.getRawResponse() == null ? null : this.response.getRawResponse().body();
     }
 
-    public JSONArray getResponseBodyAsArray()
+    public DataArray getResponseBodyAsArray()
     {
         return this.response.getArray();
     }
 
-    public JSONObject getResponseBodyAsObject()
+    public DataObject getResponseBodyAsObject()
     {
         return this.response.getObject();
     }

@@ -16,14 +16,14 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.events.guild.member.GuildMemberUpdateNicknameEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberUpdateNicknameEvent;
+import net.dv8tion.jda.api.utils.json.DataArray;
+import net.dv8tion.jda.api.utils.json.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.*;
 
@@ -36,13 +36,13 @@ public class GuildMemberUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         final long id = content.getLong("guild_id");
         if (getJDA().getGuildSetupController().isLocked(id))
             return id;
 
-        JSONObject userJson = content.getJSONObject("user");
+        DataObject userJson = content.getObject("user");
         final long userId = userJson.getLong("id");
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(id);
         if (guild == null)
@@ -63,7 +63,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
         }
 
         Set<Role> currentRoles = member.getRoleSet();
-        List<Role> newRoles = toRolesList(guild, content.getJSONArray("roles"));
+        List<Role> newRoles = toRolesList(guild, content.getArray("roles"));
 
         //If newRoles is null that means that we didn't find a role that was in the array and was cached this event
         if (newRoles == null)
@@ -104,10 +104,10 @@ public class GuildMemberUpdateHandler extends SocketHandler
                             getJDA(), responseNumber,
                             member, newRoles));
         }
-        if (content.has("nick"))
+        if (content.hasKey("nick"))
         {
             String oldNick = member.getNickname();
-            String newNick = content.optString("nick", null);
+            String newNick = content.getString("nick", null);
             if (!Objects.equals(oldNick, newNick))
             {
                 member.setNickname(newNick);
@@ -120,7 +120,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
         return null;
     }
 
-    private List<Role> toRolesList(GuildImpl guild, JSONArray array)
+    private List<Role> toRolesList(GuildImpl guild, DataArray array)
     {
         LinkedList<Role> roles = new LinkedList<>();
         for(int i = 0; i < array.length(); i++)

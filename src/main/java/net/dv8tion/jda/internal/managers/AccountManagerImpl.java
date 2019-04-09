@@ -22,11 +22,11 @@ import net.dv8tion.jda.api.entities.SelfUser;
 import net.dv8tion.jda.api.managers.AccountManager;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
+import net.dv8tion.jda.api.utils.json.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import okhttp3.RequestBody;
-import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 
@@ -138,7 +138,7 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
         Checks.check(!isClient || (currentPassword != null && !currentPassword.isEmpty()),
             "Provided client account password to be used in auth is null or empty!");
 
-        JSONObject body = new JSONObject();
+        DataObject body = DataObject.empty();
 
         //Required fields. Populate with current values..
         body.put("username", getSelfUser().getName());
@@ -147,7 +147,7 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
         if (shouldUpdate(NAME))
             body.put("username", name);
         if (shouldUpdate(AVATAR))
-            body.put("avatar", avatar == null ? JSONObject.NULL : avatar.getEncoding());
+            body.put("avatar", avatar == null ? null : avatar.getEncoding());
 
         if (isClient)
         {

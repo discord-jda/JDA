@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.entities.Webhook;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.WebhookAction;
+import net.dv8tion.jda.api.utils.json.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
@@ -82,7 +83,7 @@ public class WebhookActionImpl extends AuditableRestActionImpl<Webhook> implemen
     @Override
     public RequestBody finalizeData()
     {
-        JSONObject object = new JSONObject();
+        DataObject object = DataObject.empty();
         object.put("name",   name);
         object.put("avatar", avatar != null ? avatar.getEncoding() : JSONObject.NULL);
 
@@ -92,7 +93,7 @@ public class WebhookActionImpl extends AuditableRestActionImpl<Webhook> implemen
     @Override
     protected void handleSuccess(Response response, Request<Webhook> request)
     {
-        JSONObject json = response.getObject();
+        DataObject json = response.getObject();
         Webhook webhook = api.get().getEntityBuilder().createWebhook(json);
 
         request.onSuccess(webhook);

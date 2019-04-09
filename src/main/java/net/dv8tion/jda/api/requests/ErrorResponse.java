@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.requests;
 
-import org.json.JSONObject;
+import net.dv8tion.jda.api.utils.json.DataObject;
 
 public enum ErrorResponse
 {
@@ -100,7 +100,7 @@ public enum ErrorResponse
         return SERVER_ERROR;
     }
 
-    public static ErrorResponse fromJSON(JSONObject obj)
+    public static ErrorResponse fromJSON(DataObject obj)
     {
         if (obj == null || obj.isNull("code"))
             return SERVER_ERROR;

@@ -21,10 +21,10 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
+import net.dv8tion.jda.api.utils.json.DataArray;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
-import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.LinkedList;
@@ -86,13 +86,13 @@ public class ReactionPaginationActionImpl
     protected void handleSuccess(Response response, Request<List<User>> request)
     {
         final EntityBuilder builder = api.get().getEntityBuilder();
-        final JSONArray array = response.getArray();
+        final DataArray array = response.getArray();
         final List<User> users = new LinkedList<>();
         for (int i = 0; i < array.length(); i++)
         {
             try
             {
-                final User user = builder.createFakeUser(array.getJSONObject(i), false);
+                final User user = builder.createFakeUser(array.getObject(i), false);
                 users.add(user);
                 if (useCache)
                     cached.add(user);

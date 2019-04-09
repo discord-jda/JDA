@@ -23,14 +23,14 @@ import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.utils.json.DataArray;
+import net.dv8tion.jda.api.utils.json.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.EmptyRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -132,10 +132,10 @@ public class InviteImpl implements Invite
         return new RestActionImpl<>(this.api, route, (response, request) ->
         {
             final EntityBuilder entityBuilder = this.api.getEntityBuilder();
-            final JSONArray array = response.getArray();
+            final DataArray array = response.getArray();
             for (int i = 0; i < array.length(); i++)
             {
-                final JSONObject object = array.getJSONObject(i);
+                final DataObject object = array.getObject(i);
                 if (InviteImpl.this.code.equals(object.getString("code")))
                 {
                     return entityBuilder.createInvite(object);

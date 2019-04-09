@@ -25,9 +25,9 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.pagination.MessagePaginationAction;
+import net.dv8tion.jda.api.utils.json.DataArray;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.Route;
-import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
@@ -78,14 +78,14 @@ public class MessagePaginationActionImpl
     @Override
     protected void handleSuccess(Response response, Request<List<Message>> request)
     {
-        JSONArray array = response.getArray();
+        DataArray array = response.getArray();
         List<Message> messages = new ArrayList<>(array.length());
         EntityBuilder builder = api.get().getEntityBuilder();
         for (int i = 0; i < array.length(); i++)
         {
             try
             {
-                Message msg = builder.createMessage(array.getJSONObject(i), channel, false);
+                Message msg = builder.createMessage(array.getObject(i), channel, false);
                 messages.add(msg);
                 if (useCache)
                     cached.add(msg);

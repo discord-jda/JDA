@@ -26,6 +26,8 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.util.*;
 import java.util.function.Function;
@@ -64,6 +66,35 @@ public class DataObject
         }
     }
 
+    @Nonnull
+    public static DataObject fromJson(@Nonnull InputStream stream)
+    {
+        try
+        {
+            Map<String, Object> map = mapper.readValue(stream, mapType);
+            return new DataObject(map);
+        }
+        catch (IOException ex)
+        {
+            throw new UncheckedIOException(ex);
+        }
+    }
+
+
+    @Nonnull
+    public static DataObject fromJson(@Nonnull Reader stream)
+    {
+        try
+        {
+            Map<String, Object> map = mapper.readValue(stream, mapType);
+            return new DataObject(map);
+        }
+        catch (IOException ex)
+        {
+            throw new UncheckedIOException(ex);
+        }
+    }
+
     public boolean hasKey(@Nonnull String key)
     {
         return data.containsKey(key);
@@ -74,9 +105,20 @@ public class DataObject
         return data.get(key) == null;
     }
 
-    @Nullable
-    @SuppressWarnings("unchecked")
+    public boolean isObject(@Nonnull String key)
+    {
+        return optObject(key).isPresent();
+    }
+
+    @Nonnull
     public DataObject getObject(@Nonnull String key)
+    {
+        return optObject(key).orElseThrow(() -> valueError(key, "DataObject"));
+    }
+
+    @Nonnull
+    @SuppressWarnings("unchecked")
+    public Optional<DataObject> optObject(@Nonnull String key)
     {
         Map<String, Object> child = null;
         try
@@ -87,23 +129,35 @@ public class DataObject
         {
             log.error("Unable to extract child data", ex);
         }
-        return child != null ? new DataObject(child) : null;
+        return child == null ? Optional.empty() : Optional.of(new DataObject(child));
     }
 
-    @Nullable
-    @SuppressWarnings("unchecked")
+    @Nonnull
     public DataArray getArray(@Nonnull String key)
+    {
+        return optArray(key).orElseThrow(() -> valueError(key, "DataArray"));
+    }
+
+    @Nonnull
+    @SuppressWarnings("unchecked")
+    public Optional<DataArray> optArray(@Nonnull String key)
     {
         List<Object> child = null;
         try
         {
-            child = (List<Object>) get(Map.class, key);
+            child = (List<Object>) get(List.class, key);
         }
         catch (ClassCastException ex)
         {
             log.error("Unable to extract child data", ex);
         }
-        return child != null ? new DataArray(child) : null;
+        return child == null ? Optional.empty() : Optional.of(new DataArray(child));
+    }
+
+    @Nonnull
+    public Optional<Object> opt(@Nonnull String key)
+    {
+        return Optional.ofNullable(data.get(key));
     }
 
     @Nonnull
@@ -206,15 +260,15 @@ public class DataObject
     }
 
     @Nonnull
-    public DataObject put(@Nonnull String key, @Nonnull DataObject map)
+    public DataObject put(@Nonnull String key, @Nullable DataObject map)
     {
-        return put(key, map.data);
+        return put(key, map == null ? null : map.data);
     }
 
     @Nonnull
-    public DataObject put(@Nonnull String key, @Nonnull DataArray list)
+    public DataObject put(@Nonnull String key, @Nullable DataArray list)
     {
-        return put(key, list.data);
+        return put(key, list == null ? null : list.data);
     }
 
     @Nonnull

@@ -22,11 +22,11 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.restaction.order.RoleOrderAction;
+import net.dv8tion.jda.api.utils.json.DataArray;
+import net.dv8tion.jda.api.utils.json.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -97,7 +97,7 @@ public class RoleOrderActionImpl
                 throw new InsufficientPermissionException(Permission.MANAGE_ROLES);
         }
 
-        JSONArray array = new JSONArray();
+        DataArray array = DataArray.empty();
         List<Role> ordering = new ArrayList<>(orderList);
 
         //If not in normal discord order, reverse.
@@ -113,7 +113,7 @@ public class RoleOrderActionImpl
                 // If the current role was moved, we are not owner and we can't interact with the role then throw a PermissionException
                 throw new IllegalStateException("Cannot change order: One of the roles could not be moved due to hierarchical power!");
 
-            array.put(new JSONObject()
+            array.add(DataObject.empty()
                     .put("id", role.getId())
                     .put("position", i + 1)); //plus 1 because position 0 is the @everyone position.
         }

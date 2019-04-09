@@ -28,6 +28,8 @@ import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.TimeUtil;
+import net.dv8tion.jda.api.utils.json.DataArray;
+import net.dv8tion.jda.api.utils.json.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
@@ -35,9 +37,7 @@ import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.WebhookActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.util.*;
@@ -71,15 +71,15 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         JDAImpl jda = (JDAImpl) getJDA();
         return new RestActionImpl<>(jda, route, (response, request) ->
         {
-            JSONArray array = response.getArray();
+            DataArray array = response.getArray();
             List<Webhook> webhooks = new ArrayList<>(array.length());
             EntityBuilder builder = jda.getEntityBuilder();
 
-            for (Object object : array)
+            for (int i = 0; i < array.length(); i++)
             {
                 try
                 {
-                    webhooks.add(builder.createWebhook((JSONObject) object));
+                    webhooks.add(builder.createWebhook(array.getObject(i)));
                 }
                 catch (JSONException | NullPointerException e)
                 {
@@ -520,7 +520,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     // -- internal --
     private RestActionImpl<Void> deleteMessages0(Collection<String> messageIds)
     {
-        JSONObject body = new JSONObject().put("messages", messageIds);
+        DataObject body = DataObject.empty().put("messages", messageIds);
         Route.CompiledRoute route = Route.Messages.DELETE_MESSAGES.compile(getId());
         return new RestActionImpl<>(getJDA(), route, body);
     }

@@ -24,11 +24,11 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.GuildManager;
+import net.dv8tion.jda.api.utils.json.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import okhttp3.RequestBody;
-import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 
@@ -223,7 +223,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     @Override
     protected RequestBody finalizeData()
     {
-        JSONObject body = new JSONObject().put("name", getGuild().getName());
+        DataObject body = DataObject.empty().put("name", getGuild().getName());
         if (shouldUpdate(NAME))
             body.put("name", name);
         if (shouldUpdate(REGION))
@@ -231,9 +231,9 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
         if (shouldUpdate(AFK_TIMEOUT))
             body.put("afk_timeout", afkTimeout);
         if (shouldUpdate(ICON))
-            body.put("icon", icon == null ? JSONObject.NULL : icon.getEncoding());
+            body.put("icon", icon == null ? null : icon.getEncoding());
         if (shouldUpdate(SPLASH))
-            body.put("splash", splash == null ? JSONObject.NULL : splash.getEncoding());
+            body.put("splash", splash == null ? null : splash.getEncoding());
         if (shouldUpdate(AFK_CHANNEL))
             body.put("afk_channel_id", opt(afkChannel));
         if (shouldUpdate(SYSTEM_CHANNEL))

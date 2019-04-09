@@ -27,14 +27,13 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
+import net.dv8tion.jda.api.utils.json.DataArray;
+import net.dv8tion.jda.api.utils.json.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.Helpers;
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -114,35 +113,35 @@ public class AuditLogPaginationActionImpl
     @Override
     protected void handleSuccess(Response response, Request<List<AuditLogEntry>> request)
     {
-        JSONObject obj = response.getObject();
-        JSONArray users = obj.getJSONArray("users");
-        JSONArray webhooks = obj.getJSONArray("webhooks");
-        JSONArray entries = obj.getJSONArray("audit_log_entries");
+        DataObject obj = response.getObject();
+        DataArray users = obj.getArray("users");
+        DataArray webhooks = obj.getArray("webhooks");
+        DataArray entries = obj.getArray("audit_log_entries");
 
         List<AuditLogEntry> list = new ArrayList<>(entries.length());
         EntityBuilder builder = api.get().getEntityBuilder();
 
-        TLongObjectMap<JSONObject> userMap = new TLongObjectHashMap<>();
+        TLongObjectMap<DataObject> userMap = new TLongObjectHashMap<>();
         for (int i = 0; i < users.length(); i++)
         {
-            JSONObject user = users.getJSONObject(i);
+            DataObject user = users.getObject(i);
             userMap.put(user.getLong("id"), user);
         }
-        
-        TLongObjectMap<JSONObject> webhookMap = new TLongObjectHashMap<>();
+
+        TLongObjectMap<DataObject> webhookMap = new TLongObjectHashMap<>();
         for (int i = 0; i < webhooks.length(); i++)
         {
-            JSONObject webhook = webhooks.getJSONObject(i);
+            DataObject webhook = webhooks.getObject(i);
             webhookMap.put(webhook.getLong("id"), webhook);
         }
-        
+
         for (int i = 0; i < entries.length(); i++)
         {
             try
             {
-                JSONObject entry = entries.getJSONObject(i);
-                JSONObject user = userMap.get(Helpers.optLong(entry, "user_id", 0));
-                JSONObject webhook = webhookMap.get(Helpers.optLong(entry, "target_id", 0));
+                DataObject entry = entries.getObject(i);
+                DataObject user = userMap.get(entry.getLong("user_id", 0));
+                DataObject webhook = webhookMap.get(entry.getLong("target_id", 0));
                 AuditLogEntry result = builder.createAuditLogEntry((GuildImpl) guild, entry, user, webhook);
                 list.add(result);
                 if (this.useCache)

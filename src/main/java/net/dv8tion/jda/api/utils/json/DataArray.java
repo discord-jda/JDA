@@ -26,15 +26,14 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 import java.io.UncheckedIOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
-public class DataArray
+public class DataArray implements Iterable<Object>
 {
     private static final Logger log = LoggerFactory.getLogger(DataObject.class);
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -47,12 +46,14 @@ public class DataArray
         this.data = data;
     }
 
+    @Nonnull
     public static DataArray empty()
     {
         return new DataArray(new ArrayList<>());
     }
 
-    public static DataArray fromJson(String json)
+    @Nonnull
+    public static DataArray fromJson(@Nonnull String json)
     {
         try
         {
@@ -62,6 +63,37 @@ public class DataArray
         {
             throw new UncheckedIOException(e);
         }
+    }
+
+    @Nonnull
+    public static DataArray fromJson(@Nonnull InputStream json)
+    {
+        try
+        {
+            return new DataArray(mapper.readValue(json, listType));
+        }
+        catch (IOException e)
+        {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    @Nonnull
+    public static DataArray fromJson(@Nonnull Reader json)
+    {
+        try
+        {
+            return new DataArray(mapper.readValue(json, listType));
+        }
+        catch (IOException e)
+        {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    public boolean isNull(int index)
+    {
+        return data.get(index) == null;
     }
 
     public int length()
@@ -74,7 +106,7 @@ public class DataArray
         return data.isEmpty();
     }
 
-    @Nullable
+    @Nonnull
     @SuppressWarnings("unchecked")
     public DataObject getObject(int index)
     {
@@ -87,10 +119,12 @@ public class DataArray
         {
             log.error("Unable to extract child data", ex);
         }
-        return child != null ? new DataObject(child) : null;
+        if (child == null)
+            throw valueError(index, "DataObject");
+        return new DataObject(child);
     }
 
-    @Nullable
+    @Nonnull
     @SuppressWarnings("unchecked")
     public DataArray getArray(int index)
     {
@@ -103,7 +137,9 @@ public class DataArray
         {
             log.error("Unable to extract child data", ex);
         }
-        return child != null ? new DataArray(child) : null;
+        if (child == null)
+            throw valueError(index, "DataArray");
+        return new DataArray(child);
     }
 
     @Nonnull
@@ -267,5 +303,12 @@ public class DataArray
 
         throw new IllegalStateException(String.format("Cannot parse value for index %d into type %s: %s instance of %s",
                                                       index, type.getSimpleName(), value, value.getClass().getSimpleName()));
+    }
+
+    @Nonnull
+    @Override
+    public Iterator<Object> iterator()
+    {
+        return data.iterator();
     }
 }
