@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.json.DataObject;
+import net.dv8tion.jda.api.utils.json.SerializableData;
 import net.dv8tion.jda.internal.requests.restaction.GuildActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.PermOverrideData;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -253,7 +254,7 @@ public interface GuildAction extends RestAction<Void>
      *
      * <p>This may be used in {@link ChannelData#addPermissionOverride(RoleData, long, long)}  ChannelData.addPermissionOverride(...)}!
      */
-    class RoleData //TODO: implements JSONString
+    class RoleData implements SerializableData
     {
         protected final long id;
         protected final boolean isPublicRole;
@@ -442,8 +443,8 @@ public interface GuildAction extends RestAction<Void>
             return this;
         }
 
-//        @Override
-        public String toJSONString()
+        @Override
+        public DataObject toData()
         {
             final DataObject o = DataObject.empty().put("id", Long.toUnsignedString(id));
             if (permissions != null)
@@ -458,7 +459,7 @@ public interface GuildAction extends RestAction<Void>
                 o.put("mentionable", mentionable);
             if (hoisted != null)
                 o.put("hoist", hoisted);
-            return o.toString();
+            return o;
         }
 
         protected void checkPublic(String comment)
@@ -474,7 +475,7 @@ public interface GuildAction extends RestAction<Void>
      *
      * <p>Use with {@link #addChannel(ChannelData) GuildAction.addChannel(ChannelData)}.
      */
-    class ChannelData //TODO: implements JSONString
+    class ChannelData implements SerializableData
     {
         protected final ChannelType type;
         protected final String name;
@@ -680,8 +681,8 @@ public interface GuildAction extends RestAction<Void>
             return addPermissionOverride(role, allowRaw, denyRaw);
         }
 
-//        @Override
-        public String toJSONString()
+        @Override
+        public DataObject toData()
         {
             final DataObject o = DataObject.empty();
             o.put("name", name);
@@ -698,7 +699,7 @@ public interface GuildAction extends RestAction<Void>
                 o.put("position", position);
             if (!overrides.isEmpty())
                 o.put("permission_overwrites", overrides);
-            return o.toString();
+            return o;
         }
     }
 }

@@ -234,20 +234,13 @@ public class DataArray implements Iterable<Object>
     @Nonnull
     public DataArray add(@Nullable Object value)
     {
-        data.add(value);
+        if (value instanceof SerializableData)
+            data.add(((SerializableData) value).toData().data);
+        else if (value instanceof DataArray)
+            data.add(((DataArray) value).data);
+        else
+            data.add(value);
         return this;
-    }
-
-    @Nonnull
-    public DataArray add(@Nonnull DataArray array)
-    {
-        return add(array.data);
-    }
-
-    @Nonnull
-    public DataArray add(@Nonnull DataObject map)
-    {
-        return add(map.data);
     }
 
     @Nonnull

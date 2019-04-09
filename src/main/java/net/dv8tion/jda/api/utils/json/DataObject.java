@@ -33,7 +33,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
-public class DataObject
+public class DataObject implements SerializableData
 {
     private static final Logger log = LoggerFactory.getLogger(DataObject.class);
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -267,8 +267,8 @@ public class DataObject
     @Nonnull
     public DataObject put(@Nonnull String key, @Nullable Object value)
     {
-        if (value instanceof DataObject)
-            data.put(key, ((DataObject) value).data);
+        if (value instanceof SerializableData)
+            data.put(key, ((SerializableData) value).toData().data);
         else if (value instanceof DataArray)
             data.put(key, ((DataArray) value).data);
         else
@@ -297,7 +297,7 @@ public class DataObject
         }
         catch (JsonProcessingException e)
         {
-            throw new IllegalStateException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -305,6 +305,12 @@ public class DataObject
     public Map<String, Object> toMap()
     {
         return data;
+    }
+
+    @Override
+    public DataObject toData()
+    {
+        return this;
     }
 
     private IllegalStateException valueError(String key, String expectedType)

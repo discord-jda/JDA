@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.managers.DirectAudioController;
 import net.dv8tion.jda.api.utils.json.DataObject;
+import net.dv8tion.jda.api.utils.json.SerializableData;
 
 import javax.annotation.Nonnull;
 
@@ -58,7 +59,7 @@ public interface VoiceDispatchInterceptor
      * @see VoiceServerUpdate
      * @see VoiceStateUpdate
      */
-    interface VoiceUpdate //TODO: extends JSONString
+    interface VoiceUpdate extends SerializableData
     {
         /**
          * The {@link Guild} for this update
@@ -72,13 +73,8 @@ public interface VoiceDispatchInterceptor
          *
          * @return The raw JSON object
          */
-        DataObject getJSON();
-
-//        @Override
-        default String toJSONString()
-        {
-            return getJSON().toString();
-        }
+        @Override
+        DataObject toData();
 
         /**
          * Shortcut to access the audio controller of this JDA instance
@@ -158,7 +154,7 @@ public interface VoiceDispatchInterceptor
         }
 
         @Override
-        public DataObject getJSON()
+        public DataObject toData()
         {
             return json;
         }
@@ -217,7 +213,7 @@ public interface VoiceDispatchInterceptor
         }
 
         @Override
-        public DataObject getJSON()
+        public DataObject toData()
         {
             return json;
         }
