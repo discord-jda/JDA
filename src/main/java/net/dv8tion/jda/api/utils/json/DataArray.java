@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.utils.json;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
+import net.dv8tion.jda.api.exceptions.ParsingException;
 import org.jetbrains.annotations.Contract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +29,6 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.io.UncheckedIOException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -67,7 +67,7 @@ public class DataArray implements Iterable<Object>
         }
         catch (IOException e)
         {
-            throw new UncheckedIOException(e);
+            throw new ParsingException(e);
         }
     }
 
@@ -80,7 +80,7 @@ public class DataArray implements Iterable<Object>
         }
         catch (IOException e)
         {
-            throw new UncheckedIOException(e);
+            throw new ParsingException(e);
         }
     }
 
@@ -93,7 +93,7 @@ public class DataArray implements Iterable<Object>
         }
         catch (IOException e)
         {
-            throw new UncheckedIOException(e);
+            throw new ParsingException(e);
         }
     }
 
@@ -275,9 +275,9 @@ public class DataArray implements Iterable<Object>
         return data;
     }
 
-    private IllegalStateException valueError(int index, String expectedType)
+    private ParsingException valueError(int index, String expectedType)
     {
-        return new IllegalStateException("Unable to access value at " + index + " with type " + expectedType + ": " + data.get(index));
+        return new ParsingException("Unable to access value at " + index + " with type " + expectedType + ": " + data.get(index));
     }
 
     @Nullable
@@ -300,7 +300,7 @@ public class DataArray implements Iterable<Object>
         else if (numberMapper != null && value instanceof Number)
             return numberMapper.apply((Number) value);
 
-        throw new IllegalStateException(String.format("Cannot parse value for index %d into type %s: %s instance of %s",
+        throw new ParsingException(String.format("Cannot parse value for index %d into type %s: %s instance of %s",
                                                       index, type.getSimpleName(), value, value.getClass().getSimpleName()));
     }
 

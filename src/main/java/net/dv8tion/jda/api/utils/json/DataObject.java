@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.utils.json;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.MapType;
+import net.dv8tion.jda.api.exceptions.ParsingException;
 import org.jetbrains.annotations.Contract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +29,6 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.io.UncheckedIOException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -62,7 +62,7 @@ public class DataObject implements SerializableData
         }
         catch (IOException ex)
         {
-            throw new UncheckedIOException(ex);
+            throw new ParsingException(ex);
         }
     }
 
@@ -76,7 +76,7 @@ public class DataObject implements SerializableData
         }
         catch (IOException ex)
         {
-            throw new UncheckedIOException(ex);
+            throw new ParsingException(ex);
         }
     }
 
@@ -91,7 +91,7 @@ public class DataObject implements SerializableData
         }
         catch (IOException ex)
         {
-            throw new UncheckedIOException(ex);
+            throw new ParsingException(ex);
         }
     }
 
@@ -107,12 +107,18 @@ public class DataObject implements SerializableData
 
     public boolean isArray(@Nonnull String key)
     {
-        return optArray(key).isPresent();
+        return opt(key)
+            .map(Object::getClass)
+            .map(List.class::isAssignableFrom)
+            .orElse(false);
     }
 
     public boolean isObject(@Nonnull String key)
     {
-        return optObject(key).isPresent();
+        return opt(key)
+            .map(Object::getClass)
+            .map(Map.class::isAssignableFrom)
+            .orElse(false);
     }
 
     @Nonnull
@@ -297,7 +303,7 @@ public class DataObject implements SerializableData
         }
         catch (JsonProcessingException e)
         {
-            throw new UncheckedIOException(e);
+            throw new ParsingException(e);
         }
     }
 
@@ -313,9 +319,9 @@ public class DataObject implements SerializableData
         return this;
     }
 
-    private IllegalStateException valueError(String key, String expectedType)
+    private ParsingException valueError(String key, String expectedType)
     {
-        return new IllegalStateException("Unable to access " + key + " with type " + expectedType + ": " + data.get(key));
+        return new ParsingException("Unable to access " + key + " with type " + expectedType + ": " + data.get(key));
     }
 
     @Nullable
@@ -338,7 +344,7 @@ public class DataObject implements SerializableData
         else if (value instanceof String && stringParse != null)
             return stringParse.apply((String) value);
 
-        throw new IllegalStateException(String.format("Cannot parse value for %s into type %s: %s instance of %s",
+        throw new ParsingException(String.format("Cannot parse value for %s into type %s: %s instance of %s",
                                                       key, type.getSimpleName(), value, value.getClass().getSimpleName()));
     }
 }
