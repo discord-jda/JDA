@@ -107,18 +107,12 @@ public class DataObject implements SerializableData
 
     public boolean isArray(@Nonnull String key)
     {
-        return opt(key)
-            .map(Object::getClass)
-            .map(List.class::isAssignableFrom)
-            .orElse(false);
+        return data.get(key) instanceof List;
     }
 
     public boolean isObject(@Nonnull String key)
     {
-        return opt(key)
-            .map(Object::getClass)
-            .map(Map.class::isAssignableFrom)
-            .orElse(false);
+        return data.get(key) instanceof Map;
     }
 
     @Nonnull
