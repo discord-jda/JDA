@@ -33,6 +33,7 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.json.DataArray;
 import net.dv8tion.jda.api.utils.json.DataObject;
+import net.dv8tion.jda.api.utils.json.DataType;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.audio.ConnectionRequest;
 import net.dv8tion.jda.internal.audio.ConnectionStage;
@@ -802,7 +803,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         String type = raw.getString("t");
         long responseTotal = api.getResponseTotal();
 
-        if (!raw.isObject("d"))
+        if (!raw.isType("d", DataType.OBJECT))
         {
             // Needs special handling due to content of "d" being an array
             if (type.equals("PRESENCES_REPLACE"))

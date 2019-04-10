@@ -102,6 +102,11 @@ public class DataArray implements Iterable<Object>
         return data.get(index) == null;
     }
 
+    public boolean isType(int index, @Nonnull DataType type)
+    {
+        return type.isType(data.get(index));
+    }
+
     public int length()
     {
         return data.size();

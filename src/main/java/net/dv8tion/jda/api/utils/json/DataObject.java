@@ -105,14 +105,9 @@ public class DataObject implements SerializableData
         return data.get(key) == null;
     }
 
-    public boolean isArray(@Nonnull String key)
+    public boolean isType(@Nonnull String key, @Nonnull DataType type)
     {
-        return data.get(key) instanceof List;
-    }
-
-    public boolean isObject(@Nonnull String key)
-    {
-        return data.get(key) instanceof Map;
+        return type.isType(data.get(key));
     }
 
     @Nonnull
