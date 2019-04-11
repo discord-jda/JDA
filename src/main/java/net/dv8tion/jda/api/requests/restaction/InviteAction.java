@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Invite;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -31,8 +33,9 @@ import java.util.function.BooleanSupplier;
  */
 public interface InviteAction extends AuditableRestAction<Invite>
 {
+    @Nonnull
     @Override
-    InviteAction setCheck(BooleanSupplier checks);
+    InviteAction setCheck(@Nullable BooleanSupplier checks);
 
     /**
      * Sets the max age in seconds for the invite. Set this to {@code 0} if the invite should never expire. Default is {@code 86400} (24 hours).
@@ -46,8 +49,9 @@ public interface InviteAction extends AuditableRestAction<Invite>
      *
      * @return The current InviteAction for chaining.
      */
+    @Nonnull
     @CheckReturnValue
-    InviteAction setMaxAge(final Integer maxAge);
+    InviteAction setMaxAge(@Nullable final Integer maxAge);
 
     /**
      * Sets the max age for the invite. Set this to {@code 0} if the invite should never expire. Default is {@code 86400} (24 hours).
@@ -63,8 +67,9 @@ public interface InviteAction extends AuditableRestAction<Invite>
      *
      * @return The current InviteAction for chaining.
      */
+    @Nonnull
     @CheckReturnValue
-    InviteAction setMaxAge(final Long maxAge, final TimeUnit timeUnit);
+    InviteAction setMaxAge(@Nullable final Long maxAge, @Nonnull final TimeUnit timeUnit);
 
     /**
      * Sets the max uses for the invite. Set this to {@code 0} if the invite should have unlimited uses. Default is {@code 0}.
@@ -78,8 +83,9 @@ public interface InviteAction extends AuditableRestAction<Invite>
      *
      * @return The current InviteAction for chaining.
      */
+    @Nonnull
     @CheckReturnValue
-    InviteAction setMaxUses(final Integer maxUses);
+    InviteAction setMaxUses(@Nullable final Integer maxUses);
 
     /**
      * Sets whether the invite should only grant temporary membership. Default is {@code false}.
@@ -89,8 +95,9 @@ public interface InviteAction extends AuditableRestAction<Invite>
      *
      * @return The current InviteAction for chaining.
      */
+    @Nonnull
     @CheckReturnValue
-    InviteAction setTemporary(final Boolean temporary);
+    InviteAction setTemporary(@Nullable final Boolean temporary);
 
     /**
      * Sets whether discord should reuse a similar invite. Default is {@code false}.
@@ -100,6 +107,7 @@ public interface InviteAction extends AuditableRestAction<Invite>
      *
      * @return The current InviteAction for chaining.
      */
+    @Nonnull
     @CheckReturnValue
-    InviteAction setUnique(final Boolean unique);
+    InviteAction setUnique(@Nullable final Boolean unique);
 }

@@ -16,7 +16,7 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.events.guild.member.GuildMemberNickChangeEvent;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberUpdateNicknameEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -106,15 +106,15 @@ public class GuildMemberUpdateHandler extends SocketHandler
         }
         if (content.has("nick"))
         {
-            String prevNick = member.getNickname();
+            String oldNick = member.getNickname();
             String newNick = content.optString("nick", null);
-            if (!Objects.equals(prevNick, newNick))
+            if (!Objects.equals(oldNick, newNick))
             {
                 member.setNickname(newNick);
                 getJDA().getEventManager().handle(
-                        new GuildMemberNickChangeEvent(
+                        new GuildMemberUpdateNicknameEvent(
                                 getJDA(), responseNumber,
-                                member, prevNick, newNick));
+                                member, oldNick));
             }
         }
         return null;

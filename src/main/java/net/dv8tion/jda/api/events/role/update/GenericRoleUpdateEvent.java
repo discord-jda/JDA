@@ -21,6 +21,9 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.UpdateEvent;
 import net.dv8tion.jda.api.events.role.GenericRoleEvent;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Role Role} was updated.
  * <br>Every RoleUpdateEvent is derived from this event and can be casted.
@@ -34,8 +37,8 @@ public abstract class GenericRoleUpdateEvent<T> extends GenericRoleEvent impleme
     protected final String identifier;
 
     public GenericRoleUpdateEvent(
-        JDA api, long responseNumber, Role role,
-        T previous, T next, String identifier)
+        @Nonnull JDA api, long responseNumber, @Nonnull Role role,
+        @Nullable T previous, @Nullable T next, @Nonnull String identifier)
     {
         super(api, responseNumber, role);
         this.previous = previous;
@@ -43,24 +46,28 @@ public abstract class GenericRoleUpdateEvent<T> extends GenericRoleEvent impleme
         this.identifier = identifier;
     }
 
+    @Nonnull
     @Override
     public Role getEntity()
     {
         return role;
     }
 
+    @Nonnull
     @Override
     public String getPropertyIdentifier()
     {
         return identifier;
     }
 
+    @Nullable
     @Override
     public T getOldValue()
     {
         return previous;
     }
 
+    @Nullable
     @Override
     public T getNewValue()
     {

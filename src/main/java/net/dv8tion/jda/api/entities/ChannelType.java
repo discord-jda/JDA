@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import javax.annotation.Nonnull;
+
 /**
  * Enum used to differentiate between the different types of Discord channels.
  */
@@ -97,6 +99,7 @@ public enum ChannelType
      *
      * @return The ChannelType that is referred to by the provided key. If the id key is unknown, {@link #UNKNOWN} is returned.
      */
+    @Nonnull
     public static ChannelType fromId(int id)
     {
         if (id == 5) // NEWS = TEXT

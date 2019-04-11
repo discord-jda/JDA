@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.internal.entities.InviteImpl;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -55,7 +56,8 @@ public interface Invite
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.Invite Invite}
      *         <br>The Invite object
      */
-    static RestAction<Invite> resolve(final JDA api, final String code)
+    @Nonnull
+    static RestAction<Invite> resolve(@Nonnull final JDA api, @Nonnull final String code)
     {
         return resolve(api, code, false);
     }
@@ -80,7 +82,8 @@ public interface Invite
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.Invite Invite}
      *         <br>The Invite object
      */
-    static RestAction<Invite> resolve(final JDA api, final String code, final boolean withCounts)
+    @Nonnull
+    static RestAction<Invite> resolve(@Nonnull final JDA api, @Nonnull final String code, final boolean withCounts)
     {
         return InviteImpl.resolve(api, code, withCounts);
     }
@@ -95,6 +98,7 @@ public interface Invite
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @Nonnull
     @CheckReturnValue
     AuditableRestAction<Void> delete();
 
@@ -118,6 +122,7 @@ public interface Invite
      * @see    #getType()
      * @see    #isExpanded()
      */
+    @Nonnull
     @CheckReturnValue
     RestAction<Invite> expand();
 
@@ -126,6 +131,7 @@ public interface Invite
      *
      * @return The invites's type
      */
+    @Nonnull
     Invite.InviteType getType();
 
     /**
@@ -136,6 +142,7 @@ public interface Invite
      * 
      * @see    net.dv8tion.jda.api.entities.Invite.Channel
      */
+    @Nullable
     Channel getChannel();
 
     /**
@@ -143,6 +150,7 @@ public interface Invite
      *
      * @return the invite code
      */
+    @Nonnull
     String getCode();
 
     /**
@@ -153,6 +161,7 @@ public interface Invite
      *
      * @see    net.dv8tion.jda.api.entities.Invite.Group
      */
+    @Nullable
     Group getGroup();
 
     /**
@@ -161,6 +170,7 @@ public interface Invite
      *
      * @return Invite URL for this Invite
      */
+    @Nonnull
     default String getUrl()
     {
         return "https://discord.gg/" + getCode();
@@ -179,6 +189,7 @@ public interface Invite
      * @see    #expand()
      * @see    #isExpanded()
      */
+    @Nonnull
     OffsetDateTime getCreationTime();
 
     /**
@@ -189,6 +200,7 @@ public interface Invite
      * 
      * @see    net.dv8tion.jda.api.entities.Invite.Guild
      */
+    @Nullable
     Guild getGuild();
 
     /**
@@ -196,6 +208,7 @@ public interface Invite
      *
      * @return The user who created this invite
      */
+    @Nullable
     User getInviter();
 
     /**
@@ -203,6 +216,7 @@ public interface Invite
      *
      * @return the corresponding JDA instance
      */
+    @Nonnull
     JDA getJDA();
 
     /**
@@ -287,6 +301,7 @@ public interface Invite
          *
          * @return The channels's name
          */
+        @Nonnull
         String getName();
 
         /**
@@ -295,6 +310,7 @@ public interface Invite
          *
          * @return The channel's type
          */
+        @Nonnull
         ChannelType getType();
     }
 
@@ -312,6 +328,7 @@ public interface Invite
          *
          * @see    #getIconUrl()
          */
+        @Nullable
         String getIconId();
 
         /**
@@ -321,6 +338,7 @@ public interface Invite
          *
          * @see    #getIconId()
          */
+        @Nullable
         String getIconUrl();
 
         /**
@@ -328,6 +346,7 @@ public interface Invite
          *
          * @return The guilds's name
          */
+        @Nonnull
         String getName();
 
         /**
@@ -337,6 +356,7 @@ public interface Invite
          *
          * @see    #getSplashUrl()
          */
+        @Nullable
         String getSplashId();
 
         /**
@@ -346,6 +366,7 @@ public interface Invite
          *
          * @see    #getSplashId()
          */
+        @Nullable
         String getSplashUrl();
         
         /**
@@ -353,6 +374,7 @@ public interface Invite
          * 
          * @return the verification level of the guild
          */
+        @Nonnull
         VerificationLevel getVerificationLevel();
         
         /**
@@ -389,6 +411,7 @@ public interface Invite
          *
          * @return Never-null, unmodifiable Set containing all of the Guild's features.
          */
+        @Nonnull
         Set<String> getFeatures();
     }
 
@@ -406,6 +429,7 @@ public interface Invite
          *
          * @see    #getIconUrl()
          */
+        @Nullable
         String getIconId();
 
         /**
@@ -415,6 +439,7 @@ public interface Invite
          *
          * @see    #getIconId()
          */
+        @Nullable
         String getIconUrl();
 
         /**
@@ -422,6 +447,7 @@ public interface Invite
          *
          * @return The group's name
          */
+        @Nullable
         String getName();
 
         /**

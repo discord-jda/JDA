@@ -19,6 +19,8 @@ package net.dv8tion.jda.api.events.guild.voice;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} was (un-)deafened.
  * <br>Combines {@link net.dv8tion.jda.api.events.guild.voice.GuildVoiceGuildDeafenEvent GuildVoiceGuildDeafenEvent}
@@ -30,7 +32,7 @@ public class GuildVoiceDeafenEvent extends GenericGuildVoiceEvent
 {
     protected final boolean deafened;
 
-    public GuildVoiceDeafenEvent(JDA api, long responseNumber, Member member)
+    public GuildVoiceDeafenEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member)
     {
         super(api, responseNumber, member);
         this.deafened = member.getVoiceState().isDeafened();

@@ -19,6 +19,8 @@ package net.dv8tion.jda.api.events.user.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.User;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that the discriminator of a {@link net.dv8tion.jda.api.entities.User User} changed.
  *
@@ -30,7 +32,7 @@ public class UserUpdateDiscriminatorEvent extends GenericUserUpdateEvent<String>
 {
     public static final String IDENTIFIER = "discriminator";
 
-    public UserUpdateDiscriminatorEvent(JDA api, long responseNumber, User user, String oldDiscriminator)
+    public UserUpdateDiscriminatorEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, @Nonnull String oldDiscriminator)
     {
         super(api, responseNumber, user, oldDiscriminator, user.getDiscriminator(), IDENTIFIER);
     }
@@ -40,6 +42,7 @@ public class UserUpdateDiscriminatorEvent extends GenericUserUpdateEvent<String>
      *
      * @return The old discriminator
      */
+    @Nonnull
     public String getOldDiscriminator()
     {
         return getOldValue();
@@ -50,8 +53,23 @@ public class UserUpdateDiscriminatorEvent extends GenericUserUpdateEvent<String>
      *
      * @return The new discriminator
      */
+    @Nonnull
     public String getNewDiscriminator()
     {
         return getNewValue();
+    }
+
+    @Nonnull
+    @Override
+    public String getOldValue()
+    {
+        return super.getOldValue();
+    }
+
+    @Nonnull
+    @Override
+    public String getNewValue()
+    {
+        return super.getNewValue();
     }
 }

@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.api.events;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Indicates that a value of an entity was updated
  *
@@ -31,6 +34,7 @@ public interface UpdateEvent<E, T> extends GenericEvent
      *
      * @return The class of the affected entity
      */
+    @Nonnull
     @SuppressWarnings("unchecked")
     default Class<E> getEntityType()
     {
@@ -61,6 +65,7 @@ public interface UpdateEvent<E, T> extends GenericEvent
      *
      * @return The name of the updated property
      */
+    @Nonnull
     String getPropertyIdentifier();
 
     /**
@@ -68,6 +73,7 @@ public interface UpdateEvent<E, T> extends GenericEvent
      *
      * @return The affected entity
      */
+    @Nonnull
     E getEntity();
 
     /**
@@ -75,6 +81,7 @@ public interface UpdateEvent<E, T> extends GenericEvent
      *
      * @return The old value
      */
+    @Nullable
     T getOldValue();
 
     /**
@@ -82,5 +89,6 @@ public interface UpdateEvent<E, T> extends GenericEvent
      *
      * @return The new value
      */
+    @Nullable
     T getNewValue();
 }

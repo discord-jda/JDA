@@ -18,6 +18,8 @@ package net.dv8tion.jda.api.events.self;
 
 import net.dv8tion.jda.api.JDA;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that the verification state of the current user changed. (client-only)
  *
@@ -29,7 +31,7 @@ public class SelfUpdateVerifiedEvent extends GenericSelfUpdateEvent<Boolean>
 {
     public static final String IDENTIFIER = "verified";
 
-    public SelfUpdateVerifiedEvent(JDA api, long responseNumber, boolean wasVerified)
+    public SelfUpdateVerifiedEvent(@Nonnull JDA api, long responseNumber, boolean wasVerified)
     {
         super(api, responseNumber, wasVerified, !wasVerified, IDENTIFIER);
     }
@@ -42,5 +44,19 @@ public class SelfUpdateVerifiedEvent extends GenericSelfUpdateEvent<Boolean>
     public boolean wasVerified()
     {
         return getOldValue();
+    }
+
+    @Nonnull
+    @Override
+    public Boolean getOldValue()
+    {
+        return super.getOldValue();
+    }
+
+    @Nonnull
+    @Override
+    public Boolean getNewValue()
+    {
+        return super.getNewValue();
     }
 }

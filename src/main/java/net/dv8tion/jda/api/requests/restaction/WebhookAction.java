@@ -22,6 +22,8 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.Webhook;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -32,14 +34,16 @@ import java.util.function.BooleanSupplier;
  */
 public interface WebhookAction extends AuditableRestAction<Webhook>
 {
+    @Nonnull
     @Override
-    WebhookAction setCheck(BooleanSupplier checks);
+    WebhookAction setCheck(@Nullable BooleanSupplier checks);
 
     /**
      * The {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} to create this webhook in
      *
      * @return The channel
      */
+    @Nonnull
     TextChannel getChannel();
 
     /**
@@ -47,6 +51,7 @@ public interface WebhookAction extends AuditableRestAction<Webhook>
      *
      * @return The guild
      */
+    @Nonnull
     default Guild getGuild()
     {
         return getChannel().getGuild();
@@ -63,8 +68,9 @@ public interface WebhookAction extends AuditableRestAction<Webhook>
      *
      * @return The current WebhookAction for chaining convenience.
      */
+    @Nonnull
     @CheckReturnValue
-    WebhookAction setName(String name);
+    WebhookAction setName(@Nonnull String name);
 
     /**
      * Sets the <b>Avatar</b> for the custom Webhook User
@@ -75,6 +81,7 @@ public interface WebhookAction extends AuditableRestAction<Webhook>
      *
      * @return The current WebhookAction for chaining convenience.
      */
+    @Nonnull
     @CheckReturnValue
-    WebhookAction setAvatar(Icon icon);
+    WebhookAction setAvatar(@Nullable Icon icon);
 }

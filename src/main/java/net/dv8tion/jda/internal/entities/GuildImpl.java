@@ -87,10 +87,10 @@ public class GuildImpl implements Guild
     private VoiceChannel afkChannel;
     private TextChannel systemChannel;
     private Role publicRole;
-    private VerificationLevel verificationLevel;
-    private NotificationLevel defaultNotificationLevel;
-    private MFALevel mfaLevel;
-    private ExplicitContentLevel explicitContentLevel;
+    private VerificationLevel verificationLevel = VerificationLevel.UNKNOWN;
+    private NotificationLevel defaultNotificationLevel = NotificationLevel.UNKNOWN;
+    private MFALevel mfaLevel = MFALevel.UNKNOWN;
+    private ExplicitContentLevel explicitContentLevel = ExplicitContentLevel.UNKNOWN;
     private Timeout afkTimeout;
     private boolean available;
     private boolean canSendVerification = false;
@@ -101,6 +101,7 @@ public class GuildImpl implements Guild
         this.api = new UpstreamReference<>(api);
     }
 
+    @Nonnull
     @Override
     public RestAction<EnumSet<Region>> retrieveRegions(boolean includeDeprecated)
     {
@@ -127,8 +128,9 @@ public class GuildImpl implements Guild
         });
     }
 
+    @Nonnull
     @Override
-    public MemberAction addMember(String accessToken, String userId)
+    public MemberAction addMember(@Nonnull String accessToken, @Nonnull String userId)
     {
         Checks.notBlank(accessToken, "Access-Token");
         Checks.isSnowflake(userId, "User ID");
@@ -138,6 +140,7 @@ public class GuildImpl implements Guild
         return new MemberActionImpl(getJDA(), this, userId, accessToken);
     }
 
+    @Nonnull
     @Override
     public String getName()
     {
@@ -156,6 +159,7 @@ public class GuildImpl implements Guild
         return iconId == null ? null : "https://cdn.discordapp.com/icons/" + id + "/" + iconId + ".png";
     }
 
+    @Nonnull
     @Override
     public Set<String> getFeatures()
     {
@@ -174,6 +178,7 @@ public class GuildImpl implements Guild
         return splashId == null ? null : "https://cdn.discordapp.com/splashes/" + id + "/" + splashId + ".png";
     }
 
+    @Nonnull
     @Override
     public RestAction<String> retrieveVanityUrl()
     {
@@ -200,6 +205,7 @@ public class GuildImpl implements Guild
         return systemChannel;
     }
 
+    @Nonnull
     @Override
     public RestAction<List<Webhook>> retrieveWebhooks()
     {
@@ -242,12 +248,14 @@ public class GuildImpl implements Guild
         return ownerId;
     }
 
+    @Nonnull
     @Override
     public Timeout getAfkTimeout()
     {
         return afkTimeout;
     }
 
+    @Nonnull
     @Override
     public String getRegionRaw()
     {
@@ -255,30 +263,36 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public boolean isMember(User user)
+    public boolean isMember(@Nonnull User user)
     {
         return memberCache.get(user.getIdLong()) != null;
     }
 
+    @Nonnull
     @Override
     public Member getSelfMember()
     {
-        return getMember(getJDA().getSelfUser());
+        Member member = getMember(getJDA().getSelfUser());
+        if (member == null)
+            throw new IllegalStateException("Guild does not have a self member");
+        return member;
     }
 
     @Override
-    public Member getMember(User user)
+    public Member getMember(@Nonnull User user)
     {
         Checks.notNull(user, "User");
         return getMemberById(user.getIdLong());
     }
 
+    @Nonnull
     @Override
     public MemberCacheView getMemberCache()
     {
         return memberCache;
     }
 
+    @Nonnull
     @Override
     public SortedSnowflakeCacheView<Category> getCategoryCache()
     {
@@ -292,30 +306,35 @@ public class GuildImpl implements Guild
         return storeChannelCache;
     }
 
+    @Nonnull
     @Override
     public SortedSnowflakeCacheView<TextChannel> getTextChannelCache()
     {
         return textChannelCache;
     }
 
+    @Nonnull
     @Override
     public SortedSnowflakeCacheView<VoiceChannel> getVoiceChannelCache()
     {
         return voiceChannelCache;
     }
 
+    @Nonnull
     @Override
     public SortedSnowflakeCacheView<Role> getRoleCache()
     {
         return roleCache;
     }
 
+    @Nonnull
     @Override
     public SnowflakeCacheView<Emote> getEmoteCache()
     {
         return emoteCache;
     }
 
+    @Nonnull
     @Override
     public List<GuildChannel> getChannels(boolean includeHidden)
     {
@@ -378,6 +397,7 @@ public class GuildImpl implements Guild
         return Collections.unmodifiableList(channels);
     }
 
+    @Nonnull
     @Override
     public RestAction<List<ListedEmote>> retrieveEmotes()
     {
@@ -398,8 +418,9 @@ public class GuildImpl implements Guild
         });
     }
 
+    @Nonnull
     @Override
-    public RestAction<ListedEmote> retrieveEmoteById(String id)
+    public RestAction<ListedEmote> retrieveEmoteById(@Nonnull String id)
     {
         Checks.isSnowflake(id, "Emote ID");
         Emote emote = getEmoteById(id);
@@ -461,6 +482,7 @@ public class GuildImpl implements Guild
         });
     }
 
+    @Nonnull
     @Override
     public RestAction<Integer> retrievePrunableMemberCount(int days)
     {
@@ -474,6 +496,7 @@ public class GuildImpl implements Guild
         return new RestActionImpl<>(getJDA(), route, (response, request) -> response.getObject().getInt("pruned"));
     }
 
+    @Nonnull
     @Override
     public Role getPublicRole()
     {
@@ -491,6 +514,7 @@ public class GuildImpl implements Guild
                                     .findFirst().orElse(null);
     }
 
+    @Nonnull
     @Override
     public GuildManager getManager()
     {
@@ -507,6 +531,7 @@ public class GuildImpl implements Guild
         return mng;
     }
 
+    @Nonnull
     @Override
     public GuildController getController()
     {
@@ -523,12 +548,14 @@ public class GuildImpl implements Guild
         return ctrl;
     }
 
+    @Nonnull
     @Override
     public AuditLogPaginationAction retrieveAuditLogs()
     {
         return new AuditLogPaginationActionImpl(this);
     }
 
+    @Nonnull
     @Override
     public RestAction<Void> leave()
     {
@@ -539,6 +566,7 @@ public class GuildImpl implements Guild
         return new RestActionImpl<>(getJDA(), route);
     }
 
+    @Nonnull
     @Override
     public RestAction<Void> delete()
     {
@@ -548,6 +576,7 @@ public class GuildImpl implements Guild
         return delete(null);
     }
 
+    @Nonnull
     @Override
     public RestAction<Void> delete(String mfaCode)
     {
@@ -565,6 +594,7 @@ public class GuildImpl implements Guild
         return new RestActionImpl<Void>(getJDA(), route, mfaBody);
     }
 
+    @Nonnull
     @Override
     public AudioManager getAudioManager()
     {
@@ -592,12 +622,14 @@ public class GuildImpl implements Guild
         return mng;
     }
 
+    @Nonnull
     @Override
     public JDAImpl getJDA()
     {
         return api.get();
     }
 
+    @Nonnull
     @Override
     public List<GuildVoiceState> getVoiceStates()
     {
@@ -605,24 +637,28 @@ public class GuildImpl implements Guild
                 getMembersView().stream().map(Member::getVoiceState).filter(Objects::nonNull).collect(Collectors.toList()));
     }
 
+    @Nonnull
     @Override
     public VerificationLevel getVerificationLevel()
     {
         return verificationLevel;
     }
 
+    @Nonnull
     @Override
     public NotificationLevel getDefaultNotificationLevel()
     {
         return defaultNotificationLevel;
     }
 
+    @Nonnull
     @Override
     public MFALevel getRequiredMFALevel()
     {
         return mfaLevel;
     }
 
+    @Nonnull
     @Override
     public ExplicitContentLevel getExplicitContentLevel()
     {
@@ -841,6 +877,7 @@ public class GuildImpl implements Guild
         return "G:" + getName() + '(' + id + ')';
     }
 
+    @Nonnull
     @Override
     public RestAction<List<Invite>> retrieveInvites()
     {

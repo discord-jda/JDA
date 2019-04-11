@@ -18,21 +18,29 @@ package net.dv8tion.jda.api.events.guild.member;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.UpdateEvent;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} updated their {@link net.dv8tion.jda.api.entities.Guild Guild} nickname.
  *
  * <p>Can be used to retrieve members who change their nickname, triggering guild, the old nick and the new nick.
+ *
+ * <p>Identifier: {@code nick}
  */
-public class GuildMemberNickChangeEvent extends GenericGuildMemberEvent
+public class GuildMemberUpdateNicknameEvent extends GenericGuildMemberEvent implements UpdateEvent<Member, String>
 {
-    private final String prevNick, newNick;
+    public static final String IDENTIFIER = "nick";
 
-    public GuildMemberNickChangeEvent(JDA api, long responseNumber, Member member, String prevNick, String newNick)
+    private final String oldNick, newNick;
+
+    public GuildMemberUpdateNicknameEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nullable String oldNick)
     {
         super(api, responseNumber, member);
-        this.prevNick = prevNick;
-        this.newNick = newNick;
+        this.oldNick = oldNick;
+        this.newNick = member.getNickname();
     }
 
     /**
@@ -40,9 +48,10 @@ public class GuildMemberNickChangeEvent extends GenericGuildMemberEvent
      *
      * @return The old nickname
      */
-    public String getPrevNick()
+    @Nullable
+    public String getOldNickname()
     {
-        return prevNick;
+        return getOldValue();
     }
 
     /**
@@ -50,8 +59,43 @@ public class GuildMemberNickChangeEvent extends GenericGuildMemberEvent
      *
      * @return The new nickname
      */
-    public String getNewNick()
+    @Nullable
+    public String getNewNickname()
+    {
+        return getNewValue();
+    }
+
+    @Nonnull
+    @Override
+    public String getPropertyIdentifier()
+    {
+        return IDENTIFIER;
+    }
+
+    @Nonnull
+    @Override
+    public Member getEntity()
+    {
+        return getMember();
+    }
+
+    @Nullable
+    @Override
+    public String getOldValue()
+    {
+        return oldNick;
+    }
+
+    @Nullable
+    @Override
+    public String getNewValue()
     {
         return newNick;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "MemberUpdate[" + getPropertyIdentifier() + "](" + getOldValue() + "->" + getNewValue() + ')';
     }
 }

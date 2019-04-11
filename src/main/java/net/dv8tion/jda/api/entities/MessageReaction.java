@@ -25,10 +25,12 @@ import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationActi
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.pagination.ReactionPaginationActionImpl;
+import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Objects;
 
 /**
@@ -60,7 +62,7 @@ public class MessageReaction
      * @param  count
      *         The amount of people that reacted with this Reaction
      */
-    public MessageReaction(MessageChannel channel, ReactionEmote emote, long messageId, boolean self, int count)
+    public MessageReaction(@Nonnull MessageChannel channel, @Nonnull ReactionEmote emote, long messageId, boolean self, int count)
     {
         this.channel = channel;
         this.emote = emote;
@@ -74,6 +76,7 @@ public class MessageReaction
      *
      * @return The JDA instance of this Reaction
      */
+    @Nonnull
     public JDA getJDA()
     {
         return channel.getJDA();
@@ -129,6 +132,7 @@ public class MessageReaction
      *
      * @return The ChannelType
      */
+    @Nonnull
     public ChannelType getChannelType()
     {
         return channel.getType();
@@ -143,7 +147,7 @@ public class MessageReaction
      *
      * @return True, if this Reaction was used in a MessageChannel from the specified ChannelType
      */
-    public boolean isFromType(ChannelType type)
+    public boolean isFromType(@Nonnull ChannelType type)
     {
         return getChannelType() == type;
     }
@@ -155,6 +159,7 @@ public class MessageReaction
      *
      * @return {@link net.dv8tion.jda.api.entities.Guild Guild} this Reaction was used in, or {@code null}
      */
+    @Nullable
     public Guild getGuild()
     {
         TextChannel channel = getTextChannel();
@@ -167,6 +172,7 @@ public class MessageReaction
      *
      * @return The {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} or {@code null}
      */
+    @Nullable
     public TextChannel getTextChannel()
     {
         return getChannel() instanceof TextChannel ? (TextChannel) getChannel() : null;
@@ -178,6 +184,7 @@ public class MessageReaction
      *
      * @return The {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} or {@code null}
      */
+    @Nullable
     public PrivateChannel getPrivateChannel()
     {
         return getChannel() instanceof PrivateChannel ? (PrivateChannel) getChannel() : null;
@@ -189,6 +196,7 @@ public class MessageReaction
      *
      * @return The channel this Reaction was used in
      */
+    @Nonnull
     public MessageChannel getChannel()
     {
         return channel;
@@ -200,6 +208,7 @@ public class MessageReaction
      *
      * @return The final instance of this Reaction's Emote/Emoji
      */
+    @Nonnull
     public ReactionEmote getReactionEmote()
     {
         return emote;
@@ -210,6 +219,7 @@ public class MessageReaction
      *
      * @return The message id this reaction is attached to
      */
+    @Nonnull
     public String getMessageId()
     {
         return Long.toUnsignedString(messageId);
@@ -243,6 +253,7 @@ public class MessageReaction
      *
      * @return {@link ReactionPaginationAction ReactionPaginationAction}
      */
+    @Nonnull
     @CheckReturnValue
     public ReactionPaginationAction retrieveUsers()
     {
@@ -269,6 +280,7 @@ public class MessageReaction
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: Void
      *         Nothing is returned on success
      */
+    @Nonnull
     @CheckReturnValue
     public RestAction<Void> removeReaction()
     {
@@ -307,11 +319,11 @@ public class MessageReaction
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: Void
      *         Nothing is returned on success
      */
+    @Nonnull
     @CheckReturnValue
-    public RestAction<Void> removeReaction(User user)
+    public RestAction<Void> removeReaction(@Nonnull User user)
     {
-        if (user == null)
-            throw new IllegalArgumentException("Provided User was null!");
+        Checks.notNull(user, "User");
         if (!user.equals(getJDA().getSelfUser()))
         {
             if (channel.getType() == ChannelType.TEXT)
@@ -367,7 +379,7 @@ public class MessageReaction
         private final long id;
         private final Emote emote;
 
-        private ReactionEmote(String name, JDA api)
+        private ReactionEmote(@Nonnull String name, @Nonnull JDA api)
         {
             this.name = name;
             this.api = api;
@@ -375,7 +387,7 @@ public class MessageReaction
             this.emote = null;
         }
 
-        private ReactionEmote(Emote emote)
+        private ReactionEmote(@Nonnull Emote emote)
         {
             this.api = emote.getJDA();
             this.name = emote.getName();
@@ -383,12 +395,14 @@ public class MessageReaction
             this.emote = emote;
         }
 
-        public static ReactionEmote fromUnicode(String name, JDA api)
+        @Nonnull
+        public static ReactionEmote fromUnicode(@Nonnull String name, @Nonnull JDA api)
         {
             return new ReactionEmote(name, api);
         }
 
-        public static ReactionEmote fromCustom(Emote emote)
+        @Nonnull
+        public static ReactionEmote fromCustom(@Nonnull Emote emote)
         {
             return new ReactionEmote(emote);
         }
@@ -428,6 +442,7 @@ public class MessageReaction
          *
          * @return The name for this emote/emoji
          */
+        @Nonnull
         public String getName()
         {
             return name;
@@ -441,6 +456,7 @@ public class MessageReaction
          *
          * @return String containing the codepoint representation of the reaction emoji
          */
+        @Nonnull
         public String getAsCodepoints()
         {
             if (!isEmoji())
@@ -494,6 +510,7 @@ public class MessageReaction
          *
          * @return The JDA instance of the Reaction
          */
+        @Nonnull
         public JDA getJDA()
         {
             return api;
@@ -515,5 +532,4 @@ public class MessageReaction
             return "RE:" + getName() + "(" + getId() + ")";
         }
     }
-
 }

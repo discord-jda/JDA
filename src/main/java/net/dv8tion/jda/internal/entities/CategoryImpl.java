@@ -47,12 +47,14 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
         return null;
     }
 
+    @Nonnull
     @Override
     public ChannelType getType()
     {
         return ChannelType.CATEGORY;
     }
 
+    @Nonnull
     @Override
     public List<Member> getMembers()
     {
@@ -77,8 +79,9 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
         throw new AssertionError("Somehow when determining position we never found the Category in the Guild's channels? wtf?");
     }
 
+    @Nonnull
     @Override
-    public ChannelAction<Category> createCopy(Guild guild)
+    public ChannelAction<Category> createCopy(@Nonnull Guild guild)
     {
         Checks.notNull(guild, "Guild");
         ChannelAction<Category> action = guild.getController().createCategory(name);
@@ -95,18 +98,21 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
         return action;
     }
 
+    @Nonnull
     @Override
     public InviteAction createInvite()
     {
         throw new UnsupportedOperationException("Cannot create invites for category!");
     }
 
+    @Nonnull
     @Override
     public RestAction<List<Invite>> retrieveInvites()
     {
         return new EmptyRestAction<>(getJDA(), Collections.emptyList());
     }
 
+    @Nonnull
     @Override
     public List<GuildChannel> getChannels()
     {
@@ -127,6 +133,7 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
                     .sorted().collect(Collectors.toList()));
     }
 
+    @Nonnull
     @Override
     public List<TextChannel> getTextChannels()
     {
@@ -135,6 +142,7 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
                     .sorted().collect(Collectors.toList()));
     }
 
+    @Nonnull
     @Override
     public List<VoiceChannel> getVoiceChannels()
     {
@@ -143,28 +151,32 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
                     .sorted().collect(Collectors.toList()));
     }
 
+    @Nonnull
     @Override
-    public ChannelAction<TextChannel> createTextChannel(String name)
+    public ChannelAction<TextChannel> createTextChannel(@Nonnull String name)
     {
         ChannelAction<TextChannel> action = getGuild().getController().createTextChannel(name).setParent(this);
         applyPermission(action);
         return action;
     }
 
+    @Nonnull
     @Override
-    public ChannelAction<VoiceChannel> createVoiceChannel(String name)
+    public ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name)
     {
         ChannelAction<VoiceChannel> action = getGuild().getController().createVoiceChannel(name).setParent(this);
         applyPermission(action);
         return action;
     }
 
+    @Nonnull
     @Override
     public CategoryOrderAction<GuildChannel> modifyTextChannelPositions()
     {
         return getGuild().getController().modifyTextChannelPositions(this);
     }
 
+    @Nonnull
     @Override
     public CategoryOrderAction<VoiceChannel> modifyVoiceChannelPositions()
     {

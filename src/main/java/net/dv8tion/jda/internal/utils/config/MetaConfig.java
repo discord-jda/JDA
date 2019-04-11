@@ -18,6 +18,8 @@ package net.dv8tion.jda.internal.utils.config;
 
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -31,8 +33,8 @@ public class MetaConfig
     private final boolean useShutdownHook;
 
     public MetaConfig(
-            ConcurrentMap<String, String> mdcContextMap,
-            EnumSet<CacheFlag> cacheFlags, boolean enableMDC, boolean useShutdownHook)
+            @Nullable ConcurrentMap<String, String> mdcContextMap,
+            @Nullable EnumSet<CacheFlag> cacheFlags, boolean enableMDC, boolean useShutdownHook)
     {
         this.cacheFlags = cacheFlags == null ? EnumSet.allOf(CacheFlag.class) : cacheFlags;
         this.enableMDC = enableMDC;
@@ -43,11 +45,13 @@ public class MetaConfig
         this.useShutdownHook = useShutdownHook;
     }
 
+    @Nullable
     public ConcurrentMap<String, String> getMdcContextMap()
     {
         return mdcContextMap;
     }
 
+    @Nonnull
     public EnumSet<CacheFlag> getCacheFlags()
     {
         return cacheFlags;
@@ -63,6 +67,7 @@ public class MetaConfig
         return useShutdownHook;
     }
 
+    @Nonnull
     public static MetaConfig getDefault()
     {
         return defaultConfig;

@@ -21,6 +21,8 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.EnumSet;
 
 /**
@@ -59,6 +61,7 @@ public interface PermissionOverride
      *
      * @return Possibly-empty set of allowed {@link net.dv8tion.jda.api.Permission Permissions}.
      */
+    @Nonnull
     EnumSet<Permission> getAllowed();
 
     /**
@@ -67,6 +70,7 @@ public interface PermissionOverride
      *
      * @return Possibly-empty set of unaffected {@link net.dv8tion.jda.api.Permission Permissions}.
      */
+    @Nonnull
     EnumSet<Permission> getInherit();
 
     /**
@@ -75,6 +79,7 @@ public interface PermissionOverride
      *
      * @return Possibly-empty set of denied {@link net.dv8tion.jda.api.Permission Permissions}.
      */
+    @Nonnull
     EnumSet<Permission> getDenied();
 
     /**
@@ -83,6 +88,7 @@ public interface PermissionOverride
      *
      * @return Never-null {@link net.dv8tion.jda.api.JDA JDA} instance.
      */
+    @Nonnull
     JDA getJDA();
 
     /**
@@ -94,6 +100,7 @@ public interface PermissionOverride
      *
      * @return Possibly-null related {@link net.dv8tion.jda.api.entities.Member Member}.
      */
+    @Nullable
     Member getMember();
 
     /**
@@ -105,6 +112,7 @@ public interface PermissionOverride
      *
      * @return Possibly-null related {@link net.dv8tion.jda.api.entities.Role}.
      */
+    @Nullable
     Role getRole();
 
     /**
@@ -112,6 +120,7 @@ public interface PermissionOverride
      *
      * @return Never-null related {@link GuildChannel GuildChannel} that this override is part of.
      */
+    @Nonnull
     GuildChannel getChannel();
 
     /**
@@ -122,6 +131,7 @@ public interface PermissionOverride
      *
      * @return Never-null related {@link net.dv8tion.jda.api.entities.Guild Guild}.
      */
+    @Nonnull
     Guild getGuild();
 
     /**
@@ -150,6 +160,7 @@ public interface PermissionOverride
      *
      * @return The PermissionOverrideAction of this override.
      */
+    @Nonnull
     PermissionOverrideAction getManager();
 
     /**
@@ -172,6 +183,7 @@ public interface PermissionOverride
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @Nonnull
     @CheckReturnValue
     AuditableRestAction<Void> delete();
 }

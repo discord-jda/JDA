@@ -56,6 +56,7 @@ public class MemberActionImpl extends RestActionImpl<Void> implements MemberActi
         this.guild = guild;
     }
 
+    @Nonnull
     @Override
     public MemberAction setCheck(BooleanSupplier checks)
     {
@@ -90,6 +91,7 @@ public class MemberActionImpl extends RestActionImpl<Void> implements MemberActi
         return guild;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public MemberActionImpl setNickname(String nick)
@@ -107,6 +109,7 @@ public class MemberActionImpl extends RestActionImpl<Void> implements MemberActi
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public MemberActionImpl setRoles(Collection<Role> roles)
@@ -123,6 +126,7 @@ public class MemberActionImpl extends RestActionImpl<Void> implements MemberActi
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public MemberActionImpl setRoles(Role... roles)
@@ -139,6 +143,7 @@ public class MemberActionImpl extends RestActionImpl<Void> implements MemberActi
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public MemberActionImpl setMute(boolean mute)
@@ -147,6 +152,7 @@ public class MemberActionImpl extends RestActionImpl<Void> implements MemberActi
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public MemberActionImpl setDeafen(boolean deaf)

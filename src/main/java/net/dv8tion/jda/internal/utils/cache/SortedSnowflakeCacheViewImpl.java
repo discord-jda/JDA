@@ -46,7 +46,7 @@ public class SortedSnowflakeCacheViewImpl<T extends ISnowflake & Comparable<? su
     }
 
     @Override
-    public void forEach(Consumer<? super T> action)
+    public void forEach(@Nonnull Consumer<? super T> action)
     {
         try (UnlockHook hook = readLock())
         {
@@ -55,11 +55,12 @@ public class SortedSnowflakeCacheViewImpl<T extends ISnowflake & Comparable<? su
     }
 
     @Override
-    public void forEachUnordered(Consumer<? super T> action)
+    public void forEachUnordered(@Nonnull Consumer<? super T> action)
     {
         super.forEach(action);
     }
 
+    @Nonnull
     @Override
     public List<T> asList()
     {
@@ -77,6 +78,7 @@ public class SortedSnowflakeCacheViewImpl<T extends ISnowflake & Comparable<? su
         }
     }
 
+    @Nonnull
     @Override
     public NavigableSet<T> asSet()
     {
@@ -93,8 +95,9 @@ public class SortedSnowflakeCacheViewImpl<T extends ISnowflake & Comparable<? su
         }
     }
 
+    @Nonnull
     @Override
-    public List<T> getElementsByName(String name, boolean ignoreCase)
+    public List<T> getElementsByName(@Nonnull String name, boolean ignoreCase)
     {
         List<T> filtered = super.getElementsByName(name, ignoreCase);
         filtered.sort(comparator);
@@ -110,24 +113,28 @@ public class SortedSnowflakeCacheViewImpl<T extends ISnowflake & Comparable<? su
         }
     }
 
+    @Nonnull
     @Override
     public Stream<T> streamUnordered()
     {
         return super.stream();
     }
 
+    @Nonnull
     @Override
     public Stream<T> parallelStreamUnordered()
     {
         return super.parallelStream();
     }
 
+    @Nonnull
     @Override
     public Stream<T> stream()
     {
         return super.stream().sorted(comparator);
     }
 
+    @Nonnull
     @Override
     public Stream<T> parallelStream()
     {

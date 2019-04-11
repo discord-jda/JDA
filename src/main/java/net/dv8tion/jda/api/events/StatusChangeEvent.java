@@ -17,6 +17,8 @@ package net.dv8tion.jda.api.events;
 
 import net.dv8tion.jda.api.JDA;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that our {@link net.dv8tion.jda.api.JDA.Status Status} changed. (Example: SHUTTING_DOWN {@literal ->} SHUTDOWN)
  *
@@ -31,7 +33,7 @@ public class StatusChangeEvent extends Event implements UpdateEvent<JDA, JDA.Sta
     protected final JDA.Status newStatus;
     protected final JDA.Status oldStatus;
 
-    public StatusChangeEvent(JDA api, JDA.Status newStatus, JDA.Status oldStatus)
+    public StatusChangeEvent(@Nonnull JDA api, @Nonnull JDA.Status newStatus, @Nonnull JDA.Status oldStatus)
     {
         super(api);
         this.newStatus = newStatus;
@@ -43,6 +45,7 @@ public class StatusChangeEvent extends Event implements UpdateEvent<JDA, JDA.Sta
      *
      * @return The new status
      */
+    @Nonnull
     public JDA.Status getNewStatus()
     {
         return newStatus;
@@ -53,29 +56,34 @@ public class StatusChangeEvent extends Event implements UpdateEvent<JDA, JDA.Sta
      *
      * @return The previous status
      */
+    @Nonnull
     public JDA.Status getOldStatus()
     {
         return oldStatus;
     }
 
+    @Nonnull
     @Override
     public String getPropertyIdentifier()
     {
         return IDENTIFIER;
     }
 
+    @Nonnull
     @Override
     public JDA getEntity()
     {
         return getJDA();
     }
 
+    @Nonnull
     @Override
     public JDA.Status getOldValue()
     {
         return oldStatus;
     }
 
+    @Nonnull
     @Override
     public JDA.Status getNewValue()
     {
