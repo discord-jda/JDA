@@ -42,7 +42,9 @@ public enum ChannelType
      * A {@link net.dv8tion.jda.api.entities.Category Category}, Guild-Only.
      */
     CATEGORY(4, 2, true),
-
+    /**
+     * A {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel}, Guild-Only.
+     */
     STORE(6, 0, true),
     /**
      * Unknown Discord channel type. Should never happen and would only possibly happen if Discord implemented a new
@@ -66,6 +68,11 @@ public enum ChannelType
         this.isGuild = isGuild;
     }
 
+    /**
+     * The sorting bucket for this channel type.
+     *
+     * @return The sorting bucket
+     */
     public int getSortBucket()
     {
         return sortBucket;

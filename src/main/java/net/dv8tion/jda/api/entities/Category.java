@@ -36,7 +36,8 @@ public interface Category extends GuildChannel
     /**
      * All {@link GuildChannel Channels} listed
      * for this Category
-     * <br>This may contain both {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}
+     * <br>This may contain {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels},
+     * {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels},
      * and {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}!
      *
      * @return Immutable list of all child channels
@@ -44,6 +45,12 @@ public interface Category extends GuildChannel
     @Nonnull
     List<GuildChannel> getChannels();
 
+    /**
+     * All {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels}
+     * listed for this Category
+     *
+     * @return Immutable list of all child StoreChannels
+     */
     @Nonnull
     List<StoreChannel> getStoreChannels();
 
