@@ -18,6 +18,8 @@ package net.dv8tion.jda.internal.utils.config;
 
 import net.dv8tion.jda.internal.utils.concurrent.CountingThreadFactory;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.concurrent.*;
 import java.util.function.Supplier;
 
@@ -40,25 +42,25 @@ public class ThreadingConfig
         this.shutdownCallbackPool = false;
     }
 
-    public void setRateLimitPool(ScheduledExecutorService executor, boolean shutdown)
+    public void setRateLimitPool(@Nullable ScheduledExecutorService executor, boolean shutdown)
     {
         this.rateLimitPool = executor;
         this.shutdownRateLimitPool = shutdown;
     }
 
-    public void setGatewayPool(ScheduledExecutorService executor, boolean shutdown)
+    public void setGatewayPool(@Nullable ScheduledExecutorService executor, boolean shutdown)
     {
         this.gatewayPool = executor;
         this.shutdownGatewayPool = shutdown;
     }
 
-    public void setCallbackPool(ExecutorService executor, boolean shutdown)
+    public void setCallbackPool(@Nullable ExecutorService executor, boolean shutdown)
     {
         this.callbackPool = executor == null ? ForkJoinPool.commonPool() : executor;
         this.shutdownCallbackPool = shutdown;
     }
 
-    public void init(Supplier<String> identifier)
+    public void init(@Nonnull Supplier<String> identifier)
     {
         if (this.rateLimitPool == null)
             this.rateLimitPool = newScheduler(5, identifier, "RateLimit");
@@ -97,16 +99,19 @@ public class ThreadingConfig
             rateLimitPool.shutdownNow();
     }
 
+    @Nonnull
     public ScheduledExecutorService getRateLimitPool()
     {
         return rateLimitPool;
     }
 
+    @Nonnull
     public ScheduledExecutorService getGatewayPool()
     {
         return gatewayPool;
     }
 
+    @Nonnull
     public ExecutorService getCallbackPool()
     {
         return callbackPool;
@@ -127,11 +132,13 @@ public class ThreadingConfig
         return shutdownCallbackPool;
     }
 
+    @Nonnull
     public static ScheduledThreadPoolExecutor newScheduler(int coreSize, Supplier<String> identifier, String baseName)
     {
         return new ScheduledThreadPoolExecutor(coreSize, new CountingThreadFactory(identifier, baseName));
     }
 
+    @Nonnull
     public static ThreadingConfig getDefault()
     {
         return new ThreadingConfig();

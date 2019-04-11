@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.api.requests;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Constants representing {@link net.dv8tion.jda.internal.requests.WebSocketClient WebSocketClient} close codes
  * with association to an explaining message.
@@ -70,6 +73,7 @@ public enum CloseCode
      *
      * @return The reason for this close
      */
+    @Nonnull
     public String getMeaning()
     {
         return meaning;
@@ -102,6 +106,7 @@ public enum CloseCode
      * @return The CloseCode field matching the specified integer
      *         or {@code null} if no match was found
      */
+    @Nullable
     public static CloseCode from(int code)
     {
         for (CloseCode c : values())

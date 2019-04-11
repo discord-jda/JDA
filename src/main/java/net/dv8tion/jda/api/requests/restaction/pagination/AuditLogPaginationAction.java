@@ -21,6 +21,9 @@ import net.dv8tion.jda.api.audit.AuditLogEntry;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * {@link PaginationAction PaginationAction}
  * that paginates the endpoint {@link net.dv8tion.jda.internal.requests.Route.Guilds#GET_AUDIT_LOGS Route.Guilds.GET_AUDIT_LOGS}.
@@ -71,6 +74,7 @@ public interface AuditLogPaginationAction extends PaginationAction<AuditLogEntry
      *
      * @return The never-null target Guild
      */
+    @Nonnull
     Guild getGuild();
     
     /**
@@ -82,7 +86,8 @@ public interface AuditLogPaginationAction extends PaginationAction<AuditLogEntry
      *
      * @return The current AuditLogPaginationAction for chaining convenience
      */
-    AuditLogPaginationAction type(ActionType type);
+    @Nonnull
+    AuditLogPaginationAction type(@Nullable ActionType type);
 
     /**
      * Filters retrieved entities by the specified {@link net.dv8tion.jda.api.entities.User User}.
@@ -94,7 +99,8 @@ public interface AuditLogPaginationAction extends PaginationAction<AuditLogEntry
      *
      * @return The current AuditLogPaginationAction for chaining convenience
      */
-    AuditLogPaginationAction user(User user);
+    @Nonnull
+    AuditLogPaginationAction user(@Nullable User user);
 
     /**
      * Filters retrieved entities by the specified {@link net.dv8tion.jda.api.entities.User User} id.
@@ -109,7 +115,8 @@ public interface AuditLogPaginationAction extends PaginationAction<AuditLogEntry
      *
      * @return The current AuditLogPaginationAction for chaining convenience
      */
-    AuditLogPaginationAction user(String userId);
+    @Nonnull
+    AuditLogPaginationAction user(@Nullable String userId);
 
     /**
      * Filters retrieved entities by the specified {@link net.dv8tion.jda.api.entities.User User} id.
@@ -120,5 +127,6 @@ public interface AuditLogPaginationAction extends PaginationAction<AuditLogEntry
      *
      * @return The current AuditLogPaginationAction for chaining convenience
      */
+    @Nonnull
     AuditLogPaginationAction user(long userId);
 }

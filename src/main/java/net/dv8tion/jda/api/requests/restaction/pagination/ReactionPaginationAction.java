@@ -19,6 +19,8 @@ package net.dv8tion.jda.api.requests.restaction.pagination;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.User;
 
+import javax.annotation.Nonnull;
+
 /**
  * {@link PaginationAction PaginationAction}
  * that paginates the endpoint {@link net.dv8tion.jda.internal.requests.Route.Messages#GET_REACTION_USERS Route.Messages.GET_REACTION_USERS}.
@@ -45,7 +47,6 @@ import net.dv8tion.jda.api.entities.User;
  * @since  3.1
  *
  * @see    MessageReaction#retrieveUsers()
- * @see    MessageReaction#retrieveUsers(int)
  */
 public interface ReactionPaginationAction extends PaginationAction<User, ReactionPaginationAction>
 {
@@ -54,5 +55,6 @@ public interface ReactionPaginationAction extends PaginationAction<User, Reactio
      *
      * @return The current MessageReaction
      */
+    @Nonnull
     MessageReaction getReaction();
 }

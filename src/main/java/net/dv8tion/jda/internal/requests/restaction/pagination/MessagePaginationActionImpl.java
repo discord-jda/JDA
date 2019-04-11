@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.utils.json.DataArray;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.Route;
 
+import javax.annotation.Nonnull;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +54,7 @@ public class MessagePaginationActionImpl
         this.channel = channel;
     }
 
+    @Nonnull
     @Override
     public MessageChannel getChannel()
     {

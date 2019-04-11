@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.utils;
+package net.dv8tion.jda.internal.utils;
 
 import net.dv8tion.jda.api.utils.json.DataObject;
 

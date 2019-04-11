@@ -34,6 +34,7 @@ import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import javax.annotation.Nonnull;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +56,7 @@ public class AuditLogPaginationActionImpl
         this.guild = guild;
     }
 
+    @Nonnull
     @Override
     public AuditLogPaginationActionImpl type(ActionType type)
     {
@@ -62,26 +64,31 @@ public class AuditLogPaginationActionImpl
         return this;
     }
 
+    @Nonnull
     @Override
     public AuditLogPaginationActionImpl user(User user)
     {
         return user(user == null ? null : user.getId());
     }
 
+    @Nonnull
     @Override
     public AuditLogPaginationActionImpl user(String userId)
     {
-        Checks.isSnowflake(userId, "User ID");
+        if (userId != null)
+            Checks.isSnowflake(userId, "User ID");
         this.userId = userId;
         return this;
     }
 
+    @Nonnull
     @Override
     public AuditLogPaginationActionImpl user(long userId)
     {
         return user(Long.toUnsignedString(userId));
     }
 
+    @Nonnull
     @Override
     public Guild getGuild()
     {

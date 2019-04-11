@@ -18,6 +18,8 @@ package net.dv8tion.jda.api.events.self;
 
 import net.dv8tion.jda.api.JDA;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that the discriminator of the current user changed.
  *
@@ -29,7 +31,7 @@ public class SelfUpdateDiscriminatorEvent extends GenericSelfUpdateEvent<String>
 {
     public static final String IDENTIFIER = "discriminator";
 
-    public SelfUpdateDiscriminatorEvent(JDA api, long responseNumber, String oldDiscriminator)
+    public SelfUpdateDiscriminatorEvent(@Nonnull JDA api, long responseNumber, @Nonnull String oldDiscriminator)
     {
         super(api, responseNumber, oldDiscriminator, api.getSelfUser().getDiscriminator(), IDENTIFIER);
     }
@@ -39,6 +41,7 @@ public class SelfUpdateDiscriminatorEvent extends GenericSelfUpdateEvent<String>
      *
      * @return The old discriminator
      */
+    @Nonnull
     public String getOldDiscriminator()
     {
         return getOldValue();
@@ -49,8 +52,23 @@ public class SelfUpdateDiscriminatorEvent extends GenericSelfUpdateEvent<String>
      *
      * @return The new discriminator
      */
+    @Nonnull
     public String getNewDiscriminator()
     {
         return getNewValue();
+    }
+
+    @Nonnull
+    @Override
+    public String getOldValue()
+    {
+        return super.getOldValue();
+    }
+
+    @Nonnull
+    @Override
+    public String getNewValue()
+    {
+        return super.getNewValue();
     }
 }

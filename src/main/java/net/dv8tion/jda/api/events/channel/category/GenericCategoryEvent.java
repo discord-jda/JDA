@@ -21,6 +21,8 @@ import net.dv8tion.jda.api.entities.Category;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.Event;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Category Category} was created/deleted/updated.
  * <br>Every category event is a subclass of this event and can be casted
@@ -31,7 +33,7 @@ public abstract class GenericCategoryEvent extends Event
 {
     protected final Category category;
 
-    public GenericCategoryEvent(JDA api, long responseNumber, Category category)
+    public GenericCategoryEvent(@Nonnull JDA api, long responseNumber, @Nonnull Category category)
     {
         super(api, responseNumber);
         this.category = category;
@@ -42,6 +44,7 @@ public abstract class GenericCategoryEvent extends Event
      *
      * @return The Category
      */
+    @Nonnull
     public Category getCategory()
     {
         return category;
@@ -52,6 +55,7 @@ public abstract class GenericCategoryEvent extends Event
      *
      * @return The ID for the category
      */
+    @Nonnull
     public String getId()
     {
         return Long.toUnsignedString(getIdLong());
@@ -73,6 +77,7 @@ public abstract class GenericCategoryEvent extends Event
      *
      * @return The {@link net.dv8tion.jda.api.entities.Guild Guild}
      */
+    @Nonnull
     public Guild getGuild()
     {
         return category.getGuild();

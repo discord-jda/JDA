@@ -26,6 +26,7 @@ import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
 
+import javax.annotation.Nonnull;
 import java.io.UncheckedIOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -57,6 +58,7 @@ public class ReactionPaginationActionImpl
             : EncodingUtil.encodeUTF8(emote.getName());
     }
 
+    @Nonnull
     @Override
     public MessageReaction getReaction()
     {

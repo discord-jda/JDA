@@ -49,6 +49,8 @@ import net.dv8tion.jda.internal.utils.PermissionUtil;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -73,7 +75,7 @@ public class GuildController
      *        The {@link net.dv8tion.jda.api.entities.Guild Guild}
      *        that will be modified
      */
-    public GuildController(Guild guild)
+    public GuildController(@Nonnull Guild guild)
     {
         this.guild = new UpstreamReference<>((GuildImpl) guild);
     }
@@ -83,6 +85,7 @@ public class GuildController
      *
      * @return The underlying {@link net.dv8tion.jda.api.entities.Guild Guild} instance
      */
+    @Nonnull
     public Guild getGuild()
     {
         return guild.get();
@@ -93,6 +96,7 @@ public class GuildController
      *
      * @return the corresponding JDA instance
      */
+    @Nonnull
     public JDA getJDA()
     {
         return getGuild().getJDA();
@@ -144,8 +148,9 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
      */
+    @Nonnull
     @CheckReturnValue
-    public RestAction<Void> moveVoiceMember(Member member, VoiceChannel voiceChannel)
+    public RestAction<Void> moveVoiceMember(@Nonnull Member member, @Nonnull VoiceChannel voiceChannel)
     {
         Checks.notNull(member, "Member");
         Checks.notNull(voiceChannel, "VoiceChannel");
@@ -217,8 +222,9 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @Nonnull
     @CheckReturnValue
-    public AuditableRestAction<Void> setNickname(Member member, String nickname)
+    public AuditableRestAction<Void> setNickname(@Nonnull Member member, @Nullable String nickname)
     {
         Checks.notNull(member, "Member");
         checkGuild(member.getGuild(), "Member");
@@ -279,6 +285,7 @@ public class GuildController
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction} - Type: Integer
      *         <br>The amount of Members that were pruned from the Guild.
      */
+    @Nonnull
     @CheckReturnValue
     public AuditableRestAction<Integer> prune(int days)
     {
@@ -326,8 +333,9 @@ public class GuildController
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *         Kicks the provided Member from the current Guild
      */
+    @Nonnull
     @CheckReturnValue
-    public AuditableRestAction<Void> kick(Member member, String reason)
+    public AuditableRestAction<Void> kick(@Nonnull Member member, @Nullable String reason)
     {
         Checks.notNull(member, "member");
         checkGuild(member.getGuild(), "member");
@@ -379,8 +387,9 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @Nonnull
     @CheckReturnValue
-    public AuditableRestAction<Void> kick(String userId, String reason)
+    public AuditableRestAction<Void> kick(@Nonnull String userId, @Nullable String reason)
     {
         Member member = getGuild().getMemberById(userId);
         Checks.check(member != null, "The provided userId does not correspond to a member in this guild! Provided userId: %s", userId);
@@ -421,8 +430,9 @@ public class GuildController
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *         Kicks the provided Member from the current Guild
      */
+    @Nonnull
     @CheckReturnValue
-    public AuditableRestAction<Void> kick(Member member)
+    public AuditableRestAction<Void> kick(@Nonnull Member member)
     {
         return kick(member, null);
     }
@@ -459,8 +469,9 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @Nonnull
     @CheckReturnValue
-    public AuditableRestAction<Void> kick(String userId)
+    public AuditableRestAction<Void> kick(@Nonnull String userId)
     {
         return kick(userId, null);
     }
@@ -510,8 +521,9 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @Nonnull
     @CheckReturnValue
-    public AuditableRestAction<Void> ban(Member member, int delDays, String reason)
+    public AuditableRestAction<Void> ban(@Nonnull Member member, int delDays, @Nullable String reason)
     {
         Checks.notNull(member, "Member");
         //Don't check if the provided member is from this guild. It doesn't matter if they are or aren't.
@@ -563,8 +575,9 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @Nonnull
     @CheckReturnValue
-    public AuditableRestAction<Void> ban(User user, int delDays, String reason)
+    public AuditableRestAction<Void> ban(@Nonnull User user, int delDays, @Nullable String reason)
     {
         Checks.notNull(user, "User");
         checkPermission(Permission.BAN_MEMBERS);
@@ -631,8 +644,9 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @Nonnull
     @CheckReturnValue
-    public AuditableRestAction<Void> ban(String userId, int delDays, String reason)
+    public AuditableRestAction<Void> ban(@Nonnull String userId, int delDays, @Nullable String reason)
     {
         Checks.notNull(userId, "User");
         checkPermission(Permission.BAN_MEMBERS);
@@ -696,8 +710,9 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @Nonnull
     @CheckReturnValue
-    public AuditableRestAction<Void> ban(Member member, int delDays)
+    public AuditableRestAction<Void> ban(@Nonnull Member member, int delDays)
     {
         return ban(member, delDays, null);
     }
@@ -744,8 +759,9 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @Nonnull
     @CheckReturnValue
-    public AuditableRestAction<Void> ban(User user, int delDays)
+    public AuditableRestAction<Void> ban(@Nonnull User user, int delDays)
     {
         return ban(user, delDays, null);
     }
@@ -792,8 +808,9 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @Nonnull
     @CheckReturnValue
-    public AuditableRestAction<Void> ban(String userId, int delDays)
+    public AuditableRestAction<Void> ban(@Nonnull String userId, int delDays)
     {
         return ban(userId, delDays, null);
     }
@@ -824,8 +841,9 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @Nonnull
     @CheckReturnValue
-    public AuditableRestAction<Void> unban(User user)
+    public AuditableRestAction<Void> unban(@Nonnull User user)
     {
         Checks.notNull(user, "User");
 
@@ -858,8 +876,9 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @Nonnull
     @CheckReturnValue
-    public AuditableRestAction<Void> unban(String userId)
+    public AuditableRestAction<Void> unban(@Nonnull String userId)
     {
         Checks.isSnowflake(userId, "User ID");
         checkPermission(Permission.BAN_MEMBERS);
@@ -902,8 +921,9 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @Nonnull
     @CheckReturnValue
-    public AuditableRestAction<Void> setDeafen(Member member, boolean deafen)
+    public AuditableRestAction<Void> setDeafen(@Nonnull Member member, boolean deafen)
     {
         Checks.notNull(member, "Member");
         checkGuild(member.getGuild(), "Member");
@@ -957,8 +977,9 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @Nonnull
     @CheckReturnValue
-    public AuditableRestAction<Void> setMute(Member member, boolean mute)
+    public AuditableRestAction<Void> setMute(@Nonnull Member member, boolean mute)
     {
         Checks.notNull(member, "Member");
         checkGuild(member.getGuild(), "Member");
@@ -1021,8 +1042,9 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @Nonnull
     @CheckReturnValue
-    public AuditableRestAction<Void> addSingleRoleToMember(Member member, Role role)
+    public AuditableRestAction<Void> addSingleRoleToMember(@Nonnull Member member, @Nonnull Role role)
     {
         Checks.notNull(member, "Member");
         Checks.notNull(role, "Role");
@@ -1078,8 +1100,9 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @Nonnull
     @CheckReturnValue
-    public AuditableRestAction<Void> removeSingleRoleFromMember(Member member, Role role)
+    public AuditableRestAction<Void> removeSingleRoleFromMember(@Nonnull Member member, @Nonnull Role role)
     {
         Checks.notNull(member, "Member");
         Checks.notNull(role, "Role");
@@ -1140,8 +1163,9 @@ public class GuildController
      * @see    #addRolesToMember(Member, Collection)
      * @see    #modifyMemberRoles(Member, Role...)
      */
+    @Nonnull
     @CheckReturnValue
-    public AuditableRestAction<Void> addRolesToMember(Member member, Role... roles)
+    public AuditableRestAction<Void> addRolesToMember(@Nonnull Member member, @Nonnull Role... roles)
     {
         return modifyMemberRoles(member, Arrays.asList(roles), Collections.emptyList());
     }
@@ -1194,8 +1218,9 @@ public class GuildController
      * @see    #addRolesToMember(Member, Role...)
      * @see    #modifyMemberRoles(Member, Collection)
      */
+    @Nonnull
     @CheckReturnValue
-    public AuditableRestAction<Void> addRolesToMember(Member member, Collection<Role> roles)
+    public AuditableRestAction<Void> addRolesToMember(@Nonnull Member member, @Nonnull Collection<Role> roles)
     {
         return modifyMemberRoles(member, roles, Collections.emptyList());
     }
@@ -1248,8 +1273,9 @@ public class GuildController
      * @see    #addRolesToMember(Member, Collection)
      * @see    #modifyMemberRoles(Member, Role...)
      */
+    @Nonnull
     @CheckReturnValue
-    public AuditableRestAction<Void> removeRolesFromMember(Member member, Role... roles)
+    public AuditableRestAction<Void> removeRolesFromMember(@Nonnull Member member, @Nonnull Role... roles)
     {
         return modifyMemberRoles(member, Collections.emptyList(), Arrays.asList(roles));
     }
@@ -1302,8 +1328,9 @@ public class GuildController
      * @see    #addRolesToMember(Member, Role...)
      * @see    #modifyMemberRoles(Member, Collection)
      */
+    @Nonnull
     @CheckReturnValue
-    public AuditableRestAction<Void> removeRolesFromMember(Member member, Collection<Role> roles)
+    public AuditableRestAction<Void> removeRolesFromMember(@Nonnull Member member, @Nonnull Collection<Role> roles)
     {
         return modifyMemberRoles(member, Collections.emptyList(), roles);
     }
@@ -1358,8 +1385,9 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @Nonnull
     @CheckReturnValue
-    public AuditableRestAction<Void> modifyMemberRoles(Member member, Collection<Role> rolesToAdd, Collection<Role> rolesToRemove)
+    public AuditableRestAction<Void> modifyMemberRoles(@Nonnull Member member, @Nonnull Collection<Role> rolesToAdd, @Nonnull Collection<Role> rolesToRemove)
     {
         Checks.notNull(member, "Member");
         Checks.notNull(rolesToAdd, "Collection containing roles to be added to the member");
@@ -1448,8 +1476,9 @@ public class GuildController
      *
      * @see    #modifyMemberRoles(Member, Collection)
      */
+    @Nonnull
     @CheckReturnValue
-    public AuditableRestAction<Void> modifyMemberRoles(Member member, Role... roles)
+    public AuditableRestAction<Void> modifyMemberRoles(@Nonnull Member member, @Nonnull Role... roles)
     {
         return modifyMemberRoles(member, Arrays.asList(roles));
     }
@@ -1501,8 +1530,9 @@ public class GuildController
      *
      * @see    #modifyMemberRoles(Member, Collection)
      */
+    @Nonnull
     @CheckReturnValue
-    public AuditableRestAction<Void> modifyMemberRoles(Member member, Collection<Role> roles)
+    public AuditableRestAction<Void> modifyMemberRoles(@Nonnull Member member, @Nonnull Collection<Role> roles)
     {
         Checks.notNull(member, "Member");
         Checks.notNull(roles, "Roles");
@@ -1578,8 +1608,9 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @Nonnull
     @CheckReturnValue
-    public AuditableRestAction<Void> transferOwnership(Member newOwner)
+    public AuditableRestAction<Void> transferOwnership(@Nonnull Member newOwner)
     {
         Checks.notNull(newOwner, "Member");
         checkGuild(newOwner.getGuild(), "Member");
@@ -1621,8 +1652,9 @@ public class GuildController
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new TextChannel before creating it
      */
+    @Nonnull
     @CheckReturnValue
-    public ChannelAction<TextChannel> createTextChannel(String name)
+    public ChannelAction<TextChannel> createTextChannel(@Nonnull String name)
     {
         checkPermission(Permission.MANAGE_CHANNEL);
         Checks.notBlank(name, "Name");
@@ -1657,8 +1689,9 @@ public class GuildController
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new VoiceChannel before creating it
      */
+    @Nonnull
     @CheckReturnValue
-    public ChannelAction<VoiceChannel> createVoiceChannel(String name)
+    public ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name)
     {
         checkPermission(Permission.MANAGE_CHANNEL);
         Checks.notBlank(name, "Name");
@@ -1693,8 +1726,9 @@ public class GuildController
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new Category before creating it
      */
+    @Nonnull
     @CheckReturnValue
-    public ChannelAction<Category> createCategory(String name)
+    public ChannelAction<Category> createCategory(@Nonnull String name)
     {
         checkPermission(Permission.MANAGE_CHANNEL);
         Checks.notBlank(name, "Name");
@@ -1747,9 +1781,10 @@ public class GuildController
      * @see    #createVoiceChannel(String)
      * @see    ChannelAction ChannelAction
      */
+    @Nonnull
     @CheckReturnValue
     @SuppressWarnings("unchecked")
-    public <T extends GuildChannel> ChannelAction<T> createCopyOfChannel(T channel)
+    public <T extends GuildChannel> ChannelAction<T> createCopyOfChannel(@Nonnull T channel)
     {
         Checks.notNull(channel, "Channel");
         return (ChannelAction<T>) channel.createCopy(getGuild());
@@ -1779,6 +1814,7 @@ public class GuildController
      * @return {@link RoleAction RoleAction}
      *         <br>Creates a new role with previously selected field values
      */
+    @Nonnull
     @CheckReturnValue
     public RoleAction createRole()
     {
@@ -1820,8 +1856,9 @@ public class GuildController
      * @return {@link RoleAction RoleAction}
      *         <br>RoleAction with already copied values from the specified {@link net.dv8tion.jda.api.entities.Role Role}
      */
+    @Nonnull
     @CheckReturnValue
-    public RoleAction createCopyOfRole(Role role)
+    public RoleAction createCopyOfRole(@Nonnull Role role)
     {
         Checks.notNull(role, "Role");
         return role.createCopy(getGuild());
@@ -1862,8 +1899,9 @@ public class GuildController
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction} - Type: {@link net.dv8tion.jda.api.entities.Emote Emote}
      */
+    @Nonnull
     @CheckReturnValue
-    public AuditableRestAction<Emote> createEmote(String name, Icon icon, Role... roles)
+    public AuditableRestAction<Emote> createEmote(@Nonnull String name, @Nonnull Icon icon, @Nonnull Role... roles)
     {
         checkPermission(Permission.MANAGE_EMOTES);
         Checks.notBlank(name, "Emote name");
@@ -1903,6 +1941,7 @@ public class GuildController
      *
      * @return {@link ChannelOrderAction ChannelOrderAction} - Type: {@link net.dv8tion.jda.api.entities.Category Category}
      */
+    @Nonnull
     @CheckReturnValue
     public ChannelOrderAction<Category> modifyCategoryPositions()
     {
@@ -1927,6 +1966,7 @@ public class GuildController
      *
      * @return {@link ChannelOrderAction ChannelOrderAction} - Type: {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      */
+    @Nonnull
     @CheckReturnValue
     public ChannelOrderAction<TextChannel> modifyTextChannelPositions()
     {
@@ -1951,6 +1991,7 @@ public class GuildController
      *
      * @return {@link ChannelOrderAction ChannelOrderAction} - Type: {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}
      */
+    @Nonnull
     @CheckReturnValue
     public ChannelOrderAction<VoiceChannel> modifyVoiceChannelPositions()
     {
@@ -1983,8 +2024,9 @@ public class GuildController
      *
      * @return {@link CategoryOrderAction CategoryOrderAction} - Type: {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      */
+    @Nonnull
     @CheckReturnValue
-    public CategoryOrderAction<TextChannel> modifyTextChannelPositions(Category category)
+    public CategoryOrderAction<TextChannel> modifyTextChannelPositions(@Nonnull Category category)
     {
         Checks.notNull(category, "Category");
         checkGuild(category.getGuild(), "Category");
@@ -2017,8 +2059,9 @@ public class GuildController
      *
      * @return {@link CategoryOrderAction CategoryOrderAction} - Type: {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}
      */
+    @Nonnull
     @CheckReturnValue
-    public CategoryOrderAction<VoiceChannel> modifyVoiceChannelPositions(Category category)
+    public CategoryOrderAction<VoiceChannel> modifyVoiceChannelPositions(@Nonnull Category category)
     {
         Checks.notNull(category, "Category");
         checkGuild(category.getGuild(), "Category");
@@ -2049,6 +2092,7 @@ public class GuildController
      *
      * @return {@link RoleOrderAction RoleOrderAction}
      */
+    @Nonnull
     @CheckReturnValue
     public RoleOrderAction modifyRolePositions()
     {
@@ -2080,6 +2124,7 @@ public class GuildController
      *
      * @return {@link RoleOrderAction RoleOrderAction}
      */
+    @Nonnull
     @CheckReturnValue
     public RoleOrderAction modifyRolePositions(boolean useAscendingOrder)
     {

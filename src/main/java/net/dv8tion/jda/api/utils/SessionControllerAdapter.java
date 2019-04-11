@@ -29,6 +29,7 @@ import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 import org.slf4j.Logger;
 
+import javax.annotation.Nonnull;
 import javax.security.auth.login.LoginException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -51,14 +52,14 @@ public class SessionControllerAdapter implements SessionController
     }
 
     @Override
-    public void appendSession(SessionConnectNode node)
+    public void appendSession(@Nonnull SessionConnectNode node)
     {
         connectQueue.add(node);
         runWorker();
     }
 
     @Override
-    public void removeSession(SessionConnectNode node)
+    public void removeSession(@Nonnull SessionConnectNode node)
     {
         connectQueue.remove(node);
     }
@@ -75,16 +76,18 @@ public class SessionControllerAdapter implements SessionController
         globalRatelimit.set(ratelimit);
     }
 
+    @Nonnull
     @Override
-    public String getGateway(JDA api)
+    public String getGateway(@Nonnull JDA api)
     {
         Route.CompiledRoute route = Route.Misc.GATEWAY.compile();
         return new RestActionImpl<String>(api, route,
             (response, request) -> response.getObject().getString("url")).complete();
     }
 
+    @Nonnull
     @Override
-    public Pair<String, Integer> getGatewayBot(JDA api)
+    public Pair<String, Integer> getGatewayBot(@Nonnull JDA api)
     {
         AccountTypeException.check(api.getAccountType(), AccountType.BOT);
         return new RestActionImpl<Pair<String, Integer>>(api, Route.Misc.GATEWAY_BOT.compile())

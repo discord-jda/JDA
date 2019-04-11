@@ -18,6 +18,9 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.managers.AccountManager;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Represents the currently logged in account.
  */
@@ -51,7 +54,8 @@ public interface SelfUser extends User
      *
      * @return The email of the currently logged in account.
      */
-    String getEmail() throws AccountTypeException;
+    @Nonnull
+    String getEmail();
 
     /**
      * Shows whether there has ever been a mobile app connected to this account.
@@ -63,7 +67,7 @@ public interface SelfUser extends User
      *
      * @return {@code true} if the account is linked with a mobile app, otherwise {@code false}
      */
-    boolean isMobile() throws AccountTypeException;
+    boolean isMobile();
 
     /**
      * The Discord Nitro status of this account.
@@ -75,7 +79,7 @@ public interface SelfUser extends User
      *
      * @return The Discord Nitro status of the currently logged in account.
      */
-    boolean isNitro() throws AccountTypeException;
+    boolean isNitro();
 
     /**
      * Used to get the phone number of the currently logged in account if a phone number has been attached to it.
@@ -87,7 +91,8 @@ public interface SelfUser extends User
      *
      * @return The phone of the currently logged in account or null if there's no number associated
      */
-    String getPhoneNumber() throws AccountTypeException;
+    @Nullable
+    String getPhoneNumber();
 
     /**
      * Returns the maximum size for files that can be uploaded with this account.
@@ -109,5 +114,6 @@ public interface SelfUser extends User
      *
      * @return An AccountManager instance for the current account
      */
+    @Nonnull
     AccountManager getManager();
 }

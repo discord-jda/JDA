@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.Guild;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that the {@link net.dv8tion.jda.api.Region Region} of a {@link net.dv8tion.jda.api.entities.Guild Guild} changed.
  *
@@ -34,7 +36,7 @@ public class GuildUpdateRegionEvent extends GenericGuildUpdateEvent<Region>
     private final String oldRegion;
     private final String newRegion;
 
-    public GuildUpdateRegionEvent(JDA api, long responseNumber, Guild guild, String oldRegion)
+    public GuildUpdateRegionEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull String oldRegion)
     {
         super(api, responseNumber, guild, Region.fromKey(oldRegion), guild.getRegion(), IDENTIFIER);
         this.oldRegion = oldRegion;
@@ -49,6 +51,7 @@ public class GuildUpdateRegionEvent extends GenericGuildUpdateEvent<Region>
      *
      * @return Resolved {@link net.dv8tion.jda.api.Region Region} constant from the raw name
      */
+    @Nonnull
     public Region getOldRegion()
     {
         return getOldValue();
@@ -61,6 +64,7 @@ public class GuildUpdateRegionEvent extends GenericGuildUpdateEvent<Region>
      *
      * @return Raw name of the old voice region
      */
+    @Nonnull
     public String getOldRegionRaw()
     {
         return oldRegion;
@@ -74,6 +78,7 @@ public class GuildUpdateRegionEvent extends GenericGuildUpdateEvent<Region>
      *
      * @return Resolved {@link net.dv8tion.jda.api.Region Region} constant from the raw name
      */
+    @Nonnull
     public Region getNewRegion()
     {
         return getNewValue();
@@ -86,8 +91,23 @@ public class GuildUpdateRegionEvent extends GenericGuildUpdateEvent<Region>
      *
      * @return Raw name of the updated voice region
      */
+    @Nonnull
     public String getNewRegionRaw()
     {
         return newRegion;
+    }
+
+    @Nonnull
+    @Override
+    public Region getOldValue()
+    {
+        return super.getOldValue();
+    }
+
+    @Nonnull
+    @Override
+    public Region getNewValue()
+    {
+        return super.getNewValue();
     }
 }

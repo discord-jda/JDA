@@ -20,6 +20,9 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Indicates that the afk-channel of a {@link net.dv8tion.jda.api.entities.Guild Guild} changed.
  *
@@ -31,7 +34,7 @@ public class GuildUpdateAfkChannelEvent extends GenericGuildUpdateEvent<VoiceCha
 {
     public static final String IDENTIFIER = "afk_channel";
 
-    public GuildUpdateAfkChannelEvent(JDA api, long responseNumber, Guild guild, VoiceChannel oldAfkChannel)
+    public GuildUpdateAfkChannelEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable VoiceChannel oldAfkChannel)
     {
         super(api, responseNumber, guild, oldAfkChannel, guild.getAfkChannel(), IDENTIFIER);
     }
@@ -41,6 +44,7 @@ public class GuildUpdateAfkChannelEvent extends GenericGuildUpdateEvent<VoiceCha
      *
      * @return The old afk channel, or null
      */
+    @Nullable
     public VoiceChannel getOldAfkChannel()
     {
         return getOldValue();
@@ -51,6 +55,7 @@ public class GuildUpdateAfkChannelEvent extends GenericGuildUpdateEvent<VoiceCha
      *
      * @return The new afk channel, or null
      */
+    @Nullable
     public VoiceChannel getNewAfkChannel()
     {
         return getNewValue();

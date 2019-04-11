@@ -23,6 +23,7 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import javax.annotation.Nonnull;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
@@ -46,6 +47,7 @@ public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestAct
         super(api, route);
     }
 
+    @Nonnull
     @Override
     @SuppressWarnings("unchecked")
     public M setCheck(BooleanSupplier checks)
@@ -53,6 +55,7 @@ public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestAct
         return (M) super.setCheck(checks);
     }
 
+    @Nonnull
     @Override
     @SuppressWarnings("unchecked")
     public M reset(long fields)
@@ -66,6 +69,7 @@ public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestAct
         return (M) this;
     }
 
+    @Nonnull
     @Override
     @SuppressWarnings("unchecked")
     public M reset(long... fields)
@@ -84,6 +88,7 @@ public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestAct
         return reset(sum);
     }
 
+    @Nonnull
     @Override
     @SuppressWarnings("unchecked")
     public M reset()
@@ -93,7 +98,6 @@ public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestAct
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void queue(Consumer<? super Void> success, Consumer<? super Throwable> failure)
     {
         if (shouldUpdate())

@@ -18,6 +18,9 @@ package net.dv8tion.jda.api.requests;
 
 import net.dv8tion.jda.api.utils.json.DataObject;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 public enum ErrorResponse
 {
     UNKNOWN_ACCOUNT(    10001, "Unknown Account"),
@@ -85,11 +88,13 @@ public enum ErrorResponse
         return code;
     }
 
+    @Nonnull
     public String getMeaning()
     {
         return meaning;
     }
 
+    @Nonnull
     public static ErrorResponse fromCode(int code)
     {
         for (ErrorResponse error : values())
@@ -100,7 +105,8 @@ public enum ErrorResponse
         return SERVER_ERROR;
     }
 
-    public static ErrorResponse fromJSON(DataObject obj)
+    @Nonnull
+    public static ErrorResponse fromJSON(@Nullable DataObject obj)
     {
         if (obj == null || obj.isNull("code"))
             return SERVER_ERROR;

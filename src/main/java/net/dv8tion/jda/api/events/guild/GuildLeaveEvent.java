@@ -18,6 +18,8 @@ package net.dv8tion.jda.api.events.guild;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that you left a {@link net.dv8tion.jda.api.entities.Guild Guild}.
  *
@@ -25,7 +27,7 @@ import net.dv8tion.jda.api.entities.Guild;
  */
 public class GuildLeaveEvent extends GenericGuildEvent
 {
-    public GuildLeaveEvent(JDA api, long responseNumber, Guild guild)
+    public GuildLeaveEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild)
     {
         super(api, responseNumber, guild);
     }

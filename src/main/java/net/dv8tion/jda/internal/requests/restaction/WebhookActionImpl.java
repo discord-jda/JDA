@@ -29,6 +29,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -48,21 +49,24 @@ public class WebhookActionImpl extends AuditableRestActionImpl<Webhook> implemen
         this.name = name;
     }
 
+    @Nonnull
     @Override
     public WebhookActionImpl setCheck(BooleanSupplier checks)
     {
         return (WebhookActionImpl) super.setCheck(checks);
     }
 
+    @Nonnull
     @Override
     public TextChannel getChannel()
     {
         return channel;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
-    public WebhookActionImpl setName(String name)
+    public WebhookActionImpl setName(@Nonnull String name)
     {
         Checks.notNull(name, "Webhook name");
         Checks.check(name.length() >= 2 && name.length() <= 100, "The webhook name must be in the range of 2-100!");
@@ -71,6 +75,7 @@ public class WebhookActionImpl extends AuditableRestActionImpl<Webhook> implemen
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public WebhookActionImpl setAvatar(Icon icon)

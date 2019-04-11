@@ -988,7 +988,7 @@ public class EntityBuilder
         else
         {
             DataObject obj = content.getObject("video");
-            video = new VideoInfo(obj.getString("url"),
+            video = new VideoInfo(obj.getString("url", null),
                                   obj.getInt("width", -1),
                                   obj.getInt("height", -1));
         }

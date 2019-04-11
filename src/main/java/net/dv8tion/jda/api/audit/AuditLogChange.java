@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.audit;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Objects;
 
 /**
@@ -50,6 +52,7 @@ public class AuditLogChange
      * @return The old value
      */
     @SuppressWarnings("unchecked")
+    @Nullable
     public <T> T getOldValue()
     {
         return (T) oldValue;
@@ -68,6 +71,7 @@ public class AuditLogChange
      * @return The new value
      */
     @SuppressWarnings("unchecked")
+    @Nullable
     public <T> T getNewValue()
     {
         return (T) newValue;
@@ -79,6 +83,7 @@ public class AuditLogChange
      *
      * @return The key
      */
+    @Nonnull
     public String getKey()
     {
         return key;

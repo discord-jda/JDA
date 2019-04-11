@@ -36,6 +36,7 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.io.*;
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -69,12 +70,14 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         this.channel = channel;
     }
 
+    @Nonnull
     @Override
     public MessageAction setCheck(BooleanSupplier checks)
     {
         return (MessageAction) super.setCheck(checks);
     }
 
+    @Nonnull
     @Override
     public MessageChannel getChannel()
     {
@@ -94,6 +97,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return finalizeRoute().getMethod() == Method.PATCH;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public MessageActionImpl apply(final Message message)
@@ -108,6 +112,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return content(message.getContentRaw()).tts(message.isTTS());
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public MessageActionImpl tts(final boolean isTTS)
@@ -116,6 +121,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public MessageActionImpl reset()
@@ -123,6 +129,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return content(null).nonce(null).embed(null).tts(false).override(false).clearFiles();
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public MessageActionImpl nonce(final String nonce)
@@ -131,6 +138,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public MessageActionImpl content(final String content)
@@ -144,6 +152,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public MessageActionImpl embed(final MessageEmbed embed)
@@ -159,6 +168,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public MessageActionImpl append(final CharSequence csq, final int start, final int end)
@@ -169,6 +179,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public MessageActionImpl append(final char c)
@@ -179,9 +190,10 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
-    public MessageActionImpl addFile(final InputStream data, final String name)
+    public MessageActionImpl addFile(@Nonnull final InputStream data, @Nonnull final String name)
     {
         checkEdit();
         Checks.notNull(data, "Data");
@@ -192,9 +204,10 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
-    public MessageActionImpl addFile(final File file, final String name)
+    public MessageActionImpl addFile(@Nonnull final File file, @Nonnull final String name)
     {
         Checks.notNull(file, "File");
         Checks.check(file.exists() && file.canRead(), "Provided file either does not exist or cannot be read from!");
@@ -212,6 +225,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         }
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public MessageActionImpl clearFiles()
@@ -221,9 +235,10 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
-    public MessageActionImpl clearFiles(BiConsumer<String, InputStream> finalizer)
+    public MessageActionImpl clearFiles(@Nonnull BiConsumer<String, InputStream> finalizer)
     {
         Checks.notNull(finalizer, "Finalizer");
         for (Iterator<Map.Entry<String, InputStream>> it = files.entrySet().iterator(); it.hasNext();)
@@ -236,9 +251,10 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
-    public MessageActionImpl clearFiles(Consumer<InputStream> finalizer)
+    public MessageActionImpl clearFiles(@Nonnull Consumer<InputStream> finalizer)
     {
         Checks.notNull(finalizer, "Finalizer");
         for (Iterator<InputStream> it = files.values().iterator(); it.hasNext(); )
@@ -250,6 +266,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public MessageActionImpl override(final boolean bool)

@@ -20,6 +20,9 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * The Presence associated with the provided JDA instance
  *
@@ -27,12 +30,12 @@ import net.dv8tion.jda.api.entities.Activity;
  */
 public interface Presence
 {
-
     /**
      * The JDA instance of this Presence
      *
      * @return The current JDA instance
      */
+    @Nonnull
     JDA getJDA();
 
     /**
@@ -42,6 +45,7 @@ public interface Presence
      * @return The {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus}
      *         of the current session
      */
+    @Nonnull
     OnlineStatus getStatus();
 
     /**
@@ -51,6 +55,7 @@ public interface Presence
      * @return The {@link net.dv8tion.jda.api.entities.Activity Activity}
      *         of the current session or null if no activity is set
      */
+    @Nullable
     Activity getActivity();
 
     /**
@@ -73,7 +78,7 @@ public interface Presence
      *         the {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus}
      *         to be used (OFFLINE/null {@literal ->} INVISIBLE)
      */
-    void setStatus(OnlineStatus status);
+    void setStatus(@Nullable OnlineStatus status);
 
     /**
      * Sets the {@link net.dv8tion.jda.api.entities.Activity Activity} for this session.
@@ -90,7 +95,7 @@ public interface Presence
      * @see    net.dv8tion.jda.api.entities.Activity#playing(String)
      * @see    net.dv8tion.jda.api.entities.Activity#streaming(String, String)
      */
-    void setActivity(Activity activity);
+    void setActivity(@Nullable Activity activity);
 
     /**
      * Sets whether this session should be marked as afk or not
@@ -118,7 +123,7 @@ public interface Presence
      * @throws java.lang.IllegalArgumentException
      *         If the specified OnlineStatus is {@link net.dv8tion.jda.api.OnlineStatus#UNKNOWN UNKNOWN}
      */
-    void setPresence(OnlineStatus status, Activity activity, boolean idle);
+    void setPresence(@Nullable OnlineStatus status, @Nullable Activity activity, boolean idle);
 
     /**
      * Sets two presence fields of this session.
@@ -134,7 +139,7 @@ public interface Presence
      * @throws java.lang.IllegalArgumentException
      *         If the specified OnlineStatus is {@link net.dv8tion.jda.api.OnlineStatus#UNKNOWN UNKNOWN}
      */
-    void setPresence(OnlineStatus status, Activity activity);
+    void setPresence(@Nullable OnlineStatus status, @Nullable Activity activity);
 
     /**
      * Sets two presence fields of this session.
@@ -149,7 +154,7 @@ public interface Presence
      * @throws java.lang.IllegalArgumentException
      *         If the specified OnlineStatus is {@link net.dv8tion.jda.api.OnlineStatus#UNKNOWN UNKNOWN}
      */
-    void setPresence(OnlineStatus status, boolean idle);
+    void setPresence(@Nullable OnlineStatus status, boolean idle);
 
     /**
      * Sets two presence fields of this session.
@@ -161,5 +166,5 @@ public interface Presence
      * @param  idle
      *         Whether to mark this session as idle (useful for client accounts {@link #setIdle(boolean)})
      */
-    void setPresence(Activity activity, boolean idle);
+    void setPresence(@Nullable Activity activity, boolean idle);
 }

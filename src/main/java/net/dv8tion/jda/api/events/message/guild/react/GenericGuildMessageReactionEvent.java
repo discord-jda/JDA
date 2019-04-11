@@ -23,6 +23,9 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GenericGuildMessageEvent;
 
+import javax.annotation.Nonnull;
+import java.util.Objects;
+
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} was added or removed in a TextChannel.
  *
@@ -33,7 +36,7 @@ public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessa
     protected final User issuer;
     protected final MessageReaction reaction;
 
-    public GenericGuildMessageReactionEvent(JDA api, long responseNumber, User user, MessageReaction reaction)
+    public GenericGuildMessageReactionEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, @Nonnull MessageReaction reaction)
     {
         super(api, responseNumber, reaction.getMessageIdLong(), (TextChannel) reaction.getChannel());
         this.issuer = user;
@@ -45,6 +48,7 @@ public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessa
      *
      * @return The reacting user
      */
+    @Nonnull
     public User getUser()
     {
         return issuer;
@@ -55,9 +59,10 @@ public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessa
      *
      * @return The member instance for the reacting user
      */
+    @Nonnull
     public Member getMember()
     {
-        return getGuild().getMember(getUser());
+        return Objects.requireNonNull(getGuild().getMember(getUser()));
     }
 
     /**
@@ -65,6 +70,7 @@ public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessa
      *
      * @return The message reaction
      */
+    @Nonnull
     public MessageReaction getReaction()
     {
         return reaction;
@@ -76,6 +82,7 @@ public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessa
      *
      * @return The reaction emote
      */
+    @Nonnull
     public MessageReaction.ReactionEmote getReactionEmote()
     {
         return reaction.getReactionEmote();

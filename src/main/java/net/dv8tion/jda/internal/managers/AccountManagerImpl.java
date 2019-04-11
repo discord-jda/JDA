@@ -29,6 +29,7 @@ import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 
 public class AccountManagerImpl extends ManagerBase<AccountManager> implements AccountManager
 {
@@ -53,12 +54,14 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
         this.selfUser = new UpstreamReference<>(selfUser);
     }
 
+    @Nonnull
     @Override
     public SelfUser getSelfUser()
     {
         return selfUser.get();
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public AccountManagerImpl reset(long fields)
@@ -69,6 +72,7 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public AccountManagerImpl reset(long... fields)
@@ -77,6 +81,7 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public AccountManagerImpl reset()
@@ -86,9 +91,10 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
-    public AccountManagerImpl setName(String name, String currentPassword)
+    public AccountManagerImpl setName(@Nonnull String name, String currentPassword)
     {
         Checks.notBlank(name, "Name");
         Checks.check(name.length() >= 2 && name.length() <= 32, "Name must be between 2-32 characters long");
@@ -98,6 +104,7 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public AccountManagerImpl setAvatar(Icon avatar, String currentPassword)
@@ -108,9 +115,10 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
-    public AccountManagerImpl setEmail(String email, String currentPassword)
+    public AccountManagerImpl setEmail(@Nonnull String email, @Nonnull String currentPassword)
     {
         Checks.notNull(email, "email");
         this.currentPassword = currentPassword;
@@ -121,7 +129,7 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
 
     @Override
     @CheckReturnValue
-    public AccountManagerImpl setPassword(String newPassword, String currentPassword)
+    public AccountManagerImpl setPassword(@Nonnull String newPassword, @Nonnull String currentPassword)
     {
         Checks.notNull(newPassword, "password");
         Checks.check(newPassword.length() >= 6 && newPassword.length() <= 128, "Password must be between 2-128 characters long");

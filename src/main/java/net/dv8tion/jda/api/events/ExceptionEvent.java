@@ -18,6 +18,8 @@ package net.dv8tion.jda.api.events;
 
 import net.dv8tion.jda.api.JDA;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that JDA encountered a Throwable that could not be forwarded to another end-user frontend.
  * <br>For instance this is fired for events in internal WebSocket handling or audio threads.
@@ -31,7 +33,7 @@ public class ExceptionEvent extends Event
     protected final Throwable throwable;
     protected final boolean logged;
 
-    public ExceptionEvent(JDA api, Throwable throwable, boolean logged)
+    public ExceptionEvent(@Nonnull JDA api, @Nonnull Throwable throwable, boolean logged)
     {
         super(api);
         this.throwable = throwable;
@@ -53,6 +55,7 @@ public class ExceptionEvent extends Event
      *
      * @return The cause
      */
+    @Nonnull
     public Throwable getCause()
     {
         return throwable;

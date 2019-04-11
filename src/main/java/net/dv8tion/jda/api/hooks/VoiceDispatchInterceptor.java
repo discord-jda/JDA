@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.utils.json.DataObject;
 import net.dv8tion.jda.api.utils.json.SerializableData;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Interceptor used to handle critical voice dispatches.
@@ -66,6 +67,7 @@ public interface VoiceDispatchInterceptor
          *
          * @return The guild
          */
+        @Nonnull
         Guild getGuild();
 
         /**
@@ -81,6 +83,7 @@ public interface VoiceDispatchInterceptor
          *
          * @return The {@link DirectAudioController} for this JDA instance
          */
+        @Nonnull
         default DirectAudioController getAudioController()
         {
             return getJDA().getDirectAudioController();
@@ -101,6 +104,7 @@ public interface VoiceDispatchInterceptor
          *
          * @return The guild id
          */
+        @Nonnull
         default String getGuildId()
         {
             return Long.toUnsignedString(getGuildIdLong());
@@ -111,6 +115,7 @@ public interface VoiceDispatchInterceptor
          *
          * @return The JDA instance
          */
+        @Nonnull
         default JDA getJDA()
         {
             return getGuild().getJDA();
@@ -121,6 +126,7 @@ public interface VoiceDispatchInterceptor
          *
          * @return The shard information, or null if this was not for a sharded client
          */
+        @Nullable
         default JDA.ShardInfo getShardInfo()
         {
             return getJDA().getShardInfo();
@@ -147,12 +153,14 @@ public interface VoiceDispatchInterceptor
             this.json = json;
         }
 
+        @Nonnull
         @Override
         public Guild getGuild()
         {
             return guild;
         }
 
+        @Nonnull
         @Override
         public DataObject toData()
         {
@@ -164,6 +172,7 @@ public interface VoiceDispatchInterceptor
          *
          * @return The endpoint
          */
+        @Nonnull
         public String getEndpoint()
         {
             return endpoint;
@@ -174,6 +183,7 @@ public interface VoiceDispatchInterceptor
          *
          * @return The access token
          */
+        @Nonnull
         public String getToken()
         {
             return token;
@@ -184,6 +194,7 @@ public interface VoiceDispatchInterceptor
          *
          * @return The session id
          */
+        @Nonnull
         public String getSessionId()
         {
             return sessionId;
@@ -206,12 +217,14 @@ public interface VoiceDispatchInterceptor
             this.json = json;
         }
 
+        @Nonnull
         @Override
         public Guild getGuild()
         {
             return voiceState.getGuild();
         }
 
+        @Nonnull
         @Override
         public DataObject toData()
         {
@@ -223,6 +236,7 @@ public interface VoiceDispatchInterceptor
          *
          * @return The updated voice channel, or null to signal disconnect
          */
+        @Nullable
         public VoiceChannel getChannel()
         {
             return channel;
@@ -233,6 +247,7 @@ public interface VoiceDispatchInterceptor
          *
          * @return The voice state
          */
+        @Nonnull
         public GuildVoiceState getVoiceState()
         {
             return voiceState;

@@ -29,6 +29,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -65,12 +66,14 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
         return g;
     }
 
+    @Nonnull
     @Override
     public Emote getEmote()
     {
         return emote;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public EmoteManagerImpl reset(long fields)
@@ -83,6 +86,7 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public EmoteManagerImpl reset(long... fields)
@@ -91,6 +95,7 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public EmoteManagerImpl reset()
@@ -101,9 +106,10 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
-    public EmoteManagerImpl setName(String name)
+    public EmoteManagerImpl setName(@Nonnull String name)
     {
         Checks.notBlank(name, "Name");
         Checks.check(name.length() >= 2 && name.length() <= 32, "Name must be between 2-32 characters long");
@@ -112,6 +118,7 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public EmoteManagerImpl setRoles(Set<Role> roles)

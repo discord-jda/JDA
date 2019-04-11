@@ -19,6 +19,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.Event;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Guild Guild} event is fired.
  * <br>Every GuildEvent is an instance of this event and can be casted.
@@ -29,7 +31,7 @@ public abstract class GenericGuildEvent extends Event
 {
     protected final Guild guild;
 
-    public GenericGuildEvent(JDA api, long responseNumber, Guild guild)
+    public GenericGuildEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild)
     {
         super(api, responseNumber);
         this.guild = guild;
@@ -40,6 +42,7 @@ public abstract class GenericGuildEvent extends Event
      *
      * @return The Guild
      */
+    @Nonnull
     public Guild getGuild()
     {
         return guild;
