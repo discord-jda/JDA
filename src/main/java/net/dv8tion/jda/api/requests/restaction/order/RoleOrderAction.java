@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.managers.GuildController;
 
+import javax.annotation.Nonnull;
+
 /**
  * Implementation of {@link OrderAction OrderAction}
  * designed to modify the order of {@link net.dv8tion.jda.api.entities.Role Roles} of the
@@ -44,5 +46,6 @@ public interface RoleOrderAction extends OrderAction<Role, RoleOrderAction>
      *
      * @return The corresponding {@link net.dv8tion.jda.api.entities.Guild Guild}
      */
+    @Nonnull
     Guild getGuild();
 }

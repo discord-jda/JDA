@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.OrderAction;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
@@ -40,6 +41,7 @@ public interface Category extends GuildChannel, Comparable<Category>
      *
      * @return Immutable list of all child channels
      */
+    @Nonnull
     List<GuildChannel> getChannels();
 
     /**
@@ -48,6 +50,7 @@ public interface Category extends GuildChannel, Comparable<Category>
      *
      * @return Immutable list of all child TextChannels
      */
+    @Nonnull
     List<TextChannel> getTextChannels();
 
     /**
@@ -56,6 +59,7 @@ public interface Category extends GuildChannel, Comparable<Category>
      *
      * @return Immutable list of all child VoiceChannels
      */
+    @Nonnull
     List<VoiceChannel> getVoiceChannels();
 
     /**
@@ -86,8 +90,9 @@ public interface Category extends GuildChannel, Comparable<Category>
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new TextChannel before creating it
      */
+    @Nonnull
     @CheckReturnValue
-    ChannelAction<TextChannel> createTextChannel(String name);
+    ChannelAction<TextChannel> createTextChannel(@Nonnull String name);
 
     /**
      * Creates a new {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} with this Category as parent.
@@ -117,8 +122,9 @@ public interface Category extends GuildChannel, Comparable<Category>
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new VoiceChannel before creating it
      */
+    @Nonnull
     @CheckReturnValue
-    ChannelAction<VoiceChannel> createVoiceChannel(String name);
+    ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name);
 
     /**
      * Modifies the positional order of this Category's nested {@link #getTextChannels() TextChannels}.
@@ -143,6 +149,7 @@ public interface Category extends GuildChannel, Comparable<Category>
      * @return A {@link CategoryOrderAction CategoryOrderAction} for
      *         ordering the Category's {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}.
      */
+    @Nonnull
     @CheckReturnValue
     CategoryOrderAction<TextChannel> modifyTextChannelPositions();
 
@@ -169,12 +176,15 @@ public interface Category extends GuildChannel, Comparable<Category>
      * @return A {@link CategoryOrderAction CategoryOrderAction} for
      *         ordering the Category's {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}.
      */
+    @Nonnull
     @CheckReturnValue
     CategoryOrderAction<VoiceChannel> modifyVoiceChannelPositions();
 
+    @Nonnull
     @Override
     ChannelAction<Category> createCopy(Guild guild);
 
+    @Nonnull
     @Override
     ChannelAction<Category> createCopy();
 }

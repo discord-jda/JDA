@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.GenericEvent;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that the presence of a {@link net.dv8tion.jda.api.entities.User User} has changed.
  * <br>Users don't have presences directly, this is fired when a {@link net.dv8tion.jda.api.entities.Member Member} from a {@link net.dv8tion.jda.api.entities.Guild Guild}
@@ -30,16 +32,18 @@ import net.dv8tion.jda.api.events.GenericEvent;
 public interface GenericUserPresenceEvent extends GenericEvent
 {
     /**
-     * Possibly-null guild in which the presence has changed.
+     * Guild in which the presence has changed.
      *
      * @return The guild
      */
+    @Nonnull
     Guild getGuild();
 
     /**
-     * Possibly-null member who changed their presence.
+     * Member who changed their presence.
      *
      * @return The member
      */
+    @Nonnull
     Member getMember();
 }

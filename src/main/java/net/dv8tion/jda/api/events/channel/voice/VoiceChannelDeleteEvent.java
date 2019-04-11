@@ -18,6 +18,8 @@ package net.dv8tion.jda.api.events.channel.voice;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} was deleted.
  *
@@ -25,7 +27,7 @@ import net.dv8tion.jda.api.entities.VoiceChannel;
  */
 public class VoiceChannelDeleteEvent extends GenericVoiceChannelEvent
 {
-    public VoiceChannelDeleteEvent(JDA api, long responseNumber, VoiceChannel channel)
+    public VoiceChannelDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull VoiceChannel channel)
     {
         super(api, responseNumber, channel);
     }

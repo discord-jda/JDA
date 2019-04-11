@@ -60,24 +60,28 @@ public class MemberImpl implements Member
         this.clientStatus = cacheOnline ? new ConcurrentHashMap<>(5) : null;
     }
 
+    @Nonnull
     @Override
     public User getUser()
     {
         return user;
     }
 
+    @Nonnull
     @Override
     public GuildImpl getGuild()
     {
         return guild.get();
     }
 
+    @Nonnull
     @Override
     public JDA getJDA()
     {
         return user.getJDA();
     }
 
+    @Nonnull
     @Override
     public OffsetDateTime getTimeJoined()
     {
@@ -90,12 +94,14 @@ public class MemberImpl implements Member
         return voiceState;
     }
 
+    @Nonnull
     @Override
     public List<Activity> getActivities()
     {
         return activities == null || activities.isEmpty() ? Collections.emptyList() : activities;
     }
 
+    @Nonnull
     @Override
     public OnlineStatus getOnlineStatus()
     {
@@ -119,12 +125,14 @@ public class MemberImpl implements Member
         return nickname;
     }
 
+    @Nonnull
     @Override
     public String getEffectiveName()
     {
         return nickname != null ? nickname : user.getName();
     }
 
+    @Nonnull
     @Override
     public List<Role> getRoles()
     {
@@ -153,15 +161,18 @@ public class MemberImpl implements Member
         return Role.DEFAULT_COLOR_RAW;
     }
 
+    @Nonnull
     @Override
     public EnumSet<Permission> getPermissions()
     {
         return Permission.getPermissions(PermissionUtil.getEffectivePermission(this));
     }
 
+    @Nonnull
     @Override
-    public EnumSet<Permission> getPermissions(GuildChannel channel)
+    public EnumSet<Permission> getPermissions(@Nonnull GuildChannel channel)
     {
+        Checks.notNull(channel, "Channel");
         if (!getGuild().equals(channel.getGuild()))
             throw new IllegalArgumentException("Provided channel is not in the same guild as this member!");
 
@@ -169,13 +180,13 @@ public class MemberImpl implements Member
     }
 
     @Override
-    public boolean hasPermission(Permission... permissions)
+    public boolean hasPermission(@Nonnull Permission... permissions)
     {
         return PermissionUtil.checkPermission(this, permissions);
     }
 
     @Override
-    public boolean hasPermission(Collection<Permission> permissions)
+    public boolean hasPermission(@Nonnull Collection<Permission> permissions)
     {
         Checks.notNull(permissions, "Permission Collection");
 
@@ -183,13 +194,13 @@ public class MemberImpl implements Member
     }
 
     @Override
-    public boolean hasPermission(GuildChannel channel, Permission... permissions)
+    public boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Permission... permissions)
     {
         return PermissionUtil.checkPermission(channel, this, permissions);
     }
 
     @Override
-    public boolean hasPermission(GuildChannel channel, Collection<Permission> permissions)
+    public boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Collection<Permission> permissions)
     {
         Checks.notNull(permissions, "Permission Collection");
 
@@ -197,19 +208,19 @@ public class MemberImpl implements Member
     }
 
     @Override
-    public boolean canInteract(Member member)
+    public boolean canInteract(@Nonnull Member member)
     {
         return PermissionUtil.canInteract(this, member);
     }
 
     @Override
-    public boolean canInteract(Role role)
+    public boolean canInteract(@Nonnull Role role)
     {
         return PermissionUtil.canInteract(this, role);
     }
 
     @Override
-    public boolean canInteract(Emote emote)
+    public boolean canInteract(@Nonnull Emote emote)
     {
         return PermissionUtil.canInteract(this, emote);
     }
@@ -289,6 +300,7 @@ public class MemberImpl implements Member
         return "MB:" + getEffectiveName() + '(' + user.toString() + " / " + getGuild().toString() +')';
     }
 
+    @Nonnull
     @Override
     public String getAsMention()
     {

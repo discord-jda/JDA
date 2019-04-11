@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.entities;
 
+import javax.annotation.Nonnull;
+
 /**
  * Represents the embedded resource type.
  * <br>These are typically either Images, Videos or Links.
@@ -45,6 +47,7 @@ public enum EmbedType
      * @return The {@link net.dv8tion.jda.api.entities.EmbedType EmbedType} matching the provided key,
      *         or {@link net.dv8tion.jda.api.entities.EmbedType#UNKNOWN UNKNOWN}.
      */
+    @Nonnull
     public static EmbedType fromKey(String key)
     {
         for (EmbedType type : values())

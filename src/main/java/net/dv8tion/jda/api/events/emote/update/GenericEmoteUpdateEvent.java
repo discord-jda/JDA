@@ -21,6 +21,9 @@ import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.events.UpdateEvent;
 import net.dv8tion.jda.api.events.emote.GenericEmoteEvent;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Indicates that an {@link net.dv8tion.jda.api.entities.Emote Emote} was updated.
  */
@@ -31,8 +34,8 @@ public abstract class GenericEmoteUpdateEvent<T> extends GenericEmoteEvent imple
     protected final String identifier;
 
     public GenericEmoteUpdateEvent(
-        JDA api, long responseNumber, Emote emote,
-        T previous, T next, String identifier)
+            @Nonnull JDA api, long responseNumber, @Nonnull Emote emote,
+            @Nullable T previous, @Nullable T next, @Nonnull String identifier)
     {
         super(api, responseNumber, emote);
         this.previous = previous;
@@ -40,24 +43,28 @@ public abstract class GenericEmoteUpdateEvent<T> extends GenericEmoteEvent imple
         this.identifier = identifier;
     }
 
+    @Nonnull
     @Override
     public Emote getEntity()
     {
         return getEmote();
     }
 
+    @Nonnull
     @Override
     public String getPropertyIdentifier()
     {
         return identifier;
     }
 
+    @Nullable
     @Override
     public T getOldValue()
     {
         return previous;
     }
 
+    @Nullable
     @Override
     public T getNewValue()
     {

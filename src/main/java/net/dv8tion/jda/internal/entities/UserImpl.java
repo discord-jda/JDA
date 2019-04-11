@@ -28,6 +28,7 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import org.json.JSONObject;
 
+import javax.annotation.Nonnull;
 import java.util.FormattableFlags;
 import java.util.Formatter;
 import java.util.List;
@@ -50,12 +51,14 @@ public class UserImpl implements User
         this.api = new UpstreamReference<>(api);
     }
 
+    @Nonnull
     @Override
     public String getName()
     {
         return name;
     }
 
+    @Nonnull
     @Override
     public String getDiscriminator()
     {
@@ -75,24 +78,28 @@ public class UserImpl implements User
                 + (getAvatarId().startsWith("a_") ? ".gif" : ".png");
     }
 
+    @Nonnull
     @Override
     public String getDefaultAvatarId()
     {
         return DefaultAvatar.values()[Integer.parseInt(getDiscriminator()) % DefaultAvatar.values().length].toString();
     }
 
+    @Nonnull
     @Override
     public String getDefaultAvatarUrl()
     {
         return "https://discordapp.com/assets/" + getDefaultAvatarId() + ".png";
     }
 
+    @Nonnull
     @Override
     public String getEffectiveAvatarUrl()
     {
         return getAvatarUrl() == null ? getDefaultAvatarUrl() : getAvatarUrl();
     }
 
+    @Nonnull
     @Override
     public String getAsTag()
     {
@@ -105,6 +112,7 @@ public class UserImpl implements User
         return privateChannel != null;
     }
 
+    @Nonnull
     @Override
     public RestAction<PrivateChannel> openPrivateChannel()
     {
@@ -124,6 +132,7 @@ public class UserImpl implements User
         });
     }
 
+    @Nonnull
     @Override
     public List<Guild> getMutualGuilds()
     {
@@ -144,12 +153,14 @@ public class UserImpl implements User
         return bot;
     }
 
+    @Nonnull
     @Override
     public JDAImpl getJDA()
     {
         return api.get();
     }
 
+    @Nonnull
     @Override
     public String getAsMention()
     {

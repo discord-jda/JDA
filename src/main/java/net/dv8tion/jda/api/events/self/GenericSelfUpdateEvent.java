@@ -21,6 +21,9 @@ import net.dv8tion.jda.api.entities.SelfUser;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.UpdateEvent;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.SelfUser SelfUser} changed or started an activity.
  * <br>Every SelfUserEvent is derived from this event and can be casted.
@@ -34,8 +37,8 @@ public abstract class GenericSelfUpdateEvent<T> extends Event implements UpdateE
     protected final String identifier;
 
     public GenericSelfUpdateEvent(
-        JDA api, long responseNumber,
-        T previous, T next, String identifier)
+            @Nonnull JDA api, long responseNumber,
+            @Nullable T previous, @Nullable T next, @Nonnull String identifier)
     {
         super(api, responseNumber);
         this.previous = previous;
@@ -48,29 +51,34 @@ public abstract class GenericSelfUpdateEvent<T> extends Event implements UpdateE
      *
      * @return The {@link net.dv8tion.jda.api.entities.SelfUser SelfUser}
      */
+    @Nonnull
     public SelfUser getSelfUser()
     {
         return api.getSelfUser();
     }
 
+    @Nonnull
     @Override
     public SelfUser getEntity()
     {
         return getSelfUser();
     }
 
+    @Nonnull
     @Override
     public String getPropertyIdentifier()
     {
         return identifier;
     }
 
+    @Nullable
     @Override
     public T getOldValue()
     {
         return previous;
     }
 
+    @Nullable
     @Override
     public T getNewValue()
     {

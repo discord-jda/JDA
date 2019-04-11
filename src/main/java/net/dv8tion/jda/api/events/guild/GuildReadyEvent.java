@@ -19,6 +19,8 @@ package net.dv8tion.jda.api.events.guild;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Guild Guild} finished setting up
  * <br>This event is fired if a guild finished setting up during initial login phase.
@@ -28,7 +30,7 @@ import net.dv8tion.jda.api.entities.Guild;
  */
 public class GuildReadyEvent extends GenericGuildEvent
 {
-    public GuildReadyEvent(JDA api, long responseNumber, Guild guild)
+    public GuildReadyEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild)
     {
         super(api, responseNumber, guild);
     }

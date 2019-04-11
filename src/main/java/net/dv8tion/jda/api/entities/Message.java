@@ -28,6 +28,7 @@ import okhttp3.*;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.*;
 import java.time.OffsetDateTime;
 import java.util.Formattable;
@@ -134,6 +135,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return immutable list of mentioned users
      */
+    @Nonnull
     List<User> getMentionedUsers();
 
     /**
@@ -147,6 +149,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return immutable list of mentioned TextChannels
      */
+    @Nonnull
     List<TextChannel> getMentionedChannels();
 
     /**
@@ -160,6 +163,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return immutable list of mentioned Roles
      */
+    @Nonnull
     List<Role> getMentionedRoles();
 
     /**
@@ -182,7 +186,8 @@ public interface Message extends ISnowflake, Formattable
      *
      * @since  3.4.0
      */
-    List<Member> getMentionedMembers(Guild guild);
+    @Nonnull
+    List<Member> getMentionedMembers(@Nonnull Guild guild);
 
     /**
      * Creates an immutable list of {@link net.dv8tion.jda.api.entities.Member Members}
@@ -200,6 +205,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @since  3.4.0
      */
+    @Nonnull
     List<Member> getMentionedMembers();
 
     /**
@@ -222,7 +228,8 @@ public interface Message extends ISnowflake, Formattable
      *
      * @since  3.4.0
      */
-    List<IMentionable> getMentions(MentionType... types);
+    @Nonnull
+    List<IMentionable> getMentions(@Nonnull MentionType... types);
 
     /**
      * Checks if given {@link net.dv8tion.jda.api.entities.IMentionable IMentionable}
@@ -246,7 +253,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return True, if the given mentionable was mentioned in this message
      */
-    boolean isMentioned(IMentionable mentionable, MentionType... types);
+    boolean isMentioned(@Nonnull IMentionable mentionable, @Nonnull MentionType... types);
 
     /**
      * Indicates if this Message mentions everyone using @everyone or @here.
@@ -269,6 +276,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return Time of the most recent edit, or {@code null} if the Message has never been edited.
      */
+    @Nullable
     OffsetDateTime getTimeEdited();
 
     /**
@@ -279,6 +287,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return Message author
      */
+    @Nonnull
     User getAuthor();
 
     /**
@@ -293,6 +302,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return Message author, or {@code null} if the message was not sent from a TextChannel.
      */
+    @Nullable
     Member getMember();
 
     /**
@@ -304,6 +314,7 @@ public interface Message extends ISnowflake, Formattable
      * 
      * @return A String representing the jump-to URL for the message
      */
+    @Nonnull
     String getJumpUrl();
 
     /**
@@ -325,6 +336,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The textual content of the message with mentions resolved to be visually like the Discord client.
      */
+    @Nonnull
     String getContentDisplay();
 
     /**
@@ -335,6 +347,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The raw textual content of the message, containing unresolved Discord message formatting.
      */
+    @Nonnull
     String getContentRaw();
 
     /**
@@ -344,6 +357,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The textual content from {@link #getContentDisplay()} with all text formatting characters removed or escaped.
      */
+    @Nonnull
     String getContentStripped();
 
     /**
@@ -358,6 +372,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return Immutable list of invite codes
      */
+    @Nonnull
     List<String> getInvites();
 
     /**
@@ -372,6 +387,7 @@ public interface Message extends ISnowflake, Formattable
      * @see    net.dv8tion.jda.api.MessageBuilder#setNonce(String)
      * @see    <a href="https://en.wikipedia.org/wiki/Cryptographic_nonce" target="_blank">Cryptographic Nonce - Wikipedia</a>
      */
+    @Nullable
     String getNonce();
 
     /**
@@ -391,7 +407,18 @@ public interface Message extends ISnowflake, Formattable
      * @return True if the {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} which this message was received
      *         from is the same as the one specified by {@code type}.
      */
-    boolean isFromType(ChannelType type);
+    boolean isFromType(@Nonnull ChannelType type);
+
+    /**
+     * Whether this message was sent in a {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * <br>If this is {@code false} then {@link #getGuild()} will throw an {@link java.lang.IllegalStateException}.
+     *
+     * @return True, if {@link #getChannelType()}.{@link ChannelType#isGuild() isGuild()} is true.
+     */
+    default boolean isFromGuild()
+    {
+        return getChannelType().isGuild();
+    }
 
     /**
      * Gets the {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} that this message was received from.
@@ -403,6 +430,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The ChannelType which this message was received from.
      */
+    @Nonnull
     ChannelType getChannelType();
 
     /**
@@ -422,12 +450,12 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The MessageChannel of this Message
      */
+    @Nonnull
     MessageChannel getChannel();
 
     /**
      * Returns the {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} that this message was sent in.
-     * <br><b>This is only valid if the Message was actually sent in a PrivateChannel.</b> This will return {@code null}
-     * if it was not sent from a PrivateChannel.
+     * <br><b>This is only valid if the Message was actually sent in a PrivateChannel.</b>
      * <br>You can check the type of channel this message was sent from using {@link #isFromType(ChannelType)} or {@link #getChannelType()}.
      *
      * <p>Use {@link #getChannel()} for an ambiguous {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
@@ -435,15 +463,21 @@ public interface Message extends ISnowflake, Formattable
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     * @throws java.lang.IllegalStateException
+     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.PrivateChannel}.
      *
-     * @return The PrivateChannel this message was sent in, or {@code null} if it was not sent from a PrivateChannel.
+     * @return The PrivateChannel this message was sent in
+     *
+     * @see    #isFromGuild()
+     * @see    #isFromType(ChannelType)
+     * @see    #getChannelType()
      */
+    @Nonnull
     PrivateChannel getPrivateChannel();
 
     /**
      * Returns the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that this message was sent in.
-     * <br><b>This is only valid if the Message was actually sent in a TextChannel.</b> This will return {@code null}
-     * if it was not sent from a TextChannel.
+     * <br><b>This is only valid if the Message was actually sent in a TextChannel.</b>
      * <br>You can check the type of channel this message was sent from using {@link #isFromType(ChannelType)} or {@link #getChannelType()}.
      *
      * <p>Use {@link #getChannel()} for an ambiguous {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
@@ -451,35 +485,49 @@ public interface Message extends ISnowflake, Formattable
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     * @throws java.lang.IllegalStateException
+     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.TextChannel}.
      *
-     * @return The TextChannel this message was sent in, or {@code null} if it was not sent from a TextChannel.
+     * @return The TextChannel this message was sent in
+     *
+     * @see    #isFromGuild()
+     * @see    #isFromType(ChannelType)
+     * @see    #getChannelType()
      */
+    @Nonnull
     TextChannel getTextChannel();
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Category Category} this
-     * message was sent in. This will always be {@code null} for DMs and Groups.
-     * <br>Equivalent to {@code getTextChannel().getParent()}.
+     * message was sent in. This will always be {@code null} for DMs.
+     * <br>Equivalent to {@code getTextChannel().getParent()} if this was sent in a {@link net.dv8tion.jda.api.entities.TextChannel}.
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      *
      * @return {@link net.dv8tion.jda.api.entities.Category Category} for this message
      */
+    @Nullable
     Category getCategory();
 
     /**
      * Returns the {@link net.dv8tion.jda.api.entities.Guild Guild} that this message was sent in.
-     * <br>This is just a shortcut to {@link #getTextChannel()}{@link net.dv8tion.jda.api.entities.TextChannel#getGuild() .getGuild()}.
-     * <br><b>This is only valid if the Message was actually sent in a TextChannel.</b> This will return {@code null}
-     * if it was not sent from a TextChannel.
+     * <br>This is just a shortcut to {@link #getTextChannel()}.{@link net.dv8tion.jda.api.entities.TextChannel#getGuild() getGuild()}.
+     * <br><b>This is only valid if the Message was actually sent in a TextChannel.</b>
      * <br>You can check the type of channel this message was sent from using {@link #isFromType(ChannelType)} or {@link #getChannelType()}.
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     * @throws java.lang.IllegalStateException
+     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.TextChannel}.
      *
-     * @return The Guild this message was sent in, or {@code null} if it was not sent from a TextChannel.
+     * @return The Guild this message was sent in
+     *
+     * @see    #isFromGuild()
+     * @see    #isFromType(ChannelType)
+     * @see    #getChannelType()
      */
+    @Nonnull
     Guild getGuild();
 
     /**
@@ -488,6 +536,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return Unmodifiable list of {@link net.dv8tion.jda.api.entities.Message.Attachment Attachments}.
      */
+    @Nonnull
     List<Attachment> getAttachments();
 
     /**
@@ -496,6 +545,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return Unmodifiable list of all given MessageEmbeds.
      */
+    @Nonnull
     List<MessageEmbed> getEmbeds();
 
     /**
@@ -514,6 +564,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return An immutable list of the Emotes used in this message (example match {@literal <:jda:230988580904763393>})
      */
+    @Nonnull
     List<Emote> getEmotes();
 
     /**
@@ -521,6 +572,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return immutable list of all MessageReactions on this message.
      */
+    @Nonnull
     List<MessageReaction> getReactions();
 
     /**
@@ -529,6 +581,14 @@ public interface Message extends ISnowflake, Formattable
      * @return If this message is TTS.
      */
     boolean isTTS();
+
+    /**
+     * A {@link net.dv8tion.jda.api.entities.MessageActivity MessageActivity} that contains its type and party id.
+     *
+     * @return The activity, or {@code null} if no activity was added to the message.
+     */
+    @Nullable
+    MessageActivity getActivity();
 
     /**
      * Edits this Message's content to the provided String.
@@ -562,8 +622,9 @@ public interface Message extends ISnowflake, Formattable
      * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated content
      */
+    @Nonnull
     @CheckReturnValue
-    MessageAction editMessage(CharSequence newContent);
+    MessageAction editMessage(@Nonnull CharSequence newContent);
 
     /**
      * Edits this Message's content to the provided {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}.
@@ -598,8 +659,9 @@ public interface Message extends ISnowflake, Formattable
      * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated content
      */
+    @Nonnull
     @CheckReturnValue
-    MessageAction editMessage(MessageEmbed newContent);
+    MessageAction editMessage(@Nonnull MessageEmbed newContent);
 
     /**
      * Edits this Message's content to the provided format.
@@ -646,8 +708,9 @@ public interface Message extends ISnowflake, Formattable
      * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated content
      */
+    @Nonnull
     @CheckReturnValue
-    MessageAction editMessageFormat(String format, Object... args);
+    MessageAction editMessageFormat(@Nonnull String format, @Nonnull Object... args);
 
     /**
      * Edits this Message's content to the provided {@link net.dv8tion.jda.api.entities.Message Message}.
@@ -684,8 +747,9 @@ public interface Message extends ISnowflake, Formattable
      * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated content
      */
+    @Nonnull
     @CheckReturnValue
-    MessageAction editMessage(Message newContent);
+    MessageAction editMessage(@Nonnull Message newContent);
 
     /**
      * Deletes this Message from Discord.
@@ -729,6 +793,7 @@ public interface Message extends ISnowflake, Formattable
      * @see    net.dv8tion.jda.api.entities.TextChannel#deleteMessages(java.util.Collection) TextChannel.deleteMessages(Collection)
      * @see    net.dv8tion.jda.api.entities.MessageChannel#purgeMessages(java.util.List) MessageChannel.purgeMessages(List)
      */
+    @Nonnull
     @CheckReturnValue
     AuditableRestAction<Void> delete();
 
@@ -740,6 +805,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return  the corresponding JDA instance
      */
+    @Nonnull
     JDA getJDA();
 
     /**
@@ -784,6 +850,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
+    @Nonnull
     @CheckReturnValue
     RestAction<Void> pin();
 
@@ -822,6 +889,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
+    @Nonnull
     @CheckReturnValue
     RestAction<Void> unpin();
 
@@ -876,8 +944,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
+    @Nonnull
     @CheckReturnValue
-    RestAction<Void> addReaction(Emote emote);
+    RestAction<Void> addReaction(@Nonnull Emote emote);
 
     /**
      * Adds a reaction to this Message using a unicode emoji.
@@ -935,8 +1004,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
+    @Nonnull
     @CheckReturnValue
-    RestAction<Void> addReaction(String unicode);
+    RestAction<Void> addReaction(@Nonnull String unicode);
 
     /**
      * Removes all reactions from this Message.
@@ -971,6 +1041,7 @@ public interface Message extends ISnowflake, Formattable
      *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
+    @Nonnull
     @CheckReturnValue
     RestAction<Void> clearReactions();
 
@@ -978,11 +1049,12 @@ public interface Message extends ISnowflake, Formattable
      * This specifies the {@link net.dv8tion.jda.api.entities.MessageType MessageType} of this Message.
      *
      * <p>Messages can represent more than just simple text sent by Users, they can also be special messages that
-     * inform about events occurs. A few examples are the system message informing that a message has been pinned.
-     * Another would be the system message informing that a call has been started or ended in a group.
+     * inform about events that occur. Messages can either be {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT default messages}
+     * or special messages like {@link net.dv8tion.jda.api.entities.MessageType#GUILD_MEMBER_JOIN welcome messages}.
      *
      * @return The {@link net.dv8tion.jda.api.entities.MessageType MessageType} of this message.
      */
+    @Nonnull
     MessageType getType();
 
     /**
@@ -1026,6 +1098,7 @@ public interface Message extends ISnowflake, Formattable
             this.pattern = Pattern.compile(regex);
         }
 
+        @Nonnull
         public Pattern getPattern()
         {
             return pattern;
@@ -1064,6 +1137,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return The corresponding JDA instance for this Attachment
          */
+        @Nonnull
         public JDA getJDA()
         {
             return jda;
@@ -1080,6 +1154,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return Non-null String containing the Attachment URL.
          */
+        @Nonnull
         public String getUrl()
         {
             return url;
@@ -1090,6 +1165,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return Non-null String containing the proxied Attachment url.
          */
+        @Nonnull
         public String getProxyUrl()
         {
             return proxyUrl;
@@ -1100,6 +1176,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return Non-null String containing the Attachment file name.
          */
+        @Nonnull
         public String getFileName()
         {
             return fileName;
@@ -1132,6 +1209,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.InputStream}
          */
+        @Nonnull
         public CompletableFuture<InputStream> retrieveInputStream() // it is expected that the response is closed by the callback!
         {
             CompletableFuture<InputStream> future = new CompletableFuture<>();
@@ -1185,6 +1263,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
          */
+        @Nonnull
         public CompletableFuture<File> downloadToFile() // using relative path
         {
             return downloadToFile(getFileName());
@@ -1217,6 +1296,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
          */
+        @Nonnull
         public CompletableFuture<File> downloadToFile(String path)
         {
             Checks.notNull(path, "Path");
@@ -1250,6 +1330,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
          */
+        @Nonnull
         public CompletableFuture<File> downloadToFile(File file)
         {
             Checks.notNull(file, "File");
@@ -1302,6 +1383,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link net.dv8tion.jda.api.entities.Icon}
          */
+        @Nonnull
         public CompletableFuture<Icon> retrieveAsIcon()
         {
             if (!isImage())

@@ -23,15 +23,18 @@ import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.internal.utils.config.SessionConfig;
 import okhttp3.OkHttpClient;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 public class ShardingSessionConfig extends SessionConfig
 {
     private final OkHttpClient.Builder builder;
     private final IAudioSendFactory audioSendFactory;
 
     public ShardingSessionConfig(
-            SessionController sessionController, VoiceDispatchInterceptor interceptor,
-            OkHttpClient httpClient, OkHttpClient.Builder httpClientBuilder,
-            WebSocketFactory webSocketFactory, IAudioSendFactory audioSendFactory,
+            @Nullable SessionController sessionController, @Nullable VoiceDispatchInterceptor interceptor,
+            @Nullable OkHttpClient httpClient, @Nullable OkHttpClient.Builder httpClientBuilder,
+            @Nullable WebSocketFactory webSocketFactory, @Nullable IAudioSendFactory audioSendFactory,
             boolean audioEnabled, boolean retryOnTimeout,  boolean autoReconnect,
             boolean bulkDeleteSplittingEnabled, int maxReconnectDelay)
     {
@@ -45,16 +48,19 @@ public class ShardingSessionConfig extends SessionConfig
         this.audioSendFactory = audioSendFactory;
     }
 
+    @Nullable
     public OkHttpClient.Builder getHttpBuilder()
     {
         return builder;
     }
 
+    @Nullable
     public IAudioSendFactory getAudioSendFactory()
     {
         return audioSendFactory;
     }
 
+    @Nonnull
     public static ShardingSessionConfig getDefault()
     {
         return new ShardingSessionConfig(null, null, null, null, null, null, true, true, true, true, 900);

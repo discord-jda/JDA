@@ -41,8 +41,9 @@ import java.util.function.BooleanSupplier;
  */
 public interface MemberAction extends RestAction<Void>
 {
+    @Nonnull
     @Override
-    MemberAction setCheck(BooleanSupplier checks);
+    MemberAction setCheck(@Nullable BooleanSupplier checks);
 
     /**
      * The access token
@@ -89,8 +90,9 @@ public interface MemberAction extends RestAction<Void>
      *
      * @return The current MemberAction for chaining
      */
+    @Nonnull
     @CheckReturnValue
-    MemberAction setNickname(String nick);
+    MemberAction setNickname(@Nullable String nick);
 
     /**
      * Sets the roles of the user for the guild.
@@ -104,8 +106,9 @@ public interface MemberAction extends RestAction<Void>
      *
      * @return The current MemberAction for chaining
      */
+    @Nonnull
     @CheckReturnValue
-    MemberAction setRoles(Collection<Role> roles);
+    MemberAction setRoles(@Nullable Collection<Role> roles);
 
     /**
      * Sets the roles of the user for the guild.
@@ -119,8 +122,9 @@ public interface MemberAction extends RestAction<Void>
      *
      * @return The current MemberAction for chaining
      */
+    @Nonnull
     @CheckReturnValue
-    MemberAction setRoles(Role... roles);
+    MemberAction setRoles(@Nullable Role... roles);
 
     /**
      * Whether the user should be voice muted in the guild.
@@ -131,6 +135,7 @@ public interface MemberAction extends RestAction<Void>
      *
      * @return The current MemberAction for chaining
      */
+    @Nonnull
     @CheckReturnValue
     MemberAction setMute(boolean mute);
 
@@ -143,6 +148,7 @@ public interface MemberAction extends RestAction<Void>
      *
      * @return The current MemberAction for chaining
      */
+    @Nonnull
     @CheckReturnValue
     MemberAction setDeafen(boolean deaf);
 }

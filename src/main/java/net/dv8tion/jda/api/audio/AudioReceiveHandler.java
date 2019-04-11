@@ -17,8 +17,8 @@
 package net.dv8tion.jda.api.audio;
 
 import net.dv8tion.jda.api.entities.User;
-import javax.annotation.Nonnull;
 
+import javax.annotation.Nonnull;
 import javax.sound.sampled.AudioFormat;
 
 /**
@@ -65,7 +65,7 @@ public interface AudioReceiveHandler
      * @param  combinedAudio
      *         The combined audio data.
      */
-    void handleCombinedAudio(CombinedAudio combinedAudio);
+    void handleCombinedAudio(@Nonnull CombinedAudio combinedAudio);
 
     /**
      * If {@link #canReceiveUser()} returns true, JDA will provide a {@link net.dv8tion.jda.api.audio.UserAudio UserAudio}
@@ -88,7 +88,7 @@ public interface AudioReceiveHandler
      * @param  userAudio
      *         The user audio data
      */
-    void handleUserAudio(UserAudio userAudio);
+    void handleUserAudio(@Nonnull UserAudio userAudio);
 
     /**
      * This method is a filter predicate used by JDA to determine whether or not to include a
