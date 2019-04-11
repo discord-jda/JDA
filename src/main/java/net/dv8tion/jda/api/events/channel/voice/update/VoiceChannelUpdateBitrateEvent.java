@@ -18,6 +18,8 @@ package net.dv8tion.jda.api.events.channel.voice.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that a {@link VoiceChannel VoiceChannel}'s bitrate changed.
  *
@@ -29,14 +31,9 @@ public class VoiceChannelUpdateBitrateEvent extends GenericVoiceChannelUpdateEve
 {
     public static final String IDENTIFIER = "bitrate";
 
-    private final int oldBitrate;
-    private final int newBitrate;
-
-    public VoiceChannelUpdateBitrateEvent(JDA api, long responseNumber, VoiceChannel channel, int oldBitrate)
+    public VoiceChannelUpdateBitrateEvent(@Nonnull JDA api, long responseNumber, @Nonnull VoiceChannel channel, int oldBitrate)
     {
-        super(api, responseNumber, channel);
-        this.oldBitrate = oldBitrate;
-        this.newBitrate = channel.getBitrate();
+        super(api, responseNumber, channel, oldBitrate, channel.getBitrate(), IDENTIFIER);
     }
 
     /**
@@ -46,7 +43,7 @@ public class VoiceChannelUpdateBitrateEvent extends GenericVoiceChannelUpdateEve
      */
     public int getOldBitrate()
     {
-        return oldBitrate;
+        return getOldValue();
     }
 
     /**
@@ -56,24 +53,6 @@ public class VoiceChannelUpdateBitrateEvent extends GenericVoiceChannelUpdateEve
      */
     public int getNewBitrate()
     {
-        return newBitrate;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public Integer getOldValue()
-    {
-        return oldBitrate;
-    }
-
-    @Override
-    public Integer getNewValue()
-    {
-        return newBitrate;
+        return getNewValue();
     }
 }

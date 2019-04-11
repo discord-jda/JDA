@@ -20,6 +20,9 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Category;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}'s parent changed.
  *
@@ -31,14 +34,9 @@ public class VoiceChannelUpdateParentEvent extends GenericVoiceChannelUpdateEven
 {
     public static final String IDENTIFIER = "parent";
 
-    private final Category oldParent;
-    private final Category newParent;
-
-    public VoiceChannelUpdateParentEvent(JDA api, long responseNumber, VoiceChannel channel, Category oldParent)
+    public VoiceChannelUpdateParentEvent(@Nonnull JDA api, long responseNumber, @Nonnull VoiceChannel channel, @Nullable Category oldParent)
     {
-        super(api, responseNumber, channel);
-        this.oldParent = oldParent;
-        this.newParent = channel.getParent();
+        super(api, responseNumber, channel, oldParent, channel.getParent(), IDENTIFIER);
     }
 
     /**
@@ -46,9 +44,10 @@ public class VoiceChannelUpdateParentEvent extends GenericVoiceChannelUpdateEven
      *
      * @return The old parent, or null
      */
+    @Nullable
     public Category getOldParent()
     {
-        return oldParent;
+        return getOldValue();
     }
 
     /**
@@ -56,26 +55,9 @@ public class VoiceChannelUpdateParentEvent extends GenericVoiceChannelUpdateEven
      *
      * @return The new parent, or null
      */
+    @Nullable
     public Category getNewParent()
     {
-        return newParent;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public Category getOldValue()
-    {
-        return oldParent;
-    }
-
-    @Override
-    public Category getNewValue()
-    {
-        return newParent;
+        return getNewValue();
     }
 }

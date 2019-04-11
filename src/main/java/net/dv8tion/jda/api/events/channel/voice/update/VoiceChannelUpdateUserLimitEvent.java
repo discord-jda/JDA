@@ -18,6 +18,8 @@ package net.dv8tion.jda.api.events.channel.voice.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that a {@link VoiceChannel VoiceChannel}'s user limit changed.
  *
@@ -29,14 +31,9 @@ public class VoiceChannelUpdateUserLimitEvent extends GenericVoiceChannelUpdateE
 {
     public static final String IDENTIFIER = "userlimit";
 
-    private final int oldUserLimit;
-    private final int newUserLimit;
-
-    public VoiceChannelUpdateUserLimitEvent(JDA api, long responseNumber, VoiceChannel channel, int oldUserLimit)
+    public VoiceChannelUpdateUserLimitEvent(@Nonnull JDA api, long responseNumber, @Nonnull VoiceChannel channel, int oldUserLimit)
     {
-        super(api, responseNumber, channel);
-        this.oldUserLimit = oldUserLimit;
-        this.newUserLimit = channel.getUserLimit();
+        super(api, responseNumber, channel, oldUserLimit, channel.getUserLimit(), IDENTIFIER);
     }
 
     /**
@@ -46,7 +43,7 @@ public class VoiceChannelUpdateUserLimitEvent extends GenericVoiceChannelUpdateE
      */
     public int getOldUserLimit()
     {
-        return oldUserLimit;
+        return getOldValue();
     }
 
     /**
@@ -56,24 +53,6 @@ public class VoiceChannelUpdateUserLimitEvent extends GenericVoiceChannelUpdateE
      */
     public int getNewUserLimit()
     {
-        return newUserLimit;
-    }
-
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Override
-    public Integer getOldValue()
-    {
-        return oldUserLimit;
-    }
-
-    @Override
-    public Integer getNewValue()
-    {
-        return newUserLimit;
+        return getNewValue();
     }
 }

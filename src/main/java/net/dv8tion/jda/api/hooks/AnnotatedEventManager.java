@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.internal.JDAImpl;
 
+import javax.annotation.Nonnull;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -52,7 +53,7 @@ public class AnnotatedEventManager implements IEventManager
     private final Map<Class<?>, Map<Object, List<Method>>> methods = new HashMap<>();
 
     @Override
-    public void register(Object listener)
+    public void register(@Nonnull Object listener)
     {
         if (listeners.add(listener))
         {
@@ -61,7 +62,7 @@ public class AnnotatedEventManager implements IEventManager
     }
 
     @Override
-    public void unregister(Object listener)
+    public void unregister(@Nonnull Object listener)
     {
         if (listeners.remove(listener))
         {
@@ -69,6 +70,7 @@ public class AnnotatedEventManager implements IEventManager
         }
     }
 
+    @Nonnull
     @Override
     public List<Object> getRegisteredListeners()
     {
@@ -77,7 +79,7 @@ public class AnnotatedEventManager implements IEventManager
 
     @Override
     @SuppressWarnings("unchecked")
-    public void handle(GenericEvent event)
+    public void handle(@Nonnull GenericEvent event)
     {
         Class<?> eventClass = event.getClass();
         do

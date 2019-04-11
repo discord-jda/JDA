@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.requests.EmptyRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -47,7 +48,7 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
     }
 
     @Override
-    public int compareTo(Category other)
+    public int compareTo(@Nonnull Category other)
     {
         Checks.notNull(other, "Other Category");
         if (other.equals(this))
@@ -58,12 +59,14 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
         return Integer.compare(rawPosition, other.getPositionRaw());
     }
 
+    @Nonnull
     @Override
     public ChannelType getType()
     {
         return ChannelType.CATEGORY;
     }
 
+    @Nonnull
     @Override
     public List<Member> getMembers()
     {
@@ -88,8 +91,9 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
         throw new AssertionError("Somehow when determining position we never found the Category in the Guild's channels? wtf?");
     }
 
+    @Nonnull
     @Override
-    public ChannelAction<Category> createCopy(Guild guild)
+    public ChannelAction<Category> createCopy(@Nonnull Guild guild)
     {
         Checks.notNull(guild, "Guild");
         ChannelAction<Category> action = guild.createCategory(name);
@@ -106,18 +110,21 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
         return action;
     }
 
+    @Nonnull
     @Override
     public InviteAction createInvite()
     {
         throw new UnsupportedOperationException("Cannot create invites for category!");
     }
 
+    @Nonnull
     @Override
     public RestAction<List<Invite>> retrieveInvites()
     {
         return new EmptyRestAction<>(getJDA(), Collections.emptyList());
     }
 
+    @Nonnull
     @Override
     public List<GuildChannel> getChannels()
     {
@@ -127,6 +134,7 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
         return Collections.unmodifiableList(channels);
     }
 
+    @Nonnull
     @Override
     public List<TextChannel> getTextChannels()
     {
@@ -136,6 +144,7 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
                     .collect(Collectors.toList()));
     }
 
+    @Nonnull
     @Override
     public List<VoiceChannel> getVoiceChannels()
     {
@@ -145,28 +154,32 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
                     .collect(Collectors.toList()));
     }
 
+    @Nonnull
     @Override
-    public ChannelAction<TextChannel> createTextChannel(String name)
+    public ChannelAction<TextChannel> createTextChannel(@Nonnull String name)
     {
         ChannelAction<TextChannel> action = getGuild().createTextChannel(name).setParent(this);
         applyPermission(action);
         return action;
     }
 
+    @Nonnull
     @Override
-    public ChannelAction<VoiceChannel> createVoiceChannel(String name)
+    public ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name)
     {
         ChannelAction<VoiceChannel> action = getGuild().createVoiceChannel(name).setParent(this);
         applyPermission(action);
         return action;
     }
 
+    @Nonnull
     @Override
     public CategoryOrderAction<TextChannel> modifyTextChannelPositions()
     {
         return getGuild().modifyTextChannelPositions(this);
     }
 
+    @Nonnull
     @Override
     public CategoryOrderAction<VoiceChannel> modifyVoiceChannelPositions()
     {

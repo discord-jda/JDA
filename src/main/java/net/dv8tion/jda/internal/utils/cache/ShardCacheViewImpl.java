@@ -89,6 +89,7 @@ public class ShardCacheViewImpl extends ReadWriteLockCache<JDA> implements Shard
         }
     }
 
+    @Nonnull
     @Override
     public List<JDA> asList()
     {
@@ -103,6 +104,7 @@ public class ShardCacheViewImpl extends ReadWriteLockCache<JDA> implements Shard
         }
     }
 
+    @Nonnull
     @Override
     public Set<JDA> asSet()
     {
@@ -117,6 +119,7 @@ public class ShardCacheViewImpl extends ReadWriteLockCache<JDA> implements Shard
         }
     }
 
+    @Nonnull
     @Override
     public LockIterator<JDA> lockedIterator()
     {
@@ -146,8 +149,9 @@ public class ShardCacheViewImpl extends ReadWriteLockCache<JDA> implements Shard
         return elements.isEmpty();
     }
 
+    @Nonnull
     @Override
-    public List<JDA> getElementsByName(String name, boolean ignoreCase)
+    public List<JDA> getElementsByName(@Nonnull String name, boolean ignoreCase)
     {
         Checks.notEmpty(name, "Name");
         if (elements.isEmpty())
@@ -187,12 +191,14 @@ public class ShardCacheViewImpl extends ReadWriteLockCache<JDA> implements Shard
         }
     }
 
+    @Nonnull
     @Override
     public Stream<JDA> stream()
     {
         return StreamSupport.stream(spliterator(), false);
     }
 
+    @Nonnull
     @Override
     public Stream<JDA> parallelStream()
     {
@@ -269,6 +275,7 @@ public class ShardCacheViewImpl extends ReadWriteLockCache<JDA> implements Shard
             return generator.get().allMatch(CacheView::isEmpty);
         }
 
+        @Nonnull
         @Override
         public List<JDA> asList()
         {
@@ -277,6 +284,7 @@ public class ShardCacheViewImpl extends ReadWriteLockCache<JDA> implements Shard
             return Collections.unmodifiableList(list);
         }
 
+        @Nonnull
         @Override
         public Set<JDA> asSet()
         {
@@ -285,6 +293,7 @@ public class ShardCacheViewImpl extends ReadWriteLockCache<JDA> implements Shard
             return Collections.unmodifiableSet(set);
         }
 
+        @Nonnull
         @Override
         public ClosableIterator<JDA> lockedIterator()
         {
@@ -292,8 +301,9 @@ public class ShardCacheViewImpl extends ReadWriteLockCache<JDA> implements Shard
             return new ChainedClosableIterator<>(gen);
         }
 
+        @Nonnull
         @Override
-        public List<JDA> getElementsByName(String name, boolean ignoreCase)
+        public List<JDA> getElementsByName(@Nonnull String name, boolean ignoreCase)
         {
             return Collections.unmodifiableList(distinctStream()
                 .flatMap(view -> view.getElementsByName(name, ignoreCase).stream())
@@ -309,12 +319,14 @@ public class ShardCacheViewImpl extends ReadWriteLockCache<JDA> implements Shard
                 .findFirst().orElse(null);
         }
 
+        @Nonnull
         @Override
         public Stream<JDA> stream()
         {
             return generator.get().flatMap(CacheView::stream).distinct();
         }
 
+        @Nonnull
         @Override
         public Stream<JDA> parallelStream()
         {

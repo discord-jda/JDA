@@ -19,38 +19,51 @@ package net.dv8tion.jda.api.entities;
 import javax.annotation.Nonnull;
 
 /**
- * Represents the embedded resource type.
- * <br>These are typically either Images, Videos or Links.
+ * The type of client a user might be active on.
+ *
+ * @see net.dv8tion.jda.api.entities.Member#getOnlineStatus(ClientType) Member.getOnlineStatus(type)
  */
-public enum EmbedType
+public enum ClientType
 {
-    IMAGE("image"),
-    VIDEO("video"),
-    LINK("link"),
-    RICH("rich"),
-    UNKNOWN("");
+    /** The official discord desktop client */
+    DESKTOP("desktop"),
+    /** The official discord mobile app */
+    MOBILE("mobile"),
+    /** Discord from the browser (or bot) */
+    WEB("web"),
+    /** Placeholder for a new type that is not yet supported here */
+    UNKNOWN("unknown"),
+    ;
 
     private final String key;
-    EmbedType(String key)
+
+    ClientType(String key)
     {
         this.key = key;
     }
 
     /**
-     * Attempts to find the EmbedType from the provided key.
-     * <br>If the provided key doesn't match any known {@link net.dv8tion.jda.api.entities.EmbedType EmbedType},
-     * this will return {@link net.dv8tion.jda.api.entities.EmbedType#UNKNOWN UNKNOWN}.
+     * The raw key used by the API to identify this type
+     *
+     * @return The raw key
+     */
+    public String getKey()
+    {
+        return key;
+    }
+
+    /**
+     * Resolves the provided raw API key to the enum constant.
      *
      * @param  key
-     *         The key related to the {@link net.dv8tion.jda.api.entities.EmbedType EmbedType}.
+     *         The api key to check
      *
-     * @return The {@link net.dv8tion.jda.api.entities.EmbedType EmbedType} matching the provided key,
-     *         or {@link net.dv8tion.jda.api.entities.EmbedType#UNKNOWN UNKNOWN}.
+     * @return THe resolved ClientType or {@link #UNKNOWN}
      */
     @Nonnull
-    public static EmbedType fromKey(String key)
+    public static ClientType fromKey(@Nonnull String key)
     {
-        for (EmbedType type : values())
+        for (ClientType type : values())
         {
             if (type.key.equals(key))
                 return type;

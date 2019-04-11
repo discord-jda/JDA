@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
@@ -30,7 +31,7 @@ public class GuildMessageEmbedEvent extends GenericGuildMessageEvent
 {
     private final List<MessageEmbed> embeds;
 
-    public GuildMessageEmbedEvent(JDA api, long responseNumber, long messageId, TextChannel channel, List<MessageEmbed> embeds)
+    public GuildMessageEmbedEvent(@Nonnull JDA api, long responseNumber, long messageId, @Nonnull TextChannel channel, @Nonnull List<MessageEmbed> embeds)
     {
         super(api, responseNumber, messageId, channel);
         this.embeds = embeds;
@@ -41,6 +42,7 @@ public class GuildMessageEmbedEvent extends GenericGuildMessageEvent
      *
      * @return The MessageEmbeds
      */
+    @Nonnull
     public List<MessageEmbed> getMessageEmbeds()
     {
         return embeds;

@@ -19,9 +19,13 @@ package net.dv8tion.jda.api.requests.restaction.pagination;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.User;
 
+import javax.annotation.Nonnull;
+
 /**
  * {@link PaginationAction PaginationAction}
  * that paginates the endpoint {@link net.dv8tion.jda.internal.requests.Route.Messages#GET_REACTION_USERS Route.Messages.GET_REACTION_USERS}.
+ * <br>Note that this implementation is not considered thread-safe as modifications to the cache are not done
+ * with a lock. Calling methods on this class from multiple threads is not recommended.
  *
  * <p><b>Must provide not-null {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} to compile a valid
  * pagination route.</b>
@@ -43,7 +47,6 @@ import net.dv8tion.jda.api.entities.User;
  * @since  3.1
  *
  * @see    MessageReaction#retrieveUsers()
- * @see    MessageReaction#retrieveUsers(int)
  */
 public interface ReactionPaginationAction extends PaginationAction<User, ReactionPaginationAction>
 {
@@ -52,5 +55,6 @@ public interface ReactionPaginationAction extends PaginationAction<User, Reactio
      *
      * @return The current MessageReaction
      */
+    @Nonnull
     MessageReaction getReaction();
 }

@@ -19,6 +19,7 @@ import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.Instant;
 import java.time.temporal.TemporalUnit;
@@ -47,13 +48,15 @@ public interface Activity
      *
      * @return RichPresence or {@code null} if {@link #isRich()} returns {@code false}
      */
+    @Nullable
     RichPresence asRichPresence();
 
     /**
      * The displayed name of the {@link Activity Activity}. If no name has been set, this returns null.
      *
-     * @return Possibly-null String containing the Activity's name.
+     * @return String containing the Activity's name.
      */
+    @Nonnull
     String getName();
 
     /**
@@ -62,6 +65,7 @@ public interface Activity
      *
      * @return Possibly-null String containing the Activity's URL.
      */
+    @Nullable
     String getUrl();
 
     /**
@@ -69,6 +73,7 @@ public interface Activity
      *
      * @return Never-null {@link net.dv8tion.jda.api.entities.Activity.ActivityType ActivityType} representing the type of Activity
      */
+    @Nonnull
     ActivityType getType();
 
     /**
@@ -92,7 +97,8 @@ public interface Activity
      *
      * @return A valid Activity instance with the provided name with {@link net.dv8tion.jda.api.entities.Activity.ActivityType#DEFAULT}
      */
-    static Activity playing(String name)
+    @Nonnull
+    static Activity playing(@Nonnull String name)
     {
         Checks.notBlank(name, "Name");
         return EntityBuilder.createAcitvity(name, null, ActivityType.DEFAULT);
@@ -115,7 +121,8 @@ public interface Activity
      *
      * @see    #isValidStreamingUrl(String)
      */
-    static Activity streaming(String name, String url)
+    @Nonnull
+    static Activity streaming(@Nonnull String name, @Nullable String url)
     {
         Checks.notEmpty(name, "Provided game name");
         ActivityType type;
@@ -138,7 +145,8 @@ public interface Activity
      *
      * @return A valid Activity instance with the provided name with {@link net.dv8tion.jda.api.entities.Activity.ActivityType#LISTENING}
      */
-    static Activity listening(String name)
+    @Nonnull
+    static Activity listening(@Nonnull String name)
     {
         Checks.notBlank(name, "Name");
         return EntityBuilder.createAcitvity(name, null, ActivityType.LISTENING);
@@ -158,8 +166,9 @@ public interface Activity
      *
      * @incubating This feature is not yet confirmed for the official bot API
      */
+    @Nonnull
     @Incubating
-    static Activity watching(String name)
+    static Activity watching(@Nonnull String name)
     {
         Checks.notBlank(name, "Name");
         return EntityBuilder.createAcitvity(name, null, ActivityType.WATCHING);
@@ -178,7 +187,8 @@ public interface Activity
      *
      * @return A valid Activity instance with the provided name and url
      */
-    static Activity of(ActivityType type, String name)
+    @Nonnull
+    static Activity of(@Nonnull ActivityType type, @Nonnull String name)
     {
         return of(type, name, null);
     }
@@ -202,7 +212,8 @@ public interface Activity
      *
      * @see    #isValidStreamingUrl(String)
      */
-    static Activity of(ActivityType type, String name, String url)
+    @Nonnull
+    static Activity of(@Nonnull ActivityType type, @Nonnull String name, @Nullable String url)
     {
         Checks.notNull(type, "Type");
         switch (type)
@@ -228,7 +239,7 @@ public interface Activity
      *
      * @return True if the provided url is valid for triggering Discord's streaming status
      */
-    static boolean isValidStreamingUrl(String url)
+    static boolean isValidStreamingUrl(@Nullable String url)
     {
         return url != null && url.matches("https?://(www\\.)?twitch\\.tv/.+");
     }
@@ -287,6 +298,7 @@ public interface Activity
          *
          * @return The ActivityType that has the key provided, or {@link #DEFAULT} for unknown key.
          */
+        @Nonnull
         public static ActivityType fromKey(int key)
         {
             switch (key)

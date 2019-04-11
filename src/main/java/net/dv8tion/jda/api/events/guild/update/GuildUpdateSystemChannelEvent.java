@@ -20,6 +20,9 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Indicates that the system channel of a {@link net.dv8tion.jda.api.entities.Guild Guild} changed.
  * <br>This is used for welcome messages
@@ -32,7 +35,7 @@ public class GuildUpdateSystemChannelEvent extends GenericGuildUpdateEvent<TextC
 {
     public static final String IDENTIFIER = "system_channel";
 
-    public GuildUpdateSystemChannelEvent(JDA api, long responseNumber, Guild guild, TextChannel oldSystemChannel)
+    public GuildUpdateSystemChannelEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable TextChannel oldSystemChannel)
     {
         super(api, responseNumber, guild, oldSystemChannel, guild.getSystemChannel(), IDENTIFIER);
     }
@@ -42,6 +45,7 @@ public class GuildUpdateSystemChannelEvent extends GenericGuildUpdateEvent<TextC
      * 
      * @return The previous system channel
      */
+    @Nullable
     public TextChannel getOldSystemChannel()
     {
         return getOldValue();
@@ -52,6 +56,7 @@ public class GuildUpdateSystemChannelEvent extends GenericGuildUpdateEvent<TextC
      *
      * @return The new system channel
      */
+    @Nullable
     public TextChannel getNewSystemChannel()
     {
         return getNewValue();

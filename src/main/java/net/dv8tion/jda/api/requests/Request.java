@@ -29,6 +29,8 @@ import net.dv8tion.jda.internal.requests.Route;
 import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
@@ -122,21 +124,25 @@ public class Request<T>
         });
     }
 
+    @Nonnull
     public JDAImpl getJDA()
     {
         return api;
     }
 
+    @Nonnull
     public RestAction<T> getRestAction()
     {
         return restAction;
     }
 
+    @Nonnull
     public Consumer<? super T> getOnSuccess()
     {
         return onSuccess;
     }
 
+    @Nonnull
     public Consumer<? super Throwable> getOnFailure()
     {
         return onFailure;
@@ -147,21 +153,25 @@ public class Request<T>
         return checks == null || checks.getAsBoolean();
     }
 
+    @Nullable
     public CaseInsensitiveMap<String, String> getHeaders()
     {
         return headers;
     }
 
+    @Nonnull
     public Route.CompiledRoute getRoute()
     {
         return route;
     }
 
+    @Nullable
     public RequestBody getBody()
     {
         return body;
     }
 
+    @Nullable
     public Object getRawBody()
     {
         return rawBody;
@@ -182,9 +192,9 @@ public class Request<T>
         return isCanceled;
     }
 
-    public void handleResponse(Response response)
+    public void handleResponse(@Nonnull Response response)
     {
-        api.getEventManager().handle(new HttpRequestEvent(this, response));
         restAction.handleResponse(response, this);
+        api.getEventManager().handle(new HttpRequestEvent(this, response));
     }
 }

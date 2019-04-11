@@ -22,6 +22,8 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.Color;
 import java.util.Collection;
 import java.util.function.BooleanSupplier;
@@ -40,14 +42,16 @@ import java.util.function.BooleanSupplier;
  */
 public interface RoleAction extends AuditableRestAction<Role>
 {
+    @Nonnull
     @Override
-    RoleAction setCheck(BooleanSupplier checks);
+    RoleAction setCheck(@Nullable BooleanSupplier checks);
 
     /**
      * The guild to create the role in
      *
      * @return The guild
      */
+    @Nonnull
     Guild getGuild();
 
     /**
@@ -61,8 +65,9 @@ public interface RoleAction extends AuditableRestAction<Role>
      *
      * @return The current RoleAction, for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
-    RoleAction setName(String name);
+    RoleAction setName(@Nullable String name);
 
     /**
      * Sets whether or not the new role should be hoisted
@@ -72,8 +77,9 @@ public interface RoleAction extends AuditableRestAction<Role>
      *
      * @return The current RoleAction, for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
-    RoleAction setHoisted(Boolean hoisted);
+    RoleAction setHoisted(@Nullable Boolean hoisted);
 
     /**
      * Sets whether the new role should be mentionable by members of
@@ -84,8 +90,9 @@ public interface RoleAction extends AuditableRestAction<Role>
      *
      * @return The current RoleAction, for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
-    RoleAction setMentionable(Boolean mentionable);
+    RoleAction setMentionable(@Nullable Boolean mentionable);
 
     /**
      * Sets the color which the new role should be displayed with.
@@ -95,8 +102,9 @@ public interface RoleAction extends AuditableRestAction<Role>
      *
      * @return The current RoleAction, for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
-    default RoleAction setColor(Color color)
+    default RoleAction setColor(@Nullable Color color)
     {
         return this.setColor(color != null ? color.getRGB() : null);
     }
@@ -111,8 +119,9 @@ public interface RoleAction extends AuditableRestAction<Role>
      *
      * @return The current RoleAction, for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
-    RoleAction setColor(Integer rgb);
+    RoleAction setColor(@Nullable Integer rgb);
 
     /**
      * Sets the Permissions the new Role should have.
@@ -131,8 +140,9 @@ public interface RoleAction extends AuditableRestAction<Role>
      *
      * @see    net.dv8tion.jda.api.Permission#getRaw(net.dv8tion.jda.api.Permission...) Permission.getRaw(Permission...)
      */
+    @Nonnull
     @CheckReturnValue
-    default RoleAction setPermissions(Permission... permissions)
+    default RoleAction setPermissions(@Nullable Permission... permissions)
     {
         if (permissions != null)
             Checks.noneNull(permissions, "Permissions");
@@ -158,8 +168,9 @@ public interface RoleAction extends AuditableRestAction<Role>
      * @see    net.dv8tion.jda.api.Permission#getRaw(java.util.Collection) Permission.getRaw(Collection)
      * @see    java.util.EnumSet EnumSet
      */
+    @Nonnull
     @CheckReturnValue
-    default RoleAction setPermissions(Collection<Permission> permissions)
+    default RoleAction setPermissions(@Nullable Collection<Permission> permissions)
     {
         if (permissions != null)
             Checks.noneNull(permissions, "Permissions");
@@ -187,6 +198,7 @@ public interface RoleAction extends AuditableRestAction<Role>
      * @see    net.dv8tion.jda.api.Permission#getRaw(java.util.Collection)
      * @see    net.dv8tion.jda.api.Permission#getRaw(net.dv8tion.jda.api.Permission...)
      */
+    @Nonnull
     @CheckReturnValue
-    RoleAction setPermissions(Long permissions);
+    RoleAction setPermissions(@Nullable Long permissions);
 }

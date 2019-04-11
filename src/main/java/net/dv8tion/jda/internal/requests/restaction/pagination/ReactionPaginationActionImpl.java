@@ -27,6 +27,7 @@ import net.dv8tion.jda.internal.utils.EncodingUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import javax.annotation.Nonnull;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -57,6 +58,7 @@ public class ReactionPaginationActionImpl
             : EncodingUtil.encodeUTF8(emote.getName());
     }
 
+    @Nonnull
     @Override
     public MessageReaction getReaction()
     {
@@ -108,4 +110,9 @@ public class ReactionPaginationActionImpl
         request.onSuccess(users);
     }
 
+    @Override
+    protected long getKey(User it)
+    {
+        return it.getIdLong();
+    }
 }

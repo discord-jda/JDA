@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.events.guild.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 
+import javax.annotation.Nonnull;
 import java.util.Set;
 
 /**
@@ -32,7 +33,7 @@ public class GuildUpdateFeaturesEvent extends GenericGuildUpdateEvent<Set<String
 {
     public static final String IDENTIFIER = "features";
 
-    public GuildUpdateFeaturesEvent(JDA api, long responseNumber, Guild guild, Set<String> oldFeatures)
+    public GuildUpdateFeaturesEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull Set<String> oldFeatures)
     {
         super(api, responseNumber, guild, oldFeatures, guild.getFeatures(), IDENTIFIER);
     }
@@ -42,6 +43,7 @@ public class GuildUpdateFeaturesEvent extends GenericGuildUpdateEvent<Set<String
      *
      * @return Never-null, unmodifiable Set of the old features
      */
+    @Nonnull
     public Set<String> getOldFeatures()
     {
         return getOldValue();
@@ -52,8 +54,23 @@ public class GuildUpdateFeaturesEvent extends GenericGuildUpdateEvent<Set<String
      *
      * @return Never-null, unmodifiable Set of the new features
      */
+    @Nonnull
     public Set<String> getNewFeatures()
     {
         return getNewValue();
+    }
+
+    @Nonnull
+    @Override
+    public Set<String> getOldValue()
+    {
+        return super.getOldValue();
+    }
+
+    @Nonnull
+    @Override
+    public Set<String> getNewValue()
+    {
+        return super.getNewValue();
     }
 }

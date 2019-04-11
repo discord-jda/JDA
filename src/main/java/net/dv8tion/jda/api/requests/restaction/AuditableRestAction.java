@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.audit.ThreadLocalReason;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -56,11 +58,13 @@ public interface AuditableRestAction<T> extends RestAction<T>
      *
      * @see    ThreadLocalReason
      */
-    AuditableRestAction<T> reason(String reason);
+    @Nonnull
+    AuditableRestAction<T> reason(@Nullable String reason);
 
     /**
      * {@inheritDoc}
      */
+    @Nonnull
     @Override
-    AuditableRestAction<T> setCheck(BooleanSupplier checks);
+    AuditableRestAction<T> setCheck(@Nullable BooleanSupplier checks);
 }

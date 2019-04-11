@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.function.BooleanSupplier;
 
@@ -42,14 +44,16 @@ import java.util.function.BooleanSupplier;
  */
 public interface ChannelAction<T extends GuildChannel> extends AuditableRestAction<T>
 {
+    @Nonnull
     @Override
-    ChannelAction<T> setCheck(BooleanSupplier checks);
+    ChannelAction<T> setCheck(@Nullable BooleanSupplier checks);
 
     /**
      * The guild to create this {@link GuildChannel} in
      *
      * @return The guild
      */
+    @Nonnull
     Guild getGuild();
 
     /**
@@ -57,6 +61,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @return The channel type
      */
+    @Nonnull
     ChannelType getType();
 
     /**
@@ -70,8 +75,9 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @return The current ChannelAction, for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
-    ChannelAction<T> setName(String name);
+    ChannelAction<T> setName(@Nonnull String name);
 
     /**
      * Sets the {@link net.dv8tion.jda.api.entities.Category Category} for the new GuildChannel
@@ -87,8 +93,9 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @return The current ChannelAction, for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
-    ChannelAction<T> setParent(Category category);
+    ChannelAction<T> setParent(@Nullable Category category);
 
     /**
      * Sets the position where the new Channel should be inserted into.
@@ -109,8 +116,9 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @return The current ChannelAction, for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
-    ChannelAction<T> setPosition(Integer position);
+    ChannelAction<T> setPosition(@Nullable Integer position);
 
     /**
      * Sets the topic for the new TextChannel
@@ -125,8 +133,9 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @return The current ChannelAction, for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
-    ChannelAction<T> setTopic(String topic);
+    ChannelAction<T> setTopic(@Nullable String topic);
 
     /**
      * Sets the NSFW flag for the new TextChannel
@@ -139,6 +148,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @return The current ChannelAction, for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
     ChannelAction<T> setNSFW(boolean nsfw);
 
@@ -161,6 +171,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @return The current ChannelAction, for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
     ChannelAction<T> setSlowmode(int slowmode);
 
@@ -190,8 +201,9 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @see    java.util.EnumSet
      */
+    @Nonnull
     @CheckReturnValue
-    default ChannelAction<T> addPermissionOverride(IPermissionHolder target, Collection<Permission> allow, Collection<Permission> deny)
+    default ChannelAction<T> addPermissionOverride(@Nonnull IPermissionHolder target, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny)
     {
         final long allowRaw = allow != null ? Permission.getRaw(allow) : 0;
         final long denyRaw = deny != null ? Permission.getRaw(deny) : 0;
@@ -233,8 +245,9 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * @see    net.dv8tion.jda.api.Permission#getRaw(java.util.Collection)
      * @see    net.dv8tion.jda.api.Permission#getRaw(net.dv8tion.jda.api.Permission...)
      */
+    @Nonnull
     @CheckReturnValue
-    ChannelAction<T> addPermissionOverride(IPermissionHolder target, long allow, long deny);
+    ChannelAction<T> addPermissionOverride(@Nonnull IPermissionHolder target, long allow, long deny);
 
     /**
      * Sets the bitrate for the new VoiceChannel
@@ -250,8 +263,9 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @return The current ChannelAction, for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
-    ChannelAction<T> setBitrate(Integer bitrate);
+    ChannelAction<T> setBitrate(@Nullable Integer bitrate);
 
     /**
      * Sets the userlimit for the new VoiceChannel
@@ -266,6 +280,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @return The current ChannelAction, for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
-    ChannelAction<T> setUserlimit(Integer userlimit);
+    ChannelAction<T> setUserlimit(@Nullable Integer userlimit);
 }

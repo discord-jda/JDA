@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.managers.AccountManager;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.IOUtil;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,7 +38,7 @@ public class Icon
 {
     protected final String encoding;
 
-    protected Icon(String base64Encoding)
+    protected Icon(@Nonnull String base64Encoding)
     {
         //Note: the usage of `image/jpeg` does not mean png/gif are not supported!
         this.encoding = "data:image/jpeg;base64," + base64Encoding;
@@ -48,6 +49,7 @@ public class Icon
      *
      * @return String representation of the encoded data for this icon
      */
+    @Nonnull
     public String getEncoding()
     {
         return encoding;
@@ -69,7 +71,8 @@ public class Icon
      *
      * @see    net.dv8tion.jda.internal.utils.IOUtil#readFully(File)
      */
-    public static Icon from(File file) throws IOException
+    @Nonnull
+    public static Icon from(@Nonnull File file) throws IOException
     {
         Checks.notNull(file, "Provided File");
         Checks.check(file.exists(), "Provided file does not exist!");
@@ -94,7 +97,8 @@ public class Icon
      *
      * @see    net.dv8tion.jda.internal.utils.IOUtil#readFully(InputStream)
      */
-    public static Icon from(InputStream stream) throws IOException
+    @Nonnull
+    public static Icon from(@Nonnull InputStream stream) throws IOException
     {
         Checks.notNull(stream, "InputStream");
 
@@ -112,7 +116,8 @@ public class Icon
      *
      * @return An Icon instance representing the specified image data
      */
-    public static Icon from(byte[] data)
+    @Nonnull
+    public static Icon from(@Nonnull byte[] data)
     {
         Checks.notNull(data, "Provided byte[]");
 

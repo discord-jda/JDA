@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.UpdateEvent;
 
+import javax.annotation.Nullable;
+
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} joined or left a {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
  * <br>Generic event that combines
@@ -40,6 +42,7 @@ public interface GuildVoiceUpdateEvent extends UpdateEvent<Member, VoiceChannel>
      *
      * @return The {@link net.dv8tion.jda.api.entities.VoiceChannel}
      */
+    @Nullable
     VoiceChannel getChannelLeft();
 
     /**
@@ -47,5 +50,6 @@ public interface GuildVoiceUpdateEvent extends UpdateEvent<Member, VoiceChannel>
      *
      * @return The {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}
      */
+    @Nullable
     VoiceChannel getChannelJoined();
 }

@@ -18,6 +18,8 @@ package net.dv8tion.jda.api.events.channel.text.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.TextChannel;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}'s position changed.
  *
@@ -29,7 +31,7 @@ public class TextChannelUpdatePositionEvent extends GenericTextChannelUpdateEven
 {
     public static final String IDENTIFIER = "position";
 
-    public TextChannelUpdatePositionEvent(JDA api, long responseNumber, TextChannel channel, int oldPosition)
+    public TextChannelUpdatePositionEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel, int oldPosition)
     {
         super(api, responseNumber, channel, oldPosition, channel.getPositionRaw(), IDENTIFIER);
     }

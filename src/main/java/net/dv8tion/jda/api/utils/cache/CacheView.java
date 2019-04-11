@@ -24,6 +24,8 @@ import net.dv8tion.jda.internal.utils.cache.ShardCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.UnifiedCacheViewImpl;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -67,6 +69,7 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @return Immutable list of cached elements
      */
+    @Nonnull
     List<T> asList();
 
     /**
@@ -75,6 +78,7 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @return Immutable set of cached elements
      */
+    @Nonnull
     Set<T> asSet();
 
     /**
@@ -87,6 +91,7 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @return {@link ClosableIterator} holding a read-lock on the data structure.
      */
+    @Nonnull
     ClosableIterator<T> lockedIterator();
 
     /**
@@ -99,7 +104,7 @@ public interface CacheView<T> extends Iterable<T>
      * @throws NullPointerException
      *         If provided with null
      */
-    default void forEachUnordered(final Consumer<? super T> action)
+    default void forEachUnordered(@Nonnull final Consumer<? super T> action)
     {
         forEach(action);
     }
@@ -129,7 +134,8 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @see    #acceptStream(Consumer)
      */
-    default <R> R applyStream(Function<? super Stream<T>, ? extends R> action)
+    @Nullable
+    default <R> R applyStream(@Nonnull Function<? super Stream<T>, ? extends R> action)
     {
         Checks.notNull(action, "Action");
         try (ClosableIterator<T> it = lockedIterator())
@@ -160,7 +166,7 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @see    #applyStream(Function)
      */
-    default void acceptStream(Consumer<? super Stream<T>> action)
+    default void acceptStream(@Nonnull Consumer<? super Stream<T>> action)
     {
         Checks.notNull(action, "Action");
         try (ClosableIterator<T> it = lockedIterator())
@@ -210,7 +216,8 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @return Immutable list of elements with the given name
      */
-    List<T> getElementsByName(String name, boolean ignoreCase);
+    @Nonnull
+    List<T> getElementsByName(@Nonnull String name, boolean ignoreCase);
 
     /**
      * Creates an immutable list of all elements matching the given name.
@@ -225,7 +232,8 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @return Immutable list of elements with the given name
      */
-    default List<T> getElementsByName(String name)
+    @Nonnull
+    default List<T> getElementsByName(@Nonnull String name)
     {
         return getElementsByName(name, false);
     }
@@ -236,6 +244,7 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @return Stream of elements
      */
+    @Nonnull
     Stream<T> stream();
 
     /**
@@ -244,6 +253,7 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @return Parallel Stream of elements
      */
+    @Nonnull
     Stream<T> parallelStream();
 
     /**
@@ -264,7 +274,8 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @return Resulting collections
      */
-    default <R, A> R collect(Collector<? super T, A, R> collector)
+    @Nonnull
+    default <R, A> R collect(@Nonnull Collector<? super T, A, R> collector)
     {
         return stream().collect(collector);
     }
@@ -282,7 +293,8 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @return Combined CacheView spanning over all provided implementation instances
      */
-    static <E> CacheView<E> all(Collection<? extends CacheView<E>> cacheViews)
+    @Nonnull
+    static <E> CacheView<E> all(@Nonnull Collection<? extends CacheView<E>> cacheViews)
     {
         Checks.noneNull(cacheViews, "Collection");
         return new UnifiedCacheViewImpl<>(cacheViews::stream);
@@ -301,7 +313,8 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @return Combined CacheView spanning over all provided implementation instances
      */
-    static <E> CacheView<E> all(Supplier<? extends Stream<? extends CacheView<E>>> generator)
+    @Nonnull
+    static <E> CacheView<E> all(@Nonnull Supplier<? extends Stream<? extends CacheView<E>>> generator)
     {
         Checks.notNull(generator, "Generator");
         return new UnifiedCacheViewImpl<>(generator);
@@ -316,7 +329,8 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @return Combined ShardCacheView spanning over all provided implementation instances
      */
-    static ShardCacheView allShards(Collection<ShardCacheView> cacheViews)
+    @Nonnull
+    static ShardCacheView allShards(@Nonnull Collection<ShardCacheView> cacheViews)
     {
         Checks.noneNull(cacheViews, "Collection");
         return new ShardCacheViewImpl.UnifiedShardCacheViewImpl(cacheViews::stream);
@@ -331,7 +345,8 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @return Combined ShardCacheView spanning over all provided implementation instances
      */
-    static ShardCacheView allShards(Supplier<? extends Stream<? extends ShardCacheView>> generator)
+    @Nonnull
+    static ShardCacheView allShards(@Nonnull Supplier<? extends Stream<? extends ShardCacheView>> generator)
     {
         Checks.notNull(generator, "Generator");
         return new ShardCacheViewImpl.UnifiedShardCacheViewImpl(generator);
@@ -350,7 +365,8 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @return Combined SnowflakeCacheView spanning over all provided implementation instances
      */
-    static <E extends ISnowflake> SnowflakeCacheView<E> allSnowflakes(Collection<? extends SnowflakeCacheView<E>> cacheViews)
+    @Nonnull
+    static <E extends ISnowflake> SnowflakeCacheView<E> allSnowflakes(@Nonnull Collection<? extends SnowflakeCacheView<E>> cacheViews)
     {
         Checks.noneNull(cacheViews, "Collection");
         return new UnifiedCacheViewImpl.UnifiedSnowflakeCacheView<>(cacheViews::stream);
@@ -369,7 +385,8 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @return Combined SnowflakeCacheView spanning over all provided implementation instances
      */
-    static <E extends ISnowflake> SnowflakeCacheView<E> allSnowflakes(Supplier<? extends Stream<? extends SnowflakeCacheView<E>>> generator)
+    @Nonnull
+    static <E extends ISnowflake> SnowflakeCacheView<E> allSnowflakes(@Nonnull Supplier<? extends Stream<? extends SnowflakeCacheView<E>>> generator)
     {
         Checks.notNull(generator, "Generator");
         return new UnifiedCacheViewImpl.UnifiedSnowflakeCacheView<>(generator);
@@ -385,7 +402,8 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @return Combined MemberCacheView spanning over all provided instances
      */
-    static UnifiedMemberCacheView allMembers(Collection<? extends MemberCacheView> cacheViews)
+    @Nonnull
+    static UnifiedMemberCacheView allMembers(@Nonnull Collection<? extends MemberCacheView> cacheViews)
     {
         Checks.noneNull(cacheViews, "Collection");
         return new UnifiedCacheViewImpl.UnifiedMemberCacheViewImpl(cacheViews::stream);
@@ -401,7 +419,8 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @return Combined MemberCacheView spanning over all provided instances
      */
-    static UnifiedMemberCacheView allMembers(Supplier<? extends Stream<? extends MemberCacheView>> generator)
+    @Nonnull
+    static UnifiedMemberCacheView allMembers(@Nonnull Supplier<? extends Stream<? extends MemberCacheView>> generator)
     {
         Checks.notNull(generator, "Generator");
         return new UnifiedCacheViewImpl.UnifiedMemberCacheViewImpl(generator);
@@ -416,7 +435,7 @@ public interface CacheView<T> extends Iterable<T>
      */
     class SimpleCacheView<T> extends AbstractCacheView<T>
     {
-        public SimpleCacheView(Class<T> type, Function<T, String> nameMapper)
+        public SimpleCacheView(@Nonnull Class<T> type, @Nullable Function<T, String> nameMapper)
         {
             super(type, nameMapper);
         }
