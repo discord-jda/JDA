@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.Color;
 import java.time.OffsetDateTime;
@@ -33,13 +34,14 @@ import java.util.List;
  *
  * @since 3.0
  */
-public interface Member extends IMentionable, IPermissionHolder, ISnowflake
+public interface Member extends IMentionable, IPermissionHolder
 {
     /**
      * The user wrapped by this Entity.
      *
      * @return {@link net.dv8tion.jda.api.entities.User User}
      */
+    @Nonnull
     User getUser();
 
     /**
@@ -47,6 +49,7 @@ public interface Member extends IMentionable, IPermissionHolder, ISnowflake
      *
      * @return {@link net.dv8tion.jda.api.entities.Guild Guild}
      */
+    @Nonnull
     Guild getGuild();
 
     /**
@@ -54,6 +57,7 @@ public interface Member extends IMentionable, IPermissionHolder, ISnowflake
      *
      * @return The current JDA instance.
      */
+    @Nonnull
     JDA getJDA();
 
     /**
@@ -61,6 +65,7 @@ public interface Member extends IMentionable, IPermissionHolder, ISnowflake
      *
      * @return The Join Date.
      */
+    @Nonnull
     OffsetDateTime getTimeJoined();
 
     /**
@@ -71,6 +76,7 @@ public interface Member extends IMentionable, IPermissionHolder, ISnowflake
      *
      * @return {@link net.dv8tion.jda.api.entities.GuildVoiceState GuildVoiceState}
      */
+    @Nullable
     GuildVoiceState getVoiceState();
 
     /**
@@ -79,6 +85,7 @@ public interface Member extends IMentionable, IPermissionHolder, ISnowflake
      *
      * @return Immutable list of {@link Activity Activities} for the user
      */
+    @Nonnull
     List<Activity> getActivities();
 
     /**
@@ -87,7 +94,27 @@ public interface Member extends IMentionable, IPermissionHolder, ISnowflake
      *
      * @return The current {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} of the {@link net.dv8tion.jda.api.entities.User User}.
      */
+    @Nonnull
     OnlineStatus getOnlineStatus();
+
+    /**
+     * The platform dependent {@link net.dv8tion.jda.api.OnlineStatus} of this member.
+     * <br>Since a user can be connected from multiple different devices such as web and mobile,
+     * discord specifies a status for each {@link net.dv8tion.jda.api.entities.ClientType}.
+     *
+     * <p>If a user is not online on the specified type,
+     * {@link net.dv8tion.jda.api.OnlineStatus#OFFLINE OFFLINE} is returned.
+     *
+     * @param  type
+     *         The type of client
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided type is null
+     *
+     * @return The status for that specific client or OFFLINE
+     */
+    @Nonnull
+    OnlineStatus getOnlineStatus(@Nonnull ClientType type);
 
     /**
      * Returns the current nickname of this Member for the parent Guild.
@@ -97,6 +124,7 @@ public interface Member extends IMentionable, IPermissionHolder, ISnowflake
      *
      * @return The nickname or null, if no nickname is set.
      */
+    @Nullable
     String getNickname();
 
     /**
@@ -104,6 +132,7 @@ public interface Member extends IMentionable, IPermissionHolder, ISnowflake
      *
      * @return The Nickname of this Member or the Username if no Nickname is present.
      */
+    @Nonnull
     String getEffectiveName();
 
     /**
@@ -119,6 +148,7 @@ public interface Member extends IMentionable, IPermissionHolder, ISnowflake
      *
      * @return An immutable List of {@link net.dv8tion.jda.api.entities.Role Roles} for this Member.
      */
+    @Nonnull
     List<Role> getRoles();
 
     /**
@@ -131,6 +161,7 @@ public interface Member extends IMentionable, IPermissionHolder, ISnowflake
      *
      * @see    #getColorRaw()
      */
+    @Nullable
     Color getColor();
 
     /**
@@ -151,9 +182,13 @@ public interface Member extends IMentionable, IPermissionHolder, ISnowflake
      * @param  channel
      *         The {@link GuildChannel GuildChannel} of which to get Permissions for
      *
+     * @throws java.lang.IllegalArgumentException
+     *         If the channel is null
+     *
      * @return Set of Permissions granted to this Member.
      */
-    EnumSet<Permission> getPermissions(GuildChannel channel);
+    @Nonnull
+    EnumSet<Permission> getPermissions(@Nonnull GuildChannel channel);
 
     /**
      * Whether this Member can interact with the provided Member
@@ -171,7 +206,7 @@ public interface Member extends IMentionable, IPermissionHolder, ISnowflake
      *
      * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member)
      */
-    boolean canInteract(Member member);
+    boolean canInteract(@Nonnull Member member);
 
     /**
      * Whether this Member can interact with the provided {@link net.dv8tion.jda.api.entities.Role Role}
@@ -189,7 +224,7 @@ public interface Member extends IMentionable, IPermissionHolder, ISnowflake
      *
      * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Role)
      */
-    boolean canInteract(Role role);
+    boolean canInteract(@Nonnull Role role);
 
     /**
      * Whether this Member can interact with the provided {@link net.dv8tion.jda.api.entities.Emote Emote}
@@ -207,7 +242,7 @@ public interface Member extends IMentionable, IPermissionHolder, ISnowflake
      *
      * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Emote)
      */
-    boolean canInteract(Emote emote);
+    boolean canInteract(@Nonnull Emote emote);
 
     /**
      * Checks whether this member is the owner of its related {@link net.dv8tion.jda.api.entities.Guild Guild}.

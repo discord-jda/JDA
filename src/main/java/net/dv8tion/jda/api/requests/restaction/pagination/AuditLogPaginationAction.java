@@ -21,9 +21,14 @@ import net.dv8tion.jda.api.audit.AuditLogEntry;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * {@link PaginationAction PaginationAction}
  * that paginates the endpoint {@link net.dv8tion.jda.internal.requests.Route.Guilds#GET_AUDIT_LOGS Route.Guilds.GET_AUDIT_LOGS}.
+ * <br>Note that this implementation is not considered thread-safe as modifications to the cache are not done
+ * with a lock. Calling methods on this class from multiple threads is not recommended.
  *
  * <p><b>Must provide not-null {@link net.dv8tion.jda.api.entities.Guild Guild} to compile a valid guild audit logs
  * pagination route</b>
@@ -43,7 +48,7 @@ import net.dv8tion.jda.api.entities.User;
  *         if (channels.isEmpty()) return; // no log channel
  *         TextChannel channel = channels.get(0); // get first match
  *
- *         AuditLogPaginationAction auditLogs = event.getGuild().getAuditLogs();
+ *         AuditLogPaginationAction auditLogs = event.getGuild().retrieveAuditLogs();
  *         auditLogs.type(ActionType.ROLE_CREATE); // only take ROLE_CREATE type
  *         auditLogs.limit(1); // take first
  *         auditLogs.queue( (entries) {@literal ->}
@@ -59,7 +64,7 @@ import net.dv8tion.jda.api.entities.User;
  *
  * @since  3.2
  *
- * @see    Guild#getAuditLogs()
+ * @see    Guild#retrieveAuditLogs()
  */
 public interface AuditLogPaginationAction extends PaginationAction<AuditLogEntry, AuditLogPaginationAction>
 {
@@ -69,6 +74,7 @@ public interface AuditLogPaginationAction extends PaginationAction<AuditLogEntry
      *
      * @return The never-null target Guild
      */
+    @Nonnull
     Guild getGuild();
     
     /**
@@ -80,7 +86,8 @@ public interface AuditLogPaginationAction extends PaginationAction<AuditLogEntry
      *
      * @return The current AuditLogPaginationAction for chaining convenience
      */
-    AuditLogPaginationAction type(ActionType type);
+    @Nonnull
+    AuditLogPaginationAction type(@Nullable ActionType type);
 
     /**
      * Filters retrieved entities by the specified {@link net.dv8tion.jda.api.entities.User User}.
@@ -92,7 +99,8 @@ public interface AuditLogPaginationAction extends PaginationAction<AuditLogEntry
      *
      * @return The current AuditLogPaginationAction for chaining convenience
      */
-    AuditLogPaginationAction user(User user);
+    @Nonnull
+    AuditLogPaginationAction user(@Nullable User user);
 
     /**
      * Filters retrieved entities by the specified {@link net.dv8tion.jda.api.entities.User User} id.
@@ -107,7 +115,8 @@ public interface AuditLogPaginationAction extends PaginationAction<AuditLogEntry
      *
      * @return The current AuditLogPaginationAction for chaining convenience
      */
-    AuditLogPaginationAction user(String userId);
+    @Nonnull
+    AuditLogPaginationAction user(@Nullable String userId);
 
     /**
      * Filters retrieved entities by the specified {@link net.dv8tion.jda.api.entities.User User} id.
@@ -118,5 +127,6 @@ public interface AuditLogPaginationAction extends PaginationAction<AuditLogEntry
      *
      * @return The current AuditLogPaginationAction for chaining convenience
      */
+    @Nonnull
     AuditLogPaginationAction user(long userId);
 }

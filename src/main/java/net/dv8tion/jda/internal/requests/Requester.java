@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.ratelimit.BotRateLimiter;
 import net.dv8tion.jda.internal.requests.ratelimit.ClientRateLimiter;
+import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.config.AuthorizationConfig;
 import okhttp3.Call;
@@ -35,6 +36,7 @@ import org.jetbrains.annotations.Async;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketTimeoutException;
@@ -44,6 +46,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.Inflater;
+import java.util.zip.InflaterInputStream;
+import java.util.zip.ZipException;
 
 public class Requester
 {
@@ -166,7 +171,7 @@ public class Requester
 
         //adding token to all requests to the discord api or cdn pages
         //we can check for startsWith(DISCORD_API_PREFIX) because the cdn endpoints don't need any kind of authorization
-        if (url.startsWith(DISCORD_API_PREFIX) && authConfig.getToken() != null)
+        if (url.startsWith(DISCORD_API_PREFIX))
             builder.header("authorization", authConfig.getToken());
 
         // Apply custom headers like X-Audit-Log-Reason
@@ -293,11 +298,26 @@ public class Requester
      *
      * @return InputStream representing the body of this response
      */
+    @SuppressWarnings("ConstantConditions") // methods here don't return null despite the annotations on them, read the docs
     public static InputStream getBody(okhttp3.Response response) throws IOException
     {
         String encoding = response.header("content-encoding", "");
-        if (encoding.equals("gzip"))
-            return new GZIPInputStream(response.body().byteStream());
-        return response.body().byteStream();
+        InputStream data = new BufferedInputStream(response.body().byteStream());
+        data.mark(256);
+        try
+        {
+            if (encoding.equalsIgnoreCase("gzip"))
+                return new GZIPInputStream(data);
+            else if (encoding.equalsIgnoreCase("deflate"))
+                return new InflaterInputStream(data, new Inflater(true));
+        }
+        catch (ZipException ex)
+        {
+            data.reset(); // reset to get full content
+            LOG.error("Failed to read gzip content for response. Headers: {}\nContent: '{}'",
+                      response.headers(), JDALogger.getLazyString(() -> new String(IOUtil.readFully(data))), ex);
+            return null;
+        }
+        return data;
     }
 }

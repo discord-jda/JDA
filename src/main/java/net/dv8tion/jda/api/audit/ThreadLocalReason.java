@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.audit;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
@@ -118,7 +119,8 @@ public final class ThreadLocalReason
      *
      * @return The closable instance
      */
-    public static Closable closable(String reason)
+    @Nonnull
+    public static Closable closable(@Nullable String reason)
     {
         return new ThreadLocalReason.Closable(reason);
     }
@@ -141,7 +143,7 @@ public final class ThreadLocalReason
     {
         private final String previous;
 
-        public Closable(String reason)
+        public Closable(@Nullable String reason)
         {
             this.previous = getCurrent();
             setCurrent(reason);

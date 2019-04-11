@@ -19,6 +19,8 @@ package net.dv8tion.jda.api.events.role.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Role;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Role Role} updated its position.
  *
@@ -33,7 +35,7 @@ public class RoleUpdatePositionEvent extends GenericRoleUpdateEvent<Integer>
     private final int oldPositionRaw;
     private final int newPositionRaw;
 
-    public RoleUpdatePositionEvent(JDA api, long responseNumber, Role role, int oldPosition, int oldPositionRaw)
+    public RoleUpdatePositionEvent(@Nonnull JDA api, long responseNumber, @Nonnull Role role, int oldPosition, int oldPositionRaw)
     {
         super(api, responseNumber, role, oldPosition, role.getPosition(), IDENTIFIER);
         this.oldPositionRaw = oldPositionRaw;
@@ -78,5 +80,19 @@ public class RoleUpdatePositionEvent extends GenericRoleUpdateEvent<Integer>
     public int getNewPositionRaw()
     {
         return newPositionRaw;
+    }
+
+    @Nonnull
+    @Override
+    public Integer getOldValue()
+    {
+        return super.getOldValue();
+    }
+
+    @Nonnull
+    @Override
+    public Integer getNewValue()
+    {
+        return super.getNewValue();
     }
 }

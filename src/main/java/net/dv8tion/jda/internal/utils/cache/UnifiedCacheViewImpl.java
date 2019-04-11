@@ -27,7 +27,9 @@ import net.dv8tion.jda.api.utils.cache.UnifiedMemberCacheView;
 import net.dv8tion.jda.internal.utils.ChainedClosableIterator;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -54,52 +56,68 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
     }
 
     @Override
-    public List<T> asList()
+    public void forEach(Consumer<? super T> action)
     {
+        Objects.requireNonNull(action);
         try (ClosableIterator<T> it = lockedIterator())
         {
-            List<T> list = new ArrayList<>();
-            it.forEachRemaining(list::add);
-            return Collections.unmodifiableList(list);
+            while (it.hasNext())
+                action.accept(it.next());
         }
     }
 
+    @Nonnull
+    @Override
+    public List<T> asList()
+    {
+        List<T> list = new LinkedList<>();
+        forEach(list::add);
+        return Collections.unmodifiableList(list);
+    }
+
+    @Nonnull
     @Override
     public Set<T> asSet()
     {
-        try (ClosableIterator<T> it = lockedIterator())
+        try (ChainedClosableIterator<T> it = lockedIterator())
         {
-            Set<T> set = new HashSet<>();
-            it.forEachRemaining(set::add);
-            return Collections.unmodifiableSet(set);
+            //because the iterator needs to retain elements to avoid duplicates,
+            // we can use the resulting HashSet as our return value!
+            while (it.hasNext()) it.next();
+            return Collections.unmodifiableSet(it.getItems());
         }
     }
 
+    @Nonnull
     @Override
-    public ClosableIterator<T> lockedIterator()
+    public ChainedClosableIterator<T> lockedIterator()
     {
         Iterator<? extends E> gen = generator.get().iterator();
         return new ChainedClosableIterator<>(gen);
     }
 
+    @Nonnull
     @Override
-    public List<T> getElementsByName(String name, boolean ignoreCase)
+    public List<T> getElementsByName(@Nonnull String name, boolean ignoreCase)
     {
         return Collections.unmodifiableList(distinctStream()
                 .flatMap(view -> view.getElementsByName(name, ignoreCase).stream())
+                .distinct()
                 .collect(Collectors.toList()));
     }
 
+    @Nonnull
     @Override
     public Stream<T> stream()
     {
-        return generator.get().flatMap(CacheView::stream).distinct();
+        return distinctStream().flatMap(CacheView::stream).distinct();
     }
 
+    @Nonnull
     @Override
     public Stream<T> parallelStream()
     {
-        return generator.get().flatMap(CacheView::parallelStream).distinct();
+        return distinctStream().flatMap(CacheView::parallelStream).distinct();
     }
 
     @Nonnull
@@ -141,6 +159,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
             super(generator);
         }
 
+        @Nonnull
         @Override
         public List<Member> getElementsById(long id)
         {
@@ -150,32 +169,36 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
                 .collect(Collectors.toList()));
         }
 
+        @Nonnull
         @Override
-        public List<Member> getElementsByUsername(String name, boolean ignoreCase)
+        public List<Member> getElementsByUsername(@Nonnull String name, boolean ignoreCase)
         {
             return Collections.unmodifiableList(distinctStream()
                 .flatMap(view -> view.getElementsByUsername(name, ignoreCase).stream())
                 .collect(Collectors.toList()));
         }
 
+        @Nonnull
         @Override
-        public List<Member> getElementsByNickname(String name, boolean ignoreCase)
+        public List<Member> getElementsByNickname(@Nullable String name, boolean ignoreCase)
         {
             return Collections.unmodifiableList(distinctStream()
                 .flatMap(view -> view.getElementsByNickname(name, ignoreCase).stream())
                 .collect(Collectors.toList()));
         }
 
+        @Nonnull
         @Override
-        public List<Member> getElementsWithRoles(Role... roles)
+        public List<Member> getElementsWithRoles(@Nonnull Role... roles)
         {
             return Collections.unmodifiableList(distinctStream()
                 .flatMap(view -> view.getElementsWithRoles(roles).stream())
                 .collect(Collectors.toList()));
         }
 
+        @Nonnull
         @Override
-        public List<Member> getElementsWithRoles(Collection<Role> roles)
+        public List<Member> getElementsWithRoles(@Nonnull Collection<Role> roles)
         {
             return Collections.unmodifiableList(distinctStream()
                 .flatMap(view -> view.getElementsWithRoles(roles).stream())

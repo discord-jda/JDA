@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.audio.AudioConnection;
@@ -41,7 +42,7 @@ public class VoiceServerUpdateHandler extends SocketHandler
         if (guild == null)
             throw new IllegalArgumentException("Attempted to start audio connection with Guild that doesn't exist!");
 
-        getJDA().getClient().updateAudioConnection(guildId, guild.getSelfMember().getVoiceState().getChannel());
+        getJDA().getDirectAudioController().update(guild, guild.getSelfMember().getVoiceState().getChannel());
 
         if (content.isNull("endpoint"))
         {
@@ -57,6 +58,13 @@ public class VoiceServerUpdateHandler extends SocketHandler
         String sessionId = guild.getSelfMember().getVoiceState().getSessionId();
         if (sessionId == null)
             throw new IllegalArgumentException("Attempted to create audio connection without having a session ID. Did VOICE_STATE_UPDATED fail?");
+
+        VoiceDispatchInterceptor voiceInterceptor = getJDA().getVoiceInterceptor();
+        if (voiceInterceptor != null)
+        {
+            voiceInterceptor.onVoiceServerUpdate(new VoiceDispatchInterceptor.VoiceServerUpdate(guild, endpoint, token, sessionId, allContent));
+            return null;
+        }
 
         AudioManagerImpl audioManager = (AudioManagerImpl) guild.getAudioManager();
         MiscUtil.locked(audioManager.CONNECTION_LOCK, () ->

@@ -16,29 +16,24 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.exceptions.HttpException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
-import net.dv8tion.jda.api.utils.IOConsumer;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.IOUtil;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import okhttp3.*;
 
 import javax.annotation.CheckReturnValue;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.io.*;
 import java.time.OffsetDateTime;
 import java.util.Formattable;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 
 /**
@@ -127,7 +122,7 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Pattern used to find instant invites in messages.
      *
-     * @see #getInvites() getInvites()
+     * @see #getInvites()
      */
     Pattern INVITE_PATTERN = Pattern.compile("(?:https?://)?discord(?:app\\.com/invite|\\.gg)/([a-z0-9-]+)", Pattern.CASE_INSENSITIVE);
 
@@ -140,6 +135,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return immutable list of mentioned users
      */
+    @Nonnull
     List<User> getMentionedUsers();
 
     /**
@@ -153,6 +149,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return immutable list of mentioned TextChannels
      */
+    @Nonnull
     List<TextChannel> getMentionedChannels();
 
     /**
@@ -166,6 +163,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return immutable list of mentioned Roles
      */
+    @Nonnull
     List<Role> getMentionedRoles();
 
     /**
@@ -188,7 +186,8 @@ public interface Message extends ISnowflake, Formattable
      *
      * @since  3.4.0
      */
-    List<Member> getMentionedMembers(Guild guild);
+    @Nonnull
+    List<Member> getMentionedMembers(@Nonnull Guild guild);
 
     /**
      * Creates an immutable list of {@link net.dv8tion.jda.api.entities.Member Members}
@@ -206,6 +205,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @since  3.4.0
      */
+    @Nonnull
     List<Member> getMentionedMembers();
 
     /**
@@ -228,7 +228,8 @@ public interface Message extends ISnowflake, Formattable
      *
      * @since  3.4.0
      */
-    List<IMentionable> getMentions(MentionType... types);
+    @Nonnull
+    List<IMentionable> getMentions(@Nonnull MentionType... types);
 
     /**
      * Checks if given {@link net.dv8tion.jda.api.entities.IMentionable IMentionable}
@@ -252,7 +253,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return True, if the given mentionable was mentioned in this message
      */
-    boolean isMentioned(IMentionable mentionable, MentionType... types);
+    boolean isMentioned(@Nonnull IMentionable mentionable, @Nonnull MentionType... types);
 
     /**
      * Indicates if this Message mentions everyone using @everyone or @here.
@@ -275,6 +276,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return Time of the most recent edit, or {@code null} if the Message has never been edited.
      */
+    @Nullable
     OffsetDateTime getTimeEdited();
 
     /**
@@ -285,6 +287,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return Message author
      */
+    @Nonnull
     User getAuthor();
 
     /**
@@ -299,6 +302,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return Message author, or {@code null} if the message was not sent from a TextChannel.
      */
+    @Nullable
     Member getMember();
 
     /**
@@ -310,6 +314,7 @@ public interface Message extends ISnowflake, Formattable
      * 
      * @return A String representing the jump-to URL for the message
      */
+    @Nonnull
     String getJumpUrl();
 
     /**
@@ -331,6 +336,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The textual content of the message with mentions resolved to be visually like the Discord client.
      */
+    @Nonnull
     String getContentDisplay();
 
     /**
@@ -341,15 +347,17 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The raw textual content of the message, containing unresolved Discord message formatting.
      */
+    @Nonnull
     String getContentRaw();
 
     /**
-     * Gets the textual content of this message using {@link #getContentDisplay()} and then strips it of all markdown characters
-     * like {@literal *, **, __, ~~} that provide text formatting. Any characters that match these but are not being used
+     * Gets the textual content of this message using {@link #getContentDisplay()} and then strips it of markdown characters 
+     * like {@literal *, **, __, ~~, ||} that provide text formatting. Any characters that match these but are not being used 
      * for formatting are escaped to prevent possible formatting.
      *
      * @return The textual content from {@link #getContentDisplay()} with all text formatting characters removed or escaped.
      */
+    @Nonnull
     String getContentStripped();
 
     /**
@@ -364,6 +372,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return Immutable list of invite codes
      */
+    @Nonnull
     List<String> getInvites();
 
     /**
@@ -378,6 +387,7 @@ public interface Message extends ISnowflake, Formattable
      * @see    net.dv8tion.jda.api.MessageBuilder#setNonce(String)
      * @see    <a href="https://en.wikipedia.org/wiki/Cryptographic_nonce" target="_blank">Cryptographic Nonce - Wikipedia</a>
      */
+    @Nullable
     String getNonce();
 
     /**
@@ -397,7 +407,18 @@ public interface Message extends ISnowflake, Formattable
      * @return True if the {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} which this message was received
      *         from is the same as the one specified by {@code type}.
      */
-    boolean isFromType(ChannelType type);
+    boolean isFromType(@Nonnull ChannelType type);
+
+    /**
+     * Whether this message was sent in a {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * <br>If this is {@code false} then {@link #getGuild()} will throw an {@link java.lang.IllegalStateException}.
+     *
+     * @return True, if {@link #getChannelType()}.{@link ChannelType#isGuild() isGuild()} is true.
+     */
+    default boolean isFromGuild()
+    {
+        return getChannelType().isGuild();
+    }
 
     /**
      * Gets the {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} that this message was received from.
@@ -409,6 +430,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The ChannelType which this message was received from.
      */
+    @Nonnull
     ChannelType getChannelType();
 
     /**
@@ -428,12 +450,12 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The MessageChannel of this Message
      */
+    @Nonnull
     MessageChannel getChannel();
 
     /**
      * Returns the {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} that this message was sent in.
-     * <br><b>This is only valid if the Message was actually sent in a PrivateChannel.</b> This will return {@code null}
-     * if it was not sent from a PrivateChannel.
+     * <br><b>This is only valid if the Message was actually sent in a PrivateChannel.</b>
      * <br>You can check the type of channel this message was sent from using {@link #isFromType(ChannelType)} or {@link #getChannelType()}.
      *
      * <p>Use {@link #getChannel()} for an ambiguous {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
@@ -441,15 +463,21 @@ public interface Message extends ISnowflake, Formattable
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     * @throws java.lang.IllegalStateException
+     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.PrivateChannel}.
      *
-     * @return The PrivateChannel this message was sent in, or {@code null} if it was not sent from a PrivateChannel.
+     * @return The PrivateChannel this message was sent in
+     *
+     * @see    #isFromGuild()
+     * @see    #isFromType(ChannelType)
+     * @see    #getChannelType()
      */
+    @Nonnull
     PrivateChannel getPrivateChannel();
 
     /**
      * Returns the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that this message was sent in.
-     * <br><b>This is only valid if the Message was actually sent in a TextChannel.</b> This will return {@code null}
-     * if it was not sent from a TextChannel.
+     * <br><b>This is only valid if the Message was actually sent in a TextChannel.</b>
      * <br>You can check the type of channel this message was sent from using {@link #isFromType(ChannelType)} or {@link #getChannelType()}.
      *
      * <p>Use {@link #getChannel()} for an ambiguous {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
@@ -457,35 +485,49 @@ public interface Message extends ISnowflake, Formattable
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     * @throws java.lang.IllegalStateException
+     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.TextChannel}.
      *
-     * @return The TextChannel this message was sent in, or {@code null} if it was not sent from a TextChannel.
+     * @return The TextChannel this message was sent in
+     *
+     * @see    #isFromGuild()
+     * @see    #isFromType(ChannelType)
+     * @see    #getChannelType()
      */
+    @Nonnull
     TextChannel getTextChannel();
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Category Category} this
-     * message was sent in. This will always be {@code null} for DMs and Groups.
-     * <br>Equivalent to {@code getTextChannel().getParent()}.
+     * message was sent in. This will always be {@code null} for DMs.
+     * <br>Equivalent to {@code getTextChannel().getParent()} if this was sent in a {@link net.dv8tion.jda.api.entities.TextChannel}.
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      *
      * @return {@link net.dv8tion.jda.api.entities.Category Category} for this message
      */
+    @Nullable
     Category getCategory();
 
     /**
      * Returns the {@link net.dv8tion.jda.api.entities.Guild Guild} that this message was sent in.
-     * <br>This is just a shortcut to {@link #getTextChannel()}{@link net.dv8tion.jda.api.entities.TextChannel#getGuild() .getGuild()}.
-     * <br><b>This is only valid if the Message was actually sent in a TextChannel.</b> This will return {@code null}
-     * if it was not sent from a TextChannel.
+     * <br>This is just a shortcut to {@link #getTextChannel()}.{@link net.dv8tion.jda.api.entities.TextChannel#getGuild() getGuild()}.
+     * <br><b>This is only valid if the Message was actually sent in a TextChannel.</b>
      * <br>You can check the type of channel this message was sent from using {@link #isFromType(ChannelType)} or {@link #getChannelType()}.
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     * @throws java.lang.IllegalStateException
+     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.TextChannel}.
      *
-     * @return The Guild this message was sent in, or {@code null} if it was not sent from a TextChannel.
+     * @return The Guild this message was sent in
+     *
+     * @see    #isFromGuild()
+     * @see    #isFromType(ChannelType)
+     * @see    #getChannelType()
      */
+    @Nonnull
     Guild getGuild();
 
     /**
@@ -494,6 +536,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return Unmodifiable list of {@link net.dv8tion.jda.api.entities.Message.Attachment Attachments}.
      */
+    @Nonnull
     List<Attachment> getAttachments();
 
     /**
@@ -502,6 +545,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return Unmodifiable list of all given MessageEmbeds.
      */
+    @Nonnull
     List<MessageEmbed> getEmbeds();
 
     /**
@@ -520,6 +564,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return An immutable list of the Emotes used in this message (example match {@literal <:jda:230988580904763393>})
      */
+    @Nonnull
     List<Emote> getEmotes();
 
     /**
@@ -527,6 +572,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return immutable list of all MessageReactions on this message.
      */
+    @Nonnull
     List<MessageReaction> getReactions();
 
     /**
@@ -535,6 +581,14 @@ public interface Message extends ISnowflake, Formattable
      * @return If this message is TTS.
      */
     boolean isTTS();
+
+    /**
+     * A {@link net.dv8tion.jda.api.entities.MessageActivity MessageActivity} that contains its type and party id.
+     *
+     * @return The activity, or {@code null} if no activity was added to the message.
+     */
+    @Nullable
+    MessageActivity getActivity();
 
     /**
      * Edits this Message's content to the provided String.
@@ -568,8 +622,9 @@ public interface Message extends ISnowflake, Formattable
      * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated content
      */
+    @Nonnull
     @CheckReturnValue
-    MessageAction editMessage(CharSequence newContent);
+    MessageAction editMessage(@Nonnull CharSequence newContent);
 
     /**
      * Edits this Message's content to the provided {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}.
@@ -604,8 +659,9 @@ public interface Message extends ISnowflake, Formattable
      * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated content
      */
+    @Nonnull
     @CheckReturnValue
-    MessageAction editMessage(MessageEmbed newContent);
+    MessageAction editMessage(@Nonnull MessageEmbed newContent);
 
     /**
      * Edits this Message's content to the provided format.
@@ -652,8 +708,9 @@ public interface Message extends ISnowflake, Formattable
      * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated content
      */
+    @Nonnull
     @CheckReturnValue
-    MessageAction editMessageFormat(String format, Object... args);
+    MessageAction editMessageFormat(@Nonnull String format, @Nonnull Object... args);
 
     /**
      * Edits this Message's content to the provided {@link net.dv8tion.jda.api.entities.Message Message}.
@@ -690,8 +747,9 @@ public interface Message extends ISnowflake, Formattable
      * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated content
      */
+    @Nonnull
     @CheckReturnValue
-    MessageAction editMessage(Message newContent);
+    MessageAction editMessage(@Nonnull Message newContent);
 
     /**
      * Deletes this Message from Discord.
@@ -735,6 +793,7 @@ public interface Message extends ISnowflake, Formattable
      * @see    net.dv8tion.jda.api.entities.TextChannel#deleteMessages(java.util.Collection) TextChannel.deleteMessages(Collection)
      * @see    net.dv8tion.jda.api.entities.MessageChannel#purgeMessages(java.util.List) MessageChannel.purgeMessages(List)
      */
+    @Nonnull
     @CheckReturnValue
     AuditableRestAction<Void> delete();
 
@@ -746,6 +805,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return  the corresponding JDA instance
      */
+    @Nonnull
     JDA getJDA();
 
     /**
@@ -790,6 +850,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
+    @Nonnull
     @CheckReturnValue
     RestAction<Void> pin();
 
@@ -828,6 +889,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
+    @Nonnull
     @CheckReturnValue
     RestAction<Void> unpin();
 
@@ -882,12 +944,13 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
+    @Nonnull
     @CheckReturnValue
-    RestAction<Void> addReaction(Emote emote);
+    RestAction<Void> addReaction(@Nonnull Emote emote);
 
     /**
-     * Adds a reaction to this Message using a UTF8 emoji.
-     * <br>A reference of UTF8 emojis can be found here:
+     * Adds a reaction to this Message using a unicode emoji.
+     * <br>A reference of unicode emojis can be found here:
      * <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a>.
      *
      * <p>This message instance will not be updated by this operation.
@@ -925,7 +988,7 @@ public interface Message extends ISnowflake, Formattable
      * </ul>
      *
      * @param  unicode
-     *         The UTF8 emoji to add as a reaction to this Message.
+     *         The unicode emoji to add as a reaction to this Message.
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
@@ -941,8 +1004,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
+    @Nonnull
     @CheckReturnValue
-    RestAction<Void> addReaction(String unicode);
+    RestAction<Void> addReaction(@Nonnull String unicode);
 
     /**
      * Removes all reactions from this Message.
@@ -977,6 +1041,7 @@ public interface Message extends ISnowflake, Formattable
      *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
+    @Nonnull
     @CheckReturnValue
     RestAction<Void> clearReactions();
 
@@ -984,11 +1049,12 @@ public interface Message extends ISnowflake, Formattable
      * This specifies the {@link net.dv8tion.jda.api.entities.MessageType MessageType} of this Message.
      *
      * <p>Messages can represent more than just simple text sent by Users, they can also be special messages that
-     * inform about events occurs. A few examples are the system message informing that a message has been pinned.
-     * Another would be the system message informing that a call has been started or ended in a group.
+     * inform about events that occur. Messages can either be {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT default messages}
+     * or special messages like {@link net.dv8tion.jda.api.entities.MessageType#GUILD_MEMBER_JOIN welcome messages}.
      *
      * @return The {@link net.dv8tion.jda.api.entities.MessageType MessageType} of this message.
      */
+    @Nonnull
     MessageType getType();
 
     /**
@@ -1032,6 +1098,7 @@ public interface Message extends ISnowflake, Formattable
             this.pattern = Pattern.compile(regex);
         }
 
+        @Nonnull
         public Pattern getPattern()
         {
             return pattern;
@@ -1070,6 +1137,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return The corresponding JDA instance for this Attachment
          */
+        @Nonnull
         public JDA getJDA()
         {
             return jda;
@@ -1086,18 +1154,18 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return Non-null String containing the Attachment URL.
          */
+        @Nonnull
         public String getUrl()
         {
             return url;
         }
 
         /**
-         * The url of the Attachment, proxied by Discord.
-         * <br>Url to the resource proxied by https://images.discordapp.net
-         * <br><b>Note: </b> This URL will most likely only work for images. ({@link #isImage()})
+         * Url to the resource proxied by the Discord CDN.
          *
          * @return Non-null String containing the proxied Attachment url.
          */
+        @Nonnull
         public String getProxyUrl()
         {
             return proxyUrl;
@@ -1108,119 +1176,242 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return Non-null String containing the Attachment file name.
          */
+        @Nonnull
         public String getFileName()
         {
             return fileName;
         }
 
         /**
-         * Creates an {@link net.dv8tion.jda.api.entities.Icon Icon} instance for
-         * this attachment if {@link #isImage() isImage()} is {@code true}!
-         * <br>This is a convenience method that can be used to retrieve an Icon from an attachment image link which
-         * requires a set user-agent to be loaded.
+         * Enqueues a request to retrieve the contents of this Attachment.
+         * <br><b>The receiver is expected to close the retrieved {@link java.io.InputStream}.</b>
          *
-         * <p>When a global proxy was specified via {@link net.dv8tion.jda.api.JDABuilder JDABuilder} this will use the
-         * specified proxy to create an {@link java.io.InputStream InputStream} otherwise it will use a normal {@link java.net.URLConnection URLConnection}
-         * with the User-Agent for the currently logged in account.
+         * <h2>Example</h2>
+         * <pre>{@code
+         * public void printContents(Message.Attachment attachment)
+         * {
+         *     attachment.retrieveInputStream().thenAccept(in -> {
+         *         StringBuilder builder = new StringBuilder();
+         *         byte[] buf = byte[1024];
+         *         int count = 0;
+         *         while ((count = in.read(buf)) > 0)
+         *         {
+         *             builder.append(new String(buf, 0, count));
+         *         }
+         *         in.close();
+         *         System.out.println(builder);
+         *     }).exceptionally(t -> { // handle failure
+         *         t.printStackTrace();
+         *         return null;
+         *     });
+         * }
+         * }</pre>
          *
-         * @throws IOException
-         *         If an IOError occurs while reading the image
-         * @throws java.lang.IllegalStateException
-         *         If this is not an image attachment
-         *
-         * @return {@link net.dv8tion.jda.api.entities.Icon Icon} for this image attachment
-         *
-         * @since  3.4.0
+         * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.InputStream}
          */
-        public Icon getAsIcon() throws IOException
+        @Nonnull
+        public CompletableFuture<InputStream> retrieveInputStream() // it is expected that the response is closed by the callback!
+        {
+            CompletableFuture<InputStream> future = new CompletableFuture<>();
+            Request req = getRequest();
+            OkHttpClient httpClient = getJDA().getHttpClient();
+            httpClient.newCall(req).enqueue(new Callback()
+            {
+                @Override
+                public void onFailure(@Nonnull Call call, @Nonnull IOException e)
+                {
+                    future.completeExceptionally(new UncheckedIOException(e));
+                }
+
+                @Override
+                public void onResponse(@Nonnull Call call, @Nonnull Response response) throws IOException
+                {
+                    if (response.isSuccessful())
+                    {
+                        InputStream body = Requester.getBody(response);
+                        if (!future.complete(body))
+                            IOUtil.silentClose(response);
+                    }
+                    else
+                    {
+                        future.completeExceptionally(new HttpException(response.code() + ": " + response.message()));
+                        IOUtil.silentClose(response);
+                    }
+                }
+            });
+            return future;
+        }
+
+        /**
+         * Downloads the attachment into the current working directory using the file name provided by {@link #getFileName()}.
+         * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
+         * Alternatively you can use {@link #retrieveInputStream()} and use a continuation with a different executor.
+         *
+         * <h2>Example</h2>
+         * <pre>{@code
+         * public void saveLocally(Message.Attachment attachment)
+         * {
+         *     attachment.downloadToFile()
+         *         .thenAccept(file -> System.out.println("Saved attachment to " + file.getName()))
+         *         .exceptionally(t ->
+         *         { // handle failure
+         *             t.printStackTrace();
+         *             return null;
+         *         });
+         * }
+         * }</pre>
+         *
+         * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
+         */
+        @Nonnull
+        public CompletableFuture<File> downloadToFile() // using relative path
+        {
+            return downloadToFile(getFileName());
+        }
+
+        /**
+         * Downloads the attachment to a file at the specified path (relative or absolute).
+         * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
+         * Alternatively you can use {@link #retrieveInputStream()} and use a continuation with a different executor.
+         *
+         * <h2>Example</h2>
+         * <pre>{@code
+         * public void saveLocally(Message.Attachment attachment)
+         * {
+         *     attachment.downloadToFile("/tmp/" + attachment.getFileName())
+         *         .thenAccept(file -> System.out.println("Saved attachment to " + file.getName()))
+         *         .exceptionally(t ->
+         *         { // handle failure
+         *             t.printStackTrace();
+         *             return null;
+         *         });
+         * }
+         * }</pre>
+         *
+         * @param  path
+         *         The path to save the file to
+         *
+         * @throws java.lang.IllegalArgumentException
+         *         If the provided path is null
+         *
+         * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
+         */
+        @Nonnull
+        public CompletableFuture<File> downloadToFile(String path)
+        {
+            Checks.notNull(path, "Path");
+            return downloadToFile(new File(path));
+        }
+
+        /**
+         * Downloads the attachment to a file at the specified path (relative or absolute).
+         * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
+         * Alternatively you can use {@link #retrieveInputStream()} and use a continuation with a different executor.
+         *
+         * <h2>Example</h2>
+         * <pre>{@code
+         * public void saveLocally(Message.Attachment attachment)
+         * {
+         *     attachment.downloadToFile(new File("/tmp/" + attachment.getFileName()))
+         *         .thenAccept(file -> System.out.println("Saved attachment to " + file.getName()))
+         *         .exceptionally(t ->
+         *         { // handle failure
+         *             t.printStackTrace();
+         *             return null;
+         *         });
+         * }
+         * }</pre>
+         *
+         * @param  file
+         *         The file to write to
+         *
+         * @throws java.lang.IllegalArgumentException
+         *         If the provided file is null or cannot be written to
+         *
+         * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
+         */
+        @Nonnull
+        public CompletableFuture<File> downloadToFile(File file)
+        {
+            Checks.notNull(file, "File");
+            Checks.check(file.canWrite(), "Cannot write to file %s", file.getName());
+            return retrieveInputStream().thenApplyAsync((stream) -> {
+                try (FileOutputStream out = new FileOutputStream(file))
+                {
+                    byte[] buf = new byte[1024];
+                    int count;
+                    while ((count = stream.read(buf)) > 0)
+                    {
+                        out.write(buf, 0, count);
+                    }
+                    return file;
+                }
+                catch (IOException e)
+                {
+                    throw new UncheckedIOException(e);
+                }
+                finally
+                {
+                    IOUtil.silentClose(stream);
+                }
+            }, getJDA().getCallbackPool());
+        }
+
+        /**
+         * Retrieves the image of this attachment and provides an {@link net.dv8tion.jda.api.entities.Icon} equivalent.
+         * <br>Useful with {@link net.dv8tion.jda.api.managers.AccountManager#setAvatar(Icon)}.
+         * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
+         * Alternatively you can use {@link #retrieveInputStream()} and use a continuation with a different executor.
+         *
+         * <h2>Example</h2>
+         * <pre>{@code
+         * public void changeAvatar(Message.Attachment attachment)
+         * {
+         *     attachment.retrieveAsIcon().thenCompose(icon -> {
+         *         SelfUser self = attachment.getJDA().getSelfUser();
+         *         AccountManager manager = self.getManager();
+         *         return manager.setAvatar(icon).submit();
+         *     }).exceptionally(t -> {
+         *         t.printStackTrace();
+         *         return null;
+         *     });
+         * }
+         * }</pre>
+         *
+         * @throws java.lang.IllegalStateException
+         *         If this is not an image ({@link #isImage()})
+         *
+         * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link net.dv8tion.jda.api.entities.Icon}
+         */
+        @Nonnull
+        public CompletableFuture<Icon> retrieveAsIcon()
         {
             if (!isImage())
                 throw new IllegalStateException("Cannot create an Icon out of this attachment. This is not an image.");
-            AtomicReference<Icon> icon = new AtomicReference<>();
-            withInputStream((in) -> icon.set(Icon.from(in)));
-            return icon.get();
+            return retrieveInputStream().thenApplyAsync((stream) ->
+            {
+                try
+                {
+                    return Icon.from(stream);
+                }
+                catch (IOException e)
+                {
+                    throw new UncheckedIOException(e);
+                }
+                finally
+                {
+                    IOUtil.silentClose(stream);
+                }
+            }, getJDA().getCallbackPool());
         }
 
-        /**
-         * Downloads this attachment to given File
-         *
-         * @param  file
-         *         The file, where the attachment will get downloaded to
-         *
-         * @return boolean true, if successful, otherwise false
-         */
-        public boolean download(File file)
+        protected Request getRequest()
         {
-            try
-            {
-                withInputStream((in) -> Files.copy(in, Paths.get(file.getAbsolutePath())));
-                return true;
-            }
-            catch (Exception e)
-            {
-                JDAImpl.LOG.error("Error while downloading an attachment", e);
-            }
-            return false;
-        }
-
-        /**
-         * Creates a copy of the {@link java.io.InputStream InputStream} that is created using an {@link okhttp3.OkHttpClient OkHttpClient}.
-         *
-         * <p>You can access the input stream directly using {@link #withInputStream(net.dv8tion.jda.api.utils.IOConsumer) withInputStream(IOConsumer)}
-         * which will have an open input stream available within the consumer scope. The stream will be closed once that method returns.
-         *
-         * @throws java.io.IOException
-         *         If an IO error occurs trying to read from the opened HTTP channel
-         *
-         * @return InputStream copy of the response body for this Attachment
-         *
-         * @since  3.4.0
-         */
-        public InputStream getInputStream() throws IOException
-        {
-            try (Response response = openConnection())
-            {
-                // creates a copy in order to properly close the response
-                InputStream in = Requester.getBody(response);
-                return new ByteArrayInputStream(IOUtil.readFully(in));
-            }
-        }
-
-        /**
-         * Allows to access the InputStream that is available from the HTTP {@link okhttp3.Response Response}
-         * to be used without having to copy it.
-         * <br>Unlike {@link #getInputStream()} this does not return a full copy of the input stream.
-         * Instead this method will provide the InputStream data in the specified consumer in which it is still accessible.
-         *
-         * <p><b>When this method returns the InputStream will be closed accordingly!</b>
-         *
-         * @param  then
-         *         Not-null {@link net.dv8tion.jda.api.utils.IOConsumer IOConsumer} to accept the InputStream
-         *
-         * @throws java.lang.IllegalArgumentException
-         *         If the provided IOConsumer is {@code null}
-         * @throws IOException
-         *         If an IOException occurs within the IOConsumer or while opening an HTTP channel
-         *
-         * @since  3.4.0
-         */
-        public void withInputStream(IOConsumer<InputStream> then) throws IOException
-        {
-            Checks.notNull(then, "Consumer");
-            try (Response response = openConnection())
-            {
-                then.accept(Requester.getBody(response));
-            }
-        }
-
-        protected Response openConnection() throws IOException
-        {
-            final OkHttpClient client = jda.getRequester().getHttpClient();
-            final Request request = new Request.Builder().url(getUrl())
-                        .addHeader("user-agent", Requester.USER_AGENT)
-                        .addHeader("accept-encoding", "gzip")
-                        .build();
-            return client.newCall(request).execute();
+            return new Request.Builder()
+                .url(getUrl())
+                .addHeader("user-agent", Requester.USER_AGENT)
+                .addHeader("accept-encoding", "gzip, deflate")
+                .build();
         }
 
         /**

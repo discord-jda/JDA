@@ -18,6 +18,9 @@ package net.dv8tion.jda.api.events.channel.text.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.TextChannel;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}'s topic changed.
  *
@@ -29,7 +32,7 @@ public class TextChannelUpdateTopicEvent extends GenericTextChannelUpdateEvent<S
 {
     public static final String IDENTIFIER = "topic";
 
-    public TextChannelUpdateTopicEvent(JDA api, long responseNumber, TextChannel channel, String oldTopic)
+    public TextChannelUpdateTopicEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel, @Nullable String oldTopic)
     {
         super(api, responseNumber, channel, oldTopic, channel.getTopic(), IDENTIFIER);
     }
@@ -39,6 +42,7 @@ public class TextChannelUpdateTopicEvent extends GenericTextChannelUpdateEvent<S
      *
      * @return The old topic, or null
      */
+    @Nullable
     public String getOldTopic()
     {
         return getOldValue();
@@ -49,6 +53,7 @@ public class TextChannelUpdateTopicEvent extends GenericTextChannelUpdateEvent<S
      *
      * @return The new topic, or null
      */
+    @Nullable
     public String getNewTopic()
     {
         return getNewValue();

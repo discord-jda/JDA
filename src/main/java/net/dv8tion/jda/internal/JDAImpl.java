@@ -30,6 +30,7 @@ import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.InterfacedEventManager;
+import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.Presence;
 import net.dv8tion.jda.api.requests.Request;
@@ -45,6 +46,7 @@ import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.handle.GuildSetupController;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
+import net.dv8tion.jda.internal.managers.DirectAudioControllerImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
 import net.dv8tion.jda.internal.requests.*;
 import net.dv8tion.jda.internal.requests.restaction.GuildActionImpl;
@@ -64,6 +66,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
+import javax.annotation.Nonnull;
 import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.concurrent.*;
@@ -94,6 +97,7 @@ public class JDAImpl implements JDA
     protected final EventCache eventCache = new EventCache();
 
     protected final GuildSetupController guildSetupController;
+    protected final DirectAudioControllerImpl audioController;
 
     protected final AuthorizationConfig authConfig;
     protected final ThreadingConfig threadConfig;
@@ -132,6 +136,7 @@ public class JDAImpl implements JDA
         this.requester = new Requester(this);
         this.requester.setRetryOnTimeout(this.sessionConfig.isRetryOnTimeout());
         this.guildSetupController = new GuildSetupController(this);
+        this.audioController = new DirectAudioControllerImpl(this);
     }
 
     public boolean isCacheFlagSet(CacheFlag flag)
@@ -147,6 +152,11 @@ public class JDAImpl implements JDA
     public GuildSetupController getGuildSetupController()
     {
         return guildSetupController;
+    }
+
+    public VoiceDispatchInterceptor getVoiceInterceptor()
+    {
+        return sessionConfig.getVoiceDispatchInterceptor();
     }
 
     public int login() throws LoginException
@@ -349,6 +359,7 @@ public class JDAImpl implements JDA
         return authConfig;
     }
 
+    @Nonnull
     @Override
     public String getToken()
     {
@@ -388,6 +399,7 @@ public class JDAImpl implements JDA
         return sessionConfig.isAutoReconnect();
     }
 
+    @Nonnull
     @Override
     public Status getStatus()
     {
@@ -400,8 +412,9 @@ public class JDAImpl implements JDA
         return ping;
     }
 
+    @Nonnull
     @Override
-    public JDA awaitStatus(Status status) throws InterruptedException
+    public JDA awaitStatus(@Nonnull Status status) throws InterruptedException
     {
         Checks.notNull(status, "Status");
         Checks.check(status.isInit(), "Cannot await the status %s as it is not part of the login cycle!", status);
@@ -417,30 +430,42 @@ public class JDAImpl implements JDA
         return this;
     }
 
+    @Nonnull
     @Override
     public ScheduledExecutorService getRateLimitPool()
     {
         return threadConfig.getRateLimitPool();
     }
 
+    @Nonnull
     @Override
     public ScheduledExecutorService getGatewayPool()
     {
         return threadConfig.getGatewayPool();
     }
 
+    @Nonnull
     @Override
     public ExecutorService getCallbackPool()
     {
         return threadConfig.getCallbackPool();
     }
 
+    @Nonnull
     @Override
     public OkHttpClient getHttpClient()
     {
         return sessionConfig.getHttpClient();
     }
 
+    @Nonnull
+    @Override
+    public DirectAudioControllerImpl getDirectAudioController()
+    {
+        return this.audioController;
+    }
+
+    @Nonnull
     @Override
     public List<String> getCloudflareRays()
     {
@@ -448,6 +473,7 @@ public class JDAImpl implements JDA
         return client == null ? Collections.emptyList() : Collections.unmodifiableList(new LinkedList<>(client.getCfRays()));
     }
 
+    @Nonnull
     @Override
     public List<String> getWebSocketTrace()
     {
@@ -455,15 +481,17 @@ public class JDAImpl implements JDA
         return client == null ? Collections.emptyList() : Collections.unmodifiableList(new LinkedList<>(client.getTraces()));
     }
 
+    @Nonnull
     @Override
-    public List<Guild> getMutualGuilds(User... users)
+    public List<Guild> getMutualGuilds(@Nonnull User... users)
     {
         Checks.notNull(users, "users");
         return getMutualGuilds(Arrays.asList(users));
     }
 
+    @Nonnull
     @Override
-    public List<Guild> getMutualGuilds(Collection<User> users)
+    public List<Guild> getMutualGuilds(@Nonnull Collection<User> users)
     {
         Checks.notNull(users, "users");
         for(User u : users)
@@ -473,12 +501,14 @@ public class JDAImpl implements JDA
                 .collect(Collectors.toList()));
     }
 
+    @Nonnull
     @Override
-    public RestAction<User> retrieveUserById(String id)
+    public RestAction<User> retrieveUserById(@Nonnull String id)
     {
         return retrieveUserById(MiscUtil.parseSnowflake(id));
     }
 
+    @Nonnull
     @Override
     public RestAction<User> retrieveUserById(long id)
     {
@@ -494,62 +524,75 @@ public class JDAImpl implements JDA
             (response, request) -> getEntityBuilder().createFakeUser(response.getObject(), false));
     }
 
+    @Nonnull
     @Override
     public CacheView<AudioManager> getAudioManagerCache()
     {
         return audioManagers;
     }
 
+    @Nonnull
     @Override
     public SnowflakeCacheView<Guild> getGuildCache()
     {
         return guildCache;
     }
 
+    @Nonnull
     @Override
     public SnowflakeCacheView<Role> getRoleCache()
     {
         return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getRoleCache));
     }
 
+    @Nonnull
     @Override
     public SnowflakeCacheView<Emote> getEmoteCache()
     {
         return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getEmoteCache));
     }
 
+    @Nonnull
     @Override
     public SnowflakeCacheView<Category> getCategoryCache()
     {
         return categories;
     }
 
+    @Nonnull
     @Override
     public SnowflakeCacheView<TextChannel> getTextChannelCache()
     {
         return textChannelCache;
     }
 
+    @Nonnull
     @Override
     public SnowflakeCacheView<VoiceChannel> getVoiceChannelCache()
     {
         return voiceChannelCache;
     }
 
+    @Nonnull
     @Override
     public SnowflakeCacheView<PrivateChannel> getPrivateChannelCache()
     {
         return privateChannelCache;
     }
 
+    @Nonnull
     @Override
     public SnowflakeCacheView<User> getUserCache()
     {
         return userCache;
     }
 
+    @Nonnull
+    @Override
     public SelfUser getSelfUser()
     {
+        if (selfUser == null)
+            throw new IllegalStateException("Session is not yet ready!");
         return selfUser;
     }
 
@@ -631,18 +674,21 @@ public class JDAImpl implements JDA
         return shardInfo;
     }
 
+    @Nonnull
     @Override
     public Presence getPresence()
     {
         return presence;
     }
 
+    @Nonnull
     @Override
     public IEventManager getEventManager()
     {
         return eventManager;
     }
 
+    @Nonnull
     @Override
     public AccountType getAccountType()
     {
@@ -656,7 +702,7 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public void addEventListener(Object... listeners)
+    public void addEventListener(@Nonnull Object... listeners)
     {
         Checks.noneNull(listeners, "listeners");
 
@@ -665,7 +711,7 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public void removeEventListener(Object... listeners)
+    public void removeEventListener(@Nonnull Object... listeners)
     {
         Checks.noneNull(listeners, "listeners");
 
@@ -673,20 +719,22 @@ public class JDAImpl implements JDA
             eventManager.unregister(listener);
     }
 
+    @Nonnull
     @Override
     public List<Object> getRegisteredListeners()
     {
         return Collections.unmodifiableList(eventManager.getRegisteredListeners());
     }
 
+    @Nonnull
     @Override
-    public GuildActionImpl createGuild(String name)
+    public GuildActionImpl createGuild(@Nonnull String name)
     {
         switch (getAccountType())
         {
             case BOT:
                 if (guildCache.size() >= 10)
-                    throw new IllegalStateException("Cannot create a Guild with a Bot in more than 10 guilds!");
+                    throw new IllegalStateException("Cannot create a Guild with a Bot in 10 or more guilds!");
                 break;
             case CLIENT:
                 if (guildCache.size() >= 100)
@@ -695,8 +743,9 @@ public class JDAImpl implements JDA
         return new GuildActionImpl(this, name);
     }
 
+    @Nonnull
     @Override
-    public RestAction<Webhook> getWebhookById(String webhookId)
+    public RestAction<Webhook> retrieveWebhookById(@Nonnull String webhookId)
     {
         Checks.isSnowflake(webhookId, "Webhook ID");
 
@@ -710,9 +759,11 @@ public class JDAImpl implements JDA
         });
     }
 
+    @Nonnull
     @Override
-    public RestAction<ApplicationInfo> getApplicationInfo()
+    public RestAction<ApplicationInfo> retrieveApplicationInfo()
     {
+        AccountTypeException.check(getAccountType(), AccountType.BOT);
         Route.CompiledRoute route = Route.Applications.GET_BOT_APPLICATION.compile();
         return new RestActionImpl<>(this, route, (response, request) ->
         {
@@ -722,6 +773,7 @@ public class JDAImpl implements JDA
         });
     }
 
+    @Nonnull
     @Override
     public String getInviteUrl(Permission... permissions)
     {
@@ -731,6 +783,7 @@ public class JDAImpl implements JDA
         return builder.toString();
     }
 
+    @Nonnull
     @Override
     public String getInviteUrl(Collection<Permission> permissions)
     {
@@ -743,7 +796,7 @@ public class JDAImpl implements JDA
     private StringBuilder buildBaseInviteUrl()
     {
         if (clientId == null)
-            getApplicationInfo().complete();
+            retrieveApplicationInfo().complete();
         StringBuilder builder = new StringBuilder("https://discordapp.com/oauth2/authorize?scope=bot&client_id=");
         builder.append(clientId);
         return builder;

@@ -16,8 +16,10 @@
 
 package net.dv8tion.jda.api.utils;
 
+import javax.annotation.Nonnull;
+
 @FunctionalInterface
 public interface Procedure<T>
 {
-    boolean execute(T value);
+    boolean execute(@Nonnull T value);
 }

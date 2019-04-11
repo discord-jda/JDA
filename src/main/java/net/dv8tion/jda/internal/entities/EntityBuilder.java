@@ -263,7 +263,7 @@ public class EntityBuilder
             createCategory(guildObj, channelData, guildObj.getIdLong());
             break;
         default:
-            throw new IllegalArgumentException("Cannot create channel for type " + channelData.getInt("type"));
+            LOG.debug("Cannot create channel for type " + channelData.getInt("type"));
         }
     }
 
@@ -417,14 +417,15 @@ public class EntityBuilder
         return member;
     }
 
-    //Effectively the same as createFriendPresence
     public void createPresence(MemberImpl member, JSONObject presenceJson)
     {
         if (member == null)
             throw new NullPointerException("Provided member was null!");
         boolean cacheGame = getJDA().isCacheFlagSet(CacheFlag.PRESENCE);
+        boolean cacheStatus = getJDA().isCacheFlagSet(CacheFlag.CLIENT_STATUS);
 
         JSONArray activityArray = !cacheGame || presenceJson.isNull("activities") ? null : presenceJson.getJSONArray("activities");
+        JSONObject clientStatusJson = !cacheStatus || presenceJson.isNull("client_status") ? null : presenceJson.getJSONObject("client_status");
         OnlineStatus onlineStatus = OnlineStatus.fromKey(presenceJson.getString("status"));
         List<Activity> activities = new ArrayList<>();
         boolean parsedActivity = false;
@@ -449,9 +450,18 @@ public class EntityBuilder
                 }
             }
         }
-        member.setOnlineStatus(onlineStatus);
         if (cacheGame && parsedActivity)
             member.setActivities(activities);
+        member.setOnlineStatus(onlineStatus);
+        if (clientStatusJson != null)
+        {
+            for (String key : clientStatusJson.keySet())
+            {
+                ClientType type = ClientType.fromKey(key);
+                OnlineStatus status = OnlineStatus.fromKey(clientStatusJson.getString(key));
+                member.setOnlineStatus(type, status);
+            }
+        }
     }
 
     public static Activity createAcitvity(JSONObject gameJson)
@@ -803,6 +813,11 @@ public class EntityBuilder
         final List<MessageEmbed>       embeds      = map(jsonObject, "embeds",      this::createMessageEmbed);
         final List<MessageReaction>    reactions   = map(jsonObject, "reactions",   (obj) -> createMessageReaction(chan, id, obj));
 
+        MessageActivity activity = null;
+
+        if (!jsonObject.isNull("activity"))
+            activity = createMessageActivity(jsonObject);
+
         User user;
         switch (chan.getType())
         {
@@ -844,15 +859,42 @@ public class EntityBuilder
             case DEFAULT:
                 return new ReceivedMessage(id, chan, type, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
-                    content, nonce, user, editTime, reactions, attachments, embeds);
+                    content, nonce, user, activity, editTime, reactions, attachments, embeds);
             case UNKNOWN:
                 throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
             default:
                 return new SystemMessage(id, chan, type, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
-                    content, nonce, user, editTime, reactions, attachments, embeds);
+                    content, nonce, user, activity, editTime, reactions, attachments, embeds);
         }
 
+    }
+
+    private static MessageActivity createMessageActivity(JSONObject jsonObject)
+    {
+        JSONObject activityData = jsonObject.getJSONObject("activity");
+        final MessageActivity.ActivityType activityType = MessageActivity.ActivityType.fromId(activityData.getInt("type"));
+        final String partyId = activityData.optString("party_id", null);
+        MessageActivity.Application application = null;
+
+        if (!jsonObject.isNull("application"))
+        {
+            JSONObject applicationData = jsonObject.getJSONObject("application");
+
+            final String name = applicationData.getString("name");
+            final String description = applicationData.optString("description", "");
+            final String iconId = applicationData.optString("icon", null);
+            final String coverId = applicationData.optString("cover_image", null);
+            final long applicationId = applicationData.getLong("id");
+
+            application = new MessageActivity.Application(name, description, iconId, coverId, applicationId);
+        }
+        if (activityType == MessageActivity.ActivityType.UNKNOWN)
+        {
+            LOG.debug("Received an unknown ActivityType, Activity: {}", activityData);
+        }
+
+        return new MessageActivity(activityType, partyId, application);
     }
 
     public MessageReaction createMessageReaction(MessageChannel chan, long id, JSONObject obj)
@@ -871,11 +913,11 @@ public class EntityBuilder
             // creates fake emoji because no guild has this emoji id
             if (emote == null)
                 emote = new EmoteImpl(emojiID, getJDA()).setAnimated(animated).setName(name);
-            reactionEmote = new MessageReaction.ReactionEmote(emote);
+            reactionEmote = MessageReaction.ReactionEmote.fromCustom(emote);
         }
         else
         {
-            reactionEmote = new MessageReaction.ReactionEmote(name, null, getJDA());
+            reactionEmote = MessageReaction.ReactionEmote.fromUnicode(name, getJDA());
         }
 
         return new MessageReaction(chan, reactionEmote, id, me, count);
@@ -886,8 +928,8 @@ public class EntityBuilder
         final int width = Helpers.optInt(jsonObject, "width", -1);
         final int height = Helpers.optInt(jsonObject, "height", -1);
         final int size = jsonObject.getInt("size");
-        final String url = jsonObject.optString("url", null);
-        final String proxyUrl = jsonObject.optString("proxy_url", null);
+        final String url = jsonObject.getString("url");
+        final String proxyUrl = jsonObject.getString("proxy_url");
         final String filename = jsonObject.getString("filename");
         final long id = jsonObject.getLong("id");
         return new Message.Attachment(id, url, proxyUrl, filename, size, height, width, getJDA());
@@ -952,7 +994,7 @@ public class EntityBuilder
         else
         {
             JSONObject obj = content.getJSONObject("video");
-            video = new VideoInfo(obj.optString("url"),
+            video = new VideoInfo(obj.optString("url", null),
                                   Helpers.optInt(obj, "width", -1),
                                   Helpers.optInt(obj, "height", -1));
         }
@@ -1110,12 +1152,11 @@ public class EntityBuilder
             final long groupId = channelObject.getLong("id");
             final String groupIconId = channelObject.optString("icon", null);
 
-            final JSONArray usernameArray = channelObject.optJSONArray("recipients");
             final List<String> usernames;
-            if (usernameArray == null)
+            if (channelObject.isNull("recipients"))
                 usernames = null;
             else
-                usernames = Collections.unmodifiableList(StreamSupport.stream(usernameArray.spliterator(), false).map(String::valueOf).collect(Collectors.toList()));
+                usernames = map(channelObject, "recipients", (json) -> json.getString("username"));
 
             group = new InviteImpl.GroupImpl(groupIconId, groupName, groupId, usernames);
         }

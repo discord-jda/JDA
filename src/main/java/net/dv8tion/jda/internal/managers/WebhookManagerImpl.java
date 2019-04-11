@@ -29,6 +29,7 @@ import okhttp3.RequestBody;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 
 public class WebhookManagerImpl extends ManagerBase<WebhookManager> implements WebhookManager
 {
@@ -52,12 +53,14 @@ public class WebhookManagerImpl extends ManagerBase<WebhookManager> implements W
             checkPermissions();
     }
 
+    @Nonnull
     @Override
     public Webhook getWebhook()
     {
         return webhook.get();
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public WebhookManagerImpl reset(long fields)
@@ -72,6 +75,7 @@ public class WebhookManagerImpl extends ManagerBase<WebhookManager> implements W
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public WebhookManagerImpl reset(long... fields)
@@ -80,6 +84,7 @@ public class WebhookManagerImpl extends ManagerBase<WebhookManager> implements W
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public WebhookManagerImpl reset()
@@ -91,9 +96,10 @@ public class WebhookManagerImpl extends ManagerBase<WebhookManager> implements W
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
-    public WebhookManagerImpl setName(String name)
+    public WebhookManagerImpl setName(@Nonnull String name)
     {
         Checks.notBlank(name, "Name");
         this.name = name;
@@ -101,6 +107,7 @@ public class WebhookManagerImpl extends ManagerBase<WebhookManager> implements W
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public WebhookManagerImpl setAvatar(Icon icon)
@@ -110,9 +117,10 @@ public class WebhookManagerImpl extends ManagerBase<WebhookManager> implements W
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
-    public WebhookManagerImpl setChannel(TextChannel channel)
+    public WebhookManagerImpl setChannel(@Nonnull TextChannel channel)
     {
         Checks.notNull(channel, "Channel");
         Checks.check(channel.getGuild().equals(getGuild()), "Channel is not from the same guild");

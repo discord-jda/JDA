@@ -32,9 +32,11 @@ import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.MessagePaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EncodingUtil;
 import org.json.JSONArray;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -84,6 +86,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return The most recent message's id
      */
+    @Nonnull
     default String getLatestMessageId()
     {
         return Long.toUnsignedString(getLatestMessageIdLong());
@@ -104,7 +107,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @see    CompletableFuture#allOf(java.util.concurrent.CompletableFuture[])
      */
-    default List<CompletableFuture<Void>> purgeMessagesById(List<String> messageIds)
+    @Nonnull
+    default List<CompletableFuture<Void>> purgeMessagesById(@Nonnull List<String> messageIds)
     {
         if (messageIds == null || messageIds.isEmpty())
             return Collections.emptyList();
@@ -129,7 +133,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @see    CompletableFuture#allOf(java.util.concurrent.CompletableFuture[])
      */
-    default List<CompletableFuture<Void>> purgeMessagesById(String... messageIds)
+    @Nonnull
+    default List<CompletableFuture<Void>> purgeMessagesById(@Nonnull String... messageIds)
     {
         if (messageIds == null || messageIds.length == 0)
             return Collections.emptyList();
@@ -156,7 +161,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @see    CompletableFuture#allOf(java.util.concurrent.CompletableFuture[])
      */
-    default List<CompletableFuture<Void>> purgeMessages(Message... messages)
+    @Nonnull
+    default List<CompletableFuture<Void>> purgeMessages(@Nonnull Message... messages)
     {
         if (messages == null || messages.length == 0)
             return Collections.emptyList();
@@ -183,7 +189,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @see    CompletableFuture#allOf(java.util.concurrent.CompletableFuture[])
      */
-    default List<CompletableFuture<Void>> purgeMessages(List<? extends Message> messages)
+    @Nonnull
+    default List<CompletableFuture<Void>> purgeMessages(@Nonnull List<? extends Message> messages)
     {
         if (messages == null || messages.isEmpty())
             return Collections.emptyList();
@@ -222,7 +229,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @see    CompletableFuture#allOf(java.util.concurrent.CompletableFuture[])
      */
-    default List<CompletableFuture<Void>> purgeMessagesById(long... messageIds)
+    @Nonnull
+    default List<CompletableFuture<Void>> purgeMessagesById(@Nonnull long... messageIds)
     {
         if (messageIds == null || messageIds.length == 0)
             return Collections.emptyList();
@@ -275,6 +283,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return Never-null "name" of the MessageChannel. Different implementations determine what the name.
      */
+    @Nonnull
     String getName();
 
     /**
@@ -282,6 +291,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return The ChannelType for this channel
      */
+    @Nonnull
     ChannelType getType();
 
     /**
@@ -289,6 +299,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return the corresponding JDA instance
      */
+    @Nonnull
     JDA getJDA();
 
     /**
@@ -329,8 +340,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @see net.dv8tion.jda.api.MessageBuilder
      */
-    @CheckReturnValue
-    default MessageAction sendMessage(CharSequence text)
+    @Nonnull
+    default MessageAction sendMessage(@Nonnull CharSequence text)
     {
         Checks.notEmpty(text, "Provided text for message");
         Checks.check(text.length() <= 2000, "Provided text for message must be less than 2000 characters in length");
@@ -388,8 +399,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @return {@link MessageAction MessageAction}
      *         <br>The newly created Message after it has been sent to Discord.
      */
+    @Nonnull
     @CheckReturnValue
-    default MessageAction sendMessageFormat(String format, Object... args)
+    default MessageAction sendMessageFormat(@Nonnull String format, @Nonnull Object... args)
     {
         Checks.notEmpty(format, "Format");
         return sendMessage(String.format(format, args));
@@ -437,8 +449,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @see    net.dv8tion.jda.api.MessageBuilder
      * @see    net.dv8tion.jda.api.EmbedBuilder
      */
+    @Nonnull
     @CheckReturnValue
-    default MessageAction sendMessage(MessageEmbed embed)
+    default MessageAction sendMessage(@Nonnull MessageEmbed embed)
     {
         Checks.notNull(embed, "Provided embed");
 
@@ -503,8 +516,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @see    net.dv8tion.jda.api.MessageBuilder
      */
+    @Nonnull
     @CheckReturnValue
-    default MessageAction sendMessage(Message msg)
+    default MessageAction sendMessage(@Nonnull Message msg)
     {
         Checks.notNull(msg, "Message");
 
@@ -515,191 +529,11 @@ public interface MessageChannel extends ISnowflake, Formattable
     /**
      * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
      * Sends the provided {@link net.dv8tion.jda.api.entities.Message Message} with the uploaded file.
-     * <br>If you do not wish to send a Message with the uploaded file, you can provide {@code null} for
-     * the {@code message} parameter.
+     * <br>If you want to send a Message with the uploaded file, you can add the file to the {@link net.dv8tion.jda.api.requests.restaction.MessageAction}
+     * returned by {@link #sendMessage(Message)}.
      *
-     * <p>This is a shortcut to {@link #sendFile(java.io.File, String, Message)} by way of using {@link java.io.File#getName()}.
-     * <pre>sendFile(file, file.getName(), message)</pre>
-     *
-     * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String, Message)}.
-     *
-     * @param  file
-     *         The file to upload to the {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         <ul>
-     *             <li>Provided {@code file} is null.</li>
-     *             <li>Provided {@code file} does not exist.</li>
-     *             <li>Provided {@code file} is unreadable.</li>
-     *             <li>Provided {@code file} is greater than 8MiB for normal and 50MiB for nitro accounts.</li>
-     *             <li>Provided {@link net.dv8tion.jda.api.entities.Message Message} is not {@code null} <b>and</b>
-     *                 contains a {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed} which
-     *                 is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable(net.dv8tion.jda.api.AccountType) sendable}</li>
-     *         </ul>
-     * @throws net.dv8tion.jda.api.exceptions.PermissionException
-     *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the logged in account does not have
-     *         <ul>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}</li>
-     *         </ul>
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
-     *         and both the currently logged in account and the target user are bots.
-     *
-     * @return {@link MessageAction MessageAction}
-     *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
-     */
-    @CheckReturnValue
-    default MessageAction sendFile(File file)
-    {
-        return sendFile(file, (Message) null);
-    }
-
-    /**
-     * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
-     * Sends the provided {@link net.dv8tion.jda.api.entities.Message Message} with the uploaded file.
-     * <br>If you do not wish to send a Message with the uploaded file, you can provide {@code null} for
-     * the {@code message} parameter.
-     *
-     * <p>The {@code fileName} parameter is used to inform Discord about what the file should be called. This is 2 fold:
-     * <ol>
-     *     <li>The file name provided is the name that is found in {@link net.dv8tion.jda.api.entities.Message.Attachment#getFileName()}
-     *          after upload and it is the name that will show up in the client when the upload is displayed.
-     *     <br>Note: The fileName does not show up on the Desktop client for images. It does on mobile however.</li>
-     *     <li>The extension of the provided fileName also determines who Discord will treat the file. Discord currently only
-     *         has special handling for image file types, but the fileName's extension must indicate that it is an image file.
-     *         This means it has to end in something like .png, .jpg, .jpeg, .gif, etc. As a note, you can also not provide
-     *         a full name for the file and instead ONLY provide the extension like "png" or "gif" and Discord will generate
-     *         a name for the upload and append the fileName as the extension.</li>
-     * </ol>
-     *
-     * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String, Message)}.
-     *
-     * @param  file
-     *         The file to upload to the {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
-     * @param  fileName
-     *         The name that should be sent to discord
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         <ul>
-     *             <li>Provided {@code file} is null.</li>
-     *             <li>Provided {@code file} does not exist.</li>
-     *             <li>Provided {@code file} is unreadable.</li>
-     *             <li>Provided {@code file} is greater than 8MiB for normal and 50MiB for nitro accounts.</li>
-     *             <li>Provided {@link net.dv8tion.jda.api.entities.Message Message} is not {@code null} <b>and</b>
-     *                 contains a {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed} which
-     *                 is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable(net.dv8tion.jda.api.AccountType) sendable}</li>
-     *         </ul>
-     * @throws net.dv8tion.jda.api.exceptions.PermissionException
-     *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the logged in account does not have
-     *         <ul>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}</li>
-     *         </ul>
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
-     *         and both the currently logged in account and the target user are bots.
-     *
-     * @return {@link MessageAction MessageAction}
-     *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
-     */
-    @CheckReturnValue
-    default MessageAction sendFile(File file, String fileName)
-    {
-        return sendFile(file, fileName, null);
-    }
-
-    /**
-     * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
-     * Sends the provided {@link net.dv8tion.jda.api.entities.Message Message} with the uploaded file.
-     * <br>If you do not wish to send a Message with the uploaded file, you can provide {@code null} for
-     * the {@code message} parameter.
-     * <br>This allows you to send an {@link java.io.InputStream InputStream} as substitute to a file.
-     *
-     * <p>For information about the {@code fileName} parameter, Refer to the documentation for {@link #sendFile(java.io.File, String, Message)}.
-     * <br>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String, Message)}.
-     *
-     * @param  data
-     *         The InputStream data to upload to the {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
-     * @param  fileName
-     *         The name that should be sent to discord
-     *         <br>Refer to the documentation for {@link #sendFile(java.io.File, String, Message)} for information about this parameter.
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided filename is {@code null} or {@code empty}.
-     * @throws net.dv8tion.jda.api.exceptions.PermissionException
-     *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the logged in account does not have
-     *         <ul>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}</li>
-     *         </ul>
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
-     *         and both the currently logged in account and the target user are bots.
-     *
-     * @return {@link MessageAction MessageAction}
-     *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
-     */
-    @CheckReturnValue
-    default MessageAction sendFile(InputStream data, String fileName)
-    {
-        return sendFile(data, fileName, null);
-    }
-
-    /**
-     * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
-     * Sends the provided {@link net.dv8tion.jda.api.entities.Message Message} with the uploaded file.
-     * <br>If you do not wish to send a Message with the uploaded file, you can provide {@code null} for
-     * the {@code message} parameter.
-     * <br>This allows you to send an {@code byte[]} as substitute to a file.
-     *
-     * <p>For information about the {@code fileName} parameter, Refer to the documentation for {@link #sendFile(java.io.File, String, Message)}.
-     * <br>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String, Message)}.
-     *
-     * @param  data
-     *         The {@code byte[]} data to upload to the {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
-     * @param  fileName
-     *         The name that should be sent to discord.
-     *         <br>Refer to the documentation for {@link #sendFile(java.io.File, String, Message)} for information about this parameter.
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         <ul>
-     *             <li>If the provided filename is {@code null} or {@code empty} or the provided data is larger than 8MiB on normal or 50MiB on nitro accounts.</li>
-     *             <li>If the provided {@link net.dv8tion.jda.api.entities.Message Message}
-     *                 contains an {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}
-     *                 that is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable(net.dv8tion.jda.api.AccountType) sendable}</li>
-     *         </ul>
-     * @throws net.dv8tion.jda.api.exceptions.PermissionException
-     *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the logged in account does not have
-     *         <ul>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}</li>
-     *         </ul>
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
-     *         and both the currently logged in account and the target user are bots.
-     *
-     * @return {@link MessageAction MessageAction}
-     *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
-     */
-    @CheckReturnValue
-    default MessageAction sendFile(byte[] data, String fileName)
-    {
-        return sendFile(data, fileName, null);
-    }
-
-    /**
-     * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
-     * Sends the provided {@link net.dv8tion.jda.api.entities.Message Message} with the uploaded file.
-     * <br>If you do not wish to send a Message with the uploaded file, you can provide {@code null} for
-     * the {@code message} parameter.
-     *
-     * <p>This is a shortcut to {@link #sendFile(java.io.File, String, Message)} by way of using {@link java.io.File#getName()}.
-     * <pre>sendFile(file, file.getName(), message)</pre>
+     * <p>This is a shortcut to {@link #sendFile(java.io.File, String)} by way of using {@link java.io.File#getName()}.
+     * <pre>sendFile(file, file.getName())</pre>
      *
      * <p><b>Uploading images with Embeds</b>
      * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
@@ -707,21 +541,17 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p><u>Example</u>
      * <pre><code>
      * MessageChannel channel; // = reference of a MessageChannel
-     * MessageBuilder message = new MessageBuilder();
      * EmbedBuilder embed = new EmbedBuilder();
      * File file = new File("cat.gif");
      * embed.setImage("attachment://cat.gif")
      *      .setDescription("This is a cute cat :3");
-     * message.setEmbed(embed.build());
-     * channel.sendFile(file, message.build()).queue();
+     * channel.sendFile(file).embed(embed.build()).queue();
      * </code></pre>
      *
-     * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String, Message)}.
+     * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String)}.
      *
      * @param  file
      *         The file to upload to the {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
-     * @param  message
-     *         The message to be sent along with the uploaded file. This value can be {@code null}.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -729,9 +559,6 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>Provided {@code file} does not exist.</li>
      *             <li>Provided {@code file} is unreadable.</li>
      *             <li>Provided {@code file} is greater than 8 MiB on a normal or 50 MiB on a nitro account.</li>
-     *             <li>Provided {@link net.dv8tion.jda.api.entities.Message Message} is not {@code null} <b>and</b>
-     *                 contains a {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed} which
-     *                 is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable(net.dv8tion.jda.api.AccountType) sendable}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the logged in account does not have
@@ -745,28 +572,29 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         and both the currently logged in account and the target user are bots.
      *
      * @return {@link MessageAction MessageAction}
-     *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
+     *         <br>Providing the {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
      */
+    @Nonnull
     @CheckReturnValue
-    default MessageAction sendFile(File file, Message message)
+    default MessageAction sendFile(@Nonnull File file)
     {
         Checks.notNull(file, "file");
 
-        return sendFile(file, file.getName(), message);
+        return sendFile(file, file.getName());
     }
 
     /**
      * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
      * Sends the provided {@link net.dv8tion.jda.api.entities.Message Message} with the uploaded file.
-     * <br>If you do not wish to send a Message with the uploaded file, you can provide {@code null} for
-     * the {@code message} parameter.
+     * <br>If you want to send a Message with the uploaded file, you can add the file to the {@link net.dv8tion.jda.api.requests.restaction.MessageAction}
+     * returned by {@link #sendMessage(Message)}.
      *
      * <p>The {@code fileName} parameter is used to inform Discord about what the file should be called. This is 2 fold:
      * <ol>
      *     <li>The file name provided is the name that is found in {@link net.dv8tion.jda.api.entities.Message.Attachment#getFileName()}
      *          after upload and it is the name that will show up in the client when the upload is displayed.
      *     <br>Note: The fileName does not show up on the Desktop client for images. It does on mobile however.</li>
-     *     <li>The extension of the provided fileName also determines who Discord will treat the file. Discord currently only
+     *     <li>The extension of the provided fileName also determines how Discord will treat the file. Discord currently only
      *         has special handling for image file types, but the fileName's extension must indicate that it is an image file.
      *         This means it has to end in something like .png, .jpg, .jpeg, .gif, etc. As a note, you can also not provide
      *         a full name for the file and instead ONLY provide the extension like "png" or "gif" and Discord will generate
@@ -779,13 +607,11 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p><u>Example</u>
      * <pre><code>
      * MessageChannel channel; // = reference of a MessageChannel
-     * MessageBuilder message = new MessageBuilder();
      * EmbedBuilder embed = new EmbedBuilder();
      * File file = new File("cat_01.gif");
      * embed.setImage("attachment://cat.gif") // we specify this in sendFile as "cat.gif"
      *      .setDescription("This is a cute cat :3");
-     * message.setEmbed(embed.build());
-     * channel.sendFile(file, "cat.gif", message.build()).queue();
+     * channel.sendFile(file, "cat.gif").embed(embed.build()).queue();
      * </code></pre>
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
@@ -814,8 +640,6 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         The file to upload to the {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
      * @param  fileName
      *         The name that should be sent to discord
-     * @param  message
-     *         The message to be sent along with the uploaded file. This value can be {@code null}.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -823,9 +647,6 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>Provided {@code file} does not exist.</li>
      *             <li>Provided {@code file} is unreadable.</li>
      *             <li>Provided {@code file} is greater than 8 MiB on a normal or 50 MiB on a nitro account.</li>
-     *             <li>Provided {@link net.dv8tion.jda.api.entities.Message Message} is not {@code null} <b>and</b>
-     *                 contains a {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed} which
-     *                 is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable(net.dv8tion.jda.api.AccountType) sendable}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the logged in account does not have
@@ -839,10 +660,11 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         and both the currently logged in account and the target user are bots.
      *
      * @return {@link MessageAction MessageAction}
-     *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
+     *         <br>Providing the {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
      */
+    @Nonnull
     @CheckReturnValue
-    default MessageAction sendFile(File file, String fileName, Message message)
+    default MessageAction sendFile(@Nonnull File file, @Nonnull String fileName)
     {
         Checks.notNull(file, "file");
         Checks.check(file.exists() && file.canRead(),
@@ -853,7 +675,7 @@ public interface MessageChannel extends ISnowflake, Formattable
 
         try
         {
-            return sendFile(new FileInputStream(file), fileName, message);
+            return sendFile(new FileInputStream(file), fileName);
         }
         catch (FileNotFoundException ex)
         {
@@ -864,12 +686,12 @@ public interface MessageChannel extends ISnowflake, Formattable
     /**
      * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
      * Sends the provided {@link net.dv8tion.jda.api.entities.Message Message} with the uploaded file.
-     * <br>If you do not wish to send a Message with the uploaded file, you can provide {@code null} for
-     * the {@code message} parameter.
+     * <br>If you want to send a Message with the uploaded file, you can add the file to the {@link net.dv8tion.jda.api.requests.restaction.MessageAction}
+     * returned by {@link #sendMessage(Message)}.
      * <br>This allows you to send an {@link java.io.InputStream InputStream} as substitute to a file.
      *
-     * <p>For information about the {@code fileName} parameter, Refer to the documentation for {@link #sendFile(java.io.File, String, Message)}.
-     * <br>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String, Message)}.
+     * <p>For information about the {@code fileName} parameter, Refer to the documentation for {@link #sendFile(java.io.File, String)}.
+     * <br>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String)}.
      *
      * <p><b>Uploading images with Embeds</b>
      * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
@@ -877,25 +699,21 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p><u>Example</u>
      * <pre><code>
      * MessageChannel channel; // = reference of a MessageChannel
-     * MessageBuilder message = new MessageBuilder();
      * EmbedBuilder embed = new EmbedBuilder();
      * InputStream file = new URL("https://http.cat/500").openStream();
      * embed.setImage("attachment://cat.png") // we specify this in sendFile as "cat.png"
      *      .setDescription("This is a cute cat :3");
-     * message.setEmbed(embed.build());
-     * channel.sendFile(file, "cat.png", message.build()).queue();
+     * channel.sendFile(file, "cat.png").embed(embed.build()).queue();
      * </code></pre>
      *
      * @param  data
      *         The InputStream data to upload to the {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
      * @param  fileName
      *         The name that should be sent to discord
-     *         <br>Refer to the documentation for {@link #sendFile(java.io.File, String, Message)} for information about this parameter.
-     * @param  message
-     *         The message to be sent along with the uploaded file. This value can be {@code null}.
+     *         <br>Refer to the documentation for {@link #sendFile(java.io.File, String)} for information about this parameter.
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the provided filename is {@code null} or {@code empty}.
+     *         If the provided file or filename is {@code null} or {@code empty}.
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
@@ -908,27 +726,28 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         and both the currently logged in account and the target user are bots.
      *
      * @return {@link MessageAction MessageAction}
-     *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
+     *         <br>Provides the {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
      */
+    @Nonnull
     @CheckReturnValue
-    default MessageAction sendFile(InputStream data, String fileName, Message message)
+    default MessageAction sendFile(@Nonnull InputStream data, @Nonnull String fileName)
     {
         Checks.notNull(data, "data InputStream");
         Checks.notNull(fileName, "fileName");
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
-        return new MessageActionImpl(getJDA(), route, this).apply(message).addFile(data, fileName);
+        return new MessageActionImpl(getJDA(), route, this).addFile(data, fileName);
     }
 
     /**
      * Uploads a file to the Discord servers and sends it to this {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
      * Sends the provided {@link net.dv8tion.jda.api.entities.Message Message} with the uploaded file.
-     * <br>If you do not wish to send a Message with the uploaded file, you can provide {@code null} for
-     * the {@code message} parameter.
+     * <br>If you want to send a Message with the uploaded file, you can add the file to the {@link net.dv8tion.jda.api.requests.restaction.MessageAction}
+     * returned by {@link #sendMessage(Message)}.
      * <br>This allows you to send an {@code byte[]} as substitute to a file.
      *
-     * <p>For information about the {@code fileName} parameter, Refer to the documentation for {@link #sendFile(java.io.File, String, Message)}.
-     * <br>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String, Message)}.
+     * <p>For information about the {@code fileName} parameter, Refer to the documentation for {@link #sendFile(java.io.File, String)}.
+     * <br>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String)}.
      *
      * <p><b>Uploading images with Embeds</b>
      * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
@@ -936,29 +755,23 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <p><u>Example</u>
      * <pre><code>
      * MessageChannel channel; // = reference of a MessageChannel
-     * MessageBuilder message = new MessageBuilder();
      * EmbedBuilder embed = new EmbedBuilder();
      * byte[] file = IOUtil.readFully(new URL("https://http.cat/500").openStream());
      * embed.setImage("attachment://cat.png") // we specify this in sendFile as "cat.png"
      *      .setDescription("This is a cute cat :3");
-     * message.setEmbed(embed.build());
-     * channel.sendFile(file, "cat.png", message.build()).queue();
+     * channel.sendFile(file, "cat.png").embed(embed.build()).queue();
      * </code></pre>
      *
      * @param  data
      *         The {@code byte[]} data to upload to the {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
      * @param  fileName
      *         The name that should be sent to discord.
-     *         <br>Refer to the documentation for {@link #sendFile(java.io.File, String, Message)} for information about this parameter.
-     * @param  message
-     *         The message to be sent along with the uploaded file. This value can be {@code null}.
+     *         <br>Refer to the documentation for {@link #sendFile(java.io.File, String)} for information about this parameter.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
-     *             <li>If the provided filename is {@code null} or {@code empty} or the provided data is larger than 8 MiB on a normal or 50 MiB on a nitro account.</li>
-     *             <li>If the provided {@link net.dv8tion.jda.api.entities.Message Message}
-     *                 contains an {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}
-     *                 that is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable(net.dv8tion.jda.api.AccountType) sendable}</li>
+     *             <li>If the provided filename is {@code null} or {@code empty}</li>
+     *             <li>If the provided data is larger than 8 MiB on a normal or 50 MiB on a nitro account</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the logged in account does not have
@@ -972,16 +785,17 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         and both the currently logged in account and the target user are bots.
      *
      * @return {@link MessageAction MessageAction}
-     *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
+     *         <br>Provides the {@link net.dv8tion.jda.api.entities.Message Message} created from this upload.
      */
+    @Nonnull
     @CheckReturnValue
-    default MessageAction sendFile(byte[] data, String fileName, Message message)
+    default MessageAction sendFile(@Nonnull byte[] data, @Nonnull String fileName)
     {
         Checks.notNull(data, "data");
         Checks.notNull(fileName, "fileName");
         final long maxSize = getJDA().getSelfUser().getAllowedFileSize();
         Checks.check(data.length <= maxSize, "File is too big! Max file-size is %d bytes", maxSize);
-        return sendFile(new ByteArrayInputStream(data), fileName, message);
+        return sendFile(new ByteArrayInputStream(data), fileName);
     }
 
     /**
@@ -1026,8 +840,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: Message
      *         <br>The Message defined by the provided id.
      */
+    @Nonnull
     @CheckReturnValue
-    default RestAction<Message> getMessageById(String messageId)
+    default RestAction<Message> retrieveMessageById(@Nonnull String messageId)
     {
         AccountTypeException.check(getJDA().getAccountType(), AccountType.BOT);
         Checks.isSnowflake(messageId, "Message ID");
@@ -1078,10 +893,11 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: Message
      *         <br>The Message defined by the provided id.
      */
+    @Nonnull
     @CheckReturnValue
-    default RestAction<Message> getMessageById(long messageId)
+    default RestAction<Message> retrieveMessageById(long messageId)
     {
-        return getMessageById(Long.toUnsignedString(messageId));
+        return retrieveMessageById(Long.toUnsignedString(messageId));
     }
 
     /**
@@ -1121,8 +937,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: Void
      */
+    @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> deleteMessageById(String messageId)
+    default AuditableRestAction<Void> deleteMessageById(@Nonnull String messageId)
     {
         Checks.isSnowflake(messageId, "Message ID");
 
@@ -1167,6 +984,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: Void
      */
+    @Nonnull
     @CheckReturnValue
     default AuditableRestAction<Void> deleteMessageById(long messageId)
     {
@@ -1174,7 +992,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     }
 
     /**
-     * Creates a new {@link MessageHistory MessageHistory} object for each call of this method.
+     * Creates a new {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object for each call of this method.
      * <br>MessageHistory is <b>NOT</b> an internal message cache, but rather it queries the Discord servers for previously sent messages.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
@@ -1226,6 +1044,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return {@link MessagePaginationAction MessagePaginationAction}
      */
+    @Nonnull
     @CheckReturnValue
     default MessagePaginationAction getIterableHistory()
     {
@@ -1234,7 +1053,7 @@ public interface MessageChannel extends ISnowflake, Formattable
 
     /**
      * Uses the provided {@code id} of a message as a marker and retrieves messages sent around
-     * the marker. The {@code limit} determines the amount of message retrieved near the marker. Discord will
+     * the marker. The {@code limit} determines the amount of messages retrieved near the marker. Discord will
      * attempt to evenly split the limit between before and after the marker, however in the case that the marker is set
      * near the beginning or near the end of the channel's history the amount of messages on each side of the marker may
      * be different, and their total count may not equal the provided {@code limit}.
@@ -1269,10 +1088,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * @param messageId
-     *        The id of the message that will act as a marker.
-     * @param limit
-     *        The amount of message to be retrieved around the marker. Minimum: 1, Max: 100.
+     * @param  messageId
+     *         The id of the message that will act as a marker.
+     * @param  limit
+     *         The amount of messages to be retrieved around the marker. Minimum: 1, Max: 100.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -1287,19 +1106,20 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
-     *         <br>Provides a MessageHistory object with message around the provided message loaded into it.
+     *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages around the provided message loaded into it.
      *
      * @see    net.dv8tion.jda.api.entities.MessageHistory#getHistoryAround(MessageChannel, String) MessageHistory.getHistoryAround(MessageChannel, String)
      */
+    @Nonnull
     @CheckReturnValue
-    default MessageHistory.MessageRetrieveAction getHistoryAround(String messageId, int limit)
+    default MessageHistory.MessageRetrieveAction getHistoryAround(@Nonnull String messageId, int limit)
     {
         return MessageHistory.getHistoryAround(this, messageId).limit(limit);
     }
 
     /**
      * Uses the provided {@code id} of a message as a marker and retrieves messages around
-     * the marker. The {@code limit} determines the amount of message retrieved near the marker. Discord will
+     * the marker. The {@code limit} determines the amount of messages retrieved near the marker. Discord will
      * attempt to evenly split the limit between before and after the marker, however in the case that the marker is set
      * near the beginning or near the end of the channel's history the amount of messages on each side of the marker may
      * be different, and their total count may not equal the provided {@code limit}.
@@ -1334,10 +1154,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * @param messageId
-     *        The id of the message that will act as a marker. The id must refer to a message from this MessageChannel.
-     * @param limit
-     *        The amount of message to be retrieved around the marker. Minimum: 1, Max: 100.
+     * @param  messageId
+     *         The id of the message that will act as a marker. The id must refer to a message from this MessageChannel.
+     * @param  limit
+     *         The amount of messages to be retrieved around the marker. Minimum: 1, Max: 100.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -1352,10 +1172,11 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
-     *         <br>Provides a MessageHistory object with message around the provided message loaded into it.
+     *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages around the provided message loaded into it.
      *
      * @see    net.dv8tion.jda.api.entities.MessageHistory#getHistoryAround(MessageChannel, String) MessageHistory.getHistoryAround(MessageChannel, String)
      */
+    @Nonnull
     @CheckReturnValue
     default MessageHistory.MessageRetrieveAction getHistoryAround(long messageId, int limit)
     {
@@ -1364,7 +1185,7 @@ public interface MessageChannel extends ISnowflake, Formattable
 
     /**
      * Uses the provided {@link net.dv8tion.jda.api.entities.Message Message} as a marker and retrieves messages around
-     * the marker. The {@code limit} determines the amount of message retrieved near the marker. Discord will
+     * the marker. The {@code limit} determines the amount of messages retrieved near the marker. Discord will
      * attempt to evenly split the limit between before and after the marker, however in the case that the marker is set
      * near the beginning or near the end of the channel's history the amount of messages on each side of the marker may
      * be different, and their total count may not equal the provided {@code limit}.
@@ -1398,11 +1219,11 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * @param message
-     *        The {@link net.dv8tion.jda.api.entities.Message Message} that will act as a marker. The provided Message
-     *        must be from this MessageChannel.
-     * @param limit
-     *        The amount of message to be retrieved around the marker. Minimum: 1, Max: 100.
+     * @param  message
+     *         The {@link net.dv8tion.jda.api.entities.Message Message} that will act as a marker. The provided Message
+     *         must be from this MessageChannel.
+     * @param  limit
+     *         The amount of messages to be retrieved around the marker. Minimum: 1, Max: 100.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -1417,12 +1238,13 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
-     *         <br>Provides a MessageHistory object with message around the provided message loaded into it.
+     *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages around the provided message loaded into it.
      *
      * @see    net.dv8tion.jda.api.entities.MessageHistory#getHistoryAround(MessageChannel, String) MessageHistory.getHistoryAround(MessageChannel, String)
      */
+    @Nonnull
     @CheckReturnValue
-    default MessageHistory.MessageRetrieveAction getHistoryAround(Message message, int limit)
+    default MessageHistory.MessageRetrieveAction getHistoryAround(@Nonnull Message message, int limit)
     {
         Checks.notNull(message, "Provided target message");
         return getHistoryAround(message.getId(), limit);
@@ -1430,7 +1252,7 @@ public interface MessageChannel extends ISnowflake, Formattable
 
     /**
      * Uses the provided {@code id} of a message as a marker and retrieves messages sent after
-     * the marker ID. The {@code limit} determines the amount of message retrieved near the marker.
+     * the marker ID. The {@code limit} determines the amount of messages retrieved near the marker.
      *
      * <p><b>Examples:</b>
      * <br>Retrieve 100 messages from the middle of history. {@literal >}100 message exist in history and the marker is {@literal >}50 messages
@@ -1457,10 +1279,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * @param messageId
-     *        The id of the message that will act as a marker.
-     * @param limit
-     *        The amount of message to be retrieved after the marker. Minimum: 1, Max: 100.
+     * @param  messageId
+     *         The id of the message that will act as a marker.
+     * @param  limit
+     *         The amount of messages to be retrieved after the marker. Minimum: 1, Max: 100.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -1475,19 +1297,20 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
-     *         <br>Provides a MessageHistory object with message after the provided message loaded into it.
+     *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages after the provided message loaded into it.
      *
      * @see    net.dv8tion.jda.api.entities.MessageHistory#getHistoryAfter(MessageChannel, String) MessageHistory.getHistoryAfter(MessageChannel, String)
      */
+    @Nonnull
     @CheckReturnValue
-    default MessageHistory.MessageRetrieveAction getHistoryAfter(String messageId, int limit)
+    default MessageHistory.MessageRetrieveAction getHistoryAfter(@Nonnull String messageId, int limit)
     {
         return MessageHistory.getHistoryAfter(this, messageId).limit(limit);
     }
 
     /**
      * Uses the provided {@code id} of a message as a marker and retrieves messages sent after
-     * the marker ID. The {@code limit} determines the amount of message retrieved near the marker.
+     * the marker ID. The {@code limit} determines the amount of messages retrieved near the marker.
      *
      * <p><b>Examples:</b>
      * <br>Retrieve 100 messages from the middle of history. {@literal >}100 message exist in history and the marker is {@literal >}50 messages
@@ -1514,10 +1337,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * @param messageId
-     *        The id of the message that will act as a marker.
-     * @param limit
-     *        The amount of message to be retrieved after the marker. Minimum: 1, Max: 100.
+     * @param  messageId
+     *         The id of the message that will act as a marker.
+     * @param  limit
+     *         The amount of messages to be retrieved after the marker. Minimum: 1, Max: 100.
      *
      * @throws java.lang.IllegalArgumentException
      *         Provided {@code limit} is less than {@code 1} or greater than {@code 100}.
@@ -1529,10 +1352,11 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
-     *         <br>Provides a MessageHistory object with message after the provided message loaded into it.
+     *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages after the provided message loaded into it.
      *
      * @see    net.dv8tion.jda.api.entities.MessageHistory#getHistoryAfter(MessageChannel, String) MessageHistory.getHistoryAfter(MessageChannel, String)
      */
+    @Nonnull
     @CheckReturnValue
     default MessageHistory.MessageRetrieveAction getHistoryAfter(long messageId, int limit)
     {
@@ -1541,7 +1365,7 @@ public interface MessageChannel extends ISnowflake, Formattable
 
     /**
      * Uses the provided message as a marker and retrieves messages sent after
-     * the marker. The {@code limit} determines the amount of message retrieved near the marker.
+     * the marker. The {@code limit} determines the amount of messages retrieved near the marker.
      *
      * <p><b>Examples:</b>
      * <br>Retrieve 100 messages from the middle of history. {@literal >}100 message exist in history and the marker is {@literal >}50 messages
@@ -1568,10 +1392,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * @param message
-     *        The message that will act as a marker.
-     * @param limit
-     *        The amount of message to be retrieved after the marker. Minimum: 1, Max: 100.
+     * @param  message
+     *         The message that will act as a marker.
+     * @param  limit
+     *         The amount of messages to be retrieved after the marker. Minimum: 1, Max: 100.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -1586,12 +1410,13 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
-     *         <br>Provides a MessageHistory object with message after the provided message loaded into it.
+     *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages after the provided message loaded into it.
      *
      * @see    net.dv8tion.jda.api.entities.MessageHistory#getHistoryAfter(MessageChannel, String) MessageHistory.getHistoryAfter(MessageChannel, String)
      */
+    @Nonnull
     @CheckReturnValue
-    default MessageHistory.MessageRetrieveAction getHistoryAfter(Message message, int limit)
+    default MessageHistory.MessageRetrieveAction getHistoryAfter(@Nonnull Message message, int limit)
     {
         Checks.notNull(message, "Message");
         return getHistoryAfter(message.getId(), limit);
@@ -1599,7 +1424,7 @@ public interface MessageChannel extends ISnowflake, Formattable
 
     /**
      * Uses the provided {@code id} of a message as a marker and retrieves messages sent before
-     * the marker ID. The {@code limit} determines the amount of message retrieved near the marker.
+     * the marker ID. The {@code limit} determines the amount of messages retrieved near the marker.
      *
      * <p><b>Examples:</b>
      * <br>Retrieve 100 messages from the middle of history. {@literal >}100 message exist in history and the marker is {@literal >}50 messages
@@ -1626,10 +1451,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * @param messageId
-     *        The id of the message that will act as a marker.
-     * @param limit
-     *        The amount of message to be retrieved after the marker. Minimum: 1, Max: 100.
+     * @param  messageId
+     *         The id of the message that will act as a marker.
+     * @param  limit
+     *         The amount of messages to be retrieved after the marker. Minimum: 1, Max: 100.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -1644,19 +1469,20 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
-     *         <br>Provides a MessageHistory object with message before the provided message loaded into it.
+     *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages before the provided message loaded into it.
      *
      * @see    net.dv8tion.jda.api.entities.MessageHistory#getHistoryBefore(MessageChannel, String) MessageHistory.getHistoryBefore(MessageChannel, String)
      */
+    @Nonnull
     @CheckReturnValue
-    default MessageHistory.MessageRetrieveAction getHistoryBefore(String messageId, int limit)
+    default MessageHistory.MessageRetrieveAction getHistoryBefore(@Nonnull String messageId, int limit)
     {
         return MessageHistory.getHistoryBefore(this, messageId).limit(limit);
     }
 
     /**
      * Uses the provided {@code id} of a message as a marker and retrieves messages sent before
-     * the marker ID. The {@code limit} determines the amount of message retrieved near the marker.
+     * the marker ID. The {@code limit} determines the amount of messages retrieved near the marker.
      *
      * <p><b>Examples:</b>
      * <br>Retrieve 100 messages from the middle of history. {@literal >}100 message exist in history and the marker is {@literal >}50 messages
@@ -1683,10 +1509,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * @param messageId
-     *        The id of the message that will act as a marker.
-     * @param limit
-     *        The amount of message to be retrieved after the marker. Minimum: 1, Max: 100.
+     * @param  messageId
+     *         The id of the message that will act as a marker.
+     * @param  limit
+     *         The amount of messages to be retrieved after the marker. Minimum: 1, Max: 100.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -1701,10 +1527,11 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
-     *         <br>Provides a MessageHistory object with message before the provided message loaded into it.
+     *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages before the provided message loaded into it.
      *
      * @see    net.dv8tion.jda.api.entities.MessageHistory#getHistoryBefore(MessageChannel, String) MessageHistory.getHistoryBefore(MessageChannel, String)
      */
+    @Nonnull
     @CheckReturnValue
     default MessageHistory.MessageRetrieveAction getHistoryBefore(long messageId, int limit)
     {
@@ -1713,7 +1540,7 @@ public interface MessageChannel extends ISnowflake, Formattable
 
     /**
      * Uses the provided message as a marker and retrieves messages sent before
-     * the marker. The {@code limit} determines the amount of message retrieved near the marker.
+     * the marker. The {@code limit} determines the amount of messages retrieved near the marker.
      *
      * <p><b>Examples:</b>
      * <br>Retrieve 100 messages from the middle of history. {@literal >}100 message exist in history and the marker is {@literal >}50 messages
@@ -1740,10 +1567,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * @param message
-     *        The message that will act as a marker.
-     * @param limit
-     *        The amount of message to be retrieved after the marker. Minimum: 1, Max: 100.
+     * @param  message
+     *         The message that will act as a marker.
+     * @param  limit
+     *         The amount of messages to be retrieved after the marker. Minimum: 1, Max: 100.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -1758,15 +1585,79 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
-     *         <br>Provides a MessageHistory object with message before the provided message loaded into it.
+     *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages before the provided message loaded into it.
      *
      * @see    net.dv8tion.jda.api.entities.MessageHistory#getHistoryBefore(MessageChannel, String) MessageHistory.getHistoryBefore(MessageChannel, String)
      */
+    @Nonnull
     @CheckReturnValue
-    default MessageHistory.MessageRetrieveAction getHistoryBefore(Message message, int limit)
+    default MessageHistory.MessageRetrieveAction getHistoryBefore(@Nonnull Message message, int limit)
     {
         Checks.notNull(message, "Message");
         return getHistoryBefore(message.getId(), limit);
+    }
+
+    /**
+     * Retrieves messages from the beginning of this {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
+     * The {@code limit} determines the amount of messages being retrieved.
+     *
+     * <h2>Example</h2>
+     * <pre><code>
+     * public void resendFirstMessage(MessageChannel channel)
+     * {
+     *     channel.getHistoryFromBeginning(1).queue(history {@literal ->}
+     *     {
+     *         if (!history.isEmpty())
+     *         {
+     *             Message firstMsg = history.getRetrievedHistory().get(0);
+     *             channel.sendMessage(firstMsg).queue();
+     *         }
+     *         else
+     *             channel.sendMessage("No history for this channel!").queue();
+     *     });
+     * }
+     * </code></pre>
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The request was attempted after the account lost
+     *         {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the
+     *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * @param  limit
+     *         The amount of messages to be retrieved. Minimum: 1, Max: 100.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         Provided {@code limit} is less than {@code 1} or greater than {@code 100}.
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the logged in account does not have
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
+     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
+     *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with with the first messages of this channel loaded into it.
+     *         <br><b>Note: The messages are ordered from the most recent to oldest!</b>
+     *
+     * @see    net.dv8tion.jda.api.entities.MessageHistory#retrieveFuture(int)                     MessageHistory.retrieveFuture(int)
+     * @see    net.dv8tion.jda.api.entities.MessageHistory#getHistoryAfter(MessageChannel, String) MessageHistory.getHistoryAfter(MessageChannel, String)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageHistory.MessageRetrieveAction getHistoryFromBeginning(int limit)
+    {
+        return MessageHistory.getHistoryFromBeginning(this).limit(limit);
     }
 
     /**
@@ -1797,6 +1688,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: Void
      */
+    @Nonnull
     @CheckReturnValue
     default RestAction<Void> sendTyping()
     {
@@ -1809,7 +1701,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * in this MessageChannel.
      *
      * <p>The unicode provided has to be a unicode representation of the emoji
-     * that is supposed to be represented by the Reaction.
+     * that is supposed to be used for the Reaction.
      * <br>To retrieve the characters needed you can use an api or
      * the official discord client by escaping the emoji (\:emoji-name:)
      * and copying the resulting emoji from the sent message.
@@ -1841,7 +1733,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION} in the
      *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
      *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI}
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
      *     <br>The provided unicode character does not refer to a known emoji unicode character.
      *     <br>Proper unicode characters for emojis can be found at
      *         <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">http://unicode.org/emoji/charts/full-emoji-list.html</a></li>
@@ -1866,7 +1758,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
-     *         and the logged in account does not have
+     *         and the logged in account does not have:
      *         <ul>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
@@ -1874,8 +1766,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction}
      */
+    @Nonnull
     @CheckReturnValue
-    default RestAction<Void> addReactionById(String messageId, String unicode)
+    default RestAction<Void> addReactionById(@Nonnull String messageId, @Nonnull String unicode)
     {
         Checks.isSnowflake(messageId, "Message ID");
         Checks.notNull(unicode, "Provided Unicode");
@@ -1884,9 +1777,9 @@ public interface MessageChannel extends ISnowflake, Formattable
 
         String encoded;
         if (unicode.startsWith("U+"))
-            encoded = MiscUtil.encodeCodePointsUTF8(unicode);
+            encoded = EncodingUtil.encodeCodepointsUTF8(unicode);
         else
-            encoded = MiscUtil.encodeUTF8(unicode);
+            encoded = EncodingUtil.encodeUTF8(unicode);
         Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, encoded);
         return new RestActionImpl<>(getJDA(), route);
     }
@@ -1896,7 +1789,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * in this MessageChannel.
      *
      * <p>The unicode provided has to be a unicode representation of the emoji
-     * that is supposed to be represented by the Reaction.
+     * that is supposed to be used for the Reaction.
      * <br>To retrieve the characters needed you can use an api or
      * the official discord client by escaping the emoji (\:emoji-name:)
      * and copying the resulting emoji from the sent message.
@@ -1928,7 +1821,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION} in the
      *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
      *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI}
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
      *     <br>The provided unicode character does not refer to a known emoji unicode character.
      *     <br>Proper unicode characters for emojis can be found at
      *         <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">http://unicode.org/emoji/charts/full-emoji-list.html</a></li>
@@ -1947,12 +1840,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         The unicode characters to react with
      *
      * @throws java.lang.IllegalArgumentException
-     *         <ul>
-     *             <li>If provided {@code unicode} is {@code null} or empty.</li>
-     *         </ul>
+     *         If provided {@code unicode} is {@code null} or empty.
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
-     *         and the logged in account does not have
+     *         and the logged in account does not have:
      *         <ul>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
@@ -1960,8 +1851,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction}
      */
+    @Nonnull
     @CheckReturnValue
-    default RestAction<Void> addReactionById(long messageId, String unicode)
+    default RestAction<Void> addReactionById(long messageId, @Nonnull String unicode)
     {
         return addReactionById(Long.toUnsignedString(messageId), unicode);
     }
@@ -2022,8 +1914,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction}
      */
+    @Nonnull
     @CheckReturnValue
-    default RestAction<Void> addReactionById(String messageId, Emote emote)
+    default RestAction<Void> addReactionById(@Nonnull String messageId, @Nonnull Emote emote)
     {
         Checks.isSnowflake(messageId, "Message ID");
         Checks.notNull(emote, "Emote");
@@ -2087,8 +1980,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction}
      */
+    @Nonnull
     @CheckReturnValue
-    default RestAction<Void> addReactionById(long messageId, Emote emote)
+    default RestAction<Void> addReactionById(long messageId, @Nonnull Emote emote)
     {
         return addReactionById(Long.toUnsignedString(messageId), emote);
     }
@@ -2146,13 +2040,14 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction}
      */
+    @Nonnull
     @CheckReturnValue
-    default RestAction<Void> removeReactionById(String messageId, String unicode)
+    default RestAction<Void> removeReactionById(@Nonnull String messageId, @Nonnull String unicode)
     {
         Checks.isSnowflake(messageId, "Message ID");
         Checks.noWhitespace(unicode, "Emoji");
 
-        final String code = MiscUtil.encodeUTF8(unicode);
+        final String code = EncodingUtil.encodeUTF8(unicode);
         final Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, code, "@me");
         return new RestActionImpl<>(getJDA(), route);
     }
@@ -2210,8 +2105,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction}
      */
+    @Nonnull
     @CheckReturnValue
-    default RestAction<Void> removeReactionById(long messageId, String unicode)
+    default RestAction<Void> removeReactionById(long messageId, @Nonnull String unicode)
     {
         return removeReactionById(Long.toUnsignedString(messageId), unicode);
     }
@@ -2263,8 +2159,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction}
      */
+    @Nonnull
     @CheckReturnValue
-    default RestAction<Void> removeReactionById(String messageId, Emote emote)
+    default RestAction<Void> removeReactionById(@Nonnull String messageId, @Nonnull Emote emote)
     {
         Checks.notNull(emote, "Emote");
         return removeReactionById(messageId, emote.getName() + ":" + emote.getId());
@@ -2317,15 +2214,16 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction}
      */
+    @Nonnull
     @CheckReturnValue
-    default RestAction<Void> removeReactionById(long messageId, Emote emote)
+    default RestAction<Void> removeReactionById(long messageId, @Nonnull Emote emote)
     {
         Checks.notNull(emote, "Emote");
         return removeReactionById(messageId, emote.getName() + ":" + emote.getId());
     }
 
     /**
-     * Used to pin a message. Pinned messages are retrievable via {@link #getPinnedMessages()}.
+     * Used to pin a message. Pinned messages are retrievable via {@link #retrievePinnedMessages()}.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -2361,8 +2259,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
      */
+    @Nonnull
     @CheckReturnValue
-    default RestAction<Void> pinMessageById(String messageId)
+    default RestAction<Void> pinMessageById(@Nonnull String messageId)
     {
         Checks.isSnowflake(messageId, "Message ID");
 
@@ -2371,7 +2270,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     }
 
     /**
-     * Used to pin a message. Pinned messages are retrievable via {@link #getPinnedMessages()}.
+     * Used to pin a message. Pinned messages are retrievable via {@link #retrievePinnedMessages()}.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -2407,6 +2306,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
      */
+    @Nonnull
     @CheckReturnValue
     default RestAction<Void> pinMessageById(long messageId)
     {
@@ -2414,7 +2314,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     }
 
     /**
-     * Used to unpin a message. Pinned messages are retrievable via {@link #getPinnedMessages()}.
+     * Used to unpin a message. Pinned messages are retrievable via {@link #retrievePinnedMessages()}.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -2450,8 +2350,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
      */
+    @Nonnull
     @CheckReturnValue
-    default RestAction<Void> unpinMessageById(String messageId)
+    default RestAction<Void> unpinMessageById(@Nonnull String messageId)
     {
         Checks.isSnowflake(messageId, "Message ID");
 
@@ -2460,7 +2361,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     }
 
     /**
-     * Used to unpin a message. Pinned messages are retrievable via {@link #getPinnedMessages()}.
+     * Used to unpin a message. Pinned messages are retrievable via {@link #retrievePinnedMessages()}.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -2496,6 +2397,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
      */
+    @Nonnull
     @CheckReturnValue
     default RestAction<Void> unpinMessageById(long messageId)
     {
@@ -2524,8 +2426,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.api.entities.Message}{@literal >}
      *         <br>An immutable list of pinned messages
      */
+    @Nonnull
     @CheckReturnValue
-    default RestAction<List<Message>> getPinnedMessages()
+    default RestAction<List<Message>> retrievePinnedMessages()
     {
         JDAImpl jda = (JDAImpl) getJDA();
         Route.CompiledRoute route = Route.Messages.GET_PINNED_MESSAGES.compile(getId());
@@ -2585,8 +2488,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @return {@link MessageAction MessageAction}
      *         <br>The modified Message after it has been sent to Discord.
      */
+    @Nonnull
     @CheckReturnValue
-    default MessageAction editMessageById(String messageId, CharSequence newContent)
+    default MessageAction editMessageById(@Nonnull String messageId, @Nonnull CharSequence newContent)
     {
         Checks.isSnowflake(messageId, "Message ID");
         Checks.notEmpty(newContent, "Provided message content");
@@ -2640,8 +2544,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @return {@link MessageAction MessageAction}
      *         <br>The modified Message after it has been sent to Discord.
      */
+    @Nonnull
     @CheckReturnValue
-    default MessageAction editMessageById(long messageId, CharSequence newContent)
+    default MessageAction editMessageById(long messageId, @Nonnull CharSequence newContent)
     {
         return editMessageById(Long.toUnsignedString(messageId), newContent);
     }
@@ -2688,8 +2593,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @return {@link MessageAction MessageAction}
      *         <br>The modified Message after it has been sent to discord
      */
+    @Nonnull
     @CheckReturnValue
-    default MessageAction editMessageById(String messageId, Message newContent)
+    default MessageAction editMessageById(@Nonnull String messageId, @Nonnull Message newContent)
     {
         Checks.isSnowflake(messageId, "Message ID");
         Checks.notNull(newContent, "message");
@@ -2740,8 +2646,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @return {@link MessageAction MessageAction}
      *         <br>The modified Message after it has been sent to discord
      */
+    @Nonnull
     @CheckReturnValue
-    default MessageAction editMessageById(long messageId, Message newContent)
+    default MessageAction editMessageById(long messageId, @Nonnull Message newContent)
     {
         return editMessageById(Long.toUnsignedString(messageId), newContent);
     }
@@ -2797,8 +2704,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @return {@link MessageAction MessageAction}
      *         <br>The modified Message after it has been sent to discord
      */
+    @Nonnull
     @CheckReturnValue
-    default MessageAction editMessageFormatById(String messageId, String format, Object... args)
+    default MessageAction editMessageFormatById(@Nonnull String messageId, @Nonnull String format, @Nonnull Object... args)
     {
         Checks.notBlank(format, "Format String");
         return editMessageById(messageId, String.format(format, args));
@@ -2855,8 +2763,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @return {@link MessageAction MessageAction}
      *         <br>The modified Message after it has been sent to discord
      */
+    @Nonnull
     @CheckReturnValue
-    default MessageAction editMessageFormatById(long messageId, String format, Object... args)
+    default MessageAction editMessageFormatById(long messageId, @Nonnull String format, @Nonnull Object... args)
     {
         Checks.notBlank(format, "Format String");
         return editMessageById(messageId, String.format(format, args));
@@ -2905,8 +2814,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @return {@link MessageAction MessageAction}
      *         <br>The modified Message after it has been sent to discord
      */
+    @Nonnull
     @CheckReturnValue
-    default MessageAction editMessageById(String messageId, MessageEmbed newEmbed)
+    default MessageAction editMessageById(@Nonnull String messageId, @Nonnull MessageEmbed newEmbed)
     {
         Checks.isSnowflake(messageId, "Message ID");
         Checks.notNull(newEmbed, "MessageEmbed");
@@ -2958,8 +2868,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @return {@link MessageAction MessageAction}
      *         <br>The modified Message after it has been sent to discord
      */
+    @Nonnull
     @CheckReturnValue
-    default MessageAction editMessageById(long messageId, MessageEmbed newEmbed)
+    default MessageAction editMessageById(long messageId, @Nonnull MessageEmbed newEmbed)
     {
         return editMessageById(Long.toUnsignedString(messageId), newEmbed);
     }

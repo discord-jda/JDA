@@ -20,14 +20,15 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.api.managers.PermOverrideManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
-import net.dv8tion.jda.internal.managers.PermOverrideManagerImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.PermissionOverrideActionImpl;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 
+import javax.annotation.Nonnull;
 import java.util.EnumSet;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -38,7 +39,7 @@ public class PermissionOverrideImpl implements PermissionOverride
     private final IPermissionHolder permissionHolder;
 
     protected final ReentrantLock mngLock = new ReentrantLock();
-    protected volatile PermOverrideManager manager;
+    protected volatile PermissionOverrideAction manager;
 
     private long allow;
     private long deny;
@@ -68,24 +69,28 @@ public class PermissionOverrideImpl implements PermissionOverride
         return deny;
     }
 
+    @Nonnull
     @Override
     public EnumSet<Permission> getAllowed()
     {
         return Permission.getPermissions(allow);
     }
 
+    @Nonnull
     @Override
     public EnumSet<Permission> getInherit()
     {
         return Permission.getPermissions(getInheritRaw());
     }
 
+    @Nonnull
     @Override
     public EnumSet<Permission> getDenied()
     {
         return Permission.getPermissions(deny);
     }
 
+    @Nonnull
     @Override
     public JDA getJDA()
     {
@@ -104,12 +109,14 @@ public class PermissionOverrideImpl implements PermissionOverride
         return isRoleOverride() ? (Role) permissionHolder : null;
     }
 
+    @Nonnull
     @Override
     public GuildChannel getChannel()
     {
         return channel.get();
     }
 
+    @Nonnull
     @Override
     public Guild getGuild()
     {
@@ -128,28 +135,33 @@ public class PermissionOverrideImpl implements PermissionOverride
         return permissionHolder instanceof Role;
     }
 
+    @Nonnull
     @Override
-    public PermOverrideManager getManager()
+    public PermissionOverrideAction getManager()
     {
-        PermOverrideManager mng = manager;
+        if (!getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
+            throw new InsufficientPermissionException(Permission.MANAGE_PERMISSIONS);
+        PermissionOverrideAction mng = manager;
         if (mng == null)
         {
             mng = MiscUtil.locked(mngLock, () ->
             {
                 if (manager == null)
-                    manager = new PermOverrideManagerImpl(this);
+                    manager = new PermissionOverrideActionImpl(this).setOverride(false);
                 return manager;
             });
         }
-        return mng;
+        return mng.reset();
     }
 
+    @Nonnull
     @Override
     public AuditableRestAction<Void> delete()
     {
         if (!getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
             throw new InsufficientPermissionException(Permission.MANAGE_PERMISSIONS);
 
+        @SuppressWarnings("ConstantConditions")
         String targetId = isRoleOverride() ? getRole().getId() : getMember().getUser().getId();
         Route.CompiledRoute route = Route.Channels.DELETE_PERM_OVERRIDE.compile(getChannel().getId(), targetId);
         return new AuditableRestActionImpl<>(getJDA(), route);

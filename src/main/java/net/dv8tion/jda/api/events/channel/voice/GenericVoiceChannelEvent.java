@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.Event;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} event was fired.
  * <br>Every VoiceChannelEvent is derived from this event and can be casted.
@@ -30,7 +32,7 @@ public abstract class GenericVoiceChannelEvent extends Event
 {
     private final VoiceChannel channel;
 
-    public GenericVoiceChannelEvent(JDA api, long responseNumber, VoiceChannel channel)
+    public GenericVoiceChannelEvent(@Nonnull JDA api, long responseNumber, @Nonnull VoiceChannel channel)
     {
         super(api, responseNumber);
         this.channel = channel;
@@ -41,6 +43,7 @@ public abstract class GenericVoiceChannelEvent extends Event
      *
      * @return The VoiceChannel
      */
+    @Nonnull
     public VoiceChannel getChannel()
     {
         return channel;
@@ -52,6 +55,7 @@ public abstract class GenericVoiceChannelEvent extends Event
      *
      * @return The Guild
      */
+    @Nonnull
     public Guild getGuild()
     {
         return channel.getGuild();

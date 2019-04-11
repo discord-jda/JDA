@@ -17,15 +17,20 @@
 package net.dv8tion.jda.internal.utils.config;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
+import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.SessionControllerAdapter;
 import okhttp3.OkHttpClient;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class SessionConfig
 {
     private final SessionController sessionController;
     private final OkHttpClient httpClient;
     private final WebSocketFactory webSocketFactory;
+    private final VoiceDispatchInterceptor interceptor;
     private boolean autoReconnect;
     private boolean retryOnTimeout;
     private boolean bulkDeleteSplittingEnabled;
@@ -33,13 +38,15 @@ public class SessionConfig
     private int maxReconnectDelay;
 
     public SessionConfig(
-        SessionController sessionController, OkHttpClient httpClient, WebSocketFactory webSocketFactory,
+        @Nullable SessionController sessionController, @Nullable OkHttpClient httpClient,
+        @Nullable WebSocketFactory webSocketFactory, @Nullable VoiceDispatchInterceptor interceptor,
         boolean audioEnabled, boolean retryOnTimeout, boolean autoReconnect,
         boolean bulkDeleteSplittingEnabled, int maxReconnectDelay)
     {
         this.sessionController = sessionController == null ? new SessionControllerAdapter() : sessionController;
-        this.httpClient = httpClient == null ? new OkHttpClient() : httpClient;
+        this.httpClient = httpClient;
         this.webSocketFactory = webSocketFactory == null ? new WebSocketFactory() : webSocketFactory;
+        this.interceptor = interceptor;
         this.audioEnabled = audioEnabled;
         this.autoReconnect = autoReconnect;
         this.retryOnTimeout = retryOnTimeout;
@@ -52,19 +59,28 @@ public class SessionConfig
         this.autoReconnect = autoReconnect;
     }
 
+    @Nonnull
     public SessionController getSessionController()
     {
         return sessionController;
     }
 
+    @Nullable
     public OkHttpClient getHttpClient()
     {
         return httpClient;
     }
 
+    @Nonnull
     public WebSocketFactory getWebSocketFactory()
     {
         return webSocketFactory;
+    }
+
+    @Nullable
+    public VoiceDispatchInterceptor getVoiceDispatchInterceptor()
+    {
+        return interceptor;
     }
 
     public boolean isAutoReconnect()
@@ -92,8 +108,9 @@ public class SessionConfig
         return maxReconnectDelay;
     }
 
+    @Nonnull
     public static SessionConfig getDefault()
     {
-        return new SessionConfig(null, null, null, true, true, true, true, 900);
+        return new SessionConfig(null, null, null, null, true, true, true, true, 900);
     }
 }

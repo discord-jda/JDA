@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.utils.MiscUtil;
 
+import javax.annotation.Nonnull;
 import java.util.Formattable;
 import java.util.FormattableFlags;
 import java.util.Formatter;
@@ -48,7 +49,7 @@ import java.util.Formatter;
  *
  * @since 3.0
  */
-public interface IMentionable extends Formattable
+public interface IMentionable extends Formattable, ISnowflake
 {
     /**
      * Retrieve a Mention for this Entity.
@@ -56,6 +57,7 @@ public interface IMentionable extends Formattable
      *
      * @return A resolvable mention.
      */
+    @Nonnull
     String getAsMention();
 
     @Override

@@ -35,6 +35,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -55,8 +57,9 @@ public class MessageHistory
      * @param  channel
      *         The {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel} to retrieval history from.
      */
-    public MessageHistory(MessageChannel channel)
+    public MessageHistory(@Nonnull MessageChannel channel)
     {
+        Checks.notNull(channel, "Channel");
         this.channel = channel;
         if (channel instanceof TextChannel)
         {
@@ -71,6 +74,7 @@ public class MessageHistory
      *
      * @return The corresponding JDA instance
      */
+    @Nonnull
     public JDA getJDA()
     {
         return channel.getJDA();
@@ -105,6 +109,7 @@ public class MessageHistory
      *
      * @return The MessageChannel of this history.
      */
+    @Nonnull
     public MessageChannel getChannel()
     {
         return channel;
@@ -161,6 +166,7 @@ public class MessageHistory
      *         <br>Retrieved Messages are placed in a List and provided in order of most recent to oldest with most recent
      *         starting at index 0. If the list is empty, there were no more messages left to retrieve.
      */
+    @Nonnull
     @CheckReturnValue
     public RestAction<List<Message>> retrievePast(int amount)
     {
@@ -230,6 +236,7 @@ public class MessageHistory
      *         <br>Retrieved Messages are placed in a List and provided in order of most recent to oldest with most recent
      *         starting at index 0. If the list is empty, there were no more messages left to retrieve.
      */
+    @Nonnull
     @CheckReturnValue
     public RestAction<List<Message>> retrieveFuture(int amount)
     {
@@ -267,6 +274,7 @@ public class MessageHistory
      *
      * @return A List of Messages, sorted newest to oldest.
      */
+    @Nonnull
     public List<Message> getRetrievedHistory()
     {
         int size = size();
@@ -282,7 +290,7 @@ public class MessageHistory
      * <br>If a Message with the provided id has not already been retrieved (thus, doesn't not exist in this MessageHistory
      * object), then this method returns null.
      * <p>
-     * <b>Note:</b> This methods is not the same as {@link MessageChannel#getMessageById(String)}, which itself queries
+     * <b>Note:</b> This methods is not the same as {@link MessageChannel#retrieveMessageById(String)}, which itself queries
      * Discord. This method is for getting a message that has already been retrieved by this MessageHistory object.
      *
      * @param  id
@@ -295,7 +303,8 @@ public class MessageHistory
      *
      * @return Possibly-null Message with the same {@code id} as the one provided.
      */
-    public Message getMessageById(String id)
+    @Nullable
+    public Message getMessageById(@Nonnull String id)
     {
         return getMessageById(MiscUtil.parseSnowflake(id));
     }
@@ -305,7 +314,7 @@ public class MessageHistory
      * <br>If a Message with the provided id has not already been retrieved (thus, doesn't not exist in this MessageHistory
      * object), then this method returns null.
      * <p>
-     * <b>Note:</b> This methods is not the same as {@link MessageChannel#getMessageById(long)}, which itself queries
+     * <b>Note:</b> This methods is not the same as {@link MessageChannel#retrieveMessageById(long)}, which itself queries
      * Discord. This method is for getting a message that has already been retrieved by this MessageHistory object.
      *
      * @param  id
@@ -313,6 +322,7 @@ public class MessageHistory
      *
      * @return Possibly-null Message with the same {@code id} as the one provided.
      */
+    @Nullable
     public Message getMessageById(long id)
     {
         return history.get(id);
@@ -354,7 +364,9 @@ public class MessageHistory
      * @see    net.dv8tion.jda.api.entities.MessageChannel#getHistoryAfter(long, int)    MessageChannel.getHistoryAfter(long, int)
      * @see    net.dv8tion.jda.api.entities.MessageChannel#getHistoryAfter(Message, int) MessageChannel.getHistoryAfter(Message, int)
      */
-    public static MessageRetrieveAction getHistoryAfter(MessageChannel channel, String messageId)
+    @Nonnull
+    @CheckReturnValue
+    public static MessageRetrieveAction getHistoryAfter(@Nonnull MessageChannel channel, @Nonnull String messageId)
     {
         checkArguments(channel, messageId);
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId()).withQueryParams("after", messageId);
@@ -397,7 +409,9 @@ public class MessageHistory
      * @see    net.dv8tion.jda.api.entities.MessageChannel#getHistoryBefore(long, int)    MessageChannel.getHistoryBefore(long, int)
      * @see    net.dv8tion.jda.api.entities.MessageChannel#getHistoryBefore(Message, int) MessageChannel.getHistoryBefore(Message, int)
      */
-    public static MessageRetrieveAction getHistoryBefore(MessageChannel channel, String messageId)
+    @Nonnull
+    @CheckReturnValue
+    public static MessageRetrieveAction getHistoryBefore(@Nonnull MessageChannel channel, @Nonnull String messageId)
     {
         checkArguments(channel, messageId);
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId()).withQueryParams("before", messageId);
@@ -440,11 +454,44 @@ public class MessageHistory
      * @see    net.dv8tion.jda.api.entities.MessageChannel#getHistoryAround(long, int)    MessageChannel.getHistoryAround(long, int)
      * @see    net.dv8tion.jda.api.entities.MessageChannel#getHistoryAround(Message, int) MessageChannel.getHistoryAround(Message, int)
      */
-    public static MessageRetrieveAction getHistoryAround(MessageChannel channel, String messageId)
+    @Nonnull
+    @CheckReturnValue
+    public static MessageRetrieveAction getHistoryAround(@Nonnull MessageChannel channel, @Nonnull String messageId)
     {
         checkArguments(channel, messageId);
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId()).withQueryParams("around", messageId);
         return new MessageRetrieveAction(route, channel);
+    }
+
+    /**
+     * Constructs a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} with the initially retrieved history
+     * of messages sent.
+     *
+     * <p>Alternatively you can use {@link net.dv8tion.jda.api.entities.MessageChannel#getHistoryFromBeginning(int) MessageChannel.getHistoryFromBeginning(...)}
+     *
+     * <h2>Example</h2>
+     * <br>{@code MessageHistory history = MessageHistory.getHistoryFromBeginning(channel).limit(60).complete()}
+     * <br>Will return a MessageHistory instance with the first 60 messages of the given {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
+
+     *
+     * @param  channel
+     *         The {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided MessageChannel is {@code null};
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If this is a TextChannel and the currently logged in account does not
+     *         have the permission {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
+     *
+     * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageRetrieveAction}
+     *
+     * @see    net.dv8tion.jda.api.entities.MessageChannel#getHistoryFromBeginning(int)  MessageChannel.getHistoryFromBeginning(int)
+     */
+    @Nonnull
+    @CheckReturnValue
+    public static MessageRetrieveAction getHistoryFromBeginning(@Nonnull MessageChannel channel)
+    {
+        return getHistoryAfter(channel, "0");
     }
 
     private static void checkArguments(MessageChannel channel, String messageId)
@@ -485,7 +532,9 @@ public class MessageHistory
          *
          * @return The current MessageRetrieveAction for chaining convenience
          */
-        public MessageRetrieveAction limit(Integer limit)
+        @Nonnull
+        @CheckReturnValue
+        public MessageRetrieveAction limit(@Nullable Integer limit)
         {
             if (limit != null)
             {

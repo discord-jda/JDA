@@ -260,7 +260,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 break;  //Finish the CategoryUpdate case
             }
             default:
-                throw new IllegalArgumentException("CHANNEL_UPDATE provided an unrecognized channel type JSON: " + content);
+                WebSocketClient.LOG.debug("CHANNEL_UPDATE provided an unrecognized channel type JSON: {}", content);
         }
         return null;
     }

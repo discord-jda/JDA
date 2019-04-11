@@ -26,6 +26,7 @@ import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 
+import javax.annotation.Nonnull;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -51,18 +52,21 @@ public class WebhookImpl implements Webhook
         this.id = id;
     }
 
+    @Nonnull
     @Override
     public JDA getJDA()
     {
         return channel.getJDA();
     }
 
+    @Nonnull
     @Override
     public Guild getGuild()
     {
         return channel.getGuild();
     }
 
+    @Nonnull
     @Override
     public TextChannel getChannel()
     {
@@ -75,12 +79,14 @@ public class WebhookImpl implements Webhook
         return owner;
     }
 
+    @Nonnull
     @Override
     public User getDefaultUser()
     {
         return user;
     }
 
+    @Nonnull
     @Override
     public String getName()
     {
@@ -93,12 +99,14 @@ public class WebhookImpl implements Webhook
         return token;
     }
 
+    @Nonnull
     @Override
     public String getUrl()
     {
         return Requester.DISCORD_API_PREFIX + "webhooks/" + getId() + (getToken() == null ? "" : "/" + getToken());
     }
 
+    @Nonnull
     @Override
     public AuditableRestAction<Void> delete()
     {
@@ -109,6 +117,7 @@ public class WebhookImpl implements Webhook
         return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
+    @Nonnull
     @Override
     public WebhookManager getManager()
     {

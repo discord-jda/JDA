@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.Event;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.PrivateChannel Private Channel} was deleted.
  *
@@ -29,7 +31,7 @@ public class PrivateChannelDeleteEvent extends Event
 {
     protected final PrivateChannel channel;
 
-    public PrivateChannelDeleteEvent(JDA api, long responseNumber, PrivateChannel channel)
+    public PrivateChannelDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull PrivateChannel channel)
     {
         super(api, responseNumber);
         this.channel = channel;
@@ -41,6 +43,7 @@ public class PrivateChannelDeleteEvent extends Event
      *
      * @return The User
      */
+    @Nonnull
     public User getUser()
     {
         return channel.getUser();
@@ -51,6 +54,7 @@ public class PrivateChannelDeleteEvent extends Event
      *
      * @return The PrivateChannel
      */
+    @Nonnull
     public PrivateChannel getChannel()
     {
         return channel;

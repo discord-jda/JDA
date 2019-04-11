@@ -21,12 +21,14 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.RoleAction;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.Color;
 
 /**
  * Represents a {@link net.dv8tion.jda.api.entities.Guild Guild}'s Role. Used to control permissions for Members.
  */
-public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Comparable<Role>
+public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
 {
     /** Used to keep consistency between color values used in the API */
     int DEFAULT_COLOR_RAW = 0x1FFFFFFF; // java.awt.Color fills the MSB with FF, we just use 1F to provide better consistency
@@ -57,6 +59,7 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      *
      * @return Never-null String containing the name of this {@link net.dv8tion.jda.api.entities.Role Role}.
      */
+    @Nonnull
     String getName();
 
     /**
@@ -96,6 +99,7 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      *
      * @see    #getColorRaw()
      */
+    @Nullable
     Color getColor();
 
     /**
@@ -131,13 +135,14 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      *
      * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Role, Role)
      */
-    boolean canInteract(Role role);
+    boolean canInteract(@Nonnull Role role);
 
     /**
      * Returns the {@link net.dv8tion.jda.api.entities.Guild Guild} this Role exists in
      *
      * @return the Guild containing this Role
      */
+    @Nonnull
     Guild getGuild();
 
     /**
@@ -173,8 +178,9 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      * @return {@link RoleAction RoleAction}
      *         <br>RoleAction with already copied values from the specified {@link net.dv8tion.jda.api.entities.Role Role}
      */
+    @Nonnull
     @CheckReturnValue
-    RoleAction createCopy(Guild guild);
+    RoleAction createCopy(@Nonnull Guild guild);
 
     /**
      * Creates a new {@link net.dv8tion.jda.api.entities.Role Role} in this {@link net.dv8tion.jda.api.entities.Guild Guild}
@@ -204,6 +210,7 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      * @return {@link RoleAction RoleAction}
      *         <br>RoleAction with already copied values from the specified {@link net.dv8tion.jda.api.entities.Role Role}
      */
+    @Nonnull
     @CheckReturnValue
     default RoleAction createCopy()
     {
@@ -222,6 +229,7 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      *
      * @return The RoleManager of this Role
      */
+    @Nonnull
     RoleManager getManager();
 
     /**
@@ -247,6 +255,7 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction}
      */
+    @Nonnull
     @CheckReturnValue
     AuditableRestAction<Void> delete();
 
@@ -255,5 +264,6 @@ public interface Role extends ISnowflake, IMentionable, IPermissionHolder, Compa
      *
      * @return the corresponding JDA instance
      */
+    @Nonnull
     JDA getJDA();
 }

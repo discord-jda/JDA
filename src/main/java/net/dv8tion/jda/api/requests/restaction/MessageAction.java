@@ -25,6 +25,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
@@ -78,21 +79,19 @@ import java.util.function.Consumer;
  * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(File, String)
  * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(InputStream, String)
  * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(byte[], String)
- * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(File, Message)
- * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(File, String, Message)
- * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(InputStream, String, Message)
- * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(byte[], String, Message)
  */
 public interface MessageAction extends RestAction<Message>, Appendable
 {
+    @Nonnull
     @Override
-    MessageAction setCheck(BooleanSupplier checks);
+    MessageAction setCheck(@Nullable BooleanSupplier checks);
 
     /**
      * The target {@link MessageChannel} for this message
      *
      * @return The target channel
      */
+    @Nonnull
     MessageChannel getChannel();
 
     /**
@@ -129,8 +128,9 @@ public interface MessageAction extends RestAction<Message>, Appendable
      *
      * @return Updated MessageAction for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
-    MessageAction apply(final Message message);
+    MessageAction apply(@Nullable final Message message);
 
     /**
      * Enable/Disable Text-To-Speech for the resulting message.
@@ -141,6 +141,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      *
      * @return Updated MessageAction for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
     MessageAction tts(final boolean isTTS);
 
@@ -153,6 +154,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      *
      * @return Updated MessageAction for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
     MessageAction reset();
 
@@ -171,8 +173,9 @@ public interface MessageAction extends RestAction<Message>, Appendable
      * @see    net.dv8tion.jda.api.MessageBuilder#setNonce(String)
      * @see    <a href="https://en.wikipedia.org/wiki/Cryptographic_nonce" target="_blank">Cryptographic Nonce - Wikipedia</a>
      */
+    @Nonnull
     @CheckReturnValue
-    MessageAction nonce(final String nonce);
+    MessageAction nonce(@Nullable final String nonce);
 
     /**
      * Overrides existing content with the provided input
@@ -187,8 +190,9 @@ public interface MessageAction extends RestAction<Message>, Appendable
      *
      * @return Updated MessageAction for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
-    MessageAction content(final String content);
+    MessageAction content(@Nullable final String content);
 
     /**
      * Sets the {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}
@@ -206,8 +210,9 @@ public interface MessageAction extends RestAction<Message>, Appendable
      *
      * @return Updated MessageAction for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
-    MessageAction embed(final MessageEmbed embed);
+    MessageAction embed(@Nullable final MessageEmbed embed);
 
     /**
      * {@inheritDoc}
@@ -217,9 +222,10 @@ public interface MessageAction extends RestAction<Message>, Appendable
      *
      * @return Updated MessageAction for chaining convenience
      */
+    @Nonnull
     @Override
     @CheckReturnValue
-    default MessageAction append(final CharSequence csq)
+    default MessageAction append(@Nonnull final CharSequence csq)
     {
         return append(csq, 0, csq.length());
     }
@@ -232,9 +238,10 @@ public interface MessageAction extends RestAction<Message>, Appendable
      *
      * @return Updated MessageAction for chaining convenience
      */
+    @Nonnull
     @Override
     @CheckReturnValue
-    MessageAction append(final CharSequence csq, final int start, final int end);
+    MessageAction append(@Nullable final CharSequence csq, final int start, final int end);
 
     /**
      * {@inheritDoc}
@@ -244,6 +251,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      *
      * @return Updated MessageAction for chaining convenience
      */
+    @Nonnull
     @Override
     @CheckReturnValue
     MessageAction append(final char c);
@@ -272,8 +280,9 @@ public interface MessageAction extends RestAction<Message>, Appendable
      *
      * @return Updated MessageAction for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
-    default MessageAction appendFormat(final String format, final Object... args)
+    default MessageAction appendFormat(@Nonnull final String format, final Object... args)
     {
         return append(String.format(format, args));
     }
@@ -304,6 +313,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      *
      * @return Updated MessageAction for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
     MessageAction addFile(@Nonnull final InputStream data, @Nonnull final String name, @Nonnull AttachmentOption... options);
 
@@ -335,6 +345,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      *
      * @see    net.dv8tion.jda.api.entities.SelfUser#getAllowedFileSize() SelfUser.getAllowedFileSize()
      */
+    @Nonnull
     @CheckReturnValue
     default MessageAction addFile(@Nonnull final byte[] data, @Nonnull final String name, @Nonnull AttachmentOption... options)
     {
@@ -366,6 +377,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      *
      * @see    net.dv8tion.jda.api.entities.SelfUser#getAllowedFileSize() SelfUser.getAllowedFileSize()
      */
+    @Nonnull
     @CheckReturnValue
     default MessageAction addFile(@Nonnull final File file, @Nonnull AttachmentOption... options)
     {
@@ -403,6 +415,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      *
      * @see    net.dv8tion.jda.api.entities.SelfUser#getAllowedFileSize() SelfUser.getAllowedFileSize()
      */
+    @Nonnull
     @CheckReturnValue
     MessageAction addFile(@Nonnull final File file, @Nonnull final String name, @Nonnull AttachmentOption... options);
 
@@ -415,6 +428,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      *
      * @see    #clearFiles(BiConsumer)
      */
+    @Nonnull
     @CheckReturnValue
     MessageAction clearFiles();
 
@@ -429,8 +443,9 @@ public interface MessageAction extends RestAction<Message>, Appendable
      *
      * @see    java.io.Closeable
      */
+    @Nonnull
     @CheckReturnValue
-    MessageAction clearFiles(BiConsumer<String, InputStream> finalizer);
+    MessageAction clearFiles(@Nonnull BiConsumer<String, InputStream> finalizer);
 
     /**
      * Clears all previously added files
@@ -444,8 +459,9 @@ public interface MessageAction extends RestAction<Message>, Appendable
      *
      * @see    java.io.Closeable
      */
+    @Nonnull
     @CheckReturnValue
-    MessageAction clearFiles(Consumer<InputStream> finalizer);
+    MessageAction clearFiles(@Nonnull Consumer<InputStream> finalizer);
 
     /**
      * Whether all fields should be considered when editing a message
@@ -455,6 +471,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      *
      * @return Updated MessageAction for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
     MessageAction override(final boolean bool);
 }

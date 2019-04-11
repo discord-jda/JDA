@@ -23,6 +23,8 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.ContextRunnable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -180,7 +182,7 @@ public interface RestAction<T>
      * @param callback
      *        The fallback to use, or null to ignore failures (not recommended)
      */
-    static void setDefaultFailure(final Consumer<? super Throwable> callback)
+    static void setDefaultFailure(@Nullable final Consumer<? super Throwable> callback)
     {
         RestActionImpl.setDefaultFailure(callback);
     }
@@ -191,7 +193,7 @@ public interface RestAction<T>
      * @param callback
      *        The fallback to use, or null to ignore success
      */
-    static void setDefaultSuccess(final Consumer<Object> callback)
+    static void setDefaultSuccess(@Nullable final Consumer<Object> callback)
     {
         RestActionImpl.setDefaultSuccess(callback);
     }
@@ -201,6 +203,7 @@ public interface RestAction<T>
      *
      * @return The fallback consumer
      */
+    @Nonnull
     static Consumer<? super Throwable> getDefaultFailure()
     {
         return RestActionImpl.getDefaultFailure();
@@ -211,6 +214,7 @@ public interface RestAction<T>
      *
      * @return The fallback consumer
      */
+    @Nonnull
     static Consumer<Object> getDefaultSuccess()
     {
         return RestActionImpl.getDefaultSuccess();
@@ -221,6 +225,7 @@ public interface RestAction<T>
      *
      * @return The corresponding JDA instance
      */
+    @Nonnull
     JDA getJDA();
 
     /**
@@ -233,7 +238,8 @@ public interface RestAction<T>
      *
      * @return The current RestAction for chaining convenience
      */
-    RestAction<T> setCheck(BooleanSupplier checks);
+    @Nonnull
+    RestAction<T> setCheck(@Nullable BooleanSupplier checks);
 
     /**
      * Submits a Request for execution.
@@ -257,7 +263,7 @@ public interface RestAction<T>
      *         The success callback that will be called at a convenient time
      *         for the API. (can be null)
      */
-    default void queue(Consumer<? super T> success)
+    default void queue(@Nullable Consumer<? super T> success)
     {
         queue(success, null);
     }
@@ -274,7 +280,7 @@ public interface RestAction<T>
      *         The failure callback that will be called if the Request
      *         encounters an exception at its execution point.
      */
-    void queue(Consumer<? super T> success, Consumer<? super Throwable> failure);
+    void queue(@Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure);
 
     /**
      * Blocks the current Thread and awaits the completion
@@ -328,6 +334,7 @@ public interface RestAction<T>
      *
      * @return Never-null {@link java.util.concurrent.CompletableFuture CompletableFuture} representing the completion promise
      */
+    @Nonnull
     default CompletableFuture<T> submit()
     {
         return submit(true);
@@ -343,6 +350,7 @@ public interface RestAction<T>
      *
      * @return Never-null {@link java.util.concurrent.CompletableFuture CompletableFuture} task representing the completion promise
      */
+    @Nonnull
     CompletableFuture<T> submit(boolean shouldQueue);
 
     /**
@@ -368,7 +376,8 @@ public interface RestAction<T>
      * @return {@link DelayedCompletableFuture DelayedCompletableFuture}
      *         representing the delayed operation
      */
-    default DelayedCompletableFuture<T> submitAfter(long delay, TimeUnit unit)
+    @Nonnull
+    default DelayedCompletableFuture<T> submitAfter(long delay, @Nonnull TimeUnit unit)
     {
         return submitAfter(delay, unit, null);
     }
@@ -397,7 +406,8 @@ public interface RestAction<T>
      * @return {@link DelayedCompletableFuture DelayedCompletableFuture}
      *         representing the delayed operation
      */
-    default DelayedCompletableFuture<T> submitAfter(long delay, TimeUnit unit, ScheduledExecutorService executor)
+    @Nonnull
+    default DelayedCompletableFuture<T> submitAfter(long delay, @Nonnull TimeUnit unit, @Nullable ScheduledExecutorService executor)
     {
         Checks.notNull(unit, "TimeUnit");
         if (executor == null)
@@ -424,7 +434,7 @@ public interface RestAction<T>
      *
      * @return The response value
      */
-    default T completeAfter(long delay, TimeUnit unit)
+    default T completeAfter(long delay, @Nonnull TimeUnit unit)
     {
         Checks.notNull(unit, "TimeUnit");
         try
@@ -461,7 +471,8 @@ public interface RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
      */
-    default ScheduledFuture<?> queueAfter(long delay, TimeUnit unit)
+    @Nonnull
+    default ScheduledFuture<?> queueAfter(long delay, @Nonnull TimeUnit unit)
     {
         return queueAfter(delay, unit, null, null, null);
     }
@@ -492,7 +503,8 @@ public interface RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
      */
-    default ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<? super T> success)
+    @Nonnull
+    default ScheduledFuture<?> queueAfter(long delay, @Nonnull TimeUnit unit, @Nullable Consumer<? super T> success)
     {
         return queueAfter(delay, unit, success, null, null);
     }
@@ -523,7 +535,8 @@ public interface RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
      */
-    default ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<? super T> success, Consumer<? super Throwable> failure)
+    @Nonnull
+    default ScheduledFuture<?> queueAfter(long delay, @Nonnull TimeUnit unit, @Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure)
     {
         return queueAfter(delay, unit, success, failure, null);
     }
@@ -553,7 +566,8 @@ public interface RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
      */
-    default ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, ScheduledExecutorService executor)
+    @Nonnull
+    default ScheduledFuture<?> queueAfter(long delay, @Nonnull TimeUnit unit, @Nullable ScheduledExecutorService executor)
     {
         return queueAfter(delay, unit, null, null, executor);
     }
@@ -586,7 +600,8 @@ public interface RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
      */
-    default ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<? super T> success, ScheduledExecutorService executor)
+    @Nonnull
+    default ScheduledFuture<?> queueAfter(long delay, @Nonnull TimeUnit unit, @Nullable Consumer<? super T> success, @Nullable ScheduledExecutorService executor)
     {
         return queueAfter(delay, unit, success, null, executor);
     }
@@ -619,7 +634,8 @@ public interface RestAction<T>
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
      */
-    default ScheduledFuture<?> queueAfter(long delay, TimeUnit unit, Consumer<? super T> success, Consumer<? super Throwable> failure, ScheduledExecutorService executor)
+    @Nonnull
+    default ScheduledFuture<?> queueAfter(long delay, @Nonnull TimeUnit unit, @Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure, @Nullable ScheduledExecutorService executor)
     {
         Checks.notNull(unit, "TimeUnit");
         if (executor == null)

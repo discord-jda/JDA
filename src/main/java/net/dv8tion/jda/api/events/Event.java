@@ -17,6 +17,8 @@ package net.dv8tion.jda.api.events;
 
 import net.dv8tion.jda.api.JDA;
 
+import javax.annotation.Nonnull;
+
 /**
  * Top-level event type
  * <br>All events JDA fires are derived from this class.
@@ -24,7 +26,7 @@ import net.dv8tion.jda.api.JDA;
  * <p>Can be used to check if an Object is a JDA event in {@link net.dv8tion.jda.api.hooks.EventListener EventListener} implementations to distinguish what event is being fired.
  * <br>Adapter implementation: {@link net.dv8tion.jda.api.hooks.ListenerAdapter ListenerAdapter}
  */
-public abstract class Event
+public abstract class Event implements GenericEvent
 {
     protected final JDA api;
     protected final long responseNumber;
@@ -39,7 +41,7 @@ public abstract class Event
      *
      * @see   #Event(net.dv8tion.jda.api.JDA)
      */
-    public Event(JDA api, long responseNumber)
+    public Event(@Nonnull JDA api, long responseNumber)
     {
         this.api = api;
         this.responseNumber = responseNumber;
@@ -52,27 +54,19 @@ public abstract class Event
      * @param api
      *        Current JDA instance
      */
-    public Event(JDA api)
+    public Event(@Nonnull JDA api)
     {
         this(api, api.getResponseTotal());
     }
 
-    /**
-     * The current JDA instance corresponding to this Event
-     *
-     * @return The corresponding JDA instance
-     */
+    @Nonnull
+    @Override
     public JDA getJDA()
     {
         return api;
     }
 
-    /**
-     * The current sequence for this event.
-     * <br>This can be used to keep events in order when making sequencing system.
-     *
-     * @return The current sequence number for this event
-     */
+    @Override
     public long getResponseNumber()
     {
         return responseNumber;

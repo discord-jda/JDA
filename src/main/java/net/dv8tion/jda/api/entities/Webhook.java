@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.managers.WebhookManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -30,12 +31,12 @@ import javax.annotation.Nullable;
  */
 public interface Webhook extends ISnowflake, IFakeable
 {
-
     /**
      * The JDA instance of this Webhook.
      *
      * @return The current JDA instance of this Webhook
      */
+    @Nonnull
     JDA getJDA();
 
     /**
@@ -45,6 +46,7 @@ public interface Webhook extends ISnowflake, IFakeable
      *
      * @return The current Guild of this Webhook
      */
+    @Nonnull
     Guild getGuild();
 
     /**
@@ -53,6 +55,7 @@ public interface Webhook extends ISnowflake, IFakeable
      *
      * @return The current TextChannel of this Webhook
      */
+    @Nonnull
     TextChannel getChannel();
 
     /**
@@ -79,6 +82,7 @@ public interface Webhook extends ISnowflake, IFakeable
      *
      * @see    <a href="https://discordapp.com/developers/docs/resources/webhook#execute-webhook">Execute Webhook Docs</a>
      */
+    @Nonnull
     User getDefaultUser();
 
     /**
@@ -90,6 +94,7 @@ public interface Webhook extends ISnowflake, IFakeable
      *
      * @return The name of this Webhook
      */
+    @Nonnull
     String getName();
 
     /**
@@ -121,6 +126,7 @@ public interface Webhook extends ISnowflake, IFakeable
      *
      * @return The execution route for this Webhook.
      */
+    @Nonnull
     String getUrl();
 
     /**
@@ -132,6 +138,7 @@ public interface Webhook extends ISnowflake, IFakeable
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>The rest action to delete this Webhook.
      */
+    @Nonnull
     @CheckReturnValue
     AuditableRestAction<Void> delete();
 
@@ -147,5 +154,6 @@ public interface Webhook extends ISnowflake, IFakeable
      * 
      * @return The {@link WebhookManager WebhookManager} for this Webhook
      */
+    @Nonnull
     WebhookManager getManager();
 }

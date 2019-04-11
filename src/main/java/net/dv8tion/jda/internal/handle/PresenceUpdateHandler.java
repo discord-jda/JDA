@@ -17,6 +17,7 @@ package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.ClientType;
 import net.dv8tion.jda.api.events.user.UserActivityEndEvent;
 import net.dv8tion.jda.api.events.user.UserActivityStartEvent;
 import net.dv8tion.jda.api.events.user.update.*;
@@ -31,6 +32,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 
@@ -130,6 +132,7 @@ public class PresenceUpdateHandler extends SocketHandler
                 else
                     EntityBuilder.LOG.warn("Encountered exception trying to parse a presence! UserID: {} Message: {} Enable debug for details", userId, ex.getMessage());
             }
+
             OnlineStatus status = OnlineStatus.fromKey(content.getString("status"));
 
             //If we are in a Guild, then we will use Member.
@@ -155,6 +158,21 @@ public class PresenceUpdateHandler extends SocketHandler
                 }
                 else
                 {
+                    if (!content.isNull("client_status"))
+                    {
+                        JSONObject json = content.getJSONObject("client_status");
+                        EnumSet<ClientType> types = EnumSet.of(ClientType.UNKNOWN);
+                        for (String key : json.keySet())
+                        {
+                            ClientType type = ClientType.fromKey(key);
+                            types.add(type);
+                            String raw = String.valueOf(json.get(key));
+                            OnlineStatus clientStatus = OnlineStatus.fromKey(raw);
+                            member.setOnlineStatus(type, clientStatus);
+                        }
+                        for (ClientType type : EnumSet.complementOf(types))
+                            member.setOnlineStatus(type, null); // set remaining types to offline
+                    }
                     //The member is already cached, so modify the presence values and fire events as needed.
                     if (!member.getOnlineStatus().equals(status))
                     {
