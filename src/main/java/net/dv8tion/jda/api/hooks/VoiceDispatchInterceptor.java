@@ -75,6 +75,7 @@ public interface VoiceDispatchInterceptor
          *
          * @return The raw JSON object
          */
+        @Nonnull
         @Override
         DataObject toData();
 

@@ -468,6 +468,7 @@ public interface GuildAction extends RestAction<Void>
             return this;
         }
 
+        @Nonnull
         @Override
         public DataObject toData()
         {
@@ -713,6 +714,7 @@ public interface GuildAction extends RestAction<Void>
             return addPermissionOverride(role, allowRaw, denyRaw);
         }
 
+        @Nonnull
         @Override
         public DataObject toData()
         {

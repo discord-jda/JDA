@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.utils.json.DataArray;
 import net.dv8tion.jda.api.utils.json.DataObject;
+import net.dv8tion.jda.api.utils.json.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
@@ -37,7 +38,7 @@ import java.util.Objects;
  * <a href="http://imgur.com/a/yOb5n" target="_blank">http://imgur.com/a/yOb5n</a>
  * <br>This class has many possibilities for null values, so be careful!
  */
-public class MessageEmbed
+public class MessageEmbed implements SerializableData
 {
     /**
      * The maximum length an embed title can have
@@ -427,7 +428,8 @@ public class MessageEmbed
      * @return JSONObject for this embed
      */
     @Nonnull
-    public DataObject toJSONObject()
+    @Override
+    public DataObject toData()
     {
         if (json != null)
             return json;

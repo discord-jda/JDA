@@ -302,6 +302,7 @@ public class DataObject implements SerializableData
         return data;
     }
 
+    @Nonnull
     @Override
     public DataObject toData()
     {

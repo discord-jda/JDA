@@ -322,7 +322,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
             if (embed == null)
                 obj.putNull("embed");
             else
-                obj.put("embed", getJSONEmbed(embed));
+                obj.put("embed", embed);
             if (content.length() == 0)
                 obj.putNull("content");
             else
@@ -336,7 +336,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         else
         {
             if (embed != null)
-                obj.put("embed", getJSONEmbed(embed));
+                obj.put("embed", embed);
             if (content.length() > 0)
                 obj.put("content", content.toString());
             if (nonce != null)
@@ -344,11 +344,6 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
             obj.put("tts", tts);
         }
         return obj;
-    }
-
-    protected static DataObject getJSONEmbed(final MessageEmbed embed)
-    {
-        return embed.toJSONObject();
     }
 
     protected void checkFileAmount()
