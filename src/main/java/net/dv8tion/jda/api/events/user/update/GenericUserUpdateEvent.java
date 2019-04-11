@@ -21,6 +21,9 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.UpdateEvent;
 import net.dv8tion.jda.api.events.user.GenericUserEvent;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 public abstract class GenericUserUpdateEvent<T> extends GenericUserEvent implements UpdateEvent<User, T>
 {
     protected final T previous;
@@ -28,8 +31,8 @@ public abstract class GenericUserUpdateEvent<T> extends GenericUserEvent impleme
     protected final String identifier;
 
     public GenericUserUpdateEvent(
-        JDA api, long responseNumber, User user,
-        T previous, T next, String identifier)
+        @Nonnull JDA api, long responseNumber, @Nonnull User user,
+        @Nullable T previous, @Nullable T next, @Nonnull String identifier)
     {
         super(api, responseNumber, user);
         this.previous = previous;
@@ -37,24 +40,28 @@ public abstract class GenericUserUpdateEvent<T> extends GenericUserEvent impleme
         this.identifier = identifier;
     }
 
+    @Nonnull
     @Override
     public User getEntity()
     {
         return getUser();
     }
 
+    @Nonnull
     @Override
     public String getPropertyIdentifier()
     {
         return identifier;
     }
 
+    @Nullable
     @Override
     public T getOldValue()
     {
         return previous;
     }
 
+    @Nullable
     @Override
     public T getNewValue()
     {

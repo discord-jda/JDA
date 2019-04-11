@@ -28,6 +28,7 @@ import okhttp3.RequestBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -77,6 +78,7 @@ public class RoleOrderActionImpl
 
     }
 
+    @Nonnull
     @Override
     public Guild getGuild()
     {

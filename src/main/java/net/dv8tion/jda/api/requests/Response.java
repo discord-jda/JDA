@@ -23,6 +23,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.*;
 import java.util.Optional;
 import java.util.Set;
@@ -46,13 +48,13 @@ public class Response implements Closeable
     private boolean attemptedParsing = false;
     private Exception exception;
 
-    public Response(final okhttp3.Response response, final Exception exception, final Set<String> cfRays)
+    public Response(@Nullable final okhttp3.Response response, @Nonnull final Exception exception, @Nonnull final Set<String> cfRays)
     {
         this(response, response != null ? response.code() : ERROR_CODE, ERROR_MESSAGE, -1, cfRays);
         this.exception = exception;
     }
 
-    public Response(final okhttp3.Response response, final int code, final String message, final long retryAfter, final Set<String> cfRays)
+    public Response(@Nullable final okhttp3.Response response, final int code, @Nonnull final String message, final long retryAfter, @Nonnull final Set<String> cfRays)
     {
         this.rawResponse = response;
         this.code = code;
@@ -76,57 +78,66 @@ public class Response implements Closeable
         }
     }
 
-    public Response(final long retryAfter, final Set<String> cfRays)
+    public Response(final long retryAfter, @Nonnull final Set<String> cfRays)
     {
         this(null, 429, "TOO MANY REQUESTS", retryAfter, cfRays);
     }
 
-    public Response(final okhttp3.Response response, final long retryAfter, final Set<String> cfRays)
+    public Response(@Nonnull final okhttp3.Response response, final long retryAfter, @Nonnull final Set<String> cfRays)
     {
         this(response, response.code(), response.message(), retryAfter, cfRays);
     }
 
+    @Nonnull
     public JSONArray getArray()
     {
         return get(JSONArray.class, JSON_SERIALIZE_ARRAY);
     }
 
+    @Nonnull
     public Optional<JSONArray> optArray()
     {
         return parseBody(true, JSONArray.class, JSON_SERIALIZE_ARRAY);
     }
 
+    @Nonnull
     public JSONObject getObject()
     {
         return get(JSONObject.class, JSON_SERIALIZE_OBJECT);
     }
 
+    @Nonnull
     public Optional<JSONObject> optObject()
     {
         return parseBody(true, JSONObject.class, JSON_SERIALIZE_OBJECT);
     }
 
+    @Nonnull
     public String getString()
     {
         return parseBody(String.class, this::readString)
             .orElseGet(() -> fallbackString == null ? "N/A" : fallbackString);
     }
 
+    @Nonnull
     public <T> T get(Class<T> clazz, IOFunction<BufferedReader, T> parser)
     {
         return parseBody(clazz, parser).orElseThrow(IllegalStateException::new);
     }
 
+    @Nullable
     public okhttp3.Response getRawResponse()
     {
         return this.rawResponse;
     }
 
+    @Nonnull
     public Set<String> getCFRays()
     {
         return cfRays;
     }
 
+    @Nullable
     public Exception getException()
     {
         return exception;

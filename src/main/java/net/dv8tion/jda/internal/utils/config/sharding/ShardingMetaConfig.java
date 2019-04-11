@@ -19,6 +19,8 @@ package net.dv8tion.jda.internal.utils.config.sharding;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.utils.config.MetaConfig;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.IntFunction;
@@ -30,8 +32,8 @@ public class ShardingMetaConfig extends MetaConfig
     private final IntFunction<? extends ConcurrentMap<String, String>> contextProvider;
 
     public ShardingMetaConfig(
-            IntFunction<? extends ConcurrentMap<String, String>> contextProvider,
-            EnumSet<CacheFlag> cacheFlags, boolean enableMDC,
+            @Nullable IntFunction<? extends ConcurrentMap<String, String>> contextProvider,
+            @Nullable EnumSet<CacheFlag> cacheFlags, boolean enableMDC,
             boolean useShutdownHook, boolean enableCompression)
     {
         super(null, cacheFlags, enableMDC, useShutdownHook);
@@ -40,6 +42,7 @@ public class ShardingMetaConfig extends MetaConfig
         this.contextProvider = contextProvider;
     }
 
+    @Nullable
     public ConcurrentMap<String, String> getContextMap(int shardId)
     {
         return contextProvider == null ? null : contextProvider.apply(shardId);
@@ -50,11 +53,13 @@ public class ShardingMetaConfig extends MetaConfig
         return enableCompression;
     }
 
+    @Nullable
     public IntFunction<? extends ConcurrentMap<String, String>> getContextProvider()
     {
         return contextProvider;
     }
 
+    @Nonnull
     public static ShardingMetaConfig getDefault()
     {
         return defaultConfig;

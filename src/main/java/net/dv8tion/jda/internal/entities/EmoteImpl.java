@@ -30,6 +30,7 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 
+import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -87,6 +88,7 @@ public class EmoteImpl implements ListedEmote
         return guild == null ? null : guild.get();
     }
 
+    @Nonnull
     @Override
     public List<Role> getRoles()
     {
@@ -101,6 +103,7 @@ public class EmoteImpl implements ListedEmote
         return roles != null;
     }
 
+    @Nonnull
     @Override
     public String getName()
     {
@@ -125,12 +128,14 @@ public class EmoteImpl implements ListedEmote
         return id;
     }
 
+    @Nonnull
     @Override
     public JDAImpl getJDA()
     {
         return api.get();
     }
 
+    @Nonnull
     @Override
     public User getUser()
     {
@@ -145,6 +150,7 @@ public class EmoteImpl implements ListedEmote
         return user != null;
     }
 
+    @Nonnull
     @Override
     public EmoteManager getManager()
     {
@@ -167,6 +173,7 @@ public class EmoteImpl implements ListedEmote
         return animated;
     }
 
+    @Nonnull
     @Override
     public AuditableRestAction<Void> delete()
     {
@@ -178,7 +185,7 @@ public class EmoteImpl implements ListedEmote
             throw new InsufficientPermissionException(Permission.MANAGE_EMOTES);
 
         Route.CompiledRoute route = Route.Emotes.DELETE_EMOTE.compile(getGuild().getId(), getId());
-        return new AuditableRestActionImpl<Void>(getJDA(), route);
+        return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
     // -- Setters --

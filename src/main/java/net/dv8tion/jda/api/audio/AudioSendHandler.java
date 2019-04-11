@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.audio;
 
+import javax.annotation.Nullable;
 import javax.sound.sampled.AudioFormat;
 import java.nio.ByteBuffer;
 
@@ -59,6 +60,7 @@ public interface AudioSendHandler
      * @see    java.nio.ByteBuffer#allocate(int)
      * @see    java.nio.ByteBuffer#wrap(byte[])
      */
+    @Nullable
     ByteBuffer provide20MsAudio();
 
     /**

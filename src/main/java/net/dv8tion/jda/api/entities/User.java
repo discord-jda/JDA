@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.RestAction;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -64,6 +66,7 @@ public interface User extends IMentionable, IFakeable
      *
      * @return Never-null String containing the {@link net.dv8tion.jda.api.entities.User User}'s username.
      */
+    @Nonnull
     String getName();
 
     /**
@@ -73,6 +76,7 @@ public interface User extends IMentionable, IFakeable
      *
      * @return Never-null String containing the {@link net.dv8tion.jda.api.entities.User User} discriminator.
      */
+    @Nonnull
     String getDiscriminator();
 
     /**
@@ -81,6 +85,7 @@ public interface User extends IMentionable, IFakeable
      *
      * @return Possibly-null String containing the {@link net.dv8tion.jda.api.entities.User User} avatar id.
      */
+    @Nullable
     String getAvatarId();
 
     /**
@@ -89,6 +94,7 @@ public interface User extends IMentionable, IFakeable
      *
      * @return Possibly-null String containing the {@link net.dv8tion.jda.api.entities.User User} avatar url.
      */
+    @Nullable
     String getAvatarUrl();
 
     /**
@@ -96,6 +102,7 @@ public interface User extends IMentionable, IFakeable
      *
      * @return Never-null String containing the {@link net.dv8tion.jda.api.entities.User User} default avatar id.
      */
+    @Nonnull
     String getDefaultAvatarId();
 
     /**
@@ -103,6 +110,7 @@ public interface User extends IMentionable, IFakeable
      *
      * @return Never-null String containing the {@link net.dv8tion.jda.api.entities.User User} default avatar url.
      */
+    @Nonnull
     String getDefaultAvatarUrl();
 
     /**
@@ -112,6 +120,7 @@ public interface User extends IMentionable, IFakeable
      *
      * @return  Never-null String containing the {@link net.dv8tion.jda.api.entities.User User} effective avatar url.
      */
+    @Nonnull
     String getEffectiveAvatarUrl();
 
     /**
@@ -120,6 +129,7 @@ public interface User extends IMentionable, IFakeable
      *
      * @return Never-null String containing the tag for this user, for example DV8FromTheWorld#6297
      */
+    @Nonnull
     String getAsTag();
 
     /**
@@ -149,6 +159,7 @@ public interface User extends IMentionable, IFakeable
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         <br>The PrivateChannel to use to directly message this User.
      */
+    @Nonnull
     @CheckReturnValue
     RestAction<PrivateChannel> openPrivateChannel();
 
@@ -158,6 +169,7 @@ public interface User extends IMentionable, IFakeable
      *
      * @return Unmodifiable list of all {@link net.dv8tion.jda.api.entities.Guild Guilds} that this user is a member of.
      */
+    @Nonnull
     List<Guild> getMutualGuilds();
 
     /**
@@ -172,5 +184,6 @@ public interface User extends IMentionable, IFakeable
      *
      * @return the corresponding JDA instance
      */
+    @Nonnull
     JDA getJDA();
 }

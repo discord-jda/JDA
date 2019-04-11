@@ -23,6 +23,8 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.FormattableFlags;
 import java.util.Formatter;
@@ -47,6 +49,7 @@ public interface TextChannel extends GuildChannel, MessageChannel, Comparable<Te
      *
      * @return Possibly-null String containing the topic of this TextChannel.
      */
+    @Nullable
     String getTopic();
     
     /**
@@ -72,9 +75,11 @@ public interface TextChannel extends GuildChannel, MessageChannel, Comparable<Te
      */
     int getSlowmode();
 
+    @Nonnull
     @Override
-    ChannelAction<TextChannel> createCopy(Guild guild);
+    ChannelAction<TextChannel> createCopy(@Nonnull Guild guild);
 
+    @Nonnull
     @Override
     ChannelAction<TextChannel> createCopy();
 
@@ -93,6 +98,7 @@ public interface TextChannel extends GuildChannel, MessageChannel, Comparable<Te
      * @return {@link net.dv8tion.jda.api.requests.RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.api.entities.Webhook Webhook}{@literal >}
      *         <br>An immutable list of Webhook attached to this channel
      */
+    @Nonnull
     @CheckReturnValue
     RestAction<List<Webhook>> retrieveWebhooks();
 
@@ -121,8 +127,9 @@ public interface TextChannel extends GuildChannel, MessageChannel, Comparable<Te
      * @return A specific {@link WebhookAction WebhookAction}
      *         <br>This action allows to set fields for the new webhook before creating it
      */
+    @Nonnull
     @CheckReturnValue
-    WebhookAction createWebhook(String name);
+    WebhookAction createWebhook(@Nonnull String name);
 
     /**
      * Bulk deletes a list of messages.
@@ -167,8 +174,9 @@ public interface TextChannel extends GuildChannel, MessageChannel, Comparable<Te
      * @see    #deleteMessagesByIds(Collection)
      * @see    #purgeMessages(List)
      */
+    @Nonnull
     @CheckReturnValue
-    RestAction<Void> deleteMessages(Collection<Message> messages);
+    RestAction<Void> deleteMessages(@Nonnull Collection<Message> messages);
 
     /**
      * Bulk deletes a list of messages.
@@ -216,8 +224,9 @@ public interface TextChannel extends GuildChannel, MessageChannel, Comparable<Te
      * @see    #deleteMessages(Collection)
      * @see    #purgeMessagesById(List)
      */
+    @Nonnull
     @CheckReturnValue
-    RestAction<Void> deleteMessagesByIds(Collection<String> messageIds);
+    RestAction<Void> deleteMessagesByIds(@Nonnull Collection<String> messageIds);
 
     /**
      * Deletes a {@link net.dv8tion.jda.api.entities.Webhook Webhook} attached to this channel
@@ -251,8 +260,9 @@ public interface TextChannel extends GuildChannel, MessageChannel, Comparable<Te
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> deleteWebhookById(String id);
+    AuditableRestAction<Void> deleteWebhookById(@Nonnull String id);
 
     /**
      * Attempts to remove all reactions from a message with the specified {@code messageId} in this TextChannel
@@ -285,8 +295,9 @@ public interface TextChannel extends GuildChannel, MessageChannel, Comparable<Te
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @Nonnull
     @CheckReturnValue
-    RestAction<Void> clearReactionsById(String messageId);
+    RestAction<Void> clearReactionsById(@Nonnull String messageId);
 
     /**
      * Attempts to remove all reactions from a message with the specified {@code messageId} in this TextChannel
@@ -317,6 +328,7 @@ public interface TextChannel extends GuildChannel, MessageChannel, Comparable<Te
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @Nonnull
     @CheckReturnValue
     default RestAction<Void> clearReactionsById(long messageId)
     {
@@ -382,8 +394,9 @@ public interface TextChannel extends GuildChannel, MessageChannel, Comparable<Te
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction}
      */
+    @Nonnull
     @CheckReturnValue
-    RestAction<Void> removeReactionById(String messageId, String unicode, User user);
+    RestAction<Void> removeReactionById(@Nonnull String messageId, @Nonnull String unicode, @Nonnull User user);
 
     /**
      * Attempts to remove the reaction from a message represented by the specified {@code messageId}
@@ -444,8 +457,9 @@ public interface TextChannel extends GuildChannel, MessageChannel, Comparable<Te
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction}
      */
+    @Nonnull
     @CheckReturnValue
-    default RestAction<Void> removeReactionById(long messageId, String unicode, User user)
+    default RestAction<Void> removeReactionById(long messageId, @Nonnull String unicode, @Nonnull User user)
     {
         return removeReactionById(Long.toUnsignedString(messageId), unicode, user);
     }
@@ -503,8 +517,9 @@ public interface TextChannel extends GuildChannel, MessageChannel, Comparable<Te
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction}
      */
+    @Nonnull
     @CheckReturnValue
-    default RestAction<Void> removeReactionById(String messageId, Emote emote, User user)
+    default RestAction<Void> removeReactionById(@Nonnull String messageId, @Nonnull Emote emote, @Nonnull User user)
     {
         Checks.notNull(emote, "Emote");
         return removeReactionById(messageId, emote.getName() + ":" + emote.getId(), user);
@@ -563,8 +578,9 @@ public interface TextChannel extends GuildChannel, MessageChannel, Comparable<Te
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction}
      */
+    @Nonnull
     @CheckReturnValue
-    default RestAction<Void> removeReactionById(long messageId, Emote emote, User user)
+    default RestAction<Void> removeReactionById(long messageId, @Nonnull Emote emote, @Nonnull User user)
     {
         return removeReactionById(Long.toUnsignedString(messageId), emote, user);
     }
@@ -590,7 +606,7 @@ public interface TextChannel extends GuildChannel, MessageChannel, Comparable<Te
      *
      * @return True, if the specified member is able to read and send messages in this channel
      */
-    boolean canTalk(Member member);
+    boolean canTalk(@Nonnull Member member);
 
     @Override
     default void formatTo(Formatter formatter, int flags, int width, int precision)

@@ -84,6 +84,7 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
         this.limit = new AtomicInteger(0);
     }
 
+    @Nonnull
     @Override
     @SuppressWarnings("unchecked")
     public M skipTo(long id)
@@ -107,6 +108,7 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
         return lastKey;
     }
 
+    @Nonnull
     @Override
     @SuppressWarnings("unchecked")
     public M setCheck(BooleanSupplier checks)
@@ -126,12 +128,14 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
         return cached.isEmpty();
     }
 
+    @Nonnull
     @Override
     public List<T> getCached()
     {
         return Collections.unmodifiableList(cached);
     }
 
+    @Nonnull
     @Override
     public T getLast()
     {
@@ -141,6 +145,7 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
         return last;
     }
 
+    @Nonnull
     @Override
     public T getFirst()
     {
@@ -149,6 +154,7 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
         return cached.get(0);
     }
 
+    @Nonnull
     @Override
     @SuppressWarnings("unchecked")
     public M limit(final int limit)
@@ -159,6 +165,7 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
         return (M) this;
     }
 
+    @Nonnull
     @Override
     @SuppressWarnings("unchecked")
     public M cache(final boolean enableCache)
@@ -191,6 +198,7 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
         return limit.get();
     }
 
+    @Nonnull
     @Override
     public CompletableFuture<List<T>> takeAsync(int amount)
     {
@@ -200,6 +208,7 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
         }, task::completeExceptionally));
     }
 
+    @Nonnull
     @Override
     public CompletableFuture<List<T>> takeRemainingAsync(int amount)
     {
@@ -225,8 +234,9 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
         return new PaginationIterator<>(cached, this::getNextChunk);
     }
 
+    @Nonnull
     @Override
-    public CompletableFuture<?> forEachAsync(final Procedure<? super T> action, final Consumer<? super Throwable> failure)
+    public CompletableFuture<?> forEachAsync(@Nonnull final Procedure<? super T> action, @Nonnull final Consumer<? super Throwable> failure)
     {
         Checks.notNull(action, "Procedure");
         Checks.notNull(failure, "Failure Consumer");
@@ -249,8 +259,9 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
         return task;
     }
 
+    @Nonnull
     @Override
-    public CompletableFuture<?> forEachRemainingAsync(final Procedure<? super T> action, final Consumer<? super Throwable> failure)
+    public CompletableFuture<?> forEachRemainingAsync(@Nonnull final Procedure<? super T> action, @Nonnull final Consumer<? super Throwable> failure)
     {
         Checks.notNull(action, "Procedure");
         Checks.notNull(failure, "Failure Consumer");
@@ -274,7 +285,7 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
     }
 
     @Override
-    public void forEachRemaining(final Procedure<? super T> action)
+    public void forEachRemaining(@Nonnull final Procedure<? super T> action)
     {
         Checks.notNull(action, "Procedure");
         Queue<T> queue = new LinkedList<>();

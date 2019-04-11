@@ -18,6 +18,8 @@ package net.dv8tion.jda.api.events.self;
 
 import net.dv8tion.jda.api.JDA;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that the current user subscribed to nitro or the active nitro subscription ran out. (client-only)
  *
@@ -29,7 +31,7 @@ public class SelfUpdateNitroEvent extends GenericSelfUpdateEvent<Boolean>
 {
     public static final String IDENTIFIER = "nitro";
 
-    public SelfUpdateNitroEvent(JDA api, long responseNumber, boolean wasNitro)
+    public SelfUpdateNitroEvent(@Nonnull JDA api, long responseNumber, boolean wasNitro)
     {
         super(api, responseNumber, wasNitro, !wasNitro, IDENTIFIER);
     }
@@ -42,5 +44,19 @@ public class SelfUpdateNitroEvent extends GenericSelfUpdateEvent<Boolean>
     public boolean wasNitro()
     {
         return getOldValue();
+    }
+
+    @Nonnull
+    @Override
+    public Boolean getOldValue()
+    {
+        return super.getOldValue();
+    }
+
+    @Nonnull
+    @Override
+    public Boolean getNewValue()
+    {
+        return super.getNewValue();
     }
 }

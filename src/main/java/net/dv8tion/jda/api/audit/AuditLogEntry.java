@@ -26,6 +26,7 @@ import net.dv8tion.jda.internal.entities.UserImpl;
 import net.dv8tion.jda.internal.entities.WebhookImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,7 +40,6 @@ import java.util.Map;
  */
 public class AuditLogEntry implements ISnowflake
 {
-
     protected final long id;
     protected final long targetId;
     protected final GuildImpl guild;
@@ -94,6 +94,7 @@ public class AuditLogEntry implements ISnowflake
      *
      * @return The target id
      */
+    @Nonnull
     public String getTargetId()
     {
         return Long.toUnsignedString(targetId);
@@ -115,6 +116,7 @@ public class AuditLogEntry implements ISnowflake
      *
      * @return The Guild instance
      */
+    @Nonnull
     public Guild getGuild()
     {
         return guild;
@@ -148,6 +150,7 @@ public class AuditLogEntry implements ISnowflake
      *
      * @return The corresponding JDA instance
      */
+    @Nonnull
     public JDA getJDA()
     {
         return guild.getJDA();
@@ -161,6 +164,7 @@ public class AuditLogEntry implements ISnowflake
      *
      * @return Key-Value Map of changes
      */
+    @Nonnull
     public Map<String, AuditLogChange> getChanges()
     {
         return changes;
@@ -176,7 +180,7 @@ public class AuditLogEntry implements ISnowflake
      * @return Possibly-null value corresponding to the specified key
      */
     @Nullable
-    public AuditLogChange getChangeByKey(final AuditLogKey key)
+    public AuditLogChange getChangeByKey(@Nullable final AuditLogKey key)
     {
         return key == null ? null : getChangeByKey(key.getKey());
     }
@@ -191,7 +195,7 @@ public class AuditLogEntry implements ISnowflake
      * @return Possibly-null value corresponding to the specified key
      */
     @Nullable
-    public AuditLogChange getChangeByKey(final String key)
+    public AuditLogChange getChangeByKey(@Nullable final String key)
     {
         return changes.get(key);
     }
@@ -207,7 +211,8 @@ public class AuditLogEntry implements ISnowflake
      *
      * @return Possibly-empty, never-null immutable list of {@link AuditLogChange AuditLogChanges}
      */
-    public List<AuditLogChange> getChangesForKeys(AuditLogKey... keys)
+    @Nonnull
+    public List<AuditLogChange> getChangesForKeys(@Nonnull AuditLogKey... keys)
     {
         Checks.notNull(keys, "Keys");
         List<AuditLogChange> changes = new ArrayList<>(keys.length);
@@ -232,6 +237,7 @@ public class AuditLogEntry implements ISnowflake
      *
      * @return Key-Value Map of changes
      */
+    @Nonnull
     public Map<String, Object> getOptions()
     {
         return options;
@@ -253,7 +259,7 @@ public class AuditLogEntry implements ISnowflake
      */
     @Nullable
     @SuppressWarnings("unchecked")
-    public <T> T getOptionByName(String name)
+    public <T> T getOptionByName(@Nullable String name)
     {
         return (T) options.get(name);
     }
@@ -274,7 +280,7 @@ public class AuditLogEntry implements ISnowflake
      * @return Possibly-null value corresponding to the specified option constant
      */
     @Nullable
-    public <T> T getOption(AuditLogOption option)
+    public <T> T getOption(@Nonnull AuditLogOption option)
     {
         Checks.notNull(option, "Option");
         return getOptionByName(option.getKey());
@@ -294,7 +300,8 @@ public class AuditLogEntry implements ISnowflake
      *
      * @return Unmodifiable list of representative values
      */
-    public List<Object> getOptions(AuditLogOption... options)
+    @Nonnull
+    public List<Object> getOptions(@Nonnull AuditLogOption... options)
     {
         Checks.notNull(options, "Options");
         List<Object> items = new ArrayList<>(options.length);
@@ -313,6 +320,7 @@ public class AuditLogEntry implements ISnowflake
      *
      * @return The {@link net.dv8tion.jda.api.audit.ActionType ActionType}
      */
+    @Nonnull
     public ActionType getType()
     {
         return type;
@@ -325,6 +333,7 @@ public class AuditLogEntry implements ISnowflake
      *
      * @return The {@link net.dv8tion.jda.api.audit.TargetType TargetType}
      */
+    @Nonnull
     public TargetType getTargetType()
     {
         return type.getTargetType();
