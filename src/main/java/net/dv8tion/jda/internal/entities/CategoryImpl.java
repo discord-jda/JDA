@@ -171,14 +171,14 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
 
     @Nonnull
     @Override
-    public CategoryOrderAction<GuildChannel> modifyTextChannelPositions()
+    public CategoryOrderAction modifyTextChannelPositions()
     {
         return getGuild().getController().modifyTextChannelPositions(this);
     }
 
     @Nonnull
     @Override
-    public CategoryOrderAction<VoiceChannel> modifyVoiceChannelPositions()
+    public CategoryOrderAction modifyVoiceChannelPositions()
     {
         return getGuild().getController().modifyVoiceChannelPositions(this);
     }

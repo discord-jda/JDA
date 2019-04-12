@@ -33,9 +33,9 @@ import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-public class ChannelOrderActionImpl<T extends GuildChannel>
-    extends OrderActionImpl<T, ChannelOrderAction<T>>
-    implements ChannelOrderAction<T>
+public class ChannelOrderActionImpl
+    extends OrderActionImpl<GuildChannel, ChannelOrderAction>
+    implements ChannelOrderAction
 {
     protected final Guild guild;
     protected final ChannelType type;
@@ -54,9 +54,9 @@ public class ChannelOrderActionImpl<T extends GuildChannel>
      * @throws java.lang.IllegalArgumentException
      *         If one of the specified Guild has no channels of the ChannelType.
      */
-    public ChannelOrderActionImpl(Class<T> clazz, Guild guild, ChannelType type)
+    public ChannelOrderActionImpl(Guild guild, ChannelType type)
     {
-        this(guild, type, getChannelsOfType(clazz, guild, type));
+        this(guild, type, getChannelsOfType(guild, type));
     }
 
     /**
@@ -81,7 +81,7 @@ public class ChannelOrderActionImpl<T extends GuildChannel>
      *         or any of them do not have the same ChannelType as the one
      *         provided.
      */
-    public ChannelOrderActionImpl(Guild guild, ChannelType type, Collection<? extends T> channels)
+    public ChannelOrderActionImpl(Guild guild, ChannelType type, Collection<? extends GuildChannel> channels)
     {
         super(guild.getJDA(), Route.Guilds.MODIFY_CHANNELS.compile(guild.getId()));
 
@@ -130,17 +130,16 @@ public class ChannelOrderActionImpl<T extends GuildChannel>
     }
 
     @Override
-    protected void validateInput(T entity)
+    protected void validateInput(GuildChannel entity)
     {
         Checks.check(entity.getGuild().equals(guild), "Provided channel is not from this Guild!");
         Checks.check(orderList.contains(entity), "Provided channel is not in the list of orderable channels!");
     }
 
-    protected static <E extends GuildChannel> Collection<E> getChannelsOfType(Class<E> clazz, Guild guild, ChannelType type)
+    protected static Collection<GuildChannel> getChannelsOfType(Guild guild, ChannelType type)
     {
         return guild.getChannels().stream()
             .filter(it -> it.getType().getSortBucket() == type.getSortBucket())
-            .map(clazz::cast)
             .sorted()
             .collect(Collectors.toList());
     }

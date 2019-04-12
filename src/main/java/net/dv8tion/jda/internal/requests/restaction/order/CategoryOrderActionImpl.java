@@ -26,9 +26,9 @@ import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-public class CategoryOrderActionImpl<T extends GuildChannel>
-    extends ChannelOrderActionImpl<T>
-    implements CategoryOrderAction<T>
+public class CategoryOrderActionImpl
+    extends ChannelOrderActionImpl
+    implements CategoryOrderAction
 {
     protected final Category category;
 
@@ -47,9 +47,9 @@ public class CategoryOrderActionImpl<T extends GuildChannel>
      *         If the {@code ChannelType} is not one that can be retrieved from a {@code Category}.
      *         Currently the only two allowed are {@link ChannelType#TEXT} and {@link ChannelType#VOICE}.
      */
-    public CategoryOrderActionImpl(Class<T> clazz, Category category, ChannelType type)
+    public CategoryOrderActionImpl(Category category, ChannelType type)
     {
-        super(category.getGuild(), type, getChannelsOfType(clazz, category, type));
+        super(category.getGuild(), type, getChannelsOfType(category, type));
         this.category = category;
     }
 
@@ -61,7 +61,7 @@ public class CategoryOrderActionImpl<T extends GuildChannel>
     }
 
     @Override
-    protected void validateInput(T entity)
+    protected void validateInput(GuildChannel entity)
     {
         Checks.notNull(entity, "Provided channel");
         Checks.check(getCategory().equals(entity.getParent()), "Provided channel's Category is not this Category!");
@@ -69,11 +69,11 @@ public class CategoryOrderActionImpl<T extends GuildChannel>
     }
 
     @Nonnull
-    private static <E extends GuildChannel> Collection<E> getChannelsOfType(Class<E> clazz, Category category, ChannelType type)
+    private static Collection<GuildChannel> getChannelsOfType(Category category, ChannelType type)
     {
         Checks.notNull(type, "ChannelType");
         Checks.notNull(category, "Category");
-        return ChannelOrderActionImpl.getChannelsOfType(clazz, category.getGuild(), type).stream()
+        return ChannelOrderActionImpl.getChannelsOfType(category.getGuild(), type).stream()
              .filter(it -> category.equals(it.getParent()))
              .sorted()
              .collect(Collectors.toList());

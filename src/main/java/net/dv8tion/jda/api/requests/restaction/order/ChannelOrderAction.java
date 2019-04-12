@@ -31,10 +31,6 @@ import javax.annotation.Nonnull;
  * <p>Before you can use any of the {@code move} methods
  * you must use either {@link #selectPosition(Object) selectPosition(GuildChannel)} or {@link #selectPosition(int)}!
  *
- * @param <T>
- *        The type of {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} defining
- *        which channels to order
- *
  * @since 3.0
  *
  * @see   GuildController
@@ -43,7 +39,7 @@ import javax.annotation.Nonnull;
  * @see   GuildController#modifyCategoryPositions()
  * @see   CategoryOrderAction
  */
-public interface ChannelOrderAction<T extends GuildChannel> extends OrderAction<T, ChannelOrderAction<T>>
+public interface ChannelOrderAction extends OrderAction<GuildChannel, ChannelOrderAction>
 {
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} which holds
