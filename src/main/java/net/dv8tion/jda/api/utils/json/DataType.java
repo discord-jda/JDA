@@ -21,12 +21,23 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Enum constants representing possible types for a {@link net.dv8tion.jda.api.utils.json.DataObject} value.
+ */
 public enum DataType
 {
     INT, FLOAT, STRING, OBJECT, ARRAY, BOOLEAN, NULL, UNKNOWN;
 
+    /**
+     * Assumes the type of the provided value through instance checks.
+     *
+     * @param  value
+     *         The value to test
+     *
+     * @return The DataType constant or {@link #UNKNOWN}
+     */
     @Nonnull
-    public DataType getType(@Nullable Object value)
+    public static DataType getType(@Nullable Object value)
     {
         for (DataType type : values())
         {
@@ -36,6 +47,15 @@ public enum DataType
         return UNKNOWN;
     }
 
+    /**
+     * Tests whether the type for the provided value is
+     * the one represented by this enum constant.
+     *
+     * @param  value
+     *         The value to check
+     *
+     * @return True, if the value is of this type
+     */
     public boolean isType(@Nullable Object value)
     {
         switch (this)
