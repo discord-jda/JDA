@@ -587,6 +587,11 @@ public class JDAImpl implements JDA
         return userCache;
     }
 
+    public boolean hasSelfUser()
+    {
+        return selfUser != null;
+    }
+
     @Nonnull
     @Override
     public SelfUser getSelfUser()
