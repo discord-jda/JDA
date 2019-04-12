@@ -89,7 +89,7 @@ public class EntityBuilder
 
     public SelfUser createSelfUser(JSONObject self)
     {
-        SelfUserImpl selfUser = ((SelfUserImpl) getJDA().getSelfUser());
+        SelfUserImpl selfUser = (SelfUserImpl) (getJDA().hasSelfUser() ? getJDA().getSelfUser() : null);
         if (selfUser == null)
         {
             final long id = self.getLong("id");
