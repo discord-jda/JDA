@@ -542,6 +542,7 @@ public class DataObject implements SerializableData
      *
      * @return A DataObject with the removed key
      */
+    @Nonnull
     public DataObject remove(@Nonnull String key)
     {
         data.remove(key);
