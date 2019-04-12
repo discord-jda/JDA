@@ -34,7 +34,9 @@ import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 /**
- * Throws {@link java.lang.NullPointerException},
+ * Represents a map of values used in communication with the Discord API.
+ *
+ * <p>Throws {@link java.lang.NullPointerException},
  * if a parameter annotated with {@link javax.annotation.Nonnull} is provided with {@code null}.
  *
  * <p>This class is not Thread-Safe.
@@ -637,7 +639,7 @@ public class DataObject implements SerializableData
 
     private ParsingException valueError(String key, String expectedType)
     {
-        return new ParsingException("Unable to access " + key + " with type " + expectedType + ": " + data.get(key));
+        return new ParsingException("Unable to resolve value with key " + key + " to type " + expectedType + ": " + data.get(key));
     }
 
     @Nullable
