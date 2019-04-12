@@ -245,6 +245,7 @@ public class DataObject implements SerializableData
     {
         return optArray(key).orElseThrow(() -> valueError(key, "DataArray"));
     }
+
     /**
      * Resolves a DataArray to a key.
      *

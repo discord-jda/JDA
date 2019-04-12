@@ -251,7 +251,7 @@ public class DataArray implements Iterable<Object>
         List<Object> child = null;
         try
         {
-            child = (List<Object>) get(Map.class, index);
+            child = (List<Object>) get(List.class, index);
         }
         catch (ClassCastException ex)
         {
