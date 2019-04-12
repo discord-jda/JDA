@@ -637,8 +637,9 @@ public interface Guild extends ISnowflake
      * specific Guild. <br>If there is no matching {@link net.dv8tion.jda.api.entities.Category Category} this returns
      * {@code null}.
      *
-     * @param id
+     * @param  id
      *         The snowflake ID of the wanted Category
+     *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.Category Category} for the provided ID.
      */
     @Nullable
@@ -708,7 +709,7 @@ public interface Guild extends ISnowflake
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} with matching id.
      */
     @Nullable
-    default StoreChannel getStoreChannelById(String id) { return getStoreChannelCache().getElementById(id); }
+    default StoreChannel getStoreChannelById(@Nonnull String id) { return getStoreChannelCache().getElementById(id); }
 
     /**
      * Gets a {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} from this guild that has the same id as the
@@ -749,10 +750,10 @@ public interface Guild extends ISnowflake
      * @param  ignoreCase
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
      *
-     * @return Possibly-empty immutable list of all StoreChannels names that match the provided name.
+     * @return Possibly-empty immutable list of all StoreChannels with names that match the provided name.
      */
     @Nonnull
-    default List<StoreChannel> getStoreChannelsByName(String name, boolean ignoreCase) { return getStoreChannelCache().getElementsByName(name, ignoreCase); }
+    default List<StoreChannel> getStoreChannelsByName(@Nonnull String name, boolean ignoreCase) { return getStoreChannelCache().getElementsByName(name, ignoreCase); }
 
     /**
      * Sorted {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
