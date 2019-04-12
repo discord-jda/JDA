@@ -619,11 +619,13 @@ public interface Guild extends ISnowflake
      * specific Guild. <br>If there is no matching {@link net.dv8tion.jda.api.entities.Category Category} this returns
      * {@code null}.
      *
-     * @param id
+     * @param  id
      *         The snowflake ID of the wanted Category
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.Category Category} for the provided ID.
+     *
      * @throws java.lang.IllegalArgumentException
      *         If the provided ID is not a valid {@code long}
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.Category Category} for the provided ID.
      */
     @Nullable
     default Category getCategoryById(@Nonnull String id)
@@ -669,13 +671,15 @@ public interface Guild extends ISnowflake
      * Gets a list of all {@link net.dv8tion.jda.api.entities.Category Categories} in this Guild that have the same
      * name as the one provided. <br>If there are no matching categories this will return an empty list.
      *
-     * @param name
+     * @param  name
      *         The name to check
-     * @param ignoreCase
+     * @param  ignoreCase
      *         Whether to ignore case on name checking
-     * @return Immutable list of all categories matching the provided name
+     *
      * @throws java.lang.IllegalArgumentException
      *         If the provided name is {@code null}
+     *
+     * @return Immutable list of all categories matching the provided name
      */
     @Nonnull
     default List<Category> getCategoriesByName(@Nonnull String name, boolean ignoreCase)
@@ -688,7 +692,7 @@ public interface Guild extends ISnowflake
      * all cached {@link net.dv8tion.jda.api.entities.Category Categories} of this Guild.
      * <br>Categories are sorted according to their position.
      *
-     * @return Sorted {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     * @return @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
      */
     @Nonnull
     SortedSnowflakeCacheView<Category> getCategoryCache();
@@ -844,7 +848,7 @@ public interface Guild extends ISnowflake
      * all cached {@link net.dv8tion.jda.api.entities.TextChannel TextChannels} of this Guild.
      * <br>TextChannels are sorted according to their position.
      *
-     * @return Sorted {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
      */
     @Nonnull
     SortedSnowflakeCacheView<TextChannel> getTextChannelCache();
@@ -928,7 +932,7 @@ public interface Guild extends ISnowflake
      * all cached {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} of this Guild.
      * <br>VoiceChannels are sorted according to their position.
      *
-     * @return Sorted {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
      */
     @Nonnull
     SortedSnowflakeCacheView<VoiceChannel> getVoiceChannelCache();
@@ -1065,7 +1069,7 @@ public interface Guild extends ISnowflake
      * all cached {@link net.dv8tion.jda.api.entities.Role Roles} of this Guild.
      * <br>Roles are sorted according to their position.
      *
-     * @return Sorted {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
      */
     @Nonnull
     SortedSnowflakeCacheView<Role> getRoleCache();

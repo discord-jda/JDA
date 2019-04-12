@@ -1260,12 +1260,14 @@ public interface JDA
      *
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</b>
      *
-     * @param id
+     * @param  id
      *         The id of the requested {@link net.dv8tion.jda.api.entities.Emote}.
-     * @return An {@link net.dv8tion.jda.api.entities.Emote Emote} represented by this id or null if none is found in
-     *         our cache.
+     *
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
+     * @return An {@link net.dv8tion.jda.api.entities.Emote Emote} represented by this id or null if none is found in
+     *         our cache.
      */
     @Nullable
     default Emote getEmoteById(@Nonnull String id)
@@ -1279,8 +1281,9 @@ public interface JDA
      *
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</b>
      *
-     * @param id
+     * @param  id
      *         The id of the requested {@link net.dv8tion.jda.api.entities.Emote}.
+     *
      * @return An {@link net.dv8tion.jda.api.entities.Emote Emote} represented by this id or null if none is found in
      *         our cache.
      */
@@ -1298,11 +1301,12 @@ public interface JDA
      *
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</b>
      *
-     * @param name
+     * @param  name
      *         The name of the requested {@link net.dv8tion.jda.api.entities.Emote Emotes}.
-     * @param ignoreCase
+     * @param  ignoreCase
      *         Whether to ignore case or not when comparing the provided name to each {@link
      *         net.dv8tion.jda.api.entities.Emote#getName()}.
+     *
      * @return Possibly-empty list of all the {@link net.dv8tion.jda.api.entities.Emote Emotes} that all have the same
      *         name as the provided name.
      */
