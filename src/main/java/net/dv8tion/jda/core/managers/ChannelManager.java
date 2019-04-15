@@ -620,7 +620,7 @@ public class ChannelManager extends ManagerBase
     {
         if (getType() != ChannelType.TEXT)
             throw new IllegalStateException("Can only set slowmode on text channels");
-        Checks.check(slowmode <= 120 && slowmode >= 0, "Slowmode per user must be between 0 and 120 (seconds)!");
+        Checks.check(slowmode <= 21600 && slowmode >= 0, "Slowmode per user must be between 0 and 21600 (seconds)!");
         this.slowmode = slowmode;
         set |= SLOWMODE;
         return this;
