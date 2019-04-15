@@ -55,7 +55,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
 
     /**
      * The slowmode set for this TextChannel.
-     * <br>If slowmode is set this returns an {@code int} between 1 and 120. If not set this returns {@code 0}.
+     * <br>If slowmode is set this returns an {@code int} between 1 and 21600. If not set this returns {@code 0}.
      *
      * <p>Note that only {@link net.dv8tion.jda.core.AccountType#CLIENT CLIENT} type accounts are
      * affected by slowmode, and that {@link net.dv8tion.jda.core.AccountType#BOT BOT} accounts
