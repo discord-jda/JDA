@@ -64,7 +64,7 @@ public interface TextChannel extends Channel, MessageChannel, Comparable<TextCha
      * {@link net.dv8tion.jda.core.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} permission also
      * grants immunity to slowmode.
      *
-     * @return The slowmode for this TextChannel, between 1 and 120, or {@code 0} if no slowmode is set.
+     * @return The slowmode for this TextChannel, between 1 and 21600, or {@code 0} if no slowmode is set.
      */
     int getSlowmode();
 
