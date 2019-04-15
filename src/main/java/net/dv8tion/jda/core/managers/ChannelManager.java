@@ -595,7 +595,7 @@ public class ChannelManager extends ManagerBase
      * Sets the <b><u>slowmode</u></b> of the selected {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}.
      * <br>Provide {@code 0} to reset the slowmode of the {@link net.dv8tion.jda.core.entities.TextChannel TextChannel}
      *
-     * <p>A channel slowmode <b>must not</b> be negative nor greater than {@code 120}!
+     * <p>A channel slowmode <b>must not</b> be negative nor greater than {@code 21600}!
      * <br><b>This is only available to {@link net.dv8tion.jda.core.entities.TextChannel TextChannels}</b>
      *
      * <p>Note that only {@link net.dv8tion.jda.core.AccountType#CLIENT CLIENT} type accounts are
@@ -611,7 +611,7 @@ public class ChannelManager extends ManagerBase
      * @throws IllegalStateException
      *         If the selected {@link net.dv8tion.jda.core.entities.Channel Channel}'s type is not {@link net.dv8tion.jda.core.entities.ChannelType#TEXT TEXT}
      * @throws IllegalArgumentException
-     *         If the provided slowmode is negative or greater than {@code 120}
+     *         If the provided slowmode is negative or greater than {@code 21600}
      *
      * @return ChannelManager for chaining convenience
      */
@@ -620,7 +620,7 @@ public class ChannelManager extends ManagerBase
     {
         if (getType() != ChannelType.TEXT)
             throw new IllegalStateException("Can only set slowmode on text channels");
-        Checks.check(slowmode <= 120 && slowmode >= 0, "Slowmode per user must be between 0 and 120 (seconds)!");
+        Checks.check(slowmode <= 21600 && slowmode >= 0, "Slowmode per user must be between 0 and 21600 (seconds)!");
         this.slowmode = slowmode;
         set |= SLOWMODE;
         return this;

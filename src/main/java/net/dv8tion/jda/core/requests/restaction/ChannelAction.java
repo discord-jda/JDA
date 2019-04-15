@@ -214,14 +214,14 @@ public class ChannelAction extends AuditableRestAction<Channel>
      *         The number of seconds required to wait between sending messages in the channel.
      *
      * @throws IllegalArgumentException
-     *         If the {@code slowmode} is greater than 120, or less than 0
+     *         If the {@code slowmode} is greater than 21600, or less than 0
      *
      * @return The current ChannelAction, for chaining convenience
      */
     @CheckReturnValue
     public ChannelAction setSlowmode(int slowmode)
     {
-        Checks.check(slowmode <= 120 && slowmode >= 0, "Slowmode must be between 0 and 120 (seconds)!");
+        Checks.check(slowmode <= 21600 && slowmode >= 0, "Slowmode must be between 0 and 21600 (seconds)!");
         this.slowmode = slowmode;
         return this;
     }
