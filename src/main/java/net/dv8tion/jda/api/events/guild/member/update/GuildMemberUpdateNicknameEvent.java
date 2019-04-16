@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.events.guild.member;
+package net.dv8tion.jda.api.events.guild.member.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.UpdateEvent;
+import net.dv8tion.jda.api.events.guild.member.GenericGuildMemberEvent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -30,7 +31,7 @@ import javax.annotation.Nullable;
  *
  * <p>Identifier: {@code nick}
  */
-public class GuildMemberUpdateNicknameEvent extends GenericGuildMemberEvent implements UpdateEvent<Member, String>
+public class GuildMemberUpdateNicknameEvent extends GenericGuildMemberUpdateEvent<String>
 {
     public static final String IDENTIFIER = "nick";
 
@@ -38,9 +39,9 @@ public class GuildMemberUpdateNicknameEvent extends GenericGuildMemberEvent impl
 
     public GuildMemberUpdateNicknameEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nullable String oldNick)
     {
-        super(api, responseNumber, member);
+        super(api, responseNumber, member, oldNick, member.getNickname(), IDENTIFIER);
         this.oldNick = oldNick;
-        this.newNick = member.getNickname();
+        this.newNick = super.getNewValue();
     }
 
     /**
