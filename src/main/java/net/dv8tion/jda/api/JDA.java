@@ -937,7 +937,10 @@ public interface JDA
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} with matching id.
      */
     @Nullable
-    default StoreChannel getStoreChannelById(@Nonnull String id) { return getStoreChannelCache().getElementById(id); }
+    default StoreChannel getStoreChannelById(@Nonnull String id)
+    {
+        return getStoreChannelCache().getElementById(id);
+    }
 
     /**
      * Gets a {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} that has the same id as the
@@ -951,7 +954,10 @@ public interface JDA
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} with matching id.
      */
     @Nullable
-    default StoreChannel getStoreChannelById(long id) { return getStoreChannelCache().getElementById(id); }
+    default StoreChannel getStoreChannelById(long id)
+    {
+        return getStoreChannelCache().getElementById(id);
+    }
 
     /**
      * Gets all {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels} of all connected
@@ -965,7 +971,10 @@ public interface JDA
      * @return Possibly-empty immutable List of all known {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel}.
      */
     @Nonnull
-    default List<StoreChannel> getStoreChannels() { return getStoreChannelCache().asList(); }
+    default List<StoreChannel> getStoreChannels()
+    {
+        return getStoreChannelCache().asList();
+    }
 
     /**
      * An unmodifiable list of all {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels} that have the same name as the one provided.
@@ -979,7 +988,10 @@ public interface JDA
      * @return Possibly-empty immutable list of all StoreChannels with names that match the provided name.
      */
     @Nonnull
-    default List<StoreChannel> getStoreChannelsByName(@Nonnull String name, boolean ignoreCase) { return getStoreChannelCache().getElementsByName(name, ignoreCase); }
+    default List<StoreChannel> getStoreChannelsByName(@Nonnull String name, boolean ignoreCase)
+    {
+        return getStoreChannelCache().getElementsByName(name, ignoreCase);
+    }
 
     /**
      * {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
