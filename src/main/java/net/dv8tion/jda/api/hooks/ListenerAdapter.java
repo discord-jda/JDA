@@ -41,6 +41,8 @@ import net.dv8tion.jda.api.events.emote.update.EmoteUpdateRolesEvent;
 import net.dv8tion.jda.api.events.emote.update.GenericEmoteUpdateEvent;
 import net.dv8tion.jda.api.events.guild.*;
 import net.dv8tion.jda.api.events.guild.member.*;
+import net.dv8tion.jda.api.events.guild.member.update.GenericGuildMemberUpdateEvent;
+import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
 import net.dv8tion.jda.api.events.guild.update.*;
 import net.dv8tion.jda.api.events.guild.voice.*;
 import net.dv8tion.jda.api.events.http.HttpRequestEvent;
@@ -217,6 +219,8 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildMemberLeave(@Nonnull GuildMemberLeaveEvent event) {}
     public void onGuildMemberRoleAdd(@Nonnull GuildMemberRoleAddEvent event) {}
     public void onGuildMemberRoleRemove(@Nonnull GuildMemberRoleRemoveEvent event) {}
+
+    //Guild Member Update Events
     public void onGuildMemberUpdateNickname(@Nonnull GuildMemberUpdateNicknameEvent event) {}
 
     //Guild Voice Events
@@ -279,6 +283,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericRoleUpdate(@Nonnull GenericRoleUpdateEvent event) {}
     public void onGenericEmote(@Nonnull GenericEmoteEvent event) {}
     public void onGenericEmoteUpdate(@Nonnull GenericEmoteUpdateEvent event) {}
+    public void onGenericGuildMemberUpdateEvent(@Nonnull GenericGuildMemberUpdateEvent event) {}
 
     @Override
     public final void onEvent(@Nonnull GenericEvent event)
@@ -492,6 +497,8 @@ public abstract class ListenerAdapter implements EventListener
             onGuildMemberRoleAdd((GuildMemberRoleAddEvent) event);
         else if (event instanceof GuildMemberRoleRemoveEvent)
             onGuildMemberRoleRemove((GuildMemberRoleRemoveEvent) event);
+
+        //Guild Member Update Events
         else if (event instanceof GuildMemberUpdateNicknameEvent)
             onGuildMemberUpdateNickname((GuildMemberUpdateNicknameEvent) event);
 
@@ -573,6 +580,8 @@ public abstract class ListenerAdapter implements EventListener
             onGenericVoiceChannelUpdate((GenericVoiceChannelUpdateEvent) event);
         else if (event instanceof GenericGuildUpdateEvent)
             onGenericGuildUpdate((GenericGuildUpdateEvent) event);
+        else if (event instanceof GenericGuildMemberUpdateEvent)
+            onGenericGuildMemberUpdateEvent(((GenericGuildMemberUpdateEvent) event));
         else if (event instanceof GenericGuildMemberEvent)
             onGenericGuildMember((GenericGuildMemberEvent) event);
         else if (event instanceof GenericGuildVoiceEvent)
