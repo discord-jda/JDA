@@ -23,6 +23,12 @@ import net.dv8tion.jda.api.events.guild.member.GenericGuildMemberEvent;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Indicates that a {@link net.dv8tion.jda.api.entities.Guild Guild} member event is fired.
+ * <br>Every GuildMemberUpdateEvent is an instance of this event and can be casted.
+ *
+ * <p>Can be used to detect any GuildMemberUpdateEvent.
+ */
 public abstract class GenericGuildMemberUpdateEvent<T> extends GenericGuildMemberEvent implements UpdateEvent<Member, T> {
 
     protected final T previous;
