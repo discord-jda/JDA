@@ -18,8 +18,6 @@ package net.dv8tion.jda.api.events.guild.member.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.UpdateEvent;
-import net.dv8tion.jda.api.events.guild.member.GenericGuildMemberEvent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -35,13 +33,9 @@ public class GuildMemberUpdateNicknameEvent extends GenericGuildMemberUpdateEven
 {
     public static final String IDENTIFIER = "nick";
 
-    private final String oldNick, newNick;
-
     public GuildMemberUpdateNicknameEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nullable String oldNick)
     {
         super(api, responseNumber, member, oldNick, member.getNickname(), IDENTIFIER);
-        this.oldNick = oldNick;
-        this.newNick = super.getNewValue();
     }
 
     /**
@@ -64,39 +58,5 @@ public class GuildMemberUpdateNicknameEvent extends GenericGuildMemberUpdateEven
     public String getNewNickname()
     {
         return getNewValue();
-    }
-
-    @Nonnull
-    @Override
-    public String getPropertyIdentifier()
-    {
-        return IDENTIFIER;
-    }
-
-    @Nonnull
-    @Override
-    public Member getEntity()
-    {
-        return getMember();
-    }
-
-    @Nullable
-    @Override
-    public String getOldValue()
-    {
-        return oldNick;
-    }
-
-    @Nullable
-    @Override
-    public String getNewValue()
-    {
-        return newNick;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "MemberUpdate[" + getPropertyIdentifier() + "](" + getOldValue() + "->" + getNewValue() + ')';
     }
 }

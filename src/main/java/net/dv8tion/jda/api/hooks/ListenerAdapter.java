@@ -278,12 +278,12 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericGuild(@Nonnull GenericGuildEvent event) {}
     public void onGenericGuildUpdate(@Nonnull GenericGuildUpdateEvent event) {}
     public void onGenericGuildMember(@Nonnull GenericGuildMemberEvent event) {}
+    public void onGenericGuildMemberUpdate(@Nonnull GenericGuildMemberUpdateEvent event) {}
     public void onGenericGuildVoice(@Nonnull GenericGuildVoiceEvent event) {}
     public void onGenericRole(@Nonnull GenericRoleEvent event) {}
     public void onGenericRoleUpdate(@Nonnull GenericRoleUpdateEvent event) {}
     public void onGenericEmote(@Nonnull GenericEmoteEvent event) {}
     public void onGenericEmoteUpdate(@Nonnull GenericEmoteUpdateEvent event) {}
-    public void onGenericGuildMemberUpdateEvent(@Nonnull GenericGuildMemberUpdateEvent event) {}
 
     @Override
     public final void onEvent(@Nonnull GenericEvent event)
@@ -580,8 +580,6 @@ public abstract class ListenerAdapter implements EventListener
             onGenericVoiceChannelUpdate((GenericVoiceChannelUpdateEvent) event);
         else if (event instanceof GenericGuildUpdateEvent)
             onGenericGuildUpdate((GenericGuildUpdateEvent) event);
-        else if (event instanceof GenericGuildMemberUpdateEvent)
-            onGenericGuildMemberUpdateEvent(((GenericGuildMemberUpdateEvent) event));
         else if (event instanceof GenericGuildMemberEvent)
             onGenericGuildMember((GenericGuildMemberEvent) event);
         else if (event instanceof GenericGuildVoiceEvent)
@@ -600,6 +598,8 @@ public abstract class ListenerAdapter implements EventListener
             onGenericPrivateMessage((GenericPrivateMessageEvent) event);
         else if (event instanceof GenericGuildMessageEvent)
             onGenericGuildMessage((GenericGuildMessageEvent) event);
+        else if (event instanceof GenericGuildMemberUpdateEvent)
+            onGenericGuildMemberUpdate((GenericGuildMemberUpdateEvent) event);
         else if (event instanceof GenericUserEvent)
             onGenericUser((GenericUserEvent) event);
         else if (event instanceof GenericSelfUpdateEvent)
