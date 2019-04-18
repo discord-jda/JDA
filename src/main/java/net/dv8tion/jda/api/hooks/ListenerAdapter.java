@@ -580,8 +580,8 @@ public abstract class ListenerAdapter implements EventListener
             onGenericVoiceChannelUpdate((GenericVoiceChannelUpdateEvent) event);
         else if (event instanceof GenericGuildUpdateEvent)
             onGenericGuildUpdate((GenericGuildUpdateEvent) event);
-        else if (event instanceof GenericGuildMemberEvent)
-            onGenericGuildMember((GenericGuildMemberEvent) event);
+        else if (event instanceof GenericGuildMemberUpdateEvent)
+            onGenericGuildMemberUpdate((GenericGuildMemberUpdateEvent) event);
         else if (event instanceof GenericGuildVoiceEvent)
             onGenericGuildVoice((GenericGuildVoiceEvent) event);
         else if (event instanceof GenericRoleUpdateEvent)
@@ -598,8 +598,8 @@ public abstract class ListenerAdapter implements EventListener
             onGenericPrivateMessage((GenericPrivateMessageEvent) event);
         else if (event instanceof GenericGuildMessageEvent)
             onGenericGuildMessage((GenericGuildMessageEvent) event);
-        else if (event instanceof GenericGuildMemberUpdateEvent)
-            onGenericGuildMemberUpdate((GenericGuildMemberUpdateEvent) event);
+        else if (event instanceof GenericGuildMemberEvent)
+            onGenericGuildMember((GenericGuildMemberEvent) event);
         else if (event instanceof GenericUserEvent)
             onGenericUser((GenericUserEvent) event);
         else if (event instanceof GenericSelfUpdateEvent)

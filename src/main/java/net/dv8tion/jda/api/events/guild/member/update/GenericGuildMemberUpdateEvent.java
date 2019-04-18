@@ -29,15 +29,15 @@ import javax.annotation.Nullable;
  *
  * <p>Can be used to detect any GuildMemberUpdateEvent.
  */
-public abstract class GenericGuildMemberUpdateEvent<T> extends GenericGuildMemberEvent implements UpdateEvent<Member, T> {
-
+public abstract class GenericGuildMemberUpdateEvent<T> extends GenericGuildMemberEvent implements UpdateEvent<Member, T>
+{
     protected final T previous;
     protected final T next;
     protected final String identifier;
 
     public GenericGuildMemberUpdateEvent(
         @Nonnull JDA api, long responseNumber, @Nonnull Member member,
-        @Nullable T previous, @Nullable T next, String identifier)
+        @Nullable T previous, @Nullable T next, @Nonnull String identifier)
     {
         super(api, responseNumber, member);
         this.previous = previous;
