@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.Permission;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.EnumSet;
 
@@ -33,6 +34,7 @@ public interface IPermissionHolder extends ISnowflake
      * 
      * @return A never-null Guild to which this PermissionHolder is linked
      */
+    @Nonnull
     Guild getGuild();
 
     /**
@@ -41,6 +43,7 @@ public interface IPermissionHolder extends ISnowflake
      *
      * @return An EnumSet of Permissions granted to this PermissionHolder.
      */
+    @Nonnull
     EnumSet<Permission> getPermissions();
 
     /**
@@ -51,7 +54,7 @@ public interface IPermissionHolder extends ISnowflake
      *
      * @return True, if all of the specified Permissions are granted to this PermissionHolder.
      */
-    boolean hasPermission(Permission... permissions);
+    boolean hasPermission(@Nonnull Permission... permissions);
 
     /**
      * Checks whether or not this PermissionHolder has the {@link net.dv8tion.jda.api.Permission Permissions} in the provided
@@ -64,7 +67,7 @@ public interface IPermissionHolder extends ISnowflake
      *
      * @see    java.util.EnumSet EnumSet
      */
-    boolean hasPermission(Collection<Permission> permissions);
+    boolean hasPermission(@Nonnull Collection<Permission> permissions);
 
     /**
      * Checks whether or not this PermissionHolder has the given {@link net.dv8tion.jda.api.Permission Permissions} in the specified GuildChannel.
@@ -78,7 +81,7 @@ public interface IPermissionHolder extends ISnowflake
      *
      * @see    java.util.EnumSet EnumSet
      */
-    boolean hasPermission(GuildChannel channel, Permission... permissions);
+    boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Permission... permissions);
 
     /**
      * Checks whether or not this PermissionHolder has the {@link net.dv8tion.jda.api.Permission Permissions} in the provided
@@ -91,5 +94,5 @@ public interface IPermissionHolder extends ISnowflake
      *
      * @return True, if all of the specified Permissions are granted to this PermissionHolder in the provided GuildChannel.
      */
-    boolean hasPermission(GuildChannel channel, Collection<Permission> permissions);
+    boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Collection<Permission> permissions);
 }

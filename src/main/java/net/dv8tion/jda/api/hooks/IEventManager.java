@@ -17,6 +17,7 @@ package net.dv8tion.jda.api.hooks;
 
 import net.dv8tion.jda.api.events.GenericEvent;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
@@ -44,7 +45,6 @@ import java.util.List;
  */
 public interface IEventManager
 {
-
     /**
      * Registers the specified listener
      * <br>Accepted types may be specified by implementations
@@ -52,7 +52,7 @@ public interface IEventManager
      * @param listener
      *        A listener object
      */
-    void register(Object listener);
+    void register(@Nonnull Object listener);
 
     /**
      * Removes the specified listener
@@ -60,7 +60,7 @@ public interface IEventManager
      * @param listener
      *        The listener object to remove
      */
-    void unregister(Object listener);
+    void unregister(@Nonnull Object listener);
 
     /**
      * Handles the provided {@link net.dv8tion.jda.api.events.GenericEvent GenericEvent}.
@@ -69,7 +69,7 @@ public interface IEventManager
      * @param event
      *        The event to handle
      */
-    void handle(GenericEvent event);
+    void handle(@Nonnull GenericEvent event);
 
     /**
      * The currently registered listeners
@@ -77,5 +77,6 @@ public interface IEventManager
      * @return An immutable list of listeners
      *         that have already been registered
      */
+    @Nonnull
     List<Object> getRegisteredListeners();
 }

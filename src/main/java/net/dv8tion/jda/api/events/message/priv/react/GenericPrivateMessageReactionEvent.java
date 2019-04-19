@@ -22,6 +22,8 @@ import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.priv.GenericPrivateMessageEvent;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} was added or removed.
  *
@@ -32,7 +34,7 @@ public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEve
     protected final User issuer;
     protected final MessageReaction reaction;
 
-    public GenericPrivateMessageReactionEvent(JDA api, long responseNumber, User user, MessageReaction reaction)
+    public GenericPrivateMessageReactionEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, @Nonnull MessageReaction reaction)
     {
         super(api, responseNumber, reaction.getMessageIdLong(), (PrivateChannel) reaction.getChannel());
         this.issuer = user;
@@ -44,6 +46,7 @@ public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEve
      *
      * @return The reacting user
      */
+    @Nonnull
     public User getUser()
     {
         return issuer;
@@ -54,6 +57,7 @@ public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEve
      *
      * @return The message reaction
      */
+    @Nonnull
     public MessageReaction getReaction()
     {
         return reaction;
@@ -65,6 +69,7 @@ public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEve
      *
      * @return The message reaction emote
      */
+    @Nonnull
     public MessageReaction.ReactionEmote getReactionEmote()
     {
         return reaction.getReactionEmote();

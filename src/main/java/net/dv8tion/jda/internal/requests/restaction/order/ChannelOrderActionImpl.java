@@ -29,6 +29,7 @@ import okhttp3.RequestBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 
 public class ChannelOrderActionImpl<T extends GuildChannel>
@@ -96,12 +97,14 @@ public class ChannelOrderActionImpl<T extends GuildChannel>
         this.orderList.addAll(channels);
     }
 
+    @Nonnull
     @Override
     public Guild getGuild()
     {
         return guild;
     }
 
+    @Nonnull
     @Override
     public ChannelType getChannelType()
     {

@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.internal.managers.ManagerBase;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.util.function.BooleanSupplier;
 
 public interface Manager<M extends Manager<M>> extends AuditableRestAction<Void>
@@ -58,12 +59,15 @@ public interface Manager<M extends Manager<M>> extends AuditableRestAction<Void>
         return ManagerBase.isPermissionChecksEnabled();
     }
 
+    @Nonnull
     @Override
     M setCheck(BooleanSupplier checks);
 
+    @Nonnull
     @CheckReturnValue
     M reset(long fields);
 
+    @Nonnull
     @CheckReturnValue
     M reset(long... fields);
 
@@ -72,6 +76,7 @@ public interface Manager<M extends Manager<M>> extends AuditableRestAction<Void>
      *
      * @return The current Manager with all settings reset to default
      */
+    @Nonnull
     @CheckReturnValue
     M reset();
 }

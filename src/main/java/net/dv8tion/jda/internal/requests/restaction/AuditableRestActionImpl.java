@@ -30,6 +30,7 @@ import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 
@@ -74,8 +75,9 @@ public class AuditableRestActionImpl<T> extends RestActionImpl<T> implements Aud
         return (AuditableRestActionImpl) super.setCheck(checks);
     }
 
+    @Nonnull
     @CheckReturnValue
-    public AuditableRestActionImpl<T> reason(String reason)
+    public AuditableRestActionImpl<T> reason(@Nullable String reason)
     {
         this.reason = reason;
         return this;

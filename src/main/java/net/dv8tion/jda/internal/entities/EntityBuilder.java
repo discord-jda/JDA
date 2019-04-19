@@ -89,7 +89,7 @@ public class EntityBuilder
 
     public SelfUser createSelfUser(JSONObject self)
     {
-        SelfUserImpl selfUser = ((SelfUserImpl) getJDA().getSelfUser());
+        SelfUserImpl selfUser = (SelfUserImpl) (getJDA().hasSelfUser() ? getJDA().getSelfUser() : null);
         if (selfUser == null)
         {
             final long id = self.getLong("id");
@@ -994,7 +994,7 @@ public class EntityBuilder
         else
         {
             JSONObject obj = content.getJSONObject("video");
-            video = new VideoInfo(obj.optString("url"),
+            video = new VideoInfo(obj.optString("url", null),
                                   Helpers.optInt(obj, "width", -1),
                                   Helpers.optInt(obj, "height", -1));
         }

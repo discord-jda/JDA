@@ -15,6 +15,9 @@
  */
 package net.dv8tion.jda.api;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Represents the Regions used for Audio connections.
  * <br>This is used by {@link net.dv8tion.jda.api.entities.Guild Guild} to where the server that hosts the
@@ -74,6 +77,7 @@ public enum Region
      *
      * @return The name of this region
      */
+    @Nonnull
     public String getName()
     {
         return name;
@@ -84,6 +88,7 @@ public enum Region
      *
      * @return The key (internal name) of this region
      */
+    @Nonnull
     public String getKey()
     {
         return key;
@@ -94,6 +99,7 @@ public enum Region
      * 
      * @return Possibly-null unicode for the region's flag
      */
+    @Nonnull
     public String getEmoji()
     {
         return emoji;
@@ -120,7 +126,8 @@ public enum Region
      * @return The {@link net.dv8tion.jda.api.Region Region} matching the key. If there is no match,
      *         returns {@link net.dv8tion.jda.api.Region#UNKNOWN UNKNOWN}.
      */
-    public static Region fromKey(String key)
+    @Nonnull
+    public static Region fromKey(@Nullable String key)
     {
         for (Region region : values())
         {

@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.entities;
 
+import javax.annotation.Nonnull;
+
 /**
  * Represents an emote retrieved from {@link Guild#retrieveEmotes()} or {@link Guild#retrieveEmoteById(long)}
  *
@@ -39,6 +41,7 @@ public interface ListedEmote extends Emote
      *
      * @see    #hasUser()
      */
+    @Nonnull
     User getUser();
 
     /**

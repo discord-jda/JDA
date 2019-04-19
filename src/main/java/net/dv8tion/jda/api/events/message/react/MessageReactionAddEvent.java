@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.User;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that a user added a reaction to a message
  * <br>This includes unicode and custom emoji
@@ -28,7 +30,7 @@ import net.dv8tion.jda.api.entities.User;
  */
 public class MessageReactionAddEvent extends GenericMessageReactionEvent
 {
-    public MessageReactionAddEvent(JDA api, long responseNumber, User user, MessageReaction reaction)
+    public MessageReactionAddEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, @Nonnull MessageReaction reaction)
     {
         super(api, responseNumber, user, reaction);
     }

@@ -20,6 +20,9 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.UpdateEvent;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} updated their {@link net.dv8tion.jda.api.entities.Guild Guild} nickname.
  *
@@ -33,7 +36,7 @@ public class GuildMemberUpdateNicknameEvent extends GenericGuildMemberEvent impl
 
     private final String oldNick, newNick;
 
-    public GuildMemberUpdateNicknameEvent(JDA api, long responseNumber, Member member, String oldNick)
+    public GuildMemberUpdateNicknameEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nullable String oldNick)
     {
         super(api, responseNumber, member);
         this.oldNick = oldNick;
@@ -45,6 +48,7 @@ public class GuildMemberUpdateNicknameEvent extends GenericGuildMemberEvent impl
      *
      * @return The old nickname
      */
+    @Nullable
     public String getOldNickname()
     {
         return getOldValue();
@@ -55,29 +59,34 @@ public class GuildMemberUpdateNicknameEvent extends GenericGuildMemberEvent impl
      *
      * @return The new nickname
      */
+    @Nullable
     public String getNewNickname()
     {
         return getNewValue();
     }
 
+    @Nonnull
     @Override
     public String getPropertyIdentifier()
     {
         return IDENTIFIER;
     }
 
+    @Nonnull
     @Override
     public Member getEntity()
     {
         return getMember();
     }
 
+    @Nullable
     @Override
     public String getOldValue()
     {
         return oldNick;
     }
 
+    @Nullable
     @Override
     public String getNewValue()
     {

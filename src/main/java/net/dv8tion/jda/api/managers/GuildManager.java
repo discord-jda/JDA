@@ -23,6 +23,8 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -90,6 +92,7 @@ public interface GuildManager extends Manager<GuildManager>
      *
      * @return GuildManager for chaining convenience
      */
+    @Nonnull
     @Override
     GuildManager reset(long fields);
 
@@ -118,6 +121,7 @@ public interface GuildManager extends Manager<GuildManager>
      *
      * @return GuildManager for chaining convenience
      */
+    @Nonnull
     @Override
     GuildManager reset(long... fields);
 
@@ -127,6 +131,7 @@ public interface GuildManager extends Manager<GuildManager>
      *
      * @return The {@link net.dv8tion.jda.api.entities.Guild Guild} of this Manager
      */
+    @Nonnull
     Guild getGuild();
 
     /**
@@ -140,8 +145,9 @@ public interface GuildManager extends Manager<GuildManager>
      *
      * @return GuildManager for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
-    GuildManager setName(String name);
+    GuildManager setName(@Nonnull String name);
 
     /**
      * Sets the {@link net.dv8tion.jda.api.Region Region} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -158,8 +164,9 @@ public interface GuildManager extends Manager<GuildManager>
      * @see    net.dv8tion.jda.api.Region#isVip()
      * @see    net.dv8tion.jda.api.entities.Guild#getFeatures()
      */
+    @Nonnull
     @CheckReturnValue
-    GuildManager setRegion(Region region);
+    GuildManager setRegion(@Nonnull Region region);
 
     /**
      * Sets the {@link net.dv8tion.jda.api.entities.Icon Icon} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -170,8 +177,9 @@ public interface GuildManager extends Manager<GuildManager>
      *
      * @return GuildManager for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
-    GuildManager setIcon(Icon icon);
+    GuildManager setIcon(@Nullable Icon icon);
 
     /**
      * Sets the Splash {@link net.dv8tion.jda.api.entities.Icon Icon} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -185,8 +193,9 @@ public interface GuildManager extends Manager<GuildManager>
      *
      * @return GuildManager for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
-    GuildManager setSplash(Icon splash);
+    GuildManager setSplash(@Nullable Icon splash);
 
     /**
      * Sets the AFK {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -200,8 +209,9 @@ public interface GuildManager extends Manager<GuildManager>
      *
      * @return GuildManager for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
-    GuildManager setAfkChannel(VoiceChannel afkChannel);
+    GuildManager setAfkChannel(@Nullable VoiceChannel afkChannel);
 
     /**
      * Sets the system {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -215,8 +225,9 @@ public interface GuildManager extends Manager<GuildManager>
      *
      * @return GuildManager for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
-    GuildManager setSystemChannel(TextChannel systemChannel);
+    GuildManager setSystemChannel(@Nullable TextChannel systemChannel);
 
     /**
      * Sets the afk {@link net.dv8tion.jda.api.entities.Guild.Timeout Timeout} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -229,8 +240,9 @@ public interface GuildManager extends Manager<GuildManager>
      *
      * @return GuildManager for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
-    GuildManager setAfkTimeout(Guild.Timeout timeout);
+    GuildManager setAfkTimeout(@Nonnull Guild.Timeout timeout);
 
     /**
      * Sets the {@link net.dv8tion.jda.api.entities.Guild.VerificationLevel Verification Level} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -243,8 +255,9 @@ public interface GuildManager extends Manager<GuildManager>
      *
      * @return GuildManager for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
-    GuildManager setVerificationLevel(Guild.VerificationLevel level);
+    GuildManager setVerificationLevel(@Nonnull Guild.VerificationLevel level);
 
     /**
      * Sets the {@link net.dv8tion.jda.api.entities.Guild.NotificationLevel Notification Level} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -257,8 +270,9 @@ public interface GuildManager extends Manager<GuildManager>
      *
      * @return GuildManager for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
-    GuildManager setDefaultNotificationLevel(Guild.NotificationLevel level);
+    GuildManager setDefaultNotificationLevel(@Nonnull Guild.NotificationLevel level);
 
     /**
      * Sets the {@link net.dv8tion.jda.api.entities.Guild.MFALevel MFA Level} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -271,8 +285,9 @@ public interface GuildManager extends Manager<GuildManager>
      *
      * @return GuildManager for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
-    GuildManager setRequiredMFALevel(Guild.MFALevel level);
+    GuildManager setRequiredMFALevel(@Nonnull Guild.MFALevel level);
 
     /**
      * Sets the {@link net.dv8tion.jda.api.entities.Guild.ExplicitContentLevel Explicit Content Level} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -285,6 +300,7 @@ public interface GuildManager extends Manager<GuildManager>
      *
      * @return GuildManager for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
-    GuildManager setExplicitContentLevel(Guild.ExplicitContentLevel level);
+    GuildManager setExplicitContentLevel(@Nonnull Guild.ExplicitContentLevel level);
 }

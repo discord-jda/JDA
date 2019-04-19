@@ -17,6 +17,8 @@ package net.dv8tion.jda.api.hooks;
 
 import net.dv8tion.jda.api.events.GenericEvent;
 
+import javax.annotation.Nonnull;
+
 /**
  * JDA pushes {@link net.dv8tion.jda.api.events.GenericEvent GenericEvents} to the registered EventListeners.
  *
@@ -45,5 +47,5 @@ public interface EventListener
      * @param  event
      *         The Event to handle.
      */
-    void onEvent(GenericEvent event);
+    void onEvent(@Nonnull GenericEvent event);
 }

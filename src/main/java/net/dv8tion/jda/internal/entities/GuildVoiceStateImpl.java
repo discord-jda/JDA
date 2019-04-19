@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 
+import javax.annotation.Nonnull;
+
 public class GuildVoiceStateImpl implements GuildVoiceState
 {
     private final UpstreamReference<Member> member;
@@ -49,6 +51,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
         return selfDeafened;
     }
 
+    @Nonnull
     @Override
     public JDA getJDA()
     {
@@ -97,12 +100,14 @@ public class GuildVoiceStateImpl implements GuildVoiceState
         return connectedChannel;
     }
 
+    @Nonnull
     @Override
     public Guild getGuild()
     {
         return getMember().getGuild();
     }
 
+    @Nonnull
     @Override
     public Member getMember()
     {
