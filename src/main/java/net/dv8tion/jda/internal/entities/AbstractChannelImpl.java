@@ -28,7 +28,7 @@ import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.InviteAction;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
-import net.dv8tion.jda.api.utils.json.DataArray;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.ChannelManagerImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;

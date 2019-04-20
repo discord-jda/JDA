@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.utils.json;
+package net.dv8tion.jda.api.utils.data;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Enum constants representing possible types for a {@link net.dv8tion.jda.api.utils.json.DataObject} value.
+ * Enum constants representing possible types for a {@link net.dv8tion.jda.api.utils.data.DataObject} value.
  */
 public enum DataType
 {

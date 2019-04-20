@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.internal.utils;
 
-import net.dv8tion.jda.api.utils.json.DataObject;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

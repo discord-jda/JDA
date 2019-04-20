@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.internal.audio;
 
-import net.dv8tion.jda.api.utils.json.DataArray;
+import net.dv8tion.jda.api.utils.data.DataArray;
 
 public enum AudioEncryption
 {

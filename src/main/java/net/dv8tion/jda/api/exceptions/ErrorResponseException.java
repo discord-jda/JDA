@@ -18,7 +18,7 @@ package net.dv8tion.jda.api.exceptions;
 
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.Response;
-import net.dv8tion.jda.api.utils.json.DataObject;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import java.util.Optional;
 

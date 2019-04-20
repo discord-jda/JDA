@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.events.channel.category.CategoryDeleteEvent;
 import net.dv8tion.jda.api.events.channel.priv.PrivateChannelDeleteEvent;
 import net.dv8tion.jda.api.events.channel.text.TextChannelDeleteEvent;
 import net.dv8tion.jda.api.events.channel.voice.VoiceChannelDeleteEvent;
-import net.dv8tion.jda.api.utils.json.DataObject;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.UserImpl;

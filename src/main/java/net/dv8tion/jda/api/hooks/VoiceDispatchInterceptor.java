@@ -21,8 +21,8 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.managers.DirectAudioController;
-import net.dv8tion.jda.api.utils.json.DataObject;
-import net.dv8tion.jda.api.utils.json.SerializableData;
+import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.data.SerializableData;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

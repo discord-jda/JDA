@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import net.dv8tion.jda.api.utils.json.DataObject;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

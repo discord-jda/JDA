@@ -18,7 +18,7 @@ package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent;
-import net.dv8tion.jda.api.utils.json.DataObject;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 
 import java.util.LinkedList;

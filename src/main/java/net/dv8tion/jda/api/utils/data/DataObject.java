@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.utils.json;
+package net.dv8tion.jda.api.utils.data;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -178,7 +178,7 @@ public class DataObject implements SerializableData
      *
      * @return True, if the type check is successful
      *
-     * @see    net.dv8tion.jda.api.utils.json.DataType#isType(Object) DataType.isType(Object)
+     * @see    net.dv8tion.jda.api.utils.data.DataType#isType(Object) DataType.isType(Object)
      */
     public boolean isType(@Nonnull String key, @Nonnull DataType type)
     {

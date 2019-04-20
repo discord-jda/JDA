@@ -17,7 +17,7 @@
 package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.entities.PermissionOverride;
-import net.dv8tion.jda.api.utils.json.DataObject;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 public class PermOverrideData //TODO: implements JSONString
 {

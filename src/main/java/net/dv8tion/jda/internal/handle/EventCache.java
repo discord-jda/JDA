@@ -18,7 +18,7 @@ package net.dv8tion.jda.internal.handle;
 import gnu.trove.iterator.TLongObjectIterator;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
-import net.dv8tion.jda.api.utils.json.DataObject;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.CacheConsumer;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;

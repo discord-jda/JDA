@@ -18,8 +18,8 @@ package net.dv8tion.jda.api.requests;
 
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.utils.IOFunction;
-import net.dv8tion.jda.api.utils.json.DataArray;
-import net.dv8tion.jda.api.utils.json.DataObject;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Requester;
 
 import javax.annotation.Nonnull;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.utils.json;
+package net.dv8tion.jda.api.utils.data;
 
 import javax.annotation.Nonnull;
 
@@ -24,9 +24,9 @@ import javax.annotation.Nonnull;
 public interface SerializableData
 {
     /**
-     * Serialized {@link net.dv8tion.jda.api.utils.json.DataObject} for this object.
+     * Serialized {@link net.dv8tion.jda.api.utils.data.DataObject} for this object.
      *
-     * @return {@link net.dv8tion.jda.api.utils.json.DataObject}
+     * @return {@link net.dv8tion.jda.api.utils.data.DataObject}
      */
     @Nonnull
     DataObject toData();

@@ -17,9 +17,9 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.utils.json.DataArray;
-import net.dv8tion.jda.api.utils.json.DataObject;
-import net.dv8tion.jda.api.utils.json.SerializableData;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
@@ -422,7 +422,7 @@ public class MessageEmbed implements SerializableData
     }
 
     /**
-     * Creates a new {@link net.dv8tion.jda.api.utils.json.DataObject}
+     * Creates a new {@link net.dv8tion.jda.api.utils.data.DataObject}
      * used for sending.
      *
      * @return JSONObject for this embed

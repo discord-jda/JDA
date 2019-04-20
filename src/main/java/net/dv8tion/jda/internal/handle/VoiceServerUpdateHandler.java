@@ -19,7 +19,7 @@ package net.dv8tion.jda.internal.handle;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.utils.MiscUtil;
-import net.dv8tion.jda.api.utils.json.DataObject;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.audio.AudioConnection;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
