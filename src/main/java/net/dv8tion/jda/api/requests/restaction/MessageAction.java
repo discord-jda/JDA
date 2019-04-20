@@ -75,10 +75,10 @@ import java.util.function.Consumer;
  * @see    net.dv8tion.jda.api.entities.MessageChannel#sendMessage(CharSequence)
  * @see    net.dv8tion.jda.api.entities.MessageChannel#sendMessage(MessageEmbed)
  * @see    net.dv8tion.jda.api.entities.MessageChannel#sendMessageFormat(String, Object...)
- * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(File)
- * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(File, String)
- * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(InputStream, String)
- * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(byte[], String)
+ * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(File, AttachmentOption...)
+ * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(File, String, AttachmentOption...)
+ * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(InputStream, String, AttachmentOption...)
+ * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(byte[], String, AttachmentOption...)
  */
 public interface MessageAction extends RestAction<Message>, Appendable
 {

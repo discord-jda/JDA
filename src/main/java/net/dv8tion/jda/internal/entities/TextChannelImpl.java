@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookAction;
+import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -352,7 +353,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
 
     @Nonnull
     @Override
-    public MessageAction sendFile(@Nonnull InputStream data, @Nonnull String fileName)
+    public MessageAction sendFile(@Nonnull InputStream data, @Nonnull String fileName, @Nonnull AttachmentOption... options)
     {
         checkVerification();
         checkPermission(Permission.MESSAGE_READ);
@@ -360,7 +361,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         checkPermission(Permission.MESSAGE_ATTACH_FILES);
 
         //Call MessageChannel's default method
-        return TextChannel.super.sendFile(data, fileName);
+        return TextChannel.super.sendFile(data, fileName, options);
     }
 
     @Nonnull

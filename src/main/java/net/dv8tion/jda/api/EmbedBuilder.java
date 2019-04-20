@@ -447,7 +447,7 @@ public class EmbedBuilder
      *
      * <p><b>Uploading images with Embeds</b>
      * <br>When uploading an <u>image</u>
-     * (using {@link net.dv8tion.jda.api.entities.MessageChannel#sendFile(java.io.File) MessageChannel.sendFile(...)})
+     * (using {@link net.dv8tion.jda.api.entities.MessageChannel#sendFile(java.io.File, net.dv8tion.jda.api.utils.AttachmentOption...) MessageChannel.sendFile(...)})
      * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
      *
      * <p><u>Example</u>
@@ -493,7 +493,7 @@ public class EmbedBuilder
      *
      * <p><b>Uploading images with Embeds</b>
      * <br>When uploading an <u>image</u>
-     * (using {@link net.dv8tion.jda.api.entities.MessageChannel#sendFile(java.io.File) MessageChannel.sendFile(...)})
+     * (using {@link net.dv8tion.jda.api.entities.MessageChannel#sendFile(java.io.File, net.dv8tion.jda.api.utils.AttachmentOption...) MessageChannel.sendFile(...)})
      * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
      *
      * <p><u>Example</u>
@@ -517,7 +517,7 @@ public class EmbedBuilder
      *
      * @return the builder after the image has been set
      *
-     * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(java.io.File, String) MessageChannel.sendFile(...)
+     * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(java.io.File, String, net.dv8tion.jda.api.utils.AttachmentOption...) MessageChannel.sendFile(...)
      */
     @Nonnull
     public EmbedBuilder setImage(@Nullable String url)
@@ -586,7 +586,7 @@ public class EmbedBuilder
      *
      * <p><b>Uploading images with Embeds</b>
      * <br>When uploading an <u>image</u>
-     * (using {@link net.dv8tion.jda.api.entities.MessageChannel#sendFile(java.io.File) MessageChannel.sendFile(...)})
+     * (using {@link net.dv8tion.jda.api.entities.MessageChannel#sendFile(java.io.File, net.dv8tion.jda.api.utils.AttachmentOption...) MessageChannel.sendFile(...)})
      * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
      *
      * <p><u>Example</u>
@@ -660,7 +660,7 @@ public class EmbedBuilder
      *
      * <p><b>Uploading images with Embeds</b>
      * <br>When uploading an <u>image</u>
-     * (using {@link net.dv8tion.jda.api.entities.MessageChannel#sendFile(java.io.File) MessageChannel.sendFile(...)})
+     * (using {@link net.dv8tion.jda.api.entities.MessageChannel#sendFile(java.io.File, net.dv8tion.jda.api.utils.AttachmentOption...) MessageChannel.sendFile(...)})
      * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
      *
      * <p><u>Example</u>
