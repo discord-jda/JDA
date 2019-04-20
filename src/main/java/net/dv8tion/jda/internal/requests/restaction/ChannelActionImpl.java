@@ -146,7 +146,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @CheckReturnValue
     public ChannelActionImpl<T> setSlowmode(int slowmode)
     {
-        Checks.check(slowmode <= 120 && slowmode >= 0, "Slowmode must be between 0 and 120 (seconds)!");
+        Checks.check(slowmode <= 21600 && slowmode >= 0, "Slowmode must be between 0 and 21600 (seconds)!");
         this.slowmode = slowmode;
         return this;
     }
