@@ -129,6 +129,36 @@ public class MessageListener extends ListenerAdapter
 }
 ```
 
+**Ping-Pong Bot**:
+
+```java
+public class Bot extends ListenerAdapter
+{
+    public static void main(String[] args) throws LoginException
+    {
+        new JDABuilder(args[0])
+            .addEventListener(new Bot())
+            .setActivity(Activity.playing("Type !ping"))
+            .build();
+    }
+    
+    @Override
+    public void onMessageReceived(MessageReceivedEvent event)
+    {
+        Message msg = event.getMessage();
+        if (msg.getContentRaw().equals("!ping"))
+        {
+            MessageChannel channel = event.getChannel();
+            long time = System.currentTimeMillis();
+            channel.sendMessage("Pong!") /* => RestAction<Message> */
+                   .queue(response /* => Message */ -> {
+                       response.editMessageFormat("Pong: %d ms", System.currentTimeMillis() - time).queue();
+                   });
+        }
+    }
+}
+```
+
 <!-- ### More Examples
 TODO: Call for examples
 We provide a small set of Examples in the [Example Directory](https://github.com/DV8FromTheWorld/JDA/tree/master/src/examples/java).
