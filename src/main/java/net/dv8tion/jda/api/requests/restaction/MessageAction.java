@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -74,10 +75,10 @@ import java.util.function.Consumer;
  * @see    net.dv8tion.jda.api.entities.MessageChannel#sendMessage(CharSequence)
  * @see    net.dv8tion.jda.api.entities.MessageChannel#sendMessage(MessageEmbed)
  * @see    net.dv8tion.jda.api.entities.MessageChannel#sendMessageFormat(String, Object...)
- * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(File)
- * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(File, String)
- * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(InputStream, String)
- * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(byte[], String)
+ * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(File, AttachmentOption...)
+ * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(File, String, AttachmentOption...)
+ * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(InputStream, String, AttachmentOption...)
+ * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(byte[], String, AttachmentOption...)
  */
 public interface MessageAction extends RestAction<Message>, Appendable
 {
@@ -298,6 +299,8 @@ public interface MessageAction extends RestAction<Message>, Appendable
      *         The file name that should be used to interpret the type of the given data
      *         using the file-name extension. This name is similar to what will be visible
      *         through {@link net.dv8tion.jda.api.entities.Message.Attachment#getFileName() Message.Attachment.getFileName()}
+     * @param  options
+     *         Possible options to apply to this attachment, such as marking it as spoiler image
      *
      * @throws java.lang.IllegalStateException
      *         If the file limit of {@value Message#MAX_FILE_AMOUNT} has been reached prior to calling this method,
@@ -312,7 +315,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      */
     @Nonnull
     @CheckReturnValue
-    MessageAction addFile(@Nonnull final InputStream data, @Nonnull final String name);
+    MessageAction addFile(@Nonnull final InputStream data, @Nonnull final String name, @Nonnull AttachmentOption... options);
 
     /**
      * Adds the provided byte[] as file data.
@@ -325,6 +328,8 @@ public interface MessageAction extends RestAction<Message>, Appendable
      *         The file name that should be used to interpret the type of the given data
      *         using the file-name extension. This name is similar to what will be visible
      *         through {@link net.dv8tion.jda.api.entities.Message.Attachment#getFileName() Message.Attachment.getFileName()}
+     * @param  options
+     *         Possible options to apply to this attachment, such as marking it as spoiler image
      *
      * @throws java.lang.IllegalStateException
      *         If the file limit of {@value Message#MAX_FILE_AMOUNT} has been reached prior to calling this method,
@@ -342,20 +347,22 @@ public interface MessageAction extends RestAction<Message>, Appendable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction addFile(@Nonnull final byte[] data, @Nonnull final String name)
+    default MessageAction addFile(@Nonnull final byte[] data, @Nonnull final String name, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(data, "Data");
         final long maxSize = getJDA().getSelfUser().getAllowedFileSize();
         Checks.check(data.length <= maxSize, "File may not exceed the maximum file length of %d bytes!", maxSize);
-        return addFile(new ByteArrayInputStream(data), name);
+        return addFile(new ByteArrayInputStream(data), name, options);
     }
 
     /**
      * Adds the provided {@link java.io.File File} as file data.
-     * <br>Shortcut for {@link #addFile(java.io.File, String) addFile(file, file.getName())} with the same side-effects.
+     * <br>Shortcut for {@link #addFile(java.io.File, String, net.dv8tion.jda.api.utils.AttachmentOption...) addFile(file, file.getName())} with the same side-effects.
      *
      * @param  file
      *         The File that will be interpreted as file data
+     * @param  options
+     *         Possible options to apply to this attachment, such as marking it as spoiler image
      *
      * @throws java.lang.IllegalStateException
      *         If the file limit of {@value Message#MAX_FILE_AMOUNT} has been reached prior to calling this method,
@@ -372,10 +379,10 @@ public interface MessageAction extends RestAction<Message>, Appendable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction addFile(@Nonnull final File file)
+    default MessageAction addFile(@Nonnull final File file, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(file, "File");
-        return addFile(file, file.getName());
+        return addFile(file, file.getName(), options);
     }
 
     /**
@@ -390,6 +397,8 @@ public interface MessageAction extends RestAction<Message>, Appendable
      *         The file name that should be used to interpret the type of the given data
      *         using the file-name extension. This name is similar to what will be visible
      *         through {@link net.dv8tion.jda.api.entities.Message.Attachment#getFileName() Message.Attachment.getFileName()}
+     * @param  options
+     *         Possible options to apply to this attachment, such as marking it as spoiler image
      *
      * @throws java.lang.IllegalStateException
      *         If the file limit of {@value Message#MAX_FILE_AMOUNT} has been reached prior to calling this method,
@@ -408,12 +417,12 @@ public interface MessageAction extends RestAction<Message>, Appendable
      */
     @Nonnull
     @CheckReturnValue
-    MessageAction addFile(@Nonnull final File file, @Nonnull final String name);
+    MessageAction addFile(@Nonnull final File file, @Nonnull final String name, @Nonnull AttachmentOption... options);
 
     /**
      * Clears all previously added files
-     * <br>And closes {@code FileInputStreams} generated by {@link #addFile(File, String)}.
-     * <br>To close all stream (including ones given by {@link #addFile(InputStream, String)}) use {@link #clearFiles(Consumer)}.
+     * <br>And closes {@code FileInputStreams} generated by {@link #addFile(File, String, net.dv8tion.jda.api.utils.AttachmentOption...)}.
+     * <br>To close all stream (including ones given by {@link #addFile(InputStream, String, net.dv8tion.jda.api.utils.AttachmentOption...)}) use {@link #clearFiles(Consumer)}.
      *
      * @return Updated MessageAction for chaining convenience
      *

@@ -24,13 +24,14 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
-import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.internal.requests.Method;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
+import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
@@ -193,13 +194,15 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     @Nonnull
     @Override
     @CheckReturnValue
-    public MessageActionImpl addFile(@Nonnull final InputStream data, @Nonnull final String name)
+    public MessageActionImpl addFile(@Nonnull final InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
         checkEdit();
         Checks.notNull(data, "Data");
         Checks.notBlank(name, "Name");
+        Checks.noneNull(options, "Options");
         checkFileAmount();
         checkPermission(Permission.MESSAGE_ATTACH_FILES);
+        name = applyOptions(name, options);
         files.put(name, data);
         return this;
     }
@@ -207,9 +210,10 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     @Nonnull
     @Override
     @CheckReturnValue
-    public MessageActionImpl addFile(@Nonnull final File file, @Nonnull final String name)
+    public MessageActionImpl addFile(@Nonnull final File file, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(file, "File");
+        Checks.noneNull(options, "Options");
         Checks.check(file.exists() && file.canRead(), "Provided file either does not exist or cannot be read from!");
         final long maxSize = getJDA().getSelfUser().getAllowedFileSize();
         Checks.check(file.length() <= maxSize, "File may not exceed the maximum file length of %d bytes!", maxSize);
@@ -217,6 +221,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         {
             FileInputStream data = new FileInputStream(file);
             ownedResources.add(data);
+            name = applyOptions(name, options);
             return addFile(data, name);
         }
         catch (FileNotFoundException e)
@@ -275,6 +280,19 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
+    private String applyOptions(String name, AttachmentOption[] options)
+    {
+        for (AttachmentOption opt : options)
+        {
+            if (opt == AttachmentOption.SPOILER)
+            {
+                name = "SPOILER_" + name;
+                break;
+            }
+        }
+        return name;
+    }
+
     private void clearResources()
     {
         for (InputStream ownedResource : ownedResources)
@@ -298,7 +316,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         int index = 0;
         for (Map.Entry<String, InputStream> entry : files.entrySet())
         {
-            final RequestBody body = MiscUtil.createRequestBody(Requester.MEDIA_TYPE_OCTET, entry.getValue());
+            final RequestBody body = IOUtil.createRequestBody(Requester.MEDIA_TYPE_OCTET, entry.getValue());
             builder.addFormDataPart("file" + index++, entry.getKey(), body);
         }
         if (!isEmpty())
