@@ -41,6 +41,8 @@ import net.dv8tion.jda.api.events.emote.update.EmoteUpdateRolesEvent;
 import net.dv8tion.jda.api.events.emote.update.GenericEmoteUpdateEvent;
 import net.dv8tion.jda.api.events.guild.*;
 import net.dv8tion.jda.api.events.guild.member.*;
+import net.dv8tion.jda.api.events.guild.member.update.GenericGuildMemberUpdateEvent;
+import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
 import net.dv8tion.jda.api.events.guild.update.*;
 import net.dv8tion.jda.api.events.guild.voice.*;
 import net.dv8tion.jda.api.events.http.HttpRequestEvent;
@@ -217,6 +219,8 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildMemberLeave(@Nonnull GuildMemberLeaveEvent event) {}
     public void onGuildMemberRoleAdd(@Nonnull GuildMemberRoleAddEvent event) {}
     public void onGuildMemberRoleRemove(@Nonnull GuildMemberRoleRemoveEvent event) {}
+
+    //Guild Member Update Events
     public void onGuildMemberUpdateNickname(@Nonnull GuildMemberUpdateNicknameEvent event) {}
 
     //Guild Voice Events
@@ -274,6 +278,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericGuild(@Nonnull GenericGuildEvent event) {}
     public void onGenericGuildUpdate(@Nonnull GenericGuildUpdateEvent event) {}
     public void onGenericGuildMember(@Nonnull GenericGuildMemberEvent event) {}
+    public void onGenericGuildMemberUpdate(@Nonnull GenericGuildMemberUpdateEvent event) {}
     public void onGenericGuildVoice(@Nonnull GenericGuildVoiceEvent event) {}
     public void onGenericRole(@Nonnull GenericRoleEvent event) {}
     public void onGenericRoleUpdate(@Nonnull GenericRoleUpdateEvent event) {}
@@ -492,6 +497,8 @@ public abstract class ListenerAdapter implements EventListener
             onGuildMemberRoleAdd((GuildMemberRoleAddEvent) event);
         else if (event instanceof GuildMemberRoleRemoveEvent)
             onGuildMemberRoleRemove((GuildMemberRoleRemoveEvent) event);
+
+        //Guild Member Update Events
         else if (event instanceof GuildMemberUpdateNicknameEvent)
             onGuildMemberUpdateNickname((GuildMemberUpdateNicknameEvent) event);
 
@@ -573,8 +580,8 @@ public abstract class ListenerAdapter implements EventListener
             onGenericVoiceChannelUpdate((GenericVoiceChannelUpdateEvent) event);
         else if (event instanceof GenericGuildUpdateEvent)
             onGenericGuildUpdate((GenericGuildUpdateEvent) event);
-        else if (event instanceof GenericGuildMemberEvent)
-            onGenericGuildMember((GenericGuildMemberEvent) event);
+        else if (event instanceof GenericGuildMemberUpdateEvent)
+            onGenericGuildMemberUpdate((GenericGuildMemberUpdateEvent) event);
         else if (event instanceof GenericGuildVoiceEvent)
             onGenericGuildVoice((GenericGuildVoiceEvent) event);
         else if (event instanceof GenericRoleUpdateEvent)
@@ -591,6 +598,8 @@ public abstract class ListenerAdapter implements EventListener
             onGenericPrivateMessage((GenericPrivateMessageEvent) event);
         else if (event instanceof GenericGuildMessageEvent)
             onGenericGuildMessage((GenericGuildMessageEvent) event);
+        else if (event instanceof GenericGuildMemberEvent)
+            onGenericGuildMember((GenericGuildMemberEvent) event);
         else if (event instanceof GenericUserEvent)
             onGenericUser((GenericUserEvent) event);
         else if (event instanceof GenericSelfUpdateEvent)

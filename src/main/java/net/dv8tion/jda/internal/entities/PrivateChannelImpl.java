@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
@@ -147,10 +148,10 @@ public class PrivateChannelImpl implements PrivateChannel
 
     @Nonnull
     @Override
-    public MessageAction sendFile(@Nonnull InputStream data, @Nonnull String fileName)
+    public MessageAction sendFile(@Nonnull InputStream data, @Nonnull String fileName, @Nonnull AttachmentOption... options)
     {
         checkBot();
-        return PrivateChannel.super.sendFile(data, fileName);
+        return PrivateChannel.super.sendFile(data, fileName, options);
     }
 
     public PrivateChannelImpl setFake(boolean fake)
