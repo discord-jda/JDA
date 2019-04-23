@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.*;
+import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.requests.CloseCode;
 import net.dv8tion.jda.api.utils.MiscUtil;
@@ -49,7 +50,6 @@ import org.slf4j.MDC;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.SoftReference;
 import java.time.OffsetDateTime;
@@ -863,7 +863,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         LOG.debug("Unrecognized event:\n{}", raw);
             }
         }
-        catch (UncheckedIOException ex)
+        catch (ParsingException ex)
         {
             LOG.warn("Got an unexpected Json-parse error. Please redirect following message to the devs:\n\t{}\n\t{} -> {}",
                 ex.getMessage(), type, content, ex);

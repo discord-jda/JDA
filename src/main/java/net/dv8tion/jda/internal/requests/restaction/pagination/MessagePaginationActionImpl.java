@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.pagination.MessagePaginationAction;
@@ -30,7 +31,6 @@ import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.Route;
 
 import javax.annotation.Nonnull;
-import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -94,7 +94,7 @@ public class MessagePaginationActionImpl
                 last = msg;
                 lastKey = last.getIdLong();
             }
-            catch (UncheckedIOException | NullPointerException e)
+            catch (ParsingException | NullPointerException e)
             {
                 LOG.warn("Encountered an exception in MessagePagination", e);
             }

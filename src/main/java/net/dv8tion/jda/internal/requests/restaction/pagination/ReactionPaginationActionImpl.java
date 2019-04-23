@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.requests.restaction.pagination;
 
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
@@ -27,7 +28,6 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
 
 import javax.annotation.Nonnull;
-import java.io.UncheckedIOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -101,7 +101,7 @@ public class ReactionPaginationActionImpl
                 last = user;
                 lastKey = last.getIdLong();
             }
-            catch (UncheckedIOException | NullPointerException e)
+            catch (ParsingException | NullPointerException e)
             {
                 LOG.warn("Encountered exception in ReactionPagination", e);
             }
