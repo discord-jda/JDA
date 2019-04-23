@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.events.guild.update.*;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
+import net.dv8tion.jda.internal.utils.Helpers;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -47,12 +48,23 @@ public class GuildUpdateHandler extends SocketHandler
         if (getJDA().getGuildSetupController().isLocked(id))
             return id;
 
+        GuildImpl guild = (GuildImpl) getJDA().getGuildById(id);
+        if (guild == null)
+        {
+            getJDA().getEventCache().cache(EventCache.Type.GUILD, id, responseNumber, allContent, this::handle);
+            return null;
+        }
+
         //////////////
         //  WARNING //
         //Do not rely on allContent past this point, this method is also called from GuildCreateHandler!
         //////////////
-        GuildImpl guild = (GuildImpl) getJDA().getGuildById(id);
         long ownerId = content.getLong("owner_id");
+        int maxMembers = Helpers.optInt(content, "max_members", 0);
+        int maxPresences = Helpers.optInt(content, "max_presences", 5000);
+        String description = content.optString("description", null);
+        String vanityCode = content.optString("vanity_url_code", null);
+        String bannerId = content.optString("banner", null);
         String name = content.getString("name");
         String iconId = content.optString("icon", null);
         String splashId = content.optString("splash", null);
@@ -75,6 +87,28 @@ public class GuildUpdateHandler extends SocketHandler
         else
         {
             features = Collections.emptySet();
+        }
+
+        //TODO: Events?
+        if (!Objects.equals(description, guild.getDescription()))
+        {
+            guild.setDescription(description);
+        }
+        if (!Objects.equals(bannerId, guild.getBannerId()))
+        {
+            guild.setBannerId(bannerId);
+        }
+        if (!Objects.equals(vanityCode, guild.getVanityUrl()))
+        {
+            guild.setVanityCode(vanityCode);
+        }
+        if (maxMembers != guild.getMaxMembers())
+        {
+            guild.setMaxMembers(maxMembers);
+        }
+        if (maxPresences != guild.getMaxPresences())
+        {
+            guild.setMaxPresences(maxPresences);
         }
 
         if (ownerId != guild.getOwnerIdLong())

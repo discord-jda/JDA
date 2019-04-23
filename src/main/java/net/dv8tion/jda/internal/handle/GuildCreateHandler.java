@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.events.guild.GuildAvailableEvent;
 import net.dv8tion.jda.api.events.guild.GuildUnavailableEvent;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.internal.requests.WebSocketCode;
 import net.dv8tion.jda.internal.utils.Helpers;
 import org.json.JSONObject;
 
@@ -59,7 +60,13 @@ public class GuildCreateHandler extends SocketHandler
                     guild));
             // I'm not sure if this is actually needed, but if discord sends us an updated field here
             //  we can just use the same logic we use for GUILD_UPDATE in order to update it and fire events
-            getJDA().getClient().<GuildUpdateHandler>getHandler("GUILD_UPDATE").handle(responseNumber, allContent);
+            getJDA().getClient().<GuildUpdateHandler>getHandler("GUILD_UPDATE")
+                .handle(responseNumber, new JSONObject()
+                    .put("comment", "This was previously a GUILD_CREATE with unavailable set to false")
+                    .put("t", "GUILD_UPDATE")
+                    .put("s", responseNumber)
+                    .put("op", WebSocketCode.DISPATCH)
+                    .put("d", content));
         }
         return null;
     }

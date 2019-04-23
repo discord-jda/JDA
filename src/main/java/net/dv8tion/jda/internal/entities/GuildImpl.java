@@ -78,9 +78,11 @@ public class GuildImpl implements Guild
 
     private Member owner;
     private String name;
-    private String iconId;
-    private String splashId;
+    private String iconId, splashId;
     private String region;
+    private String vanityCode;
+    private String description, banner;
+    private int maxPresences, maxMembers;
     private long ownerId;
     private Set<String> features;
     private VoiceChannel afkChannel;
@@ -190,6 +192,39 @@ public class GuildImpl implements Guild
 
         return new RestActionImpl<>(getJDA(), route,
             (response, request) -> response.getObject().getString("code"));
+    }
+
+    @Nullable
+    @Override
+    public String getVanityUrl()
+    {
+        return vanityCode;
+    }
+
+    @Nullable
+    @Override
+    public String getDescription()
+    {
+        return description;
+    }
+
+    @Nullable
+    @Override
+    public String getBannerId()
+    {
+        return banner;
+    }
+
+    @Override
+    public int getMaxMembers()
+    {
+        return maxMembers;
+    }
+
+    @Override
+    public int getMaxPresences()
+    {
+        return maxPresences;
     }
 
     @Override
@@ -740,6 +775,36 @@ public class GuildImpl implements Guild
     public GuildImpl setRegion(String region)
     {
         this.region = region;
+        return this;
+    }
+
+    public GuildImpl setVanityCode(String code)
+    {
+        this.vanityCode = code;
+        return this;
+    }
+
+    public GuildImpl setDescription(String description)
+    {
+        this.description = description;
+        return this;
+    }
+
+    public GuildImpl setBannerId(String bannerId)
+    {
+        this.banner = bannerId;
+        return this;
+    }
+
+    public GuildImpl setMaxPresences(int maxPresences)
+    {
+        this.maxPresences = maxPresences;
+        return this;
+    }
+
+    public GuildImpl setMaxMembers(int maxMembers)
+    {
+        this.maxMembers = maxMembers;
         return this;
     }
 

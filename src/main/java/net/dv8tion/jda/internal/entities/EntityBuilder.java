@@ -157,6 +157,9 @@ public class EntityBuilder
         final String iconId = guildJson.optString("icon", null);
         final String splashId = guildJson.optString("splash", null);
         final String region = guildJson.optString("region", null);
+        final String description = guildJson.optString("description", null);
+        final String vanityCode = guildJson.optString("vanity_url_code", null);
+        final String bannerId = guildJson.optString("banner", null);
         final JSONArray roleArray = guildJson.getJSONArray("roles");
         final JSONArray channelArray = guildJson.getJSONArray("channels");
         final JSONArray emotesArray = guildJson.getJSONArray("emojis");
@@ -166,6 +169,8 @@ public class EntityBuilder
         final long ownerId = Helpers.optLong(guildJson, "owner_id", 0L);
         final long afkChannelId = Helpers.optLong(guildJson, "afk_channel_id", 0L);
         final long systemChannelId = Helpers.optLong(guildJson, "system_channel_id", 0L);
+        final int maxMembers = Helpers.optInt(guildJson, "max_members", 0);
+        final int maxPresences = Helpers.optInt(guildJson, "max_presences", 5000);
         final int mfaLevel = Helpers.optInt(guildJson, "mfa_level", 0);
         final int afkTimeout = Helpers.optInt(guildJson, "afk_timeout", 0);
         final int verificationLevel = Helpers.optInt(guildJson, "verification_level", 0);
@@ -177,6 +182,11 @@ public class EntityBuilder
                 .setIconId(iconId)
                 .setSplashId(splashId)
                 .setRegion(region)
+                .setDescription(description)
+                .setBannerId(bannerId)
+                .setVanityCode(vanityCode)
+                .setMaxMembers(maxMembers)
+                .setMaxPresences(maxPresences)
                 .setOwnerId(ownerId)
                 .setAfkTimeout(Guild.Timeout.fromKey(afkTimeout))
                 .setVerificationLevel(VerificationLevel.fromKey(verificationLevel))

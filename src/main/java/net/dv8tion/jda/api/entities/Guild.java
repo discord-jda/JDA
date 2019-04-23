@@ -254,10 +254,22 @@ public interface Guild extends ISnowflake
      *         <br>The vanity url of this server
      *
      * @see    #getFeatures()
+     * @see    #getVanityUrl()
      */
     @Nonnull
     @CheckReturnValue
     RestAction<String> retrieveVanityUrl();
+
+    //TODO: Docs
+    @Nullable
+    String getVanityUrl();
+    @Nullable
+    String getDescription();
+    @Nullable
+    String getBannerId(); //TODO: getBannerUrl
+
+    int getMaxMembers();
+    int getMaxPresences();
 
     /**
      * Provides the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} that has been set as the channel
