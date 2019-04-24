@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.*;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.requests.CloseCode;
+import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -77,7 +78,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected final Map<String, SocketHandler> handlers = new HashMap<>();
     protected final Set<String> cfRays = ConcurrentHashMap.newKeySet();
     protected final Set<String> traces = ConcurrentHashMap.newKeySet();
-    protected final boolean compression;
+    protected final Compression compression;
 
     public WebSocket socket;
     protected String sessionId = null;
@@ -117,7 +118,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected volatile ConnectNode connectNode;
 
-    public WebSocketClient(JDAImpl api, boolean compression)
+    public WebSocketClient(JDAImpl api, Compression compression)
     {
         this.api = api;
         this.executor = api.getGatewayPool();
@@ -327,7 +328,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         initiating = true;
 
         String url = api.getGatewayUrl() + "?encoding=json&v=" + DISCORD_GATEWAY_VERSION;
-        if (compression)
+        if (compression == Compression.ZLIB)
         {
             url += "&compress=zlib-stream";
             decompressBuffer = newDecompressBuffer();
@@ -913,6 +914,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected JSONObject handleBinary(byte[] binary) throws DataFormatException, UnsupportedEncodingException
     {
+        //TODO: Generalize for other compression algorithms
         //Thanks to ShadowLordAlpha and Shredder121 for code and debugging.
         //Get the compressed message and inflate it
         //We use the same buffer here to optimize gc use

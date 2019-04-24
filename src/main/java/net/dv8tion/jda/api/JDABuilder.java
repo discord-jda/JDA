@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.SessionControllerAdapter;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
@@ -83,7 +84,7 @@ public class JDABuilder
     protected boolean autoReconnect = true;
     protected boolean idle = false;
     protected boolean requestTimeoutRetry = true;
-    protected boolean enableCompression = true;
+    protected Compression compression = Compression.ZLIB;
 
     /**
      * Creates a completely empty JDABuilder.
@@ -216,25 +217,26 @@ public class JDABuilder
     }
 
     /**
-     * Enable stream-compression on the gateway connection,
+     * Enable compression on the gateway connection,
      * this will decrease the amount of used bandwidth for the running bot instance
      * for the cost of a few extra cycles for decompression.
-     * <br><b>Default: true</b>
+     * <br><b>Default: {@link net.dv8tion.jda.api.utils.Compression#ZLIB}</b>
      *
      * <p><b>We recommend to keep this enabled unless you have issues with the decompression</b>
      * <br>This mode might become obligatory in a future version, do not rely on this switch to stay.
      *
-     * @param  enable
-     *         True, if the gateway connection should use compression
+     * @param  compression
+     *         The compression algorithm to use with the gateway connection
      *
      * @return The JDABuilder instance. Useful for chaining
      *
      * @see    <a href="https://discordapp.com/developers/docs/topics/gateway#transport-compression" target="_blank">Official Discord Documentation - Transport Compression</a>
      */
     @Nonnull
-    public JDABuilder setCompressionEnabled(boolean enable)
+    public JDABuilder setCompression(@Nonnull Compression compression)
     {
-        this.enableCompression = enable;
+        Checks.notNull(compression, "Compression");
+        this.compression = compression;
         return this;
     }
 
@@ -885,7 +887,7 @@ public class JDABuilder
                 .setCacheActivity(activity)
                 .setCacheIdle(idle)
                 .setCacheStatus(status);
-        jda.login(shardInfo, enableCompression, true);
+        jda.login(shardInfo, compression, true);
         return jda;
     }
 }
