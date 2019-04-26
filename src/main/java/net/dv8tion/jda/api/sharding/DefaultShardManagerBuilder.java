@@ -219,12 +219,13 @@ public class  DefaultShardManagerBuilder
     }
 
     /**
-     * Enable compression on the gateway connection,
+     * Sets the compression algorithm used with the gateway connection,
      * this will decrease the amount of used bandwidth for the running bot instance
      * for the cost of a few extra cycles for decompression.
+     * Compression can be entirely disabled by setting this to {@link net.dv8tion.jda.api.utils.Compression#NONE}.
      * <br><b>Default: {@link net.dv8tion.jda.api.utils.Compression#ZLIB}</b>
      *
-     * <p><b>We recommend to keep this enabled unless you have issues with the decompression</b>
+     * <p><b>We recommend to keep this on the default unless you have issues with the decompression</b>
      * <br>This mode might become obligatory in a future version, do not rely on this switch to stay.
      *
      * @param  compression
@@ -235,8 +236,9 @@ public class  DefaultShardManagerBuilder
      * @see    <a href="https://discordapp.com/developers/docs/topics/gateway#transport-compression" target="_blank">Official Discord Documentation - Transport Compression</a>
      */
     @Nonnull
-    public DefaultShardManagerBuilder setCompressionEnabled(Compression compression)
+    public DefaultShardManagerBuilder setCompression(@Nonnull Compression compression)
     {
+        Checks.notNull(compression, "Compression");
         this.compression = compression;
         return this;
     }

@@ -217,12 +217,13 @@ public class JDABuilder
     }
 
     /**
-     * Enable compression on the gateway connection,
+     * Sets the compression algorithm used with the gateway connection,
      * this will decrease the amount of used bandwidth for the running bot instance
      * for the cost of a few extra cycles for decompression.
+     * Compression can be entirely disabled by setting this to {@link net.dv8tion.jda.api.utils.Compression#NONE}.
      * <br><b>Default: {@link net.dv8tion.jda.api.utils.Compression#ZLIB}</b>
      *
-     * <p><b>We recommend to keep this enabled unless you have issues with the decompression</b>
+     * <p><b>We recommend to keep this on the default unless you have issues with the decompression.</b>
      * <br>This mode might become obligatory in a future version, do not rely on this switch to stay.
      *
      * @param  compression
