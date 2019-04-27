@@ -17,6 +17,8 @@ package net.dv8tion.jda.api.events;
 
 import net.dv8tion.jda.api.JDA;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that JDA successfully resumed its connection to the gateway.
  * <br>All Objects are still in place and events are replayed.
@@ -25,7 +27,7 @@ import net.dv8tion.jda.api.JDA;
  */
 public class ResumedEvent extends Event
 {
-    public ResumedEvent(JDA api, long responseNumber)
+    public ResumedEvent(@Nonnull JDA api, long responseNumber)
     {
         super(api, responseNumber);
     }

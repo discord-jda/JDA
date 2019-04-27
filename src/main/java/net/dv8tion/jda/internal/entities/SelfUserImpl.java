@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.AccountManagerImpl;
 
+import javax.annotation.Nonnull;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class SelfUserImpl extends UserImpl implements SelfUser
@@ -59,6 +60,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
         throw new UnsupportedOperationException("You cannot get a PrivateChannel with yourself (SelfUser)");
     }
 
+    @Nonnull
     @Override
     public RestAction<PrivateChannel> openPrivateChannel()
     {
@@ -77,6 +79,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
         return mfaEnabled;
     }
 
+    @Nonnull
     @Override
     public String getEmail() throws AccountTypeException
     {
@@ -118,6 +121,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
             return Message.MAX_FILE_SIZE;
     }
 
+    @Nonnull
     @Override
     public AccountManager getManager()
     {

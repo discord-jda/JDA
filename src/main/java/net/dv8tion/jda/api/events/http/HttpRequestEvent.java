@@ -27,6 +27,8 @@ import okhttp3.ResponseBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Set;
 
 /**
@@ -39,7 +41,7 @@ public class HttpRequestEvent extends Event
     private final Request<?> request;
     private final Response response;
 
-    public HttpRequestEvent(final Request<?> request, final Response response)
+    public HttpRequestEvent(@Nonnull final Request<?> request, @Nonnull final Response response)
     {
         super(request.getJDA());
 
@@ -47,76 +49,91 @@ public class HttpRequestEvent extends Event
         this.response = response;
     }
 
+    @Nonnull
     public Request<?> getRequest()
     {
         return this.request;
     }
 
+    @Nullable
     public RequestBody getRequestBody()
     {
         return this.request.getBody();
     }
 
+    @Nullable
     public Object getRequestBodyRaw()
     {
         return this.request.getRawBody();
     }
 
+    @Nullable
     public Headers getRequestHeaders()
     {
         return this.response.getRawResponse() == null ? null : this.response.getRawResponse().request().headers();
     }
 
+    @Nullable
     public okhttp3.Request getRequestRaw()
     {
         return this.response.getRawResponse() == null ? null : this.response.getRawResponse().request();
     }
 
+    @Nullable
     public Response getResponse()
     {
         return this.response;
     }
 
+    @Nullable
     public ResponseBody getResponseBody()
     {
         return this.response.getRawResponse() == null ? null : this.response.getRawResponse().body();
     }
 
+    @Nullable
     public JSONArray getResponseBodyAsArray()
     {
         return this.response.getArray();
     }
 
+    @Nullable
     public JSONObject getResponseBodyAsObject()
     {
         return this.response.getObject();
     }
 
+    @Nullable
     public String getResponseBodyAsString()
     {
         return this.response.getString();
     }
 
+    @Nullable
     public Headers getResponseHeaders()
     {
         return this.response.getRawResponse() == null ? null : this.response.getRawResponse().headers();
     }
 
+    @Nullable
     public okhttp3.Response getResponseRaw()
     {
         return this.response.getRawResponse();
     }
 
+    @Nonnull
     public Set<String> getCFRays()
     {
         return this.response.getCFRays();
     }
 
+    @Nonnull
     public RestAction<?> getRestAction()
     {
         return this.request.getRestAction();
     }
 
+    @Nonnull
     public CompiledRoute getRoute()
     {
         return this.request.getRoute();

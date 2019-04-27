@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.SelfUser;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Manager providing functionality to update one or more fields for the logged in account.
@@ -56,6 +58,7 @@ public interface AccountManager extends Manager<AccountManager>
      *
      * @return The corresponding SelfUser
      */
+    @Nonnull
     SelfUser getSelfUser();
 
     /**
@@ -76,6 +79,7 @@ public interface AccountManager extends Manager<AccountManager>
      *
      * @return AccountManager for chaining convenience
      */
+    @Nonnull
     @Override
     @CheckReturnValue
     AccountManager reset(long fields);
@@ -98,6 +102,7 @@ public interface AccountManager extends Manager<AccountManager>
      *
      * @return AccountManager for chaining convenience
      */
+    @Nonnull
     @Override
     @CheckReturnValue
     AccountManager reset(long... fields);
@@ -120,8 +125,9 @@ public interface AccountManager extends Manager<AccountManager>
      *
      * @return AccountManager for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
-    default AccountManager setName(String name)
+    default AccountManager setName(@Nonnull String name)
     {
         return setName(name, null);
     }
@@ -146,8 +152,9 @@ public interface AccountManager extends Manager<AccountManager>
      *
      * @return AccountManager for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
-    AccountManager setName(String name, String currentPassword);
+    AccountManager setName(@Nonnull String name, @Nullable String currentPassword);
 
     /**
      * Sets the avatar for the currently logged in account
@@ -161,8 +168,9 @@ public interface AccountManager extends Manager<AccountManager>
      *
      * @return AccountManager for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
-    default AccountManager setAvatar(Icon avatar)
+    default AccountManager setAvatar(@Nullable Icon avatar)
     {
         return setAvatar(avatar, null);
     }
@@ -183,8 +191,9 @@ public interface AccountManager extends Manager<AccountManager>
      *
      * @return AccountManager for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
-    AccountManager setAvatar(Icon avatar, String currentPassword);
+    AccountManager setAvatar(@Nullable Icon avatar, @Nullable String currentPassword);
 
     /**
      * Sets the email for the currently logged in client account.
@@ -204,8 +213,9 @@ public interface AccountManager extends Manager<AccountManager>
      *
      * @return AccountManager for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
-    AccountManager setEmail(String email, String currentPassword);
+    AccountManager setEmail(@Nonnull String email, @Nonnull String currentPassword);
 
     /**
      * Sets the password for the currently logged in client account.
@@ -223,6 +233,7 @@ public interface AccountManager extends Manager<AccountManager>
      *
      * @return AccountManager for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
-    AccountManager setPassword(String newPassword, String currentPassword);
+    AccountManager setPassword(@Nonnull String newPassword, @Nonnull String currentPassword);
 }

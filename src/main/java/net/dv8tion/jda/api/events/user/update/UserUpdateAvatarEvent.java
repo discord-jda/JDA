@@ -19,6 +19,9 @@ package net.dv8tion.jda.api.events.user.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.User;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Indicates that the Avatar of a {@link net.dv8tion.jda.api.entities.User User} changed.
  *
@@ -31,7 +34,7 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String>
     public static final String IDENTIFIER = "avatar";
     private static final String AVATAR_URL = "https://cdn.discordapp.com/avatars/%s/%s%s";
 
-    public UserUpdateAvatarEvent(JDA api, long responseNumber, User user, String oldAvatar)
+    public UserUpdateAvatarEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, @Nullable String oldAvatar)
     {
         super(api, responseNumber, user, oldAvatar, user.getAvatarId(), IDENTIFIER);
     }
@@ -41,6 +44,7 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String>
      *
      * @return The previous avatar id
      */
+    @Nullable
     public String getOldAvatarId()
     {
         return getOldValue();
@@ -51,6 +55,7 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String>
      *
      * @return The previous avatar url
      */
+    @Nullable
     public String getOldAvatarUrl()
     {
         return previous == null ? null : String.format(AVATAR_URL, getUser().getId(), previous, previous.startsWith("a_") ? ".gif" : ".png");
@@ -61,6 +66,7 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String>
      *
      * @return The new avatar id
      */
+    @Nullable
     public String getNewAvatarId()
     {
         return getNewValue();
@@ -71,6 +77,7 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String>
      *
      * @return The url of the new avatar
      */
+    @Nullable
     public String getNewAvatarUrl()
     {
         return next == null ? null : String.format(AVATAR_URL, getUser().getId(), next, next.startsWith("a_") ? ".gif" : ".png");

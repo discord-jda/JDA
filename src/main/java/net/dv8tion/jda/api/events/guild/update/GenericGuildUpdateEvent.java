@@ -20,6 +20,9 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.UpdateEvent;
 import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Guild Guild} was updated.
  *
@@ -32,8 +35,8 @@ public abstract class GenericGuildUpdateEvent<T> extends GenericGuildEvent imple
     protected final String identifier;
 
     public GenericGuildUpdateEvent(
-        JDA api, long responseNumber, Guild guild,
-        T previous, T next, String identifier)
+        @Nonnull JDA api, long responseNumber, @Nonnull Guild guild,
+        @Nullable T previous, @Nullable T next, @Nonnull String identifier)
     {
         super(api, responseNumber, guild);
         this.previous = previous;
@@ -41,24 +44,28 @@ public abstract class GenericGuildUpdateEvent<T> extends GenericGuildEvent imple
         this.identifier = identifier;
     }
 
+    @Nonnull
     @Override
     public Guild getEntity()
     {
         return getGuild();
     }
 
+    @Nonnull
     @Override
     public String getPropertyIdentifier()
     {
         return identifier;
     }
 
+    @Nullable
     @Override
     public T getOldValue()
     {
         return previous;
     }
 
+    @Nullable
     @Override
     public T getNewValue()
     {

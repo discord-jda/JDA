@@ -18,6 +18,8 @@ package net.dv8tion.jda.api.events.user;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 
 /**
@@ -30,7 +32,7 @@ public class UserTypingEvent extends GenericUserEvent
     private final MessageChannel channel;
     private final OffsetDateTime timestamp;
 
-    public UserTypingEvent(JDA api, long responseNumber, User user, MessageChannel channel, OffsetDateTime timestamp)
+    public UserTypingEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, @Nonnull MessageChannel channel, @Nonnull OffsetDateTime timestamp)
     {
         super(api, responseNumber, user);
         this.channel = channel;
@@ -42,6 +44,7 @@ public class UserTypingEvent extends GenericUserEvent
      *
      * @return The time when the typing started
      */
+    @Nonnull
     public OffsetDateTime getTimestamp()
     {
         return timestamp;
@@ -52,6 +55,7 @@ public class UserTypingEvent extends GenericUserEvent
      *
      * @return The channel
      */
+    @Nonnull
     public MessageChannel getChannel()
     {
         return channel;
@@ -65,7 +69,7 @@ public class UserTypingEvent extends GenericUserEvent
      *
      * @return True, if the user started typing in a channel of the specified type
      */
-    public boolean isFromType(ChannelType type)
+    public boolean isFromType(@Nonnull ChannelType type)
     {
         return channel.getType() == type;
     }
@@ -75,6 +79,7 @@ public class UserTypingEvent extends GenericUserEvent
      *
      * @return The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType}
      */
+    @Nonnull
     public ChannelType getType()
     {
         return channel.getType();
@@ -86,6 +91,7 @@ public class UserTypingEvent extends GenericUserEvent
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      */
+    @Nullable
     public PrivateChannel getPrivateChannel()
     {
         return isFromType(ChannelType.PRIVATE) ? (PrivateChannel) channel : null;
@@ -97,6 +103,7 @@ public class UserTypingEvent extends GenericUserEvent
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      */
+    @Nullable
     public TextChannel getTextChannel()
     {
         return isFromType(ChannelType.TEXT) ? (TextChannel) channel : null;
@@ -108,6 +115,7 @@ public class UserTypingEvent extends GenericUserEvent
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.Guild Guild}
      */
+    @Nullable
     public Guild getGuild()
     {
         return isFromType(ChannelType.TEXT) ? getTextChannel().getGuild() : null;
@@ -118,6 +126,7 @@ public class UserTypingEvent extends GenericUserEvent
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.Member Member}
      */
+    @Nullable
     public Member getMember()
     {
         return isFromType(ChannelType.TEXT) ? getGuild().getMember(getUser()) : null;

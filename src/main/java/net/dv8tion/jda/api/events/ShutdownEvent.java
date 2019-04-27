@@ -18,6 +18,8 @@ package net.dv8tion.jda.api.events;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.CloseCode;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 
 /**
@@ -29,7 +31,7 @@ public class ShutdownEvent extends Event
     protected final OffsetDateTime shutdownTime;
     protected final int code;
 
-    public ShutdownEvent(JDA api, OffsetDateTime shutdownTime, int code)
+    public ShutdownEvent(@Nonnull JDA api, @Nonnull OffsetDateTime shutdownTime, int code)
     {
         super(api);
         this.shutdownTime = shutdownTime;
@@ -42,6 +44,7 @@ public class ShutdownEvent extends Event
      * @return {@link java.time.OffsetDateTime OffsetDateTime} representing
      *         the point in time when the connection was dropped.
      */
+    @Nonnull
     public OffsetDateTime getTimeShutdown()
     {
         return shutdownTime;
@@ -55,6 +58,7 @@ public class ShutdownEvent extends Event
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.requests.CloseCode CloseCode}
      */
+    @Nullable
     public CloseCode getCloseCode()
     {
         return CloseCode.from(code);

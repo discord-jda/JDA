@@ -28,6 +28,7 @@ import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.PermissionOverrideActionImpl;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 
+import javax.annotation.Nonnull;
 import java.util.EnumSet;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -68,24 +69,28 @@ public class PermissionOverrideImpl implements PermissionOverride
         return deny;
     }
 
+    @Nonnull
     @Override
     public EnumSet<Permission> getAllowed()
     {
         return Permission.getPermissions(allow);
     }
 
+    @Nonnull
     @Override
     public EnumSet<Permission> getInherit()
     {
         return Permission.getPermissions(getInheritRaw());
     }
 
+    @Nonnull
     @Override
     public EnumSet<Permission> getDenied()
     {
         return Permission.getPermissions(deny);
     }
 
+    @Nonnull
     @Override
     public JDA getJDA()
     {
@@ -104,12 +109,14 @@ public class PermissionOverrideImpl implements PermissionOverride
         return isRoleOverride() ? (Role) permissionHolder : null;
     }
 
+    @Nonnull
     @Override
     public GuildChannel getChannel()
     {
         return channel.get();
     }
 
+    @Nonnull
     @Override
     public Guild getGuild()
     {
@@ -128,6 +135,7 @@ public class PermissionOverrideImpl implements PermissionOverride
         return permissionHolder instanceof Role;
     }
 
+    @Nonnull
     @Override
     public PermissionOverrideAction getManager()
     {
@@ -146,12 +154,14 @@ public class PermissionOverrideImpl implements PermissionOverride
         return mng.reset();
     }
 
+    @Nonnull
     @Override
     public AuditableRestAction<Void> delete()
     {
         if (!getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
             throw new InsufficientPermissionException(Permission.MANAGE_PERMISSIONS);
 
+        @SuppressWarnings("ConstantConditions")
         String targetId = isRoleOverride() ? getRole().getId() : getMember().getUser().getId();
         Route.CompiledRoute route = Route.Channels.DELETE_PERM_OVERRIDE.compile(getChannel().getId(), targetId);
         return new AuditableRestActionImpl<>(getJDA(), route);

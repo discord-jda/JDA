@@ -19,6 +19,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.User User} was banned from a {@link net.dv8tion.jda.api.entities.Guild Guild}.
  *
@@ -31,7 +33,7 @@ public class GuildBanEvent extends GenericGuildEvent
 {
     private final User user;
 
-    public GuildBanEvent(JDA api, long responseNumber, Guild guild, User user)
+    public GuildBanEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull User user)
     {
         super(api, responseNumber, guild);
         this.user = user;
@@ -43,6 +45,7 @@ public class GuildBanEvent extends GenericGuildEvent
      *
      * @return The banned user
      */
+    @Nonnull
     public User getUser()
     {
         return user;

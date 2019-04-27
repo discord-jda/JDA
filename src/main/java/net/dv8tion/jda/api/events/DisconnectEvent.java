@@ -19,6 +19,8 @@ import com.neovisionaries.ws.client.WebSocketFrame;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.CloseCode;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -39,9 +41,9 @@ public class DisconnectEvent extends Event
     protected final OffsetDateTime disconnectTime;
 
     public DisconnectEvent(
-        JDA api,
-        WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame,
-        boolean closedByServer, OffsetDateTime disconnectTime)
+        @Nonnull JDA api,
+        @Nullable WebSocketFrame serverCloseFrame, @Nullable WebSocketFrame clientCloseFrame,
+        boolean closedByServer, @Nonnull OffsetDateTime disconnectTime)
     {
         super(api);
         this.serverCloseFrame = serverCloseFrame;
@@ -59,6 +61,7 @@ public class DisconnectEvent extends Event
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.requests.CloseCode CloseCode}
      */
+    @Nullable
     public CloseCode getCloseCode()
     {
         return serverCloseFrame != null ? CloseCode.from(serverCloseFrame.getCloseCode()) : null;
@@ -73,6 +76,7 @@ public class DisconnectEvent extends Event
      *
      * @return Immutable list of all cf-ray values for this session
      */
+    @Nonnull
     public List<String> getCloudflareRays()
     {
         return api.getCloudflareRays();
@@ -83,6 +87,7 @@ public class DisconnectEvent extends Event
      *
      * @return The {@link com.neovisionaries.ws.client.WebSocketFrame WebSocketFrame} discord sent as closing handshake
      */
+    @Nullable
     public WebSocketFrame getServiceCloseFrame()
     {
         return serverCloseFrame;
@@ -93,6 +98,7 @@ public class DisconnectEvent extends Event
      *
      * @return The {@link com.neovisionaries.ws.client.WebSocketFrame WebSocketFrame} we sent as closing handshake
      */
+    @Nullable
     public WebSocketFrame getClientCloseFrame()
     {
         return clientCloseFrame;
@@ -113,6 +119,7 @@ public class DisconnectEvent extends Event
      *
      * @return Time of closure
      */
+    @Nonnull
     public OffsetDateTime getTimeDisconnected()
     {
         return disconnectTime;

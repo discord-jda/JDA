@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.User;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that a user removed the reaction on a message
  * 
@@ -27,7 +29,7 @@ import net.dv8tion.jda.api.entities.User;
  */
 public class MessageReactionRemoveEvent extends GenericMessageReactionEvent
 {
-    public MessageReactionRemoveEvent(JDA api, long responseNumber, User user, MessageReaction reaction)
+    public MessageReactionRemoveEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, @Nonnull MessageReaction reaction)
     {
         super(api, responseNumber, user, reaction);
     }

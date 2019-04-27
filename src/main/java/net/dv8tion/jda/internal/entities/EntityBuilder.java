@@ -89,7 +89,7 @@ public class EntityBuilder
 
     public SelfUser createSelfUser(JSONObject self)
     {
-        SelfUserImpl selfUser = ((SelfUserImpl) getJDA().getSelfUser());
+        SelfUserImpl selfUser = (SelfUserImpl) (getJDA().hasSelfUser() ? getJDA().getSelfUser() : null);
         if (selfUser == null)
         {
             final long id = self.getLong("id");
@@ -994,7 +994,7 @@ public class EntityBuilder
         else
         {
             JSONObject obj = content.getJSONObject("video");
-            video = new VideoInfo(obj.optString("url"),
+            video = new VideoInfo(obj.optString("url", null),
                                   Helpers.optInt(obj, "width", -1),
                                   Helpers.optInt(obj, "height", -1));
         }
@@ -1152,12 +1152,11 @@ public class EntityBuilder
             final long groupId = channelObject.getLong("id");
             final String groupIconId = channelObject.optString("icon", null);
 
-            final JSONArray usernameArray = channelObject.optJSONArray("recipients");
             final List<String> usernames;
-            if (usernameArray == null)
+            if (channelObject.isNull("recipients"))
                 usernames = null;
             else
-                usernames = Collections.unmodifiableList(StreamSupport.stream(usernameArray.spliterator(), false).map(String::valueOf).collect(Collectors.toList()));
+                usernames = map(channelObject, "recipients", (json) -> json.getString("username"));
 
             group = new InviteImpl.GroupImpl(groupIconId, groupName, groupId, usernames);
         }

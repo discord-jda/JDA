@@ -17,6 +17,9 @@ package net.dv8tion.jda.api.utils.cache;
 
 import net.dv8tion.jda.api.JDA;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Read-only view on internal ShardManager cache of JDA instances.
  * <br>This can be useful to check information such as size without creating
@@ -34,6 +37,7 @@ public interface ShardCacheView extends CacheView<JDA>
      *
      * @return Possibly-null entity for the specified shard ID
      */
+    @Nullable
     JDA getElementById(int id);
 
     /**
@@ -49,7 +53,8 @@ public interface ShardCacheView extends CacheView<JDA>
      *
      * @return Possibly-null entity for the specified shard ID
      */
-    default JDA getElementById(String id)
+    @Nullable
+    default JDA getElementById(@Nonnull String id)
     {
         return getElementById(Integer.parseUnsignedInt(id));
     }

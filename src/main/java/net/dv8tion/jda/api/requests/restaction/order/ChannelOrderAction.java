@@ -21,6 +21,8 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.managers.GuildController;
 
+import javax.annotation.Nonnull;
+
 /**
  * Implementation of {@link OrderAction OrderAction}
  * to modify the order of {@link net.dv8tion.jda.api.entities.GuildChannel Channels} for a {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -49,6 +51,7 @@ public interface ChannelOrderAction<T extends GuildChannel> extends OrderAction<
      *
      * @return The corresponding {@link net.dv8tion.jda.api.entities.Guild Guild}
      */
+    @Nonnull
     Guild getGuild();
 
     /**
@@ -57,5 +60,6 @@ public interface ChannelOrderAction<T extends GuildChannel> extends OrderAction<
      *
      * @return The corresponding {@link net.dv8tion.jda.api.entities.ChannelType ChannelType}
      */
+    @Nonnull
     ChannelType getChannelType();
 }
