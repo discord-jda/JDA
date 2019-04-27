@@ -39,6 +39,7 @@ import org.slf4j.MDC;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -238,7 +239,7 @@ public class Requester
 
             return retryAfter;
         }
-        catch (SocketTimeoutException e)
+        catch (SocketException | SocketTimeoutException e)
         {
             if (retryOnTimeout && !retried)
                 return execute(apiRequest, true, handleOnRatelimit);
