@@ -428,7 +428,7 @@ public class AudioConnection
                             {
                                 receiveHandler.handleUserAudio(new UserAudio(user, decodedAudio));
                             }
-                            if (receiveHandler.canReceiveCombined())
+                            if (receiveHandler.canReceiveCombined() && receiveHandler.includeUserInCombinedAudio(user))
                             {
                                 Queue<AudioData> queue = combinedQueue.get(user);
                                 if (queue == null)
