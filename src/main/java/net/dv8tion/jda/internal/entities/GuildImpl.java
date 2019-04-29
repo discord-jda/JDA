@@ -693,12 +693,12 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<Void> moveVoiceMember(@Nonnull Member member, @Nonnull VoiceChannel voiceChannel)
+    public RestAction<Void> moveVoiceMember(@Nonnull Member member, @Nullable VoiceChannel voiceChannel)
     {
         Checks.notNull(member, "Member");
-        Checks.notNull(voiceChannel, "VoiceChannel");
         checkGuild(member.getGuild(), "Member");
-        checkGuild(voiceChannel.getGuild(), "VoiceChannel");
+        if (voiceChannel != null)
+            checkGuild(voiceChannel.getGuild(), "VoiceChannel");
 
         GuildVoiceState vState = member.getVoiceState();
         if (vState == null)
@@ -715,9 +715,8 @@ public class GuildImpl implements Guild
                                                       "Neither this account nor the Member that is attempting to be moved have the VOICE_CONNECT permission " +
                                                       "for the destination VoiceChannel, so the move cannot be done.");
 
-        JSONObject body = new JSONObject().put("channel_id", voiceChannel.getId());
+        JSONObject body = new JSONObject().put("channel_id", voiceChannel == null ? null : voiceChannel.getId());
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), member.getUser().getId());
-
         return new RestActionImpl<>(getJDA(), route, body);
     }
 

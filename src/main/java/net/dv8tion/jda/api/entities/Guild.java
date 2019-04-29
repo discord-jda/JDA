@@ -1639,13 +1639,13 @@ public interface Guild extends ISnowflake
      *         The {@link net.dv8tion.jda.api.entities.Member Member} that you are moving.
      * @param  voiceChannel
      *         The destination {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} to which the member is being
-     *         moved to.
+     *         moved to. Or null to perform a voice kick.
      *
      * @throws IllegalStateException
      *         If the Member isn't currently in a VoiceChannel in this Guild, or {@link net.dv8tion.jda.api.utils.cache.CacheFlag#VOICE_STATE} is disabled.
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If any of the provided arguments is {@code null}</li>
+     *             <li>If the provided member is {@code null}</li>
      *             <li>If the provided Member isn't part of this {@link net.dv8tion.jda.api.entities.Guild Guild}</li>
      *             <li>If the provided VoiceChannel isn't part of this {@link net.dv8tion.jda.api.entities.Guild Guild}</li>
      *         </ul>
@@ -1661,7 +1661,55 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Void> moveVoiceMember(@Nonnull Member member, @Nonnull VoiceChannel voiceChannel);
+    RestAction<Void> moveVoiceMember(@Nonnull Member member, @Nullable VoiceChannel voiceChannel);
+
+
+    /**
+     * Used to kick a {@link net.dv8tion.jda.api.entities.Member Member} from a {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
+     * <br>As a note, you cannot kick a Member that isn't already in a VoiceChannel. Also they must be in a VoiceChannel
+     * in the same Guild.
+     *
+     * <p>Equivalent to {@code moveVoiceMember(member, null)}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The target Member cannot be moved due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>We were removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The specified Member was removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The specified channel was deleted before finishing the task</li>
+     * </ul>
+     *
+     * @param  member
+     *         The {@link net.dv8tion.jda.api.entities.Member Member} that you are moving.
+     *
+     * @throws IllegalStateException
+     *         If the Member isn't currently in a VoiceChannel in this Guild, or {@link net.dv8tion.jda.api.utils.cache.CacheFlag#VOICE_STATE} is disabled.
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If any of the provided arguments is {@code null}</li>
+     *             <li>If the provided Member isn't part of this {@link net.dv8tion.jda.api.entities.Guild Guild}</li>
+     *             <li>If the provided VoiceChannel isn't part of this {@link net.dv8tion.jda.api.entities.Guild Guild}</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If this account doesn't have {@link net.dv8tion.jda.api.Permission#VOICE_MOVE_OTHERS}
+     *         in the VoiceChannel that the Member is currently in.
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<Void> kickVoiceMember(@Nonnull Member member)
+    {
+        return moveVoiceMember(member, null);
+    }
 
     /**
      * Changes a Member's nickname in this guild.
