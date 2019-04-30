@@ -23,7 +23,9 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.MessagePaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
+import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
@@ -33,7 +35,6 @@ import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.MessagePaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
-import org.json.JSONArray;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -532,7 +533,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * <br>If you want to send a Message with the uploaded file, you can add the file to the {@link net.dv8tion.jda.api.requests.restaction.MessageAction}
      * returned by {@link #sendMessage(Message)}.
      *
-     * <p>This is a shortcut to {@link #sendFile(java.io.File, String)} by way of using {@link java.io.File#getName()}.
+     * <p>This is a shortcut to {@link #sendFile(java.io.File, String, AttachmentOption...)} by way of using {@link java.io.File#getName()}.
      * <pre>sendFile(file, file.getName())</pre>
      *
      * <p><b>Uploading images with Embeds</b>
@@ -548,10 +549,12 @@ public interface MessageChannel extends ISnowflake, Formattable
      * channel.sendFile(file).embed(embed.build()).queue();
      * </code></pre>
      *
-     * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String)}.
+     * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String, AttachmentOption...)}.
      *
      * @param  file
      *         The file to upload to the {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
+     * @param  options
+     *         Possible options to apply to this attachment, such as marking it as spoiler image
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -576,11 +579,11 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction sendFile(@Nonnull File file)
+    default MessageAction sendFile(@Nonnull File file, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(file, "file");
 
-        return sendFile(file, file.getName());
+        return sendFile(file, file.getName(), options);
     }
 
     /**
@@ -640,6 +643,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         The file to upload to the {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
      * @param  fileName
      *         The name that should be sent to discord
+     * @param  options
+     *         Possible options to apply to this attachment, such as marking it as spoiler image
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -664,7 +669,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction sendFile(@Nonnull File file, @Nonnull String fileName)
+    default MessageAction sendFile(@Nonnull File file, @Nonnull String fileName, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(file, "file");
         Checks.check(file.exists() && file.canRead(),
@@ -675,7 +680,7 @@ public interface MessageChannel extends ISnowflake, Formattable
 
         try
         {
-            return sendFile(new FileInputStream(file), fileName);
+            return sendFile(new FileInputStream(file), fileName, options);
         }
         catch (FileNotFoundException ex)
         {
@@ -690,8 +695,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      * returned by {@link #sendMessage(Message)}.
      * <br>This allows you to send an {@link java.io.InputStream InputStream} as substitute to a file.
      *
-     * <p>For information about the {@code fileName} parameter, Refer to the documentation for {@link #sendFile(java.io.File, String)}.
-     * <br>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String)}.
+     * <p>For information about the {@code fileName} parameter, Refer to the documentation for {@link #sendFile(java.io.File, String, AttachmentOption...)}.
+     * <br>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String, AttachmentOption...)}.
      *
      * <p><b>Uploading images with Embeds</b>
      * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
@@ -710,7 +715,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         The InputStream data to upload to the {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
      * @param  fileName
      *         The name that should be sent to discord
-     *         <br>Refer to the documentation for {@link #sendFile(java.io.File, String)} for information about this parameter.
+     *         <br>Refer to the documentation for {@link #sendFile(java.io.File, String, AttachmentOption...)} for information about this parameter.
+     * @param  options
+     *         Possible options to apply to this attachment, such as marking it as spoiler image
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided file or filename is {@code null} or {@code empty}.
@@ -730,13 +737,13 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction sendFile(@Nonnull InputStream data, @Nonnull String fileName)
+    default MessageAction sendFile(@Nonnull InputStream data, @Nonnull String fileName, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(data, "data InputStream");
         Checks.notNull(fileName, "fileName");
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
-        return new MessageActionImpl(getJDA(), route, this).addFile(data, fileName);
+        return new MessageActionImpl(getJDA(), route, this).addFile(data, fileName, options);
     }
 
     /**
@@ -746,8 +753,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      * returned by {@link #sendMessage(Message)}.
      * <br>This allows you to send an {@code byte[]} as substitute to a file.
      *
-     * <p>For information about the {@code fileName} parameter, Refer to the documentation for {@link #sendFile(java.io.File, String)}.
-     * <br>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String)}.
+     * <p>For information about the {@code fileName} parameter, Refer to the documentation for {@link #sendFile(java.io.File, String, AttachmentOption...)}.
+     * <br>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String, AttachmentOption...)}.
      *
      * <p><b>Uploading images with Embeds</b>
      * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
@@ -766,7 +773,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         The {@code byte[]} data to upload to the {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
      * @param  fileName
      *         The name that should be sent to discord.
-     *         <br>Refer to the documentation for {@link #sendFile(java.io.File, String)} for information about this parameter.
+     *         <br>Refer to the documentation for {@link #sendFile(java.io.File, String, AttachmentOption...)} for information about this parameter.
+     * @param  options
+     *         Possible options to apply to this attachment, such as marking it as spoiler image
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -789,13 +798,13 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction sendFile(@Nonnull byte[] data, @Nonnull String fileName)
+    default MessageAction sendFile(@Nonnull byte[] data, @Nonnull String fileName, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(data, "data");
         Checks.notNull(fileName, "fileName");
         final long maxSize = getJDA().getSelfUser().getAllowedFileSize();
         Checks.check(data.length <= maxSize, "File is too big! Max file-size is %d bytes", maxSize);
-        return sendFile(new ByteArrayInputStream(data), fileName);
+        return sendFile(new ByteArrayInputStream(data), fileName, options);
     }
 
     /**
@@ -2436,11 +2445,11 @@ public interface MessageChannel extends ISnowflake, Formattable
         {
             LinkedList<Message> pinnedMessages = new LinkedList<>();
             EntityBuilder builder = jda.getEntityBuilder();
-            JSONArray pins = response.getArray();
+            DataArray pins = response.getArray();
 
             for (int i = 0; i < pins.length(); i++)
             {
-                pinnedMessages.add(builder.createMessage(pins.getJSONObject(i), MessageChannel.this, false));
+                pinnedMessages.add(builder.createMessage(pins.getObject(i), MessageChannel.this, false));
             }
 
             return Collections.unmodifiableList(pinnedMessages);

@@ -24,19 +24,19 @@ import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.TimeUtil;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.apache.commons.collections4.map.ListOrderedMap;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.UncheckedIOException;
 import java.util.*;
 
 /**
@@ -183,10 +183,10 @@ public class MessageHistory
         {
             EntityBuilder builder = jda.getEntityBuilder();
             LinkedList<Message> msgs  = new LinkedList<>();
-            JSONArray historyJson = response.getArray();
+            DataArray historyJson = response.getArray();
 
             for (int i = 0; i < historyJson.length(); i++)
-                msgs.add(builder.createMessage(historyJson.getJSONObject(i)));
+                msgs.add(builder.createMessage(historyJson.getObject(i)));
 
             msgs.forEach(msg -> history.put(msg.getIdLong(), msg));
             return msgs;
@@ -252,10 +252,10 @@ public class MessageHistory
         {
             EntityBuilder builder = jda.getEntityBuilder();
             LinkedList<Message> msgs  = new LinkedList<>();
-            JSONArray historyJson = response.getArray();
+            DataArray historyJson = response.getArray();
 
             for (int i = 0; i < historyJson.length(); i++)
-                msgs.add(builder.createMessage(historyJson.getJSONObject(i)));
+                msgs.add(builder.createMessage(historyJson.getObject(i)));
 
             for (Iterator<Message> it = msgs.descendingIterator(); it.hasNext();)
             {
@@ -556,16 +556,16 @@ public class MessageHistory
         protected void handleSuccess(Response response, Request<MessageHistory> request)
         {
             final MessageHistory result = new MessageHistory(channel);
-            final JSONArray array = response.getArray();
+            final DataArray array = response.getArray();
             final EntityBuilder builder = api.get().getEntityBuilder();
             for (int i = 0; i < array.length(); i++)
             {
                 try
                 {
-                    JSONObject obj = array.getJSONObject(i);
+                    DataObject obj = array.getObject(i);
                     result.history.put(obj.getLong("id"), builder.createMessage(obj, channel, false));
                 }
-                catch (JSONException | NullPointerException e)
+                catch (UncheckedIOException | NullPointerException e)
                 {
                     LOG.warn("Encountered exception in MessagePagination", e);
                 }

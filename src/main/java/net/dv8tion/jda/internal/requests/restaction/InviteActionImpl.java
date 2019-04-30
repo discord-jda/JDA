@@ -21,10 +21,10 @@ import net.dv8tion.jda.api.entities.Invite;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.InviteAction;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
-import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -109,16 +109,16 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
     @Override
     protected RequestBody finalizeData()
     {
-        final JSONObject object = new JSONObject();
+        DataObject object = DataObject.empty();
 
         if (this.maxAge != null)
-            object.put("max_age", (int) this.maxAge);
+            object.put("max_age", this.maxAge);
         if (this.maxUses != null)
-            object.put("max_uses", (int) this.maxUses);
+            object.put("max_uses", this.maxUses);
         if (this.temporary != null)
-            object.put("temporary", (boolean) this.temporary);
+            object.put("temporary", this.temporary);
         if (this.unique != null)
-            object.put("unique", (boolean) this.unique);
+            object.put("unique", this.unique);
 
         return getRequestBody(object);
     }
