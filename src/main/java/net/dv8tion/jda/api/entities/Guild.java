@@ -3033,6 +3033,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
+    @SuppressWarnings("unchecked") // we need to do an unchecked cast for the channel type here
     default <T extends GuildChannel> ChannelAction<T> createCopyOfChannel(@Nonnull T channel)
     {
         Checks.notNull(channel, "Channel");

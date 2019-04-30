@@ -55,7 +55,10 @@ import net.dv8tion.jda.internal.requests.restaction.order.CategoryOrderActionImp
 import net.dv8tion.jda.internal.requests.restaction.order.ChannelOrderActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.order.RoleOrderActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.AuditLogPaginationActionImpl;
-import net.dv8tion.jda.internal.utils.*;
+import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EncodingUtil;
+import net.dv8tion.jda.internal.utils.PermissionUtil;
+import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.*;
 
 import javax.annotation.Nonnull;
@@ -715,7 +718,7 @@ public class GuildImpl implements Guild
                                                       "Neither this account nor the Member that is attempting to be moved have the VOICE_CONNECT permission " +
                                                       "for the destination VoiceChannel, so the move cannot be done.");
 
-        JSONObject body = new JSONObject().put("channel_id", voiceChannel == null ? null : voiceChannel.getId());
+        DataObject body = DataObject.empty().put("channel_id", voiceChannel == null ? null : voiceChannel.getId());
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), member.getUser().getId());
         return new RestActionImpl<>(getJDA(), route, body);
     }
@@ -745,7 +748,7 @@ public class GuildImpl implements Guild
         if (nickname == null)
             nickname = "";
 
-        JSONObject body = new JSONObject().put("nick", nickname);
+        DataObject body = DataObject.empty().put("nick", nickname);
 
         Route.CompiledRoute route;
         if (member.equals(getSelfMember()))
@@ -864,7 +867,7 @@ public class GuildImpl implements Guild
         if (voiceState != null && voiceState.isGuildDeafened() == deafen)
             return new EmptyRestAction<>(getJDA(), null);
 
-        JSONObject body = new JSONObject().put("deaf", deafen);
+        DataObject body = DataObject.empty().put("deaf", deafen);
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), member.getUser().getId());
         return new AuditableRestActionImpl<>(getJDA(), route, body);
     }
@@ -886,7 +889,7 @@ public class GuildImpl implements Guild
         if (voiceState != null && voiceState.isGuildMuted() == mute)
             return new EmptyRestAction<>(getJDA(), null);
 
-        JSONObject body = new JSONObject().put("mute", mute);
+        DataObject body = DataObject.empty().put("mute", mute);
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), member.getUser().getId());
         return new AuditableRestActionImpl<>(getJDA(), route, body);
     }
@@ -958,7 +961,7 @@ public class GuildImpl implements Guild
         Checks.check(!currentRoles.contains(getPublicRole()),
                      "Cannot add the PublicRole of a Guild to a Member. All members have this role by default!");
 
-        JSONObject body = new JSONObject()
+        DataObject body = DataObject.empty()
             .put("roles", currentRoles.stream().map(Role::getId).collect(Collectors.toList()));
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), member.getUser().getId());
 
@@ -1005,7 +1008,7 @@ public class GuildImpl implements Guild
         }
 
         //This is identical to the rest action stuff in #modifyMemberRoles(Member, Collection<Role>, Collection<Role>)
-        JSONObject body = new JSONObject()
+        DataObject body = DataObject.empty()
             .put("roles", roles.stream().map(Role::getId).collect(Collectors.toList()));
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), member.getUser().getId());
 
@@ -1026,7 +1029,7 @@ public class GuildImpl implements Guild
 
         Checks.check(!newOwner.getUser().isBot(), "Cannot transfer ownership of a Guild to a Bot!");
 
-        JSONObject body = new JSONObject().put("owner_id", newOwner.getUser().getId());
+        DataObject body = DataObject.empty().put("owner_id", newOwner.getUser().getId());
         Route.CompiledRoute route = Route.Guilds.MODIFY_GUILD.compile(getId());
         return new AuditableRestActionImpl<>(getJDA(), route, body);
     }
@@ -1084,7 +1087,7 @@ public class GuildImpl implements Guild
         Checks.notNull(icon, "Emote icon");
         Checks.notNull(roles, "Roles");
 
-        JSONObject body = new JSONObject();
+        DataObject body = DataObject.empty();
         body.put("name", name);
         body.put("image", icon.getEncoding());
         if (roles.length > 0) // making sure none of the provided roles are null before mapping them to the snowflake id
@@ -1094,7 +1097,7 @@ public class GuildImpl implements Guild
         Route.CompiledRoute route = Route.Emotes.CREATE_EMOTE.compile(getId());
         return new AuditableRestActionImpl<>(jda, route, body, (response, request) ->
         {
-            JSONObject obj = response.getObject();
+            DataObject obj = response.getObject();
             return jda.getEntityBuilder().createEmote(this, obj, true);
         });
     }
