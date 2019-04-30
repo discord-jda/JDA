@@ -12,7 +12,7 @@
 [ ![FAQ] ](https://github.com/DV8FromTheWorld/JDA/wiki/10\)-FAQ)
 [ ![Troubleshooting] ](https://github.com/DV8FromTheWorld/JDA/wiki/19\)-Troubleshooting)
 
-<img align="right" src="https://i.imgur.com/OG7Tne8.png" height="200" width="200">
+<img align="right" src="https://github.com/DV8FromTheWorld/JDA/blob/assets/assets/readme/logo.png?raw=true" height="200" width="200">
 
 # JDA (Java Discord API)
 
