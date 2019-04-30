@@ -328,9 +328,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         initiating = true;
 
         String url = api.getGatewayUrl() + "?encoding=json&v=" + DISCORD_GATEWAY_VERSION;
-        if (compression == Compression.ZLIB)
+        if (compression != Compression.NONE)
         {
-            url += "&compress=zlib-stream";
+            url += "&compress=" + compression.getKey();
             decompressBuffer = newDecompressBuffer();
         }
 
@@ -915,6 +915,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected JSONObject handleBinary(byte[] binary) throws DataFormatException, UnsupportedEncodingException
     {
         //TODO: Generalize for other compression algorithms
+        if (compression != Compression.ZLIB)
+            throw new IllegalStateException("Cannot decompress binary message due to unknown compression algorithm: " + compression);
         //Thanks to ShadowLordAlpha and Shredder121 for code and debugging.
         //Get the compressed message and inflate it
         //We use the same buffer here to optimize gc use

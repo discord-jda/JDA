@@ -231,6 +231,9 @@ public class  DefaultShardManagerBuilder
      * @param  compression
      *         The compression algorithm to use for the gateway connection
      *
+     * @throws java.lang.IllegalArgumentException
+     *         If provided with null
+     *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
      * @see    <a href="https://discordapp.com/developers/docs/topics/gateway#transport-compression" target="_blank">Official Discord Documentation - Transport Compression</a>

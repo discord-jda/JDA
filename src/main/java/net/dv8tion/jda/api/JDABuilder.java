@@ -229,6 +229,9 @@ public class JDABuilder
      * @param  compression
      *         The compression algorithm to use with the gateway connection
      *
+     * @throws java.lang.IllegalArgumentException
+     *         If provided with null
+     *
      * @return The JDABuilder instance. Useful for chaining
      *
      * @see    <a href="https://discordapp.com/developers/docs/topics/gateway#transport-compression" target="_blank">Official Discord Documentation - Transport Compression</a>
