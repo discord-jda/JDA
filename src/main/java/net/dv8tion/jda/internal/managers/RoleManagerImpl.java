@@ -22,12 +22,12 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.RoleManager;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import okhttp3.RequestBody;
-import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -185,7 +185,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
     @Override
     protected RequestBody finalizeData()
     {
-        JSONObject object = new JSONObject().put("name", getRole().getName());
+        DataObject object = DataObject.empty().put("name", getRole().getName());
         if (shouldUpdate(NAME))
             object.put("name", name);
         if (shouldUpdate(PERMISSION))

@@ -22,11 +22,11 @@ import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.requests.restaction.GuildActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.PermOverrideData;
 import net.dv8tion.jda.internal.utils.Checks;
-import org.json.JSONObject;
-import org.json.JSONString;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -270,7 +270,7 @@ public interface GuildAction extends RestAction<Void>
      *
      * <p>This may be used in {@link ChannelData#addPermissionOverride(RoleData, long, long)}  ChannelData.addPermissionOverride(...)}!
      */
-    class RoleData implements JSONString
+    class RoleData implements SerializableData
     {
         protected final long id;
         protected final boolean isPublicRole;
@@ -468,10 +468,11 @@ public interface GuildAction extends RestAction<Void>
             return this;
         }
 
+        @Nonnull
         @Override
-        public String toJSONString()
+        public DataObject toData()
         {
-            final JSONObject o = new JSONObject().put("id", Long.toUnsignedString(id));
+            final DataObject o = DataObject.empty().put("id", Long.toUnsignedString(id));
             if (permissions != null)
                 o.put("permissions", permissions);
             if (position != null)
@@ -484,7 +485,7 @@ public interface GuildAction extends RestAction<Void>
                 o.put("mentionable", mentionable);
             if (hoisted != null)
                 o.put("hoist", hoisted);
-            return o.toString();
+            return o;
         }
 
         protected void checkPublic(String comment)
@@ -500,7 +501,7 @@ public interface GuildAction extends RestAction<Void>
      *
      * <p>Use with {@link #addChannel(ChannelData) GuildAction.addChannel(ChannelData)}.
      */
-    class ChannelData implements JSONString
+    class ChannelData implements SerializableData
     {
         protected final ChannelType type;
         protected final String name;
@@ -713,10 +714,11 @@ public interface GuildAction extends RestAction<Void>
             return addPermissionOverride(role, allowRaw, denyRaw);
         }
 
+        @Nonnull
         @Override
-        public String toJSONString()
+        public DataObject toData()
         {
-            final JSONObject o = new JSONObject();
+            final DataObject o = DataObject.empty();
             o.put("name", name);
             o.put("type", type.getId());
             if (topic != null)
@@ -731,7 +733,7 @@ public interface GuildAction extends RestAction<Void>
                 o.put("position", position);
             if (!overrides.isEmpty())
                 o.put("permission_overwrites", overrides);
-            return o.toString();
+            return o;
         }
     }
 }

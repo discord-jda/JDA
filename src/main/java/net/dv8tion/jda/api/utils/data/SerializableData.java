@@ -14,23 +14,20 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.handle;
+package net.dv8tion.jda.api.utils.data;
 
-import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.JDAImpl;
+import javax.annotation.Nonnull;
 
-public class GuildSyncHandler extends SocketHandler
+/**
+ * Allows custom serialization for JSON payloads of an object.
+ */
+public interface SerializableData
 {
-    public GuildSyncHandler(JDAImpl api)
-    {
-        super(api);
-    }
-
-    @Override
-    protected Long handleInternally(DataObject content)
-    {
-        final long guildId = content.getLong("id");
-        getJDA().getGuildSetupController().onSync(guildId, content);
-        return null;
-    }
+    /**
+     * Serialized {@link net.dv8tion.jda.api.utils.data.DataObject} for this object.
+     *
+     * @return {@link net.dv8tion.jda.api.utils.data.DataObject}
+     */
+    @Nonnull
+    DataObject toData();
 }
