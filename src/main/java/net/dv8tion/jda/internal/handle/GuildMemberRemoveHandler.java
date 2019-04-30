@@ -19,12 +19,12 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.*;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
-import org.json.JSONObject;
 
 public class GuildMemberRemoveHandler extends SocketHandler
 {
@@ -35,7 +35,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         final long id = content.getLong("guild_id");
         boolean setup = getJDA().getGuildSetupController().onRemoveMember(id, content);
@@ -49,7 +49,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
             return null;
         }
 
-        final long userId = content.getJSONObject("user").getLong("id");
+        final long userId = content.getObject("user").getLong("id");
         if (userId == getJDA().getSelfUser().getIdLong())
         {
             //We probably just left the guild and this event is trying to remove us from the guild, therefore ignore

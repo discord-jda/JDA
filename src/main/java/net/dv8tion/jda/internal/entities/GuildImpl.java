@@ -39,6 +39,8 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.MemberCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.managers.GuildManagerImpl;
@@ -55,12 +57,10 @@ import net.dv8tion.jda.internal.requests.restaction.order.RoleOrderActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.AuditLogPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.*;
 import net.dv8tion.jda.internal.utils.cache.*;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.UncheckedIOException;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -81,7 +81,7 @@ public class GuildImpl implements Guild
     private final SnowflakeCacheViewImpl<Emote> emoteCache = new SnowflakeCacheViewImpl<>(Emote.class, Emote::getName);
     private final MemberCacheViewImpl memberCache = new MemberCacheViewImpl();
 
-    private final TLongObjectMap<JSONObject> cachedPresences = MiscUtil.newLongMap();
+    private final TLongObjectMap<DataObject> cachedPresences = MiscUtil.newLongMap();
 
     private final ReentrantLock mngLock = new ReentrantLock();
     private volatile GuildManager manager;
@@ -118,15 +118,15 @@ public class GuildImpl implements Guild
         return new RestActionImpl<>(getJDA(), route, (response, request) ->
         {
             EnumSet<Region> set = EnumSet.noneOf(Region.class);
-            JSONArray arr = response.getArray();
+            DataArray arr = response.getArray();
             for (int i = 0; arr != null && i < arr.length(); i++)
             {
-                JSONObject obj = arr.getJSONObject(i);
-                if (!includeDeprecated && Helpers.optBoolean(obj, "deprecated"))
+                DataObject obj = arr.getObject(i);
+                if (!includeDeprecated && obj.getBoolean("deprecated"))
                 {
                     continue;
                 }
-                String id = obj.optString("id");
+                String id = obj.getString("id", "");
                 Region region = Region.fromKey(id);
                 if (region != Region.UNKNOWN)
                 {
@@ -225,17 +225,17 @@ public class GuildImpl implements Guild
 
         return new RestActionImpl<>(getJDA(), route, (response, request) ->
         {
-            JSONArray array = response.getArray();
+            DataArray array = response.getArray();
             List<Webhook> webhooks = new ArrayList<>(array.length());
             EntityBuilder builder = api.get().getEntityBuilder();
 
-            for (Object object : array)
+            for (int i = 0; i < array.length(); i++)
             {
                 try
                 {
-                    webhooks.add(builder.createWebhook((JSONObject) object));
+                    webhooks.add(builder.createWebhook(array.getObject(i)));
                 }
-                catch (JSONException | NullPointerException e)
+                catch (UncheckedIOException | NullPointerException e)
                 {
                     JDAImpl.LOG.error("Error creating webhook from json", e);
                 }
@@ -405,11 +405,11 @@ public class GuildImpl implements Guild
         {
 
             EntityBuilder builder = GuildImpl.this.getJDA().getEntityBuilder();
-            JSONArray emotes = response.getArray();
+            DataArray emotes = response.getArray();
             List<ListedEmote> list = new ArrayList<>(emotes.length());
             for (int i = 0; i < emotes.length(); i++)
             {
-                JSONObject emote = emotes.getJSONObject(i);
+                DataObject emote = emotes.getObject(i);
                 list.add(builder.createEmote(GuildImpl.this, emote, true));
             }
 
@@ -449,13 +449,13 @@ public class GuildImpl implements Guild
         {
             EntityBuilder builder = api.get().getEntityBuilder();
             List<Ban> bans = new LinkedList<>();
-            JSONArray bannedArr = response.getArray();
+            DataArray bannedArr = response.getArray();
 
             for (int i = 0; i < bannedArr.length(); i++)
             {
-                final JSONObject object = bannedArr.getJSONObject(i);
-                JSONObject user = object.getJSONObject("user");
-                bans.add(new Ban(builder.createFakeUser(user, false), object.optString("reason", null)));
+                final DataObject object = bannedArr.getObject(i);
+                DataObject user = object.getObject("user");
+                bans.add(new Ban(builder.createFakeUser(user, false), object.getString("reason", null)));
             }
             return Collections.unmodifiableList(bans);
         });
@@ -475,9 +475,9 @@ public class GuildImpl implements Guild
         {
 
             EntityBuilder builder = api.get().getEntityBuilder();
-            JSONObject bannedObj = response.getObject();
-            JSONObject user = bannedObj.getJSONObject("user");
-            return new Ban(builder.createFakeUser(user, false), bannedObj.optString("reason", null));
+            DataObject bannedObj = response.getObject();
+            DataObject user = bannedObj.getObject("user");
+            return new Ban(builder.createFakeUser(user, false), bannedObj.getString("reason", null));
         });
     }
 
@@ -564,15 +564,15 @@ public class GuildImpl implements Guild
         if (!owner.equals(getSelfMember()))
             throw new PermissionException("Cannot delete a guild that you do not own!");
 
-        JSONObject mfaBody = null;
+        DataObject mfaBody = null;
         if (!getJDA().getSelfUser().isBot() && getJDA().getSelfUser().isMfaEnabled())
         {
             Checks.notEmpty(mfaCode, "Provided MultiFactor Auth code");
-            mfaBody = new JSONObject().put("code", mfaCode);
+            mfaBody = DataObject.empty().put("code", mfaCode);
         }
 
         Route.CompiledRoute route = Route.Guilds.DELETE_GUILD.compile(getId());
-        return new RestActionImpl<Void>(getJDA(), route, mfaBody);
+        return new RestActionImpl<>(getJDA(), route, mfaBody);
     }
 
     @Nonnull
@@ -1300,7 +1300,7 @@ public class GuildImpl implements Guild
         return memberCache;
     }
 
-    public TLongObjectMap<JSONObject> getCachedPresenceMap()
+    public TLongObjectMap<DataObject> getCachedPresenceMap()
     {
         return cachedPresences;
     }
@@ -1343,10 +1343,10 @@ public class GuildImpl implements Guild
         return new RestActionImpl<>(getJDA(), route, (response, request) ->
         {
             EntityBuilder entityBuilder = api.get().getEntityBuilder();
-            JSONArray array = response.getArray();
+            DataArray array = response.getArray();
             List<Invite> invites = new ArrayList<>(array.length());
             for (int i = 0; i < array.length(); i++)
-                invites.add(entityBuilder.createInvite(array.getJSONObject(i)));
+                invites.add(entityBuilder.createInvite(array.getObject(i)));
             return Collections.unmodifiableList(invites);
         });
     }

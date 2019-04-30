@@ -42,6 +42,7 @@ import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.handle.GuildSetupController;
@@ -62,7 +63,6 @@ import net.dv8tion.jda.internal.utils.config.SessionConfig;
 import net.dv8tion.jda.internal.utils.config.ThreadingConfig;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 import okhttp3.OkHttpClient;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
@@ -262,10 +262,10 @@ public class JDAImpl implements JDA
     public void verifyToken(boolean alreadyFailed) throws LoginException
     {
 
-        RestActionImpl<JSONObject> login = new RestActionImpl<JSONObject>(this, Route.Self.GET_SELF.compile())
+        RestActionImpl<DataObject> login = new RestActionImpl<DataObject>(this, Route.Self.GET_SELF.compile())
         {
             @Override
-            public void handleResponse(Response response, Request<JSONObject> request)
+            public void handleResponse(Response response, Request<DataObject> request)
             {
                 if (response.isOk())
                     request.onSuccess(response.getObject());
@@ -279,7 +279,7 @@ public class JDAImpl implements JDA
             }
         };
 
-        JSONObject userResponse;
+        DataObject userResponse;
 
         if (!alreadyFailed)
         {
@@ -321,23 +321,23 @@ public class JDAImpl implements JDA
             throw new LoginException("The provided token is invalid!");
     }
 
-    private void verifyAccountType(JSONObject userResponse)
+    private void verifyAccountType(DataObject userResponse)
     {
         if (getAccountType() == AccountType.BOT)
         {
-            if (!userResponse.has("bot") || !userResponse.getBoolean("bot"))
+            if (!userResponse.hasKey("bot") || !userResponse.getBoolean("bot"))
                 throw new AccountTypeException(AccountType.BOT, "Attempted to login as a BOT with a CLIENT token!");
         }
         else
         {
-            if (userResponse.has("bot") && userResponse.getBoolean("bot"))
+            if (userResponse.hasKey("bot") && userResponse.getBoolean("bot"))
                 throw new AccountTypeException(AccountType.CLIENT, "Attempted to login as a CLIENT with a BOT token!");
         }
     }
 
-    private JSONObject checkToken(RestActionImpl<JSONObject> login) throws LoginException
+    private DataObject checkToken(RestActionImpl<DataObject> login) throws LoginException
     {
-        JSONObject userResponse;
+        DataObject userResponse;
         try
         {
             userResponse = login.complete();
@@ -587,6 +587,11 @@ public class JDAImpl implements JDA
         return userCache;
     }
 
+    public boolean hasSelfUser()
+    {
+        return selfUser != null;
+    }
+
     @Nonnull
     @Override
     public SelfUser getSelfUser()
@@ -753,7 +758,7 @@ public class JDAImpl implements JDA
 
         return new RestActionImpl<>(this, route, (response, request) ->
         {
-            JSONObject object = response.getObject();
+            DataObject object = response.getObject();
             EntityBuilder builder = getEntityBuilder();
             return builder.createWebhook(object);
         });

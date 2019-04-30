@@ -17,10 +17,9 @@ package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.events.guild.GuildAvailableEvent;
 import net.dv8tion.jda.api.events.guild.GuildUnavailableEvent;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
-import net.dv8tion.jda.internal.utils.Helpers;
-import org.json.JSONObject;
 
 public class GuildCreateHandler extends SocketHandler
 {
@@ -31,7 +30,7 @@ public class GuildCreateHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         final long id = content.getLong("id");
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(id);
@@ -41,7 +40,7 @@ public class GuildCreateHandler extends SocketHandler
             return null;
         }
 
-        boolean unavailable = Helpers.optBoolean(content, "unavailable");
+        boolean unavailable = content.getBoolean("unavailable");
         if (guild.isAvailable() && unavailable)
         {
             guild.setAvailable(false);

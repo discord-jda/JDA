@@ -26,12 +26,11 @@ import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePermissi
 import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePositionEvent;
 import net.dv8tion.jda.api.events.channel.text.update.*;
 import net.dv8tion.jda.api.events.channel.voice.update.*;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.*;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
-import net.dv8tion.jda.internal.utils.Helpers;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +44,7 @@ public class ChannelUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         ChannelType type = ChannelType.fromId(content.getInt("type"));
         if (type == ChannelType.GROUP)
@@ -61,14 +60,14 @@ public class ChannelUpdateHandler extends SocketHandler
         final Long parentId = content.isNull("parent_id") ? null : content.getLong("parent_id");
         final int position = content.getInt("position");
         final String name = content.getString("name");
-        final boolean nsfw = Helpers.optBoolean(content, "nsfw");
-        final int slowmode = Helpers.optInt(content, "rate_limit_per_user", 0);
-        JSONArray permOverwrites = content.getJSONArray("permission_overwrites");
+        final boolean nsfw = content.getBoolean("nsfw");
+        final int slowmode = content.getInt("rate_limit_per_user", 0);
+        DataArray permOverwrites = content.getArray("permission_overwrites");
         switch (type)
         {
             case TEXT:
             {
-                String topic = content.optString("topic", null);
+                String topic = content.getString("topic", null);
                 TextChannelImpl textChannel = (TextChannelImpl) getJDA().getTextChannelsView().get(channelId);
                 if (textChannel == null)
                 {
@@ -265,23 +264,15 @@ public class ChannelUpdateHandler extends SocketHandler
         return null;
     }
 
-    private long getIdLong(IPermissionHolder permHolder)
-    {
-        if (permHolder instanceof Member)
-            return ((Member) permHolder).getUser().getIdLong();
-        else
-            return ((Role) permHolder).getIdLong();
-    }
-
-    private void applyPermissions(AbstractChannelImpl<?,?> channel, JSONObject content,
-                                  JSONArray permOverwrites, List<IPermissionHolder> contained, List<IPermissionHolder> changed)
+    private void applyPermissions(AbstractChannelImpl<?,?> channel, DataObject content,
+                                  DataArray permOverwrites, List<IPermissionHolder> contained, List<IPermissionHolder> changed)
     {
 
         //Determines if a new PermissionOverride was created or updated.
         //If a PermissionOverride was created or updated it stores it in the proper Map to be reported by the Event.
         for (int i = 0; i < permOverwrites.length(); i++)
         {
-            handlePermissionOverride(permOverwrites.getJSONObject(i), channel, content, changed, contained);
+            handlePermissionOverride(permOverwrites.getObject(i), channel, content, changed, contained);
         }
 
         //Check if any overrides were deleted because of this event.
@@ -298,7 +289,7 @@ public class ChannelUpdateHandler extends SocketHandler
             .forEach(permHolder ->
             {
                 changed.add(permHolder);
-                toRemove.add(getIdLong(permHolder));
+                toRemove.add(permHolder.getIdLong());
             });
 
         toRemove.forEach((id) ->
@@ -314,7 +305,7 @@ public class ChannelUpdateHandler extends SocketHandler
         return holder == null ? guild.getMemberById(id) : holder;
     }
 
-    private void handlePermissionOverride(JSONObject override, AbstractChannelImpl<?,?> channel, JSONObject content,
+    private void handlePermissionOverride(DataObject override, AbstractChannelImpl<?,?> channel, DataObject content,
                                           List<IPermissionHolder> changedPermHolders, List<IPermissionHolder> containedPermHolders)
     {
         final long id = override.getLong("id");

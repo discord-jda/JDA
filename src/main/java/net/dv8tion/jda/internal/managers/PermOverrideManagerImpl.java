@@ -20,10 +20,10 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.PermissionOverride;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.PermOverrideManager;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import okhttp3.RequestBody;
-import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -153,7 +153,7 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
         // setup missing values here
         setupValues();
         RequestBody data = getRequestBody(
-            new JSONObject()
+            DataObject.empty()
                 .put("id", targetId)
                 .put("type", getPermissionOverride().isMemberOverride() ? "member" : "role")
                 .put("allow", this.allowed)

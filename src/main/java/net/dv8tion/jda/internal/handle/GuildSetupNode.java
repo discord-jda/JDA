@@ -29,29 +29,28 @@ import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.guild.UnavailableGuildJoinedEvent;
 import net.dv8tion.jda.api.managers.AudioManager;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
-import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import javax.annotation.Nullable;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 public class GuildSetupNode
 {
     private final long id;
     private final UpstreamReference<GuildSetupController> controller;
-    private final List<JSONObject> cachedEvents = new LinkedList<>();
-    private TLongObjectMap<JSONObject> members;
+    private final List<DataObject> cachedEvents = new LinkedList<>();
+    private TLongObjectMap<DataObject> members;
     private TLongSet removedMembers;
-    private JSONObject partialGuild;
+    private DataObject partialGuild;
     private int expectedMemberCount = 1;
     private boolean requestedSync;
     boolean requestedChunk;
@@ -86,7 +85,7 @@ public class GuildSetupNode
     }
 
     @Nullable
-    public JSONObject getGuildPayload()
+    public DataObject getGuildPayload()
     {
         return partialGuild;
     }
@@ -193,12 +192,12 @@ public class GuildSetupNode
         cachedEvents.clear();
     }
 
-    void handleReady(JSONObject obj)
+    void handleReady(DataObject obj)
     {
         if (!sync)
             return;
         partialGuild = obj;
-        markedUnavailable = Helpers.optBoolean(partialGuild, "unavailable");
+        markedUnavailable = partialGuild.getBoolean("unavailable");
         if (markedUnavailable)
         {
             updateStatus(GuildSetupController.Status.UNAVAILABLE);
@@ -210,7 +209,7 @@ public class GuildSetupNode
         }
     }
 
-    void handleCreate(JSONObject obj)
+    void handleCreate(DataObject obj)
     {
         if (partialGuild == null)
         {
@@ -218,13 +217,12 @@ public class GuildSetupNode
         }
         else
         {
-            for (Iterator<String> it = obj.keys(); it.hasNext();)
+            for (String key : obj.keys())
             {
-                String key = it.next();
-                partialGuild.put(key, obj.opt(key));
+                partialGuild.put(key, obj.opt(key).orElse(null));
             }
         }
-        boolean unavailable = Helpers.optBoolean(partialGuild, "unavailable");
+        boolean unavailable = partialGuild.getBoolean("unavailable");
         boolean wasMarkedUnavailable = this.markedUnavailable;
         this.markedUnavailable = unavailable;
         if (unavailable)
@@ -250,7 +248,7 @@ public class GuildSetupNode
         ensureMembers();
     }
 
-    void handleSync(JSONObject obj)
+    void handleSync(DataObject obj)
     {
         if (partialGuild == null)
         {
@@ -260,16 +258,15 @@ public class GuildSetupNode
             GuildSetupController.log.debug("Dropping sync update due to unavailable guild");
             return;
         }
-        for (Iterator<String> it = obj.keys(); it.hasNext();)
+        for (String key : obj.keys())
         {
-            String key = it.next();
-            partialGuild.put(key, obj.opt(key));
+            partialGuild.put(key, obj.opt(key).orElse(null));
         }
 
         ensureMembers();
     }
 
-    boolean handleMemberChunk(JSONArray arr)
+    boolean handleMemberChunk(DataArray arr)
     {
         if (partialGuild == null)
         {
@@ -279,10 +276,10 @@ public class GuildSetupNode
             GuildSetupController.log.debug("Dropping member chunk due to unavailable guild");
             return true;
         }
-        for (Object o : arr)
+        for (int index = 0; index < arr.length(); index++)
         {
-            JSONObject obj = (JSONObject) o;
-            long id = obj.getJSONObject("user").getLong("id");
+            DataObject obj = arr.getObject(index);
+            long id = obj.getObject("user").getLong("id");
             members.put(id, obj);
         }
 
@@ -294,22 +291,22 @@ public class GuildSetupNode
         return true;
     }
 
-    void handleAddMember(JSONObject member)
+    void handleAddMember(DataObject member)
     {
         if (members == null || removedMembers == null)
             return;
         expectedMemberCount++;
-        long userId = member.getJSONObject("user").getLong("id");
+        long userId = member.getObject("user").getLong("id");
         members.put(userId, member);
         removedMembers.remove(userId);
     }
 
-    void handleRemoveMember(JSONObject member)
+    void handleRemoveMember(DataObject member)
     {
         if (members == null || removedMembers == null)
             return;
         expectedMemberCount--;
-        long userId = member.getJSONObject("user").getLong("id");
+        long userId = member.getObject("user").getLong("id");
         members.remove(userId);
         removedMembers.add(userId);
         EventCache eventCache = getController().getJDA().getEventCache();
@@ -317,7 +314,7 @@ public class GuildSetupNode
             eventCache.clear(EventCache.Type.USER, userId);
     }
 
-    void cacheEvent(JSONObject event)
+    void cacheEvent(DataObject event)
     {
         GuildSetupController.log.trace("Caching {} event during init. GuildId: {}", event.getString("t"), id);
         cachedEvents.add(event);
@@ -349,31 +346,29 @@ public class GuildSetupNode
         if (partialGuild == null)
             return;
 
-        JSONArray channels = partialGuild.optJSONArray("channels");
-        JSONArray roles = partialGuild.optJSONArray("roles");
-        if (channels != null)
-        {
-            for (Object o : channels)
+        Optional<DataArray> channels = partialGuild.optArray("channels");
+        Optional<DataArray> roles = partialGuild.optArray("roles");
+        channels.ifPresent((arr) -> {
+            for (int i = 0; i < arr.length(); i++)
             {
-                JSONObject json = (JSONObject) o;
+                DataObject json = arr.getObject(i);
                 long id = json.getLong("id");
                 eventCache.clear(EventCache.Type.CHANNEL, id);
             }
-        }
+        });
 
-        if (roles != null)
-        {
-            for (Object o : roles)
+        roles.ifPresent((arr) -> {
+            for (int i = 0; i < arr.length(); i++)
             {
-                JSONObject json = (JSONObject) o;
+                DataObject json = arr.getObject(i);
                 long id = json.getLong("id");
                 eventCache.clear(EventCache.Type.ROLE, id);
             }
-        }
+        });
 
         if (members != null)
         {
-            for (TLongObjectIterator<JSONObject> it = members.iterator(); it.hasNext();)
+            for (TLongObjectIterator<DataObject> it = members.iterator(); it.hasNext();)
             {
                 it.advance();
                 long userId = it.key();
@@ -416,7 +411,7 @@ public class GuildSetupNode
         expectedMemberCount = partialGuild.getInt("member_count");
         members = new TLongObjectHashMap<>(expectedMemberCount);
         removedMembers = new TLongHashSet();
-        JSONArray memberArray = partialGuild.getJSONArray("members");
+        DataArray memberArray = partialGuild.getArray("members");
         if (memberArray.length() < expectedMemberCount && !requestedChunk)
         {
             updateStatus(GuildSetupController.Status.CHUNKING);
