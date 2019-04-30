@@ -1,0 +1,44 @@
+# project files
+config.json
+tokens.json
+
+# music files
+*.mp3
+*.aac
+*.m4a
+*.wav
+*.flac
+*.ogg
+
+# gradle
+/build/
+/.gradle/
+/out/
+gradle.properties
+
+# eclipse files
+.classpath
+.project
+.settings/
+/bin/
+
+# intellij files
+/.idea/
+*.iml
+*.ipr
+*.iws
+
+# netbeans files
+/.nb-gradle/
+*.nb-gradle-properties
+
+# DV8 Project Files #
+src-old/examples/java/AudioBridge.java
+src-old/examples/java/AudioExample2.java
+src-old/examples/java/BridgeBotExample.java
+src-old/examples/java/LewdieTest.java
+src-old/examples/java/StreamProvider.java
+src-old/examples/java/TestReceive.java
+src-old/main/java/net/dv8tion/jda/events/audio/AudioMovedEvent.java
+src-old/main/java/net/dv8tion/jda/ratelimit/Bucket.java
+src-old/main/java/net/dv8tion/jda/ratelimit/RateLimitControl.java
