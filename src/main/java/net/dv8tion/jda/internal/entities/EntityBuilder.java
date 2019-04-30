@@ -601,12 +601,12 @@ public class EntityBuilder
         return channel;
     }
 
-    public StoreChannel createStoreChannel(JSONObject json, long guildId)
+    public StoreChannel createStoreChannel(DataObject json, long guildId)
     {
         return createStoreChannel(null, json, guildId);
     }
 
-    public StoreChannel createStoreChannel(GuildImpl guild, JSONObject json, long guildId)
+    public StoreChannel createStoreChannel(GuildImpl guild, DataObject json, long guildId)
     {
         boolean playbackCache = false;
         final long id = json.getLong("id");
@@ -630,12 +630,12 @@ public class EntityBuilder
 
         if (!json.isNull("permission_overwrites"))
         {
-            JSONArray overrides = json.getJSONArray("permission_overwrites");
+            DataArray overrides = json.getArray("permission_overwrites");
             createOverridesPass(channel, overrides);
         }
 
         channel
-            .setParent(Helpers.optLong(json, "parent_id", 0))
+            .setParent(json.getLong("parent_id", 0))
             .setName(json.getString("name"))
             .setPosition(json.getInt("position"));
         if (playbackCache)

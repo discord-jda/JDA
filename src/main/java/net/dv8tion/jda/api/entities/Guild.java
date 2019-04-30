@@ -692,7 +692,7 @@ public interface Guild extends ISnowflake
      * all cached {@link net.dv8tion.jda.api.entities.Category Categories} of this Guild.
      * <br>Categories are sorted according to their position.
      *
-     * @return @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
+     * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
      */
     @Nonnull
     SortedSnowflakeCacheView<Category> getCategoryCache();
