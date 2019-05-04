@@ -17,10 +17,9 @@
 package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.entities.PermissionOverride;
-import org.json.JSONObject;
-import org.json.JSONString;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
-public class PermOverrideData implements JSONString
+public class PermOverrideData //TODO: implements JSONString
 {
     public static final int ROLE_TYPE = 0;
     public static final int MEMBER_TYPE = 1;
@@ -53,10 +52,10 @@ public class PermOverrideData implements JSONString
         this.deny = override.getDeniedRaw();
     }
 
-    @Override
+//    @Override
     public String toJSONString()
     {
-        final JSONObject o = new JSONObject();
+        final DataObject o = DataObject.empty();
         o.put("type",  type);
         o.put("id",    id);
         o.put("allow", allow);

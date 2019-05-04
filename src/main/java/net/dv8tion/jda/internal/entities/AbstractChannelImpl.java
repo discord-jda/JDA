@@ -28,6 +28,7 @@ import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.InviteAction;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.ChannelManagerImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
@@ -37,7 +38,6 @@ import net.dv8tion.jda.internal.requests.restaction.InviteActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.PermissionOverrideActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
-import org.json.JSONArray;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -215,10 +215,10 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
         return new RestActionImpl<>(jda, route, (response, request) ->
         {
             EntityBuilder entityBuilder = jda.getEntityBuilder();
-            JSONArray array = response.getArray();
+            DataArray array = response.getArray();
             List<Invite> invites = new ArrayList<>(array.length());
             for (int i = 0; i < array.length(); i++)
-                invites.add(entityBuilder.createInvite(array.getJSONObject(i)));
+                invites.add(entityBuilder.createInvite(array.getObject(i)));
             return Collections.unmodifiableList(invites);
         });
     }

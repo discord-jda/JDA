@@ -16,12 +16,11 @@
 
 package net.dv8tion.jda.api.requests;
 
+import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.utils.IOFunction;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Requester;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -34,8 +33,8 @@ public class Response implements Closeable
 {
     public static final int ERROR_CODE = -1;
     public static final String ERROR_MESSAGE = "ERROR";
-    public static final IOFunction<BufferedReader, JSONObject> JSON_SERIALIZE_OBJECT = (reader) -> new JSONObject(new JSONTokener(reader));
-    public static final IOFunction<BufferedReader, JSONArray> JSON_SERIALIZE_ARRAY = (reader) -> new JSONArray(new JSONTokener(reader));
+    public static final IOFunction<BufferedReader, DataObject> JSON_SERIALIZE_OBJECT = DataObject::fromJson;
+    public static final IOFunction<BufferedReader, DataArray> JSON_SERIALIZE_ARRAY = DataArray::fromJson;
 
     public final int code;
     public final String message;
@@ -89,27 +88,27 @@ public class Response implements Closeable
     }
 
     @Nonnull
-    public JSONArray getArray()
+    public DataArray getArray()
     {
-        return get(JSONArray.class, JSON_SERIALIZE_ARRAY);
+        return get(DataArray.class, JSON_SERIALIZE_ARRAY);
     }
 
     @Nonnull
-    public Optional<JSONArray> optArray()
+    public Optional<DataArray> optArray()
     {
-        return parseBody(true, JSONArray.class, JSON_SERIALIZE_ARRAY);
+        return parseBody(true, DataArray.class, JSON_SERIALIZE_ARRAY);
     }
 
     @Nonnull
-    public JSONObject getObject()
+    public DataObject getObject()
     {
-        return get(JSONObject.class, JSON_SERIALIZE_OBJECT);
+        return get(DataObject.class, JSON_SERIALIZE_OBJECT);
     }
 
     @Nonnull
-    public Optional<JSONObject> optObject()
+    public Optional<DataObject> optObject()
     {
-        return parseBody(true, JSONObject.class, JSON_SERIALIZE_OBJECT);
+        return parseBody(true, DataObject.class, JSON_SERIALIZE_OBJECT);
     }
 
     @Nonnull
@@ -215,7 +214,7 @@ public class Response implements Closeable
                 reader.close();
             }
             catch (NullPointerException | IOException ignored) {}
-            if (opt && e instanceof JSONException)
+            if (opt && e instanceof ParsingException)
                 return Optional.empty();
             else
                 throw new IllegalStateException("An error occurred while parsing the response for a RestAction", e);

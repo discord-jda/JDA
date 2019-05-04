@@ -17,9 +17,9 @@ package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
-import org.json.JSONObject;
 
 public class GuildMemberAddHandler extends SocketHandler
 {
@@ -30,7 +30,7 @@ public class GuildMemberAddHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         final long id = content.getLong("guild_id");
         boolean setup = getJDA().getGuildSetupController().onAddMember(id, content);

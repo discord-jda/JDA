@@ -27,11 +27,11 @@ import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionRemov
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.hooks.IEventManager;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EmoteImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.utils.JDALogger;
-import org.json.JSONObject;
 
 public class MessageReactionHandler extends SocketHandler
 {
@@ -45,7 +45,7 @@ public class MessageReactionHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         if (!content.isNull("guild_id"))
         {
@@ -54,15 +54,15 @@ public class MessageReactionHandler extends SocketHandler
                 return guildId;
         }
 
-        JSONObject emoji = content.getJSONObject("emoji");
+        DataObject emoji = content.getObject("emoji");
 
         final long userId    = content.getLong("user_id");
         final long messageId = content.getLong("message_id");
         final long channelId = content.getLong("channel_id");
 
         final Long emojiId = emoji.isNull("id") ? null : emoji.getLong("id");
-        String emojiName = emoji.optString("name", null);
-        final boolean emojiAnimated = emoji.optBoolean("animated");
+        String emojiName = emoji.getString("name", null);
+        final boolean emojiAnimated = emoji.getBoolean("animated");
 
         if (emojiId == null && emojiName == null)
         {

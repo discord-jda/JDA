@@ -23,17 +23,15 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.UserImpl;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.Helpers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -229,7 +227,7 @@ public class WidgetUtil
                 {
                     try (InputStream stream = data)
                     {
-                        return new Widget(new JSONObject(new JSONTokener(stream)));
+                        return new Widget(DataObject.fromJson(stream));
                     }
                     catch (IOException e)
                     {
@@ -246,7 +244,7 @@ public class WidgetUtil
                     long retryAfter;
                     try (InputStream stream = data)
                     {
-                        retryAfter = new JSONObject(new JSONTokener(stream)).getLong("retry_after");
+                        retryAfter = DataObject.fromJson(stream).getLong("retry_after");
                     }
                     catch (Exception e)
                     {
@@ -317,9 +315,9 @@ public class WidgetUtil
          * @param json
          *        The {@link org.json.JSONObject JSONObject} to construct the Widget from
          */
-        private Widget(@Nonnull JSONObject json)
+        private Widget(@Nonnull DataObject json)
         {
-            String inviteCode = json.optString("instant_invite", null);
+            String inviteCode = json.getString("instant_invite", null);
             if (inviteCode != null)
                 inviteCode = inviteCode.substring(inviteCode.lastIndexOf("/") + 1);
             
@@ -330,17 +328,17 @@ public class WidgetUtil
             channels = MiscUtil.newLongMap();
             members = MiscUtil.newLongMap();
             
-            JSONArray channelsJson = json.getJSONArray("channels");
+            DataArray channelsJson = json.getArray("channels");
             for (int i = 0; i < channelsJson.length(); i++)
             {
-                JSONObject channel = channelsJson.getJSONObject(i);
+                DataObject channel = channelsJson.getObject(i);
                 channels.put(channel.getLong("id"), new VoiceChannel(channel, this));
             }
             
-            JSONArray membersJson = json.getJSONArray("members");
+            DataArray membersJson = json.getArray("members");
             for (int i = 0; i<membersJson.length(); i++)
             {
-                JSONObject memberJson = membersJson.getJSONObject(i);
+                DataObject memberJson = membersJson.getObject(i);
                 Member member = new Member(memberJson, this);
                 if (!memberJson.isNull("channel_id")) // voice state
                 {
@@ -559,17 +557,17 @@ public class WidgetUtil
             private final Widget widget;
             private VoiceState state;
             
-            private Member(@Nonnull JSONObject json, @Nonnull Widget widget)
+            private Member(@Nonnull DataObject json, @Nonnull Widget widget)
             {
                 this.widget = widget;
-                this.bot = Helpers.optBoolean(json, "bot");
+                this.bot = json.getBoolean("bot");
                 this.id = json.getLong("id");
                 this.username = json.getString("username");
                 this.discriminator = json.getString("discriminator");
-                this.avatar = json.optString("avatar", null);
-                this.nickname = json.optString("nick", null);
+                this.avatar = json.getString("avatar", null);
+                this.nickname = json.getString("nick", null);
                 this.status = OnlineStatus.fromKey(json.getString("status"));
-                this.game = json.isNull("game") ? null : EntityBuilder.createAcitvity(json.getJSONObject("game"));
+                this.game = json.isNull("game") ? null : EntityBuilder.createAcitvity(json.getObject("game"));
             }
             
             private void setVoiceState(VoiceState voiceState)
@@ -787,7 +785,7 @@ public class WidgetUtil
             private final List<Member> members;
             private final Widget widget;
             
-            private VoiceChannel(@Nonnull JSONObject json, @Nonnull Widget widget)
+            private VoiceChannel(@Nonnull DataObject json, @Nonnull Widget widget)
             {
                 this.widget = widget;
                 this.position = json.getInt("position");

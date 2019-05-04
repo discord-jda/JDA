@@ -21,12 +21,12 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -215,19 +215,19 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @Override
     protected RequestBody finalizeData()
     {
-        JSONObject object = new JSONObject();
+        DataObject object = DataObject.empty();
         object.put("name", name);
         object.put("type", type.getId());
-        object.put("permission_overwrites", new JSONArray(overrides));
+        object.put("permission_overwrites", DataArray.fromCollection(overrides));
         if (position != null)
             object.put("position", position);
         switch (type)
         {
             case VOICE:
                 if (bitrate != null)
-                    object.put("bitrate", bitrate.intValue());
+                    object.put("bitrate", bitrate);
                 if (userlimit != null)
-                    object.put("user_limit", userlimit.intValue());
+                    object.put("user_limit", userlimit);
                 break;
             case TEXT:
                 if (topic != null && !topic.isEmpty())
