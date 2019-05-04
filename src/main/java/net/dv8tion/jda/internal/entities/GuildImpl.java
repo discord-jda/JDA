@@ -55,10 +55,7 @@ import net.dv8tion.jda.internal.requests.restaction.order.CategoryOrderActionImp
 import net.dv8tion.jda.internal.requests.restaction.order.ChannelOrderActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.order.RoleOrderActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.AuditLogPaginationActionImpl;
-import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.EncodingUtil;
-import net.dv8tion.jda.internal.utils.PermissionUtil;
-import net.dv8tion.jda.internal.utils.UnlockHook;
+import net.dv8tion.jda.internal.utils.*;
 import net.dv8tion.jda.internal.utils.cache.*;
 
 import javax.annotation.Nonnull;
@@ -122,19 +119,15 @@ public class GuildImpl implements Guild
         {
             EnumSet<Region> set = EnumSet.noneOf(Region.class);
             DataArray arr = response.getArray();
-            for (int i = 0; arr != null && i < arr.length(); i++)
+            for (int i = 0; i < arr.length(); i++)
             {
                 DataObject obj = arr.getObject(i);
                 if (!includeDeprecated && obj.getBoolean("deprecated"))
-                {
                     continue;
-                }
                 String id = obj.getString("id", "");
                 Region region = Region.fromKey(id);
                 if (region != Region.UNKNOWN)
-                {
                     set.add(region);
-                }
             }
             return set;
         });
@@ -512,8 +505,7 @@ public class GuildImpl implements Guild
         final Role role = getPublicRole();
         return getTextChannelsView().stream()
                                     .filter(c -> role.hasPermission(c, Permission.MESSAGE_READ))
-                                    .sorted(Comparator.naturalOrder())
-                                    .findFirst().orElse(null);
+                                    .min(Comparator.naturalOrder()).orElse(null);
     }
 
     @Nonnull
@@ -533,6 +525,7 @@ public class GuildImpl implements Guild
         return mng;
     }
 
+    @Nonnull
     @Override
     public AuditLogPaginationAction retrieveAuditLogs()
     {
@@ -860,7 +853,7 @@ public class GuildImpl implements Guild
 
         //We check the owner instead of Position because, apparently, Discord doesn't care about position for
         // muting and deafening, only whether the affected Member is the owner.
-        if (getOwner().equals(member))
+        if (member.equals(getOwner()))
             throw new HierarchyException("Cannot modify Guild Deafen status the Owner of the Guild");
 
         GuildVoiceState voiceState = member.getVoiceState();
@@ -882,7 +875,7 @@ public class GuildImpl implements Guild
 
         //We check the owner instead of Position because, apparently, Discord doesn't care about position for
         // muting and deafening, only whether the affected Member is the owner.
-        if (getOwner().equals(member))
+        if (member.equals(getOwner()))
             throw new HierarchyException("Cannot modify Guild Mute status the Owner of the Guild");
 
         GuildVoiceState voiceState = member.getVoiceState();
@@ -896,7 +889,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> addSingleRoleToMember(@Nonnull Member member, @Nonnull Role role)
+    public AuditableRestAction<Void> addRoleToMember(@Nonnull Member member, @Nonnull Role role)
     {
         Checks.notNull(member, "Member");
         Checks.notNull(role, "Role");
@@ -911,7 +904,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> removeSingleRoleFromMember(@Nonnull Member member, @Nonnull Role role)
+    public AuditableRestAction<Void> removeRoleFromMember(@Nonnull Member member, @Nonnull Role role)
     {
         Checks.notNull(member, "Member");
         Checks.notNull(role, "Role");
@@ -934,38 +927,24 @@ public class GuildImpl implements Guild
         checkGuild(member.getGuild(), "Member");
         checkPermission(Permission.MANAGE_ROLES);
         rolesToAdd.forEach(role ->
-                           {
-                               Checks.notNull(role, "Role in rolesToAdd");
-                               checkGuild(role.getGuild(), "Role: " + role.toString());
-                               checkPosition(role);
-                               Checks.check(!role.isManaged(), "Cannot add a Managed role to a Member. Role: %s", role.toString());
-                           });
+        {
+            Checks.notNull(role, "Role in rolesToAdd");
+            checkGuild(role.getGuild(), "Role: " + role.toString());
+            checkPosition(role);
+            Checks.check(!role.isManaged(), "Cannot add a Managed role to a Member. Role: %s", role.toString());
+        });
         rolesToRemove.forEach(role ->
-                              {
-                                  Checks.notNull(role, "Role in rolesToRemove");
-                                  checkGuild(role.getGuild(), "Role: " + role.toString());
-                                  checkPosition(role);
-                                  Checks.check(!role.isManaged(), "Cannot remove a Managed role from a Member. Role: %s", role.toString());
-                              });
+        {
+            Checks.notNull(role, "Role in rolesToRemove");
+            checkGuild(role.getGuild(), "Role: " + role.toString());
+            checkPosition(role);
+            Checks.check(!role.isManaged(), "Cannot remove a Managed role from a Member. Role: %s", role.toString());
+        });
 
         Set<Role> currentRoles = new HashSet<>(((MemberImpl) member).getRoleSet());
-        Set<Role> newRolesToAdd = new HashSet<>(rolesToAdd);
-        newRolesToAdd.removeAll(rolesToRemove);
-
-        // If no changes have been made we return an EmptyRestAction instead
-        if (currentRoles.addAll(newRolesToAdd))
-            currentRoles.removeAll(rolesToRemove);
-        else if (!currentRoles.removeAll(rolesToRemove))
-            return new EmptyRestAction<>(getJDA());
-
-        Checks.check(!currentRoles.contains(getPublicRole()),
-                     "Cannot add the PublicRole of a Guild to a Member. All members have this role by default!");
-
-        DataObject body = DataObject.empty()
-            .put("roles", currentRoles.stream().map(Role::getId).collect(Collectors.toList()));
-        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), member.getUser().getId());
-
-        return new AuditableRestActionImpl<>(getJDA(), route, body);
+        currentRoles.addAll(rolesToAdd);
+        currentRoles.removeAll(rolesToRemove);
+        return modifyMemberRoles(member, currentRoles);
     }
 
     @Nonnull
@@ -976,38 +955,32 @@ public class GuildImpl implements Guild
         Checks.notNull(roles, "Roles");
         checkGuild(member.getGuild(), "Member");
         roles.forEach(role ->
-                      {
-                          Checks.notNull(role, "Role in collection");
-                          checkGuild(role.getGuild(), "Role: " + role.toString());
-                          checkPosition(role);
-                      });
+        {
+            Checks.notNull(role, "Role in collection");
+            checkGuild(role.getGuild(), "Role: " + role.toString());
+            checkPosition(role);
+        });
 
         Checks.check(!roles.contains(getPublicRole()),
-                     "Cannot add the PublicRole of a Guild to a Member. All members have this role by default!");
+             "Cannot add the PublicRole of a Guild to a Member. All members have this role by default!");
 
         // Return an empty rest action if there were no changes
         final List<Role> memberRoles = member.getRoles();
-        if (memberRoles.size() == roles.size() && memberRoles.containsAll(roles))
+        if (Helpers.deepEqualsUnordered(roles, memberRoles))
             return new EmptyRestAction<>(getJDA());
 
         //Make sure that the current managed roles are preserved and no new ones are added.
         List<Role> currentManaged = memberRoles.stream().filter(Role::isManaged).collect(Collectors.toList());
         List<Role> newManaged = roles.stream().filter(Role::isManaged).collect(Collectors.toList());
-        if (!currentManaged.isEmpty() || !newManaged.isEmpty())
+        if (!Helpers.deepEqualsUnordered(newManaged, currentManaged))
         {
-            if (!newManaged.containsAll(currentManaged))
-            {
-                currentManaged.removeAll(newManaged);
-                throw new IllegalArgumentException("Cannot remove managed roles from a member! Roles: " + currentManaged.toString());
-            }
-            if (!currentManaged.containsAll(newManaged))
-            {
-                newManaged.removeAll(currentManaged);
-                throw new IllegalArgumentException("Cannot add managed roles to a member! Roles: " + newManaged.toString());
-            }
+            List<Role> added = new ArrayList<>(newManaged);
+            added.removeAll(currentManaged);
+            List<Role> removed = new ArrayList<>(currentManaged);
+            removed.removeAll(added);
+            throw new IllegalArgumentException("Cannot modify managed roles from a member! Added: " + added + " Removed: " + removed);
         }
 
-        //This is identical to the rest action stuff in #modifyMemberRoles(Member, Collection<Role>, Collection<Role>)
         DataObject body = DataObject.empty()
             .put("roles", roles.stream().map(Role::getId).collect(Collectors.toList()));
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), member.getUser().getId());
@@ -1021,7 +994,7 @@ public class GuildImpl implements Guild
     {
         Checks.notNull(newOwner, "Member");
         checkGuild(newOwner.getGuild(), "Member");
-        if (!getOwner().equals(getSelfMember()))
+        if (!getSelfMember().equals(getOwner()))
             throw new PermissionException("The logged in account must be the owner of this Guild to be able to transfer ownership");
 
         Checks.check(!getSelfMember().equals(newOwner),
