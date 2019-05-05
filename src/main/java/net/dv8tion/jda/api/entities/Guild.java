@@ -2514,14 +2514,25 @@ public interface Guild extends ISnowflake
      *     <br>The target Member was removed from the Guild before finishing the task</li>
      * </ul>
      *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public static void promote(Member member) {
+     *     Guild guild = member.getGuild();
+     *     List<Role> pleb = guild.getRolesByName("Pleb", true); // remove all roles named "pleb"
+     *     List<Role> knight = guild.getRolesByName("Knight", true); // add all roles named "knight"
+     *     // update roles in single request
+     *     guild.modifyMemberRoles(member, pleb, knight).queue();
+     * }
+     * }</pre>
+     *
      * @param  member
      *         The {@link net.dv8tion.jda.api.entities.Member Member} that should be modified
      * @param  rolesToAdd
      *         A {@link java.util.Collection Collection} of {@link net.dv8tion.jda.api.entities.Role Roles}
-     *         to add to the current Roles the specified {@link net.dv8tion.jda.api.entities.Member Member} already has
+     *         to add to the current Roles the specified {@link net.dv8tion.jda.api.entities.Member Member} already has, or null
      * @param  rolesToRemove
      *         A {@link java.util.Collection Collection} of {@link net.dv8tion.jda.api.entities.Role Roles}
-     *         to remove from the current Roles the specified {@link net.dv8tion.jda.api.entities.Member Member} already has
+     *         to remove from the current Roles the specified {@link net.dv8tion.jda.api.entities.Member Member} already has, or null
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
@@ -2530,7 +2541,7 @@ public interface Guild extends ISnowflake
      *         and thus cannot be modified by the currently logged in account
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If any of the provided arguments is {@code null}</li>
+     *             <li>If the target member is {@code null}</li>
      *             <li>If any of the specified Roles is managed or is the {@code Public Role} of the Guild</li>
      *         </ul>
      *
@@ -2538,7 +2549,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> modifyMemberRoles(@Nonnull Member member, @Nonnull Collection<Role> rolesToAdd, @Nonnull Collection<Role> rolesToRemove);
+    AuditableRestAction<Void> modifyMemberRoles(@Nonnull Member member, @Nullable Collection<Role> rolesToAdd, @Nullable Collection<Role> rolesToRemove);
 
     /**
      * Modifies the complete {@link net.dv8tion.jda.api.entities.Role Role} set of the specified {@link net.dv8tion.jda.api.entities.Member Member}
@@ -2564,6 +2575,15 @@ public interface Guild extends ISnowflake
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
      *     <br>The target Member was removed from the Guild before finishing the task</li>
      * </ul>
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public static void removeRoles(Member member) {
+     *     Guild guild = member.getGuild();
+     *     // pass no role, this means we set the roles of the member to an empty array.
+     *     guild.modifyMemberRoles(member).queue();
+     * }
+     * }</pre>
      *
      * @param  member
      *         A {@link net.dv8tion.jda.api.entities.Member Member} of which to override the Roles of
@@ -2618,6 +2638,18 @@ public interface Guild extends ISnowflake
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
      *     <br>The target Member was removed from the Guild before finishing the task</li>
      * </ul>
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public static void makeModerator(Member member) {
+     *     Guild guild = member.getGuild();
+     *     List<Role> roles = new ArrayList<>(member.getRoles()); // modifiable copy
+     *     List<Role> modRoles = guild.getRolesByName("moderator", true); // get roles with name "moderator"
+     *     roles.addAll(modRoles); // add new roles
+     *     // update the member with new roles
+     *     guild.modifyMemberRoles(member, roles).queue();
+     * }
+     * }</pre>
      *
      * @param  member
      *         A {@link net.dv8tion.jda.api.entities.Member Member} of which to override the Roles of

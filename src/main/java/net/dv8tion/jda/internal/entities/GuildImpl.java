@@ -689,6 +689,26 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
+    public RestAction<List<Invite>> retrieveInvites()
+    {
+        if (!this.getSelfMember().hasPermission(Permission.MANAGE_SERVER))
+            throw new InsufficientPermissionException(Permission.MANAGE_SERVER);
+
+        final Route.CompiledRoute route = Route.Invites.GET_GUILD_INVITES.compile(getId());
+
+        return new RestActionImpl<>(getJDA(), route, (response, request) ->
+        {
+            EntityBuilder entityBuilder = api.get().getEntityBuilder();
+            DataArray array = response.getArray();
+            List<Invite> invites = new ArrayList<>(array.length());
+            for (int i = 0; i < array.length(); i++)
+                invites.add(entityBuilder.createInvite(array.getObject(i)));
+            return Collections.unmodifiableList(invites);
+        });
+    }
+
+    @Nonnull
+    @Override
     public RestAction<Void> moveVoiceMember(@Nonnull Member member, @Nullable VoiceChannel voiceChannel)
     {
         Checks.notNull(member, "Member");
@@ -919,31 +939,24 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> modifyMemberRoles(@Nonnull Member member, @Nonnull Collection<Role> rolesToAdd, @Nonnull Collection<Role> rolesToRemove)
+    public AuditableRestAction<Void> modifyMemberRoles(@Nonnull Member member, Collection<Role> rolesToAdd, Collection<Role> rolesToRemove)
     {
         Checks.notNull(member, "Member");
-        Checks.notNull(rolesToAdd, "Collection containing roles to be added to the member");
-        Checks.notNull(rolesToRemove, "Collection containing roles to be removed from the member");
         checkGuild(member.getGuild(), "Member");
         checkPermission(Permission.MANAGE_ROLES);
-        rolesToAdd.forEach(role ->
-        {
-            Checks.notNull(role, "Role in rolesToAdd");
-            checkGuild(role.getGuild(), "Role: " + role.toString());
-            checkPosition(role);
-            Checks.check(!role.isManaged(), "Cannot add a Managed role to a Member. Role: %s", role.toString());
-        });
-        rolesToRemove.forEach(role ->
-        {
-            Checks.notNull(role, "Role in rolesToRemove");
-            checkGuild(role.getGuild(), "Role: " + role.toString());
-            checkPosition(role);
-            Checks.check(!role.isManaged(), "Cannot remove a Managed role from a Member. Role: %s", role.toString());
-        });
-
         Set<Role> currentRoles = new HashSet<>(((MemberImpl) member).getRoleSet());
-        currentRoles.addAll(rolesToAdd);
-        currentRoles.removeAll(rolesToRemove);
+        if (rolesToAdd != null)
+        {
+            checkRoles(rolesToAdd, "add", "to");
+            currentRoles.addAll(rolesToAdd);
+        }
+
+        if (rolesToRemove != null)
+        {
+            checkRoles(rolesToRemove, "remove", "from");
+            currentRoles.removeAll(rolesToRemove);
+        }
+
         return modifyMemberRoles(member, currentRoles);
     }
 
@@ -1145,6 +1158,17 @@ public class GuildImpl implements Guild
             throw new HierarchyException("Can't modify a role with higher or equal highest role than yourself! Role: " + role.toString());
     }
 
+    private void checkRoles(Collection<Role> roles, String type, String preposition)
+    {
+        roles.forEach(role ->
+        {
+            Checks.notNull(role, "Role in roles to " + type);
+            checkGuild(role.getGuild(), "Role: " + role.toString());
+            checkPosition(role);
+            Checks.check(!role.isManaged(), "Cannot %s a managed role %s a Member. Role: %s", type, preposition, role.toString());
+        });
+    }
+
     // ---- Setters -----
 
     public GuildImpl setAvailable(boolean available)
@@ -1305,25 +1329,5 @@ public class GuildImpl implements Guild
     public String toString()
     {
         return "G:" + getName() + '(' + id + ')';
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<List<Invite>> retrieveInvites()
-    {
-        if (!this.getSelfMember().hasPermission(Permission.MANAGE_SERVER))
-            throw new InsufficientPermissionException(Permission.MANAGE_SERVER);
-
-        final Route.CompiledRoute route = Route.Invites.GET_GUILD_INVITES.compile(getId());
-
-        return new RestActionImpl<>(getJDA(), route, (response, request) ->
-        {
-            EntityBuilder entityBuilder = api.get().getEntityBuilder();
-            DataArray array = response.getArray();
-            List<Invite> invites = new ArrayList<>(array.length());
-            for (int i = 0; i < array.length(); i++)
-                invites.add(entityBuilder.createInvite(array.getObject(i)));
-            return Collections.unmodifiableList(invites);
-        });
     }
 }
