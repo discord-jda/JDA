@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.managers.RoleManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.RoleAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.RoleManagerImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
@@ -44,7 +45,8 @@ import java.util.concurrent.locks.ReentrantLock;
 public class RoleImpl implements Role
 {
     private final long id;
-    private final UpstreamReference<Guild> guild;
+    private final long guildId;
+    private final UpstreamReference<JDAImpl> api;
 
     private final ReentrantLock mngLock = new ReentrantLock();
     private volatile RoleManager manager;
@@ -60,18 +62,20 @@ public class RoleImpl implements Role
     public RoleImpl(long id, Guild guild)
     {
         this.id = id;
-        this.guild = new UpstreamReference<>(guild);
+        this.guildId = guild.getIdLong();
+        this.api = new UpstreamReference<>((JDAImpl) guild.getJDA());
     }
 
     @Override
     public int getPosition()
     {
-        if (this == getGuild().getPublicRole())
+        Guild guild = getGuild();
+        if (this == guild.getPublicRole())
             return -1;
 
         //Subtract 1 to get into 0-index, and 1 to disregard the everyone role.
-        int i = getGuild().getRoles().size() - 2;
-        for (Role r : getGuild().getRoles())
+        int i = guild.getRoles().size() - 2;
+        for (Role r : guild.getRoles())
         {
             if (r == this)
                 return i;
@@ -194,7 +198,10 @@ public class RoleImpl implements Role
     @Override
     public Guild getGuild()
     {
-        return guild.get();
+        Guild guild = getJDA().getGuildById(guildId);
+        if (guild == null)
+            throw new IllegalStateException("Cannot get reference to upstream Guild with id: " + Long.toUnsignedString(guildId));
+        return guild;
     }
 
     @Nonnull
@@ -231,22 +238,23 @@ public class RoleImpl implements Role
     @Override
     public AuditableRestAction<Void> delete()
     {
-        if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_ROLES))
+        Guild guild = getGuild();
+        if (!guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES))
             throw new InsufficientPermissionException(Permission.MANAGE_ROLES);
-        if(!PermissionUtil.canInteract(getGuild().getSelfMember(), this))
+        if(!PermissionUtil.canInteract(guild.getSelfMember(), this))
             throw new HierarchyException("Can't delete role >= highest self-role");
         if (managed)
             throw new UnsupportedOperationException("Cannot delete a Role that is managed. ");
 
-        Route.CompiledRoute route = Route.Roles.DELETE_ROLE.compile(getGuild().getId(), getId());
-        return new AuditableRestActionImpl<Void>(getJDA(), route);
+        Route.CompiledRoute route = Route.Roles.DELETE_ROLE.compile(Long.toUnsignedString(guildId), getId());
+        return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
     @Nonnull
     @Override
     public JDA getJDA()
     {
-        return getGuild().getJDA();
+        return api.get();
     }
 
     @Nonnull

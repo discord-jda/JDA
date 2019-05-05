@@ -182,6 +182,12 @@ public class EntityBuilder
                 .setExplicitContentLevel(Guild.ExplicitContentLevel.fromKey(explicitContentLevel))
                 .setRequiredMFALevel(Guild.MFALevel.fromKey(mfaLevel));
 
+        SnowflakeCacheViewImpl<Guild> guildView = getJDA().getGuildsView();
+        try (UnlockHook hook = guildView.writeLock())
+        {
+            guildView.getMap().put(guildId, guildObj);
+        }
+
         guildObj.setFeatures(featuresArray.map(it ->
             StreamSupport.stream(it.spliterator(), false)
                          .map(String::valueOf)
@@ -234,11 +240,6 @@ public class EntityBuilder
             }
         });
 
-        SnowflakeCacheViewImpl<Guild> guildView = getJDA().getGuildsView();
-        try (UnlockHook hook = guildView.writeLock())
-        {
-            guildView.getMap().put(guildId, guildObj);
-        }
         return guildObj;
     }
 

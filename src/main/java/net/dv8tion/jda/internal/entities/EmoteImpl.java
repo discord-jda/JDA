@@ -46,7 +46,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class EmoteImpl implements ListedEmote
 {
     private final long id;
-    private final UpstreamReference<GuildImpl> guild;
+    private final long guildId;
     private final UpstreamReference<JDAImpl> api;
     private final Set<Role> roles;
     private final boolean fake;
@@ -67,7 +67,7 @@ public class EmoteImpl implements ListedEmote
     public EmoteImpl(long id, GuildImpl guild, boolean fake)
     {
         this.id = id;
-        this.guild = new UpstreamReference<>(guild);
+        this.guildId = guild.getIdLong();
         this.api = new UpstreamReference<>(guild.getJDA());
         this.roles = ConcurrentHashMap.newKeySet();
         this.fake = fake;
@@ -77,7 +77,7 @@ public class EmoteImpl implements ListedEmote
     {
         this.id = id;
         this.api = new UpstreamReference<>(api);
-        this.guild = null;
+        this.guildId = 0;
         this.roles = null;
         this.fake = true;
     }
@@ -85,7 +85,7 @@ public class EmoteImpl implements ListedEmote
     @Override
     public GuildImpl getGuild()
     {
-        return guild == null ? null : guild.get();
+        return (GuildImpl) getJDA().getGuildById(guildId);
     }
 
     @Nonnull

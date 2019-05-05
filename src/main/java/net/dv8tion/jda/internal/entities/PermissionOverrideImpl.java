@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.PermissionOverrideActionImpl;
@@ -35,8 +36,11 @@ import java.util.concurrent.locks.ReentrantLock;
 public class PermissionOverrideImpl implements PermissionOverride
 {
     private final long id;
-    private final UpstreamReference<GuildChannel> channel;
-    private final IPermissionHolder permissionHolder;
+    private final long channelId;
+    private final long holderId;
+    private final ChannelType channelType;
+    private final boolean role;
+    private final UpstreamReference<JDAImpl> api;
 
     protected final ReentrantLock mngLock = new ReentrantLock();
     protected volatile PermissionOverrideAction manager;
@@ -46,9 +50,12 @@ public class PermissionOverrideImpl implements PermissionOverride
 
     public PermissionOverrideImpl(GuildChannel channel, long id, IPermissionHolder permissionHolder)
     {
-        this.channel = new UpstreamReference<>(channel);
+        this.channelId = channel.getIdLong();
+        this.holderId = permissionHolder.getIdLong();
+        this.channelType = channel.getType();
+        this.role = permissionHolder instanceof Role;
         this.id = id;
-        this.permissionHolder = permissionHolder;
+        this.api = new UpstreamReference<>((JDAImpl) channel.getJDA());
     }
 
     @Override
@@ -94,26 +101,45 @@ public class PermissionOverrideImpl implements PermissionOverride
     @Override
     public JDA getJDA()
     {
-        return getChannel().getJDA();
+        return api.get();
     }
 
     @Override
     public Member getMember()
     {
-        return isMemberOverride() ? (Member) permissionHolder : null;
+        return getGuild().getMemberById(holderId);
     }
 
     @Override
     public Role getRole()
     {
-        return isRoleOverride() ? (Role) permissionHolder : null;
+        return getGuild().getRoleById(holderId);
     }
 
     @Nonnull
     @Override
     public GuildChannel getChannel()
     {
-        return channel.get();
+        JDAImpl jda = api.get();
+        GuildChannel channel;
+        switch (channelType)
+        {
+            case TEXT:
+                channel = jda.getTextChannelById(channelId);
+                break;
+            case VOICE:
+                channel = jda.getVoiceChannelById(channelId);
+                break;
+            case CATEGORY:
+                channel = jda.getCategoryById(channelId);
+                break;
+                //TODO: STORE
+            default:
+                throw new IllegalStateException("Unknown channel type " + channelType);
+        }
+        if (channel == null)
+            throw new IllegalStateException("Cannot get reference to upstream " + channelType.name() + " Channel with id: " + Long.toUnsignedString(channelId));
+        return channel;
     }
 
     @Nonnull
@@ -126,13 +152,13 @@ public class PermissionOverrideImpl implements PermissionOverride
     @Override
     public boolean isMemberOverride()
     {
-        return permissionHolder instanceof Member;
+        return !role;
     }
 
     @Override
     public boolean isRoleOverride()
     {
-        return permissionHolder instanceof Role;
+        return role;
     }
 
     @Nonnull
@@ -187,7 +213,7 @@ public class PermissionOverrideImpl implements PermissionOverride
         if (!(o instanceof PermissionOverrideImpl))
             return false;
         PermissionOverrideImpl oPerm = (PermissionOverrideImpl) o;
-        return this.permissionHolder.equals(oPerm.permissionHolder) && this.getChannel().equals(oPerm.getChannel());
+        return this.holderId == oPerm.holderId && this.channelId == oPerm.channelId;
     }
 
     @Override

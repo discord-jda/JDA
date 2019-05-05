@@ -27,7 +27,9 @@ import javax.annotation.Nonnull;
 
 public class GuildVoiceStateImpl implements GuildVoiceState
 {
-    private final UpstreamReference<Member> member;
+    private final long guildId;
+    private final long userId;
+    private final UpstreamReference<JDA> api;
 
     private VoiceChannel connectedChannel;
     private String sessionId;
@@ -39,7 +41,9 @@ public class GuildVoiceStateImpl implements GuildVoiceState
 
     public GuildVoiceStateImpl(Member member)
     {
-        this.member = new UpstreamReference<>(member);
+        this.userId = member.getUser().getIdLong();
+        this.guildId = member.getGuild().getIdLong();
+        this.api = new UpstreamReference<>(member.getJDA());
     }
 
     @Override
@@ -58,7 +62,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     @Override
     public JDA getJDA()
     {
-        return getGuild().getJDA();
+        return api.get();
     }
 
     @Override
@@ -107,14 +111,20 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     @Override
     public Guild getGuild()
     {
-        return getMember().getGuild();
+        Guild guild = getJDA().getGuildById(guildId);
+        if (guild == null)
+            throw new IllegalStateException("Cannot get reference to upstream Guild with id: " + Long.toUnsignedString(guildId));
+        return guild;
     }
 
     @Nonnull
     @Override
     public Member getMember()
     {
-        return member.get();
+        Member member = getGuild().getMemberById(userId);
+        if (member == null)
+            throw new IllegalStateException("Cannot get reference to upstream Member with id: " + Long.toUnsignedString(userId));
+        return member;
     }
 
     @Override

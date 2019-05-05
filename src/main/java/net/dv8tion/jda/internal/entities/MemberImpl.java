@@ -38,8 +38,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MemberImpl implements Member
 {
     private static final ZoneOffset OFFSET = ZoneOffset.of("+00:00");
-    private final UpstreamReference<GuildImpl> guild;
-    private final User user;
+    private final long guildId, userId;
+    private final UpstreamReference<JDAImpl> api;
     private final Set<Role> roles = ConcurrentHashMap.newKeySet();
     private final GuildVoiceState voiceState;
     private final Map<ClientType, OnlineStatus> clientStatus;
@@ -51,9 +51,10 @@ public class MemberImpl implements Member
 
     public MemberImpl(GuildImpl guild, User user)
     {
-        this.guild = new UpstreamReference<>(guild);
-        this.user = user;
-        JDAImpl jda = (JDAImpl) getJDA();
+        this.guildId = guild.getIdLong();
+        this.userId = user.getIdLong();
+        JDAImpl jda;
+        this.api = new UpstreamReference<>(jda = (JDAImpl) user.getJDA());
         boolean cacheState = jda.isCacheFlagSet(CacheFlag.VOICE_STATE) || user.equals(jda.getSelfUser());
         boolean cacheOnline = jda.isCacheFlagSet(CacheFlag.CLIENT_STATUS);
         this.voiceState = cacheState ? new GuildVoiceStateImpl(this) : null;
@@ -64,6 +65,9 @@ public class MemberImpl implements Member
     @Override
     public User getUser()
     {
+        User user = getJDA().getUserById(userId);
+        if (user == null)
+            throw new IllegalStateException("Cannot get reference to upstream User with id: " + Long.toUnsignedString(userId));
         return user;
     }
 
@@ -71,14 +75,17 @@ public class MemberImpl implements Member
     @Override
     public GuildImpl getGuild()
     {
-        return guild.get();
+        GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
+        if (guild == null)
+            throw new IllegalStateException("Cannot get reference to upstream Guild with id: " + Long.toUnsignedString(guildId));
+        return guild;
     }
 
     @Nonnull
     @Override
     public JDA getJDA()
     {
-        return user.getJDA();
+        return api.get();
     }
 
     @Nonnull
@@ -129,7 +136,7 @@ public class MemberImpl implements Member
     @Override
     public String getEffectiveName()
     {
-        return nickname != null ? nickname : user.getName();
+        return nickname != null ? nickname : getUser().getName();
     }
 
     @Nonnull
@@ -233,7 +240,7 @@ public class MemberImpl implements Member
     @Override
     public long getIdLong()
     {
-        return user.getIdLong();
+        return userId;
     }
 
     public MemberImpl setNickname(String nickname)
@@ -281,30 +288,30 @@ public class MemberImpl implements Member
     {
         if (o == this)
             return true;
-        if (!(o instanceof Member))
+        if (!(o instanceof MemberImpl))
             return false;
 
-        Member oMember = (Member) o;
-        return oMember.getUser().equals(user) && oMember.getGuild().equals(getGuild());
+        MemberImpl oMember = (MemberImpl) o;
+        return oMember.userId == userId && oMember.guildId == guildId;
     }
 
     @Override
     public int hashCode()
     {
-        return (getGuild().getId() + user.getId()).hashCode();
+        return (Long.toUnsignedString(guildId) + Long.toUnsignedString(userId)).hashCode();
     }
 
     @Override
     public String toString()
     {
-        return "MB:" + getEffectiveName() + '(' + user.toString() + " / " + getGuild().toString() +')';
+        return "MB:" + getEffectiveName() + '(' + getUser().toString() + " / " + getGuild().toString() +')';
     }
 
     @Nonnull
     @Override
     public String getAsMention()
     {
-        return nickname == null ? user.getAsMention() : "<@!" + user.getIdLong() + '>';
+        return (nickname == null ? "<@" : "<@!") + Long.toUnsignedString(userId) + '>';
     }
 
     @Nullable
