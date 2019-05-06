@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.audio;
+package net.dv8tion.jda.api.audio;
+
+import net.dv8tion.jda.internal.audio.AudioPacket;
+import net.dv8tion.jda.internal.audio.Decoder;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -36,12 +39,12 @@ public final class OpusPacket implements Comparable<OpusPacket>
     private short[] decoded;
     private boolean triedDecode;
 
-    OpusPacket(AudioPacket packet, long userId, Decoder decoder)
+    public OpusPacket(AudioPacket packet, long userId, Decoder decoder)
     {
         this.rawPacket = packet;
         this.userId = userId;
         this.decoder = decoder;
-        this.opusAudio = packet.getEncodedAudio();
+        this.opusAudio = packet.getEncodedAudio().array();
     }
 
     public char getSequence()

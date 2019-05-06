@@ -17,7 +17,7 @@
 package net.dv8tion.jda.internal.audio;
 
 import com.iwebpp.crypto.TweetNaclFast;
-import net.dv8tion.jda.core.utils.IOUtil;
+import net.dv8tion.jda.internal.utils.IOUtil;
 
 import java.net.DatagramPacket;
 import java.nio.Buffer;

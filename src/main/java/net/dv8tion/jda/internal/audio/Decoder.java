@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.audio;
 
 import com.sun.jna.ptr.PointerByReference;
+import net.dv8tion.jda.api.audio.OpusPacket;
 import tomp2p.opuswrapper.Opus;
 
 import java.nio.ByteBuffer;
@@ -45,17 +46,17 @@ public class Decoder
             throw new IllegalStateException("Received error code from opus_decoder_create(...): " + error.get());
     }
 
-    protected boolean isInOrder(char newSeq)
+    public boolean isInOrder(char newSeq)
     {
         return lastSeq == (char) -1 || newSeq > lastSeq || lastSeq - newSeq > 10;
     }
 
-    protected boolean wasPacketLost(char newSeq)
+    public boolean wasPacketLost(char newSeq)
     {
         return newSeq > lastSeq + 1;
     }
 
-    protected short[] decodeFromOpus(AudioPacket decryptedPacket)
+    public short[] decodeFromOpus(AudioPacket decryptedPacket)
     {
         int result;
         ShortBuffer decoded = ShortBuffer.allocate(4096);
