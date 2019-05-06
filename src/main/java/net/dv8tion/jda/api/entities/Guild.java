@@ -2335,6 +2335,9 @@ public interface Guild extends ISnowflake
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
      *     <br>The specified Member was removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#USER_NOT_CONNECTED USER_NOT_CONNECTED}
+     *     <br>The specified Member is not connected to a voice channel</li>
      * </ul>
      *
      * @param  member
@@ -2375,6 +2378,9 @@ public interface Guild extends ISnowflake
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
      *     <br>The specified Member was removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#USER_NOT_CONNECTED USER_NOT_CONNECTED}
+     *     <br>The specified Member is not connected to a voice channel</li>
      * </ul>
      *
      * @param  member
