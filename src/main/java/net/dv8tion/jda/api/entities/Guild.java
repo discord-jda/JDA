@@ -2348,6 +2348,8 @@ public interface Guild extends ISnowflake
      *         If the provided member is the Guild's owner. You cannot modify the owner of a Guild.
      * @throws IllegalArgumentException
      *         If the provided member is not from this Guild or null.
+     * @throws java.lang.IllegalStateException
+     *         If the provided member is not currently connected to a voice channel.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -2386,6 +2388,8 @@ public interface Guild extends ISnowflake
      *         If the provided member is the Guild's owner. You cannot modify the owner of a Guild.
      * @throws java.lang.IllegalArgumentException
      *         If the provided member is not from this Guild or null.
+     * @throws java.lang.IllegalStateException
+     *         If the provided member is not currently connected to a voice channel.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */

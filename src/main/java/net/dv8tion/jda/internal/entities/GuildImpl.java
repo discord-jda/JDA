@@ -878,8 +878,13 @@ public class GuildImpl implements Guild
             throw new HierarchyException("Cannot modify Guild Deafen status the Owner of the Guild");
 
         GuildVoiceState voiceState = member.getVoiceState();
-        if (voiceState != null && voiceState.isGuildDeafened() == deafen)
-            return new EmptyRestAction<>(getJDA(), null);
+        if (voiceState != null)
+        {
+            if (voiceState.getChannel() == null)
+                throw new IllegalStateException("Can only deafen members who are current in a voice channel");
+            if (voiceState.isGuildDeafened() == deafen)
+                return new EmptyRestAction<>(getJDA(), null);
+        }
 
         DataObject body = DataObject.empty().put("deaf", deafen);
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), member.getUser().getId());
@@ -900,8 +905,13 @@ public class GuildImpl implements Guild
             throw new HierarchyException("Cannot modify Guild Mute status the Owner of the Guild");
 
         GuildVoiceState voiceState = member.getVoiceState();
-        if (voiceState != null && voiceState.isGuildMuted() == mute)
-            return new EmptyRestAction<>(getJDA(), null);
+        if (voiceState != null)
+        {
+            if (voiceState.getChannel() == null)
+                throw new IllegalStateException("Can only mute members who are current in a voice channel");
+            if (voiceState.isGuildMuted() == mute)
+                return new EmptyRestAction<>(getJDA(), null);
+        }
 
         DataObject body = DataObject.empty().put("mute", mute);
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), member.getUser().getId());
