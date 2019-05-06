@@ -1329,7 +1329,7 @@ public final class TweetNaclFast {
 
     public static int crypto_core_salsa20(byte [] out, byte [] in, byte [] k, byte [] c)
     {
-        ///core(out,in,k,c,0);
+        ///api(out,in,k,c,0);
         core_salsa20(out,in,k,c);
 
         ///String dbgt = "";
@@ -1341,7 +1341,7 @@ public final class TweetNaclFast {
 
     public static int crypto_core_hsalsa20(byte [] out, byte [] in, byte [] k, byte [] c)
     {
-        ///core(out,in,k,c,1);
+        ///api(out,in,k,c,1);
         core_hsalsa20(out,in,k,c);
 
         ///String dbgt = "";

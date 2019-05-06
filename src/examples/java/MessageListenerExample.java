@@ -1,11 +1,11 @@
 /*
- *     Copyright 2015-2018 Austin Keener & Michael Ritter & Florian Spieß
+ * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import net.dv8tion.jda.client.entities.Group;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.exceptions.PermissionException;
-import net.dv8tion.jda.core.exceptions.RateLimitedException;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.exceptions.PermissionException;
+import net.dv8tion.jda.api.exceptions.RateLimitedException;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import javax.security.auth.login.LoginException;
 import java.util.List;
@@ -40,7 +39,7 @@ public class MessageListenerExample extends ListenerAdapter
         try
         {
             JDA jda = new JDABuilder("Your-Token-Goes-Here")         // The token of the account that is logging in.
-                    .addEventListener(new MessageListenerExample())  // An instance of a class that will handle events.
+                    .addEventListeners(new MessageListenerExample())  // An instance of a class that will handle events.
                     .build();
             jda.awaitReady(); // Blocking guarantees that JDA will be completely loaded.
             System.out.println("Finished Building JDA!");
@@ -67,13 +66,13 @@ public class MessageListenerExample extends ListenerAdapter
      *  a method from a super class properly. You should do this every time you override a method!
      *
      * As stated above, this method is overriding a hook method in the
-     * {@link net.dv8tion.jda.core.hooks.ListenerAdapter ListenerAdapter} class. It has convience methods for all JDA events!
+     * {@link net.dv8tion.jda.api.hooks.ListenerAdapter ListenerAdapter} class. It has convience methods for all JDA events!
      * Consider looking through the events it offers if you plan to use the ListenerAdapter.
      *
      * In this example, when a message is received it is printed to the console.
      *
      * @param event
-     *          An event containing information about a {@link net.dv8tion.jda.core.entities.Message Message} that was
+     *          An event containing information about a {@link net.dv8tion.jda.api.entities.Message Message} that was
      *          sent in a channel.
      */
     @Override
@@ -125,15 +124,6 @@ public class MessageListenerExample extends ListenerAdapter
 
             System.out.printf("[PRIV]<%s>: %s\n", author.getName(), msg);
         }
-        else if (event.isFromType(ChannelType.GROUP))   //If this message was sent to a Group. This is CLIENT only!
-        {
-            //The message was sent in a Group. It should be noted that Groups are CLIENT only.
-            Group group = event.getGroup();
-            String groupName = group.getName() != null ? group.getName() : "";  //A group name can be null due to it being unnamed.
-
-            System.out.printf("[GRP: %s]<%s>: %s\n", groupName, author.getName(), msg);
-        }
-
 
         //Now that you have a grasp on the things that you might see in an event, specifically MessageReceivedEvent,
         // we will look at sending / responding to messages!

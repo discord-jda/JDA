@@ -6,7 +6,7 @@
 [FAQ]: https://img.shields.io/badge/Wiki-FAQ-blue.svg
 [Troubleshooting]: https://img.shields.io/badge/Wiki-Troubleshooting-red.svg
 [ ![version][] ][download]
-[ ![jenkins][] ](http://home.dv8tion.net:8080/job/JDA/lastSuccessfulBuild/)
+[ ![jenkins][] ](https://ci.dv8tion.net/job/JDA)
 [ ![license][] ](https://github.com/DV8FromTheWorld/JDA/tree/master/LICENSE)
 [ ![Discord](https://discordapp.com/api/guilds/125227483518861312/widget.png) ][discord-invite]
 [ ![FAQ] ](https://github.com/DV8FromTheWorld/JDA/wiki/10\)-FAQ)
@@ -57,7 +57,7 @@ JDA jda = new JDABuilder("token").build();
 ```
 
 **Note**: By default this will use the `AccountType.BOT` as that is the recommended type of account.
-You can change this to use `AccountType.CLIENT` however that is risking account termination.
+You can change this to use `AccountType.CLIENT`, however you will be risking account termination.
 Use `new JDABuilder(AccountType)` to change to a different account type.
 
 #### Examples:
@@ -142,7 +142,7 @@ To use sharding in JDA you will need to use `JDABuilder.useSharding(int shardId,
 has the ID 0. The **shardTotal** is the total amount of shards (not 0-based) which can be seen similar to the length of an array, the last shard has the ID of
 `shardTotal - 1`.
 
-The [`SessionController`](http://home.dv8tion.net:8080/job/JDA/javadoc/net/dv8tion/jda/core/utils/SessionController.html) is a tool of the JDABuilder
+The [`SessionController`](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/core/utils/SessionController.html) is a tool of the JDABuilder
 that allows to control state and behaviour between shards (sessions). When using multiple builders to build shards you have to create one instance
 of this controller and add the same instance to each builder: `builder.setSessionController(controller)`
 
@@ -265,7 +265,7 @@ We strongly recommend to use one though, as that can improve speed and allows yo
 The most popular implementations are [Log4j 2](https://logging.apache.org/log4j/2.x/) and [Logback](https://logback.qos.ch/)
 
 ## Documentation
-Docs can be found on the [Jenkins](http://home.dv8tion.net:8080/) or directly [here](http://home.dv8tion.net:8080/job/JDA/javadoc/)
+Docs can be found on the [Jenkins](https://ci.dv8tion.net/job/JDA) or directly [here](https://ci.dv8tion.net/job/JDA/javadoc/)
 <br>A simple Wiki can also be found in this repository's [Wiki section](https://github.com/DV8FromTheWorld/JDA/wiki)
 
 ### Annotations
@@ -373,17 +373,17 @@ All dependencies are managed automatically by Gradle.
    * [Github](https://github.com/TakahikoKawasaki/nv-websocket-client)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/com.neovisionaries%3Anv-websocket-client/view)
  * OkHttp
-   * Version: **3.8.1**
+   * Version: **3.13.0**
    * [Github](https://github.com/square/okhttp)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/com.squareup.okhttp3:okhttp)
  * Apache Commons Collections4
    * Version: **4.1**
    * [Website](https://commons.apache.org/proper/commons-collections)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/org.apache.commons%3Acommons-collections4/view)
- * org.json
-   * Version: **20160810**
-   * [Github](https://github.com/douglascrockford/JSON-java)
-   * [JCenter Repository](https://bintray.com/bintray/jcenter/org.json%3Ajson/view)
+ * jackson
+   * Version: **2.9.8**
+   * [Github](https://github.com/FasterXML/jackson)
+   * [JCenter Repository](https://bintray.com/bintray/jcenter/com.fasterxml.jackson.core%3Ajackson-databind/view)
  * Trove4j
    * Version: **3.0.3**
    * [BitBucket](https://bitbucket.org/trove4j/trove)
