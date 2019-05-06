@@ -20,6 +20,7 @@ import net.dv8tion.jda.internal.audio.AudioPacket;
 import net.dv8tion.jda.internal.audio.Decoder;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -39,7 +40,7 @@ public final class OpusPacket implements Comparable<OpusPacket>
     private short[] decoded;
     private boolean triedDecode;
 
-    public OpusPacket(AudioPacket packet, long userId, Decoder decoder)
+    public OpusPacket(@Nonnull AudioPacket packet, long userId, @Nullable Decoder decoder)
     {
         this.rawPacket = packet;
         this.userId = userId;
@@ -72,12 +73,14 @@ public final class OpusPacket implements Comparable<OpusPacket>
         return decoder != null && decoder.isInOrder(getSequence());
     }
 
+    @Nonnull
     public byte[] getOpusAudio()
     {
         //prevent write access to backing array
         return Arrays.copyOf(opusAudio, opusAudio.length);
     }
 
+    @Nullable
     public synchronized short[] decode()
     {
         if (triedDecode)
@@ -87,15 +90,19 @@ public final class OpusPacket implements Comparable<OpusPacket>
         if (!decoder.isInOrder(getSequence()))
             throw new IllegalStateException("Packet is not in order");
         triedDecode = true;
-        return decoded = decoder.decodeFromOpus(rawPacket);
+        return decoded = decoder.decodeFromOpus(rawPacket); // null if failed to decode
     }
 
+    @Nonnull
+    @SuppressWarnings("ConstantConditions") // the null case is handled with an exception
     public byte[] getAudioData(double volume)
     {
-        return getAudioData(decode(), volume);
+        return getAudioData(decode(), volume); // throws IllegalArgument if decode failed
     }
 
-    public static byte[] getAudioData(short[] decoded, double volume)
+    @Nonnull
+    @SuppressWarnings("ConstantConditions") // the null case is handled with an exception
+    public static byte[] getAudioData(@Nonnull short[] decoded, double volume)
     {
         if (decoded == null)
             throw new IllegalArgumentException("Cannot get audio data from null");

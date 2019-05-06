@@ -51,7 +51,7 @@ public interface AudioReceiveHandler
         return false;
     }
 
-    default void handleEncodedAudio(OpusPacket packet) {}
+    default void handleEncodedAudio(@Nonnull OpusPacket packet) {}
 
     /**
      * If {@link #canReceiveCombined()} returns true, JDA will provide a {@link net.dv8tion.jda.api.audio.CombinedAudio CombinedAudio}
