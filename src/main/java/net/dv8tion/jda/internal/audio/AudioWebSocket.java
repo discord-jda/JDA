@@ -297,6 +297,9 @@ class AudioWebSocket extends WebSocketAdapter
                 case AUTHENTICATION_FAILED:
                     this.close(ConnectionStatus.DISCONNECTED_AUTHENTICATION_FAILURE);
                     break;
+                case DISCONNECTED:
+                    this.close(ConnectionStatus.DISCONNECTED_KICKED_FROM_CHANNEL);
+                    break;
                 default:
                     this.reconnect();
             }
