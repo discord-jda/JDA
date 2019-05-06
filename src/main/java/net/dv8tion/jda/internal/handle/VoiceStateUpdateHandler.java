@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.handle;
 
+import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.guild.voice.*;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
@@ -138,6 +139,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
         {
             VoiceChannelImpl oldChannel = (VoiceChannelImpl) vState.getChannel();
             vState.setConnectedChannel(channel);
+            AudioManagerImpl mng = (AudioManagerImpl) getJDA().getAudioManagersView().get(guildId);
 
             if (oldChannel == null)
             {
@@ -151,7 +153,12 @@ public class VoiceStateUpdateHandler extends SocketHandler
             {
                 oldChannel.getConnectedMembersMap().remove(userId);
                 if (isSelf)
+                {
+                    // Tell the audio manager that we were kicked from the channel
+                    if (mng != null)
+                        mng.closeAudioConnection(ConnectionStatus.DISCONNECTED_KICKED_FROM_CHANNEL);
                     getJDA().getDirectAudioController().update(guild, null);
+                }
                 getJDA().getEventManager().handle(
                         new GuildVoiceLeaveEvent(
                                 getJDA(), responseNumber,
@@ -159,8 +166,6 @@ public class VoiceStateUpdateHandler extends SocketHandler
             }
             else
             {
-                AudioManagerImpl mng = (AudioManagerImpl) getJDA().getAudioManagersView().get(guildId);
-
                 //If the currently connected account is the one that is being moved
                 if (isSelf && mng != null && voiceInterceptor == null)
                 {

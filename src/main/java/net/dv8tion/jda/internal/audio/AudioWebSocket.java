@@ -192,7 +192,7 @@ class AudioWebSocket extends WebSocketAdapter
                 //Remove audio manager as we are no longer in the guild
                 api.getAudioManagersView().remove(guild.getIdLong());
             }
-            else if (status != ConnectionStatus.AUDIO_REGION_CHANGE)
+            else if (status != ConnectionStatus.AUDIO_REGION_CHANGE && status != ConnectionStatus.DISCONNECTED_KICKED_FROM_CHANNEL)
             {
                 api.getDirectAudioController().disconnect(guild);
             }
