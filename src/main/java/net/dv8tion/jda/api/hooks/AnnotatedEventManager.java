@@ -25,6 +25,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Implementation for {@link net.dv8tion.jda.api.hooks.IEventManager IEventManager}
@@ -130,12 +131,12 @@ public class AnnotatedEventManager implements IEventManager
                     Class<?> eventClass = pType[0];
                     if (!methods.containsKey(eventClass))
                     {
-                        methods.put(eventClass, new HashMap<>());
+                        methods.put(eventClass, new ConcurrentHashMap<>());
                     }
 
                     if (!methods.get(eventClass).containsKey(listener))
                     {
-                        methods.get(eventClass).put(listener, new ArrayList<>());
+                        methods.get(eventClass).put(listener, new CopyOnWriteArrayList<>());
                     }
 
                     methods.get(eventClass).get(listener).add(m);
