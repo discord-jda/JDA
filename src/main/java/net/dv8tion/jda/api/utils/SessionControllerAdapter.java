@@ -22,11 +22,11 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
@@ -99,7 +99,7 @@ public class SessionControllerAdapter implements SessionController
                 {
                     if (response.isOk())
                     {
-                        JSONObject object = response.getObject();
+                        DataObject object = response.getObject();
 
                         String url = object.getString("url");
                         int shards = object.getInt("shards");

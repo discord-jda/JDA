@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.requests.restaction.pagination.MessagePaginationActio
 import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
@@ -34,7 +35,6 @@ import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.MessagePaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
-import org.json.JSONArray;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -2445,11 +2445,11 @@ public interface MessageChannel extends ISnowflake, Formattable
         {
             LinkedList<Message> pinnedMessages = new LinkedList<>();
             EntityBuilder builder = jda.getEntityBuilder();
-            JSONArray pins = response.getArray();
+            DataArray pins = response.getArray();
 
             for (int i = 0; i < pins.length(); i++)
             {
-                pinnedMessages.add(builder.createMessage(pins.getJSONObject(i), MessageChannel.this, false));
+                pinnedMessages.add(builder.createMessage(pins.getObject(i), MessageChannel.this, false));
             }
 
             return Collections.unmodifiableList(pinnedMessages);

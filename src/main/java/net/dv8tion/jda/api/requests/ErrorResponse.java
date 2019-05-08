@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.requests;
 
-import org.json.JSONObject;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -106,7 +106,7 @@ public enum ErrorResponse
     }
 
     @Nonnull
-    public static ErrorResponse fromJSON(@Nullable JSONObject obj)
+    public static ErrorResponse fromJSON(@Nullable DataObject obj)
     {
         if (obj == null || obj.isNull("code"))
             return SERVER_ERROR;

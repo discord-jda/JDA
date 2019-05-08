@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.internal.audio;
 
-import org.json.JSONArray;
+import net.dv8tion.jda.api.utils.data.DataArray;
 
 public enum AudioEncryption
 {
@@ -38,14 +38,14 @@ public enum AudioEncryption
         return key;
     }
 
-    public static AudioEncryption getPreferredMode(JSONArray array)
+    public static AudioEncryption getPreferredMode(DataArray array)
     {
         AudioEncryption encryption = null;
         for (Object o : array)
         {
             try
             {
-                String name = ((String) o).toUpperCase();
+                String name = String.valueOf(o).toUpperCase();
                 AudioEncryption e = valueOf(name);
                 if (encryption == null || e.ordinal() < encryption.ordinal())
                     encryption = e;

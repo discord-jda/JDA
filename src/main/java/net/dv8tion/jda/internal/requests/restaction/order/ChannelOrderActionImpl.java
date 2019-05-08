@@ -23,11 +23,11 @@ import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
@@ -117,11 +117,11 @@ public class ChannelOrderActionImpl<T extends GuildChannel>
         final Member self = guild.getSelfMember();
         if (!self.hasPermission(Permission.MANAGE_CHANNEL))
             throw new InsufficientPermissionException(Permission.MANAGE_CHANNEL);
-        JSONArray array = new JSONArray();
+        DataArray array = DataArray.empty();
         for (int i = 0; i < orderList.size(); i++)
         {
             GuildChannel chan = orderList.get(i);
-            array.put(new JSONObject()
+            array.add(DataObject.empty()
                     .put("id", chan.getId())
                     .put("position", i));
         }

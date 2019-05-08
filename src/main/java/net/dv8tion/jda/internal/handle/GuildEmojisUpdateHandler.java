@@ -24,14 +24,14 @@ import net.dv8tion.jda.api.events.emote.EmoteRemovedEvent;
 import net.dv8tion.jda.api.events.emote.update.EmoteUpdateNameEvent;
 import net.dv8tion.jda.api.events.emote.update.EmoteUpdateRolesEvent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EmoteImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import org.apache.commons.collections4.CollectionUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.*;
 
@@ -43,7 +43,7 @@ public class GuildEmojisUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         if (!getJDA().isCacheFlagSet(CacheFlag.EMOTE))
             return null;
@@ -58,7 +58,7 @@ public class GuildEmojisUpdateHandler extends SocketHandler
             return null;
         }
 
-        JSONArray array = content.getJSONArray("emojis");
+        DataArray array = content.getArray("emojis");
         List<Emote> oldEmotes, newEmotes;
         SnowflakeCacheViewImpl<Emote> emoteView = guild.getEmotesView();
         try (UnlockHook hook = emoteView.writeLock())
@@ -68,7 +68,7 @@ public class GuildEmojisUpdateHandler extends SocketHandler
             newEmotes = new ArrayList<>();
             for (int i = 0; i < array.length(); i++)
             {
-                JSONObject current = array.getJSONObject(i);
+                DataObject current = array.getObject(i);
                 final long emoteId = current.getLong("id");
                 EmoteImpl emote = (EmoteImpl) emoteMap.get(emoteId);
                 EmoteImpl oldEmote = null;
@@ -86,10 +86,10 @@ public class GuildEmojisUpdateHandler extends SocketHandler
                 }
 
                 emote.setName(current.getString("name"))
-                     .setAnimated(current.optBoolean("animated"))
+                     .setAnimated(current.getBoolean("animated"))
                      .setManaged(current.getBoolean("managed"));
                 //update roles
-                JSONArray roles = current.getJSONArray("roles");
+                DataArray roles = current.getArray("roles");
                 Set<Role> newRoles = emote.getRoleSet();
                 Set<Role> oldRoles = new HashSet<>(newRoles); //snapshot of cached roles
                 for (int j = 0; j < roles.length(); j++)

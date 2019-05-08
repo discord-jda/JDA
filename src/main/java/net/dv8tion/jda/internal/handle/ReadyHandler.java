@@ -17,11 +17,11 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 public class ReadyHandler extends SocketHandler
 {
@@ -32,20 +32,20 @@ public class ReadyHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         EntityBuilder builder = getJDA().getEntityBuilder();
 
         //Core
-        JSONArray guilds = content.getJSONArray("guilds");
-        JSONObject selfJson = content.getJSONObject("user");
+        DataArray guilds = content.getArray("guilds");
+        DataObject selfJson = content.getObject("user");
 
         builder.createSelfUser(selfJson);
         if (getJDA().getGuildSetupController().setIncompleteCount(guilds.length()))
         {
             for (int i = 0; i < guilds.length(); i++)
             {
-                JSONObject guild = guilds.getJSONObject(i);
+                DataObject guild = guilds.getObject(i);
                 getJDA().getGuildSetupController().onReady(guild.getLong("id"), guild);
             }
         }
@@ -54,14 +54,14 @@ public class ReadyHandler extends SocketHandler
         return null;
     }
 
-    public void handleReady(JSONObject content)
+    public void handleReady(DataObject content)
     {
         EntityBuilder builder = getJDA().getEntityBuilder();
-        JSONArray privateChannels = content.getJSONArray("private_channels");
+        DataArray privateChannels = content.getArray("private_channels");
 
         for (int i = 0; i < privateChannels.length(); i++)
         {
-            JSONObject chan = privateChannels.getJSONObject(i);
+            DataObject chan = privateChannels.getObject(i);
             ChannelType type = ChannelType.fromId(chan.getInt("type"));
 
             switch (type)

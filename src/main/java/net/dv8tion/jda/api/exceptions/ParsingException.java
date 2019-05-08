@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.handle;
+package net.dv8tion.jda.api.exceptions;
 
-import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.JDAImpl;
-
-public class GuildSyncHandler extends SocketHandler
+public class ParsingException extends IllegalStateException
 {
-    public GuildSyncHandler(JDAImpl api)
+    public ParsingException(String message, Exception cause)
     {
-        super(api);
+        super(message, cause);
     }
 
-    @Override
-    protected Long handleInternally(DataObject content)
+    public ParsingException(String message)
     {
-        final long guildId = content.getLong("id");
-        getJDA().getGuildSetupController().onSync(guildId, content);
-        return null;
+        super(message);
+    }
+
+    public ParsingException(Exception cause)
+    {
+        super(cause);
     }
 }

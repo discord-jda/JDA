@@ -22,7 +22,6 @@ import net.dv8tion.jda.api.managers.Manager;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import org.json.JSONObject;
 
 import javax.annotation.Nonnull;
 import java.util.function.BooleanSupplier;
@@ -121,11 +120,6 @@ public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestAct
     protected BooleanSupplier finalizeChecks()
     {
         return enablePermissionChecks ? this::checkPermissions : super.finalizeChecks();
-    }
-
-    protected Object opt(Object it)
-    {
-        return it == null ? JSONObject.NULL : it;
     }
 
     protected boolean shouldUpdate()
