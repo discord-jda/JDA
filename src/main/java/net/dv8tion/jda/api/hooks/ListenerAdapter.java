@@ -102,6 +102,7 @@ public abstract class ListenerAdapter implements EventListener
 {
     public void onGenericEvent(@Nonnull GenericEvent event) {}
     public void onGenericUpdate(@Nonnull UpdateEvent<?, ?> event) {}
+    public void onRawGateway(@Nonnull RawGatewayEvent event) {}
 
     //JDA Events
     public void onReady(@Nonnull ReadyEvent event) {}
@@ -291,6 +292,9 @@ public abstract class ListenerAdapter implements EventListener
         onGenericEvent(event);
         if (event instanceof UpdateEvent)
             onGenericUpdate((UpdateEvent<?, ?>) event);
+        else if (event instanceof RawGatewayEvent)
+            onRawGateway((RawGatewayEvent) event);
+
         //JDA Events
         if (event instanceof ReadyEvent)
             onReady((ReadyEvent) event);

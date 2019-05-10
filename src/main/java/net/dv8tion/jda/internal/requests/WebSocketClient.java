@@ -714,7 +714,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             DataObject presence = array.getObject(i);
             final DataObject obj = DataObject.empty();
-            obj.put("jda-field", "This was constructed from a PRESENCES_REPLACE payload")
+            obj.put("comment", "This was constructed from a PRESENCES_REPLACE payload")
                .put("op", WebSocketCode.DISPATCH)
                .put("s", responseTotal)
                .put("d", presence)
@@ -806,7 +806,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 final PresenceUpdateHandler handler = getHandler("PRESENCE_UPDATE");
                 LOG.trace("{} -> {}", type, payload);
                 for (DataObject o : converted)
+                {
                     handler.handle(responseTotal, o);
+                    // Send raw event after cache has been updated - including comment
+                    api.getEventManager().handle(new RawGatewayEvent(api, responseTotal, o));
+                }
             }
             else
             {
@@ -855,6 +859,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     else
                         LOG.debug("Unrecognized event:\n{}", raw);
             }
+            // Send raw event after cache has been updated
+            api.getEventManager().handle(new RawGatewayEvent(api, responseTotal, raw));
         }
         catch (ParsingException ex)
         {
