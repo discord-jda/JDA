@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -61,7 +62,7 @@ public class  DefaultShardManagerBuilder
     protected boolean autoReconnect = true;
     protected boolean retryOnTimeout = true;
     protected boolean useShutdownNow = false;
-    protected boolean enableCompression = true;
+    protected Compression compression = Compression.ZLIB;
     protected int shardsTotal = -1;
     protected int maxReconnectDelay = 900;
     protected String token = null;
@@ -218,25 +219,30 @@ public class  DefaultShardManagerBuilder
     }
 
     /**
-     * Enable stream-compression on the gateway connection,
+     * Sets the compression algorithm used with the gateway connection,
      * this will decrease the amount of used bandwidth for the running bot instance
      * for the cost of a few extra cycles for decompression.
-     * <br><b>Default: true</b>
+     * Compression can be entirely disabled by setting this to {@link net.dv8tion.jda.api.utils.Compression#NONE}.
+     * <br><b>Default: {@link net.dv8tion.jda.api.utils.Compression#ZLIB}</b>
      *
-     * <p><b>We recommend to keep this enabled unless you have issues with the decompression</b>
+     * <p><b>We recommend to keep this on the default unless you have issues with the decompression</b>
      * <br>This mode might become obligatory in a future version, do not rely on this switch to stay.
      *
-     * @param  enable
-     *         True, if the gateway connection should use compression
+     * @param  compression
+     *         The compression algorithm to use for the gateway connection
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If provided with null
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
      * @see    <a href="https://discordapp.com/developers/docs/topics/gateway#transport-compression" target="_blank">Official Discord Documentation - Transport Compression</a>
      */
     @Nonnull
-    public DefaultShardManagerBuilder setCompressionEnabled(boolean enable)
+    public DefaultShardManagerBuilder setCompression(@Nonnull Compression compression)
     {
-        this.enableCompression = enable;
+        Checks.notNull(compression, "Compression");
+        this.compression = compression;
         return this;
     }
 
@@ -1213,7 +1219,7 @@ public class  DefaultShardManagerBuilder
         presenceConfig.setIdleProvider(idleProvider);
         final ThreadingProviderConfig threadingConfig = new ThreadingProviderConfig(rateLimitPoolProvider, gatewayPoolProvider, callbackPoolProvider, threadFactory);
         final ShardingSessionConfig sessionConfig = new ShardingSessionConfig(sessionController, voiceDispatchInterceptor, httpClient, httpClientBuilder, wsFactory, audioSendFactory, enableVoice, retryOnTimeout, autoReconnect, enableBulkDeleteSplitting, maxReconnectDelay);
-        final ShardingMetaConfig metaConfig = new ShardingMetaConfig(contextProvider, cacheFlags, enableContext, useShutdownNow, enableCompression);
+        final ShardingMetaConfig metaConfig = new ShardingMetaConfig(contextProvider, cacheFlags, enableContext, useShutdownNow, compression);
         final DefaultShardManager manager = new DefaultShardManager(this.token, this.shards, shardingConfig, eventConfig, presenceConfig, threadingConfig, sessionConfig, metaConfig);
 
         manager.login();

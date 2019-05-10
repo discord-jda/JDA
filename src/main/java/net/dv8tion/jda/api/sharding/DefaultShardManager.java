@@ -544,7 +544,7 @@ public class DefaultShardManager implements ShardManager
 
         final JDA.ShardInfo shardInfo = new JDA.ShardInfo(shardId, getShardsTotal());
 
-        final int shardTotal = jda.login(this.gatewayURL, shardInfo, this.metaConfig.isEnableCompression(), false);
+        final int shardTotal = jda.login(this.gatewayURL, shardInfo, this.metaConfig.getCompression(), false);
         if (getShardsTotal() == -1)
             shardingConfig.setShardsTotal(shardTotal);
 

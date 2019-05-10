@@ -30,6 +30,7 @@ import net.dv8tion.jda.api.events.*;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.requests.CloseCode;
+import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -46,12 +47,13 @@ import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
+import net.dv8tion.jda.internal.utils.compress.Decompressor;
+import net.dv8tion.jda.internal.utils.compress.ZlibDecompressor;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.lang.ref.SoftReference;
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -61,8 +63,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.zip.DataFormatException;
-import java.util.zip.Inflater;
-import java.util.zip.InflaterOutputStream;
 
 public class WebSocketClient extends WebSocketAdapter implements WebSocketListener
 {
@@ -79,15 +79,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected final Map<String, SocketHandler> handlers = new HashMap<>();
     protected final Set<String> cfRays = ConcurrentHashMap.newKeySet();
     protected final Set<String> traces = ConcurrentHashMap.newKeySet();
-    protected final boolean compression;
+    protected final Compression compression;
 
     public WebSocket socket;
     protected String sessionId = null;
     protected final Object readLock = new Object();
-    protected Inflater zlibContext = new Inflater();
-    protected ByteArrayOutputStream readBuffer;
-    //this is a SoftReference in order to allow this resource to be freed to prevent resources starvation
-    protected SoftReference<ByteArrayOutputStream> decompressBuffer;
+    protected Decompressor decompressor;
 
     protected final ReentrantLock queueLock = new ReentrantLock();
     protected final ScheduledExecutorService executor;
@@ -119,7 +116,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected volatile ConnectNode connectNode;
 
-    public WebSocketClient(JDAImpl api, boolean compression)
+    public WebSocketClient(JDAImpl api, Compression compression)
     {
         this.api = api;
         this.executor = api.getGatewayPool();
@@ -166,18 +163,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         traces.clear();
         for (Object o : arr)
             traces.add(String.valueOf(o));
-    }
-
-    protected void allocateBuffer(byte[] binary) throws IOException
-    {
-        this.readBuffer = new ByteArrayOutputStream(binary.length * 2);
-        this.readBuffer.write(binary);
-    }
-
-    protected void extendBuffer(byte[] binary) throws IOException
-    {
-        if (this.readBuffer != null)
-            this.readBuffer.write(binary);
     }
 
     public void setAutoReconnect(boolean reconnect)
@@ -329,10 +314,18 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         initiating = true;
 
         String url = api.getGatewayUrl() + "?encoding=json&v=" + DISCORD_GATEWAY_VERSION;
-        if (compression)
+        if (compression != Compression.NONE)
         {
-            url += "&compress=zlib-stream";
-            decompressBuffer = newDecompressBuffer();
+            url += "&compress=" + compression.getKey();
+            switch (compression)
+            {
+                case ZLIB:
+                    if (decompressor == null || decompressor.getType() != Compression.ZLIB)
+                        decompressor = new ZlibDecompressor();
+                    break;
+                default:
+                    throw new IllegalStateException("Unknown compression");
+            }
         }
 
         try
@@ -441,18 +434,18 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 LOG.error("WebSocket connection was closed and cannot be recovered due to identification issues\n{}", closeCode);
             }
 
+            if (decompressor != null)
+                decompressor.shutdown();
             api.shutdownInternals();
             api.getEventManager().handle(new ShutdownEvent(api, OffsetDateTime.now(), rawCloseCode));
         }
         else
         {
-            //reset our zlib decompression tools
+            //reset our decompression tools
             synchronized (readLock)
             {
-                zlibContext = new Inflater();
-                if (decompressBuffer != null)
-                    decompressBuffer.clear();
-                readBuffer = null;
+                if (decompressor != null)
+                    decompressor.reset();
             }
             if (isInvalidate)
                 invalidate(); // 1000 means our session is dropped so we cannot resume
@@ -885,68 +878,43 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     }
 
     @Override
-    public void onBinaryMessage(WebSocket websocket, byte[] binary) throws IOException, DataFormatException
+    public void onBinaryMessage(WebSocket websocket, byte[] binary) throws DataFormatException
     {
         DataObject json;
+        // Only acquire lock for decompression and unlock for event handling
         synchronized (readLock)
         {
-            if (!onBufferMessage(binary))
-                return;
             json = handleBinary(binary);
         }
         handleEvent(json);
     }
 
-    protected boolean onBufferMessage(byte[] binary) throws IOException
+    protected DataObject handleBinary(byte[] binary) throws DataFormatException
     {
-        if (binary.length >= 4 && IOUtil.getIntBigEndian(binary, binary.length - 4) == ZLIB_SUFFIX)
+        if (decompressor == null)
+            throw new IllegalStateException("Cannot decompress binary message due to unknown compression algorithm: " + compression);
+        // Scoping allows us to print the json that possibly failed parsing
+        String jsonString;
+        try
         {
-            extendBuffer(binary);
-            return true;
+            jsonString = decompressor.decompress(binary);
         }
-
-        if (readBuffer != null)
-            extendBuffer(binary);
-        else
-            allocateBuffer(binary);
-
-        return false;
-    }
-
-    protected DataObject handleBinary(byte[] binary) throws DataFormatException, UnsupportedEncodingException
-    {
-        //Thanks to ShadowLordAlpha and Shredder121 for code and debugging.
-        //Get the compressed message and inflate it
-        //We use the same buffer here to optimize gc use
-        ByteArrayOutputStream decompressBuffer = getDecompressBuffer();
-        try (InflaterOutputStream decompressor = new InflaterOutputStream(decompressBuffer, zlibContext))
+        catch (DataFormatException e)
         {
-            if (readBuffer != null)
-                readBuffer.writeTo(decompressor);
-            else
-                decompressor.write(binary);
-        }
-        catch (IOException e)
-        {
-            decompressBuffer.reset();
             close(4000, "MALFORMED_PACKAGE");
-            throw (DataFormatException) new DataFormatException("Malformed").initCause(e);
+            throw e;
         }
-        finally { readBuffer = null; }
 
-        String jsonString = decompressBuffer.toString("UTF-8");
-        decompressBuffer.reset();
-        return DataObject.fromJson(jsonString);
-    }
-
-    protected ByteArrayOutputStream getDecompressBuffer()
-    {
-        if (decompressBuffer == null)
-            decompressBuffer = newDecompressBuffer();
-        ByteArrayOutputStream buffer = decompressBuffer.get();
-        if (buffer == null)
-            decompressBuffer = new SoftReference<>(buffer = new ByteArrayOutputStream(1024));
-        return buffer;
+        try
+        {
+            return DataObject.fromJson(jsonString);
+        }
+        catch (ParsingException e)
+        {
+            // Print the string that could not be parsed and re-throw the exception
+            LOG.error("Failed to parse json {}", jsonString);
+            throw e;
+        }
     }
 
     @Override
