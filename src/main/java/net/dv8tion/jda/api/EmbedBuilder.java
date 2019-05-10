@@ -33,8 +33,9 @@ import java.util.regex.Pattern;
 
 /**
  * Builder system used to build {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}.
+ *
  * <br>A visual breakdown of an Embed and how it relates to this class is available at
- * <a href="http://imgur.com/a/yOb5n" target="_blank">https://imgur.com/a/yOb5n</a>.
+ * <a href="https://raw.githubusercontent.com/DV8FromTheWorld/JDA/assets/assets/docs/embeds/01-Overview.png" target="_blank">Embed Overview</a>.
  *
  * @since  3.0
  * @author John A. Grosh
@@ -221,7 +222,7 @@ public class EmbedBuilder
      * Sets the Title of the embed.
      * <br>Overload for {@link #setTitle(String, String)} without URL parameter.
      *
-     * <p><b><a href="http://i.imgur.com/JgZtxIM.png">Example</a></b>
+     * <p><b><a href="https://raw.githubusercontent.com/DV8FromTheWorld/JDA/assets/assets/docs/embeds/04-setTitle.png">Example</a></b>
      *
      * @param  title
      *         the title of the embed
@@ -244,7 +245,7 @@ public class EmbedBuilder
      * Sets the Title of the embed.
      * <br>You can provide {@code null} as url if no url should be used.
      *
-     * <p><b><a href="http://i.imgur.com/JgZtxIM.png">Example</a></b>
+     * <p><b><a href="https://raw.githubusercontent.com/DV8FromTheWorld/JDA/assets/assets/docs/embeds/04-setTitle.png">Example</a></b>
      *
      * @param  title
      *         the title of the embed
@@ -299,7 +300,7 @@ public class EmbedBuilder
     /**
      * Sets the Description of the embed. This is where the main chunk of text for an embed is typically placed.
      *
-     * <p><b><a href="http://i.imgur.com/lbchtwk.png">Example</a></b>
+     * <p><b><a href="https://raw.githubusercontent.com/DV8FromTheWorld/JDA/assets/assets/docs/embeds/05-setDescription.png">Example</a></b>
      *
      * @param  description
      *         the description of the embed, {@code null} to reset
@@ -321,7 +322,7 @@ public class EmbedBuilder
     /**
      * Appends to the description of the embed. This is where the main chunk of text for an embed is typically placed.
      *
-     * <p><b><a href="http://i.imgur.com/lbchtwk.png">Example</a></b>
+     * <p><b><a href="https://raw.githubusercontent.com/DV8FromTheWorld/JDA/assets/assets/docs/embeds/05-setDescription.png">Example</a></b>
      *
      * @param  description
      *         the string to append to the description of the embed
@@ -347,7 +348,7 @@ public class EmbedBuilder
     /**
      * Sets the Timestamp of the embed.
      *
-     * <p><b><a href="http://i.imgur.com/YP4NiER.png">Example</a></b>
+     * <p><b><a href="https://raw.githubusercontent.com/DV8FromTheWorld/JDA/assets/assets/docs/embeds/13-setTimestamp.png">Example</a></b>
      *
      * <p><b>Hint:</b> You can get the current time using {@link java.time.Instant#now() Instant.now()} or convert time from a
      * millisecond representation by using {@link java.time.Instant#ofEpochMilli(long) Instant.ofEpochMilli(long)};
@@ -404,7 +405,7 @@ public class EmbedBuilder
     /**
      * Sets the Color of the embed.
      *
-     * <a href="http://i.imgur.com/2YnxnRM.png" target="_blank">Example</a>
+     * <a href="https://raw.githubusercontent.com/DV8FromTheWorld/JDA/assets/assets/docs/embeds/02-setColor.png" target="_blank">Example</a>
      *
      * @param  color
      *         The {@link java.awt.Color Color} of the embed
@@ -424,7 +425,7 @@ public class EmbedBuilder
     /**
      * Sets the raw RGB color value for the embed.
      *
-     * <a href="http://i.imgur.com/2YnxnRM.png" target="_blank">Example</a>
+     * <a href="https://raw.githubusercontent.com/DV8FromTheWorld/JDA/assets/assets/docs/embeds/02-setColor.png" target="_blank">Example</a>
      *
      * @param  color
      *         The raw rgb value, or {@link Role#DEFAULT_COLOR_RAW} to use no color
@@ -443,7 +444,7 @@ public class EmbedBuilder
     /**
      * Sets the Thumbnail of the embed.
      *
-     * <p><b><a href="http://i.imgur.com/Zc3qwqB.png">Example</a></b>
+     * <p><b><a href="https://raw.githubusercontent.com/DV8FromTheWorld/JDA/assets/assets/docs/embeds/06-setThumbnail.png">Example</a></b>
      *
      * <p><b>Uploading images with Embeds</b>
      * <br>When uploading an <u>image</u>
@@ -489,7 +490,7 @@ public class EmbedBuilder
     /**
      * Sets the Image of the embed.
      *
-     * <p><b><a href="http://i.imgur.com/2hzuHFJ.png">Example</a></b>
+     * <p><b><a href="https://raw.githubusercontent.com/DV8FromTheWorld/JDA/assets/assets/docs/embeds/11-setImage.png">Example</a></b>
      *
      * <p><b>Uploading images with Embeds</b>
      * <br>When uploading an <u>image</u>
@@ -539,7 +540,7 @@ public class EmbedBuilder
      * image beside it along with the author's name being made clickable by way of providing a url.
      * This convenience method just sets the name.
      *
-     * <p><b><a href="http://i.imgur.com/JgZtxIM.png">Example</a></b>
+     * <p><b><a href="https://raw.githubusercontent.com/DV8FromTheWorld/JDA/assets/assets/docs/embeds/03-setAuthor.png">Example</a></b>
      *
      * @param  name
      *         the name of the author of the embed. If this is not set, the author will not appear in the embed
@@ -557,7 +558,7 @@ public class EmbedBuilder
      * image beside it along with the author's name being made clickable by way of providing a url.
      * This convenience method just sets the name and the url.
      *
-     * <p><b><a href="http://i.imgur.com/JgZtxIM.png">Example</a></b>
+     * <p><b><a href="https://raw.githubusercontent.com/DV8FromTheWorld/JDA/assets/assets/docs/embeds/03-setAuthor.png">Example</a></b>
      *
      * @param  name
      *         the name of the author of the embed. If this is not set, the author will not appear in the embed
@@ -582,7 +583,7 @@ public class EmbedBuilder
      * Sets the Author of the embed. The author appears in the top left of the embed and can have a small
      * image beside it along with the author's name being made clickable by way of providing a url.
      *
-     * <p><b><a href="http://i.imgur.com/JgZtxIM.png">Example</a></b>
+     * <p><b><a href="https://raw.githubusercontent.com/DV8FromTheWorld/JDA/assets/assets/docs/embeds/03-setAuthor.png">Example</a></b>
      *
      * <p><b>Uploading images with Embeds</b>
      * <br>When uploading an <u>image</u>
@@ -637,7 +638,7 @@ public class EmbedBuilder
     /**
      * Sets the Footer of the embed without icon.
      *
-     * <p><b><a href="http://i.imgur.com/jdf4sbi.png">Example</a></b>
+     * <p><b><a href="https://raw.githubusercontent.com/DV8FromTheWorld/JDA/assets/assets/docs/embeds/12-setFooter.png">Example</a></b>
      *
      * @param  text
      *         the text of the footer of the embed. If this is not set or set to null, the footer will not appear in the embed.
@@ -656,7 +657,7 @@ public class EmbedBuilder
     /**
      * Sets the Footer of the embed.
      *
-     * <p><b><a href="http://i.imgur.com/jdf4sbi.png">Example</a></b>
+     * <p><b><a href="https://raw.githubusercontent.com/DV8FromTheWorld/JDA/assets/assets/docs/embeds/12-setFooter.png">Example</a></b>
      *
      * <p><b>Uploading images with Embeds</b>
      * <br>When uploading an <u>image</u>
@@ -726,8 +727,8 @@ public class EmbedBuilder
      * <p>Note: If a blank string is provided to either {@code name} or {@code value}, the blank string is replaced
      * with {@link net.dv8tion.jda.api.EmbedBuilder#ZERO_WIDTH_SPACE}.
      *
-     * <p><b><a href="http://i.imgur.com/gnjzCoo.png">Example of Inline</a></b>
-     * <p><b><a href="http://i.imgur.com/Ky0KlsT.png">Example if Non-inline</a></b>
+     * <p><b><a href="https://raw.githubusercontent.com/DV8FromTheWorld/JDA/assets/assets/docs/embeds/07-addField.png">Example of Inline</a></b>
+     * <p><b><a href="https://raw.githubusercontent.com/DV8FromTheWorld/JDA/assets/assets/docs/embeds/08-addField.png">Example if Non-inline</a></b>
      *
      * @param  name
      *         the name of the Field, displayed in bold above the {@code value}.
@@ -757,8 +758,8 @@ public class EmbedBuilder
     /**
      * Adds a blank (empty) Field to the embed.
      *
-     * <p><b><a href="http://i.imgur.com/tB6tYWy.png">Example of Inline</a></b>
-     * <p><b><a href="http://i.imgur.com/lQqgH3H.png">Example of Non-inline</a></b>
+     * <p><b><a href="https://raw.githubusercontent.com/DV8FromTheWorld/JDA/assets/assets/docs/embeds/07-addField.png">Example of Inline</a></b>
+     * <p><b><a href="https://raw.githubusercontent.com/DV8FromTheWorld/JDA/assets/assets/docs/embeds/08-addField.png">Example if Non-inline</a></b>
      *
      * @param  inline
      *         whether or not this field should display inline
