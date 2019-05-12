@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.utils.config.sharding;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.utils.config.MetaConfig;
+import net.dv8tion.jda.internal.utils.config.SessionConfig;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -28,16 +29,15 @@ import java.util.function.IntFunction;
 
 public class ShardingMetaConfig extends MetaConfig
 {
-    private static final ShardingMetaConfig defaultConfig = new ShardingMetaConfig(null, null, false, true, Compression.ZLIB);
+    private static final ShardingMetaConfig defaultConfig = new ShardingMetaConfig(null, null, SessionConfig.FLAG_DEFAULTS, Compression.ZLIB);
     private final Compression compression;
     private final IntFunction<? extends ConcurrentMap<String, String>> contextProvider;
 
     public ShardingMetaConfig(
             @Nullable IntFunction<? extends ConcurrentMap<String, String>> contextProvider,
-            @Nullable EnumSet<CacheFlag> cacheFlags, boolean enableMDC,
-            boolean useShutdownHook, Compression compression)
+            @Nullable EnumSet<CacheFlag> cacheFlags, long flags, Compression compression)
     {
-        super(null, cacheFlags, enableMDC, useShutdownHook);
+        super(null, cacheFlags, (int) flags);
 
         this.compression = compression;
         this.contextProvider = contextProvider;

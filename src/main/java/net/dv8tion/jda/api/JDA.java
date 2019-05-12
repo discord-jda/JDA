@@ -1321,13 +1321,6 @@ public interface JDA
     boolean isAutoReconnect();
 
     /**
-     * Used to determine whether the instance of JDA supports audio and has it enabled.
-     *
-     * @return True if JDA can currently utilize the audio system.
-     */
-    boolean isAudioEnabled();
-
-    /**
      * Used to determine if JDA will process MESSAGE_DELETE_BULK messages received from Discord as a single
      * {@link net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent MessageBulkDeleteEvent} or split
      * the deleted messages up and fire multiple {@link net.dv8tion.jda.api.events.message.MessageDeleteEvent MessageDeleteEvents},

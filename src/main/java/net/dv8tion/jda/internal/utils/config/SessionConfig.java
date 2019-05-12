@@ -27,36 +27,43 @@ import javax.annotation.Nullable;
 
 public class SessionConfig
 {
+    public static final int FLAG_CONTEXT_ENABLED   = 1;
+    public static final int FLAG_RETRY_TIMEOUT     = 1 << 1;
+    public static final int FLAG_RAW_EVENTS        = 1 << 2;
+    public static final int FLAG_BULK_DELETE_SPLIT = 1 << 3;
+    public static final int FLAG_SHUTDOWN_HOOK     = 1 << 4;
+    public static final int FLAG_MDC_CONTEXT       = 1 << 5;
+    public static final int FLAG_AUTO_RECONNECT    = 1 << 6;
+
+    public static final int FLAG_DEFAULTS = FLAG_CONTEXT_ENABLED
+                                          | FLAG_AUTO_RECONNECT
+                                          | FLAG_BULK_DELETE_SPLIT
+                                          | FLAG_SHUTDOWN_HOOK
+                                          | FLAG_RETRY_TIMEOUT;
+
     private final SessionController sessionController;
     private final OkHttpClient httpClient;
     private final WebSocketFactory webSocketFactory;
     private final VoiceDispatchInterceptor interceptor;
-    private boolean autoReconnect;
-    private boolean retryOnTimeout;
-    private boolean bulkDeleteSplittingEnabled;
-    private boolean audioEnabled;
+    private int flags;
     private int maxReconnectDelay;
 
     public SessionConfig(
         @Nullable SessionController sessionController, @Nullable OkHttpClient httpClient,
         @Nullable WebSocketFactory webSocketFactory, @Nullable VoiceDispatchInterceptor interceptor,
-        boolean audioEnabled, boolean retryOnTimeout, boolean autoReconnect,
-        boolean bulkDeleteSplittingEnabled, int maxReconnectDelay)
+        int flags, int maxReconnectDelay)
     {
         this.sessionController = sessionController == null ? new SessionControllerAdapter() : sessionController;
         this.httpClient = httpClient;
         this.webSocketFactory = webSocketFactory == null ? new WebSocketFactory() : webSocketFactory;
         this.interceptor = interceptor;
-        this.audioEnabled = audioEnabled;
-        this.autoReconnect = autoReconnect;
-        this.retryOnTimeout = retryOnTimeout;
-        this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
+        this.flags = flags;
         this.maxReconnectDelay = maxReconnectDelay;
     }
 
     public void setAutoReconnect(boolean autoReconnect)
     {
-        this.autoReconnect = autoReconnect;
+        this.flags |= autoReconnect ? FLAG_AUTO_RECONNECT : ~FLAG_AUTO_RECONNECT;
     }
 
     @Nonnull
@@ -85,22 +92,22 @@ public class SessionConfig
 
     public boolean isAutoReconnect()
     {
-        return autoReconnect;
+        return (flags & FLAG_AUTO_RECONNECT) == FLAG_AUTO_RECONNECT;
     }
 
     public boolean isRetryOnTimeout()
     {
-        return retryOnTimeout;
+        return (flags & FLAG_RETRY_TIMEOUT) == FLAG_RETRY_TIMEOUT;
     }
 
     public boolean isBulkDeleteSplittingEnabled()
     {
-        return bulkDeleteSplittingEnabled;
+        return (flags & FLAG_BULK_DELETE_SPLIT) == FLAG_BULK_DELETE_SPLIT;
     }
 
-    public boolean isAudioEnabled()
+    public boolean isRawEvents()
     {
-        return audioEnabled;
+        return (flags & FLAG_RAW_EVENTS) == FLAG_RAW_EVENTS;
     }
 
     public int getMaxReconnectDelay()
@@ -108,9 +115,14 @@ public class SessionConfig
         return maxReconnectDelay;
     }
 
+    public int getFlags()
+    {
+        return flags;
+    }
+
     @Nonnull
     public static SessionConfig getDefault()
     {
-        return new SessionConfig(null, null, null, null, true, true, true, true, 900);
+        return new SessionConfig(null, null, null, null, FLAG_DEFAULTS, 900);
     }
 }

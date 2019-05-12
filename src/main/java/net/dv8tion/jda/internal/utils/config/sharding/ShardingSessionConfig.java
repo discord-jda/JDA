@@ -28,6 +28,10 @@ import javax.annotation.Nullable;
 
 public class ShardingSessionConfig extends SessionConfig
 {
+    public static final long FLAG_SHUTDOWN_NOW = 1L << 32;
+
+    public static final long FLAG_DEFAULTS = SessionConfig.FLAG_DEFAULTS;
+
     private final OkHttpClient.Builder builder;
     private final IAudioSendFactory audioSendFactory;
 
@@ -35,12 +39,9 @@ public class ShardingSessionConfig extends SessionConfig
             @Nullable SessionController sessionController, @Nullable VoiceDispatchInterceptor interceptor,
             @Nullable OkHttpClient httpClient, @Nullable OkHttpClient.Builder httpClientBuilder,
             @Nullable WebSocketFactory webSocketFactory, @Nullable IAudioSendFactory audioSendFactory,
-            boolean audioEnabled, boolean retryOnTimeout,  boolean autoReconnect,
-            boolean bulkDeleteSplittingEnabled, int maxReconnectDelay)
+            long flags, int maxReconnectDelay)
     {
-        super(sessionController, httpClient, webSocketFactory, interceptor,
-            audioEnabled, retryOnTimeout, autoReconnect,
-            bulkDeleteSplittingEnabled, maxReconnectDelay);
+        super(sessionController, httpClient, webSocketFactory, interceptor, (int) flags, maxReconnectDelay);
         if (httpClient == null)
             this.builder = httpClientBuilder == null ? new OkHttpClient.Builder() : httpClientBuilder;
         else
@@ -63,6 +64,6 @@ public class ShardingSessionConfig extends SessionConfig
     @Nonnull
     public static ShardingSessionConfig getDefault()
     {
-        return new ShardingSessionConfig(null, null, null, null, null, null, true, true, true, true, 900);
+        return new ShardingSessionConfig(null, null, null, null, null, null, SessionConfig.FLAG_DEFAULTS, 900);
     }
 }

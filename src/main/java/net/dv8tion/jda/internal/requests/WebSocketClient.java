@@ -809,7 +809,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 {
                     handler.handle(responseTotal, o);
                     // Send raw event after cache has been updated - including comment
-                    api.getEventManager().handle(new RawGatewayEvent(api, responseTotal, o));
+                    if (api.isRawEvents())
+                        api.getEventManager().handle(new RawGatewayEvent(api, responseTotal, o));
                 }
             }
             else
@@ -860,7 +861,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         LOG.debug("Unrecognized event:\n{}", raw);
             }
             // Send raw event after cache has been updated
-            api.getEventManager().handle(new RawGatewayEvent(api, responseTotal, raw));
+            if (api.isRawEvents())
+                api.getEventManager().handle(new RawGatewayEvent(api, responseTotal, raw));
         }
         catch (ParsingException ex)
         {

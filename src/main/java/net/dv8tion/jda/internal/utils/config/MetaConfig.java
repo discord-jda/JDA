@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentMap;
 
 public class MetaConfig
 {
-    private static final MetaConfig defaultConfig = new MetaConfig(null, EnumSet.allOf(CacheFlag.class), false, true);
+    private static final MetaConfig defaultConfig = new MetaConfig(null, EnumSet.allOf(CacheFlag.class), SessionConfig.FLAG_DEFAULTS);
     private final ConcurrentMap<String, String> mdcContextMap;
     private final EnumSet<CacheFlag> cacheFlags;
     private final boolean enableMDC;
@@ -34,15 +34,15 @@ public class MetaConfig
 
     public MetaConfig(
             @Nullable ConcurrentMap<String, String> mdcContextMap,
-            @Nullable EnumSet<CacheFlag> cacheFlags, boolean enableMDC, boolean useShutdownHook)
+            @Nullable EnumSet<CacheFlag> cacheFlags, int flags)
     {
         this.cacheFlags = cacheFlags == null ? EnumSet.allOf(CacheFlag.class) : cacheFlags;
-        this.enableMDC = enableMDC;
+        this.enableMDC = (flags & SessionConfig.FLAG_CONTEXT_ENABLED) == SessionConfig.FLAG_CONTEXT_ENABLED;
         if (enableMDC)
             this.mdcContextMap = mdcContextMap == null ? new ConcurrentHashMap<>() : null;
         else
             this.mdcContextMap = null;
-        this.useShutdownHook = useShutdownHook;
+        this.useShutdownHook = (flags & SessionConfig.FLAG_SHUTDOWN_HOOK) == SessionConfig.FLAG_SHUTDOWN_HOOK;
     }
 
     @Nullable

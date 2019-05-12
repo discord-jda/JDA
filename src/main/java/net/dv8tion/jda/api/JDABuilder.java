@@ -74,17 +74,12 @@ public class JDABuilder
     protected IEventManager eventManager = null;
     protected IAudioSendFactory audioSendFactory = null;
     protected JDA.ShardInfo shardInfo = null;
+    protected Compression compression = Compression.ZLIB;
     protected Activity activity = null;
     protected OnlineStatus status = OnlineStatus.ONLINE;
-    protected int maxReconnectDelay = 900;
-    protected boolean enableContext = true;
-    protected boolean enableVoice = true;
-    protected boolean enableShutdownHook = true;
-    protected boolean enableBulkDeleteSplitting = true;
-    protected boolean autoReconnect = true;
     protected boolean idle = false;
-    protected boolean requestTimeoutRetry = true;
-    protected Compression compression = Compression.ZLIB;
+    protected int maxReconnectDelay = 900;
+    protected int flags = SessionConfig.FLAG_DEFAULTS;
 
     /**
      * Creates a completely empty JDABuilder.
@@ -135,6 +130,17 @@ public class JDABuilder
 
         this.accountType = accountType;
         this.listeners = new LinkedList<>();
+    }
+
+    @Nonnull
+    public JDABuilder setRawEventsEnabled(boolean enable)
+    {
+        int flag = SessionConfig.FLAG_RAW_EVENTS;
+        if (enable)
+            this.flags |= flag;
+        else
+            this.flags &= ~flag;
+        return this;
     }
 
     /**
@@ -193,7 +199,7 @@ public class JDABuilder
     {
         this.contextMap = map;
         if (map != null)
-            this.enableContext = true;
+            this.flags |= SessionConfig.FLAG_MDC_CONTEXT;
         return this;
     }
 
@@ -212,7 +218,11 @@ public class JDABuilder
     @Nonnull
     public JDABuilder setContextEnabled(boolean enable)
     {
-        this.enableContext = enable;
+        int flag = SessionConfig.FLAG_MDC_CONTEXT;
+        if (enable)
+            this.flags |= flag;
+        else
+            this.flags &= ~flag;
         return this;
     }
 
@@ -259,7 +269,11 @@ public class JDABuilder
     @Nonnull
     public JDABuilder setRequestTimeoutRetry(boolean retryOnTimeout)
     {
-        this.requestTimeoutRetry = retryOnTimeout;
+        int flag = SessionConfig.FLAG_RETRY_TIMEOUT;
+        if (retryOnTimeout)
+            this.flags |= flag;
+        else
+            this.flags &= ~flag;
         return this;
     }
 
@@ -502,24 +516,6 @@ public class JDABuilder
     }
 
     /**
-     * Enables/Disables Voice functionality.
-     * <br>This is useful, if your current system doesn't support Voice and you do not need it.
-     *
-     * <p>Default: <b>true (enabled)</b>
-     *
-     * @param  enabled
-     *         True - enables voice support.
-     *
-     * @return The JDABuilder instance. Useful for chaining.
-     */
-    @Nonnull
-    public JDABuilder setAudioEnabled(boolean enabled)
-    {
-        this.enableVoice = enabled;
-        return this;
-    }
-
-    /**
      * If enabled, JDA will separate the bulk delete event into individual delete events, but this isn't as efficient as
      * handling a single event would be. It is recommended that BulkDelete Splitting be disabled and that the developer
      * should instead handle the {@link net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent MessageBulkDeleteEvent}
@@ -534,7 +530,11 @@ public class JDABuilder
     @Nonnull
     public JDABuilder setBulkDeleteSplittingEnabled(boolean enabled)
     {
-        this.enableBulkDeleteSplitting = enabled;
+        int flag = SessionConfig.FLAG_BULK_DELETE_SPLIT;
+        if (enabled)
+            this.flags |= flag;
+        else
+            this.flags &= ~flag;
         return this;
     }
 
@@ -553,7 +553,11 @@ public class JDABuilder
     @Nonnull
     public JDABuilder setEnableShutdownHook(boolean enable)
     {
-        this.enableShutdownHook = enable;
+        int flag = SessionConfig.FLAG_SHUTDOWN_HOOK;
+        if (enable)
+            this.flags |= flag;
+        else
+            this.flags &= ~flag;
         return this;
     }
 
@@ -571,7 +575,11 @@ public class JDABuilder
     @Nonnull
     public JDABuilder setAutoReconnect(boolean autoReconnect)
     {
-        this.autoReconnect = autoReconnect;
+        int flag = SessionConfig.FLAG_AUTO_RECONNECT;
+        if (autoReconnect)
+            this.flags |= flag;
+        else
+            this.flags &= ~flag;
         return this;
     }
 
@@ -872,8 +880,8 @@ public class JDABuilder
         threadingConfig.setCallbackPool(callbackPool, shutdownCallbackPool);
         threadingConfig.setGatewayPool(mainWsPool, shutdownMainWsPool);
         threadingConfig.setRateLimitPool(rateLimitPool, shutdownRateLimitPool);
-        SessionConfig sessionConfig = new SessionConfig(controller, httpClient, wsFactory, voiceDispatchInterceptor, enableVoice, requestTimeoutRetry,autoReconnect, enableBulkDeleteSplitting, maxReconnectDelay);
-        MetaConfig metaConfig = new MetaConfig(contextMap, cacheFlags, enableContext, enableShutdownHook);
+        SessionConfig sessionConfig = new SessionConfig(controller, httpClient, wsFactory, voiceDispatchInterceptor, flags, maxReconnectDelay);
+        MetaConfig metaConfig = new MetaConfig(contextMap, cacheFlags, flags);
 
         JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig);
 
