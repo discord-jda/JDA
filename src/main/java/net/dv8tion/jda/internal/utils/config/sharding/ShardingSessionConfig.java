@@ -34,6 +34,7 @@ public class ShardingSessionConfig extends SessionConfig
 
     private final OkHttpClient.Builder builder;
     private final IAudioSendFactory audioSendFactory;
+    private final int shardingFlags;
 
     public ShardingSessionConfig(
             @Nullable SessionController sessionController, @Nullable VoiceDispatchInterceptor interceptor,
@@ -47,6 +48,12 @@ public class ShardingSessionConfig extends SessionConfig
         else
             this.builder = null;
         this.audioSendFactory = audioSendFactory;
+        this.shardingFlags = (int) (flags >>> 32);
+    }
+
+    public int getShardingFlags()
+    {
+        return this.shardingFlags;
     }
 
     @Nullable
