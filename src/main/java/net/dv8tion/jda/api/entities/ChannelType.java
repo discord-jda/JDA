@@ -16,6 +16,7 @@
 package net.dv8tion.jda.api.entities;
 
 import javax.annotation.Nonnull;
+import java.util.EnumSet;
 
 /**
  * Enum used to differentiate between the different types of Discord channels.
@@ -117,5 +118,25 @@ public enum ChannelType
                 return type;
         }
         return UNKNOWN;
+    }
+
+    /**
+     * An {@link java.util.EnumSet} populated with all channel types using the provided sorting bucket.
+     *
+     * @param  bucket
+     *         The sorting bucket
+     *
+     * @return Possibly-empty {@link java.util.EnumSet} for the bucket
+     */
+    @Nonnull
+    public static EnumSet<ChannelType> fromSortBucket(int bucket)
+    {
+        EnumSet<ChannelType> types = EnumSet.noneOf(ChannelType.class);
+        for (ChannelType type : values())
+        {
+            if (type.getSortBucket() == bucket)
+                types.add(type);
+        }
+        return types;
     }
 }

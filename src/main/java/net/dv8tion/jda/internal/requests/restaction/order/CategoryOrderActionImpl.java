@@ -17,7 +17,6 @@
 package net.dv8tion.jda.internal.requests.restaction.order;
 
 import net.dv8tion.jda.api.entities.Category;
-import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -38,18 +37,12 @@ public class CategoryOrderActionImpl
      * @param  category
      *         The target {@link net.dv8tion.jda.api.entities.Category Category}
      *         which the new CategoryOrderAction will order channels from.
-     * @param  type
-     *         The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} that
-     *         matches the returning value of {@link net.dv8tion.jda.api.entities.GuildChannel#getType() GuildChannel#getType()}
-     *         for the generic {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} type {@code T}.
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the {@code ChannelType} is not one that can be retrieved from a {@code Category}.
-     *         Currently the only two allowed are {@link ChannelType#TEXT} and {@link ChannelType#VOICE}.
+     * @param  bucket
+     *         The sorting bucket
      */
-    public CategoryOrderActionImpl(Category category, ChannelType type)
+    public CategoryOrderActionImpl(Category category, int bucket)
     {
-        super(category.getGuild(), type, getChannelsOfType(category, type));
+        super(category.getGuild(), bucket, getChannelsOfType(category, bucket));
         this.category = category;
     }
 
@@ -69,11 +62,10 @@ public class CategoryOrderActionImpl
     }
 
     @Nonnull
-    private static Collection<GuildChannel> getChannelsOfType(Category category, ChannelType type)
+    private static Collection<GuildChannel> getChannelsOfType(Category category, int bucket)
     {
-        Checks.notNull(type, "ChannelType");
         Checks.notNull(category, "Category");
-        return ChannelOrderActionImpl.getChannelsOfType(category.getGuild(), type).stream()
+        return ChannelOrderActionImpl.getChannelsOfType(category.getGuild(), bucket).stream()
              .filter(it -> category.equals(it.getParent()))
              .sorted()
              .collect(Collectors.toList());

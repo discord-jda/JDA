@@ -1945,7 +1945,7 @@ public class GuildController
     @CheckReturnValue
     public ChannelOrderAction modifyCategoryPositions()
     {
-        return new ChannelOrderActionImpl(getGuild(), ChannelType.CATEGORY);
+        return new ChannelOrderActionImpl(getGuild(), ChannelType.CATEGORY.getSortBucket());
     }
 
     /**
@@ -1971,7 +1971,7 @@ public class GuildController
     @CheckReturnValue
     public ChannelOrderAction modifyTextChannelPositions()
     {
-        return new ChannelOrderActionImpl(getGuild(), ChannelType.TEXT);
+        return new ChannelOrderActionImpl(getGuild(), ChannelType.TEXT.getSortBucket());
     }
 
     /**
@@ -1996,7 +1996,7 @@ public class GuildController
     @CheckReturnValue
     public ChannelOrderAction modifyVoiceChannelPositions()
     {
-        return new ChannelOrderActionImpl(getGuild(), ChannelType.VOICE);
+        return new ChannelOrderActionImpl(getGuild(), ChannelType.VOICE.getSortBucket());
     }
 
     /**
@@ -2032,7 +2032,7 @@ public class GuildController
     {
         Checks.notNull(category, "Category");
         checkGuild(category.getGuild(), "Category");
-        return new CategoryOrderActionImpl(category, ChannelType.TEXT);
+        return new CategoryOrderActionImpl(category, ChannelType.TEXT.getSortBucket());
     }
 
     /**
@@ -2067,7 +2067,7 @@ public class GuildController
     {
         Checks.notNull(category, "Category");
         checkGuild(category.getGuild(), "Category");
-        return new CategoryOrderActionImpl(category, ChannelType.VOICE);
+        return new CategoryOrderActionImpl(category, ChannelType.VOICE.getSortBucket());
     }
 
     /**
