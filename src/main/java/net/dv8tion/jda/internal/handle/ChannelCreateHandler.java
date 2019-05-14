@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.handle;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.events.channel.category.CategoryCreateEvent;
 import net.dv8tion.jda.api.events.channel.priv.PrivateChannelCreateEvent;
+import net.dv8tion.jda.api.events.channel.store.StoreChannelCreateEvent;
 import net.dv8tion.jda.api.events.channel.text.TextChannelCreateEvent;
 import net.dv8tion.jda.api.events.channel.voice.VoiceChannelCreateEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -53,7 +54,11 @@ public class ChannelCreateHandler extends SocketHandler
             case STORE:
             {
                 builder.createStoreChannel(content, guildId);
-                break; //TODO: Events?
+                jda.getEventManager().handle(
+                    new StoreChannelCreateEvent(
+                        jda, responseNumber,
+                        builder.createStoreChannel(content, guildId)));
+                break;
             }
             case TEXT:
             {

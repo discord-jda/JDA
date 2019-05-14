@@ -24,6 +24,9 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdateNameEvent;
 import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePermissionsEvent;
 import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePositionEvent;
+import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdateNameEvent;
+import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdatePermissionsEvent;
+import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdatePositionEvent;
 import net.dv8tion.jda.api.events.channel.text.update.*;
 import net.dv8tion.jda.api.events.channel.voice.update.*;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -80,16 +83,25 @@ public class ChannelUpdateHandler extends SocketHandler
                 if (!Objects.equals(oldName, name))
                 {
                     storeChannel.setName(name);
-                    //TODO: Events?
+                    getJDA().getEventManager().handle(
+                        new StoreChannelUpdateNameEvent(
+                            getJDA(), responseNumber,
+                            storeChannel, oldName));
                 }
                 if (!Objects.equals(oldPositon, position))
                 {
                     storeChannel.setPosition(position);
-                    //TODO: Events?
+                    getJDA().getEventManager().handle(
+                        new StoreChannelUpdatePositionEvent(
+                            getJDA(), responseNumber,
+                            storeChannel, oldPositon));
                 }
 
                 applyPermissions(storeChannel, content, permOverwrites, contained, changed);
-                //TODO: Events?
+                getJDA().getEventManager().handle(
+                    new StoreChannelUpdatePermissionsEvent(
+                        getJDA(), responseNumber,
+                        storeChannel, changed));
                 break;
             }
             case TEXT:
