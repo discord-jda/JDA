@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.channel.category.CategoryDeleteEvent;
 import net.dv8tion.jda.api.events.channel.priv.PrivateChannelDeleteEvent;
@@ -26,7 +25,6 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.UserImpl;
-import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 
@@ -81,13 +79,14 @@ public class ChannelDeleteHandler extends SocketHandler
                     return null;
                 }
 
-                //We use this instead of getAudioManager(Guild) so we don't create a new instance. Efficiency!
-                AudioManagerImpl manager = (AudioManagerImpl) getJDA().getAudioManagersView().get(guild.getIdLong());
-                if (manager != null && manager.isConnected()
-                        && manager.getConnectedChannel().getIdLong() == channel.getIdLong())
-                {
-                    manager.closeAudioConnection(ConnectionStatus.DISCONNECTED_CHANNEL_DELETED);
-                }
+                // This is done in the AudioWebSocket already
+//                //We use this instead of getAudioManager(Guild) so we don't create a new instance. Efficiency!
+//                AudioManagerImpl manager = (AudioManagerImpl) getJDA().getAudioManagersView().get(guild.getIdLong());
+//                if (manager != null && manager.isConnected()
+//                        && manager.getConnectedChannel().getIdLong() == channel.getIdLong())
+//                {
+//                    manager.closeAudioConnection(ConnectionStatus.DISCONNECTED_CHANNEL_DELETED);
+//                }
                 guild.getVoiceChannelsView().remove(channel.getIdLong());
                 getJDA().getEventManager().handle(
                     new VoiceChannelDeleteEvent(
