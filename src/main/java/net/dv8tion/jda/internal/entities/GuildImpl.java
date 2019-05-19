@@ -1112,41 +1112,41 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public ChannelOrderAction<Category> modifyCategoryPositions()
+    public ChannelOrderAction modifyCategoryPositions()
     {
-        return new ChannelOrderActionImpl<>(this, ChannelType.CATEGORY);
+        return new ChannelOrderActionImpl(this, ChannelType.CATEGORY.getSortBucket());
     }
 
     @Nonnull
     @Override
-    public ChannelOrderAction<TextChannel> modifyTextChannelPositions()
+    public ChannelOrderAction modifyTextChannelPositions()
     {
-        return new ChannelOrderActionImpl<>(this, ChannelType.TEXT);
+        return new ChannelOrderActionImpl(this, ChannelType.TEXT.getSortBucket());
     }
 
     @Nonnull
     @Override
-    public ChannelOrderAction<VoiceChannel> modifyVoiceChannelPositions()
+    public ChannelOrderAction modifyVoiceChannelPositions()
     {
-        return new ChannelOrderActionImpl<>(this, ChannelType.VOICE);
+        return new ChannelOrderActionImpl(this, ChannelType.VOICE.getSortBucket());
     }
 
     @Nonnull
     @Override
-    public CategoryOrderAction<TextChannel> modifyTextChannelPositions(@Nonnull Category category)
+    public CategoryOrderAction modifyTextChannelPositions(@Nonnull Category category)
     {
         Checks.notNull(category, "Category");
         checkGuild(category.getGuild(), "Category");
-        return new CategoryOrderActionImpl<>(category, ChannelType.TEXT);
+        return new CategoryOrderActionImpl(category, ChannelType.TEXT.getSortBucket());
     }
 
     @Nonnull
     @Override
-    public CategoryOrderAction<VoiceChannel> modifyVoiceChannelPositions(@Nonnull Category category)
+    public CategoryOrderAction modifyVoiceChannelPositions(@Nonnull Category category)
     {
         Checks.notNull(category, "Category");
         checkGuild(category.getGuild(), "Category");
-        return new CategoryOrderActionImpl<>(category, ChannelType.VOICE);
+        return new CategoryOrderActionImpl(category, ChannelType.VOICE.getSortBucket());
     }
 
     @Nonnull

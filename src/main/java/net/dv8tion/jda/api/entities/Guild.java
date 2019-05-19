@@ -3078,7 +3078,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    ChannelOrderAction<Category> modifyCategoryPositions();
+    ChannelOrderAction modifyCategoryPositions();
 
     /**
      * Modifies the positional order of {@link net.dv8tion.jda.api.entities.Guild#getTextChannels() Guild.getTextChannels()}
@@ -3100,7 +3100,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    ChannelOrderAction<TextChannel> modifyTextChannelPositions();
+    ChannelOrderAction modifyTextChannelPositions();
 
     /**
      * Modifies the positional order of {@link net.dv8tion.jda.api.entities.Guild#getVoiceChannels() Guild.getVoiceChannels()}
@@ -3122,7 +3122,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    ChannelOrderAction<VoiceChannel> modifyVoiceChannelPositions();
+    ChannelOrderAction modifyVoiceChannelPositions();
 
     /**
      * Modifies the positional order of {@link net.dv8tion.jda.api.entities.Category#getTextChannels() Category#getTextChannels()}
@@ -3152,7 +3152,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    CategoryOrderAction<TextChannel> modifyTextChannelPositions(@Nonnull Category category);
+    CategoryOrderAction modifyTextChannelPositions(@Nonnull Category category);
 
     /**
      * Modifies the positional order of {@link net.dv8tion.jda.api.entities.Category#getVoiceChannels() Category#getVoiceChannels()}
@@ -3182,7 +3182,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    CategoryOrderAction<VoiceChannel> modifyVoiceChannelPositions(@Nonnull Category category);
+    CategoryOrderAction modifyVoiceChannelPositions(@Nonnull Category category);
 
     /**
      * Modifies the positional order of {@link net.dv8tion.jda.api.entities.Guild#getRoles() Guild.getRoles()}
